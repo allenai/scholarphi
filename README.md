@@ -9,6 +9,7 @@ More to come soon 🎉.
 ## Contributors
 
 * [Andrew Head](mailto:andrew.head@berkeley.edu)
+* [Kyle Lo](mailto:kylel@allenai.org)
 * [Sam Skjonsberg](mailto:sams@allenai.org)
 * [Dan Weld](mailto:danw@allenai.org)
 * [Marti Hearst](mailto:hearst@berkeley.edu)
