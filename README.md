@@ -12,4 +12,3 @@ More to come soon 🎉.
 * [Sam Skjonsberg](mailto:sams@allenai.org)
 * [Dan Weld](danw@allenai.org)
 * [Marti Hearst](mailto:hearst@berkeley.edu)
-
