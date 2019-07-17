@@ -10,5 +10,5 @@ More to come soon 🎉.
 
 * [Andrew Head](mailto:andrew.head@berkeley.edu)
 * [Sam Skjonsberg](mailto:sams@allenai.org)
-* [Dan Weld](danw@allenai.org)
+* [Dan Weld](mailto:danw@allenai.org)
 * [Marti Hearst](mailto:hearst@berkeley.edu)
