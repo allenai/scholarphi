@@ -12,6 +12,6 @@
     "persistent": true
   },
   "web_accessible_resources": [
-    "build/*"
+    "build/static/*"
   ]
 }
