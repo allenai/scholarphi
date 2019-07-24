@@ -5,7 +5,7 @@ chrome.webRequest.onHeadersReceived.addListener(
   function(details) {
     console.log("Trying to log header receive info");
     return {
-      redirectUrl: chrome.extension.getURL('extension/app.html')
+      redirectUrl: chrome.extension.getURL('extension/app.html') + '?url=' + encodeURIComponent(details.url)
     };
   }, {
     urls: [

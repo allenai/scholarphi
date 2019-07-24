@@ -19,7 +19,7 @@ class MyApp extends Component {
     return (
       <div>
         <Document
-          file="https://arxiv.org/pdf/1505.05425.pdf"
+          file={this.props.pdfUrl}
           onLoadSuccess={this.onDocumentLoadSuccess.bind(this)}
         >
           <Page pageNumber={pageNumber} />
