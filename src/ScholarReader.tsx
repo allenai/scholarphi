@@ -1,6 +1,7 @@
 import React from 'react'
 import { Document, Page } from 'react-pdf/dist/entry.webpack'
 
+import 'react-pdf/dist/Page/AnnotationLayer.css'
 import './ScholarReader.scss'
 
 interface ScholarReaderProps {
