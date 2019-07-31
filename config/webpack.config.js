@@ -148,6 +148,8 @@ module.exports = function(webpackEnv) {
       // changing JS code would still trigger a refresh.
     ].filter(Boolean),
     output: {
+      // See https://github.com/wojtekmaj/react-pdf/issues/190#issuecomment-447286187
+      globalObject: "this",
       // The build folder.
       path: isEnvProduction ? paths.appBuild : undefined,
       // Add /* filename */ comments to generated require()s in the output.

@@ -1,0 +1,49 @@
+/*
+ * Based on styles from react-pdf sample project, released under MIT license
+ * https://github.com/wojtekmaj/react-pdf/blob/master/sample/webpack/Sample.less
+ */
+body {
+  margin: 0;
+  background-color: rgb(82, 86, 89);
+  font-family: Segou UI, Tahoma, sans-serif;
+}
+
+.ScholarReader {
+  
+    &__container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 10px 0;
+        padding: 10px;
+
+        &__document {
+            margin: 1em 0;
+
+            .react-pdf {
+                &__Document {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                &__Page {
+                    max-width: calc("100% - 2em");
+                    box-shadow: 0 0 8px rgba(0, 0, 0, .5);
+                    margin: 1em;
+
+                    canvas {
+                        max-width: 100%;
+                        height: auto !important;
+                    }
+                }
+
+                &__message {
+                    padding: 20px;
+                    color: white;
+                }
+            }
+        }
+    }
+
+}
