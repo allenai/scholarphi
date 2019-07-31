@@ -9,8 +9,7 @@ More to come soon 🎉.
 # Build instructions
 
 The React app is implemented in the `src/` directory. You
-should (in theory: TODO Andrew verify) be able to test it
-standalone by running:
+can test it standalone by running:
 
 ```bash
 npm run start
@@ -25,7 +24,10 @@ be loaded by the Chrome extension when a PDF page is visited
 To compile the files, run:
 
 ```bash
-npm run build
+npm run build        # compile app with webpack
+npm run postbuild    # make small corrections to webpack
+                     # files to enable extension
+                     # integration.
 ```
 
 Then you can load the directory for this project as an
