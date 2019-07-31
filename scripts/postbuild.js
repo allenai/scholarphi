@@ -23,5 +23,5 @@ const paths = require('../config/paths');
 const mainJsPath = path.join(paths.appBuild, 'static', 'js', 'main.js');
 
 const mainJsText =  fs.readFileSync(mainJsPath, 'utf8');
-const updatedMainJsText = mainJsText.replace("new Worker(r.p+", "new Worker(");
-fs.writeFileSync(mainJsPath, mainJsText, 'utf8');
+const updatedMainJsText = mainJsText.replace(/new Worker\(r\.p\+/g, "new Worker(");
+fs.writeFileSync(mainJsPath, updatedMainJsText, 'utf8');
