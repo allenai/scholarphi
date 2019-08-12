@@ -1,11 +1,11 @@
+import _ from "lodash";
 import * as queryString from "query-string";
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import ScholarReader from "./ScholarReader";
+import { fetchSummaries, Summaries } from "./semanticScholar";
 import * as serviceWorker from "./serviceWorker";
-import { Summaries, fetchSummaries } from "./semanticScholar";
-import _ from "lodash";
 
 // var DEFAULT_PDF_URL = "https://arxiv.org/pdf/1907.09807.pdf"  // Deep learning for programming languages paper
 var DEFAULT_PDF_URL = "https://arxiv.org/pdf/1907.07355.pdf";
