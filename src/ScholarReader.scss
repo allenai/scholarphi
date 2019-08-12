@@ -36,6 +36,15 @@ body {
                         max-width: 100%;
                         height: auto !important;
                     }
+
+                    .citation-annotation {
+                      position: absolute;
+                      opacity: 0;
+
+                      &:hover {
+                        opacity: 1;
+                      }
+                    }
                 }
 
                 &__message {

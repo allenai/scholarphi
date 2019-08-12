@@ -5,7 +5,8 @@ import * as serviceWorker from './serviceWorker'
 import ScholarReader from './ScholarReader'
 import * as queryString from 'query-string'
 
-var DEFAULT_PDF_URL = "https://arxiv.org/pdf/1907.09807.pdf"
+// var DEFAULT_PDF_URL = "https://arxiv.org/pdf/1907.09807.pdf"  // Deep learning for programming languages paper
+var DEFAULT_PDF_URL = "https://arxiv.org/pdf/1907.07355v1.pdf";
 
 var params = queryString.parse(window.location.search)
 var url

@@ -83,7 +83,7 @@
   "devDependencies": {
     "@types/react": "^16.8.23",
     "@types/react-dom": "^16.8.5",
-    "@types/react-pdf": "^4.0.0",
+    "@types/react-pdf": "^4.0.2",
     "react-scripts": "^3.0.1",
     "rewire": "^4.0.1",
     "tslint": "^5.18.0",

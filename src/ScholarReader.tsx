@@ -1,16 +1,24 @@
-import React from 'react'
-import { Document, Page } from 'react-pdf/dist/entry.webpack'
+import React from "react";
+import { Document, Page } from "react-pdf/dist/entry.webpack";
 
-import 'react-pdf/dist/Page/AnnotationLayer.css'
-import './ScholarReader.scss'
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "./ScholarReader.scss";
+import { AnnotatedPage } from "./AnnotatedPage";
+import { citations } from "./annotations";
 
 interface ScholarReaderProps {
-  pdfUrl: string | undefined
+  pdfUrl: string | undefined;
 }
 
 interface ScholarReaderState {
-  numPages: number | null,
-  pageNumber: number
+  numPages: number | null;
+  pageNumber: number;
+}
+
+declare global {
+  interface Window {
+    pageObject: Page;
+  }
 }
 
 /*
@@ -19,22 +27,21 @@ interface ScholarReaderState {
  * Sample code is under MIT license.
  */
 class ScholarReader extends React.Component<ScholarReaderProps, ScholarReaderState> {
-
   constructor(props: ScholarReaderProps) {
-    super(props)
+    super(props);
     this.state = {
       numPages: null,
       pageNumber: 1
-    }
+    };
   }
 
-  onDocumentLoadSuccess = ({ numPages } : { numPages: number }) => {
-    console.log(numPages)
-    this.setState({ numPages })
-  }
+  onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+    console.log(numPages);
+    this.setState({ numPages });
+  };
 
   render() {
-    const { numPages } = this.state
+    const { numPages } = this.state;
 
     return (
       <div className="ScholarReader">
@@ -44,18 +51,13 @@ class ScholarReader extends React.Component<ScholarReaderProps, ScholarReaderSta
               file={this.props.pdfUrl}
               onLoadSuccess={this.onDocumentLoadSuccess.bind(this)}
             >
-              {
-                Array.from(
-                  new Array(numPages),
-                  (_, index) => (
-                    <Page
-                      key={`page_${index + 1}`}
-                      pageNumber={index + 1}
-                      onLoadSuccess={() => removeTextLayerOffset()}
-                    />
-                  )
-                )
-              }
+              {Array.from(new Array(numPages), (_, index) => (
+                <AnnotatedPage
+                  key={`page_${index + 1}`}
+                  index={index}
+                  citations={citations(this.props.pdfUrl, index + 1)}
+                />
+              ))}
             </Document>
           </div>
         </div>
@@ -64,20 +66,4 @@ class ScholarReader extends React.Component<ScholarReaderProps, ScholarReaderSta
   }
 }
 
-/*
- * Fix alignment of text layer with PDF layer. Fix from react-pdf GitHub issue:
- * https://github.com/wojtekmaj/react-pdf/issues/332#issuecomment-458121654
- */
-function removeTextLayerOffset() {
-  const textLayers = document.querySelectorAll(".react-pdf__Page__textContent");
-    textLayers.forEach(layer => {
-      if (layer instanceof HTMLElement) {
-        const { style } = layer;
-        style.top = "0";
-        style.left = "0";
-        style.transform = "";
-      }
-  });
-}
-
-export default ScholarReader
+export default ScholarReader;
