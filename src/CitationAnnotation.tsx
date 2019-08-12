@@ -1,6 +1,7 @@
 import { PDFPageViewport } from "pdfjs-dist";
 import React from "react";
 import { Summary } from "./semanticScholar";
+import { SummaryTooltip, SummaryView } from "./SummaryTooltip";
 
 /**
  * Dimensions are expressed in PDF coordinates, not in viewport coordinates.
@@ -18,7 +19,7 @@ interface CitationAnnotationProps {
 }
 
 export function CitationAnnotation(props: CitationAnnotationProps) {
-  if (!isXValid(props.x) || !isYValid(props.y)) {
+  if (!isXValid(props.x) || !isYValid(props.y) || props.paperSummary === undefined) {
     return null;
   }
   const pdfCoordinates = [props.x, props.y, props.x + props.width, props.y + props.height];
@@ -42,8 +43,14 @@ export function CitationAnnotation(props: CitationAnnotationProps) {
   };
 
   return (
-    <div className="citation-annotation" onMouseOver={() => console.log(props.paperSummary)} style={style}>
-    </div>
+    <SummaryTooltip title={
+      <React.Fragment>
+        <SummaryView summary={props.paperSummary}/>
+      </React.Fragment>
+    }>
+      <div className="citation-annotation" style={style}>
+      </div>
+    </SummaryTooltip>
   );
 }
 
