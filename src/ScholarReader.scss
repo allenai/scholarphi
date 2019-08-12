@@ -39,10 +39,12 @@ body {
 
                     .citation-annotation {
                       position: absolute;
-                      opacity: 0;
+                      margin-bottom: -2px;
+                      border-bottom: 1px dotted lightgrey;
 
                       &:hover {
-                        opacity: 1;
+                        border-bottom: 1px dotted black;
+                        cursor: pointer;
                       }
                     }
                 }

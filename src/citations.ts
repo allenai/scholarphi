@@ -1,3 +1,6 @@
+import { Summaries, Summary } from "./semanticScholar";
+import leven from "leven";
+
 const allCitations: Citations = {};
 
 interface Citations {
@@ -25,11 +28,36 @@ export function citations(url: string | undefined, page: number) {
   });
 }
 
+/**
+ * Get summary of the paper this citation refers to. As the titles in the summaries may come from
+ * a different source than the title in the citation data, edit distance is used to find an
+ * approximate match.
+ */
+export function gettSummary(citation: Citation, summaries: Summaries): Summary | null {
+  const title = citation.referenceTitle;
+  /*
+   * An empty title doesn't match any other title
+   */
+  if (title === undefined || title === "") {
+    return null;
+  }
+  let bestMatch;
+  let bestMatchDistance = Number.POSITIVE_INFINITY;
+  for (const otherTitle of Object.keys(summaries)) {
+    const distance = leven(title, otherTitle);
+    if (distance < bestMatchDistance) {
+      bestMatch = otherTitle;
+      bestMatchDistance = distance;
+    }
+  }
+  return bestMatch !== undefined ? summaries[bestMatch] : null;
+}
+
 /*
  * Automatically generated with Grobid. This information should be queried from an API eventually.
  * Contact Andrew Head<andrewhead@berkeley.edu> for how to generate for another paper.
  */
-allCitations["https://arxiv.org/pdf/1907.07355v1.pdf"] = [
+allCitations["https://arxiv.org/pdf/1907.07355.pdf"] = [
   {
     "referenceTitle": "Argumentation mining",
     "page": 1,

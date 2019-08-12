@@ -2,12 +2,14 @@ import React from "react";
 import { Page } from "react-pdf";
 import { PDFPageProxy } from "pdfjs-dist";
 import { useState } from "react";
-import { CitationAnnotation } from "./Annotation";
-import { Citation } from "./annotations";
+import { CitationAnnotation } from "./CitationAnnotation";
+import { Citation, gettSummary as getSummary } from "./citations";
+import { Summaries } from "./semanticScholar";
 
 interface AnnotatedPageProps {
   index: number;
   citations: Citation[];
+  summaries: Summaries;
 }
 
 export function AnnotatedPage(props: AnnotatedPageProps) {
@@ -29,7 +31,7 @@ export function AnnotatedPage(props: AnnotatedPageProps) {
             y={props.citations[index].y}
             width={props.citations[index].width}
             height={props.citations[index].height}
-            title={props.citations[index].referenceTitle}
+            paperSummary={getSummary(props.citations[index], props.summaries) || undefined}
             pageViewport={pdfPageProxy.getViewport({ scale: 1 })}
           />
         ))}

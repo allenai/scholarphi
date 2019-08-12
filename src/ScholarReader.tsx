@@ -4,10 +4,12 @@ import { Document, Page } from "react-pdf/dist/entry.webpack";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "./ScholarReader.scss";
 import { AnnotatedPage } from "./AnnotatedPage";
-import { citations } from "./annotations";
+import { citations } from "./citations";
+import { Summaries } from "./semanticScholar";
 
 interface ScholarReaderProps {
   pdfUrl: string | undefined;
+  summaries: Summaries;
 }
 
 interface ScholarReaderState {
@@ -56,6 +58,7 @@ class ScholarReader extends React.Component<ScholarReaderProps, ScholarReaderSta
                   key={`page_${index + 1}`}
                   index={index}
                   citations={citations(this.props.pdfUrl, index + 1)}
+                  summaries={this.props.summaries}
                 />
               ))}
             </Document>

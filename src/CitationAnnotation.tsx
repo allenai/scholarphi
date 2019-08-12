@@ -1,5 +1,6 @@
-import React from "react";
 import { PDFPageViewport } from "pdfjs-dist";
+import React from "react";
+import { Summary } from "./semanticScholar";
 
 /**
  * Dimensions are expressed in PDF coordinates, not in viewport coordinates.
@@ -9,31 +10,15 @@ interface CitationAnnotationProps {
   y: number;
   width: number;
   height: number;
-  title?: string;
+  paperSummary?: Summary;
   /**
    * Used to convert PDF coordinates to viewport coordinates.
    */
   pageViewport: PDFPageViewport;
 }
 
-/**
- * Grobid, the PDF analyzer that may be used here to provide annotations, sometimes assignes tokens
- * an 'x' and 'y' of -1. These positions cannot be plotted.
- */
-function isXValid(x: number) {
-  return x !== -1;
-}
-
-function isYValid(y: number) {
-  return y !== -1;
-}
-
-function isTitleValid(title: string | undefined) {
-  return title !== undefined && title.length > 0;
-}
-
 export function CitationAnnotation(props: CitationAnnotationProps) {
-  if (!isXValid(props.x) || !isYValid(props.y) || !isTitleValid(props.title)) {
+  if (!isXValid(props.x) || !isYValid(props.y)) {
     return null;
   }
   const pdfCoordinates = [props.x, props.y, props.x + props.width, props.y + props.height];
@@ -57,8 +42,19 @@ export function CitationAnnotation(props: CitationAnnotationProps) {
   };
 
   return (
-    <div className="citation-annotation" style={style}>
-      {props.title}
+    <div className="citation-annotation" onMouseOver={() => console.log(props.paperSummary)} style={style}>
     </div>
   );
+}
+
+/**
+ * Grobid, the PDF analyzer that may be used here to provide annotations, sometimes assignes tokens
+ * an 'x' and 'y' of -1. These positions cannot be plotted.
+ */
+function isXValid(x: number) {
+  return x !== -1;
+}
+
+function isYValid(y: number) {
+  return y !== -1;
 }
