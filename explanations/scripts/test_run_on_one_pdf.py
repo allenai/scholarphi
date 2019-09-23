@@ -19,6 +19,7 @@ import numpy as np
 import cv2
 from imageio import imread, imsave
 from explanations.explanations.bounding_box import bbs_for_color, find_connected_components, cluster_close_cc, merge_bbs
+from explanations.explanations.image_diff import diff_two_images
 
 
 def call_pdflatex(input_latex_dir: str, output_latex_dir: str):
@@ -54,3 +55,10 @@ def rasterize_pdf(input_pdf_path: str, output_dir: str):
         input_pdf_path,
     ]
     subprocess.run(gs_args, check=False)
+
+def diff_image(input_png_path1: str, input_png_path2: str, output_png_path: str):
+    img1 = imread(input_png_path1)
+    img2 = imread(input_png_path2)
+    diff_img = diff_two_images(img1, img2)
+    imsave(output_png_path, diff_img)
+    
