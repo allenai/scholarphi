@@ -6,7 +6,7 @@ This assumes that you already have a LaTeX source directory & it compiles correc
 
 """
 
-
+import argparse
 
 from typing import Optional, List
 
@@ -14,11 +14,12 @@ import os
 import subprocess
 import shutil
 import bs4
+import json
 
 import numpy as np
 import cv2
 from imageio import imread, imsave
-from explanations.explanations.bounding_box import bbs_for_color, find_connected_components, cluster_close_cc, merge_bbs
+from explanations.explanations.bounding_box import bbs_for_color, find_connected_components, cluster_nearby_connected_components, merge_bbs
 from explanations.explanations.image_diff import diff_two_images
 
 
@@ -61,4 +62,26 @@ def diff_image(input_png_path1: str, input_png_path2: str, output_png_path: str)
     img2 = imread(input_png_path2)
     diff_img = diff_two_images(img1, img2)
     imsave(output_png_path, diff_img)
-    
+
+def compute_bounding_boxes(diff_png_path: str, input_png_for_bbox_overlay_path: str, output_dir: str):
+    diff_img = imread(diff_png_path)
+
+    # compute bounding boxes
+    connected_components = find_connected_components(diff_img, lower=np.array([0, 0, 0]), upper=np.array([180, 255, 125]))
+    level, clusters, d = cluster_nearby_connected_components(connected_components)
+    bounding_boxes = [merge_bbs(cluster) for cluster in clusters]
+    print(json.dumps(bounding_boxes))
+
+    # overlay
+    img_for_overlay = imread(input_png_for_bbox_overlay_path)
+    for i, bb in enumerate(bounding_boxes):
+        minX, minY, maxX, maxY = bb
+        img_with_overlay = cv2.rectangle(img_for_overlay, (minX, minY), (maxX, maxY), (255, 0, 0))
+        imsave(os.path.join(output_dir, f'{i}.png'), img_with_overlay)
+    return bounding_boxes
+
+
+if __name__ == '__main__':
+    diff_image(input_png_path1='explanations/1909.08079_output_original/0003.png',
+               input_png_path2='explanations/1909.08079_output_colorized/0003.png',
+               output_png_path='explanations/1909.08079_output_diff/0003.png')

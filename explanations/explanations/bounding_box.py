@@ -129,7 +129,7 @@ def cluster_closest(clusters, d):
     return (min_d + 1, new_clusters, new_d)
 
 # Note: Don't pass the background bounding box.
-def cluster_close_cc(bbs):
+def cluster_nearby_connected_components(bbs):
     bb_list = list(bbs)
     init_size = len(bb_list)
     prev_d = np.full((init_size, init_size), -999, dtype = int)
@@ -195,7 +195,7 @@ def bbs_for_color(img, color_index):
     #print("num bbs: {}".format(len(bbs))) #DELETEME
     if len(bbs) > 500:
         return (False, [])
-    level, clusters, d = cluster_close_cc(bbs)
+    level, clusters, d = cluster_nearby_connected_components(bbs)
     #print("num clusters: {}".format(len(clusters))) #DELETEME
     return (True, [merge_bbs(cluster) for cluster in clusters])
 
