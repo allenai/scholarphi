@@ -18,13 +18,15 @@ A:  Not really.  https://grobid.readthedocs.io/en/latest/Coordinates-in-PDF/#coo
 from typing import Optional, List
 
 import os
-
 import subprocess
-
 import shutil
-
 import bs4
-from hoptex.demacro import demacro_file
+# from hoptex.demacro import demacro_file
+
+import numpy as np
+import cv2
+from imageio import imread, imsave
+from bounding_box import bbs_for_color, find_connected_components, cluster_close_cc, merge_bbs
 
 
 def call_pdflatex(src_tex: str, src_dir: str, dest_dir: str, timeout: int = 1200) -> str:
@@ -55,8 +57,8 @@ def call_pdflatex(src_tex: str, src_dir: str, dest_dir: str, timeout: int = 1200
             raise Exception(" ".join(cmd), res.returncode, log_text)
     src_name = os.path.splitext(os.path.basename(src_tex))[0]
     return dest_dir + src_name + ".pdf"
-
 # call_pdflatex(src_tex='mainRecSys.tex', src_dir='input1/', dest_dir='input1/')
+
 
 with open('input1/mainRecSys.tex', "rb") as f:
     # Some files may cause a UnicodeDecodeError if read directly as text, e.g. '/net/nfs.corp/s2-research/figure-extraction/data/distant-data/arxiv/src/0001/cond-mat0001356/s10677c.tex'
@@ -115,8 +117,6 @@ def rasterize_pdf(pdf_path: str, output_dir: str):
 
 
 
-from imageio import imread, imsave
-import numpy as np
 
 
 original_img_filepath = 'output1_black/0003.png'
@@ -140,14 +140,14 @@ diff_page = im_diff(original_img, colorized_img)
 os.makedirs('output1_diff/')
 imsave('output1_diff/0003.png', diff_page)
 
-from bounding_box import bbs_for_color, find_connected_components, cluster_close_cc, merge_bbs
+
 diff_page = imread('output1_diff/0003.png')
 # bbs_for_color(diff_page, 0)
 bbs = find_connected_components(diff_page, lower=np.array([0, 0, 0]), upper=np.array([180, 255, 125]))
 level, clusters, d = cluster_close_cc(bbs)
 bbs = [merge_bbs(cluster) for cluster in clusters]
 
-import cv2
+
 for i, label_bb in enumerate(bbs):
     minX, minY, maxX, maxY = label_bb
     test_img = cv2.rectangle(original_img, (minX, minY), (maxX, maxY), (255, 0, 0))
