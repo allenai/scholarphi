@@ -9,7 +9,7 @@ All the code for getting symbol explanations as bounding boxes
 conda create -n reader python=3.6
 cd explanations/
 pip install -r requirements.txt
-pip install opencv-python       # dont know why, but this doesnt work in requirements.txt
+pip install opencv-python==3.3.0.10       # dont know why, but this doesnt work in requirements.txt
 ```
 
 ### input
