@@ -54,11 +54,17 @@ gs -dGraphicsAlphaBits=4 -dTextAlphaBits=4 -dNOPAUSE -dBATCH -dSAFER -dQUIET -sD
 
 Check `1909.08079_output_original/` for `*.png` files, one for each page.
 
+Repeat this for `1909.08079_output_colorized/mainRecSys.pdf`.
+
 
 ### image diffs
 
-Let's say you ran the previous GhostScript command on `1909.08079_output_original/mainRecSys.pdf` and `1909.08079_output_colorized/mainRecSys.pdf`.
+Let's say you ran the previous GhostScript command on `1909.08079_output_original/` and `1909.08079_output_colorized/`.
 
- 
+Then you should have `0001.png, 0002.png, ...` within each of these directories.
+
+Pick a page for which the Original and Colorized page image are different.  Let's say this is `0003.png`.  
+
+
 
 ### output
