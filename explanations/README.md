@@ -81,5 +81,16 @@ Paths may vary depending on where you saved your examples.
 
 ### bounding boxes
 
+Given the PNG from previous step, we want bounding boxes around components.
 
+Open up Python and:
 
+```python
+from explanations.scripts.test_run_on_one_pdf import compute_bounding_boxes
+
+compute_bounding_boxes(diff_png_path='1909.08079_output_diff/0003.png',
+                       input_png_for_bbox_overlay_path='1909.08079_output_original/0003.png',
+                       output_dir='.')
+```
+
+This will dump an output file called `0.png` into `'.'` path.  If you open it up, it should look like a reasonable bounding box!
