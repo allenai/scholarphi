@@ -1,4 +1,3 @@
 beautifulsoup4
 scipy
 imageio
-python-opencv==3.3.0.10
