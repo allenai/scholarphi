@@ -65,6 +65,21 @@ Then you should have `0001.png, 0002.png, ...` within each of these directories.
 
 Pick a page for which the Original and Colorized page image are different.  Let's say this is `0003.png`.  
 
+Create a target directory: `mkdir 1909.08079_output_diff`
+
+Open up Python and:
+
+```python
+from explanations.scripts.test_run_on_one_pdf import diff_image
+
+diff_image(input_png_path1='1909.08079_output_original/0003.png',
+           input_png_path2='1909.08079_output_colorized/0003.png',
+           output_png_path='1909.08079_output_diff/0003.png')
+```
+
+Paths may vary depending on where you saved your examples.
+
+### bounding boxes
 
 
-### output
+
