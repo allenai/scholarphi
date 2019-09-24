@@ -70,7 +70,7 @@ Create a target directory: `mkdir 1909.08079_output_diff`
 Open up Python and:
 
 ```python
-from explanations.scripts.test_run_on_one_pdf import diff_image
+from explanations.scripts.example import diff_image
 
 diff_image(input_png_path1='1909.08079_output_original/0003.png',
            input_png_path2='1909.08079_output_colorized/0003.png',
@@ -86,7 +86,7 @@ Given the PNG from previous step, we want bounding boxes around components.
 Open up Python and:
 
 ```python
-from explanations.scripts.test_run_on_one_pdf import compute_bounding_boxes
+from explanations.scripts.example import compute_bounding_boxes
 
 compute_bounding_boxes(diff_png_path='1909.08079_output_diff/0003.png',
                        input_png_for_bbox_overlay_path='1909.08079_output_original/0003.png',
