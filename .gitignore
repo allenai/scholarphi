@@ -11,6 +11,9 @@
 # production
 /build
 
+# editing
+.*.swp
+
 # misc
 .DS_Store
 .env.local

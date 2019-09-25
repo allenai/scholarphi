@@ -1,0 +1,9 @@
+# Python caches
+__pycache__
+.mypy_cache
+
+# Input data
+arxiv_ids.txt
+
+# Pipeline inputs and outputs
+data
