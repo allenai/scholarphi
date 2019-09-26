@@ -1,16 +1,6 @@
 import re
 
-from explanations.instrument_latex import color_equations, is_latex_main
-
-
-def test_is_latex_main():
-    tex = "\\documentclass[docclass]"
-    assert is_latex_main(tex)
-
-
-def test_is_not_latex_main():
-    tex = "example text"
-    assert not is_latex_main(tex)
+from explanations.instrument_tex import color_equations
 
 
 def test_colors_equations():

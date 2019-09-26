@@ -37,7 +37,7 @@ if ($compiler->process()) {
   # Print out the names of all generated PDFs
   my @pdfs = @{$compiler->{process}->{made_pdf}};
   foreach (@pdfs) {
-    print "Generated PDF: $_\n";
+    print "Generated PDF: $_<end of PDF name>\n";
   }
 } else {
   print "Failed to compile the TeX. For more details, see " +
