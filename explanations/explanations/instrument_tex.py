@@ -4,11 +4,6 @@ from typing import Union
 from TexSoup import TexNode, TexSoup
 
 
-def is_latex_main(tex: str) -> bool:
-    soup = TexSoup(tex)
-    return soup.documentclass is not None
-
-
 def color_equations(tex: str) -> str:
     soup = TexSoup(tex)
     for equation in list(soup.find_all("$")):
@@ -23,11 +18,10 @@ def color_equations(tex: str) -> str:
     return str(soup)
 
 
-def get_main_file(sources_dir: str) -> Union[str, None]:
-    for filename in os.listdir(sources_dir):
-        if filename.endswith(".tex"):
-            path = os.path.join(sources_dir, filename)
-            with open(path) as tex_file:
-                if is_latex_main(tex_file.read()):
-                    return path
-    return None
+# def get_main_file(sources_dir: str) -> Union[str, None]:
+#     for filename in os.listdir(sources_dir):
+#         if filename.endswith(".tex"):
+#             path = os.path.join(sources_dir, filename)
+#             with open(path) as tex_file:
+#                 tex_file.read()
+#     return None
