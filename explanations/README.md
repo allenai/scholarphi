@@ -12,6 +12,38 @@ pip install -r requirements.txt
 pip install opencv-python==3.3.0.10       # dont know why, but this doesnt work in requirements.txt
 ```
 
+NOTE: Andrew's transitioning to storing dependencies in an
+`environment.yml` file. You may want to install from that
+file instead. More instructions to come soon.
+
+#### additional dependencies
+
+AutoTeX is the automatic TeX-building engine used at arXiv.
+It's a Perl module, and can be installed using CPAN. Install
+Perl for your command line if you haven't already.
+
+Then, install the `cpanm` command for installing Perl
+modules. Accept the defaults.
+
+```bash
+cpan App::cpanminus
+```
+
+If your system is anything like mine, you may need to add
+`cpanm` to your path, by adding this to your path:
+`/path/to/bin/` where this is the path to the `bin`
+directory that contains your installation of `perl`.
+
+Then, install AutoTeX using `cpanm`:
+
+```bash
+cpanm TeX::AutoTeX
+```
+
+##### weird stuff about AutoTeX
+
+If it fails, it appears to truncate the `.tex` files to be empty.
+
 ### input
 
 LaTeX source from arXiv.  For example:
