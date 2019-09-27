@@ -3,7 +3,12 @@ import os
 import tarfile
 from typing import List
 
-from explanations.directories import SOURCE_ARCHIVES_DIR, SOURCES_DIR
+from explanations.directories import (
+    SOURCE_ARCHIVES_DIR,
+    SOURCES_DIR,
+    source_archives,
+    sources,
+)
 
 
 def _is_file_type_forbidden(tarinfo: tarfile.TarInfo):
@@ -44,15 +49,18 @@ def get_safe_files(tarfile: tarfile.TarFile, dest_dir: str) -> List[tarfile.TarI
 
 
 def unpack(arxiv_id: str):
-    archive_path = os.path.join(SOURCE_ARCHIVES_DIR, arxiv_id)
+    archive_path = source_archives(arxiv_id)
     if not os.path.exists(archive_path):
         logging.warn("No source archive directory found for %s", arxiv_id)
         return
     if not os.path.exists(SOURCES_DIR):
         os.makedirs(SOURCES_DIR)
-    sources_path = os.path.join(SOURCES_DIR, arxiv_id)
+    sources_path = sources(arxiv_id)
+    if os.listdir(sources_path):
+        logging.warn("Files found in %s. Old files may be overwritten.", sources_path)
     # TODO(andrewhead): Check with Kyle and Sam about how to best handle sandboxing, in case our
-    # archive-checking code misses some corner cases.
+    # archive-checking code misses some corner cases. The AutoTeX documentation implies that arXiv
+    # quarantines TeX and the compilation process using chroot.
     try:
         with tarfile.open(archive_path, mode="r:gz") as archive:
             archive.extractall(
