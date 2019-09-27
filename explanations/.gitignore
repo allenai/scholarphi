@@ -3,6 +3,9 @@ __pycache__
 .mypy_cache
 .pytest_cache
 
+# VSCode settings shouldn't be committed by default
+.vscode/settings.json
+
 # Compiled files
 *.pyc
 

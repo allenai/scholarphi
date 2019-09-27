@@ -17,7 +17,7 @@ def _get_generated_pdfs(stdout: str) -> List[str]:
     return pdfs
 
 
-def compile(sources_dir: str) -> List[str]:
+def compile_tex(sources_dir: str) -> List[str]:
     """
     Compile TeX sources into PDFs. Requires running an external script to attempt to compile
     the TeX. See README.md for dependencies.

@@ -17,8 +17,12 @@ from explanations.bounding_box import (
     find_connected_components,
     merge_bbs,
 )
+from explanations.compile import compile_tex
+from explanations.directories import colorized_sources, sources
 from explanations.fetch_arxiv import fetch
+from explanations.file_utils import copy_sources_dir
 from explanations.image_diff import diff_two_images
+from explanations.instrument_tex import colorize_tex
 from explanations.unpack import unpack
 
 Span = namedtuple("Span", "start end text")
@@ -38,10 +42,6 @@ def find_all_math_tags(input_latex_file: str) -> List[Span]:
             for matches in re.finditer(r"(\$(.*?)\$)", text)
         ]
         return spans
-
-
-def call_pdflatex(input_latex_dir: str, output_latex_dir: str):
-    pass
 
 
 def rasterize_pdf(input_pdf_path: str, output_dir: str):
@@ -130,10 +130,19 @@ if __name__ == "__main__":
     with open(arxiv_ids_filename, "r") as arxiv_ids_file:
         for line in arxiv_ids_file:
             arxiv_id = line.strip()
-            logging.debug("Fetching sources for arXiv document %s", arxiv_id)
+            logging.debug("Processing arXiv document %s", arxiv_id)
+            logging.debug("Fetching sources.")
             # fetch(arxiv_id)
-            logging.debug("Unpacking sources for arXiv document %s", arxiv_id)
+            logging.debug("Unpacking sources.")
             unpack(arxiv_id)
+            logging.debug("Cloning sources.")
+            copy_sources_dir(arxiv_id)
+            logging.debug("Colorizing sources.")
+            colorize_tex(arxiv_id)
+            logging.debug("Compiling original sources.")
+            compile_tex(sources(arxiv_id))
+            logging.debug("Compiling colorized sources.")
+            compile_tex(colorized_sources(arxiv_id))
 
     # diff_image(input_png_path1='explanations/1909.08079_output_original/0003.png',
     #            input_png_path2='explanations/1909.08079_output_colorized/0003.png',
