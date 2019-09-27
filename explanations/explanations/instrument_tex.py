@@ -54,10 +54,13 @@ def _color_equation_in_arg(equation: TexNode):
 
 def _color_equation_in_environment(equation: TexNode):
     parent: TexNode = equation.parent
-    sibling_expr_ids = _get_expr_ids(parent.contents)
+    sibling_expr_ids = _get_expr_ids(parent.children)
     index = sibling_expr_ids.index(id(equation.expr))
-    parent.insert(index, COLOR_START)
-    parent.insert(index + 2, COLOR_END)
+    child = list(parent.children)[index]
+    new_node = TexSoup(COLOR_START + str(equation) + COLOR_END)
+    parent.replace(child, new_node)
+    # parent.insert(index, COLOR_START)
+    # parent.insert(index + 2, COLOR_END)
 
 
 def _color_equation(equation: TexNode):
@@ -74,7 +77,9 @@ def _color_equation(equation: TexNode):
 def color_equations(tex: str) -> str:
     soup = TexSoup(tex)
     for equation in list(soup.find_all("$")):
+        print("Before", equation.parent)
         _color_equation(equation)
+        print("After", equation.parent)
     return str(soup)
 
 
