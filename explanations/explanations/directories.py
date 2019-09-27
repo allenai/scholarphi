@@ -17,3 +17,11 @@ def sources(arxiv_id):
 
 def colorized_sources(arxiv_id):
     return os.path.join(COLORIZED_SOURCES_DIR, arxiv_id)
+
+
+def get_original_pdf_path(arxiv_id, pdf_name):
+    return os.path.join(SOURCES_DIR, arxiv_id, pdf_name)
+
+
+def get_colorized_pdf_path(arxiv_id, pdf_name):
+    return os.path.join(COLORIZED_SOURCES_DIR, arxiv_id, pdf_name)

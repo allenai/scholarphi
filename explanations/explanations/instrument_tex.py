@@ -1,3 +1,4 @@
+import logging
 import os.path
 from typing import List, Union
 
@@ -59,8 +60,6 @@ def _color_equation_in_environment(equation: TexNode):
     child = list(parent.children)[index]
     new_node = TexSoup(COLOR_START + str(equation) + COLOR_END)
     parent.replace(child, new_node)
-    # parent.insert(index, COLOR_START)
-    # parent.insert(index + 2, COLOR_END)
 
 
 def _color_equation(equation: TexNode):
@@ -77,13 +76,12 @@ def _color_equation(equation: TexNode):
 def color_equations(tex: str) -> str:
     soup = TexSoup(tex)
     for equation in list(soup.find_all("$")):
-        print("Before", equation.parent)
         _color_equation(equation)
-        print("After", equation.parent)
     return str(soup)
 
 
 def colorize_tex(arxiv_id: str):
+    logging.debug("Colorizing sources.")
     sources_dir = colorized_sources(arxiv_id)
     for filename in os.listdir(sources_dir):
         if filename.endswith(".tex"):
