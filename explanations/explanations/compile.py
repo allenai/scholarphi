@@ -21,6 +21,7 @@ def compile_tex(sources_dir: str) -> List[str]:
     Compile TeX sources into PDFs. Requires running an external script to attempt to compile
     the TeX. See README.md for dependencies.
     """
+    logging.debug("Compiling sources in %s", sources_dir)
     config = configparser.ConfigParser()
     config.read(CONFIG_FILE)
     texlive_path = config["tex"]["texlive_path"]

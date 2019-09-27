@@ -1,3 +1,4 @@
+import logging
 import os
 
 import requests
@@ -16,6 +17,7 @@ def save_source_archive(arxiv_id: str, content: bytes):
 
 
 def fetch(arxiv_id: str):
+    logging.debug("Fetching sources.")
     uri = "https://arxiv.org/e-print/%s" % (arxiv_id,)
     response = requests.get(uri, headers={"User-Agent": USER_AGENT})
     save_source_archive(arxiv_id, response.content)
