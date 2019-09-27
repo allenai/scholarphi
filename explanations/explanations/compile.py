@@ -10,7 +10,6 @@ PDF_MESSAGE_SUFFIX = "<end of PDF name>"
 
 
 def _get_generated_pdfs(stdout: str) -> List[str]:
-    print(stdout)
     pdfs = re.findall(
         PDF_MESSAGE_PREFIX + "(.*)" + PDF_MESSAGE_SUFFIX, stdout, flags=re.MULTILINE
     )
@@ -35,9 +34,9 @@ def compile_tex(sources_dir: str) -> List[str]:
 
     pdfs: List[str] = []
     if result.returncode == 0:
-        logging.debug("Successfully compiled TeX. Generated PDFS %s", str(pdfs))
         stdout = result.stdout
         pdfs = _get_generated_pdfs(stdout)
+        logging.debug("Successfully compiled TeX. Generated PDFs %s", str(pdfs))
     else:
         logging.error(
             "Failed to compile TeX. Stderr from compilation:\n%s", result.stderr
