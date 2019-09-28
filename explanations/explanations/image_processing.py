@@ -6,13 +6,23 @@ import numpy as np
 from PIL import Image
 
 
+def open_pdf(pdf_path):
+    return fitz.open(pdf_path)
+
+
 def get_cv2_images(pdf_path):
     """
     Get CV2 images for PDF, as a list with one image for each page.
     """
-    pdf = fitz.open(pdf_path)
+    pdf = open_pdf(pdf_path)
     page_images = []
     for page in pdf:
+        # TODO(andrewhead): handle rotated pages. This will likely require:
+        # 1. Saving the rotation value for a page
+        # 2. Once bounding boxes are found, applying an inverse rotation to them
+        # The inverse rotation must be applied to the bounding boxes because annotations like the
+        # bounding boxes are applied using positions relative to the rotated page.
+        assert page.rotation == 0
         pixmap = page.getPixmap()
         image = Image.frombuffer(
             "RGB", [pixmap.w, pixmap.h], pixmap.samples, "raw", "RGB", 0, 1
