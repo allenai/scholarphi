@@ -10,7 +10,7 @@ import os
 import re
 import sys
 from functools import reduce
-from typing import List, NamedTuple
+from typing import List
 
 import cv2
 import numpy as np
@@ -18,16 +18,8 @@ from imageio import imread, imsave
 
 from explanations.directories import (get_colorized_pdf_path,
                                       get_original_pdf_path)
-from explanations.image_processing import (diff_image_lists, get_cv2_images,
-                                           open_pdf)
-
-
-class PdfBoundingBox(NamedTuple):
-    left: float
-    top: float
-    width: float
-    height: float
-    page: int
+from explanations.image_processing import (PdfBoundingBox, diff_image_lists,
+                                           get_cv2_images, open_pdf)
 
 
 def get_bounding_boxes(arxiv_id, pdf_name) -> List[PdfBoundingBox]:
@@ -80,8 +72,8 @@ def _to_pdf_coordinates(
     left, top, right, bottom = bounding_box
     pdf_left = left * (pdf_page_width / image_width)
     pdf_right = right * (pdf_page_width / image_width)
-    # PDF coordinates are relative to the document bottom; image coordinates are relative to the
-    # image's top. Flip y-coordinates.
+    # Set PDF coordinates relative to the document bottom. Because image coordinates are relative
+    # to the image's top, flip the y-coordinates.
     pdf_top = pdf_page_height - (top * (pdf_page_height / image_height))
     pdf_bottom = pdf_page_height - (bottom * (pdf_page_height / image_height))
     return PdfBoundingBox(

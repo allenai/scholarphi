@@ -5,6 +5,7 @@ DATA_DIR = "data"
 SOURCE_ARCHIVES_DIR = os.path.join(DATA_DIR, "01-sources-archives")
 SOURCES_DIR = os.path.join(DATA_DIR, "02-sources")
 COLORIZED_SOURCES_DIR = os.path.join(DATA_DIR, "03-colorized-sources")
+ANNOTATED_PDFS_DIR = os.path.join(DATA_DIR, "04-annotated-pdfs")
 
 
 def source_archives(arxiv_id):
@@ -19,9 +20,17 @@ def colorized_sources(arxiv_id):
     return os.path.join(COLORIZED_SOURCES_DIR, arxiv_id)
 
 
+def annotated_pdfs(arxiv_id):
+    return os.path.join(ANNOTATED_PDFS_DIR, arxiv_id)
+
+
 def get_original_pdf_path(arxiv_id, pdf_name):
     return os.path.join(SOURCES_DIR, arxiv_id, pdf_name)
 
 
 def get_colorized_pdf_path(arxiv_id, pdf_name):
     return os.path.join(COLORIZED_SOURCES_DIR, arxiv_id, pdf_name)
+
+
+def get_annotated_pdf_path(arxiv_id: str, pdf_name: str) -> str:
+    return os.path.join(ANNOTATED_PDFS_DIR, arxiv_id, pdf_name)

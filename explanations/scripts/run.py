@@ -11,9 +11,10 @@ from imageio import imread, imsave
 
 from explanations.bounding_box import PdfBoundingBox, get_bounding_boxes
 from explanations.compile import compile_tex
-from explanations.directories import colorized_sources, sources
+from explanations.directories import ANNOTATED_PDFS_DIR, colorized_sources, sources
 from explanations.fetch_arxiv import fetch
 from explanations.file_utils import get_common_pdfs
+from explanations.image_processing import annotate_pdf_with_bounding_boxes
 from explanations.instrument_tex import colorize_tex
 from explanations.unpack import unpack
 from models.models import BoundingBox, Paper, create_tables
@@ -44,6 +45,12 @@ if __name__ == "__main__":
         "arxiv_ids", help="name of file that contains an arXiv ID on every line"
     )
     parser.add_argument("-v", action="store_true", help="show all logging statements")
+    parser.add_argument(
+        "--annotate-pdf",
+        action="store_true",
+        help="generate a PDF with annotations for the bounding boxes in %s"
+        % (ANNOTATED_PDFS_DIR,),
+    )
     args = parser.parse_args()
 
     if args.v:
@@ -66,3 +73,6 @@ if __name__ == "__main__":
             for pdf_name in common_pdfs:
                 bounding_boxes = get_bounding_boxes(arxiv_id, pdf_name)
                 save_bounding_boxes(arxiv_id, bounding_boxes)
+
+                if args.annotate_pdf:
+                    annotate_pdf_with_bounding_boxes(arxiv_id, pdf_name, bounding_boxes)
