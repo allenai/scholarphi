@@ -11,6 +11,6 @@ from explanations.directories import (
 )
 
 
-def get_shared_pdfs(original_pdfs, colorized_pdfs) -> List[str]:
+def get_common_pdfs(original_pdfs, colorized_pdfs) -> List[str]:
     shared_pdfs = [pdf for pdf in original_pdfs if pdf in colorized_pdfs]
     return shared_pdfs

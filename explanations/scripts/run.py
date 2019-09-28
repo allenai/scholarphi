@@ -3,40 +3,36 @@ import logging
 import os
 import re
 import subprocess
-from collections import namedtuple
-from pprint import pprint
 from typing import List
 
 import cv2
 import numpy as np
 from imageio import imread, imsave
 
-from explanations.bounding_box import (
-    cluster_nearby_connected_components,
-    find_connected_components,
-    merge_bbs,
-)
+from explanations.bounding_box import PdfBoundingBox, get_bounding_boxes
 from explanations.compile import compile_tex
-from explanations.directories import (
-    colorized_sources,
-    get_colorized_pdf_path,
-    get_original_pdf_path,
-    sources,
-)
+from explanations.directories import colorized_sources, sources
 from explanations.fetch_arxiv import fetch
-from explanations.file_utils import get_shared_pdfs
-from explanations.image_processing import diff_image_lists, get_cv2_images
+from explanations.file_utils import get_common_pdfs
 from explanations.instrument_tex import colorize_tex
 from explanations.unpack import unpack
+from models.models import BoundingBox, Paper, create_tables
 
 
-def compute_bounding_boxes(image_diff: np.array):
-    connected_components = find_connected_components(
-        image_diff, lower=np.array([0, 0, 0]), upper=np.array([180, 255, 125])
-    )
-    level, clusters, d = cluster_nearby_connected_components(connected_components)
-    bounding_boxes = [merge_bbs(cluster) for cluster in clusters]
-    pprint(bounding_boxes)
+def save_bounding_boxes(arxiv_id: str, bounding_boxes: List[PdfBoundingBox]):
+    try:
+        paper = Paper.get(Paper.arxiv_id == arxiv_id)
+    except Paper.DoesNotExist:
+        paper = Paper.create(arxiv_id=arxiv_id)
+    for box in bounding_boxes:
+        BoundingBox.create(
+            paper=paper,
+            page=box.page,
+            left=box.left,
+            top=box.top,
+            width=box.width,
+            height=box.height,
+        )
 
 
 if __name__ == "__main__":
@@ -48,11 +44,13 @@ if __name__ == "__main__":
         "arxiv_ids", help="name of file that contains an arXiv ID on every line"
     )
     parser.add_argument("-v", action="store_true", help="show all logging statements")
-
     args = parser.parse_args()
 
     if args.v:
         logging.basicConfig(level=logging.DEBUG)
+
+    # Create database tables if they don't yet exist
+    create_tables()
 
     arxiv_ids_filename = args.arxiv_ids
     with open(arxiv_ids_filename, "r") as arxiv_ids_file:
@@ -64,12 +62,7 @@ if __name__ == "__main__":
             colorize_tex(arxiv_id)
             original_pdfs = compile_tex(sources(arxiv_id))
             colorized_pdfs = compile_tex(colorized_sources(arxiv_id))
-            shared_pdfs = get_shared_pdfs(original_pdfs, colorized_pdfs)
-            for pdf in shared_pdfs:
-                original_pdf_path = get_original_pdf_path(arxiv_id, pdf)
-                colorized_pdf_path = get_colorized_pdf_path(arxiv_id, pdf)
-                original_images = get_cv2_images(original_pdf_path)
-                colorized_images = get_cv2_images(colorized_pdf_path)
-                image_diffs = diff_image_lists(original_images, colorized_images)
-                for image_diff in image_diffs:
-                    compute_bounding_boxes(image_diff)
+            common_pdfs = get_common_pdfs(original_pdfs, colorized_pdfs)
+            for pdf_name in common_pdfs:
+                bounding_boxes = get_bounding_boxes(arxiv_id, pdf_name)
+                save_bounding_boxes(arxiv_id, bounding_boxes)

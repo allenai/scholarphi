@@ -1,3 +1,6 @@
+# Config files with sensitive credentials
+config.ini
+
 # Python caches
 __pycache__
 .mypy_cache

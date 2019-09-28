@@ -45,6 +45,7 @@ dependencies:
   - pip=19.2.2=py36_0
   - pkginfo=1.5.0.1=py36_0
   - psutil=5.6.3=py36h1de35cc_0
+  - psycopg2
   - py-lief=0.9.0=py36h1413db1_2
   - pycodestyle=2.5.0=py36_0
   - pycosat=0.6.3=py36h1de35cc_0
@@ -92,6 +93,7 @@ dependencies:
     - more-itertools==7.2.0
     - numpy==1.17.2
     - opencv-python==3.3.0.10
+    - peewee
     - pyMuPDF
     - packaging==19.2
     - parso==0.5.1

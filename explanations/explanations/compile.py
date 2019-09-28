@@ -4,7 +4,7 @@ import re
 import subprocess
 from typing import List
 
-CONFIG_FILE = "config.ini"
+TEX_CONFIG = "config.ini"
 PDF_MESSAGE_PREFIX = "Generated PDF: "
 PDF_MESSAGE_SUFFIX = "<end of PDF name>"
 
@@ -23,7 +23,7 @@ def compile_tex(sources_dir: str) -> List[str]:
     """
     logging.debug("Compiling sources in %s", sources_dir)
     config = configparser.ConfigParser()
-    config.read(CONFIG_FILE)
+    config.read(TEX_CONFIG)
     texlive_path = config["tex"]["texlive_path"]
     texlive_bin_path = config["tex"]["texlive_bin_path"]
     result = subprocess.run(
