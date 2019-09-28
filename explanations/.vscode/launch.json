@@ -10,7 +10,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/scripts/run.py",
       "console": "integratedTerminal",
-      "args": ["arxiv_ids.txt", "-v"],
+      "args": ["arxiv_ids.txt", "-v", "--annotate-pdf"],
       "cwd": "${workspaceFolder}",
       "env": {
         "PYTHONPATH": "."
