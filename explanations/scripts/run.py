@@ -11,7 +11,14 @@ from imageio import imread, imsave
 
 from explanations.bounding_box import PdfBoundingBox, get_bounding_boxes
 from explanations.compile import compile_tex
-from explanations.directories import ANNOTATED_PDFS_DIR, colorized_sources, sources
+from explanations.directories import (
+    ANNOTATED_PDFS_DIR,
+    COLORIZED_PAPER_IMAGES_DIR,
+    DIFF_PAPER_IMAGES_DIR,
+    PAPER_IMAGES_DIR,
+    colorized_sources,
+    sources,
+)
 from explanations.fetch_arxiv import fetch
 from explanations.file_utils import get_common_pdfs
 from explanations.image_processing import annotate_pdf_with_bounding_boxes
@@ -51,28 +58,53 @@ if __name__ == "__main__":
         help="generate a PDF with annotations for the bounding boxes in %s"
         % (ANNOTATED_PDFS_DIR,),
     )
+    parser.add_argument(
+        "--save-images",
+        action="store_true",
+        help="output images from intermediate stages of the pipeline to %s, %s, and %s"
+        % (PAPER_IMAGES_DIR, COLORIZED_PAPER_IMAGES_DIR, DIFF_PAPER_IMAGES_DIR),
+    )
+    parser.add_argument(
+        "--skip-fetch",
+        action="store_true",
+        help="don't fetch the arXiv sources. Use this flag the second time you run the script "
+        + "for the same set of papers, to avoid making unnecessary requests to arXiv.",
+    )
+    parser.add_argument(
+        "--skip-database",
+        action="store_true",
+        help="skip initializing and saving results to the database. Use for development if the "
+        + "database server is down.",
+    )
     args = parser.parse_args()
 
     if args.v:
         logging.basicConfig(level=logging.DEBUG)
 
     # Create database tables if they don't yet exist
-    create_tables()
+    if not args.skip_database:
+        create_tables()
 
     arxiv_ids_filename = args.arxiv_ids
     with open(arxiv_ids_filename, "r") as arxiv_ids_file:
         for line in arxiv_ids_file:
             arxiv_id = line.strip()
             logging.debug("Processing arXiv document %s", arxiv_id)
-            # fetch(arxiv_id)
+
+            if not args.skip_fetch:
+                fetch(arxiv_id)
+
             unpack(arxiv_id)
             colorize_tex(arxiv_id)
             original_pdfs = compile_tex(sources(arxiv_id))
             colorized_pdfs = compile_tex(colorized_sources(arxiv_id))
             common_pdfs = get_common_pdfs(original_pdfs, colorized_pdfs)
             for pdf_name in common_pdfs:
-                bounding_boxes = get_bounding_boxes(arxiv_id, pdf_name)
-                save_bounding_boxes(arxiv_id, bounding_boxes)
+                bounding_boxes = get_bounding_boxes(
+                    arxiv_id, pdf_name, args.save_images
+                )
+                if not args.skip_database:
+                    save_bounding_boxes(arxiv_id, bounding_boxes)
 
                 if args.annotate_pdf:
                     annotate_pdf_with_bounding_boxes(arxiv_id, pdf_name, bounding_boxes)

@@ -16,20 +16,38 @@ import cv2
 import numpy as np
 from imageio import imread, imsave
 
-from explanations.directories import (get_colorized_pdf_path,
-                                      get_original_pdf_path)
-from explanations.image_processing import (PdfBoundingBox, diff_image_lists,
-                                           get_cv2_images, open_pdf)
+from explanations.directories import (
+    COLORIZED_PAPER_IMAGES_DIR,
+    DIFF_PAPER_IMAGES_DIR,
+    PAPER_IMAGES_DIR,
+    get_colorized_pdf_path,
+    get_original_pdf_path,
+)
+from explanations.image_processing import (
+    PdfBoundingBox,
+    diff_image_lists,
+    get_cv2_images,
+    open_pdf,
+)
 
 
-def get_bounding_boxes(arxiv_id, pdf_name) -> List[PdfBoundingBox]:
+def get_bounding_boxes(arxiv_id, pdf_name, save_images=False) -> List[PdfBoundingBox]:
     logging.debug("Getting bounding boxes for %s", pdf_name)
 
     original_pdf_path = get_original_pdf_path(arxiv_id, pdf_name)
     colorized_pdf_path = get_colorized_pdf_path(arxiv_id, pdf_name)
     original_images = get_cv2_images(original_pdf_path)
     colorized_images = get_cv2_images(colorized_pdf_path)
-    image_diffs = diff_image_lists(original_images, colorized_images)
+
+    # Colorized images is the first parameter: this means that original_images will be
+    # subtracted from colorized_images where the two are the same. Necessary for preserving
+    # colors from the colorized_images for identifying equations.
+    image_diffs = diff_image_lists(colorized_images, original_images)
+
+    if save_images:
+        save_images_to_directory(original_images, PAPER_IMAGES_DIR)
+        save_images_to_directory(colorized_images, COLORIZED_PAPER_IMAGES_DIR)
+        save_images_to_directory(image_diffs, DIFF_PAPER_IMAGES_DIR)
 
     pdf = open_pdf(original_pdf_path)
     pdf_bounding_boxes = []
@@ -50,6 +68,14 @@ def get_bounding_boxes(arxiv_id, pdf_name) -> List[PdfBoundingBox]:
         )
 
     return pdf_bounding_boxes
+
+
+def save_images_to_directory(images: List[np.array], dest_dir: str):
+    if not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
+    for page_index, image in enumerate(images):
+        image_path = os.path.join(dest_dir, "page-%d.png" % (page_index,))
+        cv2.imwrite(image_path, image)
 
 
 def find_bounding_boxes_for_page(image_diff: np.array):
@@ -258,62 +284,7 @@ def upperBgr(index):
 
 def bbs_for_color(img, color_index):
     bbs = find_connected_components(img, lowerBgr(color_index), upperBgr(color_index))
-    # print("num bbs: {}".format(len(bbs))) #DELETEME
     if len(bbs) > 500:
         return (False, [])
     level, clusters, d = cluster_nearby_connected_components(bbs)
-    # print("num clusters: {}".format(len(clusters))) #DELETEME
     return (True, [merge_bbs(cluster) for cluster in clusters])
-
-
-def bb_to_dict(bb):
-    minX, minY, maxX, maxY = bb
-    return {
-        "p_min": {"x": int(minX), "y": int(minY)},
-        "p_max": {"x": int(maxX), "y": int(maxY)},
-    }
-
-
-# Accepts the prefix of the filename for the png. This should correspond
-# minimally to $PREFIX-dif.png and $PREFIX-raw.png.
-too_many_bbs = 0
-
-
-def process_image(filename_prefix):
-    global too_many_bbs
-    img = imread("{}-dif.png".format(filename_prefix))
-    raw_img = imread("{}-raw.png".format(filename_prefix))
-
-    blue_status, blue_bbs = bbs_for_color(img, 0)
-    green_status, green_bbs = bbs_for_color(img, 1)
-    red_status, red_bbs = bbs_for_color(img, 2)
-
-    dicts = []
-    if not blue_status or not green_status or not red_status:
-        print("too many bbs file: {}".format(filename_prefix))
-        too_many_bbs += 1
-        return dicts
-
-    label_bbs = blue_bbs
-    for i, label_bb in enumerate(label_bbs):
-        label_dict = {
-            "boundingBox": bb_to_dict(label_bb),
-            "class": "label",
-            "id": "label_{}".format(i),
-        }
-        dicts.append(label_dict)
-        minX, minY, maxX, maxY = label_bb
-        cv2.rectangle(raw_img, (minX, minY), (maxX, maxY), (255, 0, 0))
-
-    equation_bbs = green_bbs + red_bbs
-    for i, equation_bb in enumerate(equation_bbs):
-        equation_dict = {
-            "boundingBox": bb_to_dict(equation_bb),
-            "class": "equation",
-            "id": "equation_{}".format(i),
-        }
-        dicts.append(equation_dict)
-        minX, minY, maxX, maxY = equation_bb
-        cv2.rectangle(raw_img, (minX, minY), (maxX, maxY), (0, 255, 0))
-
-    return dicts
