@@ -10,7 +10,14 @@
       "request": "launch",
       "program": "${workspaceFolder}/scripts/run.py",
       "console": "integratedTerminal",
-      "args": ["arxiv_ids.txt", "-v", "--annotate-pdf"],
+      "args": [
+        "arxiv_ids.txt",
+        "-v",
+        "--skip-fetch",
+        "--skip-database",
+        "--annotate-pdf",
+        "--save-images"
+      ],
       "cwd": "${workspaceFolder}",
       "env": {
         "PYTHONPATH": "."
