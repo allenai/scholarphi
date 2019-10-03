@@ -4,13 +4,9 @@ import stat
 import tarfile
 from typing import List
 
-from explanations.directories import (
-    SOURCE_ARCHIVES_DIR,
-    SOURCES_DIR,
-    colorized_sources,
-    source_archives,
-    sources,
-)
+from explanations.directories import (SOURCE_ARCHIVES_DIR, SOURCES_DIR,
+                                      colorized_sources, source_archives,
+                                      sources)
 
 
 def _unpack(archive_path: str, dest_dir: str):
