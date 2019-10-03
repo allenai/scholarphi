@@ -24,23 +24,9 @@ class ColorizedTex(NamedTuple):
 
 def _color_start(equation, hue):
     """
-    Hue is expected to be a float between 0 and 1.
+    Overlay a colorful box on top of an equation. 'hue' is a float between 0 and 1.
 
     How to color TeX equations in a way that doesn't disrupt layout:
-    If all the TeX to be processed will be processed by 'pdflatex', then you can use two commands
-    to set the color, and then reset it to neutral:
-
-    \pdfcolorstack 0 push {<red> <green> <blue> RG}  % set color
-    \pdfcolorstack 0 pop                             % unset color
-
-    Other coloring commands are available, like:
-    \textcolor[rgb]{<red>, <green>, <blue>}                                % foreground color
-    {\setlength{\fboxsep}{0pt}\colorbox[rgb]{<red>, <green>, <blue>}{...}  % background color
-
-    For PDFs, "\textcolor" will expand into to \pdfcolorstack commands. We opt for '\pdfcolorstack'
-    because it is simpler, and as portable as we need. arXiv expects files only in TeX or
-    (PDF)LaTeX format (see here https://arxiv.org/help/faq/mistakes#other_formats), and we're making
-    the assumption all papers will be (PDF)LaTeX compatible.
 
     A key step in coloring equations is to make sure that you don't upset how TeX assigns line breaks.
     If any of the coloring commands change the dimensions of the text, or add other glue or spaces,
@@ -48,15 +34,39 @@ def _color_start(equation, hue):
     equations will end up appearing in a different place than before.
 
     Because of this, we opt for the following coloring approach:
-    1. Use the original equation for formatting, but hide it, using "\phantom".
-    2. Overlay the colorized equation in a dimensionless box using "\llap". Because it's specified in
-    \llap, the line-breaking algorithm will ignore it completely.
+    1. Display the original equation *as is* to enable paragraph layout as usual.
+    2. Add a colorized box on top of the equation in a way that does *not* influence the
+       paragraph layout algorithm (this is the tricky part).
+    
+    To add the colorized box, a box is created with a specified color and the dimensions of the
+    equation, in a "left overlay" (\llay), so that the box isn't used in paragraph layout. To give
+    it a solid color and the right dimensinos, the box is created by putting the equation in the
+    box, and setting the '\textcolor' and adding a '\colorbox'. The padding of the colorbox are
+    set to '0', instead of its defaults, so it doesn't take up more space than the equation did.
+
+    This is the approach that, so far, has seemed to be the most flexible approach to colorizing
+    without having side-effects on how the text layout on the page, while being pretty accurate,
+    and producing a box with a color that's easy to detect in the image processing steps.
 
     With this approach, a colorized equation looks like:
-    \phantom{$x$}\llap{\pdfcolorstack 0 push {1 0 0 rg}$x$\pdfcolorstack 0 pop}
+    $x$\llap{\setlength{\fboxsep}{0pt}\colorbox[rgb]{<red>, <green>, <blue>}{\textcolor[rgb]{<red>, <green>, <blue>}{$x$}}}
 
-    This is the format that, in our tests so far, has been the most flexible approach to colorizing
-    without having side-effects on how the text layout on the page.
+    Other coloring options we don't use:
+    * pdfcolorstack: If all the TeX to be processed will be processed by 'pdflatex', then you can
+      use two commands to set the color, and then reset it to neutral:
+      
+        \pdfcolorstack 0 push {<red> <green> <blue> RG}  % set color
+        \pdfcolorstack 0 pop                             % unset color
+
+    * textcolor: set the color of the foreground text like so:
+        
+        \textcolor[rgb]{<red>, <green>, <blue>}
+      
+      The disadvantage of this approach is that coloring the text affects the paragraph layout
+      algorithm in subtle ways (one tricky case is that it unexpectedly changes how "word" in
+      <word>($eq$) can be hyphenated). If textcolor is used in an overlap ("\llap"), then the
+      foreground colors of the original text mixes with the colors of the overlap text, making
+      it difficult to assess what was the intended color of the equation.
 
     References:
     1. Chapters 11-14 from the TeXBook (http://www.ctex.org/documents/shredder/src/texbook.pdf):
@@ -69,13 +79,13 @@ def _color_start(equation, hue):
     3. \pdfcolorstack commands: https://tug.org/pipermail/pdftex/2007-January/006910.html
     """
     red, green, blue = colorsys.hsv_to_rgb(hue, 1, 1)
-    template = r"{eq}\llap{{\pdfcolorstack 0 push {{{red:.4f} {green:.4f} {blue:.4f} rg}}"
+    template = r"{eq}\llap{{\setlength{{\fboxsep}}{{0pt}}\colorbox[rgb]{{{red:.4f}, {green:.4f}, {blue:.4f}}}{{\textcolor[rgb]{{{red:.4f}, {green:.4f}, {blue:.4f}}}{{"
     color_start = template.format(eq=equation, red=red, green=green, blue=blue)
     return color_start
 
 
 def _color_end():
-    return r"\pdfcolorstack 0 pop}"
+    return r"}}}"
 
 
 def _get_arg_content_env_ids(items: List[Union[str, TexCmd, TexEnv]]):
