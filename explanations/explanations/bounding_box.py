@@ -1,7 +1,5 @@
 """
-
-Taken and adapted from `https://github.com/allenai/deepequations2`
-
+Adapted from `https://github.com/allenai/deepequations2`
 """
 
 import json
@@ -10,25 +8,29 @@ import os
 import re
 import sys
 from functools import reduce
-from typing import List
+from typing import List, NamedTuple, Union
 
 import cv2
 import numpy as np
 from imageio import imread, imsave
 
-from explanations.directories import (
-    COLORIZED_PAPER_IMAGES_DIR,
-    DIFF_PAPER_IMAGES_DIR,
-    PAPER_IMAGES_DIR,
-    get_colorized_pdf_path,
-    get_original_pdf_path,
-)
-from explanations.image_processing import (
-    PdfBoundingBox,
-    diff_image_lists,
-    get_cv2_images,
-    open_pdf,
-)
+from explanations.directories import (COLORIZED_PAPER_IMAGES_DIR,
+                                      DIFF_PAPER_IMAGES_DIR, PAPER_IMAGES_DIR,
+                                      get_colorized_pdf_path,
+                                      get_original_pdf_path)
+from explanations.image_processing import (PdfBoundingBox, diff_image_lists,
+                                           get_cv2_images, open_pdf)
+
+
+class Rectangle(NamedTuple):
+    """
+    Rectangle within an image. Left and top refer to positions of pixels.
+    """
+
+    left: int
+    top: int
+    width: int
+    height: int
 
 
 def get_bounding_boxes(arxiv_id, pdf_name, save_images=False) -> List[PdfBoundingBox]:
@@ -76,6 +78,48 @@ def save_images_to_directory(images: List[np.array], dest_dir: str):
     for page_index, image in enumerate(images):
         image_path = os.path.join(dest_dir, "page-%d.png" % (page_index,))
         cv2.imwrite(image_path, image)
+
+
+def find_box_of_color(
+    image: np.array, hue: float, tolerance: float = 0.01
+) -> Union[Rectangle, None]:
+    """
+    Assumes there is only one box of each color on the page.
+    'hue' is a floating point number between 0 and 1. 'tolerance' is the amount of difference
+    from 'hue' (from 0-to-1) still considered that hue.
+    Returns 'None' if no pixels found for that hue.
+    """
+    CV2_MAXIMMUM_HUE = 180
+    MOSTLY_SATURATED = 200  # out of 255
+
+    cv2_hue = hue * CV2_MAXIMMUM_HUE
+    cv2_tolerance = tolerance * CV2_MAXIMMUM_HUE
+    img_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+    saturated_pixels = img_hsv[:, :, 1] > MOSTLY_SATURATED
+
+    hues = img_hsv[:, :, 0]
+    distance_to_hue = np.abs(hues.astype(np.int16) - cv2_hue)
+    abs_distance_to_hue = np.minimum(
+        distance_to_hue, CV2_MAXIMMUM_HUE - distance_to_hue
+    )
+
+    # To determine which pixels have a color, we look for those that:
+    # 1. Match the hue
+    # 2. Are heavily saturated (i.e. aren't white---white pixels could be detected as having
+    #    any hue, with no saturation.)
+    matching_pixels = np.where(
+        (abs_distance_to_hue <= cv2_tolerance) & saturated_pixels
+    )
+    if len(matching_pixels[0]) == 0 or len(matching_pixels[1]) == 0:
+        return None
+    top = np.min(matching_pixels[0])
+    bottom = np.max(matching_pixels[0])
+    left = np.min(matching_pixels[1])
+    right = np.max(matching_pixels[1])
+    return Rectangle(
+        left=left, top=top, width=(right - left + 1), height=(bottom - top + 1)
+    )
 
 
 def find_bounding_boxes_for_page(image_diff: np.array):
