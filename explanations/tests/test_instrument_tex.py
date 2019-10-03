@@ -5,9 +5,11 @@ from explanations.instrument_tex import color_equations
 COLOR_PATTERN = (
     r"(.*?)"
     + r"\\llap{"
-    + r"\\pdfcolorstack 0 push {[0-9.]+ [0-9.]+ [0-9.]+ rg}"
+    + r"\\setlength{\\fboxsep}{0pt}"
+    + r"\\colorbox\[rgb\]{[0-9.]+, [0-9.]+, [0-9.]+}{"
+    + r"\\textcolor\[rgb\]{[0-9.]+, [0-9.]+, [0-9.]+}{"
     + r"\1"
-    + r"\\pdfcolorstack 0 pop}"
+    + r"}}}"
 )
 
 
