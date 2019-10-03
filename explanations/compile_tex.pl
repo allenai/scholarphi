@@ -39,7 +39,9 @@ if ($compiler->process()) {
   foreach (@pdfs) {
     print "Generated PDF: $_<end of PDF name>\n";
   }
+  exit 0;
 } else {
   print "Failed to compile the TeX. For more details, see " +
     "$compiler->{workdir}/auto_gen_ps.log\n";
+  exit -1;
 }
