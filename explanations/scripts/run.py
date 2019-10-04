@@ -9,7 +9,7 @@ import cv2
 import numpy as np
 from imageio import imread, imsave
 
-from explanations.bounding_box import PdfBoundingBox, get_bounding_boxes
+from explanations.bounding_box import LocalizedEquation, extract_bounding_boxes
 from explanations.compile import compile_tex
 from explanations.directories import (
     ANNOTATED_PDFS_DIR,
@@ -21,25 +21,26 @@ from explanations.directories import (
 )
 from explanations.fetch_arxiv import fetch
 from explanations.file_utils import get_common_pdfs
-from explanations.image_processing import annotate_pdf_with_bounding_boxes
+from explanations.image_processing import annotate_pdf
 from explanations.instrument_tex import colorize_tex
 from explanations.unpack import unpack
-from models.models import BoundingBox, Paper, create_tables
+from models.models import Equation, Paper, create_tables
 
 
-def save_bounding_boxes(arxiv_id: str, bounding_boxes: List[PdfBoundingBox]):
+def save_localized_equations(arxiv_id: str, equations: List[LocalizedEquation]):
     try:
         paper = Paper.get(Paper.arxiv_id == arxiv_id)
     except Paper.DoesNotExist:
         paper = Paper.create(arxiv_id=arxiv_id)
-    for box in bounding_boxes:
-        BoundingBox.create(
+    for equation in equations:
+        Equation.create(
             paper=paper,
-            page=box.page,
-            left=box.left,
-            top=box.top,
-            width=box.width,
-            height=box.height,
+            page=equation.box.page,
+            tex=equation.tex,
+            left=equation.box.left,
+            top=equation.box.top,
+            width=equation.box.width,
+            height=equation.box.height,
         )
 
 
@@ -95,16 +96,16 @@ if __name__ == "__main__":
                 fetch(arxiv_id)
 
             unpack(arxiv_id)
-            colorize_tex(arxiv_id)
+            colorized_tex = colorize_tex(arxiv_id)
             original_pdfs = compile_tex(sources(arxiv_id))
             colorized_pdfs = compile_tex(colorized_sources(arxiv_id))
             common_pdfs = get_common_pdfs(original_pdfs, colorized_pdfs)
             for pdf_name in common_pdfs:
-                bounding_boxes = get_bounding_boxes(
-                    arxiv_id, pdf_name, args.save_images
+                localized_equations = extract_bounding_boxes(
+                    arxiv_id, pdf_name, colorized_tex.equations, args.save_images
                 )
                 if not args.skip_database:
-                    save_bounding_boxes(arxiv_id, bounding_boxes)
+                    save_localized_equations(arxiv_id, localized_equations)
 
                 if args.annotate_pdf:
-                    annotate_pdf_with_bounding_boxes(arxiv_id, pdf_name, bounding_boxes)
+                    annotate_pdf(arxiv_id, pdf_name, localized_equations)

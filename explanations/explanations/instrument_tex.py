@@ -7,19 +7,12 @@ import numpy as np
 from TexSoup import Arg, OArg, RArg, TexArgs, TexCmd, TexEnv, TexNode, TexSoup
 
 from explanations.directories import colorized_sources
+from explanations.types import ColorizedEquations, ColorizedTex
 
 # TODO(andrewhead): determine number of cues based on the number of hues that OpenCV is capable
 # of distinguishing between. Current value is a guess.
 NUM_HUES = 90
 HUES = np.linspace(0, 1, NUM_HUES)
-
-
-class ColorizedTex(NamedTuple):
-    tex: str
-    """
-    Map from a float hue [0..1] to the LaTeX equation with that color.
-    """
-    equations: Dict[float, str]
 
 
 def _color_start(equation, hue):
@@ -153,28 +146,44 @@ def _color_equation(equation: TexNode, hue: float = 1.0):
         _color_equation_in_environment(equation, hue)
 
 
-def color_equations(tex: str) -> ColorizedTex:
+def generate_hues():
+    for hue in HUES:
+        yield hue
+    raise StopIteration
+
+
+def color_equations(tex: str, hue_generator) -> Tuple[ColorizedEquations, str]:
+    """
+    hue_generator: a function that, when called, returns a new hue.
+    """
     soup = TexSoup(tex)
     all_equations = list(soup.find_all("$"))
-    # If this assertion is violated, it means that we need to color equations in phases,
-    # up to 'len(HUES)' at a time.
-    assert len(all_equations) <= len(HUES)
     equations_by_hue = {}
     for i, equation in enumerate(all_equations):
-        hue = _color_equation(equation, HUES[i])
+        try:
+            hue = next(hue_generator)
+        except StopIteration:
+            logging.error("Not highlighting equation %s: out of hues.", str(equation))
+            logging.error("Skipping all other equations...")
+            break
+        _color_equation(equation, hue)
         equations_by_hue[hue] = str(equation)
-    result = ColorizedTex(str(soup), equations_by_hue)
-    return result
+    return equations_by_hue, str(soup)
 
 
-def colorize_tex(arxiv_id: str):
+def colorize_tex(arxiv_id: str) -> ColorizedTex:
+    hue_generator = generate_hues()
     logging.debug("Colorizing sources.")
     sources_dir = colorized_sources(arxiv_id)
+    colorized_equations = {}
+    file_contents = {}
     for filename in os.listdir(sources_dir):
         if filename.endswith(".tex"):
             path = os.path.join(sources_dir, filename)
             with open(path, "r") as tex_file:
-                colorized = color_equations(tex_file.read())
+                equations, contents = color_equations(tex_file.read(), hue_generator)
+                colorized_equations.update(equations)
+                file_contents[path] = contents
             with open(path, "w") as tex_file:
-                tex_file.write(colorized.tex)
-    return None
+                tex_file.write(contents)
+    return ColorizedTex(file_contents, colorized_equations)

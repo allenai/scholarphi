@@ -7,14 +7,7 @@ import numpy as np
 from PIL import Image
 
 from explanations.file_utils import copy_pdf_for_annotation
-
-
-class PdfBoundingBox(NamedTuple):
-    left: float
-    top: float
-    width: float
-    height: float
-    page: int
+from explanations.types import LocalizedEquation
 
 
 def open_pdf(pdf_path) -> fitz.Document:
@@ -44,14 +37,12 @@ def get_cv2_images(pdf_path: str) -> List[np.array]:
     return page_images
 
 
-def annotate_pdf_with_bounding_boxes(
-    arxiv_id: str, pdf_name: str, bounding_boxes: List[PdfBoundingBox]
-):
+def annotate_pdf(arxiv_id: str, pdf_name: str, equations: List[LocalizedEquation]):
     logging.debug("Annotating PDF with bounding boxes.")
     annotated_pdf_path = copy_pdf_for_annotation(arxiv_id, pdf_name)
     pdf = open_pdf(annotated_pdf_path)
-    for box in bounding_boxes:
-        page: fitz.Page = pdf[box.page]
+    for equation in equations:
+        page: fitz.Page = pdf[equation.box.page]
         # For many PDFs with the pyMuPDF toolkit, coordinates of annotations are relative to the
         # top-left of the page, though in some cases it's relative to the bottom-left. In those
         # cases, flip the coordinate system using this fix:
@@ -60,9 +51,9 @@ def annotate_pdf_with_bounding_boxes(
             page._wrapContents()
         # The PDF bounding boxes are relative to the bottom-left of the the page. Flip them to
         # be relative to the top-left before drawing them (see comment above).
-        top = page.rect.height - box.top
-        bottom = top + box.height
-        rect = (box.left, top, box.left + box.width, bottom)
+        top = page.rect.height - equation.box.top
+        bottom = top + equation.box.height
+        rect = (equation.box.left, top, equation.box.left + equation.box.width, bottom)
         page.drawRect(rect, color=(0, 0, 0), fill=None)
     pdf.saveIncr()
 
