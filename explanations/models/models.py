@@ -7,6 +7,7 @@ from peewee import (
     IntegerField,
     Model,
     PostgresqlDatabase,
+    TextField,
 )
 
 DATABASE_CONFIG = "config.ini"
@@ -37,9 +38,10 @@ class Paper(Model):
         database = database
 
 
-class BoundingBox(Model):
+class Equation(Model):
     paper = ForeignKeyField(Paper)
     page = IntegerField()
+    tex = TextField(index=True)
     left = FloatField()
     top = FloatField()
     width = FloatField()
@@ -53,4 +55,4 @@ def create_tables():
     """
     Initialize any tables that haven't yet been created.
     """
-    database.create_tables([BoundingBox, Paper], safe=True)
+    database.create_tables([Paper, Equation], safe=True)
