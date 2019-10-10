@@ -1,0 +1,7 @@
+<XMath s2:location="anonymous_string#textrange(from=6;2,to=6;7)">
+  <XMApp>
+    <XMTok meaning="plus" role="ADDOP" s2:location="anonymous_string#textrange(from=6;4,to=6;4)">+</XMTok>
+    <XMTok role="UNKNOWN" s2:location="anonymous_string#textrange(from=6;2,to=6;2)">x</XMTok>
+    <XMTok role="UNKNOWN" s2:location="anonymous_string#textrange(from=6;6,to=6;6)">y</XMTok>
+  </XMApp>
+</XMath>

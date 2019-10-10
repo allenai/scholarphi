@@ -44,7 +44,12 @@ def compile_tex(sources_dir: str) -> List[str]:
     texlive_bin_path = config["tex"]["texlive_bin_path"]
 
     result = subprocess.run(
-        ["./compile_tex.pl", sources_dir, texlive_path, texlive_bin_path],
+        [
+            os.path.join("perl", "compile_tex.pl"),
+            sources_dir,
+            texlive_path,
+            texlive_bin_path,
+        ],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         encoding="utf-8",

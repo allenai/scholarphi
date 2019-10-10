@@ -39,3 +39,22 @@ class PdfBoundingBox(NamedTuple):
 class LocalizedEquation(NamedTuple):
     tex: str
     box: PdfBoundingBox
+
+
+class Position(NamedTuple):
+    """
+    Position of token within TeX. The first line is 0, and the first character is 0.
+    """
+
+    line: int
+    character: int
+
+
+class Token(NamedTuple):
+    """
+    Token from a TeX equation.
+    """
+
+    text: str
+    start: Position
+    end: Position
