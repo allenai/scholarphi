@@ -1,0 +1,37 @@
+# Based on LaTeXML example for adding source code locators to XML:
+# https://gist.github.com/tkw1536/7ca89a875e854232ea82abafb6b5a3d7
+# Load this file as a style file when invoking latexml or latexmlmath:
+# latexmlmath --preload=label_token_locations.ltxml --XMath=result.xml "$x + y$"
+
+package LaTeXML::Package::Pool;
+
+use strict;
+use warnings;
+use LaTeXML::Package;
+
+RegisterNamespace(s2  => "http://allenai.com/");
+
+sub saveLocation {
+  my ($tag) = @_;
+  Tag($tag, afterClose => sub {
+    my ($document, $node, $box) = @_;
+    $document->getModel()->registerDocumentNamespace(s2 => "http://allenai.com/");
+    return unless $box;
+    $node->setAttribute('s2:location', $box->getLocator->toAttribute); });
+}
+
+my @tags = (
+  'ltx:XMath',
+  'ltx:XMTok',
+  'ltx:XMText',
+  'ltx:text'
+  # The following tags don't appear to have any location information:
+  # 'ltx:XMApp',
+  # 'ltx:XMRef',
+);
+
+foreach (@tags) {
+  saveLocation($_);
+}
+
+1;

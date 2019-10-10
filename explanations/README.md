@@ -39,12 +39,18 @@ engine used at arXiv. Install AutoTeX using `cpanm`:
 cpanm TeX::AutoTeX
 ```
 
+At the time this README was written, we were using AutoTeX
+version v0.906.0.
+
 **LaTeXML**: LaTeXML converts TeX documents to an XML
 representation. We use it for parsing TeX equations.
 
 ```bash
-TODO
+cpanm LaTeXML
 ```
+
+At the time this README was written, we were using LaTeXML
+v0.8.4.
 
 ### Running the scripts
 
