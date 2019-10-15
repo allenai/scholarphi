@@ -38,8 +38,6 @@ $tex
 \\end{document}
 EODoc
 
-print $texdoc, "\n";
-
 # Process the TeX
 my ($verbosity, $strict, $includestyles, $noparse) = (-1, 0, 0, 0);
 my @preload = ('perl/label_token_locations.ltxml');
