@@ -4,16 +4,14 @@ import stat
 import tarfile
 from typing import List
 
-from explanations.directories import (SOURCE_ARCHIVES_DIR, SOURCES_DIR,
-                                      colorized_sources, source_archives,
-                                      sources)
+from explanations.directories import colorized_sources, source_archives, sources
 
 
-def _unpack(archive_path: str, dest_dir: str):
+def _unpack(archive_path: str, dest_dir: str) -> None:
     if not os.path.exists(dest_dir):
         os.makedirs(dest_dir)
     if os.listdir(dest_dir):
-        logging.warn("Files found in %s. Old files may be overwritten.", dest_dir)
+        logging.warning("Files found in %s. Old files may be overwritten.", dest_dir)
     # TODO(andrewhead): Check with Kyle and Sam about how to best handle sandboxing, in case our
     # archive-checking code misses some corner cases. The AutoTeX documentation implies that arXiv
     # quarantines TeX and the compilation process using chroot.
@@ -34,22 +32,22 @@ def _unpack(archive_path: str, dest_dir: str):
             )
     except tarfile.ReadError:
         logging.error(
-            "Error reading source archive for %s. This may mean that there is no source for "
-            + "document, and instead the PDF was downloaded."
+            "Error reading source archive for %s. This may mean that there is no source for document, and instead the PDF was downloaded.",
+            archive_path,
         )
 
 
-def unpack(arxiv_id: str):
+def unpack(arxiv_id: str) -> None:
     logging.debug("Unpacking sources.")
     archive_path = source_archives(arxiv_id)
     if not os.path.exists(archive_path):
-        logging.warn("No source archive directory found for %s", arxiv_id)
+        logging.warning("No source archive directory found for %s", arxiv_id)
         return
     _unpack(archive_path, sources(arxiv_id))
     _unpack(archive_path, colorized_sources(arxiv_id))
 
 
-def _is_file_type_forbidden(tarinfo: tarfile.TarInfo):
+def _is_file_type_forbidden(tarinfo: tarfile.TarInfo) -> bool:
     return (
         tarinfo.islnk()
         or tarinfo.isblk()
@@ -61,7 +59,7 @@ def _is_file_type_forbidden(tarinfo: tarfile.TarInfo):
     )
 
 
-def _is_path_forbidden(path: str, dest_dir: str):
+def _is_path_forbidden(path: str, dest_dir: str) -> bool:
     """
     A path is forbidden if it falls outside of the directory into which the files are meant to
     be extracted. tar doesn't prevent users from defining files with absolute paths, or with
@@ -75,10 +73,10 @@ def _is_path_forbidden(path: str, dest_dir: str):
     return not resolved_dest_path.startswith(resolved_dest_dir)
 
 
-def get_safe_files(tarfile: tarfile.TarFile, dest_dir: str) -> List[tarfile.TarInfo]:
+def get_safe_files(archive: tarfile.TarFile, dest_dir: str) -> List[tarfile.TarInfo]:
     safe_files = [
         member
-        for member in tarfile
+        for member in archive
         if not (
             _is_file_type_forbidden(member) or _is_path_forbidden(member.name, dest_dir)
         )

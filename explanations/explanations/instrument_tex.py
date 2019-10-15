@@ -1,7 +1,7 @@
 import colorsys
 import logging
 import os.path
-from typing import Dict, List, NamedTuple, Tuple, Union
+from typing import Iterator, List, Tuple, Union
 
 import numpy as np
 from TexSoup import Arg, OArg, RArg, TexArgs, TexCmd, TexEnv, TexNode, TexSoup
@@ -15,13 +15,13 @@ NUM_HUES = 90
 HUES = np.linspace(0, 1, NUM_HUES)
 
 
-def _color_start(equation, hue):
+def _color_start(equation: TexNode, hue: float) -> str:
     """
     Overlay a colorful box on top of an equation. 'hue' is a float between 0 and 1.
 
     How to color TeX equations in a way that doesn't disrupt layout:
 
-    A key step in coloring equations is to make sure that you don't upset how TeX assigns line breaks.
+    A key need in coloring equations is not to upset how TeX assigns line breaks.
     If any of the coloring commands change the dimensions of the text, or add other glue or spaces,
     then the layout algorithm may lay out the text it a completely uncompatible way, meaning that
     equations will end up appearing in a different place than before.
@@ -30,7 +30,7 @@ def _color_start(equation, hue):
     1. Display the original equation *as is* to enable paragraph layout as usual.
     2. Add a colorized box on top of the equation in a way that does *not* influence the
        paragraph layout algorithm (this is the tricky part).
-    
+
     To add the colorized box, a box is created with a specified color and the dimensions of the
     equation, in a "left overlay" (\llay), so that the box isn't used in paragraph layout. To give
     it a solid color and the right dimensinos, the box is created by putting the equation in the
@@ -47,14 +47,14 @@ def _color_start(equation, hue):
     Other coloring options we don't use:
     * pdfcolorstack: If all the TeX to be processed will be processed by 'pdflatex', then you can
       use two commands to set the color, and then reset it to neutral:
-      
+
         \pdfcolorstack 0 push {<red> <green> <blue> RG}  % set color
         \pdfcolorstack 0 pop                             % unset color
 
     * textcolor: set the color of the foreground text like so:
-        
+
         \textcolor[rgb]{<red>, <green>, <blue>}
-      
+
       The disadvantage of this approach is that coloring the text affects the paragraph layout
       algorithm in subtle ways (one tricky case is that it unexpectedly changes how "word" in
       <word>($eq$) can be hyphenated). If textcolor is used in an overlap ("\llap"), then the
@@ -72,16 +72,16 @@ def _color_start(equation, hue):
     3. \pdfcolorstack commands: https://tug.org/pipermail/pdftex/2007-January/006910.html
     """
     red, green, blue = colorsys.hsv_to_rgb(hue, 1, 1)
-    template = r"{eq}\llap{{\setlength{{\fboxsep}}{{0pt}}\colorbox[rgb]{{{red:.4f}, {green:.4f}, {blue:.4f}}}{{\textcolor[rgb]{{{red:.4f}, {green:.4f}, {blue:.4f}}}{{"
+    template = r"{eq}\llap{{\setlength{{\fboxsep}}{{0pt}}\colorbox[rgb]{{{red:.4f}, {green:.4f}, {blue:.4f}}}{{\textcolor[rgb]{{{red:.4f}, {green:.4f}, {blue:.4f}}}{{"  # noqa
     color_start = template.format(eq=equation, red=red, green=green, blue=blue)
     return color_start
 
 
-def _color_end():
+def _color_end() -> str:
     return r"}}}"
 
 
-def _get_arg_content_env_ids(items: List[Union[str, TexCmd, TexEnv]]):
+def _get_arg_content_env_ids(items: List[Union[str, TexCmd, TexEnv]]) -> List[int]:
     env_ids = []
     for item in items:
         env_id = id(item) if isinstance(item, TexEnv) else -1
@@ -89,7 +89,7 @@ def _get_arg_content_env_ids(items: List[Union[str, TexCmd, TexEnv]]):
     return env_ids
 
 
-def _get_expr_ids(nodes: List[Union[TexNode, str]]):
+def _get_expr_ids(nodes: List[Union[TexNode, str]]) -> List[int]:
     expr_ids = []
     for node in list(nodes):
         expr_id = id(node.expr) if isinstance(node, TexNode) else -1
@@ -97,7 +97,7 @@ def _get_expr_ids(nodes: List[Union[TexNode, str]]):
     return expr_ids
 
 
-def _color_equation_in_arg(equation: TexNode, hue: float):
+def _color_equation_in_arg(equation: TexNode, hue: float) -> None:
     parent: TexNode = equation.parent
     args: TexArgs = parent.args
     arg: Arg
@@ -124,7 +124,7 @@ def _color_equation_in_arg(equation: TexNode, hue: float):
         break
 
 
-def _color_equation_in_environment(equation: TexNode, hue: float):
+def _color_equation_in_environment(equation: TexNode, hue: float) -> None:
     parent: TexNode = equation.parent
     sibling_expr_ids = _get_expr_ids(parent.children)
     index = sibling_expr_ids.index(id(equation.expr))
@@ -133,7 +133,7 @@ def _color_equation_in_environment(equation: TexNode, hue: float):
     parent.replace(child, new_node)
 
 
-def _color_equation(equation: TexNode, hue: float = 1.0):
+def _color_equation(equation: TexNode, hue: float = 1.0) -> None:
     """
     Color equation by surrounding it with a color environment.
     TODO(andrewhead): Instrument TeX to include color, e.g., by injecting "\\usepackage{color}" after the
@@ -146,20 +146,22 @@ def _color_equation(equation: TexNode, hue: float = 1.0):
         _color_equation_in_environment(equation, hue)
 
 
-def generate_hues():
+def generate_hues() -> Iterator[float]:
     for hue in HUES:
         yield hue
     raise StopIteration
 
 
-def color_equations(tex: str, hue_generator) -> Tuple[ColorizedEquations, str]:
+def color_equations(
+    tex: str, hue_generator: Iterator[float]
+) -> Tuple[ColorizedEquations, str]:
     """
     hue_generator: a function that, when called, returns a new hue.
     """
     soup = TexSoup(tex)
     all_equations = list(soup.find_all("$"))
     equations_by_hue = {}
-    for i, equation in enumerate(all_equations):
+    for _, equation in enumerate(all_equations):
         try:
             hue = next(hue_generator)
         except StopIteration:
