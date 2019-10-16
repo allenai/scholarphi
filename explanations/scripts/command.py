@@ -7,6 +7,13 @@ R = TypeVar("R")
 
 
 class Command(ABC, Generic[I, R]):
+    def __init__(self, args):
+        """
+        Default constructor for a command. Saves a reference to the args with which the command was
+        invoked (will be a namespace returned by 'ArgumentParser.parse_args').
+        """
+        self.args = args
+
     @staticmethod
     @abstractmethod
     def get_name() -> str:
@@ -22,7 +29,7 @@ class Command(ABC, Generic[I, R]):
         """
 
     @staticmethod
-    def init_parser(parser: ArgumentParser) -> str:
+    def init_parser(parser: ArgumentParser) -> None:
         """
         (Optionally) override this method to add provide command line arguments for this command.
         """
