@@ -3,7 +3,7 @@ import os
 
 import requests
 
-from explanations.directories import SOURCE_ARCHIVES_DIR
+from explanations.directories import SOURCE_ARCHIVES_DIR, source_archives
 
 USER_AGENT = "Andrew Head, for academic research on dissemination of scientific insight <head.andrewm@gmail.com>"
 
@@ -11,7 +11,7 @@ USER_AGENT = "Andrew Head, for academic research on dissemination of scientific 
 def save_source_archive(arxiv_id: str, content: bytes):
     if not os.path.exists(SOURCE_ARCHIVES_DIR):
         os.makedirs(SOURCE_ARCHIVES_DIR)
-    archive_path = os.path.join(SOURCE_ARCHIVES_DIR, arxiv_id)
+    archive_path = source_archives(arxiv_id)
     with open(archive_path, "wb") as archive:
         archive.write(content)
 
