@@ -1,4 +1,5 @@
 import os
+from typing import Iterator
 
 DATA_DIR = "data"
 
@@ -17,6 +18,16 @@ ANNOTATED_PDFS_DIR = os.path.join(DEBUG_DIR, "d-annotated-pdfs")
 
 
 SLASH_SUBSTITUTE = "__"
+
+
+def get_arxiv_ids(data_directory: str) -> Iterator[str]:
+    """
+    Most data directories will include (and only include) subdirectories, with one for each arXiv
+    paper. These subdirectories will have as their name a normalized arXiv ID (see below). Call
+    this function to get the arXiv IDs for which there are subdirectories in a data directory.
+    """
+    for filename in os.listdir(data_directory):
+        yield get_arxiv_id(filename)
 
 
 def normalize_arxiv_id(arxiv_id: str) -> str:

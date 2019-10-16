@@ -1,5 +1,7 @@
+import gzip
 import logging
 import os
+import shutil
 import stat
 import tarfile
 from typing import List
@@ -8,6 +10,13 @@ from explanations.directories import colorized_sources, source_archives, sources
 
 
 def _unpack(archive_path: str, dest_dir: str) -> None:
+    """
+    For permissible arXiv source formats, see the 'Other formats' page for an arXiv paper.
+    At the time of writing, the sources could be any of the following:
+    * If multiple files, a gzipped tar
+    * A PDF
+    * A gzipped TeX, DVI, PostScript, or DVI file
+    """
     if not os.path.exists(dest_dir):
         os.makedirs(dest_dir)
     if os.listdir(dest_dir):
@@ -30,11 +39,24 @@ def _unpack(archive_path: str, dest_dir: str) -> None:
                 | stat.S_IXGRP
                 | stat.S_IXOTH,
             )
+            logging.debug("Unpacked %s as a tar archive", archive_path)
+        return
     except tarfile.ReadError:
-        logging.error(
-            "Error reading source archive for %s. This may mean that there is no source for document, and instead the PDF was downloaded.",
-            archive_path,
-        )
+        logging.warning("Could not unpack %s as tar archive.", archive_path)
+    try:
+        uncompressed_path = os.path.join(dest_dir, "uncompressed")
+        with gzip.open(archive_path, "rb") as gzip_file:
+            uncompressed_contents = gzip_file.read()
+            with open(uncompressed_path, "wb") as uncompressed_file:
+                uncompressed_file.write(uncompressed_contents)
+                logging.debug("Unpacked %s as a gzip file", archive_path)
+        return
+    except Exception:  # pylint: disable=broad-except
+        logging.warning("Could not unpack %s as gzip file.", archive_path)
+
+    pdf_path = os.path.join(dest_dir, "file.pdf")
+    logging.debug("%s is assumed to be a PDF", archive_path)
+    shutil.copyfile(archive_path, pdf_path)
 
 
 def unpack(arxiv_id: str) -> None:

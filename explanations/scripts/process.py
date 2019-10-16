@@ -5,8 +5,9 @@ from typing import List
 from scripts.compile_tex import CompileTex
 from scripts.extract_equations import ExtractEquations
 from scripts.fetch_arxiv_sources import FetchArxivSources
+from scripts.unpack_sources import UnpackSources
 
-command_classes: List = [FetchArxivSources, ExtractEquations, CompileTex]
+command_classes: List = [FetchArxivSources, UnpackSources, ExtractEquations, CompileTex]
 
 
 if __name__ == "__main__":
