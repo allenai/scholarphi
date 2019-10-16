@@ -9,6 +9,9 @@ TEX_CONFIG = "config.ini"
 PDF_MESSAGE_PREFIX = "Generated PDF: "
 PDF_MESSAGE_SUFFIX = "<end of PDF name>"
 
+# BIB_FILE_PATTERN = "[verbose]:  <(.*?\.bib)>\tis of type 'BiBTeX'\."
+# BBL_FILE_PATTERN = "[verbose]:  <(.*?\.bbl)>\tis of type 'TeX auxiliary'\."
+
 
 def _get_generated_pdfs(stdout: str) -> List[str]:
     pdfs = re.findall(
@@ -61,10 +64,12 @@ def compile_tex(sources_dir: str) -> List[str]:
         pdfs = _get_generated_pdfs(stdout)
         logging.debug("Successfully compiled TeX. Generated PDFs %s", str(pdfs))
     else:
-        logging.error(
-            "Failed to compile TeX.\nStdout from compilation:\n%s\n\nStderr from compilation:\n%s",
-            result.stdout,
-            result.stderr,
-        )
+        logging.error("Failed to compile TeX.")
+
+    logging.debug(
+        "\nStdout from compilation:\n%s\n\nStderr from compilation:\n%s",
+        result.stdout,
+        result.stderr,
+    )
 
     return pdfs
