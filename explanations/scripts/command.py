@@ -7,21 +7,22 @@ R = TypeVar("R")
 
 
 class Command(ABC, Generic[I, R]):
-    @property
+    @staticmethod
     @abstractmethod
-    def name(self) -> str:
+    def get_name() -> str:
         """
         Get the name for this command for the command line interface.
         """
 
-    @property
+    @staticmethod
     @abstractmethod
-    def description(self) -> str:
+    def get_description() -> str:
         """
         Get a description of this command that can be shown on the command line.
         """
 
-    def init_parser(self, parser: ArgumentParser) -> str:
+    @staticmethod
+    def init_parser(parser: ArgumentParser) -> str:
         """
         (Optionally) override this method to add provide command line arguments for this command.
         """

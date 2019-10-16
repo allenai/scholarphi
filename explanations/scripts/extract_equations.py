@@ -25,12 +25,12 @@ class FileContents(NamedTuple):
 
 
 class ExtractEquations(Command[FileContents, Equation]):
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def get_name() -> str:
         return "extract-equations"
 
-    @property
-    def description(self) -> str:
+    @staticmethod
+    def get_description() -> str:
         return "Extract all equations from arXiv sources"
 
     def load(self) -> Iterator[FileContents]:
