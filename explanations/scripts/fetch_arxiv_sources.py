@@ -1,3 +1,4 @@
+import time
 from argparse import ArgumentParser
 from typing import Iterator
 
@@ -5,6 +6,10 @@ from explanations.fetch_arxiv import fetch
 from scripts.command import Command
 
 arxiv_id = str
+
+
+""" Time to wait between consecutive requests to arXiv. """
+FETCH_DELAY = 10  # seconds
 
 
 class FetchArxivSources(Command[str, None]):
@@ -32,6 +37,10 @@ class FetchArxivSources(Command[str, None]):
 
     def process(self, item: arxiv_id) -> Iterator[None]:
         fetch(item)
+        # This method of delaying fetches assumes that calls to 'process' will be made sequentially
+        # and not in parallel. Delay mechanisms will need to be more sophisticated if we transition
+        # to parallel data fetching.
+        time.sleep(FETCH_DELAY)
         yield None
 
     def save(self, item: arxiv_id, result: None) -> None:
