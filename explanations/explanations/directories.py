@@ -6,7 +6,7 @@ DATA_DIR = "data"
 # Main directories for processing papers
 SOURCE_ARCHIVES_DIR = os.path.join(DATA_DIR, "01-sources-archives")
 SOURCES_DIR = os.path.join(DATA_DIR, "02-sources")
-BIBITEMS_DIR = os.path.join(DATA_DIR, "03-equations")
+BIBITEMS_DIR = os.path.join(DATA_DIR, "03-bibitems")
 EQUATIONS_DIR = os.path.join(DATA_DIR, "04-equations")
 COLORIZED_SOURCES_DIR = os.path.join(DATA_DIR, "05-colorized-sources")
 
