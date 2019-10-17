@@ -11,7 +11,7 @@ from explanations.directories import SOURCE_ARCHIVES_DIR, get_arxiv_ids
 from explanations.types import ArxivId, Author, Reference, S2Metadata
 from scripts.command import Command
 
-""" Time to wait between consecutive requests to S2 API. """
+""" Time to wait between consecutive requests to S2 API. """  # pylint: disable=pointless-string-statement
 FETCH_DELAY = 3  # seconds
 
 
@@ -40,7 +40,7 @@ class FetchS2Metadata(Command[ArxivId, S2Metadata]):
             for author_data in reference_data["authors"]:
                 authors.append(Author(author_data["authorId"], author_data["name"]))
             reference = Reference(
-                s2id=reference_data["paperId"],
+                s2Id=reference_data["paperId"],
                 arxivId=reference_data["arxivId"],
                 doi=reference_data["doi"],
                 title=reference_data["title"],
@@ -68,7 +68,7 @@ class FetchS2Metadata(Command[ArxivId, S2Metadata]):
                 authors_string = ", ".join([a.name for a in reference.authors])
                 writer.writerow(
                     [
-                        reference.s2id,
+                        reference.s2Id,
                         reference.arxivId,
                         reference.doi,
                         reference.title,

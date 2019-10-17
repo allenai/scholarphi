@@ -7,6 +7,7 @@ from scripts.extract_bibitems import ExtractBibitems
 from scripts.extract_equations import ExtractEquations
 from scripts.fetch_arxiv_sources import FetchArxivSources
 from scripts.fetch_s2_data import FetchS2Metadata
+from scripts.resolve_bibitems import ResolveBibitems
 from scripts.unpack_sources import UnpackSources
 
 command_classes: List = [  # type: ignore
@@ -14,6 +15,7 @@ command_classes: List = [  # type: ignore
     FetchS2Metadata,
     UnpackSources,
     ExtractBibitems,
+    ResolveBibitems,
     ExtractEquations,
     CompileTex,
 ]

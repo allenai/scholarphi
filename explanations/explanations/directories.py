@@ -8,9 +8,10 @@ SOURCE_ARCHIVES_DIR = os.path.join(DATA_DIR, "01-sources-archives")
 S2_METADATA_DIR = os.path.join(DATA_DIR, "02-s2-metadata")
 SOURCES_DIR = os.path.join(DATA_DIR, "03-sources")
 BIBITEMS_DIR = os.path.join(DATA_DIR, "04-bibitems")
-EQUATIONS_DIR = os.path.join(DATA_DIR, "05-equations")
-COMPILATION_RESULTS_DIR = os.path.join(DATA_DIR, "06-compilation-results")
-COLORIZED_SOURCES_DIR = os.path.join(DATA_DIR, "07-colorized-sources")
+BIBITEM_RESOLUTIONS_DIR = os.path.join(DATA_DIR, "05-bibitem-resolutions")
+EQUATIONS_DIR = os.path.join(DATA_DIR, "06-equations")
+COMPILATION_RESULTS_DIR = os.path.join(DATA_DIR, "07-compilation-results")
+COLORIZED_SOURCES_DIR = os.path.join(DATA_DIR, "08-colorized-sources")
 
 # Debug directories (may or may not be created based on command options)
 DEBUG_DIR = os.path.join(DATA_DIR, "debug")
@@ -67,6 +68,10 @@ def equations(arxiv_id: str) -> str:
 
 def bibitems(arxiv_id: str) -> str:
     return os.path.join(BIBITEMS_DIR, normalize_arxiv_id(arxiv_id))
+
+
+def bibitem_resolutions(arxiv_id: str) -> str:
+    return os.path.join(BIBITEM_RESOLUTIONS_DIR, normalize_arxiv_id(arxiv_id))
 
 
 def compilation_results(arxiv_id: str) -> str:
