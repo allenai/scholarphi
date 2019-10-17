@@ -1,10 +1,9 @@
 from typing import Iterator
 
 from explanations.directories import SOURCE_ARCHIVES_DIR, get_arxiv_ids
+from explanations.types import ArxivId
 from explanations.unpack import unpack
 from scripts.command import Command
-
-ArxivId = str
 
 
 class UnpackSources(Command[str, None]):
