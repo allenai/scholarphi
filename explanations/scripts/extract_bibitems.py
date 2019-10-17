@@ -5,12 +5,10 @@ from typing import Iterator
 
 import explanations.directories as directories
 from explanations.directories import SOURCES_DIR, get_arxiv_ids, sources
-from explanations.file_utils import clean_directory, find_files
+from explanations.file_utils import clean_directory, find_files, read_file_tolerant
 from explanations.scrape_tex import TexSoupParseError, extract_bibitems
 from explanations.types import Bibitem, FileContents
 from scripts.command import Command
-
-ENCODINGS = ["utf-8", "latin-1"]
 
 
 class ExtractBibitems(Command[FileContents, Bibitem]):
@@ -27,25 +25,9 @@ class ExtractBibitems(Command[FileContents, Bibitem]):
             sources_dir = sources(arxiv_id)
             clean_directory(directories.bibitems(arxiv_id))
             for path in find_files(sources_dir, [".tex", ".bbl"]):
-                contents = None
-                for encoding in ENCODINGS:
-                    with open(path, "r", encoding=encoding) as file_:
-                        try:
-                            contents = file_.read()
-                            break
-                        except Exception:  # pylint: disable=broad-except
-                            logging.debug(
-                                "Could not decode file %s using encoding %s",
-                                path,
-                                encoding,
-                            )
-
+                contents = read_file_tolerant(path)
                 if contents is None:
-                    logging.error(
-                        "Could not find an appropriate encoding for file %s", path
-                    )
                     continue
-
                 yield FileContents(arxiv_id, path, contents)
 
     def process(self, item: FileContents) -> Iterator[Bibitem]:

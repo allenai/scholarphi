@@ -6,7 +6,7 @@ from TexSoup import TexSoup
 
 import explanations.directories as directories
 from explanations.directories import SOURCES_DIR, get_arxiv_ids, sources
-from explanations.file_utils import clean_directory, find_files
+from explanations.file_utils import clean_directory, find_files, read_file_tolerant
 from explanations.types import FileContents
 from scripts.command import Command
 
@@ -30,9 +30,10 @@ class ExtractEquations(Command[FileContents, Equation]):
             sources_dir = sources(arxiv_id)
             clean_directory(directories.equations(arxiv_id))
             for path in find_files(sources_dir, [".tex"]):
-                with open(path, "r") as tex_file:
-                    contents = tex_file.read()
-                    yield FileContents(arxiv_id, path, contents)
+                contents = read_file_tolerant(path)
+                if contents is None:
+                    continue
+                yield FileContents(arxiv_id, path, contents)
 
     def process(self, item: FileContents) -> Iterator[Equation]:
         soup = TexSoup(item.contents)

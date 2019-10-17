@@ -1,13 +1,27 @@
 import logging
 import os
 import shutil
-from typing import Iterator, List
+from typing import Iterator, List, Optional
 
-from explanations.directories import (
-    annotated_pdfs,
-    get_annotated_pdf_path,
-    get_colorized_pdf_path,
-)
+from explanations.directories import (annotated_pdfs, get_annotated_pdf_path,
+                                      get_colorized_pdf_path)
+
+
+def read_file_tolerant(path: str) -> Optional[str]:
+    """
+    Attempt to read the contents of a file using several encodings.
+    """
+    for encoding in ["utf-8", "latin-1"]:
+        with open(path, "r", encoding=encoding) as file_:
+            try:
+                return file_.read()
+            except Exception:  # pylint: disable=broad-except
+                logging.debug(
+                    "Could not decode file %s using encoding %s", path, encoding
+                )
+
+    logging.error("Could not find an appropriate encoding for file %s", path)
+    return None
 
 
 def clean_directory(directory: str) -> None:
