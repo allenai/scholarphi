@@ -8,6 +8,7 @@ __pycache__
 
 # VSCode settings shouldn't be committed by default
 .vscode/settings.json
+.vscode/.ropeproject
 
 # Compiled files
 *.pyc
