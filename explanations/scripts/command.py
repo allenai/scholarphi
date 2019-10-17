@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
-from typing import Generic, Iterator, TypeVar
+from typing import Any, Generic, Iterator, TypeVar
 
 I = TypeVar("I")
 R = TypeVar("R")
 
 
 class Command(ABC, Generic[I, R]):
-    def __init__(self, args):
+    def __init__(self, args: Any) -> None:
         """
         Default constructor for a command. Saves a reference to the args with which the command was
         invoked (will be a namespace returned by 'ArgumentParser.parse_args').

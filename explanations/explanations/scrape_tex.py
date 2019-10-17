@@ -15,7 +15,8 @@ def _extract_label(bibitem: TexCmd) -> Optional[str]:
 
 def extract_bibitems(tex: str) -> List[Bibitem]:
     extractor = BibitemExtractor()
-    return extractor.extract(tex)
+    bibitems = extractor.extract(tex)
+    return bibitems
 
 
 TEX_BREAK = r"\n\s*?\n"
@@ -33,6 +34,12 @@ def _get_text_before_break(text: str) -> str:
     return re.split(TEX_BREAK, text, maxsplit=1)[0]
 
 
+class TexSoupParseError(Exception):
+    """
+    Error parsing a TeX file using TexSoup.
+    """
+
+
 class BibitemExtractor:
     def __init__(self) -> None:
         self.current_bibitem_label: Optional[str] = None
@@ -42,7 +49,10 @@ class BibitemExtractor:
 
     def extract(self, tex: str) -> List[Bibitem]:
         self.bibitems = []
-        soup = TexSoup(tex)
+        try:
+            soup = TexSoup(tex)
+        except (TypeError, EOFError) as e:
+            raise TexSoupParseError(str(e))
         for bibitem in soup.find_all("bibitem"):
             parent = bibitem.parent
             if parent not in self.nodes_scanned:
