@@ -5,10 +5,12 @@ DATA_DIR = "data"
 
 # Main directories for processing papers
 SOURCE_ARCHIVES_DIR = os.path.join(DATA_DIR, "01-sources-archives")
-SOURCES_DIR = os.path.join(DATA_DIR, "02-sources")
-BIBITEMS_DIR = os.path.join(DATA_DIR, "03-bibitems")
-EQUATIONS_DIR = os.path.join(DATA_DIR, "04-equations")
-COLORIZED_SOURCES_DIR = os.path.join(DATA_DIR, "05-colorized-sources")
+S2_METADATA_DIR = os.path.join(DATA_DIR, "02-s2-metadata")
+SOURCES_DIR = os.path.join(DATA_DIR, "03-sources")
+BIBITEMS_DIR = os.path.join(DATA_DIR, "04-bibitems")
+EQUATIONS_DIR = os.path.join(DATA_DIR, "05-equations")
+COMPILATION_RESULTS_DIR = os.path.join(DATA_DIR, "06-compilation-results")
+COLORIZED_SOURCES_DIR = os.path.join(DATA_DIR, "07-colorized-sources")
 
 # Debug directories (may or may not be created based on command options)
 DEBUG_DIR = os.path.join(DATA_DIR, "debug")
@@ -47,6 +49,10 @@ def source_archives(arxiv_id: str) -> str:
     return os.path.join(SOURCE_ARCHIVES_DIR, normalize_arxiv_id(arxiv_id))
 
 
+def s2_metadata(arxiv_id: str) -> str:
+    return os.path.join(S2_METADATA_DIR, normalize_arxiv_id(arxiv_id))
+
+
 def sources(arxiv_id: str) -> str:
     return os.path.join(SOURCES_DIR, normalize_arxiv_id(arxiv_id))
 
@@ -61,6 +67,10 @@ def equations(arxiv_id: str) -> str:
 
 def bibitems(arxiv_id: str) -> str:
     return os.path.join(BIBITEMS_DIR, normalize_arxiv_id(arxiv_id))
+
+
+def compilation_results(arxiv_id: str) -> str:
+    return os.path.join(COMPILATION_RESULTS_DIR, normalize_arxiv_id(arxiv_id))
 
 
 def annotated_pdfs(arxiv_id: str) -> str:

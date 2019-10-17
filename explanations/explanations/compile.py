@@ -1,26 +1,42 @@
 import configparser
 import logging
 import os
+import os.path
 import re
 import subprocess
 from typing import List
 
+from explanations.types import CompilationResult
+
 TEX_CONFIG = "config.ini"
-PDF_MESSAGE_PREFIX = "Generated PDF: "
-PDF_MESSAGE_SUFFIX = "<end of PDF name>"
+PDF_MESSAGE_PREFIX = b"Generated PDF: "
+PDF_MESSAGE_SUFFIX = b"<end of PDF name>"
 
 # BIB_FILE_PATTERN = "[verbose]:  <(.*?\.bib)>\tis of type 'BiBTeX'\."
 # BBL_FILE_PATTERN = "[verbose]:  <(.*?\.bbl)>\tis of type 'TeX auxiliary'\."
 
 
-def _get_generated_pdfs(stdout: str) -> List[str]:
+def _get_generated_pdfs(stdout: bytes) -> List[bytes]:
     pdfs = re.findall(
-        PDF_MESSAGE_PREFIX + "(.*)" + PDF_MESSAGE_SUFFIX, stdout, flags=re.MULTILINE
+        PDF_MESSAGE_PREFIX + b"(.*)" + PDF_MESSAGE_SUFFIX, stdout, flags=re.MULTILINE
     )
     return pdfs
 
 
-def _clean_sources_dir(sources_dir: str):
+def _set_sources_dir_permissions(sources_dir: str) -> None:
+    """
+    AutoTeX requires permissions to be 0777 or 0775 before attempting compilation.
+    """
+    COMPILATION_PERMISSIONS = 0o775
+    os.chmod(sources_dir, COMPILATION_PERMISSIONS)
+    for (dirpath, dirnames, filenames) in os.walk(sources_dir):
+        for filename in filenames:
+            os.chmod(os.path.join(dirpath, filename), COMPILATION_PERMISSIONS)
+        for dirname in dirnames:
+            os.chmod(os.path.join(dirpath, dirname), COMPILATION_PERMISSIONS)
+
+
+def _clean_sources_dir(sources_dir: str) -> None:
     """
     AutoTeX doesn't compile a sources directory if it includes certain files from a past
     compilation. Clean the directory of those files.
@@ -32,7 +48,7 @@ def _clean_sources_dir(sources_dir: str):
                 os.remove(path)
 
 
-def compile_tex(sources_dir: str) -> List[str]:
+def compile_tex(sources_dir: str) -> CompilationResult:
     """
     Compile TeX sources into PDFs. Requires running an external script to attempt to compile
     the TeX. See README.md for dependencies.
@@ -40,6 +56,7 @@ def compile_tex(sources_dir: str) -> List[str]:
     logging.debug("Compiling sources in %s", sources_dir)
 
     _clean_sources_dir(sources_dir)
+    _set_sources_dir_permissions(sources_dir)
 
     config = configparser.ConfigParser()
     config.read(TEX_CONFIG)
@@ -55,21 +72,13 @@ def compile_tex(sources_dir: str) -> List[str]:
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        encoding="utf-8",
     )
 
-    pdfs: List[str] = []
+    pdfs = None
+    success = False
     if result.returncode == 0:
         stdout = result.stdout
         pdfs = _get_generated_pdfs(stdout)
-        logging.debug("Successfully compiled TeX. Generated PDFs %s", str(pdfs))
-    else:
-        logging.error("Failed to compile TeX.")
+        success = True
 
-    logging.debug(
-        "\nStdout from compilation:\n%s\n\nStderr from compilation:\n%s",
-        result.stdout,
-        result.stderr,
-    )
-
-    return pdfs
+    return CompilationResult(success, pdfs, result.stdout, result.stderr)

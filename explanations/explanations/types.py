@@ -1,4 +1,9 @@
-from typing import Dict, NamedTuple
+from typing import Dict, List, NamedTuple, Optional
+
+ArxivId = str
+S2Id = str
+S2AuthorId = str
+
 
 """
 Map from a float hue [0..1] to the LaTeX equation with that color.
@@ -12,6 +17,26 @@ Contents of a set of tex files. Maps from path to TeX file to the file's coloriz
 TexContents = Dict[str, str]
 
 
+class Author(NamedTuple):
+    id: S2AuthorId
+    name: str
+
+
+class Reference(NamedTuple):
+    s2id: S2Id
+    arxivId: Optional[ArxivId]
+    doi: str
+    title: str
+    authors: List[Author]
+    venue: str
+    year: int
+
+
+class S2Metadata(NamedTuple):
+    s2id: S2Id
+    references: List[Reference]
+
+
 class Bibitem(NamedTuple):
     key: str
     """
@@ -21,7 +46,7 @@ class Bibitem(NamedTuple):
 
 
 class FileContents(NamedTuple):
-    arxiv_id: str
+    arxiv_id: ArxivId
     """
     Absolute path to the TeX file.
     """
@@ -32,6 +57,13 @@ class FileContents(NamedTuple):
 class ColorizedTex(NamedTuple):
     contents: TexContents
     equations: ColorizedEquations
+
+
+class CompilationResult(NamedTuple):
+    success: bool
+    compiled_pdfs: Optional[List[bytes]]
+    stdout: bytes
+    stderr: bytes
 
 
 class Rectangle(NamedTuple):

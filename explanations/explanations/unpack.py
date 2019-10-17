@@ -27,18 +27,6 @@ def _unpack(archive_path: str, dest_dir: str) -> None:
     try:
         with tarfile.open(archive_path, mode="r:gz") as archive:
             archive.extractall(dest_dir, members=get_safe_files(archive, dest_dir))
-            # AutoTeX requrires permissions on the directory to be 0777 or 0775
-            os.chmod(
-                dest_dir,
-                stat.S_IRUSR
-                | stat.S_IRGRP
-                | stat.S_IROTH
-                | stat.S_IWUSR
-                | stat.S_IWGRP
-                | stat.S_IXUSR
-                | stat.S_IXGRP
-                | stat.S_IXOTH,
-            )
             logging.debug("Unpacked %s as a tar archive", archive_path)
         return
     except tarfile.ReadError:
