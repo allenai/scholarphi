@@ -94,15 +94,12 @@ class ResolveBibitems(Command[MatchTask, Match]):
             max_similarity = 0.0
             most_similar_reference = None
             for reference in item.references:
-                title_and_authors = reference.title + " ".join(
-                    [a.name for a in reference.authors]
-                )
-                similarity = ngram_sim(title_and_authors, bibitem.text)
+                similarity = ngram_sim(reference.title, bibitem.text)
                 logging.debug(
-                    "Computed similarity of %f between bibitem %s and reference %s",
+                    "Computed similarity of %f between reference '%s' and bibitem text '%s'",
                     similarity,
+                    reference.title,
                     bibitem.text,
-                    title_and_authors,
                 )
                 if similarity > SIMILARITY_THRESHOLD and similarity > max_similarity:
                     max_similarity = similarity
@@ -126,5 +123,10 @@ class ResolveBibitems(Command[MatchTask, Match]):
         with open(resolutions_path, "a") as resolutions_file:
             writer = csv.writer(resolutions_file, quoting=csv.QUOTE_ALL)
             writer.writerow(
-                [result.bibitem.key, result.reference.title, result.reference.s2Id]
+                [
+                    result.bibitem.key,
+                    result.reference.s2Id,
+                    result.reference.title,
+                    result.bibitem.text,
+                ]
             )
