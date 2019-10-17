@@ -2,7 +2,6 @@ import gzip
 import logging
 import os
 import shutil
-import stat
 import tarfile
 from typing import List
 

@@ -18,18 +18,18 @@ TexContents = Dict[str, str]
 
 
 class Author(NamedTuple):
-    id: S2AuthorId
+    id: Optional[S2AuthorId]
     name: str
 
 
 class Reference(NamedTuple):
-    s2id: S2Id
+    s2Id: S2Id
     arxivId: Optional[ArxivId]
     doi: str
     title: str
     authors: List[Author]
     venue: str
-    year: int
+    year: Optional[int]
 
 
 class S2Metadata(NamedTuple):
