@@ -1,7 +1,7 @@
 import logging
 import os
 import shutil
-from typing import List
+from typing import Iterator, List
 
 from explanations.directories import (
     annotated_pdfs,
@@ -27,6 +27,18 @@ def clean_directory(directory: str) -> None:
             logging.warning(
                 "Could not remove path %s from directory %s: %s", path, directory, e
             )
+
+
+def find_files(dir_: str, extensions: List[str]) -> Iterator[str]:
+    """
+    Find all files in a directory with a given extension.
+    """
+    for (dirpath, _, filenames) in os.walk(dir_):
+        for filename in filenames:
+            __, ext = os.path.splitext(filename)
+            if ext in extensions:
+                path = os.path.join(dirpath, filename)
+                yield path
 
 
 def get_common_pdfs(original_pdfs: List[str], colorized_pdfs: List[str]) -> List[str]:

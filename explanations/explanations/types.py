@@ -2,7 +2,7 @@ from typing import Dict, NamedTuple
 
 """
 Map from a float hue [0..1] to the LaTeX equation with that color.
-"""
+"""  # pylint: disable=pointless-string-statement
 ColorizedEquations = Dict[float, str]
 
 
@@ -10,6 +10,23 @@ ColorizedEquations = Dict[float, str]
 Contents of a set of tex files. Maps from path to TeX file to the file's colorized contents.
 """
 TexContents = Dict[str, str]
+
+
+class Bibitem(NamedTuple):
+    key: str
+    """
+    Plaintext extracted for bibitem.
+    """
+    text: str
+
+
+class FileContents(NamedTuple):
+    arxiv_id: str
+    """
+    Absolute path to the TeX file.
+    """
+    path: str
+    contents: str
 
 
 class ColorizedTex(NamedTuple):
