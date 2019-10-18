@@ -34,6 +34,14 @@ def _get_text_before_break(text: str) -> str:
     return re.split(TEX_BREAK, text, maxsplit=1)[0]
 
 
+def parse_tex(tex: str) -> TexSoup:
+    try:
+        soup = TexSoup(tex)
+        return soup
+    except (TypeError, EOFError) as e:
+        raise TexSoupParseError(str(e))
+
+
 class TexSoupParseError(Exception):
     """
     Error parsing a TeX file using TexSoup.
@@ -49,10 +57,7 @@ class BibitemExtractor:
 
     def extract(self, tex: str) -> List[Bibitem]:
         self.bibitems = []
-        try:
-            soup = TexSoup(tex)
-        except (TypeError, EOFError) as e:
-            raise TexSoupParseError(str(e))
+        soup = parse_tex(tex)
         for bibitem in soup.find_all("bibitem"):
             parent = bibitem.parent
             if parent not in self.nodes_scanned:

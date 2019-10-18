@@ -22,6 +22,18 @@
       "env": {
         "PYTHONPATH": "."
       }
+    },
+    {
+      "name": "Extract Equation Tokens",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/process.py",
+      "console": "integratedTerminal",
+      "args": ["extract-equation-tokens"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "."
+      }
     }
   ]
 }

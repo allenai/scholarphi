@@ -45,6 +45,11 @@ class Bibitem(NamedTuple):
     text: str
 
 
+class Equation(NamedTuple):
+    i: int
+    tex: str
+
+
 class FileContents(NamedTuple):
     arxiv_id: ArxivId
     """
