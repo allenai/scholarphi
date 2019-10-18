@@ -1,19 +1,14 @@
 import csv
+import logging
 import os.path
-from typing import Iterator, NamedTuple
-
-from TexSoup import TexSoup
+from typing import Iterator
 
 import explanations.directories as directories
 from explanations.directories import SOURCES_DIR, get_arxiv_ids, sources
 from explanations.file_utils import clean_directory, find_files, read_file_tolerant
-from explanations.types import FileContents
+from explanations.scrape_tex import TexSoupParseError, parse_tex
+from explanations.types import Equation, FileContents
 from scripts.command import Command
-
-
-class Equation(NamedTuple):
-    i: int
-    tex: str
 
 
 class ExtractEquations(Command[FileContents, Equation]):
@@ -36,11 +31,18 @@ class ExtractEquations(Command[FileContents, Equation]):
                 yield FileContents(arxiv_id, path, contents)
 
     def process(self, item: FileContents) -> Iterator[Equation]:
-        soup = TexSoup(item.contents)
-        # TODO(andrewhead): also find all begin / end equation environments.
-        equations = list(soup.find_all("$"))
-        for i, equation in enumerate(equations):
-            yield Equation(i, equation)
+        soup = None
+        try:
+            soup = parse_tex(item.contents)
+        except TexSoupParseError as e:
+            logging.error("Could not parse TeX file %s with TexSoup: %s", item.path, e)
+
+        if soup is not None:
+            # TODO(andrewhead): also find all begin / end equation environments.
+            equations = list(soup.find_all("$"))
+            for i, equation in enumerate(equations):
+                equation_contents = next(equation.expr.contents)
+                yield Equation(i, equation_contents)
 
     def save(self, item: FileContents, result: Equation) -> None:
         results_dir = directories.equations(item.arxiv_id)

@@ -12,9 +12,6 @@ TEX_CONFIG = "config.ini"
 PDF_MESSAGE_PREFIX = b"Generated PDF: "
 PDF_MESSAGE_SUFFIX = b"<end of PDF name>"
 
-# BIB_FILE_PATTERN = "[verbose]:  <(.*?\.bib)>\tis of type 'BiBTeX'\."
-# BBL_FILE_PATTERN = "[verbose]:  <(.*?\.bbl)>\tis of type 'TeX auxiliary'\."
-
 
 def _get_generated_pdfs(stdout: bytes) -> List[bytes]:
     pdfs = re.findall(
@@ -77,8 +74,7 @@ def compile_tex(sources_dir: str) -> CompilationResult:
     pdfs = None
     success = False
     if result.returncode == 0:
-        stdout = result.stdout
-        pdfs = _get_generated_pdfs(stdout)
+        pdfs = _get_generated_pdfs(result.stdout)
         success = True
 
     return CompilationResult(success, pdfs, result.stdout, result.stderr)
