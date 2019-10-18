@@ -30,6 +30,9 @@ SIMILARITY_THRESHOLD = 0.5
 
 
 def extract_ngrams(s: str, n: int = 3) -> Set[str]:
+    """
+    This and the 'ngram_sim' method below were provided by Kyle Lo.
+    """
     s = re.sub(r"\W", "", s.lower())
     ngrams = zip(*[s[i:] for i in range(n)])
     return {"".join(ngram) for ngram in ngrams}
