@@ -5,8 +5,10 @@ from typing import Iterator
 
 import explanations.directories as directories
 from explanations.directories import SOURCES_DIR, get_arxiv_ids, sources
-from explanations.file_utils import clean_directory, find_files, read_file_tolerant
-from explanations.scrape_tex import TexSoupParseError, parse_tex
+from explanations.file_utils import (clean_directory, find_files,
+                                     read_file_tolerant)
+from explanations.scrape_tex import (TexSoupParseError, find_equations,
+                                     parse_tex)
 from explanations.types import Equation, FileContents
 from scripts.command import Command
 
@@ -39,7 +41,7 @@ class ExtractEquations(Command[FileContents, Equation]):
 
         if soup is not None:
             # TODO(andrewhead): also find all begin / end equation environments.
-            equations = list(soup.find_all("$"))
+            equations = find_equations(soup.find_all("$"))
             for i, equation in enumerate(equations):
                 equation_contents = next(equation.expr.contents)
                 yield Equation(i, equation_contents)

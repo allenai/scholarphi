@@ -1,37 +1,9 @@
 import re
-from typing import Any, List, Optional, Set
+from typing import Any, Iterator, List, Optional, Set, cast
 
 from TexSoup import RArg, TexCmd, TexNode, TexSoup, TokenWithPosition
 
 from explanations.types import Bibitem
-
-
-def _extract_label(bibitem: TexCmd) -> Optional[str]:
-    for arg in bibitem.args:
-        if isinstance(arg, RArg):
-            return str(arg.value)
-    return None
-
-
-def extract_bibitems(tex: str) -> List[Bibitem]:
-    extractor = BibitemExtractor()
-    bibitems = extractor.extract(tex)
-    return bibitems
-
-
-TEX_BREAK = r"\n\s*?\n"
-
-
-def _clean_bibitem_text(text: str) -> str:
-    return re.sub(r"\s+", " ", text).strip()
-
-
-def _contains_break(text: str) -> bool:
-    return bool(re.search(TEX_BREAK, text))
-
-
-def _get_text_before_break(text: str) -> str:
-    return re.split(TEX_BREAK, text, maxsplit=1)[0]
 
 
 def parse_tex(tex: str) -> TexSoup:
@@ -46,6 +18,19 @@ class TexSoupParseError(Exception):
     """
     Error parsing a TeX file using TexSoup.
     """
+
+
+def extract_bibitems(tex: str) -> List[Bibitem]:
+    extractor = BibitemExtractor()
+    bibitems = extractor.extract(tex)
+    return bibitems
+
+
+def find_equations(soup: TexSoup) -> Iterator[TexNode]:
+    """
+    Helper function providing a consistent interface for scraping equations from a TeXSoup document.
+    """
+    return cast(Iterator[TexNode], soup.find_all("$"))
 
 
 class BibitemExtractor:
@@ -98,3 +83,25 @@ class BibitemExtractor:
 
         self.current_bibitem_label = None
         self.bibitem_text = ""
+
+
+def _extract_label(bibitem: TexCmd) -> Optional[str]:
+    for arg in bibitem.args:
+        if isinstance(arg, RArg):
+            return str(arg.value)
+    return None
+
+
+TEX_BREAK = r"\n\s*?\n"
+
+
+def _clean_bibitem_text(text: str) -> str:
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _contains_break(text: str) -> bool:
+    return bool(re.search(TEX_BREAK, text))
+
+
+def _get_text_before_break(text: str) -> str:
+    return re.split(TEX_BREAK, text, maxsplit=1)[0]

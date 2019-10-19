@@ -8,7 +8,7 @@ from typing import Iterator, List, NamedTuple, Optional
 from explanations import directories
 from explanations.directories import EQUATIONS_DIR, NODE_DIRECTORY, get_arxiv_ids
 from explanations.file_utils import clean_directory
-from explanations.types import ArxivId, Equation
+from explanations.types import ArxivId, Equation, Token
 from scripts.command import Command
 
 
@@ -19,12 +19,6 @@ class EquationWithPath(NamedTuple):
 
 
 EquationsWithPath = List[EquationWithPath]
-
-
-class Token(NamedTuple):
-    text: str
-    start: int
-    end: int
 
 
 class ParseResult(NamedTuple):

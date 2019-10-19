@@ -1,14 +1,9 @@
-from typing import Dict, List, NamedTuple, Optional
+from typing import Dict, List, NamedTuple, Optional, Tuple
 
 ArxivId = str
 S2Id = str
 S2AuthorId = str
-
-
-"""
-Map from a float hue [0..1] to the LaTeX equation with that color.
-"""  # pylint: disable=pointless-string-statement
-ColorizedEquations = Dict[float, str]
+Path = str
 
 
 """
@@ -45,9 +40,45 @@ class Bibitem(NamedTuple):
     text: str
 
 
+EquationIndex = int
+
+
 class Equation(NamedTuple):
-    i: int
+    i: EquationIndex
     tex: str
+
+
+class Token(NamedTuple):
+    """
+    Token from a TeX equation.
+    """
+
+    text: str
+    start: int
+    end: int
+
+
+class TokenEquationPair(NamedTuple):
+    """
+    Token paired with the equation it's from.
+    """
+
+    token: Token
+    equation: Equation
+
+
+class LocalizedToken(NamedTuple):
+    """
+    Token with information that can be used to uniquely identify the token amidst multiple
+    papers, multiple files for those papers, and multiple equations in those files.
+    """
+
+    text: str
+    start: int
+    end: int
+    arxiv_id: str
+    tex_path: str
+    equation_index: int
 
 
 class FileContents(NamedTuple):
@@ -59,9 +90,23 @@ class FileContents(NamedTuple):
     contents: str
 
 
+"""
+Map from a float hue [0..1] to the LaTeX equation with that color.
+"""  # pylint: disable=pointless-string-statement
+ColorizedEquations = Dict[float, str]
+
+
 class ColorizedTex(NamedTuple):
     contents: TexContents
     equations: ColorizedEquations
+
+
+"""
+Map from a float hue [0..1] to the token of a TeX equation with that color.
+"""
+ColorizedTokens = Dict[float, Token]
+ColorizedTokensByEquation = Dict[EquationIndex, ColorizedTokens]
+ColorizedTokensByLocation = Dict[Tuple[Path, EquationIndex], ColorizedTokens]
 
 
 class CompilationResult(NamedTuple):
@@ -102,13 +147,3 @@ class Position(NamedTuple):
 
     line: int
     character: int
-
-
-class Token(NamedTuple):
-    """
-    Token from a TeX equation.
-    """
-
-    text: str
-    start: Position
-    end: Position

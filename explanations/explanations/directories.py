@@ -11,8 +11,17 @@ BIBITEMS_DIR = os.path.join(DATA_DIR, "04-bibitems")
 BIBITEM_RESOLUTIONS_DIR = os.path.join(DATA_DIR, "05-bibitem-resolutions")
 EQUATIONS_DIR = os.path.join(DATA_DIR, "06-equations")
 EQUATION_TOKENS_DIR = os.path.join(DATA_DIR, "07-equation-tokens")
-COMPILATION_RESULTS_DIR = os.path.join(DATA_DIR, "08-compilation-results")
-COLORIZED_SOURCES_DIR = os.path.join(DATA_DIR, "09-colorized-sources")
+SOURCES_WITH_COLORIZED_CITATIONS = os.path.join(
+    DATA_DIR, "08-sources-with-colorized-citations"
+)
+SOURCES_WITH_COLORIZED_EQUATIONS = os.path.join(
+    DATA_DIR, "09-sources-with-colorized-equations"
+)
+SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
+    DATA_DIR, "10-sources-with-colorized-equation-tokens"
+)
+COMPILATION_RESULTS_DIR = os.path.join(DATA_DIR, "11-compilation-results")
+COLORIZED_SOURCES_DIR = os.path.join(DATA_DIR, "12-colorized-sources")
 
 # Debug directories (may or may not be created based on command options)
 DEBUG_DIR = os.path.join(DATA_DIR, "debug")
@@ -74,18 +83,18 @@ def equation_tokens(arxiv_id: str) -> str:
     return os.path.join(EQUATION_TOKENS_DIR, escape_slashes(arxiv_id))
 
 
-def equation_tokens_for_path(arxiv_id: str, path: str) -> str:
-    return os.path.join(
-        EQUATION_TOKENS_DIR, escape_slashes(arxiv_id), escape_slashes(path)
-    )
-
-
 def bibitems(arxiv_id: str) -> str:
     return os.path.join(BIBITEMS_DIR, escape_slashes(arxiv_id))
 
 
 def bibitem_resolutions(arxiv_id: str) -> str:
     return os.path.join(BIBITEM_RESOLUTIONS_DIR, escape_slashes(arxiv_id))
+
+
+def sources_with_colorized_equation_tokens(arxiv_id: str) -> str:
+    return os.path.join(
+        SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR, escape_slashes(arxiv_id)
+    )
 
 
 def compilation_results(arxiv_id: str) -> str:
