@@ -1,15 +1,22 @@
 import colorsys
 import logging
 import os.path
-from typing import Iterator, List, Tuple, Union
+from typing import Dict, Iterator, List, Tuple, Union
 
 import numpy as np
 from TexSoup import Arg, OArg, RArg, TexArgs, TexCmd, TexEnv, TexNode, TexSoup
 
 from explanations.directories import colorized_sources
-from explanations.types import ColorizedEquations, ColorizedTex
+from explanations.scrape_tex import find_equations, parse_tex
+from explanations.types import (
+    ColorizedEquations,
+    ColorizedTex,
+    ColorizedTokens,
+    ColorizedTokensByEquation,
+    Token,
+)
 
-# TODO(andrewhead): determine number of cues based on the number of hues that OpenCV is capable
+# TODO(andrewhead): determine number of hues based on the number of hues that OpenCV is capable
 # of distinguishing between. Current value is a guess.
 NUM_HUES = 90
 HUES = np.linspace(0, 1, NUM_HUES)
@@ -32,7 +39,7 @@ def _color_start(equation: TexNode, hue: float) -> str:
        paragraph layout algorithm (this is the tricky part).
 
     To add the colorized box, a box is created with a specified color and the dimensions of the
-    equation, in a "left overlay" (\llay), so that the box isn't used in paragraph layout. To give
+    equation, in a "left overlay" (\llap), so that the box isn't used in paragraph layout. To give
     it a solid color and the right dimensinos, the box is created by putting the equation in the
     box, and setting the '\textcolor' and adding a '\colorbox'. The padding of the colorbox are
     set to '0', instead of its defaults, so it doesn't take up more space than the equation did.
@@ -149,6 +156,7 @@ def _color_equation(equation: TexNode, hue: float = 1.0) -> None:
 def generate_hues() -> Iterator[float]:
     for hue in HUES:
         yield hue
+    logging.error("Out of hues!")
     raise StopIteration
 
 
@@ -158,15 +166,12 @@ def color_equations(
     """
     hue_generator: a function that, when called, returns a new hue.
     """
-    soup = TexSoup(tex)
-    all_equations = list(soup.find_all("$"))
+    soup = parse_tex(tex)
     equations_by_hue = {}
-    for _, equation in enumerate(all_equations):
+    for equation in find_equations(soup):
         try:
             hue = next(hue_generator)
         except StopIteration:
-            logging.error("Not highlighting equation %s: out of hues.", str(equation))
-            logging.error("Skipping all other equations...")
             break
         _color_equation(equation, hue)
         equations_by_hue[hue] = str(equation)
@@ -189,3 +194,64 @@ def colorize_tex(arxiv_id: str) -> ColorizedTex:
             with open(path, "w") as tex_file:
                 tex_file.write(contents)
     return ColorizedTex(file_contents, colorized_equations)
+
+
+EquationIndex = int
+
+
+def _token_color_start(hue: float) -> str:
+    red, green, blue = colorsys.hsv_to_rgb(hue, 1, 1)
+    return r"\llap{{\pdfcolorstack0 push {{{red} {green} {blue} rg {red} {green} {blue} RG}}}}".format(
+        red=red, green=green, blue=blue
+    )
+
+
+def _token_color_end() -> str:
+    return r"\llap{\pdfcolorstack0 pop}"
+
+
+def _colorize_tokens_in_equation(
+    equation: TexNode, tokens: List[Token]
+) -> ColorizedTokens:
+    equation_string = str(next(equation.expr.contents))
+    original_equation_string = equation_string
+
+    hue_generator = generate_hues()
+    colorized_tokens = {}
+    tokens_last_to_first = sorted(tokens, key=lambda t: t.start, reverse=True)
+
+    for token in tokens_last_to_first:
+        hue = next(hue_generator)
+        color_start = _token_color_start(hue)
+        color_end = _token_color_end()
+        equation_string = (
+            equation_string[: token.start]
+            + color_start
+            + equation_string[token.start : token.end]
+            + color_end
+            + equation_string[token.end :]
+        )
+        colorized_tokens[hue] = token
+
+    if equation_string != original_equation_string:
+        expr = equation.expr
+        assert hasattr(expr, "begin")
+        assert hasattr(expr, "end")
+        new_equation = TexSoup(expr.begin + equation_string + expr.end)
+        equation.replace_with(new_equation)
+
+    return colorized_tokens
+
+
+def colorize_tokens(
+    tex: str, tokens: Dict[EquationIndex, List[Token]]
+) -> Tuple[ColorizedTokensByEquation, str]:
+    soup = TexSoup(tex)
+    colorized_tokens_by_equation = {}
+    for equation_index, equation in enumerate(find_equations(soup)):
+        if equation_index in tokens:
+            colorized_tokens = _colorize_tokens_in_equation(
+                equation, tokens[equation_index]
+            )
+            colorized_tokens_by_equation[equation_index] = colorized_tokens
+    return colorized_tokens_by_equation, str(soup)
