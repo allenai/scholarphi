@@ -34,6 +34,18 @@
       "env": {
         "PYTHONPATH": "."
       }
+    },
+    {
+      "name": "Colorize Equation Tokens",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/process.py",
+      "console": "integratedTerminal",
+      "args": ["colorize-equation-tokens"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "."
+      }
     }
   ]
 }

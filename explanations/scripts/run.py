@@ -22,7 +22,7 @@ from explanations.directories import (
 from explanations.fetch_arxiv import fetch
 from explanations.file_utils import get_common_pdfs
 from explanations.image_processing import annotate_pdf
-from explanations.instrument_tex import colorize_tex
+from explanations.instrument_tex import colorize_equations
 from explanations.unpack import unpack
 from models.models import Equation, Paper, create_tables
 
@@ -96,7 +96,7 @@ if __name__ == "__main__":
                 fetch(arxiv_id)
 
             unpack(arxiv_id)
-            colorized_tex = colorize_tex(arxiv_id)
+            colorized_tex = colorize_equations(arxiv_id)
             original_pdfs = compile_tex(sources(arxiv_id))
             colorized_pdfs = compile_tex(colorized_sources(arxiv_id))
             common_pdfs = get_common_pdfs(original_pdfs, colorized_pdfs)

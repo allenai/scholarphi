@@ -18,7 +18,6 @@ from explanations.directories import (
     COLORIZED_PAPER_IMAGES_DIR,
     DIFF_PAPER_IMAGES_DIR,
     PAPER_IMAGES_DIR,
-    get_colorized_pdf_path,
     get_original_pdf_path,
 )
 from explanations.image_processing import diff_image_lists, get_cv2_images, open_pdf
@@ -30,11 +29,17 @@ from explanations.types import (
 )
 
 
+# XXX(andrewhead): Remove all references to 'get_colorized_pdf_path' soon. For now, it's
+# replaced with a noop to prevent pylint and mypy errors.
+def get_colorized_pdf_path(arxiv_id: str, pdf_name: str) -> str:
+    return ""
+
+
 def extract_bounding_boxes(
     arxiv_id: str,
     pdf_name: str,
     colorized_equations: ColorizedEquations,
-    save_images=False,
+    save_images: bool = False,
 ) -> List[LocalizedEquation]:
     logging.debug("Getting bounding boxes for %s", pdf_name)
 
@@ -81,7 +86,7 @@ def extract_bounding_boxes(
     return localized_equations
 
 
-def save_images_to_directory(images: List[np.array], dest_dir: str):
+def save_images_to_directory(images: List[np.array], dest_dir: str) -> None:
     if not os.path.exists(dest_dir):
         os.makedirs(dest_dir)
     for page_index, image in enumerate(images):

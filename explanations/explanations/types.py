@@ -1,4 +1,4 @@
-from typing import Dict, List, NamedTuple, Optional, Tuple
+from typing import Dict, List, NamedTuple, Optional
 
 ArxivId = str
 S2Id = str
@@ -67,20 +67,6 @@ class TokenEquationPair(NamedTuple):
     equation: Equation
 
 
-class LocalizedToken(NamedTuple):
-    """
-    Token with information that can be used to uniquely identify the token amidst multiple
-    papers, multiple files for those papers, and multiple equations in those files.
-    """
-
-    text: str
-    start: int
-    end: int
-    arxiv_id: str
-    tex_path: str
-    equation_index: int
-
-
 class FileContents(NamedTuple):
     arxiv_id: ArxivId
     """
@@ -103,10 +89,9 @@ class ColorizedTex(NamedTuple):
 
 """
 Map from a float hue [0..1] to the token of a TeX equation with that color.
-"""
+"""  # pylint: disable=pointless-string-statement
 ColorizedTokens = Dict[float, Token]
 ColorizedTokensByEquation = Dict[EquationIndex, ColorizedTokens]
-ColorizedTokensByLocation = Dict[Tuple[Path, EquationIndex], ColorizedTokens]
 
 
 class CompilationResult(NamedTuple):
