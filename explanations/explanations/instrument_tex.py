@@ -11,6 +11,7 @@ from explanations.types import (
     ColorizedEquations,
     ColorizedTokens,
     ColorizedTokensByEquation,
+    EquationIndex,
     Token,
 )
 
@@ -50,33 +51,6 @@ def colorize_equations(tex: str) -> Tuple[str, ColorizedEquations]:
         _replace_equation(equation, colorized_equation)
         equations_by_hue[hue] = str(equation)
     return str(soup), equations_by_hue
-
-
-EquationIndex = int
-
-
-def _color_start(hue: float) -> str:
-    red, green, blue = colorsys.hsv_to_rgb(hue, 1, 1)
-    return r"\llap{{\pdfcolorstack0 push {{{red} {green} {blue} rg {red} {green} {blue} RG}}}}".format(
-        red=red, green=green, blue=blue
-    )
-
-
-def _color_end() -> str:
-    return r"\llap{\pdfcolorstack0 pop}"
-
-
-def _adjust_start_coloring_index(index: int, equation: str) -> int:
-    """
-    It's invalid to start coloring right after subscript or superscript notation (_, ^, \\sb, \\sp).
-    Instead, coloring commands must appear before the subscript or superscript notation.
-    """
-    equation_before_color = equation[:index]
-    script_prefix = re.search(r"([_^]|(\\sp)|(\\sb))$", equation_before_color)
-    if script_prefix is not None:
-        prefix_length = len(script_prefix.group(0))
-        return index - prefix_length
-    return index
 
 
 def _colorize_tokens_in_equation(
@@ -136,20 +110,28 @@ def colorize_equation_tokens(
     return str(soup), colorized_tokens_by_equation
 
 
-def _get_arg_content_env_ids(items: List[Union[str, TexCmd, TexEnv]]) -> List[int]:
-    env_ids = []
-    for item in items:
-        env_id = id(item) if isinstance(item, TexEnv) else -1
-        env_ids.append(env_id)
-    return env_ids
+def _color_start(hue: float) -> str:
+    red, green, blue = colorsys.hsv_to_rgb(hue, 1, 1)
+    return r"\llap{{\pdfcolorstack0 push {{{red} {green} {blue} rg {red} {green} {blue} RG}}}}".format(
+        red=red, green=green, blue=blue
+    )
 
 
-def _get_expr_ids(nodes: List[Union[TexNode, str]]) -> List[int]:
-    expr_ids = []
-    for node in list(nodes):
-        expr_id = id(node.expr) if isinstance(node, TexNode) else -1
-        expr_ids.append(expr_id)
-    return expr_ids
+def _color_end() -> str:
+    return r"\llap{\pdfcolorstack0 pop}"
+
+
+def _adjust_start_coloring_index(index: int, equation: str) -> int:
+    """
+    It's invalid to start coloring right after subscript or superscript notation (_, ^, \\sb, \\sp).
+    Instead, coloring commands must appear before the subscript or superscript notation.
+    """
+    equation_before_color = equation[:index]
+    script_prefix = re.search(r"([_^]|(\\sp)|(\\sb))$", equation_before_color)
+    if script_prefix is not None:
+        prefix_length = len(script_prefix.group(0))
+        return index - prefix_length
+    return index
 
 
 def _replace_equation(equation: TexNode, new_equation: TexNode) -> None:
@@ -196,3 +178,19 @@ def _replace_equation_in_environment(equation: TexNode, new_equation: TexNode) -
     index = sibling_expr_ids.index(id(equation.expr))
     child = list(parent.children)[index]
     parent.replace(child, new_equation)
+
+
+def _get_arg_content_env_ids(items: List[Union[str, TexCmd, TexEnv]]) -> List[int]:
+    env_ids = []
+    for item in items:
+        env_id = id(item) if isinstance(item, TexEnv) else -1
+        env_ids.append(env_id)
+    return env_ids
+
+
+def _get_expr_ids(nodes: List[Union[TexNode, str]]) -> List[int]:
+    expr_ids = []
+    for node in list(nodes):
+        expr_id = id(node.expr) if isinstance(node, TexNode) else -1
+        expr_ids.append(expr_id)
+    return expr_ids
