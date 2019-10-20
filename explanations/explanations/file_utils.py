@@ -3,8 +3,7 @@ import os
 import shutil
 from typing import Iterator, List, Optional
 
-from explanations.directories import (annotated_pdfs, get_annotated_pdf_path,
-                                      get_colorized_pdf_path)
+from explanations.directories import annotated_pdfs, get_annotated_pdf_path
 
 
 def read_file_tolerant(path: str) -> Optional[str]:
@@ -61,7 +60,9 @@ def get_common_pdfs(original_pdfs: List[str], colorized_pdfs: List[str]) -> List
 
 
 def copy_pdf_for_annotation(arxiv_id: str, pdf_name: str) -> str:
-    src_pdf = get_colorized_pdf_path(arxiv_id, pdf_name)
+    # TODO(andrewhead): Unbreak this code by reimplementing get_colorized_pdf_path
+    src_pdf = get_annotated_pdf_path(arxiv_id, pdf_name)
+    # src_pdf = get_colorized_pdf_path(arxiv_id, pdf_name)
     dest_pdf = get_annotated_pdf_path(arxiv_id, pdf_name)
     annotated_pdfs_dir = annotated_pdfs(arxiv_id)
     if not os.path.exists(annotated_pdfs_dir):

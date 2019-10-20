@@ -1,16 +1,14 @@
 import colorsys
 import logging
-import os.path
+import re
 from typing import Dict, Iterator, List, Tuple, Union
 
 import numpy as np
 from TexSoup import Arg, OArg, RArg, TexArgs, TexCmd, TexEnv, TexNode, TexSoup
 
-from explanations.directories import colorized_sources
 from explanations.scrape_tex import find_equations, parse_tex
 from explanations.types import (
     ColorizedEquations,
-    ColorizedTex,
     ColorizedTokens,
     ColorizedTokensByEquation,
     Token,
@@ -39,9 +37,9 @@ def _color_start(equation: TexNode, hue: float) -> str:
        paragraph layout algorithm (this is the tricky part).
 
     To add the colorized box, a box is created with a specified color and the dimensions of the
-    equation, in a "left overlay" (\llap), so that the box isn't used in paragraph layout. To give
+    equation, in a "left overlay" (\\llap), so that the box isn't used in paragraph layout. To give
     it a solid color and the right dimensinos, the box is created by putting the equation in the
-    box, and setting the '\textcolor' and adding a '\colorbox'. The padding of the colorbox are
+    box, and setting the '\\textcolor' and adding a '\\colorbox'. The padding of the colorbox are
     set to '0', instead of its defaults, so it doesn't take up more space than the equation did.
 
     This is the approach that, so far, has seemed to be the most flexible approach to colorizing
@@ -49,34 +47,34 @@ def _color_start(equation: TexNode, hue: float) -> str:
     and producing a box with a color that's easy to detect in the image processing steps.
 
     With this approach, a colorized equation looks like:
-    $x$\llap{\setlength{\fboxsep}{0pt}\colorbox[rgb]{<red>, <green>, <blue>}{\textcolor[rgb]{<red>, <green>, <blue>}{$x$}}}
+    $x$\\llap{\\setlength{\\fboxsep}{0pt}\\colorbox[rgb]{<red>, <green>, <blue>}{\\textcolor[rgb]{<red>, <green>, <blue>}{$x$}}}
 
     Other coloring options we don't use:
     * pdfcolorstack: If all the TeX to be processed will be processed by 'pdflatex', then you can
       use two commands to set the color, and then reset it to neutral:
 
-        \pdfcolorstack 0 push {<red> <green> <blue> RG}  % set color
-        \pdfcolorstack 0 pop                             % unset color
+        \\pdfcolorstack 0 push {<red> <green> <blue> RG}  % set color
+        \\pdfcolorstack 0 pop                             % unset color
 
     * textcolor: set the color of the foreground text like so:
 
-        \textcolor[rgb]{<red>, <green>, <blue>}
+        \\textcolor[rgb]{<red>, <green>, <blue>}
 
       The disadvantage of this approach is that coloring the text affects the paragraph layout
       algorithm in subtle ways (one tricky case is that it unexpectedly changes how "word" in
-      <word>($eq$) can be hyphenated). If textcolor is used in an overlap ("\llap"), then the
+      <word>($eq$) can be hyphenated). If textcolor is used in an overlap ("\\llap"), then the
       foreground colors of the original text mixes with the colors of the overlap text, making
       it difficult to assess what was the intended color of the equation.
 
     References:
     1. Chapters 11-14 from the TeXBook (http://www.ctex.org/documents/shredder/src/texbook.pdf):
-    describes layout algorithm, and "\llap"
+    describes layout algorithm, and "\\llap"
     2. These "tracing" commands for understanding how TeX is laying out the text:
-    - \tracingparagraphs=1... \tracingparagraphs=0
-    - \tracingcommands=1... \tracingcommands=0
-    - \showoutput  % place at top of file
+    - \\tracingparagraphs=1... \\tracingparagraphs=0
+    - \\tracingcommands=1... \\tracingcommands=0
+    - \\showoutput  % place at top of file
     Reference: https://tex.stackexchange.com/a/60494
-    3. \pdfcolorstack commands: https://tug.org/pipermail/pdftex/2007-January/006910.html
+    3. \\pdfcolorstack commands: https://tug.org/pipermail/pdftex/2007-January/006910.html
     """
     red, green, blue = colorsys.hsv_to_rgb(hue, 1, 1)
     template = r"{eq}\llap{{\setlength{{\fboxsep}}{{0pt}}\colorbox[rgb]{{{red:.4f}, {green:.4f}, {blue:.4f}}}{{\textcolor[rgb]{{{red:.4f}, {green:.4f}, {blue:.4f}}}{{"  # noqa
@@ -160,7 +158,7 @@ def generate_hues() -> Iterator[float]:
     raise StopIteration
 
 
-def color_equations(
+def colorize_equations(
     tex: str, hue_generator: Iterator[float]
 ) -> Tuple[ColorizedEquations, str]:
     """
@@ -178,24 +176,6 @@ def color_equations(
     return equations_by_hue, str(soup)
 
 
-def colorize_tex(arxiv_id: str) -> ColorizedTex:
-    hue_generator = generate_hues()
-    logging.debug("Colorizing sources.")
-    sources_dir = colorized_sources(arxiv_id)
-    colorized_equations = {}
-    file_contents = {}
-    for filename in os.listdir(sources_dir):
-        if filename.endswith(".tex"):
-            path = os.path.join(sources_dir, filename)
-            with open(path, "r") as tex_file:
-                equations, contents = color_equations(tex_file.read(), hue_generator)
-                colorized_equations.update(equations)
-                file_contents[path] = contents
-            with open(path, "w") as tex_file:
-                tex_file.write(contents)
-    return ColorizedTex(file_contents, colorized_equations)
-
-
 EquationIndex = int
 
 
@@ -208,6 +188,19 @@ def _token_color_start(hue: float) -> str:
 
 def _token_color_end() -> str:
     return r"\llap{\pdfcolorstack0 pop}"
+
+
+def _adjust_start_coloring_index(index: int, equation: str) -> int:
+    """
+    It's invalid to start coloring right after subscript or superscript notation (_, ^, \\sb, \\sp).
+    Instead, coloring commands must appear before the subscript or superscript notation.
+    """
+    equation_before_color = equation[:index]
+    script_prefix = re.search(r"([_^]|(\\sp)|(\\sb))$", equation_before_color)
+    if script_prefix is not None:
+        prefix_length = len(script_prefix.group(0))
+        return index - prefix_length
+    return index
 
 
 def _colorize_tokens_in_equation(
@@ -224,12 +217,19 @@ def _colorize_tokens_in_equation(
         hue = next(hue_generator)
         color_start = _token_color_start(hue)
         color_end = _token_color_end()
+
+        start_coloring_index = token.start
+        start_coloring_index = _adjust_start_coloring_index(
+            start_coloring_index, equation_string
+        )
+        end_coloring_index = token.end
+
         equation_string = (
-            equation_string[: token.start]
+            equation_string[:start_coloring_index]
             + color_start
-            + equation_string[token.start : token.end]
+            + equation_string[start_coloring_index:end_coloring_index]
             + color_end
-            + equation_string[token.end :]
+            + equation_string[end_coloring_index:]
         )
         colorized_tokens[hue] = token
 
@@ -238,14 +238,18 @@ def _colorize_tokens_in_equation(
         assert hasattr(expr, "begin")
         assert hasattr(expr, "end")
         new_equation = TexSoup(expr.begin + equation_string + expr.end)
-        equation.replace_with(new_equation)
+        # TODO(andrewhead): don't instrument equations that are expansions of macros
+        try:
+            equation.replace_with(new_equation)
+        except (TypeError, ValueError) as e:
+            logging.error("Exception when colorizing equation %s: %s", equation, e)
 
     return colorized_tokens
 
 
-def colorize_tokens(
+def colorize_equation_tokens(
     tex: str, tokens: Dict[EquationIndex, List[Token]]
-) -> Tuple[ColorizedTokensByEquation, str]:
+) -> Tuple[str, ColorizedTokensByEquation]:
     soup = TexSoup(tex)
     colorized_tokens_by_equation = {}
     for equation_index, equation in enumerate(find_equations(soup)):
@@ -254,4 +258,4 @@ def colorize_tokens(
                 equation, tokens[equation_index]
             )
             colorized_tokens_by_equation[equation_index] = colorized_tokens
-    return colorized_tokens_by_equation, str(soup)
+    return str(soup), colorized_tokens_by_equation

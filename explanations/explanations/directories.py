@@ -21,7 +21,6 @@ SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
     DATA_DIR, "10-sources-with-colorized-equation-tokens"
 )
 COMPILATION_RESULTS_DIR = os.path.join(DATA_DIR, "11-compilation-results")
-COLORIZED_SOURCES_DIR = os.path.join(DATA_DIR, "12-colorized-sources")
 
 # Debug directories (may or may not be created based on command options)
 DEBUG_DIR = os.path.join(DATA_DIR, "debug")
@@ -71,10 +70,6 @@ def sources(arxiv_id: str) -> str:
     return os.path.join(SOURCES_DIR, escape_slashes(arxiv_id))
 
 
-def colorized_sources(arxiv_id: str) -> str:
-    return os.path.join(COLORIZED_SOURCES_DIR, escape_slashes(arxiv_id))
-
-
 def equations(arxiv_id: str) -> str:
     return os.path.join(EQUATIONS_DIR, escape_slashes(arxiv_id))
 
@@ -119,10 +114,6 @@ def diff_paper_images(arxiv_id: str) -> str:
 
 def get_original_pdf_path(arxiv_id: str, pdf_name: str) -> str:
     return os.path.join(SOURCES_DIR, escape_slashes(arxiv_id), pdf_name)
-
-
-def get_colorized_pdf_path(arxiv_id: str, pdf_name: str) -> str:
-    return os.path.join(COLORIZED_SOURCES_DIR, escape_slashes(arxiv_id), pdf_name)
 
 
 def get_annotated_pdf_path(arxiv_id: str, pdf_name: str) -> str:
