@@ -10,7 +10,7 @@ from explanations.directories import (
     SOURCES_WITH_COLORIZED_CITATIONS_DIR,
     get_arxiv_ids,
 )
-from explanations.file_utils import find_files
+from explanations.file_utils import find_files, read_file_tolerant
 from explanations.instrument_tex import colorize_citations
 from explanations.scrape_tex import TexSoupParseError
 from explanations.types import ColorizedCitation, FileContents
@@ -46,8 +46,8 @@ class ColorizeCitations(Command[FileContents, TexWithColorizedCitations]):
                 relative_tex_path = os.path.relpath(
                     absolute_tex_path, os.path.abspath(colorized_equations_path)
                 )
-                with open(absolute_tex_path) as tex_file:
-                    contents = tex_file.read()
+                contents = read_file_tolerant(absolute_tex_path)
+                if contents is not None:
                     yield FileContents(arxiv_id, relative_tex_path, contents)
 
     def process(self, item: FileContents) -> Iterator[TexWithColorizedCitations]:

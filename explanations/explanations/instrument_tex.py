@@ -178,8 +178,6 @@ def _disable_hyperref_coloring(soup: TexSoup) -> None:
     Coloring from the hyperref package will overwrite the coloring of citations. Disable coloring
     from the hyperref package.
     """
-    COLORLINKS_PATTERN = "(^|,)\\s*colorlinks\\s*=\\s*true\\s*(,|$)"
-
     for usepackage in soup.find_all("usepackage"):
 
         if not isinstance(usepackage, TexNode) or not isinstance(
@@ -205,7 +203,11 @@ def _disable_hyperref_coloring(soup: TexSoup) -> None:
             for i, item in enumerate(arg.contents):
                 if isinstance(item, TokenWithPosition):
                     updated_token = TokenWithPosition(
-                        re.sub(COLORLINKS_PATTERN, "colorlinks=false,", str(item))
+                        re.sub(
+                            "(^|,)\\s*colorlinks\\s*=\\s*true\\s*(,|$)",
+                            "\\1colorlinks=false\\2",
+                            str(item),
+                        )
                     )
                     arg.contents[i] = updated_token
 
