@@ -2,7 +2,9 @@ import argparse
 import logging
 from typing import List
 
+from scripts.colorize_citations import ColorizeCitations
 from scripts.colorize_equation_tokens import ColorizeEquationTokens
+from scripts.colorize_equations import ColorizeEquations
 from scripts.compile_tex import CompileTex
 from scripts.extract_bibitems import ExtractBibitems
 from scripts.extract_equation_tokens import ExtractEquationTokens
@@ -20,6 +22,8 @@ command_classes: List = [  # type: ignore
     ResolveBibitems,
     ExtractEquations,
     ExtractEquationTokens,
+    ColorizeCitations,
+    ColorizeEquations,
     ColorizeEquationTokens,
     CompileTex,
 ]

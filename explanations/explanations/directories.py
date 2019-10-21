@@ -11,10 +11,10 @@ BIBITEMS_DIR = os.path.join(DATA_DIR, "04-bibitems")
 BIBITEM_RESOLUTIONS_DIR = os.path.join(DATA_DIR, "05-bibitem-resolutions")
 EQUATIONS_DIR = os.path.join(DATA_DIR, "06-equations")
 EQUATION_TOKENS_DIR = os.path.join(DATA_DIR, "07-equation-tokens")
-SOURCES_WITH_COLORIZED_CITATIONS = os.path.join(
+SOURCES_WITH_COLORIZED_CITATIONS_DIR = os.path.join(
     DATA_DIR, "08-sources-with-colorized-citations"
 )
-SOURCES_WITH_COLORIZED_EQUATIONS = os.path.join(
+SOURCES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
     DATA_DIR, "09-sources-with-colorized-equations"
 )
 SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
@@ -84,6 +84,14 @@ def bibitems(arxiv_id: str) -> str:
 
 def bibitem_resolutions(arxiv_id: str) -> str:
     return os.path.join(BIBITEM_RESOLUTIONS_DIR, escape_slashes(arxiv_id))
+
+
+def sources_with_colorized_citations(arxiv_id: str) -> str:
+    return os.path.join(SOURCES_WITH_COLORIZED_CITATIONS_DIR, escape_slashes(arxiv_id))
+
+
+def sources_with_colorized_equations(arxiv_id: str) -> str:
+    return os.path.join(SOURCES_WITH_COLORIZED_EQUATIONS_DIR, escape_slashes(arxiv_id))
 
 
 def sources_with_colorized_equation_tokens(arxiv_id: str) -> str:
