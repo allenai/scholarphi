@@ -45,8 +45,8 @@ class ColorizeEquations(Command[FileContents, TexWithColorizedEquations]):
                 relative_tex_path = os.path.relpath(
                     absolute_tex_path, os.path.abspath(colorized_equations_path)
                 )
-                with open(absolute_tex_path) as tex_file:
-                    contents = tex_file.read()
+                contents = read_file_tolerant(absolute_tex_path)
+                if contents is not None:
                     yield FileContents(arxiv_id, relative_tex_path, contents)
 
     def process(self, item: FileContents) -> Iterator[TexWithColorizedEquations]:

@@ -9,6 +9,7 @@ from explanations.directories import (
     SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR,
     get_arxiv_ids,
 )
+from explanations.file_utils import read_file_tolerant
 from explanations.instrument_tex import colorize_equation_tokens
 from explanations.scrape_tex import TexSoupParseError
 from explanations.types import (
@@ -74,8 +75,8 @@ class ColorizeEquationTokens(Command[TexAndTokens, TexWithColorizedTokens]):
             for relative_tex_path in tokens_by_path:
                 tokens = tokens_by_path[relative_tex_path]
                 tex_path = os.path.join(unpack_path, relative_tex_path)
-                with open(tex_path) as tex_file:
-                    contents = tex_file.read()
+                contents = read_file_tolerant(tex_path)
+                if contents is not None:
                     yield TexAndTokens(
                         FileContents(arxiv_id, relative_tex_path, contents), tokens
                     )
