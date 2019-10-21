@@ -4,11 +4,22 @@ import re
 from typing import Dict, Iterator, List, Tuple, Union
 
 import numpy as np
-from TexSoup import Arg, OArg, RArg, TexArgs, TexCmd, TexEnv, TexNode, TexSoup
+from TexSoup import (
+    Arg,
+    OArg,
+    RArg,
+    TexArgs,
+    TexCmd,
+    TexEnv,
+    TexNode,
+    TexSoup,
+    TokenWithPosition,
+)
 
 from explanations.scrape_tex import find_equations, parse_tex
 from explanations.types import (
-    ColorizedEquations,
+    ColorizedCitation,
+    ColorizedEquation,
     ColorizedTokens,
     ColorizedTokensByEquation,
     EquationIndex,
@@ -17,14 +28,14 @@ from explanations.types import (
 
 # TODO(andrewhead): determine number of hues based on the number of hues that OpenCV is capable
 # of distinguishing between. Current value is a guess.
-NUM_HUES = 90
+NUM_HUES = 20
 HUES = np.linspace(0, 1, NUM_HUES)
 
 
 def generate_hues() -> Iterator[float]:
     """
     TODO(andrewhead): rather than endlessly cycling through hues, yield the 'StopIteration' signal
-    when out of hues, and let the caller handle resetting the generator.    
+    when out of hues, and let the caller handle resetting the generator.
     """
     while True:
         for hue in HUES:
@@ -33,24 +44,66 @@ def generate_hues() -> Iterator[float]:
     # raise StopIteration
 
 
-def colorize_equations(tex: str) -> Tuple[str, ColorizedEquations]:
-    """
-    hue_generator: a function that, when called, returns a new hue.
-    """
+def colorize_citations(tex: str) -> Tuple[str, List[ColorizedCitation]]:
+    soup = parse_tex(tex)
+    _disable_hyperref_coloring(soup)
+
+    hue_generator = generate_hues()
+    colorized_citations = []
+
+    for citation in soup.find_all("cite"):
+
+        keys = None
+        for arg in citation.expr.args:
+            if isinstance(arg, RArg):
+                keys = arg.value.split(",")
+                break
+
+        if keys is not None:
+            hue = next(hue_generator)
+            citation_string = str(citation)
+            new_citation = TexSoup(_color_start(hue) + citation_string + _color_end())
+            _replace_equation(citation, new_citation)
+            colorized_citations.append(ColorizedCitation(hue, keys))
+
+    return str(soup), colorized_citations
+
+
+def colorize_equations(tex: str) -> Tuple[str, List[ColorizedEquation]]:
     soup = parse_tex(tex)
 
     hue_generator = generate_hues()
-    equations_by_hue = {}
+    colorized_equations = []
 
-    for equation in find_equations(soup):
+    for equation_index, equation in enumerate(find_equations(soup)):
+        equation_string = str(equation)
         try:
             hue = next(hue_generator)
         except StopIteration:
             break
-        colorized_equation = TexSoup(_color_start(hue) + str(equation) + _color_end())
+        colorized_equation = TexSoup(_color_start(hue) + equation_string + _color_end())
         _replace_equation(equation, colorized_equation)
-        equations_by_hue[hue] = str(equation)
-    return str(soup), equations_by_hue
+
+        colorized_equation_info = ColorizedEquation(
+            hue=hue, tex=equation_string, i=equation_index
+        )
+        colorized_equations.append(colorized_equation_info)
+
+    return str(soup), colorized_equations
+
+
+def colorize_equation_tokens(
+    tex: str, tokens: Dict[EquationIndex, List[Token]]
+) -> Tuple[str, ColorizedTokensByEquation]:
+    soup = parse_tex(tex)
+    colorized_tokens_by_equation = {}
+    for equation_index, equation in enumerate(find_equations(soup)):
+        if equation_index in tokens:
+            colorized_tokens = _colorize_tokens_in_equation(
+                equation, tokens[equation_index]
+            )
+            colorized_tokens_by_equation[equation_index] = colorized_tokens
+    return str(soup), colorized_tokens_by_equation
 
 
 def _colorize_tokens_in_equation(
@@ -96,20 +149,6 @@ def _colorize_tokens_in_equation(
     return colorized_tokens
 
 
-def colorize_equation_tokens(
-    tex: str, tokens: Dict[EquationIndex, List[Token]]
-) -> Tuple[str, ColorizedTokensByEquation]:
-    soup = TexSoup(tex)
-    colorized_tokens_by_equation = {}
-    for equation_index, equation in enumerate(find_equations(soup)):
-        if equation_index in tokens:
-            colorized_tokens = _colorize_tokens_in_equation(
-                equation, tokens[equation_index]
-            )
-            colorized_tokens_by_equation[equation_index] = colorized_tokens
-    return str(soup), colorized_tokens_by_equation
-
-
 def _color_start(hue: float) -> str:
     red, green, blue = colorsys.hsv_to_rgb(hue, 1, 1)
     return r"\llap{{\pdfcolorstack0 push {{{red} {green} {blue} rg {red} {green} {blue} RG}}}}".format(
@@ -134,31 +173,71 @@ def _adjust_start_coloring_index(index: int, equation: str) -> int:
     return index
 
 
-def _replace_equation(equation: TexNode, new_equation: TexNode) -> None:
+def _disable_hyperref_coloring(soup: TexSoup) -> None:
     """
-    Replace an equation with an updated equation.
+    Coloring from the hyperref package will overwrite the coloring of citations. Disable coloring
+    from the hyperref package.
     """
-    parent = equation.parent
+    COLORLINKS_PATTERN = "(^|,)\\s*colorlinks\\s*=\\s*true\\s*(,|$)"
+
+    for usepackage in soup.find_all("usepackage"):
+
+        if not isinstance(usepackage, TexNode) or not isinstance(
+            usepackage.expr, TexCmd
+        ):
+            continue
+
+        is_hyperref = False
+        cmd = usepackage.expr
+        for arg in cmd.args:
+            if isinstance(arg, RArg):
+                if arg.value.strip() == "hyperref":
+                    is_hyperref = True
+                break
+
+        if not is_hyperref:
+            continue
+
+        for arg in usepackage.expr.args:
+            if not isinstance(arg, OArg):
+                continue
+
+            for i, item in enumerate(arg.contents):
+                if isinstance(item, TokenWithPosition):
+                    updated_token = TokenWithPosition(
+                        re.sub(COLORLINKS_PATTERN, "colorlinks=false,", str(item))
+                    )
+                    arg.contents[i] = updated_token
+
+            break
+
+
+def _replace_equation(node: TexNode, new_node: TexNode) -> None:
+    """
+    Replace equation in a TexSoup tree with a new node. Use this instead of TexSoup's 'replace_with'
+    method, which doesn't support some cases it should.
+    """
+    parent = node.parent
     if len(list(parent.args)) > 0:
-        _replace_equation_in_arg(equation, new_equation)
+        _replace_equation_in_arg(node, new_node)
     elif len(list(parent.children)) > 0:
-        _replace_equation_in_environment(equation, new_equation)
+        _replace_equation_in_environment(node, new_node)
 
 
-def _replace_equation_in_arg(equation: TexNode, new_equation: TexNode) -> None:
-    parent: TexNode = equation.parent
+def _replace_equation_in_arg(node: TexNode, new_node: TexNode) -> None:
+    parent: TexNode = node.parent
     args: TexArgs = parent.args
     arg: Arg
     for arg_index, arg in enumerate(args):
         env_ids = _get_arg_content_env_ids(arg.contents)
         try:
-            index = env_ids.index(id(equation.expr))
+            index = env_ids.index(id(node.expr))
         except ValueError:
-            # Equation was not found in this argument. Continue.
+            # Node was not found in this argument. Continue.
             continue
         new_contents = list(arg.contents)
         new_contents.remove(new_contents[index])
-        new_contents.insert(index, new_equation)
+        new_contents.insert(index, new_node)
         new_arg = (
             RArg(*new_contents)
             if isinstance(arg, RArg)
@@ -172,12 +251,12 @@ def _replace_equation_in_arg(equation: TexNode, new_equation: TexNode) -> None:
         break
 
 
-def _replace_equation_in_environment(equation: TexNode, new_equation: TexNode) -> None:
-    parent: TexNode = equation.parent
-    sibling_expr_ids = _get_expr_ids(parent.children)
-    index = sibling_expr_ids.index(id(equation.expr))
+def _replace_equation_in_environment(node: TexNode, new_node: TexNode) -> None:
+    parent: TexNode = node.parent
+    sibling_expr_ids = _get_expr_ids_within_nodes(parent.children)
+    index = sibling_expr_ids.index(id(node.expr))
     child = list(parent.children)[index]
-    parent.replace(child, new_equation)
+    parent.replace(child, new_node)
 
 
 def _get_arg_content_env_ids(items: List[Union[str, TexCmd, TexEnv]]) -> List[int]:
@@ -188,7 +267,7 @@ def _get_arg_content_env_ids(items: List[Union[str, TexCmd, TexEnv]]) -> List[in
     return env_ids
 
 
-def _get_expr_ids(nodes: List[Union[TexNode, str]]) -> List[int]:
+def _get_expr_ids_within_nodes(nodes: List[Union[TexNode, str]]) -> List[int]:
     expr_ids = []
     for node in list(nodes):
         expr_id = id(node.expr) if isinstance(node, TexNode) else -1

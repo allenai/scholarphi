@@ -76,15 +76,21 @@ class FileContents(NamedTuple):
     contents: str
 
 
+class ColorizedCitation(NamedTuple):
+    hue: float
+    keys: List[str]
+
+
 """
 Map from a float hue [0..1] to the LaTeX equation with that color.
 """  # pylint: disable=pointless-string-statement
 ColorizedEquations = Dict[float, str]
 
 
-class ColorizedTex(NamedTuple):
-    contents: TexContents
-    equations: ColorizedEquations
+class ColorizedEquation(NamedTuple):
+    hue: float
+    tex: str
+    i: EquationIndex
 
 
 """

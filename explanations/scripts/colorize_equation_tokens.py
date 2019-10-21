@@ -10,6 +10,7 @@ from explanations.directories import (
     get_arxiv_ids,
 )
 from explanations.instrument_tex import colorize_equation_tokens
+from explanations.scrape_tex import TexSoupParseError
 from explanations.types import (
     ColorizedTokensByEquation,
     Equation,
@@ -39,7 +40,7 @@ class ColorizeEquationTokens(Command[TexAndTokens, TexWithColorizedTokens]):
 
     @staticmethod
     def get_description() -> str:
-        return "Instrument TeX to add colorize for tokens in equations."
+        return "Instrument TeX to colorize tokens in equations."
 
     def load(self) -> Iterator[TexAndTokens]:
         for arxiv_id in get_arxiv_ids(SOURCES_DIR):
@@ -74,9 +75,9 @@ class ColorizeEquationTokens(Command[TexAndTokens, TexWithColorizedTokens]):
                 tokens = tokens_by_path[relative_tex_path]
                 tex_path = os.path.join(unpack_path, relative_tex_path)
                 with open(tex_path) as tex_file:
-                    file_contents = tex_file.read()
+                    contents = tex_file.read()
                     yield TexAndTokens(
-                        FileContents(arxiv_id, relative_tex_path, file_contents), tokens
+                        FileContents(arxiv_id, relative_tex_path, contents), tokens
                     )
 
     def process(self, item: TexAndTokens) -> Iterator[TexWithColorizedTokens]:
@@ -85,10 +86,19 @@ class ColorizeEquationTokens(Command[TexAndTokens, TexWithColorizedTokens]):
             if not token_equation.equation.i in tokens_by_equation:
                 tokens_by_equation[token_equation.equation.i] = []
             tokens_by_equation[token_equation.equation.i].append(token_equation.token)
-        colorized_tex, colorized_tokens_by_equation = colorize_equation_tokens(
-            item.file.contents, tokens_by_equation
-        )
-        yield TexWithColorizedTokens(colorized_tex, colorized_tokens_by_equation)
+
+        try:
+            colorized_tex, colorized_tokens_by_equation = colorize_equation_tokens(
+                item.file.contents, tokens_by_equation
+            )
+            yield TexWithColorizedTokens(colorized_tex, colorized_tokens_by_equation)
+        except TexSoupParseError as e:
+            logging.error(
+                "Failed to parse TeX file %s for arXiv ID %s: %s",
+                item.file.path,
+                item.file.arxiv_id,
+                e,
+            )
 
     def save(self, item: TexAndTokens, result: TexWithColorizedTokens) -> None:
         colorized_tex = result.tex

@@ -1,6 +1,10 @@
 import re
 
-from explanations.instrument_tex import colorize_equation_tokens, colorize_equations
+from explanations.instrument_tex import (
+    colorize_citations,
+    colorize_equation_tokens,
+    colorize_equations,
+)
 from explanations.types import Token
 
 COLOR_PATTERN = (
@@ -12,13 +16,34 @@ COLOR_PATTERN = (
 )
 
 
+def test_color_citations():
+    tex = "word.~\\cite{source1,source2}"
+    colorized, citations = colorize_citations(tex)
+    assert colorized.startswith("word.~")
+    matches = re.findall(COLOR_PATTERN, colorized)
+    assert matches[0] == "\\cite{source1,source2}"
+    assert len(citations) == 1
+    assert citations[0].keys == ["source1", "source2"]
+
+
+def test_disable_hyperref_colors():
+    tex = "\\usepackage[colorlinks=true,citecolor=blue]{hyperref}"
+    colorized, _ = colorize_citations(tex)
+    assert "colorlinks=false" in colorized
+
+
 def test_color_equations():
     tex = "$eq1$ and $eq2$"
-    colorized = colorize_equations(tex)[0]
+    colorized, equations = colorize_equations(tex)
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 2
     assert matches[0] == "$eq1$"
     assert matches[1] == "$eq2$"
+
+    equation0_info = equations[0]
+    assert isinstance(equation0_info.hue, float)
+    assert equation0_info.tex == "$eq1$"
+    assert equation0_info.i == 0
 
 
 def test_color_equation_in_argument():
