@@ -1,6 +1,6 @@
 from typing import Iterator
 
-from explanations.directories import SOURCE_ARCHIVES_DIR, get_arxiv_ids
+from explanations.directories import SOURCE_ARCHIVES_DIR, SOURCES_DIR, get_arxiv_ids
 from explanations.types import ArxivId
 from explanations.unpack import unpack
 from scripts.command import Command
@@ -20,7 +20,7 @@ class UnpackSources(Command[str, None]):
             yield arxiv_id
 
     def process(self, item: ArxivId) -> Iterator[None]:
-        unpack(item)
+        unpack(item, SOURCES_DIR)
         yield None
 
     def save(self, item: ArxivId, result: None) -> None:

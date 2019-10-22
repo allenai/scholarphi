@@ -33,26 +33,12 @@ def _set_sources_dir_permissions(sources_dir: str) -> None:
             os.chmod(os.path.join(dirpath, dirname), COMPILATION_PERMISSIONS)
 
 
-def _clean_sources_dir(sources_dir: str) -> None:
-    """
-    AutoTeX doesn't compile a sources directory if it includes certain files from a past
-    compilation. Clean the directory of those files.
-    """
-    for filename in os.listdir(sources_dir):
-        if filename.endswith(".synctex.gz"):
-            path = os.path.join(sources_dir, filename)
-            if os.path.isfile(path) and not os.path.islink(path):
-                os.remove(path)
-
-
 def compile_tex(sources_dir: str) -> CompilationResult:
     """
     Compile TeX sources into PDFs. Requires running an external script to attempt to compile
     the TeX. See README.md for dependencies.
     """
     logging.debug("Compiling sources in %s", sources_dir)
-
-    _clean_sources_dir(sources_dir)
     _set_sources_dir_permissions(sources_dir)
 
     config = configparser.ConfigParser()
