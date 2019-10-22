@@ -105,3 +105,21 @@ class CompileTexSources(CompileTexCommand):
     @staticmethod
     def get_output_base_dir() -> str:
         return directories.COMPILED_SOURCES_DIR
+
+
+class CompileTexSourcesWithColorizedCitations(CompileTexCommand):
+    @staticmethod
+    def get_name() -> str:
+        return "compile-tex-with-colorized-citations"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Compile TeX sources with colorized citations."
+
+    @staticmethod
+    def get_sources_base_dir() -> str:
+        return directories.SOURCES_WITH_COLORIZED_CITATIONS_DIR
+
+    @staticmethod
+    def get_output_base_dir() -> str:
+        return directories.COMPILED_SOURCES_WITH_COLORIZED_CITATIONS_DIR
