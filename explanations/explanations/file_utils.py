@@ -29,6 +29,7 @@ def clean_directory(directory: str) -> None:
     """
     if not os.path.exists(directory):
         return
+    logging.debug("Cleaning directory %s:", directory)
     for filename in os.listdir(directory):
         path = os.path.join(directory, filename)
         try:

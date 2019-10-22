@@ -9,7 +9,7 @@ from explanations.directories import (
     SOURCES_WITH_COLORIZED_EQUATIONS_DIR,
     get_arxiv_ids,
 )
-from explanations.file_utils import find_files
+from explanations.file_utils import find_files, read_file_tolerant
 from explanations.instrument_tex import colorize_equations
 from explanations.scrape_tex import TexSoupParseError
 from explanations.types import ColorizedEquation, FileContents

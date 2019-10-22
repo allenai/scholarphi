@@ -20,7 +20,16 @@ SOURCES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
 SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
     DATA_DIR, "10-sources-with-colorized-equation-tokens"
 )
-COMPILATION_RESULTS_DIR = os.path.join(DATA_DIR, "11-compilation-results")
+COMPILED_SOURCES_DIR = os.path.join(DATA_DIR, "11-compiled-sources")
+COMPILED_SOURCES_WITH_COLORIZED_CITATIONS_DIR = os.path.join(
+    DATA_DIR, "12-compiled-sources-with-colorized-citations"
+)
+COMPILED_SOURCES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
+    DATA_DIR, "13-compiled-sources-with-colorized-equations"
+)
+COMPILED_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
+    DATA_DIR, "14-compiled-sources-with-colorized-equation-tokens"
+)
 
 # Debug directories (may or may not be created based on command options)
 DEBUG_DIR = os.path.join(DATA_DIR, "debug")
@@ -58,71 +67,85 @@ def unescape_slashes(s: str) -> str:
     return s.replace(SLASH_SUBSTITUTE, "/")
 
 
+def get_data_subdirectory_for_arxiv_id(data_dir: str, arxiv_id: str) -> str:
+    return os.path.join(data_dir, escape_slashes(arxiv_id))
+
+
 def source_archives(arxiv_id: str) -> str:
-    return os.path.join(SOURCE_ARCHIVES_DIR, escape_slashes(arxiv_id))
+    return get_data_subdirectory_for_arxiv_id(SOURCE_ARCHIVES_DIR, arxiv_id)
 
 
 def s2_metadata(arxiv_id: str) -> str:
-    return os.path.join(S2_METADATA_DIR, escape_slashes(arxiv_id))
+    return get_data_subdirectory_for_arxiv_id(S2_METADATA_DIR, arxiv_id)
 
 
 def sources(arxiv_id: str) -> str:
-    return os.path.join(SOURCES_DIR, escape_slashes(arxiv_id))
+    return get_data_subdirectory_for_arxiv_id(SOURCES_DIR, arxiv_id)
 
 
 def equations(arxiv_id: str) -> str:
-    return os.path.join(EQUATIONS_DIR, escape_slashes(arxiv_id))
+    return get_data_subdirectory_for_arxiv_id(EQUATIONS_DIR, arxiv_id)
 
 
 def equation_tokens(arxiv_id: str) -> str:
-    return os.path.join(EQUATION_TOKENS_DIR, escape_slashes(arxiv_id))
+    return get_data_subdirectory_for_arxiv_id(EQUATION_TOKENS_DIR, arxiv_id)
 
 
 def bibitems(arxiv_id: str) -> str:
-    return os.path.join(BIBITEMS_DIR, escape_slashes(arxiv_id))
+    return get_data_subdirectory_for_arxiv_id(BIBITEMS_DIR, arxiv_id)
 
 
 def bibitem_resolutions(arxiv_id: str) -> str:
-    return os.path.join(BIBITEM_RESOLUTIONS_DIR, escape_slashes(arxiv_id))
+    return get_data_subdirectory_for_arxiv_id(BIBITEM_RESOLUTIONS_DIR, arxiv_id)
 
 
 def sources_with_colorized_citations(arxiv_id: str) -> str:
-    return os.path.join(SOURCES_WITH_COLORIZED_CITATIONS_DIR, escape_slashes(arxiv_id))
+    return get_data_subdirectory_for_arxiv_id(
+        SOURCES_WITH_COLORIZED_CITATIONS_DIR, arxiv_id
+    )
 
 
 def sources_with_colorized_equations(arxiv_id: str) -> str:
-    return os.path.join(SOURCES_WITH_COLORIZED_EQUATIONS_DIR, escape_slashes(arxiv_id))
+    return get_data_subdirectory_for_arxiv_id(
+        SOURCES_WITH_COLORIZED_EQUATIONS_DIR, arxiv_id
+    )
 
 
 def sources_with_colorized_equation_tokens(arxiv_id: str) -> str:
-    return os.path.join(
-        SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR, escape_slashes(arxiv_id)
+    return get_data_subdirectory_for_arxiv_id(
+        SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR, arxiv_id
     )
 
 
 def compilation_results(arxiv_id: str) -> str:
-    return os.path.join(COMPILATION_RESULTS_DIR, escape_slashes(arxiv_id))
+    return get_data_subdirectory_for_arxiv_id(COMPILED_SOURCES_DIR, arxiv_id)
 
 
 def annotated_pdfs(arxiv_id: str) -> str:
-    return os.path.join(ANNOTATED_PDFS_DIR, escape_slashes(arxiv_id))
+    return get_data_subdirectory_for_arxiv_id(ANNOTATED_PDFS_DIR, arxiv_id)
 
 
 def paper_images(arxiv_id: str) -> str:
-    return os.path.join(PAPER_IMAGES_DIR, escape_slashes(arxiv_id))
+    return get_data_subdirectory_for_arxiv_id(PAPER_IMAGES_DIR, arxiv_id)
 
 
 def colorized_paper_images(arxiv_id: str) -> str:
-    return os.path.join(COLORIZED_PAPER_IMAGES_DIR, escape_slashes(arxiv_id))
+    return get_data_subdirectory_for_arxiv_id(COLORIZED_PAPER_IMAGES_DIR, arxiv_id)
 
 
 def diff_paper_images(arxiv_id: str) -> str:
-    return os.path.join(DIFF_PAPER_IMAGES_DIR, escape_slashes(arxiv_id))
+    return get_data_subdirectory_for_arxiv_id(DIFF_PAPER_IMAGES_DIR, arxiv_id)
 
 
 def get_original_pdf_path(arxiv_id: str, pdf_name: str) -> str:
+    """
+    TODO(andrewhead): Remove this function: should no longer be called.
+    """
     return os.path.join(SOURCES_DIR, escape_slashes(arxiv_id), pdf_name)
 
 
 def get_annotated_pdf_path(arxiv_id: str, pdf_name: str) -> str:
+    """
+    TODO(andrewhead): Remove this function: should no longer be called.
+    """
     return os.path.join(ANNOTATED_PDFS_DIR, escape_slashes(arxiv_id), pdf_name)
