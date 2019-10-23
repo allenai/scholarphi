@@ -2,17 +2,12 @@
 Adapted from `https://github.com/allenai/deepequations2`
 """
 
-import json
 import logging
 import os
-import re
-import sys
-from functools import reduce
 from typing import List, Union
 
 import cv2
 import numpy as np
-from imageio import imread, imsave
 
 from explanations.directories import (
     COLORIZED_PAPER_IMAGES_DIR,
