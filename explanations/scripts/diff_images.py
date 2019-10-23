@@ -1,4 +1,3 @@
-import csv
 import logging
 import os.path
 from abc import ABC, abstractmethod
@@ -9,8 +8,8 @@ import fitz
 import numpy as np
 
 from explanations import directories
-from explanations.directories import (get_arxiv_ids,
-                                      get_data_subdirectory_for_arxiv_id)
+from explanations.compile import get_compiled_pdfs
+from explanations.directories import get_arxiv_ids, get_data_subdirectory_for_arxiv_id
 from explanations.file_utils import clean_directory
 from explanations.image_processing import diff_images
 from explanations.types import ArxivId
@@ -51,21 +50,9 @@ class DiffImagesCommand(Command[PageRasterPair, fitz.Document], ABC):
             )
             clean_directory(output_dir)
 
-            compilation_results_dir = os.path.join(
-                directories.compilation_results(arxiv_id), "compilation_results"
-            )
-            result_path = os.path.join(compilation_results_dir, "result")
-            with open(result_path) as result_file:
-                result = result_file.read().strip()
-                if result != "True":
-                    continue
-
-            pdf_paths = []
-            pdf_names_path = os.path.join(compilation_results_dir, "pdf_names.csv")
-            with open(pdf_names_path) as pdf_names_file:
-                reader = csv.reader(pdf_names_file)
-                for row in reader:
-                    pdf_paths.append(row[1])
+            pdf_paths = get_compiled_pdfs(directories.compilation_results(arxiv_id))
+            if len(pdf_paths) == 0:
+                continue
 
             original_images_dir = directories.paper_images(arxiv_id)
             modified_images_dir = get_data_subdirectory_for_arxiv_id(

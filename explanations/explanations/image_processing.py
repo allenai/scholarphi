@@ -6,12 +6,8 @@ import fitz
 import numpy as np
 from PIL import Image
 
-from explanations.file_utils import copy_pdf_for_annotation
+from explanations.file_utils import open_pdf
 from explanations.types import LocalizedEquation
-
-
-def open_pdf(pdf_path: str) -> fitz.Document:
-    return fitz.open(pdf_path)
 
 
 def get_cv2_images(pdf: fitz.Document) -> List[np.ndarray]:
@@ -40,7 +36,9 @@ def annotate_pdf(
     arxiv_id: str, pdf_name: str, equations: List[LocalizedEquation]
 ) -> None:
     logging.debug("Annotating PDF with bounding boxes.")
-    annotated_pdf_path = copy_pdf_for_annotation(arxiv_id, pdf_name)
+    # TODO(andrewhead): fix the following line
+    # annotated_pdf_path = copy_pdf_for_annotation(arxiv_id, pdf_name)
+    annotated_pdf_path = pdf_name
     pdf = open_pdf(annotated_pdf_path)
     for equation in equations:
         page: fitz.Page = pdf[equation.box.page]

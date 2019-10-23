@@ -43,6 +43,15 @@ PAPER_WITH_COLORIZED_EQUATION_TOKENS_IMAGES_DIR = os.path.join(
 DIFF_IMAGES_WITH_COLORIZED_CITATIONS_DIR = os.path.join(
     DATA_DIR, "19-diff-images-with-colorized-citations"
 )
+DIFF_IMAGES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
+    DATA_DIR, "20-diff-images-with-colorized-equations"
+)
+DIFF_IMAGES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
+    DATA_DIR, "21-diff-images-with-colorized-equation-tokens"
+)
+HUE_LOCATIONS_FOR_CITATIONS_DIR = os.path.join(
+    DATA_DIR, "22-hue-locations-for-citations"
+)
 
 # Debug directories (may or may not be created based on command options)
 DEBUG_DIR = os.path.join(DATA_DIR, "debug")
