@@ -40,6 +40,9 @@ PAPER_WITH_COLORIZED_EQUATIONS_IMAGES_DIR = os.path.join(
 PAPER_WITH_COLORIZED_EQUATION_TOKENS_IMAGES_DIR = os.path.join(
     DATA_DIR, "18-paper-with-colorized-equation-tokens-images"
 )
+DIFF_IMAGES_WITH_COLORIZED_CITATIONS_DIR = os.path.join(
+    DATA_DIR, "19-diff-images-with-colorized-citations"
+)
 
 # Debug directories (may or may not be created based on command options)
 DEBUG_DIR = os.path.join(DATA_DIR, "debug")

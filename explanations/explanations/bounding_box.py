@@ -1,102 +1,44 @@
-"""
-Adapted from `https://github.com/allenai/deepequations2`
-"""
-
-import logging
-import os
-from typing import List, Union
+from typing import Dict, Iterator, List, Optional
 
 import cv2
+import fitz
 import numpy as np
 
-from explanations.directories import (
-    COLORIZED_PAPER_IMAGES_DIR,
-    DIFF_PAPER_IMAGES_DIR,
-    PAPER_IMAGES_DIR,
-    get_original_pdf_path,
-)
-from explanations.image_processing import diff_image_lists, get_cv2_images, open_pdf
-from explanations.types import (
-    ColorizedEquations,
-    LocalizedEquation,
-    PdfBoundingBox,
-    Rectangle,
-)
-
-
-# XXX(andrewhead): Remove all references to 'get_colorized_pdf_path' soon. For now, it's
-# replaced with a noop to prevent pylint and mypy errors.
-def get_colorized_pdf_path(arxiv_id: str, pdf_name: str) -> str:
-    return ""
+from explanations.types import PdfBoundingBox, Point, Rectangle
 
 
 def extract_bounding_boxes(
-    arxiv_id: str,
-    pdf_name: str,
-    colorized_equations: ColorizedEquations,
-    save_images: bool = False,
-) -> List[LocalizedEquation]:
-    logging.debug("Getting bounding boxes for %s", pdf_name)
-
-    original_pdf_path = get_original_pdf_path(arxiv_id, pdf_name)
-    colorized_pdf_path = get_colorized_pdf_path(arxiv_id, pdf_name)
-    original_images = get_cv2_images(original_pdf_path)
-    colorized_images = get_cv2_images(colorized_pdf_path)
-
-    # Colorized images is the first parameter: this means that original_images will be
-    # subtracted from colorized_images where the two are the same. Necessary for preserving
-    # colors from the colorized_images for identifying equations.
-    image_diffs = diff_image_lists(colorized_images, original_images)
-
-    if save_images:
-        save_images_to_directory(original_images, PAPER_IMAGES_DIR)
-        save_images_to_directory(colorized_images, COLORIZED_PAPER_IMAGES_DIR)
-        save_images_to_directory(image_diffs, DIFF_PAPER_IMAGES_DIR)
-
-    pdf = open_pdf(original_pdf_path)
-    localized_equations = []
-    for page_index, image_diff in enumerate(image_diffs):
-        logging.debug("Finding bounding boxes in page %d", page_index)
-        for hue, equation in colorized_equations.items():
-            box = find_box_of_color(image_diff, hue)
-            if box is not None:
-                image_height, image_width, _ = image_diff.shape
-                page = pdf[page_index]
-                page_width = page.rect.width
-                page_height = page.rect.height
-                localized_equations.append(
-                    LocalizedEquation(
-                        tex=equation,
-                        box=_to_pdf_coordinates(
-                            box,
-                            image_width,
-                            image_height,
-                            page_width,
-                            page_height,
-                            page_index,
-                        ),
-                    )
-                )
-
-    return localized_equations
-
-
-def save_images_to_directory(images: List[np.array], dest_dir: str) -> None:
-    if not os.path.exists(dest_dir):
-        os.makedirs(dest_dir)
-    for page_index, image in enumerate(images):
-        image_path = os.path.join(dest_dir, "page-%d.png" % (page_index,))
-        cv2.imwrite(image_path, image)
-
-
-def find_box_of_color(
-    image: np.array, hue: float, tolerance: float = 0.005
-) -> Union[Rectangle, None]:
+    diff_image: np.ndarray, page_number: int, hues: List[float], pdf: fitz.Document
+) -> Dict[float, List[PdfBoundingBox]]:
     """
-    Assumes there is only one box of each color on the page.
+    See 'PixelMerger' for description of how bounding boxes are extracted.
+    """
+    image_height, image_width, _ = diff_image.shape
+    pdf_page = pdf[page_number]
+    page_width = pdf_page.rect.width
+    page_height = pdf_page.rect.height
+
+    boxes_by_hue = {}
+
+    for hue in hues:
+        pixel_boxes = list(find_boxes_of_color(diff_image, hue))
+        pdf_bounding_boxes = [
+            _to_pdf_coordinates(
+                box, image_width, image_height, page_width, page_height, page_number
+            )
+            for box in pixel_boxes
+        ]
+        boxes_by_hue[hue] = pdf_bounding_boxes
+
+    return boxes_by_hue
+
+
+def find_boxes_of_color(
+    image: np.ndarray, hue: float, tolerance: float = 0.005
+) -> List[Rectangle]:
+    """
     'hue' is a floating point number between 0 and 1. 'tolerance' is the amount of difference
     from 'hue' (from 0-to-1) still considered that hue.
-    Returns 'None' if no pixels found for that hue.
     """
     CV2_MAXIMMUM_HUE = 180
     MOSTLY_SATURATED = 200  # out of 255
@@ -120,15 +62,89 @@ def find_box_of_color(
     matching_pixels = np.where(
         (abs_distance_to_hue <= cv2_tolerance) & saturated_pixels
     )
-    if len(matching_pixels[0]) == 0 or len(matching_pixels[1]) == 0:
-        return None
-    top = np.min(matching_pixels[0])
-    bottom = np.max(matching_pixels[0])
-    left = np.min(matching_pixels[1])
-    right = np.max(matching_pixels[1])
-    return Rectangle(
-        left=left, top=top, width=(right - left + 1), height=(bottom - top + 1)
-    )
+    matching_pixels_list: List[Point] = []
+    for i in range(len(matching_pixels[0])):
+        matching_pixels_list.append(Point(matching_pixels[1][i], matching_pixels[0][i]))
+    return list(PixelMerger().merge_pixels(matching_pixels_list))
+
+
+class PixelMerger:
+    """
+    Merges pixels into bounding boxes. The algorithm was designed to create one bounding box per
+    line of text in a PDF. To do this, the algorithm combines all pixels at the same y-position
+    into lines. Then it merges vertically-adjacent lines into boxes.
+    """
+
+    def __init__(self, max_vertical_break: int = 1) -> None:
+        self.last_row: Optional[int] = None
+        self.top_y: Optional[int] = None
+        self.bottom_y: Optional[int] = None
+        self.min_x: Optional[int] = None
+        self.max_x: Optional[int] = None
+        self.max_vertical_break = max_vertical_break
+
+    def merge_pixels(self, points: List[Point]) -> Iterator[Rectangle]:
+        self._reset_merge_state()
+
+        pixels_by_row = self._group_pixels_by_row(points)
+        ordered_rows = sorted(pixels_by_row.keys())
+
+        for row in ordered_rows:
+            row_pixels = pixels_by_row[row]
+
+            # At a vertical gap, create a rectangle from the rows seen above.
+            if self.last_row is not None and (
+                (row - self.last_row) > self.max_vertical_break
+            ):
+                yield self._create_rectangle()
+                self._reset_merge_state()
+
+            if self.last_row is None:
+                self.top_y = row
+
+            self._update_x_range(row_pixels)
+            self.bottom_y = row
+            self.last_row = row
+
+        if self.top_y is not None:
+            yield self._create_rectangle()
+
+    def _create_rectangle(self) -> Rectangle:
+        assert self.min_x is not None
+        assert self.max_x is not None
+        assert self.top_y is not None
+        assert self.bottom_y is not None
+        return Rectangle(
+            left=self.min_x,
+            top=self.top_y,
+            width=self.max_x - self.min_x + 1,
+            height=self.bottom_y - self.top_y + 1,
+        )
+
+    def _update_x_range(self, points: List[Point]) -> None:
+        x_values = [p.x for p in points]
+        if self.min_x is not None:
+            x_values.append(self.min_x)
+        if self.max_x is not None:
+            x_values.append(self.max_x)
+
+        self.min_x = min(x_values)
+        self.max_x = max(x_values)
+
+    def _reset_merge_state(self) -> None:
+        self.last_row = None
+        self.top_y = None
+        self.bottom_y = None
+        self.min_x = None
+        self.max_x = None
+
+    def _group_pixels_by_row(self, points: List[Point]) -> Dict[int, List[Point]]:
+        pixels_by_row: Dict[int, List[Point]] = {}
+        for point in points:
+            if not point.y in pixels_by_row:
+                pixels_by_row[point.y] = []
+            pixels_by_row[point.y].append(point)
+        return pixels_by_row
 
 
 def _to_pdf_coordinates(

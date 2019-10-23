@@ -107,6 +107,15 @@ class CompilationResult(NamedTuple):
     stderr: bytes
 
 
+class Point(NamedTuple):
+    """
+    Location of a pixel within an image.
+    """
+
+    x: int
+    y: int
+
+
 class Rectangle(NamedTuple):
     """
     Rectangle within an image. Left and top refer to positions of pixels.
