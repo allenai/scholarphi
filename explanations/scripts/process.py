@@ -9,12 +9,13 @@ from scripts.compile_tex import (
     CompileTexSources,
     CompileTexSourcesWithColorizedCitations,
 )
+from scripts.diff_images import DiffImagesWithColorizedCitations
 from scripts.extract_bibitems import ExtractBibitems
 from scripts.extract_equation_tokens import ExtractEquationTokens
 from scripts.extract_equations import ExtractEquations
 from scripts.fetch_arxiv_sources import FetchArxivSources
 from scripts.fetch_s2_data import FetchS2Metadata
-from scripts.raster_pages import RasterPages
+from scripts.raster_pages import RasterPages, RasterPagesWithColorizedCitations
 from scripts.resolve_bibitems import ResolveBibitems
 from scripts.unpack_sources import UnpackSources
 
@@ -32,6 +33,8 @@ command_classes: List = [  # type: ignore
     CompileTexSources,
     CompileTexSourcesWithColorizedCitations,
     RasterPages,
+    RasterPagesWithColorizedCitations,
+    DiffImagesWithColorizedCitations,
 ]
 
 

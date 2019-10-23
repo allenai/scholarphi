@@ -14,7 +14,7 @@ def open_pdf(pdf_path: str) -> fitz.Document:
     return fitz.open(pdf_path)
 
 
-def get_cv2_images(pdf: fitz.Document) -> List[np.array]:
+def get_cv2_images(pdf: fitz.Document) -> List[np.ndarray]:
     """
     Get CV2 images for PDF, as a list with one image for each page.
     """
@@ -64,8 +64,8 @@ def annotate_pdf(
 
 
 def diff_image_lists(
-    image_list_0: List[np.array], image_list_1: List[np.array]
-) -> List[np.array]:
+    image_list_0: List[np.ndarray], image_list_1: List[np.ndarray]
+) -> List[np.ndarray]:
     """
     Difference two lists of CV2 images, with pairwise comparisons at each index.
     """
@@ -77,7 +77,7 @@ def diff_image_lists(
     return diffs
 
 
-def diff_images(image0: np.array, image1: np.array) -> np.array:
+def diff_images(image0: np.ndarray, image1: np.ndarray) -> np.ndarray:
     """Returns a copy of 'image0' with all pixels where 'image0' and 'image1' are equal set to white."""
     logging.debug("Diffing images.")
     assert np.array_equal(np.shape(image0), np.shape(image1))
