@@ -1,4 +1,3 @@
-import csv
 import os.path
 from abc import ABC, abstractmethod
 from typing import Iterator, List, NamedTuple
@@ -8,9 +7,10 @@ import fitz
 import numpy as np
 
 from explanations import directories
+from explanations.compile import get_compiled_pdfs
 from explanations.directories import get_data_subdirectory_for_arxiv_id
-from explanations.file_utils import clean_directory
-from explanations.image_processing import get_cv2_images, open_pdf
+from explanations.file_utils import clean_directory, open_pdf
+from explanations.image_processing import get_cv2_images
 from explanations.types import ArxivId
 from scripts.command import Command
 
@@ -41,26 +41,14 @@ class RasterPagesCommand(Command[PdfPath, fitz.Document], ABC):
 
     def load(self) -> Iterator[PdfPath]:
         for arxiv_id in os.listdir(self.get_papers_base_dir()):
-            papers_dir = get_data_subdirectory_for_arxiv_id(
-                self.get_papers_base_dir(), arxiv_id
-            )
             output_dir = get_data_subdirectory_for_arxiv_id(
                 self.get_output_base_dir(), arxiv_id
             )
             clean_directory(output_dir)
 
-            compilation_results_dir = os.path.join(papers_dir, "compilation_results")
-            result_path = os.path.join(compilation_results_dir, "result")
-            with open(result_path) as result_file:
-                result = result_file.read().strip()
-                if result != "True":
-                    continue
-
-            pdf_names_path = os.path.join(compilation_results_dir, "pdf_names.csv")
-            with open(pdf_names_path) as pdf_names_file:
-                reader = csv.reader(pdf_names_file)
-                for row in reader:
-                    yield PdfPath(arxiv_id, row[1])
+            pdf_paths = get_compiled_pdfs(directories.compilation_results(arxiv_id))
+            for path in pdf_paths:
+                yield PdfPath(arxiv_id, path)
 
     def process(self, item: PdfPath) -> Iterator[fitz.Document]:
         papers_dir = get_data_subdirectory_for_arxiv_id(

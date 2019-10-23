@@ -1,4 +1,5 @@
 import configparser
+import csv
 import logging
 import os
 import os.path
@@ -64,3 +65,23 @@ def compile_tex(sources_dir: str) -> CompilationResult:
         success = True
 
     return CompilationResult(success, pdfs, result.stdout, result.stderr)
+
+
+def get_compiled_pdfs(compiled_tex_dir: str) -> List[str]:
+    """
+    Get a list of paths to compiled PDFs in a directory of compiled TeX.
+    """
+    compilation_results_dir = os.path.join(compiled_tex_dir, "compilation_results")
+    result_path = os.path.join(compilation_results_dir, "result")
+    with open(result_path) as result_file:
+        result = result_file.read().strip()
+        if result == "True":
+            pdf_paths = []
+            pdf_names_path = os.path.join(compilation_results_dir, "pdf_names.csv")
+            with open(pdf_names_path) as pdf_names_file:
+                reader = csv.reader(pdf_names_file)
+                for row in reader:
+                    pdf_paths.append(row[1])
+            return pdf_paths
+
+    return []

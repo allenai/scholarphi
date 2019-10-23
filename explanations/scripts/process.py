@@ -15,6 +15,7 @@ from scripts.extract_equation_tokens import ExtractEquationTokens
 from scripts.extract_equations import ExtractEquations
 from scripts.fetch_arxiv_sources import FetchArxivSources
 from scripts.fetch_s2_data import FetchS2Metadata
+from scripts.locate_hues import LocateCitationHues
 from scripts.raster_pages import RasterPages, RasterPagesWithColorizedCitations
 from scripts.resolve_bibitems import ResolveBibitems
 from scripts.unpack_sources import UnpackSources
@@ -35,6 +36,7 @@ command_classes: List = [  # type: ignore
     RasterPages,
     RasterPagesWithColorizedCitations,
     DiffImagesWithColorizedCitations,
+    LocateCitationHues,
 ]
 
 

@@ -3,7 +3,11 @@ import os
 import shutil
 from typing import Iterator, List, Optional
 
-from explanations.directories import annotated_pdfs, get_annotated_pdf_path
+import fitz
+
+
+def open_pdf(pdf_path: str) -> fitz.Document:
+    return fitz.open(pdf_path)
 
 
 def read_file_tolerant(path: str) -> Optional[str]:
@@ -53,20 +57,3 @@ def find_files(dir_: str, extensions: List[str]) -> Iterator[str]:
             if ext in extensions:
                 path = os.path.join(dirpath, filename)
                 yield path
-
-
-def get_common_pdfs(original_pdfs: List[str], colorized_pdfs: List[str]) -> List[str]:
-    shared_pdfs = [pdf for pdf in original_pdfs if pdf in colorized_pdfs]
-    return shared_pdfs
-
-
-def copy_pdf_for_annotation(arxiv_id: str, pdf_name: str) -> str:
-    # TODO(andrewhead): Unbreak this code by reimplementing get_colorized_pdf_path
-    src_pdf = get_annotated_pdf_path(arxiv_id, pdf_name)
-    # src_pdf = get_colorized_pdf_path(arxiv_id, pdf_name)
-    dest_pdf = get_annotated_pdf_path(arxiv_id, pdf_name)
-    annotated_pdfs_dir = annotated_pdfs(arxiv_id)
-    if not os.path.exists(annotated_pdfs_dir):
-        os.makedirs(annotated_pdfs_dir)
-    shutil.copy2(src_pdf, dest_pdf)
-    return dest_pdf
