@@ -30,10 +30,19 @@ COMPILED_SOURCES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
 COMPILED_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
     DATA_DIR, "14-compiled-sources-with-colorized-equation-tokens"
 )
+PAPER_IMAGES_DIR = os.path.join(DATA_DIR, "15-paper-images")
+PAPER_WITH_COLORIZED_CITATIONS_IMAGES_DIR = os.path.join(
+    DATA_DIR, "16-paper-with-colorized-citations-images"
+)
+PAPER_WITH_COLORIZED_EQUATIONS_IMAGES_DIR = os.path.join(
+    DATA_DIR, "17-paper-with-colorized-equations-images"
+)
+PAPER_WITH_COLORIZED_EQUATION_TOKENS_IMAGES_DIR = os.path.join(
+    DATA_DIR, "18-paper-with-colorized-equation-tokens-images"
+)
 
 # Debug directories (may or may not be created based on command options)
 DEBUG_DIR = os.path.join(DATA_DIR, "debug")
-PAPER_IMAGES_DIR = os.path.join(DEBUG_DIR, "a-paper-images")
 COLORIZED_PAPER_IMAGES_DIR = os.path.join(DEBUG_DIR, "b-colorized-paper-images")
 DIFF_PAPER_IMAGES_DIR = os.path.join(DEBUG_DIR, "c-diff-paper-images")
 ANNOTATED_PDFS_DIR = os.path.join(DEBUG_DIR, "d-annotated-pdfs")

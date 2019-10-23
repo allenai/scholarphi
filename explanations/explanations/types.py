@@ -102,7 +102,7 @@ ColorizedTokensByEquation = Dict[EquationIndex, ColorizedTokens]
 
 class CompilationResult(NamedTuple):
     success: bool
-    compiled_pdfs: Optional[List[bytes]]
+    compiled_pdfs: Optional[List[str]]
     stdout: bytes
     stderr: bytes
 

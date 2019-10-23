@@ -1,5 +1,5 @@
 import logging
-from typing import List, NamedTuple
+from typing import List
 
 import cv2
 import fitz
@@ -10,15 +10,14 @@ from explanations.file_utils import copy_pdf_for_annotation
 from explanations.types import LocalizedEquation
 
 
-def open_pdf(pdf_path) -> fitz.Document:
+def open_pdf(pdf_path: str) -> fitz.Document:
     return fitz.open(pdf_path)
 
 
-def get_cv2_images(pdf_path: str) -> List[np.array]:
+def get_cv2_images(pdf: fitz.Document) -> List[np.array]:
     """
     Get CV2 images for PDF, as a list with one image for each page.
     """
-    pdf = open_pdf(pdf_path)
     page_images = []
     for page in pdf:
         # TODO(andrewhead): handle rotated pages. This will likely require:
@@ -37,7 +36,9 @@ def get_cv2_images(pdf_path: str) -> List[np.array]:
     return page_images
 
 
-def annotate_pdf(arxiv_id: str, pdf_name: str, equations: List[LocalizedEquation]):
+def annotate_pdf(
+    arxiv_id: str, pdf_name: str, equations: List[LocalizedEquation]
+) -> None:
     logging.debug("Annotating PDF with bounding boxes.")
     annotated_pdf_path = copy_pdf_for_annotation(arxiv_id, pdf_name)
     pdf = open_pdf(annotated_pdf_path)
@@ -47,8 +48,12 @@ def annotate_pdf(arxiv_id: str, pdf_name: str, equations: List[LocalizedEquation
         # top-left of the page, though in some cases it's relative to the bottom-left. In those
         # cases, flip the coordinate system using this fix:
         # https://github.com/pymupdf/PyMuPDF/issues/367#issuecomment-534756345
-        if not page._isWrapped:
-            page._wrapContents()
+        if (
+            hasattr(page, "_isWrapped")
+            and not page._isWrapped  # pylint: disable=protected-access
+            and hasattr(page, "_wrapContents")
+        ):
+            page._wrapContents()  # pylint: disable=protected-access
         # The PDF bounding boxes are relative to the bottom-left of the the page. Flip them to
         # be relative to the top-left before drawing them (see comment above).
         top = page.rect.height - equation.box.top
@@ -66,7 +71,7 @@ def diff_image_lists(
     """
     assert len(image_list_0) == len(image_list_1)
     diffs = []
-    for i in range(0, len(image_list_0)):
+    for i in range(0, len(image_list_0)):  # pylint: disable=consider-using-enumerate
         diff = diff_images(image_list_0[i], image_list_1[i])
         diffs.append(diff)
     return diffs

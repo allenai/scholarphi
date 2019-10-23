@@ -13,11 +13,11 @@ PDF_MESSAGE_PREFIX = b"Generated PDF: "
 PDF_MESSAGE_SUFFIX = b"<end of PDF name>"
 
 
-def _get_generated_pdfs(stdout: bytes) -> List[bytes]:
+def _get_generated_pdfs(stdout: bytes) -> List[str]:
     pdfs = re.findall(
         PDF_MESSAGE_PREFIX + b"(.*)" + PDF_MESSAGE_SUFFIX, stdout, flags=re.MULTILINE
     )
-    return pdfs
+    return [pdf_name_bytes.decode("utf-8") for pdf_name_bytes in pdfs]
 
 
 def _set_sources_dir_permissions(sources_dir: str) -> None:

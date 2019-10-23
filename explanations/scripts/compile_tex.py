@@ -8,7 +8,6 @@ from typing import Iterator
 from explanations import directories
 from explanations.compile import compile_tex
 from explanations.directories import get_data_subdirectory_for_arxiv_id
-from explanations.file_utils import clean_directory
 from explanations.types import ArxivId, CompilationResult
 from scripts.command import Command
 
@@ -29,7 +28,7 @@ class CompileTexCommand(Command[ArxivId, CompilationResult], ABC):
     @abstractmethod
     def get_output_base_dir() -> str:
         """
-        Path to the data directory where you want TeX files to be copied and compiled.
+        Path to the data directory to which to copy TeX files and compile them.
         """
 
     def load(self) -> Iterator[ArxivId]:
@@ -40,7 +39,11 @@ class CompileTexCommand(Command[ArxivId, CompilationResult], ABC):
             dest_dir = get_data_subdirectory_for_arxiv_id(
                 self.get_output_base_dir(), arxiv_id
             )
-            clean_directory(dest_dir)
+            if os.path.exists(dest_dir):
+                logging.warning(
+                    "Compilation directory already exists for %s. Deleting.", arxiv_id
+                )
+                shutil.rmtree(dest_dir)
             shutil.copytree(src_dir, dest_dir)
             yield arxiv_id
 
