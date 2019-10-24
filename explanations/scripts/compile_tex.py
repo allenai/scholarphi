@@ -126,3 +126,21 @@ class CompileTexSourcesWithColorizedCitations(CompileTexCommand):
     @staticmethod
     def get_output_base_dir() -> str:
         return directories.COMPILED_SOURCES_WITH_COLORIZED_CITATIONS_DIR
+
+
+class CompileTexSourcesWithColorizedEquations(CompileTexCommand):
+    @staticmethod
+    def get_name() -> str:
+        return "compile-tex-with-colorized-equations"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Compile TeX sources with colorized equations."
+
+    @staticmethod
+    def get_sources_base_dir() -> str:
+        return directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR
+
+    @staticmethod
+    def get_output_base_dir() -> str:
+        return directories.COMPILED_SOURCES_WITH_COLORIZED_EQUATIONS_DIR

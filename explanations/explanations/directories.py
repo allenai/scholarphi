@@ -61,6 +61,9 @@ HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR = os.path.join(
 ANNOTATED_PDFS_WITH_CITATION_BOXES_DIR = os.path.join(
     DATA_DIR, "25-annotated-pdfs-with-citation-boxes"
 )
+ANNOTATED_PDFS_WITH_EQUATION_BOXES_DIR = os.path.join(
+    DATA_DIR, "26-annotated-pdfs-with-equation-boxes"
+)
 
 # Directories for utilities
 NODE_DIRECTORY = "node"
@@ -151,3 +154,7 @@ def paper_images(arxiv_id: str) -> str:
 
 def hue_locations_for_citations(arxiv_id: str) -> str:
     return get_data_subdirectory_for_arxiv_id(HUE_LOCATIONS_FOR_CITATIONS_DIR, arxiv_id)
+
+
+def hue_locations_for_equations(arxiv_id: str) -> str:
+    return get_data_subdirectory_for_arxiv_id(HUE_LOCATIONS_FOR_EQUATIONS_DIR, arxiv_id)

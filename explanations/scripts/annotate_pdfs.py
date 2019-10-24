@@ -82,6 +82,36 @@ class AnnotatePdfsCommand(Command[PdfAndBoxes, fitz.Document], ABC):
         result.save(output_pdf_path)
 
 
+def common_load_bounding_boxes(
+    hue_locations_dir_path: str
+) -> Dict[str, List[PdfBoundingBox]]:
+    box_data_path = os.path.join(hue_locations_dir_path, "hue_locations.csv")
+
+    if not os.path.exists(box_data_path):
+        logging.warning(
+            "Could not find any bounding box data in directory %s",
+            hue_locations_dir_path,
+        )
+        return {}
+
+    boxes: Dict[str, List[PdfBoundingBox]] = {}
+    with open(box_data_path) as box_data_file:
+        reader = csv.reader(box_data_file)
+        for row in reader:
+            pdf_path = row[0]
+            box = PdfBoundingBox(
+                page=int(row[2]),
+                left=float(row[3]),
+                top=float(row[4]),
+                width=float(row[5]),
+                height=float(row[6]),
+            )
+            if not pdf_path in boxes:
+                boxes[pdf_path] = []
+            boxes[pdf_path].append(box)
+    return boxes
+
+
 class AnnotatePdfsWithCitationBoxes(AnnotatePdfsCommand):
     @staticmethod
     def get_name() -> str:
@@ -96,26 +126,25 @@ class AnnotatePdfsWithCitationBoxes(AnnotatePdfsCommand):
         return directories.ANNOTATED_PDFS_WITH_CITATION_BOXES_DIR
 
     def load_bounding_boxes(self, arxiv_id: ArxivId) -> Dict[str, List[PdfBoundingBox]]:
-        box_data_path = os.path.join(
-            directories.hue_locations_for_citations(arxiv_id), "hue_locations.csv"
+        return common_load_bounding_boxes(
+            directories.hue_locations_for_citations(arxiv_id)
         )
-        if not os.path.exists(box_data_path):
-            logging.warning("Could not find any bounding box data %s", arxiv_id)
-            return {}
 
-        boxes: Dict[str, List[PdfBoundingBox]] = {}
-        with open(box_data_path) as box_data_file:
-            reader = csv.reader(box_data_file)
-            for row in reader:
-                pdf_path = row[0]
-                box = PdfBoundingBox(
-                    page=int(row[2]),
-                    left=float(row[3]),
-                    top=float(row[4]),
-                    width=float(row[5]),
-                    height=float(row[6]),
-                )
-                if not pdf_path in boxes:
-                    boxes[pdf_path] = []
-                boxes[pdf_path].append(box)
-        return boxes
+
+class AnnotatePdfsWithEquationBoxes(AnnotatePdfsCommand):
+    @staticmethod
+    def get_name() -> str:
+        return "annotate-pdfs-with-equation-boxes"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Annotate PDFs with bounding boxes for equations."
+
+    @staticmethod
+    def get_output_base_dir() -> str:
+        return directories.ANNOTATED_PDFS_WITH_EQUATION_BOXES_DIR
+
+    def load_bounding_boxes(self, arxiv_id: ArxivId) -> Dict[str, List[PdfBoundingBox]]:
+        return common_load_bounding_boxes(
+            directories.hue_locations_for_equations(arxiv_id)
+        )
