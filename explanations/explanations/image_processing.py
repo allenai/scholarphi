@@ -6,8 +6,7 @@ import fitz
 import numpy as np
 from PIL import Image
 
-from explanations.file_utils import open_pdf
-from explanations.types import LocalizedEquation
+from explanations.types import PdfBoundingBox
 
 
 def get_cv2_images(pdf: fitz.Document) -> List[np.ndarray]:
@@ -32,16 +31,13 @@ def get_cv2_images(pdf: fitz.Document) -> List[np.ndarray]:
     return page_images
 
 
-def annotate_pdf(
-    arxiv_id: str, pdf_name: str, equations: List[LocalizedEquation]
-) -> None:
+def annotate_pdf(pdf: fitz.Document, boxes: List[PdfBoundingBox]) -> fitz.Document:
+    """
+    Annotate the 'pdf' object passed in. Caller is responsible for saving this file to disk.
+    """
     logging.debug("Annotating PDF with bounding boxes.")
-    # TODO(andrewhead): fix the following line
-    # annotated_pdf_path = copy_pdf_for_annotation(arxiv_id, pdf_name)
-    annotated_pdf_path = pdf_name
-    pdf = open_pdf(annotated_pdf_path)
-    for equation in equations:
-        page: fitz.Page = pdf[equation.box.page]
+    for box in boxes:
+        page: fitz.Page = pdf[box.page]
         # For many PDFs with the pyMuPDF toolkit, coordinates of annotations are relative to the
         # top-left of the page, though in some cases it's relative to the bottom-left. In those
         # cases, flip the coordinate system using this fix:
@@ -54,11 +50,11 @@ def annotate_pdf(
             page._wrapContents()  # pylint: disable=protected-access
         # The PDF bounding boxes are relative to the bottom-left of the the page. Flip them to
         # be relative to the top-left before drawing them (see comment above).
-        top = page.rect.height - equation.box.top
-        bottom = top + equation.box.height
-        rect = (equation.box.left, top, equation.box.left + equation.box.width, bottom)
+        top = page.rect.height - box.top
+        bottom = top + box.height
+        rect = (box.left, top, box.left + box.width, bottom)
         page.drawRect(rect, color=(0, 0, 0), fill=None)
-    pdf.saveIncr()
+    return pdf
 
 
 def diff_image_lists(

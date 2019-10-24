@@ -2,6 +2,7 @@ import argparse
 import logging
 from typing import List
 
+from scripts.annotate_pdfs import AnnotatePdfsWithCitationBoxes
 from scripts.colorize_citations import ColorizeCitations
 from scripts.colorize_equation_tokens import ColorizeEquationTokens
 from scripts.colorize_equations import ColorizeEquations
@@ -37,6 +38,7 @@ command_classes: List = [  # type: ignore
     RasterPagesWithColorizedCitations,
     DiffImagesWithColorizedCitations,
     LocateCitationHues,
+    AnnotatePdfsWithCitationBoxes,
 ]
 
 

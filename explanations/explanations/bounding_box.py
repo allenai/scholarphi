@@ -41,7 +41,7 @@ def find_boxes_of_color(
     from 'hue' (from 0-to-1) still considered that hue.
     """
     CV2_MAXIMMUM_HUE = 180
-    MOSTLY_SATURATED = 200  # out of 255
+    MOSTLY_SATURATED = 100  # out of 255
 
     cv2_hue = hue * CV2_MAXIMMUM_HUE
     cv2_tolerance = tolerance * CV2_MAXIMMUM_HUE
