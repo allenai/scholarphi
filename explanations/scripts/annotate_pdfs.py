@@ -148,3 +148,22 @@ class AnnotatePdfsWithEquationBoxes(AnnotatePdfsCommand):
         return common_load_bounding_boxes(
             directories.hue_locations_for_equations(arxiv_id)
         )
+
+
+class AnnotatePdfsWithEquationTokenBoxes(AnnotatePdfsCommand):
+    @staticmethod
+    def get_name() -> str:
+        return "annotate-pdfs-with-equation-token-boxes"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Annotate PDFs with bounding boxes for equation tokens."
+
+    @staticmethod
+    def get_output_base_dir() -> str:
+        return directories.ANNOTATED_PDFS_WITH_EQUATION_TOKEN_BOXES_DIR
+
+    def load_bounding_boxes(self, arxiv_id: ArxivId) -> Dict[str, List[PdfBoundingBox]]:
+        return common_load_bounding_boxes(
+            directories.hue_locations_for_equation_tokens(arxiv_id)
+        )

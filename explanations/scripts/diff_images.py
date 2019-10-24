@@ -136,3 +136,21 @@ class DiffImagesWithColorizedEquations(DiffImagesCommand):
     @staticmethod
     def get_output_base_dir() -> str:
         return directories.DIFF_IMAGES_WITH_COLORIZED_EQUATIONS_DIR
+
+
+class DiffImagesWithColorizedEquationTokens(DiffImagesCommand):
+    @staticmethod
+    def get_name() -> str:
+        return "diff-images-with-colorized-equation-tokens"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Diff images of pages with colorized equation tokens with uncolorized images."
+
+    @staticmethod
+    def get_raster_base_dir() -> str:
+        return directories.PAPER_WITH_COLORIZED_EQUATION_TOKENS_IMAGES_DIR
+
+    @staticmethod
+    def get_output_base_dir() -> str:
+        return directories.DIFF_IMAGES_WITH_COLORIZED_EQUATION_TOKENS_DIR

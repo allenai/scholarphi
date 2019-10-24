@@ -1,15 +1,25 @@
-from typing import Dict, Iterator, List, Optional, Tuple
+from typing import Dict, Iterable, Iterator, List, Optional
 
 import cv2
 import fitz
 import numpy as np
 
-from explanations.types import PdfBoundingBox, Point, Rectangle
+from explanations.types import (
+    BoundingBoxInfo,
+    PdfBoundingBox,
+    Point,
+    RasterBoundingBox,
+    Rectangle,
+)
 
 
 def extract_bounding_boxes(
-    diff_image: np.ndarray, page_number: int, hues: List[float], pdf: fitz.Document
-) -> Dict[float, List[PdfBoundingBox]]:
+    diff_image: np.ndarray,
+    pdf: fitz.Document,
+    page_number: int,
+    hue: float,
+    masks: Optional[Iterable[Rectangle]] = None,
+) -> List[BoundingBoxInfo]:
     """
     See 'PixelMerger' for description of how bounding boxes are extracted.
     """
@@ -18,26 +28,25 @@ def extract_bounding_boxes(
     page_width = pdf_page.rect.width
     page_height = pdf_page.rect.height
 
-    boxes_by_hue = {}
+    pixel_boxes = list(find_boxes_with_color(diff_image, hue, masks=masks))
+    box_infos = []
+    for box in pixel_boxes:
+        pdf_bounding_box = _to_pdf_coordinates(
+            box, image_width, image_height, page_width, page_height, page_number
+        )
+        raster_bounding_box = RasterBoundingBox(
+            box.left, box.top, box.width, box.height, page_number
+        )
+        box_infos.append(BoundingBoxInfo(pdf_bounding_box, raster_bounding_box))
 
-    for hue in hues:
-        pixel_boxes = list(find_boxes_with_color(diff_image, hue))
-        pdf_bounding_boxes = [
-            _to_pdf_coordinates(
-                box, image_width, image_height, page_width, page_height, page_number
-            )
-            for box in pixel_boxes
-        ]
-        boxes_by_hue[hue] = pdf_bounding_boxes
-
-    return boxes_by_hue
+    return box_infos
 
 
 def find_boxes_with_color(
     image: np.ndarray,
     hue: float,
     tolerance: float = 0.005,
-    masks: Optional[Tuple[Rectangle]] = None,
+    masks: Optional[Iterable[Rectangle]] = None,
 ) -> List[Rectangle]:
     """
     Arguments:
