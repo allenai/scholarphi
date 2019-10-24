@@ -1,4 +1,4 @@
-from typing import Dict, Iterator, List, Optional
+from typing import Dict, Iterator, List, Optional, Tuple
 
 import cv2
 import fitz
@@ -21,7 +21,7 @@ def extract_bounding_boxes(
     boxes_by_hue = {}
 
     for hue in hues:
-        pixel_boxes = list(find_boxes_of_color(diff_image, hue))
+        pixel_boxes = list(find_boxes_with_color(diff_image, hue))
         pdf_bounding_boxes = [
             _to_pdf_coordinates(
                 box, image_width, image_height, page_width, page_height, page_number
@@ -33,21 +33,32 @@ def extract_bounding_boxes(
     return boxes_by_hue
 
 
-def find_boxes_of_color(
-    image: np.ndarray, hue: float, tolerance: float = 0.005
+def find_boxes_with_color(
+    image: np.ndarray,
+    hue: float,
+    tolerance: float = 0.005,
+    masks: Optional[Tuple[Rectangle]] = None,
 ) -> List[Rectangle]:
     """
-    'hue' is a floating point number between 0 and 1. 'tolerance' is the amount of difference
-    from 'hue' (from 0-to-1) still considered that hue.
+    Arguments:
+    - 'hue': is a floating point number between 0 and 1
+    - 'tolerance': is the amount of difference from 'hue' (from 0-to-1) still considered that hue.
+    - 'masks': a set of masks to apply to the image, one at a time. Bounding boxes are extracted
+        from within each of those boxes. Masks are assumed to be non-intersecting.
     """
+
+    if masks is None:
+        height, width, _ = image.shape
+        masks = (Rectangle(left=0, top=0, width=width, height=height),)
+
     CV2_MAXIMMUM_HUE = 180
-    MOSTLY_SATURATED = 100  # out of 255
+    SATURATION_THRESHOLD = 50  # out of 255
 
     cv2_hue = hue * CV2_MAXIMMUM_HUE
     cv2_tolerance = tolerance * CV2_MAXIMMUM_HUE
     img_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-    saturated_pixels = img_hsv[:, :, 1] > MOSTLY_SATURATED
+    saturated_pixels = img_hsv[:, :, 1] > SATURATION_THRESHOLD
 
     hues = img_hsv[:, :, 0]
     distance_to_hue = np.abs(hues.astype(np.int16) - cv2_hue)
@@ -55,17 +66,33 @@ def find_boxes_of_color(
         distance_to_hue, CV2_MAXIMMUM_HUE - distance_to_hue
     )
 
-    # To determine which pixels have a color, we look for those that:
-    # 1. Match the hue
-    # 2. Are heavily saturated (i.e. aren't white---white pixels could be detected as having
-    #    any hue, with no saturation.)
-    matching_pixels = np.where(
-        (abs_distance_to_hue <= cv2_tolerance) & saturated_pixels
-    )
-    matching_pixels_list: List[Point] = []
-    for i in range(len(matching_pixels[0])):
-        matching_pixels_list.append(Point(matching_pixels[1][i], matching_pixels[0][i]))
-    return list(PixelMerger().merge_pixels(matching_pixels_list))
+    boxes = []
+    for mask in masks:
+
+        masked_distances = np.full(abs_distance_to_hue.shape, np.inf)
+
+        right = mask.left + mask.width
+        bottom = mask.top + mask.height
+        masked_distances[mask.top : bottom, mask.left : right] = abs_distance_to_hue[
+            mask.top : bottom, mask.left : right
+        ]
+
+        # To determine which pixels have a color, we look for those that:
+        # 1. Match the hue
+        # 2. Are heavily saturated (i.e. aren't white---white pixels could be detected as having
+        #    any hue, with no saturation.)
+        matching_pixels = np.where(
+            (masked_distances <= cv2_tolerance) & saturated_pixels
+        )
+
+        matching_pixels_list: List[Point] = []
+        for i in range(len(matching_pixels[0])):
+            matching_pixels_list.append(
+                Point(matching_pixels[1][i], matching_pixels[0][i])
+            )
+        boxes.extend(list(PixelMerger().merge_pixels(matching_pixels_list)))
+
+    return boxes
 
 
 class PixelMerger:
