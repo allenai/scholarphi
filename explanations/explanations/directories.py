@@ -52,12 +52,15 @@ DIFF_IMAGES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
 HUE_LOCATIONS_FOR_CITATIONS_DIR = os.path.join(
     DATA_DIR, "22-hue-locations-for-citations"
 )
-
-# Debug directories (may or may not be created based on command options)
-DEBUG_DIR = os.path.join(DATA_DIR, "debug")
-COLORIZED_PAPER_IMAGES_DIR = os.path.join(DEBUG_DIR, "b-colorized-paper-images")
-DIFF_PAPER_IMAGES_DIR = os.path.join(DEBUG_DIR, "c-diff-paper-images")
-ANNOTATED_PDFS_DIR = os.path.join(DEBUG_DIR, "d-annotated-pdfs")
+HUE_LOCATIONS_FOR_EQUATIONS_DIR = os.path.join(
+    DATA_DIR, "23-hue-locations-for-equations"
+)
+HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR = os.path.join(
+    DATA_DIR, "24-hue-locations-for-equation-tokens"
+)
+ANNOTATED_PDFS_WITH_CITATION_BOXES_DIR = os.path.join(
+    DATA_DIR, "25-annotated-pdfs-with-citation-boxes"
+)
 
 # Directories for utilities
 NODE_DIRECTORY = "node"
@@ -142,31 +145,9 @@ def compilation_results(arxiv_id: str) -> str:
     return get_data_subdirectory_for_arxiv_id(COMPILED_SOURCES_DIR, arxiv_id)
 
 
-def annotated_pdfs(arxiv_id: str) -> str:
-    return get_data_subdirectory_for_arxiv_id(ANNOTATED_PDFS_DIR, arxiv_id)
-
-
 def paper_images(arxiv_id: str) -> str:
     return get_data_subdirectory_for_arxiv_id(PAPER_IMAGES_DIR, arxiv_id)
 
 
-def colorized_paper_images(arxiv_id: str) -> str:
-    return get_data_subdirectory_for_arxiv_id(COLORIZED_PAPER_IMAGES_DIR, arxiv_id)
-
-
-def diff_paper_images(arxiv_id: str) -> str:
-    return get_data_subdirectory_for_arxiv_id(DIFF_PAPER_IMAGES_DIR, arxiv_id)
-
-
-def get_original_pdf_path(arxiv_id: str, pdf_name: str) -> str:
-    """
-    TODO(andrewhead): Remove this function: should no longer be called.
-    """
-    return os.path.join(SOURCES_DIR, escape_slashes(arxiv_id), pdf_name)
-
-
-def get_annotated_pdf_path(arxiv_id: str, pdf_name: str) -> str:
-    """
-    TODO(andrewhead): Remove this function: should no longer be called.
-    """
-    return os.path.join(ANNOTATED_PDFS_DIR, escape_slashes(arxiv_id), pdf_name)
+def hue_locations_for_citations(arxiv_id: str) -> str:
+    return get_data_subdirectory_for_arxiv_id(HUE_LOCATIONS_FOR_CITATIONS_DIR, arxiv_id)
