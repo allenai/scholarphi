@@ -154,3 +154,36 @@ class LocateCitationHues(LocateHues):
     @staticmethod
     def get_output_base_dir() -> str:
         return directories.HUE_LOCATIONS_FOR_CITATIONS_DIR
+
+
+class LocateEquationHues(LocateCitationHues):
+    @staticmethod
+    def get_name() -> str:
+        return "locate-equation-hues"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Find bouning boxes of equations by hue."
+
+    def load_hues(self, arxiv_id: ArxivId) -> List[float]:
+        hues_path = os.path.join(
+            directories.sources_with_colorized_equations(arxiv_id), "equation_hues.csv"
+        )
+        if not os.path.exists(hues_path):
+            logging.warning("Could not find any citation hues for %s", arxiv_id)
+            return []
+
+        hues = []
+        with open(hues_path) as hues_file:
+            reader = csv.reader(hues_file)
+            for row in reader:
+                hues.append(float(row[3]))
+        return hues
+
+    @staticmethod
+    def get_diff_images_base_dir() -> str:
+        return directories.DIFF_IMAGES_WITH_COLORIZED_EQUATIONS_DIR
+
+    @staticmethod
+    def get_output_base_dir() -> str:
+        return directories.HUE_LOCATIONS_FOR_EQUATIONS_DIR

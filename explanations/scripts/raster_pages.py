@@ -46,7 +46,9 @@ class RasterPagesCommand(Command[PdfPath, fitz.Document], ABC):
             )
             clean_directory(output_dir)
 
-            pdf_paths = get_compiled_pdfs(directories.compilation_results(arxiv_id))
+            pdf_paths = get_compiled_pdfs(
+                get_data_subdirectory_for_arxiv_id(self.get_papers_base_dir(), arxiv_id)
+            )
             for path in pdf_paths:
                 yield PdfPath(arxiv_id, path)
 
@@ -111,3 +113,21 @@ class RasterPagesWithColorizedCitations(RasterPagesCommand):
     @staticmethod
     def get_output_base_dir() -> str:
         return directories.PAPER_WITH_COLORIZED_CITATIONS_IMAGES_DIR
+
+
+class RasterPagesWithColorizedEquations(RasterPagesCommand):
+    @staticmethod
+    def get_name() -> str:
+        return "raster-pages-with-colorized-equations"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Raster images of pages from papers with colorized equations."
+
+    @staticmethod
+    def get_papers_base_dir() -> str:
+        return directories.COMPILED_SOURCES_WITH_COLORIZED_EQUATIONS_DIR
+
+    @staticmethod
+    def get_output_base_dir() -> str:
+        return directories.PAPER_WITH_COLORIZED_EQUATIONS_IMAGES_DIR

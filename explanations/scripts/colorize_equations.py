@@ -72,7 +72,7 @@ class ColorizeEquations(Command[FileContents, TexWithColorizedEquations]):
             tex_file.write(colorized_tex)
 
         hues_path = os.path.join(
-            directories.sources_with_colorized_equation_tokens(item.arxiv_id),
+            directories.sources_with_colorized_equations(item.arxiv_id),
             "equation_hues.csv",
         )
         with open(hues_path, "a") as hues_file:
