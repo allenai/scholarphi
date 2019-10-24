@@ -131,3 +131,21 @@ class RasterPagesWithColorizedEquations(RasterPagesCommand):
     @staticmethod
     def get_output_base_dir() -> str:
         return directories.PAPER_WITH_COLORIZED_EQUATIONS_IMAGES_DIR
+
+
+class RasterPagesWithColorizedEquationTokens(RasterPagesCommand):
+    @staticmethod
+    def get_name() -> str:
+        return "raster-pages-with-colorized-equation-tokens"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Raster images of pages from papers with colorized equation tokens."
+
+    @staticmethod
+    def get_papers_base_dir() -> str:
+        return directories.COMPILED_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR
+
+    @staticmethod
+    def get_output_base_dir() -> str:
+        return directories.PAPER_WITH_COLORIZED_EQUATION_TOKENS_IMAGES_DIR

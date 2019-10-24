@@ -128,6 +128,10 @@ class Rectangle(NamedTuple):
 
 
 class PdfBoundingBox(NamedTuple):
+    """
+    Bounding box in PDF coordinates.
+    """
+
     left: float
     top: float
     width: float
@@ -135,9 +139,21 @@ class PdfBoundingBox(NamedTuple):
     page: int
 
 
-class LocalizedEquation(NamedTuple):
-    tex: str
-    box: PdfBoundingBox
+class RasterBoundingBox(NamedTuple):
+    """
+    Bounding box of pixel locations in an image.
+    """
+
+    left: int
+    top: int
+    width: int
+    height: int
+    page: int
+
+
+class BoundingBoxInfo(NamedTuple):
+    pdf_box: PdfBoundingBox
+    raster_box: RasterBoundingBox
 
 
 class Position(NamedTuple):

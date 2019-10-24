@@ -46,6 +46,19 @@
       "env": {
         "PYTHONPATH": "."
       }
+    },
+    {
+      "name": "Locate Tokens",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/process.py",
+      "console": "integratedTerminal",
+      "args": ["locate-equation-token-hues"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": ".",
+        "PATH": "/usr/local/bin"
+      }
     }
   ]
 }
