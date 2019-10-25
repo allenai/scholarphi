@@ -1,1 +1,6 @@
+# Don't track secret configuration variables
+config/secret.json
+
+# node modules
 node_modules
+
