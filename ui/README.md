@@ -8,12 +8,17 @@ More to come soon 🎉.
 
 # Build instructions
 
+(New instructions: make sure to also check out the `pdf.js` submodule in the
+`public` directory. Then enter that directory and run `npm install`.)
+
 The React app is implemented in the `src/` directory. You
 can test it standalone by running:
 
 ```bash
 npm run start
 ```
+
+(The below instructions are out-of-date.)
 
 The project can be packaged as a Chrome extension. This is
 done with `create-react-app`, and Webpack, which compile the

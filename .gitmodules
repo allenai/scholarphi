@@ -1,0 +1,3 @@
+[submodule "ui/public/pdfjs"]
+	path = ui/public/pdf.js
+	url = git@github.com:allenai/scholar-reader-pdfjs.git

@@ -1,13 +1,22 @@
+// import "antd/dist/antd.css";
+import $ from "jquery";
 import _ from "lodash";
-import * as queryString from "query-string";
+import queryString from "query-string";
 import React from "react";
 import ReactDOM from "react-dom";
+import { PDFPageView } from "../public/pdf.js/web/pdf_page_view";
+import { AnnotatedPage } from "./AnnotatedPage";
+import { citations } from "./citations";
 import "./index.css";
-import ScholarReader from "./ScholarReader";
 import { fetchSummaries, Summaries } from "./semanticScholar";
-import * as serviceWorker from "./serviceWorker";
+import { PageRenderedEvent, PDFViewerApplication } from "./types/pdfjs-viewer";
 
-// var DEFAULT_PDF_URL = "https://arxiv.org/pdf/1907.09807.pdf"  // Deep learning for programming languages paper
+declare global {
+  interface Window {
+    PDFViewerApplication?: PDFViewerApplication;
+  }
+}
+
 var DEFAULT_PDF_URL = "https://arxiv.org/pdf/1907.07355.pdf";
 
 var params = queryString.parse(window.location.search);
@@ -41,12 +50,69 @@ if (arxivId !== undefined) {
   });
 }
 
+let oldPredecessor: JQuery | undefined = undefined;
+const pageStamps: { [key: string]: number } = {};
+const pgs: { [key: string]: PDFPageView } = {};
+
+function onPDFViewerInitialized(application: PDFViewerApplication) {
+  application.eventBus.on("pagerendered", (eventData: PageRenderedEvent) => {
+    console.log("rendered", pageStamps);
+    const pageNumber = eventData.pageNumber;
+    pgs[pageNumber] = eventData.source;
+    pageStamps[pageNumber] = eventData.timestamp;
+
+    if (pageNumber === 1) {
+      const pageDiv = eventData.source.div;
+      if (oldPredecessor !== undefined) {
+        oldPredecessor.remove();
+      }
+      oldPredecessor = $("<div>")
+        .width(pageDiv.clientWidth)
+        .height(pageDiv.clientHeight)
+        .css("background-color", "white")
+        .css("margin", "1px auto -8px auto")
+        .text("glossary")
+        .insertBefore(pageDiv);
+    }
+
+    const comp = (
+      <div>
+        {Object.keys(pageStamps).map(key => {
+          return (
+            <AnnotatedPage
+              key={key + pageStamps[key]}
+              index={Number(key)}
+              citations={citations(DEFAULT_PDF_URL, Number(key))}
+              summaries={summaries}
+              page={pgs[key]}
+            ></AnnotatedPage>
+          );
+        })}
+      </div>
+    );
+
+    const parent = document.querySelector("#phantom");
+    if (parent !== null) {
+      ReactDOM.render(comp, parent);
+    }
+  });
+}
+
+const CHECK_VIEWER_INITIALIZED_PERIOD_MS = 50;
+
+function checkPDFViewerInitialized() {
+  if (window.PDFViewerApplication !== undefined && window.PDFViewerApplication.initialized) {
+    onPDFViewerInitialized(window.PDFViewerApplication);
+  } else {
+    setTimeout(checkPDFViewerInitialized, CHECK_VIEWER_INITIALIZED_PERIOD_MS);
+  }
+}
+
+checkPDFViewerInitialized();
+
+/*
 ReactDOM.render(
   <ScholarReader pdfUrl={url} summaries={summaries} />,
   document.getElementById("root")
 );
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+*/
