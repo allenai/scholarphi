@@ -16,12 +16,14 @@
   "devDependencies": {
     "@types/hapi__hapi": "^18.2.5",
     "@types/hapi__joi": "^16.0.2",
+    "@types/nconf": "^0.10.0",
     "ts-node": "^8.4.1",
     "tslint": "^5.20.0",
     "typescript": "^3.6.4"
   },
   "dependencies": {
     "@hapi/hapi": "^18.4.0",
-    "@hapi/joi": "^16.1.7"
+    "@hapi/joi": "^16.1.7",
+    "nconf": "^0.10.0"
   }
 }

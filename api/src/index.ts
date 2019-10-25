@@ -1,37 +1,20 @@
-import * as Hapi from "@hapi/hapi";
-import * as Joi from "@hapi/joi";
+import * as nconf from "nconf";
+import { init } from "./server";
 
-const init = async () => {
-  const server = new Hapi.Server({
-    port: 3000,
-    host: "localhost"
-  });
-
-  server.route({
-    method: "GET",
-    path: "/{s2id}/citations",
-    handler: request => {
-      const s2id = request.params.s2id;
-      return { key: "value", another_key: 2, s2id };
-    },
-    options: {
-      validate: {
-        params: Joi.object({
-          s2id: Joi.string()
-            .alphanum()
-            .length(40)
-        })
-      }
+nconf
+  .argv()
+  .env()
+  .file({ file: "config/secret.json" })
+  .defaults({
+    database: {
+      host: "scholar-reader.cjc2varstph5.us-east-2.rds.amazonaws.com",
+      port: 5432,
+      name: "postgres",
+      username: "postgres"
     }
   });
 
-  await server.start();
-  console.log("Server running on %s", server.info.uri);
-};
-
-process.on("unhandledRejection", err => {
-  console.log(err);
-  process.exit(1);
-});
+console.log(nconf.get("database:name"));
+console.log(nconf.get("database:other"));
 
 init();
