@@ -3,15 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^4.3.2",
+    "@types/pdfjs-dist": "^2.1.2",
+    "antd": "^3.24.2",
     "jquery": "^3.4.1",
-    "leven": "^3.1.0",
     "lodash": "^4.17.15",
     "node-sass": "^4.12.0",
     "query-string": "^6.8.1",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "react-pdf": "^4.1.0"
+    "react-dom": "^16.8.6"
   },
   "scripts": {
     "start": "node scripts/start.js",
@@ -89,7 +88,6 @@
     "@types/lodash": "^4.14.136",
     "@types/react": "^16.8.23",
     "@types/react-dom": "^16.8.5",
-    "@types/react-pdf": "^4.0.2",
     "react-scripts": "^3.0.1",
     "rewire": "^4.0.1",
     "tslint": "^5.18.0",

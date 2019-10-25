@@ -1,12 +1,7 @@
 import React from "react";
-import { Document, Page } from "react-pdf/dist/entry.webpack";
-
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "./ScholarReader.scss";
-import { AnnotatedPage } from "./AnnotatedPage";
-import { citations } from "./citations";
 import { Summaries } from "./semanticScholar";
-import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 
 interface ScholarReaderProps {
   pdfUrl: string | undefined;
@@ -17,12 +12,6 @@ interface ScholarReaderState {
   numPages: number | null;
   pageNumber: number;
 }
-
-const theme = createMuiTheme({
-  palette: {
-    type: "light"
-  }
-});
 
 /*
  * Based on example code from the react-pdf project,
@@ -47,27 +36,11 @@ class ScholarReader extends React.Component<ScholarReaderProps, ScholarReaderSta
     const { numPages } = this.state;
 
     return (
-      <MuiThemeProvider theme={theme}>
-        <div className="ScholarReader">
-          <div className="ScholarReader__container">
-            <div className="ScholarReader__container__document">
-              <Document
-                file={this.props.pdfUrl}
-                onLoadSuccess={this.onDocumentLoadSuccess.bind(this)}
-              >
-                {Array.from(new Array(numPages), (_, index) => (
-                  <AnnotatedPage
-                    key={`page_${index + 1}`}
-                    index={index}
-                    citations={citations(this.props.pdfUrl, index + 1)}
-                    summaries={this.props.summaries}
-                  />
-                ))}
-              </Document>
-            </div>
-          </div>
+      <div className="ScholarReader">
+        <div className="ScholarReader__container">
+          <div className="ScholarReader__container__document"></div>
         </div>
-      </MuiThemeProvider>
+      </div>
     );
   }
 }

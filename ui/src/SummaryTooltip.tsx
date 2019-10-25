@@ -1,19 +1,18 @@
-import { Summary } from "./semanticScholar";
 import React from "react";
-import { Tooltip, Theme, withStyles } from "@material-ui/core";
+import { Summary } from "./semanticScholar";
 
-export const SummaryTooltip = withStyles((theme: Theme) => ({
-  tooltip: {
-    backgroundColor: theme.palette.common.white,
-    color: "rgba(0, 0, 0, 0.87)",
-    boxShadow: theme.shadows[3],
-    fontFamily: ["Garamond", "Lora", '"Times New Roman"', "serif"].join(","),
-    fontSize: "12px",
-    maxWidth: "400px",
-    paddingLeft: "1rem",
-    paddingRight: "1rem"
-  },
-}))(Tooltip);
+/*
+tooltip: {
+backgroundColor: theme.palette.common.white,
+color: "rgba(0, 0, 0, 0.87)",
+boxShadow: theme.shadows[3],
+fontFamily: ["Garamond", "Lora", '"Times New Roman"', "serif"].join(","),
+fontSize: "12px",
+maxWidth: "400px",
+paddingLeft: "1rem",
+paddingRight: "1rem"
+}
+*/
 
 interface SummaryProps {
   summary: Summary;
@@ -23,8 +22,14 @@ export function SummaryView(props: SummaryProps) {
   const authorNamesList = joinAuthorNames(...props.summary.authors);
   return (
     <div className="summary">
-      <p><b className="title">{props.summary.title}</b></p>
-      {authorNamesList && <p><i className="authors">{authorNamesList}</i></p>}
+      <p>
+        <b className="title">{props.summary.title}</b>
+      </p>
+      {authorNamesList && (
+        <p>
+          <i className="authors">{authorNamesList}</i>
+        </p>
+      )}
       <p>{props.summary.abstract}</p>
     </div>
   );
