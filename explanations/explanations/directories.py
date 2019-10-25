@@ -65,7 +65,7 @@ ANNOTATED_PDFS_WITH_EQUATION_BOXES_DIR = os.path.join(
     DATA_DIR, "26-annotated-pdfs-with-equation-boxes"
 )
 ANNOTATED_PDFS_WITH_EQUATION_TOKEN_BOXES_DIR = os.path.join(
-    DATA_DIR, "26-annotated-pdfs-with-equation-token-boxes"
+    DATA_DIR, "27-annotated-pdfs-with-equation-token-boxes"
 )
 
 # Directories for utilities

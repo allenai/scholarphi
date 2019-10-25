@@ -77,3 +77,7 @@ class FetchS2Metadata(Command[ArxivId, S2Metadata]):
                         reference.year,
                     ]
                 )
+
+        s2_id_path = os.path.join(s2_metadata_dir, "s2_id")
+        with open(s2_id_path, "w") as s2_id_file:
+            s2_id_file.write(result.s2id)
