@@ -20,10 +20,10 @@ class Author(NamedTuple):
 class Reference(NamedTuple):
     s2Id: S2Id
     arxivId: Optional[ArxivId]
-    doi: str
+    doi: Optional[str]
     title: str
     authors: List[Author]
-    venue: str
+    venue: Optional[str]
     year: Optional[int]
 
 

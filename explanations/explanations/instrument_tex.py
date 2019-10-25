@@ -28,20 +28,19 @@ from explanations.types import (
 
 # TODO(andrewhead): determine number of hues based on the number of hues that OpenCV is capable
 # of distinguishing between. Current value is a guess.
-NUM_HUES = 20
+NUM_HUES = 30
 HUES = np.linspace(0, 1, NUM_HUES)
 
 
 def generate_hues() -> Iterator[float]:
-    """
-    TODO(andrewhead): rather than endlessly cycling through hues, yield the 'StopIteration' signal
-    when out of hues, and let the caller handle resetting the generator.
-    """
-    while True:
-        for hue in HUES:
-            yield hue
-    # logging.error("Out of hues!")
-    # raise StopIteration
+    for hue in HUES:
+        yield hue
+    logging.error(
+        (
+            "Ran out of hues. It's likely many entities in the paper won't get colored."
+            + "Must start over with another copy of the paper to keep coloring."
+        )
+    )
 
 
 def colorize_citations(tex: str) -> Tuple[str, List[ColorizedCitation]]:
@@ -60,7 +59,10 @@ def colorize_citations(tex: str) -> Tuple[str, List[ColorizedCitation]]:
                 break
 
         if keys is not None:
-            hue = next(hue_generator)
+            try:
+                hue = next(hue_generator)
+            except StopIteration:
+                break
             citation_string = str(citation)
             new_citation = TexSoup(_color_start(hue) + citation_string + _color_end())
             _replace_equation(citation, new_citation)
@@ -117,7 +119,10 @@ def _colorize_tokens_in_equation(
     tokens_last_to_first = sorted(tokens, key=lambda t: t.start, reverse=True)
 
     for token in tokens_last_to_first:
-        hue = next(hue_generator)
+        try:
+            hue = next(hue_generator)
+        except StopIteration:
+            break
         color_start = _color_start(hue)
         color_end = _color_end()
 
