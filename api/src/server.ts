@@ -1,7 +1,7 @@
 import * as Hapi from "@hapi/hapi";
 import * as Joi from "@hapi/joi";
-import * as knex_init from "knex";
 import * as nconf from "nconf";
+import { Connection } from "./queries";
 
 export const init = async (config: nconf.Provider) => {
   const server = new Hapi.Server({
@@ -12,25 +12,14 @@ export const init = async (config: nconf.Provider) => {
     }
   });
 
-  const knex = knex_init({
-    client: "pg",
-    connection: {
-      host: config.get("database:host"),
-      port: config.get("database:port"),
-      user: config.get("database:user"),
-      password: config.get("database:password"),
-      database: config.get("database:database")
-    }
-  });
+  const dbConnection = new Connection(config);
 
   server.route({
     method: "GET",
     path: "/{s2id}/citations",
     handler: request => {
       const s2id = request.params.s2id;
-      return knex("citation")
-        .select()
-        .first();
+      return dbConnection.getCitations(s2id);
     },
     options: {
       validate: {
