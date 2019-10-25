@@ -139,6 +139,11 @@ class PdfBoundingBox(NamedTuple):
     page: int
 
 
+class PdfBoundingBoxAndHue(NamedTuple):
+    hue: float
+    box: PdfBoundingBox
+
+
 class RasterBoundingBox(NamedTuple):
     """
     Bounding box of pixel locations in an image.

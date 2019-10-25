@@ -8,10 +8,11 @@ import fitz
 
 from explanations import directories
 from explanations.compile import get_compiled_pdfs
-from explanations.directories import get_arxiv_ids, get_data_subdirectory_for_arxiv_id
+from explanations.directories import (get_arxiv_ids,
+                                      get_data_subdirectory_for_arxiv_id)
 from explanations.file_utils import clean_directory, open_pdf
 from explanations.image_processing import annotate_pdf
-from explanations.types import ArxivId, PdfBoundingBox
+from explanations.types import ArxivId, PdfBoundingBox, PdfBoundingBoxAndHue
 from scripts.command import Command
 
 
@@ -19,7 +20,7 @@ class PdfAndBoxes(NamedTuple):
     arxiv_id: ArxivId
     pdf: fitz.Document
     relative_pdf_path: str
-    bounding_boxes: List[PdfBoundingBox]
+    boxes_and_hues: List[PdfBoundingBoxAndHue]
 
 
 class AnnotatePdfsCommand(Command[PdfAndBoxes, fitz.Document], ABC):
@@ -35,7 +36,9 @@ class AnnotatePdfsCommand(Command[PdfAndBoxes, fitz.Document], ABC):
         """
 
     @abstractmethod
-    def load_bounding_boxes(self, arxiv_id: ArxivId) -> Dict[str, List[PdfBoundingBox]]:
+    def load_bounding_boxes(
+        self, arxiv_id: ArxivId
+    ) -> Dict[str, List[PdfBoundingBoxAndHue]]:
         """
         Load map from PDF paths to bounding boxes for those PDFs.
         """
@@ -47,7 +50,7 @@ class AnnotatePdfsCommand(Command[PdfAndBoxes, fitz.Document], ABC):
             )
             clean_directory(output_dir)
 
-            bounding_boxes = self.load_bounding_boxes(arxiv_id)
+            boxes_and_hues = self.load_bounding_boxes(arxiv_id)
 
             pdf_paths = get_compiled_pdfs(directories.compilation_results(arxiv_id))
             if len(pdf_paths) == 0:
@@ -59,16 +62,16 @@ class AnnotatePdfsCommand(Command[PdfAndBoxes, fitz.Document], ABC):
                         directories.compilation_results(arxiv_id), relative_pdf_path
                     )
                 )
-                if relative_pdf_path in bounding_boxes:
+                if relative_pdf_path in boxes_and_hues:
                     yield PdfAndBoxes(
                         arxiv_id,
                         pdf,
                         relative_pdf_path,
-                        bounding_boxes[relative_pdf_path],
+                        boxes_and_hues[relative_pdf_path],
                     )
 
     def process(self, item: PdfAndBoxes) -> Iterator[fitz.Document]:
-        annotate_pdf(item.pdf, item.bounding_boxes)
+        annotate_pdf(item.pdf, item.boxes_and_hues)
         yield item.pdf
 
     def save(self, item: PdfAndBoxes, result: fitz.Document) -> None:
@@ -84,7 +87,7 @@ class AnnotatePdfsCommand(Command[PdfAndBoxes, fitz.Document], ABC):
 
 def common_load_bounding_boxes(
     hue_locations_dir_path: str
-) -> Dict[str, List[PdfBoundingBox]]:
+) -> Dict[str, List[PdfBoundingBoxAndHue]]:
     box_data_path = os.path.join(hue_locations_dir_path, "hue_locations.csv")
 
     if not os.path.exists(box_data_path):
@@ -94,11 +97,12 @@ def common_load_bounding_boxes(
         )
         return {}
 
-    boxes: Dict[str, List[PdfBoundingBox]] = {}
+    boxes: Dict[str, List[PdfBoundingBoxAndHue]] = {}
     with open(box_data_path) as box_data_file:
         reader = csv.reader(box_data_file)
         for row in reader:
             pdf_path = row[0]
+            hue = float(row[1])
             box = PdfBoundingBox(
                 page=int(row[2]),
                 left=float(row[3]),
@@ -108,7 +112,7 @@ def common_load_bounding_boxes(
             )
             if not pdf_path in boxes:
                 boxes[pdf_path] = []
-            boxes[pdf_path].append(box)
+            boxes[pdf_path].append(PdfBoundingBoxAndHue(hue, box))
     return boxes
 
 
@@ -125,7 +129,9 @@ class AnnotatePdfsWithCitationBoxes(AnnotatePdfsCommand):
     def get_output_base_dir() -> str:
         return directories.ANNOTATED_PDFS_WITH_CITATION_BOXES_DIR
 
-    def load_bounding_boxes(self, arxiv_id: ArxivId) -> Dict[str, List[PdfBoundingBox]]:
+    def load_bounding_boxes(
+        self, arxiv_id: ArxivId
+    ) -> Dict[str, List[PdfBoundingBoxAndHue]]:
         return common_load_bounding_boxes(
             directories.hue_locations_for_citations(arxiv_id)
         )
@@ -144,7 +150,9 @@ class AnnotatePdfsWithEquationBoxes(AnnotatePdfsCommand):
     def get_output_base_dir() -> str:
         return directories.ANNOTATED_PDFS_WITH_EQUATION_BOXES_DIR
 
-    def load_bounding_boxes(self, arxiv_id: ArxivId) -> Dict[str, List[PdfBoundingBox]]:
+    def load_bounding_boxes(
+        self, arxiv_id: ArxivId
+    ) -> Dict[str, List[PdfBoundingBoxAndHue]]:
         return common_load_bounding_boxes(
             directories.hue_locations_for_equations(arxiv_id)
         )
@@ -163,7 +171,9 @@ class AnnotatePdfsWithEquationTokenBoxes(AnnotatePdfsCommand):
     def get_output_base_dir() -> str:
         return directories.ANNOTATED_PDFS_WITH_EQUATION_TOKEN_BOXES_DIR
 
-    def load_bounding_boxes(self, arxiv_id: ArxivId) -> Dict[str, List[PdfBoundingBox]]:
+    def load_bounding_boxes(
+        self, arxiv_id: ArxivId
+    ) -> Dict[str, List[PdfBoundingBoxAndHue]]:
         return common_load_bounding_boxes(
             directories.hue_locations_for_equation_tokens(arxiv_id)
         )
