@@ -1,3 +1,4 @@
+import colorsys
 import logging
 from typing import List
 
@@ -6,7 +7,7 @@ import fitz
 import numpy as np
 from PIL import Image
 
-from explanations.types import PdfBoundingBox
+from explanations.types import PdfBoundingBoxAndHue
 
 
 def get_cv2_images(pdf: fitz.Document) -> List[np.ndarray]:
@@ -31,12 +32,15 @@ def get_cv2_images(pdf: fitz.Document) -> List[np.ndarray]:
     return page_images
 
 
-def annotate_pdf(pdf: fitz.Document, boxes: List[PdfBoundingBox]) -> fitz.Document:
+def annotate_pdf(
+    pdf: fitz.Document, boxes: List[PdfBoundingBoxAndHue]
+) -> fitz.Document:
     """
     Annotate the 'pdf' object passed in. Caller is responsible for saving this file to disk.
     """
     logging.debug("Annotating PDF with bounding boxes.")
-    for box in boxes:
+    for box_and_hue in boxes:
+        box = box_and_hue.box
         page: fitz.Page = pdf[box.page]
         # For many PDFs with the pyMuPDF toolkit, coordinates of annotations are relative to the
         # top-left of the page, though in some cases it's relative to the bottom-left. In those
@@ -53,7 +57,8 @@ def annotate_pdf(pdf: fitz.Document, boxes: List[PdfBoundingBox]) -> fitz.Docume
         top = page.rect.height - box.top
         bottom = top + box.height
         rect = (box.left, top, box.left + box.width, bottom)
-        page.drawRect(rect, color=(0, 0, 0), fill=None)
+        color = colorsys.hsv_to_rgb(box_and_hue.hue, 1, 1)
+        page.drawRect(rect, color=color, fill=None)
     return pdf
 
 

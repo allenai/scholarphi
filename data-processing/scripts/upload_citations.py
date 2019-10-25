@@ -71,7 +71,7 @@ class UploadCitations(Command[CitationData, None]):
                         width=float(row[5]),
                         height=float(row[6]),
                     )
-                    if not hue in boxes_by_hue:
+                    if hue not in boxes_by_hue:
                         boxes_by_hue[hue] = []
                     boxes_by_hue[hue].append(box)
 
@@ -187,7 +187,9 @@ class UploadCitations(Command[CitationData, None]):
                             Summary.create(
                                 paper=cited_paper,
                                 title=paper_data.title,
-                                authors=paper_data.authors,
+                                authors=",".join(
+                                    [author.name for author in paper_data.authors]
+                                ),
                                 doi=paper_data.doi,
                                 venue=paper_data.venue,
                                 year=paper_data.year,
@@ -202,7 +204,7 @@ class UploadCitations(Command[CitationData, None]):
             for box in bounding_boxes:
                 bounding_box = BoundingBox.create(
                     page=box.page,
-                    left=box.page,
+                    left=box.left,
                     top=box.top,
                     width=box.width,
                     height=box.height,
