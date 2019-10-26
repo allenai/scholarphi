@@ -1,15 +1,12 @@
 // import "antd/dist/antd.css";
-import $ from "jquery";
 import _ from "lodash";
 import queryString from "query-string";
 import React from "react";
 import ReactDOM from "react-dom";
-import { PDFPageView } from "../public/pdf.js/web/pdf_page_view";
-import { AnnotatedPage } from "./AnnotatedPage";
-import { citations } from "./citations";
 import "./index.css";
+import ScholarReader from "./ScholarReader";
 import { fetchSummaries, Summaries } from "./semanticScholar";
-import { PageRenderedEvent, PDFViewerApplication } from "./types/pdfjs-viewer";
+import { PDFViewerApplication } from "./types/pdfjs-viewer";
 
 declare global {
   interface Window {
@@ -52,8 +49,10 @@ if (arxivId !== undefined) {
 
 let oldPredecessor: JQuery | undefined = undefined;
 const pageStamps: { [key: string]: number } = {};
-const pgs: { [key: string]: PDFPageView } = {};
 
+ReactDOM.render(<ScholarReader />, document.querySelector("#scholar-reader"));
+
+/*
 function onPDFViewerInitialized(application: PDFViewerApplication) {
   application.eventBus.on("pagerendered", (eventData: PageRenderedEvent) => {
     console.log("rendered", pageStamps);
@@ -97,18 +96,7 @@ function onPDFViewerInitialized(application: PDFViewerApplication) {
     }
   });
 }
-
-const CHECK_VIEWER_INITIALIZED_PERIOD_MS = 50;
-
-function checkPDFViewerInitialized() {
-  if (window.PDFViewerApplication !== undefined && window.PDFViewerApplication.initialized) {
-    onPDFViewerInitialized(window.PDFViewerApplication);
-  } else {
-    setTimeout(checkPDFViewerInitialized, CHECK_VIEWER_INITIALIZED_PERIOD_MS);
-  }
-}
-
-checkPDFViewerInitialized();
+*/
 
 /*
 ReactDOM.render(
