@@ -1,4 +1,4 @@
-import { PDFPageView } from "../../public/pdf.js/web/pdf_page_view";
+import { PDFPageProxy } from "pdfjs-dist";
 
 /**
  * Declarations for the PDF.js viewer application. These types are not declared as part of
@@ -22,4 +22,10 @@ export interface PageRenderedEvent {
   pageNumber: number;
   cssTransform: boolean;
   timestamp: number;
+}
+
+export interface PDFPageView {
+  pdfPage: PDFPageProxy;
+  canvas: HTMLCanvasElement;
+  div: HTMLDivElement;
 }
