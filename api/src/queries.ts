@@ -40,7 +40,15 @@ export class Connection {
     });
   }
 
-  async getCitations(s2Id: string) {
+  async getCitationsForS2Id(s2Id: string) {
+    return await this.getCitationsForPaper({ s2_id: s2Id });
+  }
+
+  async getCitationsForArxivId(arxivId: string) {
+    return await this.getCitationsForPaper({ arxiv_id: arxivId });
+  }
+
+  async getCitationsForPaper(paperSelector: PaperSelector) {
     const rows = await this._knex("paper")
       .select(
         "citation.id as citation_id",
@@ -56,7 +64,7 @@ export class Connection {
         "width",
         "height"
       )
-      .where({ s2_id: s2Id })
+      .where(paperSelector)
       // Get citations.
       .join("citation", { "paper.s2_id": "citation.paper_id" })
       // Get bounding box for each citation.
@@ -111,4 +119,17 @@ function add_bounding_box(citation: Citation, box: BoundingBox) {
   if (!citation.bounding_boxes.some(b => _.isEqual(b, box))) {
     citation.bounding_boxes.push(box);
   }
+}
+
+/**
+ * Expected knex.js parameters for selecting a paper. Map from paper table column ID to value.
+ */
+type PaperSelector = ArxivIdPaperSelector | S2IdPaperSelector;
+
+interface ArxivIdPaperSelector {
+  arxiv_id: string;
+}
+
+interface S2IdPaperSelector {
+  s2_id: string;
 }
