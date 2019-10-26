@@ -1,6 +1,8 @@
-# Don't track secret configuration variables
+# Secret configuration variables
 config/secret.json
 
 # node modules
 node_modules
 
+# Editor settings
+.vscode/settings.json 
