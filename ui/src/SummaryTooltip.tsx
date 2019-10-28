@@ -1,5 +1,10 @@
 import React from "react";
-import { Summary } from "./semanticScholar";
+
+interface Summary {
+  title: string;
+  authors: string[];
+  abstract: string;
+}
 
 /*
 tooltip: {

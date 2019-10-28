@@ -1,9 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { CitationAnnotation } from "./CitationAnnotation";
 import "./ScholarReader.scss";
+import * as selectors from "./selectors";
+import { ScholarReaderContext } from "./state";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
 interface PageProps {
+  pageNumber: number;
   view: PDFPageView;
 }
 
@@ -43,9 +47,26 @@ class PageOverlay extends React.Component<PageProps, {}> {
 
   render() {
     return ReactDOM.createPortal(
-      <>
-        <p>Hello, world!</p>
-      </>,
+      <ScholarReaderContext.Consumer>
+        {({ citations }) => {
+          const localizedCitations = selectors.citationsForPage(
+            [...citations],
+            this.props.pageNumber
+          );
+          return (
+            <>
+              {localizedCitations.map(c => (
+                <CitationAnnotation
+                  key={selectors.citationKey(c.bounding_box, c.citation)}
+                  location={c.bounding_box}
+                  citation={c.citation}
+                  pageView={this.props.view}
+                />
+              ))}
+            </>
+          );
+        }}
+      </ScholarReaderContext.Consumer>,
       this._element
     );
   }

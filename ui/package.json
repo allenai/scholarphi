@@ -2,10 +2,11 @@
   "name": "moody",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:3000",
   "dependencies": {
     "@types/pdfjs-dist": "^2.1.2",
     "antd": "^3.24.2",
-    "jquery": "^3.4.1",
+    "axios": "^0.19.0",
     "lodash": "^4.17.15",
     "node-sass": "^4.12.0",
     "query-string": "^6.8.1",
@@ -84,7 +85,6 @@
     ]
   },
   "devDependencies": {
-    "@types/jquery": "^3.3.31",
     "@types/lodash": "^4.14.136",
     "@types/react": "^16.8.23",
     "@types/react-dom": "^16.8.5",
