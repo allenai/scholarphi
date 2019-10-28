@@ -1,4 +1,4 @@
-import { PDFPageProxy } from "pdfjs-dist";
+import { PDFPageProxy, PDFPageViewport } from "pdfjs-dist";
 
 /**
  * Declarations for the PDF.js viewer application. These types are not declared as part of
@@ -28,4 +28,6 @@ export interface PDFPageView {
   pdfPage: PDFPageProxy;
   canvas: HTMLCanvasElement;
   div: HTMLDivElement;
+  scale: number;
+  viewport: PDFPageViewport;
 }

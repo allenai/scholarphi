@@ -3,8 +3,10 @@ import { Citation } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
 export interface State {
-  citations: Citation[];
-  pages: Pages;
+  setCitations(citations: Citation[]): void;
+  setPages(pages: Pages): void;
+  citations: Readonly<Citation[]>;
+  pages: Readonly<Pages>;
 }
 
 /**
@@ -23,9 +25,20 @@ interface PageModel {
   view: PDFPageView;
 }
 
-export const initialState = {
+export interface PaperId {
+  id: string;
+  type: "s2" | "arxiv";
+}
+
+const defaultState: State = {
+  setCitations: (citation: Citation[]) => {
+    return;
+  },
+  setPages: (pages: Pages) => {
+    return;
+  },
   citations: [],
-  pages: []
+  pages: {}
 };
 
-export const ScholarReaderContext = React.createContext(initialState);
+export const ScholarReaderContext = React.createContext<State>(defaultState);

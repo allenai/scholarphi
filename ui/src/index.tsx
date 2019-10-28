@@ -1,11 +1,10 @@
 // import "antd/dist/antd.css";
-import _ from "lodash";
 import queryString from "query-string";
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import ScholarReader from "./ScholarReader";
-import { fetchSummaries, Summaries } from "./semanticScholar";
+import { PaperId } from "./state";
 import { PDFViewerApplication } from "./types/pdfjs-viewer";
 
 declare global {
@@ -13,23 +12,6 @@ declare global {
     PDFViewerApplication?: PDFViewerApplication;
   }
 }
-
-var DEFAULT_PDF_URL = "https://arxiv.org/pdf/1907.07355.pdf";
-
-var params = queryString.parse(window.location.search);
-var url;
-if (params.url instanceof Array) {
-  url = params.url[0];
-} else if (params.url == null) {
-  url = DEFAULT_PDF_URL;
-} else {
-  url = params.url;
-}
-
-/**
- * List of paper summaries, to be populated asynchronously.
- */
-const summaries: Summaries = {};
 
 /**
  * TODO(andrewhead): Handle the case of arXiv publications that have multiple versions. How do we
@@ -40,67 +22,20 @@ function extractArxivId(url: string): string | undefined {
   return matches[1];
 }
 
-const arxivId = extractArxivId(url);
-if (arxivId !== undefined) {
-  fetchSummaries(arxivId, (fetchedSummaries: Summaries) => {
-    _.merge(summaries, fetchedSummaries);
-  });
+const params = queryString.parse(window.location.search);
+let url: string | undefined = undefined;
+if (params.file instanceof Array) {
+  url = params.file[0];
+} else if (typeof params.file === "string") {
+  url = params.file;
 }
 
-let oldPredecessor: JQuery | undefined = undefined;
-const pageStamps: { [key: string]: number } = {};
-
-ReactDOM.render(<ScholarReader />, document.querySelector("#scholar-reader"));
-
-/*
-function onPDFViewerInitialized(application: PDFViewerApplication) {
-  application.eventBus.on("pagerendered", (eventData: PageRenderedEvent) => {
-    console.log("rendered", pageStamps);
-    const pageNumber = eventData.pageNumber;
-    pgs[pageNumber] = eventData.source;
-    pageStamps[pageNumber] = eventData.timestamp;
-
-    if (pageNumber === 1) {
-      const pageDiv = eventData.source.div;
-      if (oldPredecessor !== undefined) {
-        oldPredecessor.remove();
-      }
-      oldPredecessor = $("<div>")
-        .width(pageDiv.clientWidth)
-        .height(pageDiv.clientHeight)
-        .css("background-color", "white")
-        .css("margin", "1px auto -8px auto")
-        .text("glossary")
-        .insertBefore(pageDiv);
-    }
-
-    const comp = (
-      <div>
-        {Object.keys(pageStamps).map(key => {
-          return (
-            <AnnotatedPage
-              key={key + pageStamps[key]}
-              index={Number(key)}
-              citations={citations(DEFAULT_PDF_URL, Number(key))}
-              summaries={summaries}
-              page={pgs[key]}
-            ></AnnotatedPage>
-          );
-        })}
-      </div>
-    );
-
-    const parent = document.querySelector("#phantom");
-    if (parent !== null) {
-      ReactDOM.render(comp, parent);
-    }
-  });
+let paperId: PaperId | undefined = undefined;
+if (url !== undefined) {
+  const arxivId = extractArxivId(url);
+  if (arxivId !== undefined) {
+    paperId = { type: "arxiv", id: arxivId };
+  }
 }
-*/
 
-/*
-ReactDOM.render(
-  <ScholarReader pdfUrl={url} summaries={summaries} />,
-  document.getElementById("root")
-);
-*/
+ReactDOM.render(<ScholarReader paperId={paperId} />, document.querySelector("#scholar-reader"));
