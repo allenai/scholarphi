@@ -1,17 +1,18 @@
 import React from "react";
-import { Citation } from "./types/api";
+import { Citation, Paper } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
 export interface State {
-  setCitations(citations: Citation[]): void;
-  setPages(pages: Pages): void;
   citations: Readonly<Citation[]>;
+  papers: Readonly<Papers>;
   pages: Readonly<Pages>;
+
+  setCitations(citations: Citation[]): void;
+  setPapers(papers: Papers): void;
+  setPages(pages: Pages): void;
 }
 
-/**
- * Indexed by page number.
- */
+export type Papers = { [s2Id: string]: Paper };
 export type Pages = { [pageNumber: number]: PageModel };
 
 interface PageModel {
@@ -34,10 +35,14 @@ const defaultState: State = {
   setCitations: (citation: Citation[]) => {
     return;
   },
+  setPapers: (papers: Papers) => {
+    return;
+  },
   setPages: (pages: Pages) => {
     return;
   },
   citations: [],
+  papers: {},
   pages: {}
 };
 

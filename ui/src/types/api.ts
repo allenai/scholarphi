@@ -11,11 +11,12 @@ export interface Paper {
   title: string;
   authors: string;
   abstract: string | null;
+  url: string;
   venue: string | null;
   year: number | null;
 }
 
 export interface Citation {
   bounding_boxes: BoundingBox[];
-  papers: Paper[];
+  papers: string[];
 }
