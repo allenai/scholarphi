@@ -27,7 +27,7 @@ export const init = async (config: nconf.Provider) => {
     plugin: require("./api"),
     options: { config },
     routes: {
-      prefix: "/api/v0"
+      prefix: "/api/v0/"
     }
   });
 

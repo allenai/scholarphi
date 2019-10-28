@@ -10,18 +10,9 @@ interface BoundingBox {
   height: number;
 }
 
-interface Paper {
-  s2Id: string;
-  title: string;
-  authors: string;
-  abstract: string | null;
-  venue: string | null;
-  year: number | null;
-}
-
 interface Citation {
   bounding_boxes: BoundingBox[];
-  papers: Paper[];
+  papers: string[];
 }
 
 type CitationsById = { [id: string]: Citation };
@@ -53,11 +44,6 @@ export class Connection {
       .select(
         "citation.id as citation_id",
         "citationpaper.paper_id as cited_paper_id",
-        "title",
-        "authors",
-        "abstract",
-        "year",
-        "venue",
         "page",
         "left",
         "top",
@@ -72,9 +58,8 @@ export class Connection {
       .where({ "entity.type": "citation" })
       .join("entityboundingbox", { "entity.id": "entityboundingbox.entity_id" })
       .join("boundingbox", { "entityboundingbox.bounding_box_id": "boundingbox.id" })
-      // Get summary data for each paper cited in a citation.
-      .join("citationpaper", { "citation.id": "citationpaper.citation_id" })
-      .join("summary", { "citationpaper.paper_id": "summary.paper_id" });
+      // Get S2 paper ID for each citation.
+      .join("citationpaper", { "citation.id": "citationpaper.citation_id" });
 
     const citations: CitationsById = {};
     for (const row of rows) {
@@ -85,14 +70,7 @@ export class Connection {
           papers: []
         };
       }
-      const paper: Paper = {
-        s2Id: row["cited_paper_id"],
-        title: row.title,
-        authors: row.authors,
-        abstract: row.abstract,
-        venue: row.venue,
-        year: row.year
-      };
+      const s2Id = row["cited_paper_id"];
       const bounding_box: BoundingBox = {
         page: row.page,
         left: row.left,
@@ -100,7 +78,7 @@ export class Connection {
         width: row.width,
         height: row.height
       };
-      add_paper(citations[key], paper);
+      add_paper(citations[key], s2Id);
       add_bounding_box(citations[key], bounding_box);
     }
     return Object.values(citations);
@@ -109,9 +87,9 @@ export class Connection {
   private _knex: Knex;
 }
 
-function add_paper(citation: Citation, paper: Paper) {
-  if (!citation.papers.some(p => _.isEqual(p, paper))) {
-    citation.papers.push(paper);
+function add_paper(citation: Citation, s2Id: string) {
+  if (citation.papers.indexOf(s2Id) === -1) {
+    citation.papers.push(s2Id);
   }
 }
 
