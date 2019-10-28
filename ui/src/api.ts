@@ -3,7 +3,7 @@ import { Citation } from "./types/api";
 
 export async function citationsForArxivId(arxivId: string) {
   try {
-    const response = await axios.get(`/arxiv:${arxivId}/citations`);
+    const response = await axios.get(`/api/v0/arxiv:${arxivId}/citations`);
     if (response.status === 200) {
       return response.data as Citation[];
     }

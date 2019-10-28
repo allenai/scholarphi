@@ -1,5 +1,5 @@
+import { Server } from "@hapi/hapi";
 import * as nconf from "nconf";
-import { init } from "./server";
 
 nconf
   .argv()
@@ -13,5 +13,37 @@ nconf
       user: "postgres"
     }
   });
+
+export const init = async (config: nconf.Provider) => {
+  const server = new Server({
+    port: 3000,
+    host: "localhost",
+    debug: {
+      request: ["error"]
+    }
+  });
+
+  await server.register({
+    plugin: require("./api"),
+    options: { config },
+    routes: {
+      prefix: "/api/v0"
+    }
+  });
+
+  await server.start();
+  console.log("Server running on %s", server.info.uri);
+
+  server.events.on("log", (event, tags) => {
+    if (tags.error) {
+      console.log(`Server error: ${event.error ? event.error : "unknown"}`);
+    }
+  });
+};
+
+process.on("unhandledRejection", err => {
+  console.log(err);
+  process.exit(1);
+});
 
 init(nconf);
