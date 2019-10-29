@@ -53,7 +53,7 @@ export class CitationAnnotation extends React.Component<CitationAnnotationProps,
     };
 
     return (
-      <Tooltip title={<CitationTooltipBody paperIds={this.props.citation.papers} />}>
+      <Tooltip interactive title={<CitationTooltipBody paperIds={this.props.citation.papers} />}>
         <div className="citation-annotation" style={style} />
       </Tooltip>
     );

@@ -1,3 +1,4 @@
+import { Papers } from "../state";
 import { BoundingBox, Citation } from "../types/api";
 
 /**
@@ -8,4 +9,8 @@ export function citationKey(bounding_box: BoundingBox, citation: Citation) {
     `${bounding_box.page}-L${bounding_box.left}-T${bounding_box.top}-W${bounding_box.width}-H${bounding_box.height} ` +
     `${citation.papers.join("-")}`
   );
+}
+
+export function countOfCitationsWithSummaries(papers: Papers, paperIds: string[]) {
+  return paperIds.map(id => papers[id]).filter(paper => paper !== undefined).length;
 }
