@@ -16,11 +16,7 @@ export class PaperPreview extends React.Component<PaperPreviewProps, {}> {
             <div className="citation-tooltip">
               <p className="citation-tooltip__title">{paper.title}</p>
               <p className="citation-tooltip__authors">
-                {authorNamesList && (
-                  <p>
-                    <i className="authors">{authorNamesList}</i>
-                  </p>
-                )}
+                {authorNamesList && <span>{authorNamesList}</span>}
               </p>
               <p className="citation-tooltip__abstract">{paper.abstract}</p>
             </div>
