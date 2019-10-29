@@ -1,4 +1,6 @@
+import Tooltip from "@material-ui/core/Tooltip";
 import React from "react";
+import CitationTooltipBody from "./CitationTooltipBody";
 import { BoundingBox, Citation } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
@@ -50,6 +52,12 @@ export class CitationAnnotation extends React.Component<CitationAnnotationProps,
       position: "absolute" as "absolute"
     };
 
-    return <div className="citation-annotation" style={style} />;
+    return (
+      <Tooltip title={<CitationTooltipBody paperIds={this.props.citation.papers} />}>
+        <div className="citation-annotation" style={style} />
+      </Tooltip>
+    );
   }
 }
+
+export default CitationAnnotation;

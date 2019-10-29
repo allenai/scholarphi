@@ -6,10 +6,16 @@ export interface BoundingBox {
   height: number;
 }
 
+export interface Author {
+  id: string;
+  name: string;
+  url: string;
+}
+
 export interface Paper {
   s2Id: string;
   title: string;
-  authors: string;
+  authors: Author[];
   abstract: string | null;
   url: string;
   venue: string | null;
