@@ -34,6 +34,7 @@ def extract_bounding_boxes(
         pdf_bounding_box = _to_pdf_coordinates(
             box, image_width, image_height, page_width, page_height, page_number
         )
+        print("PDF:", pdf.name, page_width, page_height)
         raster_bounding_box = RasterBoundingBox(
             box.left, box.top, box.width, box.height, page_number
         )

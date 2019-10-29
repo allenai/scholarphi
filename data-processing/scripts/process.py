@@ -2,33 +2,45 @@ import argparse
 import logging
 from typing import List
 
-from scripts.annotate_pdfs import (AnnotatePdfsWithCitationBoxes,
-                                   AnnotatePdfsWithEquationBoxes,
-                                   AnnotatePdfsWithEquationTokenBoxes)
+from scripts.annotate_pdfs import (
+    AnnotatePdfsWithCitationBoxes,
+    AnnotatePdfsWithEquationBoxes,
+    AnnotatePdfsWithEquationTokenBoxes,
+)
 from scripts.colorize_citations import ColorizeCitations
 from scripts.colorize_equation_tokens import ColorizeEquationTokens
 from scripts.colorize_equations import ColorizeEquations
-from scripts.compile_tex import (CompileTexSources,
-                                 CompileTexSourcesWithColorizedCitations,
-                                 CompileTexSourcesWithColorizedEquations,
-                                 CompileTexSourcesWithColorizedEquationTokens)
-from scripts.diff_images import (DiffImagesWithColorizedCitations,
-                                 DiffImagesWithColorizedEquations,
-                                 DiffImagesWithColorizedEquationTokens)
+from scripts.compile_tex import (
+    CompileTexSources,
+    CompileTexSourcesWithColorizedCitations,
+    CompileTexSourcesWithColorizedEquations,
+    CompileTexSourcesWithColorizedEquationTokens,
+)
+from scripts.diff_images import (
+    DiffImagesWithColorizedCitations,
+    DiffImagesWithColorizedEquations,
+    DiffImagesWithColorizedEquationTokens,
+)
 from scripts.extract_bibitems import ExtractBibitems
 from scripts.extract_equation_tokens import ExtractEquationTokens
 from scripts.extract_equations import ExtractEquations
 from scripts.fetch_arxiv_sources import FetchArxivSources
 from scripts.fetch_s2_data import FetchS2Metadata
-from scripts.locate_hues import (LocateCitationHues, LocateEquationHues,
-                                 LocateEquationTokenHues)
-from scripts.raster_pages import (RasterPages,
-                                  RasterPagesWithColorizedCitations,
-                                  RasterPagesWithColorizedEquations,
-                                  RasterPagesWithColorizedEquationTokens)
+from scripts.locate_hues import (
+    LocateCitationHues,
+    LocateEquationHues,
+    LocateEquationTokenHues,
+)
+from scripts.raster_pages import (
+    RasterPages,
+    RasterPagesWithColorizedCitations,
+    RasterPagesWithColorizedEquations,
+    RasterPagesWithColorizedEquationTokens,
+)
 from scripts.resolve_bibitems import ResolveBibitems
 from scripts.unpack_sources import UnpackSources
 from scripts.upload_citations import UploadCitations
+from scripts.upload_symbols import UploadSymbols
 
 command_classes: List = [  # type: ignore
     FetchArxivSources,
@@ -59,6 +71,7 @@ command_classes: List = [  # type: ignore
     AnnotatePdfsWithEquationBoxes,
     AnnotatePdfsWithEquationTokenBoxes,
     UploadCitations,
+    UploadSymbols,
 ]
 
 

@@ -35,7 +35,7 @@ HUES = np.linspace(0, 1, NUM_HUES)
 def generate_hues() -> Iterator[float]:
     for hue in HUES:
         yield hue
-    logging.error(
+    logging.error(  # pylint: disable=logging-not-lazy
         (
             "Ran out of hues. It's likely many entities in the paper won't get colored."
             + "Must start over with another copy of the paper to keep coloring."
