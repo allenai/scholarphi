@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { CitationAnnotation } from "./CitationAnnotation";
+import CitationAnnotation from "./CitationAnnotation";
 import "./ScholarReader.scss";
 import * as selectors from "./selectors";
 import { ScholarReaderContext } from "./state";
