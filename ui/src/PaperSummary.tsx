@@ -13,12 +13,16 @@ export class PaperPreview extends React.Component<PaperPreviewProps, {}> {
           const paper = state.papers[this.props.paperId];
           const authorNamesList = joinAuthorNames(...paper.authors.map(a => a.name));
           return (
-            <div className="citation-tooltip">
-              <p className="citation-tooltip__title">{paper.title}</p>
-              <p className="citation-tooltip__authors">
-                {authorNamesList && <span>{authorNamesList}</span>}
-              </p>
-              <p className="citation-tooltip__abstract">{paper.abstract}</p>
+            <div className="citation-summary">
+              <div className="citation-summary__section">
+                <p className="citation-summary__title">{paper.title}</p>
+                <p className="citation-summary__authors">
+                  {authorNamesList && <span>{authorNamesList}</span>}
+                </p>
+              </div>
+              <div className="citation-summary__section">
+                <p className="citation-summary__abstract">{paper.abstract}</p>
+              </div>
             </div>
           );
         }}

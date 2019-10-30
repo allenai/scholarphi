@@ -28,10 +28,10 @@ export class CitationTooltipBody extends React.Component<
 
   render() {
     return (
-      <div className="summary-tooltip">
+      <div className="citation-tooltip-body">
         {this.props.paperIds.map((paperId, i) => (
           <div
-            className="summary-toolip__paper-summary-container"
+            className="citation-tooltip-body__paper-summary-container"
             key={paperId}
             hidden={i !== this.state.activeCitation}
           >
@@ -40,7 +40,7 @@ export class CitationTooltipBody extends React.Component<
         ))}
         <ScholarReaderContext.Consumer>
           {state => (
-            <div className="summary-tooltip__stepper-container">
+            <div className="citation-tooltip-body__stepper-container">
               <MobileStepper
                 hidden={
                   selectors.countOfCitationsWithSummaries(state.papers, this.props.paperIds) <= 1
