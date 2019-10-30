@@ -1,8 +1,8 @@
 import React from "react";
 import * as api from "./api";
 import PageOverlay from "./PageOverlay";
-import "./ScholarReader.scss";
 import { Pages, PaperId, Papers, ScholarReaderContext, State } from "./state";
+import "./style/index.less";
 import { Citation, Paper } from "./types/api";
 import { PageRenderedEvent, PDFViewerApplication } from "./types/pdfjs-viewer";
 

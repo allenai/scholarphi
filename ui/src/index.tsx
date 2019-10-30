@@ -2,7 +2,6 @@
 import queryString from "query-string";
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
 import ScholarReader from "./ScholarReader";
 import { PaperId } from "./state";
 import { PDFViewerApplication } from "./types/pdfjs-viewer";
