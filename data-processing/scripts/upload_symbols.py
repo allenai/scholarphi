@@ -7,14 +7,8 @@ import explanations.directories as directories
 from explanations.directories import SOURCES_DIR, get_arxiv_ids
 from explanations.s2_data import get_s2_id
 from explanations.types import ArxivId, EquationIndex, Path, PdfBoundingBox
-from models.models import (
-    BoundingBox,
-    Entity,
-    EntityBoundingBox,
-    Paper,
-    Symbol,
-    create_tables,
-)
+from models.models import (BoundingBox, Entity, EntityBoundingBox, Paper,
+                           Symbol, create_tables)
 from scripts.command import Command
 
 S2Id = str
@@ -120,6 +114,7 @@ class UploadSymbols(Command[SymbolData, None]):
 
             symbol_tex = symbols_by_equation_hue[equation_hue]
             symbol = Symbol.create(paper=paper, tex=symbol_tex)
+            entity = Entity.create(type="symbol", entity_id=symbol.id)
 
             for box in boxes:
 
@@ -130,7 +125,4 @@ class UploadSymbols(Command[SymbolData, None]):
                     width=box.width,
                     height=box.height,
                 )
-
-                entity = Entity.create(type="symbol", entity_id=symbol.id)
-
                 EntityBoundingBox.create(bounding_box=bounding_box, entity=entity)

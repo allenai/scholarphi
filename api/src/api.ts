@@ -3,6 +3,7 @@ import * as Joi from "@hapi/joi";
 import * as nconf from "nconf";
 import { Connection } from "./queries";
 import * as s2Api from "./s2-api";
+import * as validation from "./validation";
 
 interface ApiOptions {
   config: nconf.Provider;
@@ -23,9 +24,7 @@ export const plugin = {
       },
       options: {
         validate: {
-          params: Joi.object({
-            s2Id: Joi.string().pattern(/[a-f0-9]{40}/)
-          })
+          params: validation.s2Id
         }
       }
     });
@@ -39,22 +38,21 @@ export const plugin = {
       },
       options: {
         validate: {
-          params: Joi.object({
-            /*
-             * See the arXiv documentation on valid identifiers here:
-             * https://arxiv.org/help/arxiv_identifier.
-             */
-            arxivId: Joi.alternatives().try(
-              /*
-               * Current arXiv ID format.
-               */
-              Joi.string().pattern(/[0-9]{2}[0-9]{2}.[0-9]+(v[0-9]+)?/),
-              /*
-               * Older arXiv ID format.
-               */
-              Joi.string().pattern(/[a-zA-Z0-9-]+\.[A-Z]{2}\/[0-9]{2}[0-9]{2}[0-9]+(v[0-9]+)/)
-            )
-          })
+          params: validation.arxivId
+        }
+      }
+    });
+
+    server.route({
+      method: "GET",
+      path: "papers/arxiv:{arxivId}/symbols",
+      handler: request => {
+        const arxivId = request.params.arxivId;
+        return dbConnection.getSymbolsForArxivId(arxivId);
+      },
+      options: {
+        validate: {
+          params: validation.arxivId
         }
       }
     });
