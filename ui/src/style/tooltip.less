@@ -1,0 +1,52 @@
+/**
+ * Tooltip background.
+ */
+@{mui-tooltip} {
+  background-color: @white;
+
+  .citation-tooltip-body {
+    background-color: @white;
+  }
+}
+
+/**
+ * Tooltip shadow
+ */
+@{mui-tooltip} {
+  border: @border-width @border-color solid;
+}
+
+/**
+ * Tooltip dimensions.
+ */
+@{mui-tooltip} {
+  max-width: 500px !important;
+
+  .citation-tooltip-body {
+    padding: @medium * 0.25;
+  }
+}
+
+/**
+ * Tooltip text.
+ */
+.citation-summary {
+  color: @black;
+  font-size: @medium;
+  line-height: @medium * 1.2;
+  font-weight: lighter;
+
+  &__section {
+    padding-bottom: @tooltip-content-vertical-padding;
+  }
+
+  &__title {
+    font-size: @large;
+    line-height: @large * 1.2;
+    font-weight: bolder;
+  }
+
+  &__authors {
+    color: lighten(@black, 10%);
+  }
+}

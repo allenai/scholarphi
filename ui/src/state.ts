@@ -1,13 +1,15 @@
 import React from "react";
-import { Citation, Paper } from "./types/api";
+import { Citation, Paper, Symbol } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
 export interface State {
   citations: Readonly<Citation[]>;
+  symbols: Readonly<Symbol[]>;
   papers: Readonly<Papers>;
   pages: Readonly<Pages>;
 
   setCitations(citations: Citation[]): void;
+  setSymbols(symbols: Symbol[]): void;
   setPapers(papers: Papers): void;
   setPages(pages: Pages): void;
 }
@@ -32,7 +34,10 @@ export interface PaperId {
 }
 
 const defaultState: State = {
-  setCitations: (citation: Citation[]) => {
+  setCitations: (citations: Citation[]) => {
+    return;
+  },
+  setSymbols: (symbols: Symbol[]) => {
     return;
   },
   setPapers: (papers: Papers) => {
@@ -42,6 +47,7 @@ const defaultState: State = {
     return;
   },
   citations: [],
+  symbols: [],
   papers: {},
   pages: {}
 };

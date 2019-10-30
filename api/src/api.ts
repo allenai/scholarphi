@@ -81,7 +81,7 @@ export const plugin = {
              * required, as pagination over all resources hasn't been implemented.
              */
             id: Joi.string()
-              .pattern(/[a-f0-9]{40}(,[a-f0-9]{40})*/)
+              .pattern(/^$|[a-f0-9]{40}(,[a-f0-9]{40})*/)
               .required()
           })
         }

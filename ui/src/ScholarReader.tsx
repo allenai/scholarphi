@@ -3,7 +3,7 @@ import * as api from "./api";
 import PageOverlay from "./PageOverlay";
 import { Pages, PaperId, Papers, ScholarReaderContext, State } from "./state";
 import "./style/index.less";
-import { Citation, Paper } from "./types/api";
+import { Citation, Paper, Symbol } from "./types/api";
 import { PageRenderedEvent, PDFViewerApplication } from "./types/pdfjs-viewer";
 
 interface ScholarReaderProps {
@@ -15,9 +15,11 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
     super(props);
     this.state = {
       citations: [],
+      symbols: [],
       papers: {},
       pages: {},
       setCitations: this.setCitations,
+      setSymbols: this.setSymbols,
       setPapers: this.setPapers,
       setPages: this.setPages
     };
@@ -25,6 +27,10 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
 
   setCitations(citations: Citation[]) {
     this.setState({ ...this.state, citations });
+  }
+
+  setSymbols(symbols: Symbol[]) {
+    this.setState({ ...this.state, symbols });
   }
 
   setPapers(papers: Papers) {
@@ -66,14 +72,19 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
         this.setCitations(citations);
 
         const s2Ids = citations.map(c => c.papers).flat();
-        const papers = (await api.papers(s2Ids)).reduce(
-          (papers, paper) => {
-            papers[paper.s2Id] = paper;
-            return papers;
-          },
-          {} as { [s2Id: string]: Paper }
-        );
-        this.setPapers(papers);
+        if (s2Ids.length >= 1) {
+          const papers = (await api.papers(s2Ids)).reduce(
+            (papers, paper) => {
+              papers[paper.s2Id] = paper;
+              return papers;
+            },
+            {} as { [s2Id: string]: Paper }
+          );
+          this.setPapers(papers);
+        }
+
+        const symbols = await api.symbolsForArxivId(this.props.paperId.id);
+        this.setSymbols(symbols);
       }
     }
   }

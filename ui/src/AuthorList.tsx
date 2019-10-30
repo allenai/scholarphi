@@ -20,7 +20,7 @@ class AuthorList extends React.Component<AuthorListProps, {}> {
             textConnector = ", ";
           }
           return (
-            <span>
+            <span key={author.id}>
               {textConnector}
               <S2Link url={author.url}>{author.name}</S2Link>
             </span>

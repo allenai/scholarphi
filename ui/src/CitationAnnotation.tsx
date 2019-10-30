@@ -43,15 +43,6 @@ export class CitationAnnotation extends React.Component<CitationAnnotationProps,
       height: viewportBox[1] - viewportBox[3]
     };
 
-    /**
-     * TODO(andrewhead): Write aesthetic styles in CSS file.
-     */
-    const style = {
-      ...dimensionStyles,
-      border: "1px solid black",
-      position: "absolute" as "absolute"
-    };
-
     return (
       <Tooltip
         interactive
@@ -59,7 +50,7 @@ export class CitationAnnotation extends React.Component<CitationAnnotationProps,
         className="citation-tooltip"
         title={<CitationTooltipBody paperIds={this.props.citation.papers} />}
       >
-        <div className="citation-annotation" style={style} />
+        <div className="citation-annotation" style={dimensionStyles} />
       </Tooltip>
     );
   }

@@ -26,3 +26,8 @@ export interface Citation {
   bounding_boxes: BoundingBox[];
   papers: string[];
 }
+
+export interface Symbol {
+  bounding_boxes: BoundingBox[];
+  tex: string;
+}
