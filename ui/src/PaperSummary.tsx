@@ -1,24 +1,25 @@
 import React from "react";
+import AuthorList from "./AuthorList";
+import S2Link from "./S2Link";
 import { ScholarReaderContext } from "./state";
 
-interface PaperPreviewProps {
+interface PaperSummaryProps {
   paperId: string;
 }
 
-export class PaperPreview extends React.Component<PaperPreviewProps, {}> {
+export class PaperSummary extends React.Component<PaperSummaryProps, {}> {
   render() {
     return (
       <ScholarReaderContext.Consumer>
         {state => {
           const paper = state.papers[this.props.paperId];
-          const authorNamesList = joinAuthorNames(...paper.authors.map(a => a.name));
           return (
             <div className="citation-summary">
               <div className="citation-summary__section">
-                <p className="citation-summary__title">{paper.title}</p>
-                <p className="citation-summary__authors">
-                  {authorNamesList && <span>{authorNamesList}</span>}
+                <p className="citation-summary__title">
+                  <S2Link url={paper.url}>{paper.title}</S2Link>
                 </p>
+                {paper.authors.length > 0 && <AuthorList authors={paper.authors} />}
               </div>
               <div className="citation-summary__section">
                 <p className="citation-summary__abstract">{paper.abstract}</p>
@@ -31,17 +32,4 @@ export class PaperPreview extends React.Component<PaperPreviewProps, {}> {
   }
 }
 
-function joinAuthorNames(...authors: string[]): string | null {
-  if (authors.length === 0) {
-    return null;
-  } else if (authors.length === 1) {
-    return authors[0];
-  } else if (authors.length === 2) {
-    return authors[0] + " and " + authors[1];
-  } else if (authors.length > 2) {
-    return authors.slice(0, authors.length - 1).join(", ") + " and " + authors[authors.length - 1];
-  }
-  return null;
-}
-
-export default PaperPreview;
+export default PaperSummary;
