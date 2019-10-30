@@ -27,6 +27,7 @@ interface PageProps {
 class PageOverlay extends React.Component<PageProps, {}> {
   constructor(props: PageProps) {
     super(props);
+    console.log(props.view);
     this._element = document.createElement("div");
     this._element.classList.add("scholar-reader-overlay");
   }
