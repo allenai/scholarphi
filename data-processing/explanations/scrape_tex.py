@@ -1,17 +1,8 @@
 import re
-from typing import Any, Iterator, List, Optional, Set, cast
-
-from TexSoup import RArg, TexCmd, TexNode, TexSoup, TokenWithPosition
+from typing import Any, List, Optional, Set
 
 from explanations.types import Bibitem
-
-
-def parse_tex(tex: str) -> TexSoup:
-    try:
-        soup = TexSoup(tex)
-        return soup
-    except (TypeError, EOFError) as e:
-        raise TexSoupParseError(str(e))
+from TexSoup import RArg, TexCmd, TexNode, TexSoup, TokenWithPosition
 
 
 class TexSoupParseError(Exception):
@@ -20,17 +11,18 @@ class TexSoupParseError(Exception):
     """
 
 
+def parse_soup(tex: str) -> TexSoup:
+    try:
+        soup = TexSoup(tex)
+        return soup
+    except (TypeError, EOFError) as e:
+        raise TexSoupParseError(str(e))
+
+
 def extract_bibitems(tex: str) -> List[Bibitem]:
     extractor = BibitemExtractor()
     bibitems = extractor.extract(tex)
     return bibitems
-
-
-def find_equations(soup: TexSoup) -> Iterator[TexNode]:
-    """
-    Helper function providing a consistent interface for scraping equations from a TeXSoup document.
-    """
-    return cast(Iterator[TexNode], soup.find_all("$"))
 
 
 class BibitemExtractor:
@@ -42,7 +34,7 @@ class BibitemExtractor:
 
     def extract(self, tex: str) -> List[Bibitem]:
         self.bibitems = []
-        soup = parse_tex(tex)
+        soup = parse_soup(tex)
         for bibitem in soup.find_all("bibitem"):
             parent = bibitem.parent
             if parent not in self.nodes_scanned:

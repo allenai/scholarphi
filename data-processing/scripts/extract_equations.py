@@ -6,7 +6,8 @@ from typing import Iterator
 import explanations.directories as directories
 from explanations.directories import SOURCES_DIR, get_arxiv_ids, sources
 from explanations.file_utils import clean_directory, find_files, read_file_tolerant
-from explanations.scrape_tex import TexSoupParseError, find_equations, parse_tex
+from explanations.instrument_tex import EquationExtractor, walk_tex_parse_tree
+from explanations.scrape_tex import TexSoupParseError
 from explanations.types import Equation, FileContents
 from scripts.command import Command
 
@@ -32,18 +33,14 @@ class ExtractEquations(Command[FileContents, Equation]):
                 yield FileContents(arxiv_id, relative_path, contents)
 
     def process(self, item: FileContents) -> Iterator[Equation]:
-        soup = None
+        # TODO(andrewhead): also find all begin / end equation environments.
+        equation_extractor = EquationExtractor()
         try:
-            soup = parse_tex(item.contents)
+            walk_tex_parse_tree(item.contents, [equation_extractor])
+            for equation in equation_extractor.equations:
+                yield Equation(equation.i, equation.content_tex)
         except TexSoupParseError as e:
             logging.error("Could not parse TeX file %s with TexSoup: %s", item.path, e)
-
-        if soup is not None:
-            # TODO(andrewhead): also find all begin / end equation environments.
-            equations = find_equations(soup)
-            for i, equation in enumerate(equations):
-                equation_contents = next(equation.expr.contents)
-                yield Equation(i, equation_contents)
 
     def save(self, item: FileContents, result: Equation) -> None:
         results_dir = directories.equations(item.arxiv_id)
