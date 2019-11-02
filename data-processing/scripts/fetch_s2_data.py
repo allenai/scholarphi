@@ -11,7 +11,7 @@ from explanations.directories import SOURCE_ARCHIVES_DIR, get_arxiv_ids
 from explanations.types import ArxivId, Author, Reference, S2Metadata
 from scripts.command import Command
 
-""" Time to wait between consecutive requests to S2 API. """  # pylint: disable=pointless-string-statement
+""" Time to wait between consecutive requests to S2 API. """
 FETCH_DELAY = 3  # seconds
 
 

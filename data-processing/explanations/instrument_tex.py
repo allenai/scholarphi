@@ -1,22 +1,13 @@
 import colorsys
 import logging
 import re
-from typing import Dict, Iterator, List, Tuple, Union
+from abc import ABC, abstractmethod
+from typing import Callable, Dict, Iterator, List, NamedTuple, Optional, Tuple
+from unittest import mock
 
 import numpy as np
-from TexSoup import (
-    Arg,
-    OArg,
-    RArg,
-    TexArgs,
-    TexCmd,
-    TexEnv,
-    TexNode,
-    TexSoup,
-    TokenWithPosition,
-)
 
-from explanations.scrape_tex import find_equations, parse_tex
+import TexSoup as TexSoupModule
 from explanations.types import (
     ColorizedCitation,
     ColorizedEquation,
@@ -25,6 +16,139 @@ from explanations.types import (
     EquationIndex,
     Token,
 )
+from TexSoup import (
+    Buffer,
+    OArg,
+    RArg,
+    TexCmd,
+    TexEnv,
+    TexNode,
+    TexSoup,
+    TokenWithPosition,
+    read_tex,
+    tokenize,
+)
+
+
+"""
+All TeX coloring should happen from the end of a TeX string to the start.
+"""
+
+
+class ParseListener(ABC):
+    @abstractmethod
+    def on_node_parsed(
+        self, buffer: Buffer, node: TexNode, start: int, end: int
+    ) -> None:
+        pass
+
+
+def _get_next_token_position_or_buffer_end_position(buffer: Buffer) -> int:
+
+    if buffer.peek():
+        next_token = buffer.peek()
+        assert isinstance(next_token.position, int)
+        return next_token.position
+
+    last_token = buffer.peek(-1)
+    assert isinstance(last_token.position, int)
+    return last_token.position + len(last_token)
+
+
+def wrap_read_tex(
+    read_tex_original: Callable[[Buffer], None], listeners: List[ParseListener]
+) -> Callable[[Buffer], None]:
+    def _wrapped(src: Buffer) -> None:
+        tex_buffer = src
+
+        position_before = tex_buffer.peek().position
+        node = read_tex_original(src)
+        position_after = _get_next_token_position_or_buffer_end_position(src)
+
+        for listener in listeners:
+            listener.on_node_parsed(tex_buffer, node, position_before, position_after)
+
+        return node
+
+    return _wrapped
+
+
+def walk_tex_parse_tree(
+    tex: str, listeners: Optional[List[ParseListener]] = None
+) -> None:
+    """
+    XXX(andrewhead): sorry for this hack 😬. We do this as it's the cleanest way that I can think
+    of to extract this information from the TexSoup parser without rewriting their code base.
+    """
+    listeners = [] if listeners is None else listeners
+    read_tex_instrumented = wrap_read_tex(read_tex, listeners)
+
+    with mock.patch.object(
+        TexSoupModule.reader, "read_tex", side_effect=read_tex_instrumented
+    ):
+        tokens = tokenize(tex)
+        buffer = Buffer(tokens)
+        while buffer.hasNext():
+            read_tex_instrumented(buffer)
+
+
+class Citation(NamedTuple):
+    keys: List[str]
+    """
+    Indexes of characters in TeX where the citation appears.
+    """
+    start: int
+    end: int
+
+
+class CitationExtractor(ParseListener):
+
+    COMMAND_NAMES: List[str] = ["cite"]
+
+    def __init__(self) -> None:
+        self.citations: List[Citation] = []
+
+    def on_node_parsed(
+        self, buffer: Buffer, node: TexNode, start: int, end: int
+    ) -> None:
+        if isinstance(node, TexCmd):
+            if node.name in self.COMMAND_NAMES:
+                keys: List[str] = []
+                for arg in node.args:
+                    if isinstance(arg, RArg):
+                        keys = arg.value.split(",")
+                        break
+                self.citations.append(Citation(keys, start, end))
+
+
+def _insert_color_in_tex(tex: str, hue: float, start: int, end: int) -> str:
+    return tex[:start] + _color_start(hue) + tex[start:end] + _color_end() + tex[end:]
+
+
+def colorize_citations(tex: str) -> Tuple[str, List[ColorizedCitation]]:
+
+    citation_extractor = CitationExtractor()
+    tex = _disable_hyperref_coloring(tex)
+    walk_tex_parse_tree(tex, [citation_extractor])
+
+    # Order from last-to-first so we can add color commands without messing with the offsets of
+    # citations that haven't yet been colored.
+    ordered_citations = sorted(
+        citation_extractor.citations, key=lambda c: c.start, reverse=True
+    )
+
+    hue_generator = generate_hues()
+    colorized_citations: List[ColorizedCitation] = []
+    for c in ordered_citations:
+        try:
+            hue = next(hue_generator)
+        except StopIteration:
+            break
+        tex = _insert_color_in_tex(tex, hue, c.start, c.end)
+        colorized_citations.insert(0, ColorizedCitation(hue, c.keys))
+
+    return tex, colorized_citations
+
 
 # TODO(andrewhead): determine number of hues based on the number of hues that OpenCV is capable
 # of distinguishing between. Current value is a guess.
@@ -43,76 +167,102 @@ def generate_hues() -> Iterator[float]:
     )
 
 
-def colorize_citations(tex: str) -> Tuple[str, List[ColorizedCitation]]:
-    soup = parse_tex(tex)
-    _disable_hyperref_coloring(soup)
+class Equation(NamedTuple):
+    """
+    TeX for full equation environment (e.g., "$x + y$").
+    """
 
-    hue_generator = generate_hues()
-    colorized_citations = []
+    tex: str
+    """
+    TeX for the equation markup, inside the environment (e.g., "x + y")
+    """
+    content_tex: str
+    i: int
+    """
+    Indexes of characters in TeX where the equation appears. 
+    """
+    start: int
+    end: int
+    """
+    Index at which the equation markup starts (corresponds to start of 'content_tex'.)
+    """
+    content_start: int
 
-    for citation in soup.find_all("cite"):
 
-        keys = None
-        for arg in citation.expr.args:
-            if isinstance(arg, RArg):
-                keys = arg.value.split(",")
-                break
+class EquationExtractor(ParseListener):
 
-        if keys is not None:
-            try:
-                hue = next(hue_generator)
-            except StopIteration:
-                break
-            citation_string = str(citation)
-            new_citation = TexSoup(_color_start(hue) + citation_string + _color_end())
-            _replace_equation(citation, new_citation)
-            colorized_citations.append(ColorizedCitation(hue, keys))
+    EQUATION_ENVIRONMENT_NAMES: List[str] = ["$"]
 
-    return str(soup), colorized_citations
+    def __init__(self) -> None:
+        self.equations: List[Equation] = []
+
+    def on_node_parsed(
+        self, buffer: Buffer, node: TexNode, start: int, end: int
+    ) -> None:
+        if isinstance(node, TexEnv):
+            if node.name in self.EQUATION_ENVIRONMENT_NAMES:
+                tex = str(node)
+                """
+                XXX(andrewhead): the extraction of equation contents as the first element of
+                'contents' only works because the TexSoup parser does not attempt to further parse
+                what's inside an equation (i.e. other commands and nested equations). If the TexSoup
+                parser is modified to parse equation internals, this code must be changed.
+                """
+                equation_contents = next(node.contents)
+                assert isinstance(equation_contents, TokenWithPosition)
+                content_tex = str(equation_contents)
+                content_start = equation_contents.position
+                index = len(self.equations)
+                self.equations.append(
+                    Equation(tex, content_tex, index, start, end, content_start)
+                )
 
 
 def colorize_equations(tex: str) -> Tuple[str, List[ColorizedEquation]]:
-    soup = parse_tex(tex)
+    equation_extractor = EquationExtractor()
+    walk_tex_parse_tree(tex, [equation_extractor])
+
+    equations_reverse_order = sorted(
+        equation_extractor.equations, key=lambda e: e.start, reverse=True
+    )
 
     hue_generator = generate_hues()
-    colorized_equations = []
-
-    for equation_index, equation in enumerate(find_equations(soup)):
-        equation_string = str(equation)
+    colorized_equations: List[ColorizedEquation] = []
+    for e in equations_reverse_order:
         try:
             hue = next(hue_generator)
         except StopIteration:
             break
-        colorized_equation = TexSoup(_color_start(hue) + equation_string + _color_end())
-        _replace_equation(equation, colorized_equation)
+        tex = _insert_color_in_tex(tex, hue, e.start, e.end)
+        colorized_equations.insert(0, ColorizedEquation(hue, e.tex, e.i))
 
-        colorized_equation_info = ColorizedEquation(
-            hue=hue, tex=equation_string, i=equation_index
-        )
-        colorized_equations.append(colorized_equation_info)
-
-    return str(soup), colorized_equations
+    return tex, colorized_equations
 
 
 def colorize_equation_tokens(
     tex: str, tokens: Dict[EquationIndex, List[Token]]
 ) -> Tuple[str, ColorizedTokensByEquation]:
-    soup = parse_tex(tex)
-    colorized_tokens_by_equation = {}
-    for equation_index, equation in enumerate(find_equations(soup)):
-        if equation_index in tokens:
-            colorized_tokens = _colorize_tokens_in_equation(
-                equation, tokens[equation_index]
+    equation_extractor = EquationExtractor()
+    walk_tex_parse_tree(tex, [equation_extractor])
+
+    equations_reverse_order = sorted(
+        equation_extractor.equations, key=lambda e: e.content_start, reverse=True
+    )
+
+    for equation in equations_reverse_order:
+        colorized_tokens_by_equation = {}
+        if equation.i in tokens:
+            tex, colorized_tokens = _colorize_tokens_in_equation(
+                tex, equation, tokens[equation.i]
             )
-            colorized_tokens_by_equation[equation_index] = colorized_tokens
-    return str(soup), colorized_tokens_by_equation
+            colorized_tokens_by_equation[equation.i] = colorized_tokens
+
+    return tex, colorized_tokens_by_equation
 
 
 def _colorize_tokens_in_equation(
-    equation: TexNode, tokens: List[Token]
-) -> ColorizedTokens:
-    equation_string = str(next(equation.expr.contents))
-    original_equation_string = equation_string
+    tex: str, equation: Equation, tokens: List[Token]
+) -> Tuple[str, ColorizedTokens]:
 
     hue_generator = generate_hues()
     colorized_tokens = {}
@@ -123,35 +273,19 @@ def _colorize_tokens_in_equation(
             hue = next(hue_generator)
         except StopIteration:
             break
-        color_start = _color_start(hue)
-        color_end = _color_end()
 
-        start_coloring_index = token.start
-        start_coloring_index = _adjust_start_coloring_index(
-            start_coloring_index, equation_string
-        )
-        end_coloring_index = token.end
+        token_start = token.start
+        token_start = _adjust_start_coloring_index(token_start, equation.content_tex)
 
-        equation_string = (
-            equation_string[:start_coloring_index]
-            + color_start
-            + equation_string[start_coloring_index:end_coloring_index]
-            + color_end
-            + equation_string[end_coloring_index:]
+        tex = _insert_color_in_tex(
+            tex,
+            hue,
+            equation.content_start + token_start,
+            equation.content_start + token.end,
         )
         colorized_tokens[hue] = token
 
-    if equation_string != original_equation_string:
-        expr = equation.expr
-        assert hasattr(expr, "begin")
-        assert hasattr(expr, "end")
-        new_equation = TexSoup(expr.begin + equation_string + expr.end)
-        try:
-            _replace_equation(equation, new_equation)
-        except (TypeError, ValueError) as e:
-            logging.error("Exception when colorizing equation %s: %s", equation, e)
-
-    return colorized_tokens
+    return tex, colorized_tokens
 
 
 def _color_start(hue: float) -> str:
@@ -178,105 +312,72 @@ def _adjust_start_coloring_index(index: int, equation: str) -> int:
     return index
 
 
-def _disable_hyperref_coloring(soup: TexSoup) -> None:
+class CharacterRange(NamedTuple):
+    start: int
+    end: int
+
+
+class HyperrefColorExtractor(ParseListener):
+    def __init__(self) -> None:
+        self.colorlinks_assignments: List[CharacterRange] = []
+
+    def _is_node_hyperref_package(self, node: TexNode) -> bool:
+        if not isinstance(node, TexCmd):
+            return False
+
+        if not node.name == "usepackage":
+            return False
+
+        for arg in node.args:
+            if isinstance(arg, RArg):
+                if arg.value.strip() == "hyperref":
+                    return True
+
+        return False
+
+    def on_node_parsed(
+        self, buffer: Buffer, node: TexNode, start: int, end: int
+    ) -> None:
+        if not self._is_node_hyperref_package(node):
+            return
+
+        for arg in node.args:
+            if not isinstance(arg, OArg):
+                continue
+
+            for item in arg.contents:
+                if isinstance(item, TokenWithPosition):
+                    token_start = item.position
+                    for match in re.finditer(
+                        "(?:(?<=^)|(?<=,))\\s*colorlinks\\s*=\\s*true\\s*(?=,|$)",
+                        str(item),
+                    ):
+                        self.colorlinks_assignments.append(
+                            CharacterRange(
+                                token_start + match.start(), token_start + match.end()
+                            )
+                        )
+
+
+def _disable_hyperref_coloring(tex: str) -> str:
     """
     Coloring from the hyperref package will overwrite the coloring of citations. Disable coloring
     from the hyperref package.
     """
-    for usepackage in soup.find_all("usepackage"):
+    hyperref_color_extractor = HyperrefColorExtractor()
+    walk_tex_parse_tree(tex, [hyperref_color_extractor])
 
-        if not isinstance(usepackage, TexNode) or not isinstance(
-            usepackage.expr, TexCmd
-        ):
-            continue
+    colorlinks_reverse_order = sorted(
+        hyperref_color_extractor.colorlinks_assignments,
+        key=lambda c: c.start,
+        reverse=True,
+    )
 
-        is_hyperref = False
-        cmd = usepackage.expr
-        for arg in cmd.args:
-            if isinstance(arg, RArg):
-                if arg.value.strip() == "hyperref":
-                    is_hyperref = True
-                break
-
-        if not is_hyperref:
-            continue
-
-        for arg in usepackage.expr.args:
-            if not isinstance(arg, OArg):
-                continue
-
-            for i, item in enumerate(arg.contents):
-                if isinstance(item, TokenWithPosition):
-                    updated_token = TokenWithPosition(
-                        re.sub(
-                            "(^|,)\\s*colorlinks\\s*=\\s*true\\s*(,|$)",
-                            "\\1colorlinks=false\\2",
-                            str(item),
-                        )
-                    )
-                    arg.contents[i] = updated_token
-
-            break
-
-
-def _replace_equation(node: TexNode, new_node: TexNode) -> None:
-    """
-    Replace equation in a TexSoup tree with a new node. Use this instead of TexSoup's 'replace_with'
-    method, which doesn't support some cases it should.
-    """
-    parent = node.parent
-    if len(list(parent.args)) > 0:
-        _replace_equation_in_arg(node, new_node)
-    elif len(list(parent.children)) > 0:
-        _replace_equation_in_environment(node, new_node)
-
-
-def _replace_equation_in_arg(node: TexNode, new_node: TexNode) -> None:
-    parent: TexNode = node.parent
-    args: TexArgs = parent.args
-    arg: Arg
-    for arg_index, arg in enumerate(args):
-        env_ids = _get_arg_content_env_ids(arg.contents)
-        try:
-            index = env_ids.index(id(node.expr))
-        except ValueError:
-            # Node was not found in this argument. Continue.
-            continue
-        new_contents = list(arg.contents)
-        new_contents.remove(new_contents[index])
-        new_contents.insert(index, new_node)
-        new_arg = (
-            RArg(*new_contents)
-            if isinstance(arg, RArg)
-            else OArg(*new_contents)
-            if isinstance(arg, OArg)
-            else None
+    for colorlinks_range in colorlinks_reverse_order:
+        tex = (
+            tex[: colorlinks_range.start]
+            + "colorlinks=false"
+            + tex[colorlinks_range.end :]
         )
-        if new_arg is not None:
-            args.remove(arg)
-            args.insert(arg_index, new_arg)
-        break
 
-
-def _replace_equation_in_environment(node: TexNode, new_node: TexNode) -> None:
-    parent: TexNode = node.parent
-    sibling_expr_ids = _get_expr_ids_within_nodes(parent.children)
-    index = sibling_expr_ids.index(id(node.expr))
-    child = list(parent.children)[index]
-    parent.replace(child, new_node)
-
-
-def _get_arg_content_env_ids(items: List[Union[str, TexCmd, TexEnv]]) -> List[int]:
-    env_ids = []
-    for item in items:
-        env_id = id(item) if isinstance(item, TexEnv) else -1
-        env_ids.append(env_id)
-    return env_ids
-
-
-def _get_expr_ids_within_nodes(nodes: List[Union[TexNode, str]]) -> List[int]:
-    expr_ids = []
-    for node in list(nodes):
-        expr_id = id(node.expr) if isinstance(node, TexNode) else -1
-        expr_ids.append(expr_id)
-    return expr_ids
+    return tex
