@@ -8,6 +8,7 @@ from unittest import mock
 import numpy as np
 
 import TexSoup as TexSoupModule
+from explanations.scrape_tex import TexSoupParseError
 from explanations.types import (
     ColorizedCitation,
     ColorizedEquation,
@@ -23,7 +24,6 @@ from TexSoup import (
     TexCmd,
     TexEnv,
     TexNode,
-    TexSoup,
     TokenWithPosition,
     read_tex,
     tokenize,
@@ -88,8 +88,11 @@ def walk_tex_parse_tree(
     ):
         tokens = tokenize(tex)
         buffer = Buffer(tokens)
-        while buffer.hasNext():
-            read_tex_instrumented(buffer)
+        try:
+            while buffer.hasNext():
+                read_tex_instrumented(buffer)
+        except (TypeError, EOFError) as e:
+            raise TexSoupParseError(str(e))
 
 
 class Citation(NamedTuple):
