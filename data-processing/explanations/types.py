@@ -83,7 +83,7 @@ class ColorizedCitation(NamedTuple):
 
 """
 Map from a float hue [0..1] to the LaTeX equation with that color.
-"""  # pylint: disable=pointless-string-statement
+"""
 ColorizedEquations = Dict[float, str]
 
 
@@ -95,7 +95,7 @@ class ColorizedEquation(NamedTuple):
 
 """
 Map from a float hue [0..1] to the token of a TeX equation with that color.
-"""  # pylint: disable=pointless-string-statement
+"""
 ColorizedTokens = Dict[float, Token]
 ColorizedTokensByEquation = Dict[EquationIndex, ColorizedTokens]
 

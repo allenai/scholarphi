@@ -20,6 +20,7 @@ def test_color_citations():
     tex = "word.~\\cite{source1,source2}"
     colorized, citations = colorize_citations(tex)
     assert colorized.startswith("word.~")
+    print(colorized)
     matches = re.findall(COLOR_PATTERN, colorized)
     assert matches[0] == "\\cite{source1,source2}"
     assert len(citations) == 1

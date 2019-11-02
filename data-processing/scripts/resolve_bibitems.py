@@ -25,7 +25,7 @@ class Match(NamedTuple):
 """
 The title and authors must have at least this much overlap with the bibitem's text using
 the similarity metric below to be considered a match.
-"""  # pylint: disable=pointless-string-statement
+"""
 SIMILARITY_THRESHOLD = 0.5
 
 
