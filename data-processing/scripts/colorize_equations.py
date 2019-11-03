@@ -4,13 +4,13 @@ import os.path
 from typing import Iterator, List, NamedTuple
 
 from explanations import directories
+from explanations.colorize_tex import colorize_equations
 from explanations.directories import (
     SOURCES_DIR,
     SOURCES_WITH_COLORIZED_EQUATIONS_DIR,
     get_arxiv_ids,
 )
 from explanations.file_utils import find_files, read_file_tolerant
-from explanations.instrument_tex import colorize_equations
 from explanations.scrape_tex import TexSoupParseError
 from explanations.types import ColorizedEquation, FileContents
 from explanations.unpack import unpack
