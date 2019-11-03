@@ -1,10 +1,8 @@
 import re
 
-from explanations.instrument_tex import (
-    colorize_citations,
-    colorize_equation_tokens,
-    colorize_equations,
-)
+from explanations.colorize_tex import (colorize_citations,
+                                       colorize_equation_tokens,
+                                       colorize_equations)
 from explanations.types import Token
 
 COLOR_PATTERN = (

@@ -1,22 +1,13 @@
+"""
+Utilities for scraping specific types of content out of TexSoup objects.
+"""
+
 import re
 from typing import Any, List, Optional, Set
 
+from explanations.parse_tex import parse_soup
 from explanations.types import Bibitem
-from TexSoup import RArg, TexCmd, TexNode, TexSoup, TokenWithPosition
-
-
-class TexSoupParseError(Exception):
-    """
-    Error parsing a TeX file using TexSoup.
-    """
-
-
-def parse_soup(tex: str) -> TexSoup:
-    try:
-        soup = TexSoup(tex)
-        return soup
-    except (TypeError, EOFError) as e:
-        raise TexSoupParseError(str(e))
+from TexSoup import RArg, TexCmd, TexNode, TokenWithPosition
 
 
 def extract_bibitems(tex: str) -> List[Bibitem]:
