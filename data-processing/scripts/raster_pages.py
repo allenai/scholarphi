@@ -1,3 +1,4 @@
+import logging
 import os.path
 from abc import ABC, abstractmethod
 from typing import Iterator, List, NamedTuple
@@ -94,6 +95,7 @@ class RasterPagesCommand(Command[RasterTask, fitz.Document], ABC):
         for page_index, image in enumerate(images):
             image_path = os.path.join(dest_dir, "page-%d.png" % (page_index,))
             cv2.imwrite(image_path, image)
+            logging.debug("Rasterd page to %s", image_path)
 
 
 class RasterPages(RasterPagesCommand):
