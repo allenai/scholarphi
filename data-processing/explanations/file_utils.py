@@ -47,7 +47,9 @@ def clean_directory(directory: str) -> None:
             )
 
 
-def find_files(dir_: str, extensions: List[str]) -> Iterator[str]:
+def find_files(
+    dir_: str, extensions: List[str], relative: bool = False
+) -> Iterator[str]:
     """
     Find all files in a directory with a given extension.
     """
@@ -56,4 +58,6 @@ def find_files(dir_: str, extensions: List[str]) -> Iterator[str]:
             __, ext = os.path.splitext(filename)
             if ext in extensions:
                 path = os.path.join(dirpath, filename)
+                if relative:
+                    path = os.path.relpath(path, os.path.abspath(dir_))
                 yield path

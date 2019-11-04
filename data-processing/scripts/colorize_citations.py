@@ -8,22 +8,24 @@ from explanations import directories
 from explanations.colorize_tex import colorize_citations
 from explanations.directories import (
     SOURCES_DIR,
-    SOURCES_WITH_COLORIZED_CITATIONS_DIR,
     get_arxiv_ids,
+    get_data_subdirectory_for_iteration,
+    get_iteration_id,
 )
-from explanations.file_utils import find_files, read_file_tolerant
-from explanations.scrape_tex import TexSoupParseError
+from explanations.file_utils import clean_directory, find_files, read_file_tolerant
+from explanations.parse_tex import TexSoupParseError
 from explanations.types import ColorizedCitation, FileContents
 from explanations.unpack import unpack
 from scripts.command import Command
 
 
-class TexWithColorizedCitations(NamedTuple):
+class ColorizationResult(NamedTuple):
+    iteration: int
     tex: str
     colorized_citations: List[ColorizedCitation]
 
 
-class ColorizeCitations(Command[FileContents, TexWithColorizedCitations]):
+class ColorizeCitations(Command[FileContents, ColorizationResult]):
     @staticmethod
     def get_name() -> str:
         return "colorize-citations"
@@ -34,26 +36,22 @@ class ColorizeCitations(Command[FileContents, TexWithColorizedCitations]):
 
     def load(self) -> Iterator[FileContents]:
         for arxiv_id in get_arxiv_ids(SOURCES_DIR):
-            # Unpack the sources into a new directory.
-            unpack_path = unpack(arxiv_id, SOURCES_WITH_COLORIZED_CITATIONS_DIR)
-            if unpack_path is None:
-                continue
 
-            colorized_equations_path = directories.sources_with_colorized_citations(
-                arxiv_id
-            )
-            for absolute_tex_path in find_files(colorized_equations_path, [".tex"]):
-                relative_tex_path = os.path.relpath(
-                    absolute_tex_path, os.path.abspath(colorized_equations_path)
+            output_root = directories.sources_with_colorized_citations_root(arxiv_id)
+            clean_directory(output_root)
+
+            original_sources_path = directories.sources(arxiv_id)
+            for text_path in find_files(original_sources_path, [".tex"], relative=True):
+                contents = read_file_tolerant(
+                    os.path.join(original_sources_path, text_path)
                 )
-                contents = read_file_tolerant(absolute_tex_path)
                 if contents is not None:
-                    yield FileContents(arxiv_id, relative_tex_path, contents)
+                    yield FileContents(arxiv_id, text_path, contents)
 
-    def process(self, item: FileContents) -> Iterator[TexWithColorizedCitations]:
+    def process(self, item: FileContents) -> Iterator[ColorizationResult]:
         try:
-            colorized_tex, colorized_citations = colorize_citations(item.contents)
-            yield TexWithColorizedCitations(colorized_tex, colorized_citations)
+            for i, batch in enumerate(colorize_citations(item.contents)):
+                yield ColorizationResult(i, batch.tex, batch.colorized_citations)
         except TexSoupParseError as e:
             logging.error(
                 "Failed to parse TeX file %s for arXiv ID %s: %s",
@@ -62,27 +60,39 @@ class ColorizeCitations(Command[FileContents, TexWithColorizedCitations]):
                 e,
             )
 
-    def save(self, item: FileContents, result: TexWithColorizedCitations) -> None:
+    def save(self, item: FileContents, result: ColorizationResult) -> None:
+        iteration = result.iteration
         colorized_tex = result.tex
         colorized_citations = result.colorized_citations
 
-        tex_path = os.path.join(
-            directories.sources_with_colorized_citations(item.arxiv_id), item.path
+        iteration_id = get_iteration_id(item.path, iteration)
+        output_sources_path = get_data_subdirectory_for_iteration(
+            directories.SOURCES_WITH_COLORIZED_CITATIONS_DIR,
+            item.arxiv_id,
+            iteration_id,
         )
-        with open(tex_path, "w") as tex_file:
-            tex_file.write(colorized_tex)
+        logging.info("Outputting to %s", output_sources_path)
 
-        hues_path = os.path.join(
-            directories.sources_with_colorized_citations(item.arxiv_id),
-            "citation_hues.csv",
-        )
-        with open(hues_path, "a") as hues_file:
-            writer = csv.writer(hues_file, quoting=csv.QUOTE_ALL)
-            for colorized_citation in colorized_citations:
-                writer.writerow(
-                    [
-                        item.path,
-                        colorized_citation.hue,
-                        json.dumps(colorized_citation.keys),
-                    ]
-                )
+        # Create new directory for each colorization iteration for each TeX file.
+        unpack_path = unpack(item.arxiv_id, output_sources_path)
+        sources_unpacked = unpack_path is not None
+        if unpack_path is None:
+            logging.warning("Could not unpack sources into %s", output_sources_path)
+
+        if sources_unpacked:
+            tex_path = os.path.join(output_sources_path, item.path)
+            with open(tex_path, "w") as tex_file:
+                tex_file.write(colorized_tex)
+
+            hues_path = os.path.join(output_sources_path, "citation_hues.csv")
+            with open(hues_path, "a") as hues_file:
+                writer = csv.writer(hues_file, quoting=csv.QUOTE_ALL)
+                for colorized_citation in colorized_citations:
+                    writer.writerow(
+                        [
+                            item.path,
+                            iteration_id,
+                            colorized_citation.hue,
+                            json.dumps(colorized_citation.keys),
+                        ]
+                    )

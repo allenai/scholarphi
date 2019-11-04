@@ -11,7 +11,7 @@ from explanations.directories import (
     get_arxiv_ids,
 )
 from explanations.file_utils import read_file_tolerant
-from explanations.scrape_tex import TexSoupParseError
+from explanations.parse_tex import TexSoupParseError
 from explanations.types import (
     ColorizedTokensByEquation,
     Equation,

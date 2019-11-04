@@ -70,6 +70,8 @@ def compile_tex(sources_dir: str) -> CompilationResult:
 def get_compiled_pdfs(compiled_tex_dir: str) -> List[str]:
     """
     Get a list of paths to compiled PDFs in a directory of compiled TeX.
+    Returned paths are relative to the working directory of compilation. In most cases, this will
+    either be relative to <data-directory>/<arxiv-id>, or to <data-directory>/<arxiv-id>/<iteration>/
     """
     compilation_results_dir = os.path.join(compiled_tex_dir, "compilation_results")
     result_path = os.path.join(compilation_results_dir, "result")

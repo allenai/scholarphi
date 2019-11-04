@@ -4,6 +4,8 @@ ArxivId = str
 S2Id = str
 S2AuthorId = str
 Path = str
+AbsolutePath = str
+RelativePath = str
 
 
 """
