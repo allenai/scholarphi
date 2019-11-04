@@ -177,6 +177,12 @@ class LocateHuesCommand(Command[SearchTask, HueLocation], ABC):
         with open(output_path, "a") as output_file:
             writer = csv.writer(output_file, quoting=csv.QUOTE_ALL)
             row_data = [item.relative_pdf_path, item.iteration, result.hue]
+            logging.debug(
+                "Found bounding box for %s, iteration %s, hue %f",
+                item.relative_pdf_path,
+                item.iteration,
+                result.hue,
+            )
             row_data.extend(
                 [
                     result.box_info.pdf_box.page,

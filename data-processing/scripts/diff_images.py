@@ -9,10 +9,12 @@ import numpy as np
 
 from explanations import directories
 from explanations.compile import get_compiled_pdfs
-from explanations.directories import (get_arxiv_ids,
-                                      get_data_subdirectory_for_arxiv_id,
-                                      get_data_subdirectory_for_iteration,
-                                      get_iteration_names)
+from explanations.directories import (
+    get_arxiv_ids,
+    get_data_subdirectory_for_arxiv_id,
+    get_data_subdirectory_for_iteration,
+    get_iteration_names,
+)
 from explanations.file_utils import clean_directory
 from explanations.image_processing import diff_images
 from explanations.types import ArxivId
@@ -109,6 +111,7 @@ class DiffImagesCommand(Command[PageRasterPair, fitz.Document], ABC):
         if not os.path.exists(image_dir):
             os.makedirs(image_dir)
         cv2.imwrite(image_path, result)
+        logging.debug("Diffed images and stored result at %s", image_path)
 
 
 class DiffImagesWithColorizedCitations(DiffImagesCommand):

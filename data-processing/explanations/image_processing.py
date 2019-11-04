@@ -78,7 +78,6 @@ def diff_image_lists(
 
 def diff_images(image0: np.ndarray, image1: np.ndarray) -> np.ndarray:
     """Returns a copy of 'image0' with all pixels where 'image0' and 'image1' are equal set to white."""
-    logging.debug("Diffing images.")
     assert np.array_equal(np.shape(image0), np.shape(image1))
     diff = image0 - image1
     mask = np.any(diff != 0, axis=2)  # Check if any channel is different

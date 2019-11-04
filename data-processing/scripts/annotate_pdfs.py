@@ -8,8 +8,7 @@ import fitz
 
 from explanations import directories
 from explanations.compile import get_compiled_pdfs
-from explanations.directories import (get_arxiv_ids,
-                                      get_data_subdirectory_for_arxiv_id)
+from explanations.directories import get_arxiv_ids, get_data_subdirectory_for_arxiv_id
 from explanations.file_utils import clean_directory, open_pdf
 from explanations.image_processing import annotate_pdf
 from explanations.types import ArxivId, PdfBoundingBox, PdfBoundingBoxAndHue
@@ -102,13 +101,13 @@ def common_load_bounding_boxes(
         reader = csv.reader(box_data_file)
         for row in reader:
             pdf_path = row[0]
-            hue = float(row[1])
+            hue = float(row[2])
             box = PdfBoundingBox(
-                page=int(row[2]),
-                left=float(row[3]),
-                top=float(row[4]),
-                width=float(row[5]),
-                height=float(row[6]),
+                page=int(row[3]),
+                left=float(row[4]),
+                top=float(row[5]),
+                width=float(row[6]),
+                height=float(row[7]),
             )
             if not pdf_path in boxes:
                 boxes[pdf_path] = []

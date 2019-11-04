@@ -5,18 +5,12 @@ import os.path
 from typing import Dict, Iterator, List, NamedTuple, Tuple, cast
 
 import explanations.directories as directories
-from explanations.directories import SOURCES_DIR, get_arxiv_ids
+from explanations.directories import (SOURCES_DIR, get_arxiv_ids,
+                                      get_data_subdirectory_for_iteration,
+                                      get_iteration_names)
 from explanations.types import ArxivId, Author, PdfBoundingBox, Reference
-from models.models import (
-    BoundingBox,
-    Citation,
-    CitationPaper,
-    Entity,
-    EntityBoundingBox,
-    Paper,
-    Summary,
-    create_tables,
-)
+from models.models import (BoundingBox, Citation, CitationPaper, Entity,
+                           EntityBoundingBox, Paper, Summary, create_tables)
 from scripts.command import Command
 
 CitationKey = str
@@ -24,11 +18,16 @@ CitationKeys = Tuple[CitationKey]
 S2Id = str
 
 
+class HueIteration(NamedTuple):
+    hue: float
+    iteration: str
+
+
 class CitationData(NamedTuple):
     arxiv_id: ArxivId
     s2_id: S2Id
-    boxes_by_hue: Dict[float, List[PdfBoundingBox]]
-    citation_hues: Dict[CitationKeys, float]
+    boxes_by_hue_iteration: Dict[HueIteration, List[PdfBoundingBox]]
+    citations_by_hue_iteration: Dict[HueIteration, CitationKeys]
     key_s2_ids: Dict[CitationKey, S2Id]
     s2_data: Dict[S2Id, Reference]
 
@@ -50,7 +49,7 @@ class UploadCitations(Command[CitationData, None]):
     def load(self) -> Iterator[CitationData]:
         for arxiv_id in get_arxiv_ids(SOURCES_DIR):
 
-            boxes_by_hue: Dict[float, List[PdfBoundingBox]] = {}
+            boxes_by_hue_iteration: Dict[HueIteration, List[PdfBoundingBox]] = {}
             bounding_boxes_path = os.path.join(
                 directories.hue_locations_for_citations(arxiv_id), "hue_locations.csv"
             )
@@ -64,33 +63,46 @@ class UploadCitations(Command[CitationData, None]):
                 reader = csv.reader(bounding_boxes_file)
                 for row in reader:
                     hue = float(row[1])
+                    iteration = row[2]
                     box = PdfBoundingBox(
-                        page=int(row[2]),
-                        left=float(row[3]),
-                        top=float(row[4]),
-                        width=float(row[5]),
-                        height=float(row[6]),
+                        page=int(row[3]),
+                        left=float(row[4]),
+                        top=float(row[5]),
+                        width=float(row[6]),
+                        height=float(row[7]),
                     )
-                    if hue not in boxes_by_hue:
-                        boxes_by_hue[hue] = []
-                    boxes_by_hue[hue].append(box)
+                    hue_iteration = HueIteration(hue, iteration)
+                    if hue not in boxes_by_hue_iteration:
+                        boxes_by_hue_iteration[hue_iteration] = []
+                    boxes_by_hue_iteration[hue_iteration].append(box)
 
-            citation_hues: Dict[CitationKeys, float] = {}
-            citation_hues_path = os.path.join(
-                directories.sources_with_colorized_citations(arxiv_id),
-                "citation_hues.csv",
-            )
-            if not os.path.exists(citation_hues_path):
-                logging.warning(
-                    "Could not find citation hue colors for %s. Skipping", arxiv_id
+            citations_by_hue_iteration: Dict[HueIteration, CitationKeys] = {}
+            for iteration in get_iteration_names(
+                directories.SOURCES_WITH_COLORIZED_CITATIONS_DIR, arxiv_id
+            ):
+                citation_hues_path = os.path.join(
+                    get_data_subdirectory_for_iteration(
+                        directories.SOURCES_WITH_COLORIZED_CITATIONS_DIR,
+                        arxiv_id,
+                        iteration,
+                    ),
+                    "citation_hues.csv",
                 )
-                continue
-            with open(citation_hues_path) as citation_hues_file:
-                reader = csv.reader(citation_hues_file)
-                for row in reader:
-                    citation_keys = cast(Tuple[str], tuple(json.loads(row[2])))
-                    hue = float(row[1])
-                    citation_hues[citation_keys] = hue
+                if not os.path.exists(citation_hues_path):
+                    logging.warning(
+                        "Could not find citation hue colors for %s iteration %s. Skipping",
+                        arxiv_id,
+                        iteration,
+                    )
+                    continue
+                with open(citation_hues_path) as citation_hues_file:
+                    reader = csv.reader(citation_hues_file)
+                    for row in reader:
+                        citation_keys = cast(Tuple[str], tuple(json.loads(row[3])))
+                        hue = float(row[2])
+                        iteration = row[1]
+                        hue_iteration = HueIteration(hue, iteration)
+                        citations_by_hue_iteration[hue_iteration] = citation_keys
 
             key_s2_ids: Dict[CitationKey, S2Id] = {}
             key_resolutions_path = os.path.join(
@@ -139,7 +151,12 @@ class UploadCitations(Command[CitationData, None]):
                     )
 
             yield CitationData(
-                arxiv_id, s2_id, boxes_by_hue, citation_hues, key_s2_ids, s2_data
+                arxiv_id,
+                s2_id,
+                boxes_by_hue_iteration,
+                citations_by_hue_iteration,
+                key_s2_ids,
+                s2_data,
             )
 
     def process(self, _: CitationData) -> Iterator[None]:
@@ -149,8 +166,8 @@ class UploadCitations(Command[CitationData, None]):
 
         arxiv_id = item.arxiv_id
         s2_id = item.s2_id
-        boxes_by_hue = item.boxes_by_hue
-        citation_hues = item.citation_hues
+        boxes_by_hue_iteration = item.boxes_by_hue_iteration
+        citations_by_hue_iteration = item.citations_by_hue_iteration
         key_s2_ids = item.key_s2_ids
         s2_data = item.s2_data
 
@@ -161,8 +178,8 @@ class UploadCitations(Command[CitationData, None]):
         except Paper.DoesNotExist:
             paper = Paper.create(s2_id=s2_id, arxiv_id=arxiv_id)
 
-        for citation_keys, hue in citation_hues.items():
-            bounding_boxes = boxes_by_hue[hue]
+        for hue_iteration, citation_keys in citations_by_hue_iteration.items():
+            bounding_boxes = boxes_by_hue_iteration[hue_iteration]
 
             cited_papers = []
 
