@@ -1,3 +1,4 @@
+import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
 import { Citation, Paper, Symbol } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
@@ -7,6 +8,7 @@ export interface State {
   symbols: Readonly<Symbol[]>;
   papers: Readonly<Papers>;
   pages: Readonly<Pages>;
+  pdfDocument: PDFDocumentProxy | null;
 
   setCitations(citations: Citation[]): void;
   setSymbols(symbols: Symbol[]): void;
@@ -49,7 +51,8 @@ const defaultState: State = {
   citations: [],
   symbols: [],
   papers: {},
-  pages: {}
+  pages: {},
+  pdfDocument: null
 };
 
 export const ScholarReaderContext = React.createContext<State>(defaultState);

@@ -22,12 +22,14 @@ export interface Paper {
   year: number | null;
 }
 
-export interface Citation {
-  bounding_boxes: BoundingBox[];
+export interface Citation extends Locatable {
   papers: string[];
 }
 
-export interface Symbol {
-  bounding_boxes: BoundingBox[];
+export interface Symbol extends Locatable {
   tex: string;
+}
+
+export interface Locatable {
+  bounding_boxes: BoundingBox[];
 }

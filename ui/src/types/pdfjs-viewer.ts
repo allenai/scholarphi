@@ -1,4 +1,4 @@
-import { PDFPageProxy, PDFPageViewport } from "pdfjs-dist";
+import { PDFDocumentProxy, PDFPageProxy, PDFPageViewport } from "pdfjs-dist";
 
 /**
  * Declarations for the PDF.js viewer application. These types are not declared as part of
@@ -11,6 +11,7 @@ import { PDFPageProxy, PDFPageViewport } from "pdfjs-dist";
 export interface PDFViewerApplication {
   initialized: boolean;
   eventBus: EventBus;
+  pdfDocument: PDFDocumentProxy;
 }
 
 export interface EventBus {
@@ -22,6 +23,10 @@ export interface PageRenderedEvent {
   pageNumber: number;
   cssTransform: boolean;
   timestamp: number;
+}
+
+export interface DocumentLoadedEvent {
+  source: PDFDocumentProxy;
 }
 
 export interface PDFPageView {

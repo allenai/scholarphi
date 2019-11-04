@@ -1,6 +1,9 @@
 import { BoundingBox } from "../types/api";
 import { PDFPageView } from "../types/pdfjs-viewer";
 
+/**
+ * Expects 'box' to represent location in PDF coordinates; converts to viewport coordinates.
+ */
 export function divDimensionStyles(pageView: PDFPageView, box: BoundingBox) {
   /**
    * XXX(andrewhead): A slight scale correction was needed to make the bounding boxes appear in
@@ -25,4 +28,8 @@ export function divDimensionStyles(pageView: PDFPageView, box: BoundingBox) {
     width: viewportBox[2] - viewportBox[0],
     height: viewportBox[1] - viewportBox[3]
   };
+}
+
+export function boundingBoxString(boundingBox: BoundingBox) {
+  return `${boundingBox.page}-L${boundingBox.left}-T${boundingBox.top}-W${boundingBox.width}-H${boundingBox.height}`;
 }

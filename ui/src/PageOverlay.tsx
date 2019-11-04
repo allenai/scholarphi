@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import CitationAnnotation from "./CitationAnnotation";
 import * as selectors from "./selectors";
 import { ScholarReaderContext } from "./state";
+import SymbolAnnotation from "./SymbolAnnotation";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
 interface PageProps {
@@ -27,7 +28,6 @@ interface PageProps {
 class PageOverlay extends React.Component<PageProps, {}> {
   constructor(props: PageProps) {
     super(props);
-    console.log(props.view);
     this._element = document.createElement("div");
     this._element.classList.add("scholar-reader-overlay");
   }
@@ -48,18 +48,30 @@ class PageOverlay extends React.Component<PageProps, {}> {
   render() {
     return ReactDOM.createPortal(
       <ScholarReaderContext.Consumer>
-        {({ citations }) => {
-          const localizedCitations = selectors.citationsForPage(
+        {({ citations, symbols }) => {
+          const localizedCitations = selectors.boxEntityPairsForPage(
             [...citations],
+            this.props.pageNumber
+          );
+          const localizedSymbols = selectors.boxEntityPairsForPage(
+            [...symbols],
             this.props.pageNumber
           );
           return (
             <>
               {localizedCitations.map(c => (
                 <CitationAnnotation
-                  key={selectors.citationKey(c.bounding_box, c.citation)}
-                  location={c.bounding_box}
-                  citation={c.citation}
+                  key={selectors.citationKey(c.entity, c.boundingBox)}
+                  location={c.boundingBox}
+                  citation={c.entity}
+                  pageView={this.props.view}
+                />
+              ))}
+              {localizedSymbols.map(s => (
+                <SymbolAnnotation
+                  key={selectors.symbolKey(s.entity, s.boundingBox)}
+                  location={s.boundingBox}
+                  symbol={s.entity}
                   pageView={this.props.view}
                 />
               ))}

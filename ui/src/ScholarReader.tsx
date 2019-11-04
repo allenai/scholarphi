@@ -4,7 +4,7 @@ import PageOverlay from "./PageOverlay";
 import { Pages, PaperId, Papers, ScholarReaderContext, State } from "./state";
 import "./style/index.less";
 import { Citation, Paper, Symbol } from "./types/api";
-import { PageRenderedEvent, PDFViewerApplication } from "./types/pdfjs-viewer";
+import { DocumentLoadedEvent, PageRenderedEvent, PDFViewerApplication } from "./types/pdfjs-viewer";
 
 interface ScholarReaderProps {
   paperId?: PaperId;
@@ -18,6 +18,7 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
       symbols: [],
       papers: {},
       pages: {},
+      pdfDocument: null,
       setCitations: this.setCitations,
       setSymbols: this.setSymbols,
       setPapers: this.setPapers,
@@ -49,12 +50,21 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
   }
 
   subscribeToPDFViewerStateChanges(pdfViewerApplication: PDFViewerApplication) {
-    const { eventBus } = pdfViewerApplication;
+    const { eventBus, pdfDocument } = pdfViewerApplication;
+
+    if (pdfDocument !== null) {
+      this.setState({ pdfDocument });
+    }
+    eventBus.on("documentloaded", (eventData: DocumentLoadedEvent) => {
+      this.setState({ pdfDocument: eventData.source });
+    });
+
     /*
      * TODO(andrewhead): Do we need to add pages that are *already loaded* at initialization time
      * to the state? Or will 'pagerendered' always run after this component is mounted?
      */
     eventBus.on("pagerendered", (eventData: PageRenderedEvent) => {
+      this.setState({ pdfDocument: pdfViewerApplication.pdfDocument });
       this.setPages({
         ...this.state.pages,
         [eventData.pageNumber]: {
