@@ -5,9 +5,6 @@ import * as selectors from "./selectors";
 import { BoundingBox, Citation } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
-/**
- * Dimensions are expressed in PDF coordinates, not in viewport coordinates.
- */
 interface CitationAnnotationProps {
   location: BoundingBox;
   citation: Citation;
@@ -22,12 +19,11 @@ export class CitationAnnotation extends React.Component<CitationAnnotationProps,
     return (
       <Tooltip
         interactive
-        leaveDelay={500}
         className="citation-tooltip"
         title={<CitationTooltipBody paperIds={this.props.citation.papers} />}
       >
         <div
-          className="citation-annotation"
+          className="scholar-reader-annotation citation-annotation"
           style={selectors.divDimensionStyles(this.props.pageView, this.props.location)}
         />
       </Tooltip>

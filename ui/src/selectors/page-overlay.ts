@@ -1,18 +1,21 @@
-import { BoundingBox, Citation } from "../types/api";
+import { BoundingBox, Locatable } from "../types/api";
 
-export function citationsForPage(citations: Citation[], pageNumber: number): LocalizedCitation[] {
-  const localizedCitations = [];
-  for (const citation of citations) {
-    for (const bounding_box of citation.bounding_boxes) {
-      if (bounding_box.page === pageNumber - 1) {
-        localizedCitations.push({ bounding_box, citation });
+export function boxEntityPairsForPage<T extends Locatable>(
+  entities: T[],
+  pageNumber: number
+): BoxEntityPair<T>[] {
+  const locatablesWithBoxes = [];
+  for (const entity of entities) {
+    for (const boundingBox of entity.bounding_boxes) {
+      if (boundingBox.page === pageNumber - 1) {
+        locatablesWithBoxes.push({ boundingBox, entity });
       }
     }
   }
-  return localizedCitations;
+  return locatablesWithBoxes;
 }
 
-interface LocalizedCitation {
-  bounding_box: BoundingBox;
-  citation: Citation;
+interface BoxEntityPair<T extends Locatable> {
+  entity: T;
+  boundingBox: BoundingBox;
 }
