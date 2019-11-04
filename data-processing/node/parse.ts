@@ -77,7 +77,8 @@ function parse(equation: string): Token[] {
       const token = {
         start: object.loc.start,
         end: object.loc.end,
-        text: object.text
+        text: object.text,
+        index: tokens.length
       };
       tokens.push(token);
     }

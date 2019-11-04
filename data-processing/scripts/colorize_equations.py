@@ -5,24 +5,25 @@ from typing import Iterator, List, NamedTuple
 
 from explanations import directories
 from explanations.colorize_tex import colorize_equations
-from explanations.directories import (
-    SOURCES_DIR,
-    SOURCES_WITH_COLORIZED_EQUATIONS_DIR,
-    get_arxiv_ids,
-)
-from explanations.file_utils import find_files, read_file_tolerant
+from explanations.directories import (get_arxiv_ids,
+                                      get_data_subdirectory_for_arxiv_id,
+                                      get_data_subdirectory_for_iteration,
+                                      get_iteration_id)
+from explanations.file_utils import (clean_directory, find_files,
+                                     read_file_tolerant)
 from explanations.parse_tex import TexSoupParseError
 from explanations.types import ColorizedEquation, FileContents
 from explanations.unpack import unpack
 from scripts.command import Command
 
 
-class TexWithColorizedEquations(NamedTuple):
+class ColorizationResult(NamedTuple):
+    iteration: int
     tex: str
     colorized_equations: List[ColorizedEquation]
 
 
-class ColorizeEquations(Command[FileContents, TexWithColorizedEquations]):
+class ColorizeEquations(Command[FileContents, ColorizationResult]):
     @staticmethod
     def get_name() -> str:
         return "colorize-equations"
@@ -32,27 +33,25 @@ class ColorizeEquations(Command[FileContents, TexWithColorizedEquations]):
         return "Instrument TeX to colorize equations."
 
     def load(self) -> Iterator[FileContents]:
-        for arxiv_id in get_arxiv_ids(SOURCES_DIR):
-            # Unpack the sources into a new directory.
-            unpack_path = unpack(arxiv_id, SOURCES_WITH_COLORIZED_EQUATIONS_DIR)
-            if unpack_path is None:
-                continue
+        for arxiv_id in get_arxiv_ids(directories.SOURCES_DIR):
 
-            colorized_equations_path = directories.sources_with_colorized_equations(
-                arxiv_id
+            output_root = get_data_subdirectory_for_arxiv_id(
+                directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR, arxiv_id
             )
-            for absolute_tex_path in find_files(colorized_equations_path, [".tex"]):
-                relative_tex_path = os.path.relpath(
-                    absolute_tex_path, os.path.abspath(colorized_equations_path)
-                )
-                contents = read_file_tolerant(absolute_tex_path)
-                if contents is not None:
-                    yield FileContents(arxiv_id, relative_tex_path, contents)
+            clean_directory(output_root)
 
-    def process(self, item: FileContents) -> Iterator[TexWithColorizedEquations]:
+            original_sources_path = directories.sources(arxiv_id)
+            for text_path in find_files(original_sources_path, [".tex"], relative=True):
+                contents = read_file_tolerant(
+                    os.path.join(original_sources_path, text_path)
+                )
+                if contents is not None:
+                    yield FileContents(arxiv_id, text_path, contents)
+
+    def process(self, item: FileContents) -> Iterator[ColorizationResult]:
         try:
-            colorized_tex, colorized_equations = colorize_equations(item.contents)
-            yield TexWithColorizedEquations(colorized_tex, colorized_equations)
+            for i, batch in enumerate(colorize_equations(item.contents)):
+                yield ColorizationResult(i, batch.tex, batch.colorized_equations)
         except TexSoupParseError as e:
             logging.error(
                 "Failed to parse TeX file %s for arXiv ID %s: %s",
@@ -61,28 +60,40 @@ class ColorizeEquations(Command[FileContents, TexWithColorizedEquations]):
                 e,
             )
 
-    def save(self, item: FileContents, result: TexWithColorizedEquations) -> None:
+    def save(self, item: FileContents, result: ColorizationResult) -> None:
+        iteration = result.iteration
         colorized_tex = result.tex
         colorized_equations = result.colorized_equations
 
-        tex_path = os.path.join(
-            directories.sources_with_colorized_equations(item.arxiv_id), item.path
+        iteration_id = get_iteration_id(item.path, iteration)
+        output_sources_path = get_data_subdirectory_for_iteration(
+            directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR,
+            item.arxiv_id,
+            iteration_id,
         )
-        with open(tex_path, "w") as tex_file:
-            tex_file.write(colorized_tex)
+        logging.debug("Outputting to %s", output_sources_path)
 
-        hues_path = os.path.join(
-            directories.sources_with_colorized_equations(item.arxiv_id),
-            "equation_hues.csv",
-        )
-        with open(hues_path, "a") as hues_file:
-            writer = csv.writer(hues_file, quoting=csv.QUOTE_ALL)
-            for colorized_equation in colorized_equations:
-                writer.writerow(
-                    [
-                        item.path,
-                        colorized_equation.i,
-                        colorized_equation.tex,
-                        colorized_equation.hue,
-                    ]
-                )
+        # Create new directory for each colorization iteration for each TeX file.
+        unpack_path = unpack(item.arxiv_id, output_sources_path)
+        sources_unpacked = unpack_path is not None
+        if unpack_path is None:
+            logging.warning("Could not unpack sources into %s", output_sources_path)
+
+        if sources_unpacked:
+            tex_path = os.path.join(output_sources_path, item.path)
+            with open(tex_path, "w") as tex_file:
+                tex_file.write(colorized_tex)
+
+            hues_path = os.path.join(output_sources_path, "equation_hues.csv")
+            with open(hues_path, "a") as hues_file:
+                writer = csv.writer(hues_file, quoting=csv.QUOTE_ALL)
+                for colorized_equation in colorized_equations:
+                    writer.writerow(
+                        [
+                            item.path,
+                            colorized_equation.i,
+                            iteration_id,
+                            colorized_equation.hue,
+                            colorized_equation.tex,
+                        ]
+                    )

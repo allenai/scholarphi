@@ -1,4 +1,5 @@
 export interface Token {
+  index: number;
   start: number;
   end: number;
   text: string;

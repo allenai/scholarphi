@@ -5,12 +5,23 @@ import os.path
 from typing import Dict, Iterator, List, NamedTuple, Tuple, cast
 
 import explanations.directories as directories
-from explanations.directories import (SOURCES_DIR, get_arxiv_ids,
-                                      get_data_subdirectory_for_iteration,
-                                      get_iteration_names)
+from explanations.directories import (
+    SOURCES_DIR,
+    get_arxiv_ids,
+    get_data_subdirectory_for_iteration,
+    get_iteration_names,
+)
 from explanations.types import ArxivId, Author, PdfBoundingBox, Reference
-from models.models import (BoundingBox, Citation, CitationPaper, Entity,
-                           EntityBoundingBox, Paper, Summary, create_tables)
+from models.models import (
+    BoundingBox,
+    Citation,
+    CitationPaper,
+    Entity,
+    EntityBoundingBox,
+    Paper,
+    Summary,
+    create_tables,
+)
 from scripts.command import Command
 
 CitationKey = str
@@ -62,8 +73,8 @@ class UploadCitations(Command[CitationData, None]):
             with open(bounding_boxes_path) as bounding_boxes_file:
                 reader = csv.reader(bounding_boxes_file)
                 for row in reader:
-                    hue = float(row[1])
-                    iteration = row[2]
+                    iteration = row[1]
+                    hue = float(row[2])
                     box = PdfBoundingBox(
                         page=int(row[3]),
                         left=float(row[4]),
@@ -179,6 +190,11 @@ class UploadCitations(Command[CitationData, None]):
             paper = Paper.create(s2_id=s2_id, arxiv_id=arxiv_id)
 
         for hue_iteration, citation_keys in citations_by_hue_iteration.items():
+
+            # Sometimes bounding boxes won't be found for a citation.
+            if not hue_iteration in boxes_by_hue_iteration:
+                continue
+
             bounding_boxes = boxes_by_hue_iteration[hue_iteration]
 
             cited_papers = []
