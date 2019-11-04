@@ -47,8 +47,10 @@ HUES = np.linspace(0, 1, NUM_HUES)
 def generate_hues() -> Iterator[float]:
     for hue in HUES:
         yield hue
-    logging.debug(  # pylint: disable=logging-not-lazy
-        ("Out of hues. Hopefully the caller ")
+    logging.debug(
+        (
+            "Out of hues. Hopefully the caller is restarting this generator to keep coloring."
+        )
     )
 
 
@@ -237,7 +239,14 @@ class HyperrefColorExtractor(ParseListener):
                         )
 
 
-def colorize_equations(tex: str) -> Tuple[str, List[ColorizedEquation]]:
+class EquationColorizationBatch(NamedTuple):
+    tex: str
+    colorized_equations: List[ColorizedEquation]
+
+
+def colorize_equations(tex: str) -> Iterator[EquationColorizationBatch]:
+    # TODO(andrewhead): Refactor this to share code with colorize_citations.
+
     equation_extractor = EquationExtractor()
     walk_tex_parse_tree(tex, [equation_extractor])
 
@@ -247,15 +256,23 @@ def colorize_equations(tex: str) -> Tuple[str, List[ColorizedEquation]]:
 
     hue_generator = generate_hues()
     colorized_equations: List[ColorizedEquation] = []
+
+    colorized_tex = tex
     for e in equations_reverse_order:
         try:
             hue = next(hue_generator)
         except StopIteration:
-            break
-        tex = _insert_color_in_tex(tex, hue, e.start, e.end)
-        colorized_equations.insert(0, ColorizedEquation(hue, e.tex, e.i))
+            yield EquationColorizationBatch(colorized_tex, colorized_equations)
+            colorized_tex = tex
+            colorized_equations = []
+            hue_generator = generate_hues()
+            hue = next(hue_generator)
 
-    return tex, colorized_equations
+        colorized_tex = _insert_color_in_tex(colorized_tex, hue, e.start, e.end)
+        colorized_equations.insert(0, ColorizedEquation(hue, e.content_tex, e.i))
+
+    if len(colorized_equations) > 0:
+        yield EquationColorizationBatch(colorized_tex, colorized_equations)
 
 
 class Equation(NamedTuple):
@@ -309,36 +326,138 @@ class EquationExtractor(ParseListener):
                 )
 
 
-def colorize_equation_tokens(
-    tex: str, tokens: Dict[EquationIndex, List[Token]]
-) -> Tuple[str, ColorizedTokensByEquation]:
-    equation_extractor = EquationExtractor()
-    walk_tex_parse_tree(tex, [equation_extractor])
+TexFileName = str
+TexContents = str
 
-    equations_reverse_order = sorted(
-        equation_extractor.equations, key=lambda e: e.content_start, reverse=True
+
+class TokenWithOrigin(NamedTuple):
+    tex_path: str
+    equation_index: int
+    token_index: int
+    start: int
+    end: int
+    text: str
+
+
+class ColorizedTokenWithOrigin(NamedTuple):
+    tex_path: str
+    equation_index: int
+    token_index: int
+    start: int
+    end: int
+    text: str
+    hue: float
+
+
+class EquationId(NamedTuple):
+    tex_path: str
+    i: int
+
+
+class TokenColorizationBatch(NamedTuple):
+    colorized_files: Dict[TexFileName, TexContents]
+    colorized_tokens: List[ColorizedTokenWithOrigin]
+
+
+def _get_tokens_for_equation(
+    tokens: List[TokenWithOrigin], equation_index: int, tex_path: str
+) -> List[TokenWithOrigin]:
+    return list(
+        filter(
+            lambda t: t.tex_path == tex_path and t.equation_index == equation_index,
+            tokens,
+        )
     )
 
-    for equation in equations_reverse_order:
-        colorized_tokens_by_equation = {}
-        if equation.i in tokens:
-            tex, colorized_tokens = _colorize_tokens_in_equation(
-                tex, equation, tokens[equation.i]
+
+def colorize_equation_tokens(
+    file_contents: Dict[TexFileName, TexContents], tokens: List[TokenWithOrigin]
+) -> Iterator[TokenColorizationBatch]:
+
+    equations_by_file: Dict[TexFileName, List[Equation]] = {}
+    tokens_by_equation: Dict[EquationId, List[TokenWithOrigin]] = {}
+
+    for token in tokens:
+        equation_id = EquationId(token.tex_path, token.equation_index)
+        if equation_id not in tokens_by_equation:
+            tokens_by_equation[equation_id] = []
+        tokens_by_equation[equation_id].append(token)
+
+    for tex_filename, tex in file_contents.items():
+        equation_extractor = EquationExtractor()
+        walk_tex_parse_tree(tex, [equation_extractor])
+        equations = equation_extractor.equations
+        equations_by_file[tex_filename] = equations
+
+    # Number of tokens to skip when coloring. Starts at 0, and increases with each pass of
+    # coloring. Multiple passes will be needed as the distinct hues for tokens runs out fast.
+    # Tokens are colored in parallel for all equations from all TeX files, as the search for
+    # colors will be done within the bounding boxes detected for each equation independently.
+    token_skip = 0
+
+    more_batches = True
+    while more_batches:
+
+        colorized_files: Dict[TexFileName, TexContents] = {}
+        colorized_tokens = []
+
+        for tex_filename, tex in file_contents.items():
+            colorized_tex = tex
+
+            equations_reverse_order = sorted(
+                equations_by_file[tex_filename],
+                key=lambda e: e.content_start,
+                reverse=True,
             )
-            colorized_tokens_by_equation[equation.i] = colorized_tokens
+            for equation in equations_reverse_order:
+                equation_tokens = tokens_by_equation.get(
+                    EquationId(tex_filename, equation.i)
+                )
+                if equation_tokens is not None:
+                    colorized_tex, colorized_tokens_for_equation = _colorize_tokens_for_equation(
+                        colorized_tex, equation, equation_tokens, token_skip
+                    )
+                    colorized_tokens.extend(colorized_tokens_for_equation)
 
-    return tex, colorized_tokens_by_equation
+            colorized_files[tex_filename] = colorized_tex
+
+        # If some tokens were colorized...
+        if len(colorized_tokens) > 0:
+
+            # Return batch of colorized tokens and colorized TeX
+            yield TokenColorizationBatch(colorized_files, colorized_tokens)
+            colorized_tokens = []
+            colorized_files = {}
+
+            # Continue coloring, starting from another set of tokens
+            more_batches = True
+            token_skip += NUM_HUES
+
+        else:
+            more_batches = False
 
 
-def _colorize_tokens_in_equation(
-    tex: str, equation: Equation, tokens: List[Token]
-) -> Tuple[str, ColorizedTokens]:
+class TokenEquationColorizationBatch(NamedTuple):
+    colorized_tex: str
+    colorized_tokens: List[ColorizedTokenWithOrigin]
+
+
+def _colorize_tokens_for_equation(
+    tex: str, equation: Equation, tokens: List[TokenWithOrigin], skip: int = 0
+) -> TokenEquationColorizationBatch:
+    """
+    Colorize tokens in an equation until there are no more hues.
+    To keep colorizing tokens after the hues run out, call this function again, setting 'skip'
+    to the number of tokens that were colored in previous calls.
+    """
 
     hue_generator = generate_hues()
-    colorized_tokens = {}
-    tokens_last_to_first = sorted(tokens, key=lambda t: t.start, reverse=True)
+    colorized_tokens = []
 
-    for token in tokens_last_to_first:
+    tokens_last_to_first = sorted(tokens, key=lambda t: t.start, reverse=True)
+    tokens_after_skip = tokens_last_to_first[skip:]
+
+    for token in tokens_after_skip:
         try:
             hue = next(hue_generator)
         except StopIteration:
@@ -353,9 +472,19 @@ def _colorize_tokens_in_equation(
             equation.content_start + token_start,
             equation.content_start + token.end,
         )
-        colorized_tokens[hue] = token
+        colorized_tokens.append(
+            ColorizedTokenWithOrigin(
+                token.tex_path,
+                token.equation_index,
+                token.token_index,
+                token.start,
+                token.end,
+                token.text,
+                hue,
+            )
+        )
 
-    return tex, colorized_tokens
+    return TokenEquationColorizationBatch(tex, colorized_tokens)
 
 
 def _adjust_start_coloring_index(index: int, equation: str) -> int:

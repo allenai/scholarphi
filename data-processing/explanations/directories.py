@@ -112,7 +112,10 @@ def get_data_subdirectory_for_iteration(
 
 
 def get_iteration_names(data_dir: AbsolutePath, arxiv_id: str) -> List[str]:
-    return os.listdir(get_data_subdirectory_for_arxiv_id(data_dir, arxiv_id))
+    arxiv_subdirectory = get_data_subdirectory_for_arxiv_id(data_dir, arxiv_id)
+    if not os.path.exists(arxiv_subdirectory):
+        return []
+    return os.listdir(arxiv_subdirectory)
 
 
 def get_arxiv_id_iteration_path(arxiv_id: str, iteration: str) -> RelativePath:

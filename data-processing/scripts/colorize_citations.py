@@ -7,8 +7,8 @@ from typing import Iterator, List, NamedTuple
 from explanations import directories
 from explanations.colorize_tex import colorize_citations
 from explanations.directories import (
-    SOURCES_DIR,
     get_arxiv_ids,
+    get_data_subdirectory_for_arxiv_id,
     get_data_subdirectory_for_iteration,
     get_iteration_id,
 )
@@ -35,9 +35,11 @@ class ColorizeCitations(Command[FileContents, ColorizationResult]):
         return "Instrument TeX to colorize citations."
 
     def load(self) -> Iterator[FileContents]:
-        for arxiv_id in get_arxiv_ids(SOURCES_DIR):
+        for arxiv_id in get_arxiv_ids(directories.SOURCES_DIR):
 
-            output_root = directories.sources_with_colorized_citations_root(arxiv_id)
+            output_root = get_data_subdirectory_for_arxiv_id(
+                directories.SOURCES_WITH_COLORIZED_CITATIONS_DIR, arxiv_id
+            )
             clean_directory(output_root)
 
             original_sources_path = directories.sources(arxiv_id)
@@ -71,7 +73,7 @@ class ColorizeCitations(Command[FileContents, ColorizationResult]):
             item.arxiv_id,
             iteration_id,
         )
-        logging.info("Outputting to %s", output_sources_path)
+        logging.debug("Outputting to %s", output_sources_path)
 
         # Create new directory for each colorization iteration for each TeX file.
         unpack_path = unpack(item.arxiv_id, output_sources_path)

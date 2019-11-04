@@ -37,7 +37,12 @@ def _get_parse_results(stdout: str) -> Iterator[ParseResult]:
             tokens: Optional[List[Token]] = None
             if data["tokens"] is not None:
                 tokens = [
-                    Token(text=token["text"], start=token["start"], end=token["end"])
+                    Token(
+                        token_index=token["index"],
+                        text=token["text"],
+                        start=token["start"],
+                        end=token["end"],
+                    )
                     for token in data["tokens"]
                 ]
             yield ParseResult(
@@ -135,6 +140,7 @@ class ExtractEquationTokens(Command[ArxivId, ParseResult]):
                             result.path,
                             result.i,
                             result.equation,
+                            token.token_index,
                             token.start,
                             token.end,
                             token.text,

@@ -55,6 +55,7 @@ class Token(NamedTuple):
     Token from a TeX equation.
     """
 
+    token_index: int
     text: str
     start: int
     end: int
