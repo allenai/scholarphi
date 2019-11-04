@@ -1,19 +1,12 @@
 import colorsys
 import logging
 import re
-from typing import Dict, Iterator, List, NamedTuple, Tuple
+from typing import Dict, Iterator, List, NamedTuple
 
 import numpy as np
 
 from explanations.parse_tex import ParseListener, walk_tex_parse_tree
-from explanations.types import (
-    ColorizedCitation,
-    ColorizedEquation,
-    ColorizedTokens,
-    ColorizedTokensByEquation,
-    EquationIndex,
-    Token,
-)
+from explanations.types import ColorizedCitation, ColorizedEquation
 from TexSoup import Buffer, OArg, RArg, TexCmd, TexEnv, TexNode, TokenWithPosition
 
 """

@@ -1,9 +1,8 @@
 import re
 
-from explanations.colorize_tex import (colorize_citations,
+from explanations.colorize_tex import (TokenWithOrigin, colorize_citations,
                                        colorize_equation_tokens,
                                        colorize_equations)
-from explanations.types import Token
 
 COLOR_PATTERN = (
     r"\\llap{"
@@ -16,7 +15,7 @@ COLOR_PATTERN = (
 
 def test_color_citations():
     tex = "word.~\\cite{source1,source2}"
-    colorized, citations = colorize_citations(tex)
+    colorized, citations = next(colorize_citations(tex))
     assert colorized.startswith("word.~")
     print(colorized)
     matches = re.findall(COLOR_PATTERN, colorized)
@@ -26,14 +25,16 @@ def test_color_citations():
 
 
 def test_disable_hyperref_colors():
-    tex = "\\usepackage[colorlinks=true,citecolor=blue]{hyperref}"
-    colorized, _ = colorize_citations(tex)
+    tex = "\n".join(
+        ["\\usepackage[colorlinks=true,citecolor=blue]{hyperref}", "\\cite{source}"]
+    )
+    colorized, _ = next(colorize_citations(tex))
     assert "colorlinks=false" in colorized
 
 
 def test_color_equations():
     tex = "$eq1$ and $eq2$"
-    colorized, equations = colorize_equations(tex)
+    colorized, equations = next(colorize_equations(tex))
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 2
     assert matches[0] == "$eq1$"
@@ -41,13 +42,13 @@ def test_color_equations():
 
     equation0_info = equations[0]
     assert isinstance(equation0_info.hue, float)
-    assert equation0_info.tex == "$eq1$"
+    assert equation0_info.tex == "eq1"
     assert equation0_info.i == 0
 
 
 def test_color_equation_in_argument():
     tex = "\\caption{$eq1$}"
-    colorized = colorize_equations(tex)[0]
+    colorized, _ = next(colorize_equations(tex))
     assert colorized.startswith("\\caption")
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 1
@@ -55,9 +56,17 @@ def test_color_equation_in_argument():
 
 
 def test_color_tokens():
-    tex = "$ignore$ $x + y$"
-    tokens = {1: [Token(start=0, end=1, text="x"), Token(start=4, end=5, text="y")]}
-    colorized = colorize_equation_tokens(tex, tokens)[0]
+    file_contents = {"file": "$ignore$ $x + y$"}
+    tokens = [
+        TokenWithOrigin(
+            tex_path="file", equation_index=1, token_index=0, start=0, end=1, text="x"
+        ),
+        TokenWithOrigin(
+            tex_path="file", equation_index=1, token_index=1, start=4, end=5, text="y"
+        ),
+    ]
+    colorized_files, _ = next(colorize_equation_tokens(file_contents, tokens))
+    colorized = colorized_files["file"]
     assert colorized.startswith("$ignore$")
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 2
@@ -66,16 +75,23 @@ def test_color_tokens():
 
 
 def test_color_subscripts():
-    tex = "$x_i x^i x\\sp1 x\\sb1$"
-    tokens = {
-        0: [
-            Token(start=2, end=3, text="i"),
-            Token(start=6, end=7, text="i"),
-            Token(start=12, end=13, text="1"),
-            Token(start=18, end=19, text="1"),
-        ]
-    }
-    colorized = colorize_equation_tokens(tex, tokens)[0]
+    file_contents = {"file": "$x_i x^i x\\sp1 x\\sb1$"}
+    tokens = [
+        TokenWithOrigin(
+            tex_path="file", equation_index=0, token_index=0, start=2, end=3, text="i"
+        ),
+        TokenWithOrigin(
+            tex_path="file", equation_index=0, token_index=1, start=6, end=7, text="i"
+        ),
+        TokenWithOrigin(
+            tex_path="file", equation_index=0, token_index=2, start=12, end=13, text="1"
+        ),
+        TokenWithOrigin(
+            tex_path="file", equation_index=0, token_index=3, start=18, end=19, text="1"
+        ),
+    ]
+    colorized_files, _ = next(colorize_equation_tokens(file_contents, tokens))
+    colorized = colorized_files["file"]
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 4
     # Subscript and superscript commands must also be wrapped in the coloring commands
