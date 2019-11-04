@@ -47,12 +47,11 @@ def _unpack(archive_path: str, dest_dir: str) -> None:
     shutil.copyfile(archive_path, pdf_path)
 
 
-def unpack(arxiv_id: str, data_dir: str) -> Optional[str]:
+def unpack(arxiv_id: str, unpack_path: str) -> Optional[str]:
     archive_path = directories.source_archives(arxiv_id)
     if not os.path.exists(archive_path):
         logging.warning("No source archive directory found for %s", arxiv_id)
         return None
-    unpack_path = os.path.join(data_dir, directories.escape_slashes(arxiv_id))
     if os.path.exists(unpack_path):
         logging.warning(
             "Directory already found at %s. Deleting contents.", unpack_path

@@ -11,7 +11,12 @@ import numpy as np
 from explanations import directories
 from explanations.bounding_box import extract_bounding_boxes
 from explanations.compile import get_compiled_pdfs
-from explanations.directories import get_arxiv_ids, get_data_subdirectory_for_arxiv_id
+from explanations.directories import (
+    get_arxiv_ids,
+    get_data_subdirectory_for_arxiv_id,
+    get_data_subdirectory_for_iteration,
+    get_iteration_names,
+)
 from explanations.file_utils import clean_directory, open_pdf
 from explanations.types import ArxivId, BoundingBoxInfo, RasterBoundingBox, Rectangle
 from scripts.command import Command
@@ -37,6 +42,7 @@ class HueSearchRegion(NamedTuple):
 
 class SearchTask(NamedTuple):
     arxiv_id: ArxivId
+    iteration: str
     page_images: Dict[int, np.ndarray]
     pdf: fitz.Document
     relative_pdf_path: str
@@ -70,7 +76,7 @@ class LocateHuesCommand(Command[SearchTask, HueLocation], ABC):
         """
 
     @abstractmethod
-    def load_hues(self, arxiv_id: ArxivId) -> List[HueSearchRegion]:
+    def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
         """
         Load a list of hues for which you need bounding box locations.
         """
@@ -82,48 +88,60 @@ class LocateHuesCommand(Command[SearchTask, HueLocation], ABC):
             )
             clean_directory(output_dir)
 
-            diff_images_dir = get_data_subdirectory_for_arxiv_id(
-                self.get_diff_images_base_dir(), arxiv_id
-            )
-
+            # Get PDF names from results of compiling the uncolorized TeX sources.
             compiled_pdf_paths = get_compiled_pdfs(
                 directories.compilation_results(arxiv_id)
             )
 
-            hue_searches = self.load_hues(arxiv_id)
-            hue_searches_by_pdf: Dict[PdfPath, List[HueSearchRegion]] = {}
-            for search in hue_searches:
-                pdfs_to_search = (
-                    [search.relative_pdf_path]
-                    if search.relative_pdf_path is not None
-                    else compiled_pdf_paths
+            for iteration in get_iteration_names(
+                self.get_diff_images_base_dir(), arxiv_id
+            ):
+
+                diff_images_dir = get_data_subdirectory_for_iteration(
+                    self.get_diff_images_base_dir(), arxiv_id, iteration
                 )
-                for pdf_path in pdfs_to_search:
-                    if pdf_path not in hue_searches_by_pdf:
-                        hue_searches_by_pdf[pdf_path] = []
-                    hue_searches_by_pdf[pdf_path].append(search)
 
-            for relative_pdf_path, search_regions in hue_searches_by_pdf.items():
-                pdf = open_pdf(
-                    os.path.join(
-                        directories.compilation_results(arxiv_id), relative_pdf_path
+                hue_searches = self.load_hues(arxiv_id, iteration)
+                hue_searches_by_pdf: Dict[PdfPath, List[HueSearchRegion]] = {}
+                for search in hue_searches:
+                    pdfs_to_search = (
+                        [search.relative_pdf_path]
+                        if search.relative_pdf_path is not None
+                        else compiled_pdf_paths
                     )
-                )
-                diff_images_pdf_path = os.path.join(diff_images_dir, relative_pdf_path)
-                page_images = {}
+                    for pdf_path in pdfs_to_search:
+                        if pdf_path not in hue_searches_by_pdf:
+                            hue_searches_by_pdf[pdf_path] = []
+                        hue_searches_by_pdf[pdf_path].append(search)
 
-                for img_name in os.listdir(diff_images_pdf_path):
-                    img_path = os.path.join(diff_images_pdf_path, img_name)
-                    page_image = cv2.imread(img_path)
-                    page_number = int(
-                        os.path.splitext(img_name)[0].replace("page-", "")
+                for relative_pdf_path, search_regions in hue_searches_by_pdf.items():
+                    pdf = open_pdf(
+                        os.path.join(
+                            directories.compilation_results(arxiv_id), relative_pdf_path
+                        )
                     )
-                    page_images[page_number] = page_image
+                    diff_images_pdf_path = os.path.join(
+                        diff_images_dir, relative_pdf_path
+                    )
+                    page_images = {}
 
-                for search_region in search_regions:
-                    yield SearchTask(
-                        arxiv_id, page_images, pdf, relative_pdf_path, search_region
-                    )
+                    for img_name in os.listdir(diff_images_pdf_path):
+                        img_path = os.path.join(diff_images_pdf_path, img_name)
+                        page_image = cv2.imread(img_path)
+                        page_number = int(
+                            os.path.splitext(img_name)[0].replace("page-", "")
+                        )
+                        page_images[page_number] = page_image
+
+                    for search_region in search_regions:
+                        yield SearchTask(
+                            arxiv_id,
+                            iteration,
+                            page_images,
+                            pdf,
+                            relative_pdf_path,
+                            search_region,
+                        )
 
     def process(self, item: SearchTask) -> Iterator[HueLocation]:
         for page_number, image in item.page_images.items():
@@ -158,7 +176,7 @@ class LocateHuesCommand(Command[SearchTask, HueLocation], ABC):
         output_path = os.path.join(output_dir, "hue_locations.csv")
         with open(output_path, "a") as output_file:
             writer = csv.writer(output_file, quoting=csv.QUOTE_ALL)
-            row_data = [item.relative_pdf_path, result.hue]
+            row_data = [item.relative_pdf_path, item.iteration, result.hue]
             row_data.extend(
                 [
                     result.box_info.pdf_box.page,
@@ -205,13 +223,17 @@ class LocateCitationHues(LocateHuesCommand):
     def get_description() -> str:
         return "Find bounding boxes of citations by hue."
 
-    def load_hues(self, arxiv_id: ArxivId) -> List[HueSearchRegion]:
+    def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
         return common_read_hues(
             hues_path=os.path.join(
-                directories.sources_with_colorized_citations(arxiv_id),
+                get_data_subdirectory_for_iteration(
+                    directories.SOURCES_WITH_COLORIZED_CITATIONS_DIR,
+                    arxiv_id,
+                    iteration,
+                ),
                 "citation_hues.csv",
             ),
-            column_index=1,
+            column_index=2,
         )
 
     @staticmethod
@@ -232,13 +254,17 @@ class LocateEquationHues(LocateHuesCommand):
     def get_description() -> str:
         return "Find bounding boxes of equations by hue."
 
-    def load_hues(self, arxiv_id: ArxivId) -> List[HueSearchRegion]:
+    def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
         return common_read_hues(
             hues_path=os.path.join(
-                directories.sources_with_colorized_equations(arxiv_id),
+                get_data_subdirectory_for_iteration(
+                    directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR,
+                    arxiv_id,
+                    iteration,
+                ),
                 "equation_hues.csv",
             ),
-            column_index=3,
+            column_index=4,
         )
 
     @staticmethod
@@ -272,9 +298,12 @@ class LocateEquationTokenHues(LocateHuesCommand):
             + "'"
         )
 
-    def load_hues(self, arxiv_id: ArxivId) -> List[HueSearchRegion]:
+    def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
         equation_hues_path = os.path.join(
-            directories.sources_with_colorized_equations(arxiv_id), "equation_hues.csv"
+            get_data_subdirectory_for_iteration(
+                directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR, arxiv_id, iteration
+            ),
+            "equation_hues.csv",
         )
         hues_by_equation = {}
         with open(equation_hues_path) as equation_hues_file:
@@ -310,7 +339,11 @@ class LocateEquationTokenHues(LocateHuesCommand):
 
         token_hues_by_equation: Dict[EquationId, List[Hue]] = {}
         token_hues_path = os.path.join(
-            directories.sources_with_colorized_equation_tokens(arxiv_id),
+            get_data_subdirectory_for_iteration(
+                directories.SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR,
+                arxiv_id,
+                iteration,
+            ),
             "token_hues.csv",
         )
         with open(token_hues_path) as token_hues_file:

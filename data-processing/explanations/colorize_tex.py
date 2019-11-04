@@ -32,6 +32,9 @@ colorized entity.
 Entities will be colorized, each with a different hue. Once the colorizer runs out of new hues, it
 returns the currently colorized TeX and list of colorized entities, then resets the TeX and
 starts over from where it stopped, cylcing through the same hues again.
+
+If you want a better sense of the colorization process, see the 'colorize_citations' method, which
+has more explanatory comments than the other colorization methods.
 """
 
 
@@ -44,11 +47,8 @@ HUES = np.linspace(0, 1, NUM_HUES)
 def generate_hues() -> Iterator[float]:
     for hue in HUES:
         yield hue
-    logging.error(  # pylint: disable=logging-not-lazy
-        (
-            "Ran out of hues. It's likely many entities in the paper won't get colored."
-            + "Must start over with another copy of the paper to keep coloring."
-        )
+    logging.debug(  # pylint: disable=logging-not-lazy
+        ("Out of hues. Hopefully the caller ")
     )
 
 
@@ -93,29 +93,53 @@ def _get_color_end_tex() -> str:
     return r"\llap{\pdfcolorstack0 pop}"
 
 
-def colorize_citations(tex: str) -> Tuple[str, List[ColorizedCitation]]:
+class CitationColorizationBatch(NamedTuple):
+    tex: str
+    colorized_citations: List[ColorizedCitation]
+
+
+def colorize_citations(tex: str) -> Iterator[CitationColorizationBatch]:
 
     citation_extractor = CitationExtractor()
     tex = _disable_hyperref_coloring(tex)
+
     walk_tex_parse_tree(tex, [citation_extractor])
 
     # Order from last-to-first so we can add color commands without messing with the offsets of
     # citations that haven't yet been colored.
-    ordered_citations = sorted(
+    citations_reverse_order = sorted(
         citation_extractor.citations, key=lambda c: c.start, reverse=True
     )
 
     hue_generator = generate_hues()
     colorized_citations: List[ColorizedCitation] = []
-    for c in ordered_citations:
+
+    colorized_tex = tex
+    for c in citations_reverse_order:
         try:
             hue = next(hue_generator)
         except StopIteration:
-            break
-        tex = _insert_color_in_tex(tex, hue, c.start, c.end)
+            # When the hues run out, notify caller that a batch has been finished.
+            # Provide the caller with the colorized tex and list of colors.
+            yield CitationColorizationBatch(colorized_tex, colorized_citations)
+
+            # Then reset the TeX so it is not colorized so we can start coloring with the
+            # same hues without collisions. And clear the list of colors assigned.
+            colorized_tex = tex
+            colorized_citations = []
+
+            # Reset the hue generator.
+            hue_generator = generate_hues()
+
+            # And get the hue for the next entity.
+            hue = next(hue_generator)
+
+        colorized_tex = _insert_color_in_tex(colorized_tex, hue, c.start, c.end)
         colorized_citations.insert(0, ColorizedCitation(hue, c.keys))
 
-    return tex, colorized_citations
+    # When finished coloring, check if there are any
+    if len(colorized_citations) > 0:
+        yield CitationColorizationBatch(colorized_tex, colorized_citations)
 
 
 class Citation(NamedTuple):

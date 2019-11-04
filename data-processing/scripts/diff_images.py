@@ -9,7 +9,10 @@ import numpy as np
 
 from explanations import directories
 from explanations.compile import get_compiled_pdfs
-from explanations.directories import get_arxiv_ids, get_data_subdirectory_for_arxiv_id
+from explanations.directories import (get_arxiv_ids,
+                                      get_data_subdirectory_for_arxiv_id,
+                                      get_data_subdirectory_for_iteration,
+                                      get_iteration_names)
 from explanations.file_utils import clean_directory
 from explanations.image_processing import diff_images
 from explanations.types import ArxivId
@@ -18,6 +21,7 @@ from scripts.command import Command
 
 class PageRasterPair(NamedTuple):
     arxiv_id: ArxivId
+    iteration: str
     relative_path: str
     image_name: str
     original: np.ndarray
@@ -50,40 +54,46 @@ class DiffImagesCommand(Command[PageRasterPair, fitz.Document], ABC):
             )
             clean_directory(output_dir)
 
+            # Get PDF names from results of compiling the uncolorized TeX sources.
             pdf_paths = get_compiled_pdfs(directories.compilation_results(arxiv_id))
             if len(pdf_paths) == 0:
                 continue
 
-            original_images_dir = directories.paper_images(arxiv_id)
-            modified_images_dir = get_data_subdirectory_for_arxiv_id(
-                self.get_raster_base_dir(), arxiv_id
-            )
+            for iteration in get_iteration_names(self.get_raster_base_dir(), arxiv_id):
 
-            for relative_pdf_path in pdf_paths:
-                original_pdf_images_path = os.path.join(
-                    original_images_dir, relative_pdf_path
+                original_images_dir = directories.paper_images(arxiv_id)
+                modified_images_dir = get_data_subdirectory_for_iteration(
+                    self.get_raster_base_dir(), arxiv_id, iteration
                 )
-                for img_name in os.listdir(original_pdf_images_path):
-                    original_img_path = os.path.join(original_pdf_images_path, img_name)
-                    modified_img_path = os.path.join(
-                        modified_images_dir, relative_pdf_path, img_name
-                    )
-                    if not os.path.exists(modified_img_path):
-                        logging.warning(
-                            "Could not find expected image %s. Skipping diff for this paper.",
-                            modified_img_path,
-                        )
-                        break
 
-                    original_img = cv2.imread(original_img_path)
-                    modified_img = cv2.imread(modified_img_path)
-                    yield PageRasterPair(
-                        arxiv_id,
-                        relative_pdf_path,
-                        img_name,
-                        original_img,
-                        modified_img,
+                for relative_pdf_path in pdf_paths:
+                    original_pdf_images_path = os.path.join(
+                        original_images_dir, relative_pdf_path
                     )
+                    for img_name in os.listdir(original_pdf_images_path):
+                        original_img_path = os.path.join(
+                            original_pdf_images_path, img_name
+                        )
+                        modified_img_path = os.path.join(
+                            modified_images_dir, relative_pdf_path, img_name
+                        )
+                        if not os.path.exists(modified_img_path):
+                            logging.warning(
+                                "Could not find expected image %s. Skipping diff for this paper.",
+                                modified_img_path,
+                            )
+                            break
+
+                        original_img = cv2.imread(original_img_path)
+                        modified_img = cv2.imread(modified_img_path)
+                        yield PageRasterPair(
+                            arxiv_id,
+                            iteration,
+                            relative_pdf_path,
+                            img_name,
+                            original_img,
+                            modified_img,
+                        )
 
     def process(self, item: PageRasterPair) -> Iterator[np.ndarray]:
         # Colorized images is the first parameter: this means that original_images will be
@@ -91,14 +101,13 @@ class DiffImagesCommand(Command[PageRasterPair, fitz.Document], ABC):
         yield diff_images(item.modified, item.original)
 
     def save(self, item: PageRasterPair, result: np.ndarray) -> None:
-        output_dir = get_data_subdirectory_for_arxiv_id(
-            self.get_output_base_dir(), item.arxiv_id
+        output_dir = get_data_subdirectory_for_iteration(
+            self.get_output_base_dir(), item.arxiv_id, item.iteration
         )
         image_path = os.path.join(output_dir, item.relative_path, item.image_name)
         image_dir = os.path.dirname(image_path)
         if not os.path.exists(image_dir):
             os.makedirs(image_dir)
-        print(image_path)
         cv2.imwrite(image_path, result)
 
 

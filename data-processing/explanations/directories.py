@@ -1,5 +1,7 @@
 import os
-from typing import Iterator
+from typing import Iterator, List
+
+from explanations.types import AbsolutePath, RelativePath
 
 DATA_DIR = "data"
 
@@ -101,6 +103,27 @@ def get_data_subdirectory_for_arxiv_id(data_dir: str, arxiv_id: str) -> str:
     return os.path.join(data_dir, escape_slashes(arxiv_id))
 
 
+def get_data_subdirectory_for_iteration(
+    data_dir: str, arxiv_id: str, iteration_name: str
+) -> str:
+    return os.path.join(
+        get_data_subdirectory_for_arxiv_id(data_dir, arxiv_id), iteration_name
+    )
+
+
+def get_iteration_names(data_dir: AbsolutePath, arxiv_id: str) -> List[str]:
+    return os.listdir(get_data_subdirectory_for_arxiv_id(data_dir, arxiv_id))
+
+
+def get_arxiv_id_iteration_path(arxiv_id: str, iteration: str) -> RelativePath:
+    return os.path.join(escape_slashes(arxiv_id), iteration)
+
+
+def get_iteration_id(tex_path: str, iteration: int) -> str:
+    escaped_tex_path = escape_slashes(tex_path)
+    return f"{escaped_tex_path}-iteration-{iteration}"
+
+
 def source_archives(arxiv_id: str) -> str:
     return get_data_subdirectory_for_arxiv_id(SOURCE_ARCHIVES_DIR, arxiv_id)
 
@@ -129,7 +152,14 @@ def bibitem_resolutions(arxiv_id: str) -> str:
     return get_data_subdirectory_for_arxiv_id(BIBITEM_RESOLUTIONS_DIR, arxiv_id)
 
 
-def sources_with_colorized_citations(arxiv_id: str) -> str:
+def sources_with_colorized_citations(
+    arxiv_id: str, tex_path: str, iteration: int
+) -> str:
+    iteration_id = get_iteration_id(tex_path, iteration)
+    return os.path.join(sources_with_colorized_citations_root(arxiv_id), iteration_id)
+
+
+def sources_with_colorized_citations_root(arxiv_id: str) -> str:
     return get_data_subdirectory_for_arxiv_id(
         SOURCES_WITH_COLORIZED_CITATIONS_DIR, arxiv_id
     )
