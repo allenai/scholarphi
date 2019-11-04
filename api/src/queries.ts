@@ -7,8 +7,14 @@ interface Locatable {
 }
 
 interface BoundingBox {
+  /**
+   * Page indexes start at 0.
+   */
   page: number;
   left: number;
+  /**
+   * 'Top' is the y-position of the top of the bounding box, measured from the bottom of the page.
+   */
   top: number;
   width: number;
   height: number;

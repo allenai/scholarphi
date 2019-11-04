@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { isS2ApiResponseSuccess, S2ApiPaper } from "./types/s2-api";
 
 /**
@@ -22,6 +22,11 @@ interface Paper {
   year: number | null;
 }
 
+/**
+ * TODO(andrewhead): Add decay to the cache.
+ */
+const paperCache: { [paperId: string]: AxiosResponse<any> } = {};
+
 export async function getPapers(s2Ids: string[]) {
   const results = await Promise.all(s2Ids.map(s2Id => getPaper(s2Id)));
   const papers = results.filter(paper => paper !== undefined);
@@ -31,7 +36,12 @@ export async function getPapers(s2Ids: string[]) {
 async function getPaper(s2Id: string): Promise<Paper | undefined> {
   let response;
   try {
-    response = await axios.get(`${SEMANTIC_SCHOLAR_API_URL}/paper/${s2Id}`);
+    if (paperCache[s2Id] !== undefined) {
+      response = paperCache[s2Id];
+    } else {
+      response = await axios.get(`${SEMANTIC_SCHOLAR_API_URL}/paper/${s2Id}`);
+      paperCache[s2Id] = response;
+    }
   } catch (err) {
     console.error("Failed to fetch data from Semantic Scholar API", err);
     return;
