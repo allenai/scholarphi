@@ -11,8 +11,8 @@ export class PaperSummary extends React.Component<PaperSummaryProps, {}> {
   render() {
     return (
       <ScholarReaderContext.Consumer>
-        {state => {
-          const paper = state.papers[this.props.paperId];
+        {({ papers }) => {
+          const paper = papers[this.props.paperId];
           return (
             <div className="citation-summary">
               <div className="citation-summary__section">
