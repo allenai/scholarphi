@@ -7,10 +7,16 @@ import { PDFDocumentProxy, PDFPageProxy, PDFPageViewport } from "pdfjs-dist";
  *
  * As we are building on top of Mozilla's viewer application, these typings help us type check
  * against expectations of the interface to viewer functionality.
+ *
+ * It's possible that these members may become inaccessible in future versions of the pdf.js
+ * package. Take care when updating the 'pdf.js' submodule of this project to check that
+ * all of these typings still accurately describe the interfaces available at runtime when
+ * the application is launched from 'viewer.html'.
  */
 export interface PDFViewerApplication {
   initialized: boolean;
   eventBus: EventBus;
+  pdfViewer: PDFViewer;
   pdfDocument: PDFDocumentProxy;
 }
 
@@ -27,6 +33,26 @@ export interface PageRenderedEvent {
 
 export interface DocumentLoadedEvent {
   source: PDFDocumentProxy;
+}
+
+export interface PDFViewer {
+  scrollPageIntoView: (params: ScrollPageIntoViewParameters) => void;
+}
+
+interface ScrollPageIntoViewParameters {
+  pageNumber?: number;
+  destArray?: DestArray | null;
+  allowNegativeOffset?: boolean;
+}
+
+/**
+ * First parameter is ignored by 'scrollPageIntoView' and can be 'undefined'.
+ * Second parameter is used to declare the format of the remaining arguments.
+ */
+type DestArray = [any | undefined, DestinationType, any?, any?, any?, any?];
+
+interface DestinationType {
+  name: "XYZ" | "Fit" | "FitB" | "FitH" | "FitBH" | "FitV" | "FitBV" | "FitR";
 }
 
 export interface PDFPageView {

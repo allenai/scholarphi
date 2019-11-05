@@ -19,6 +19,7 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
       papers: {},
       pages: {},
       pdfDocument: null,
+      pdfViewer: null,
       setCitations: this.setCitations,
       setSymbols: this.setSymbols,
       setPapers: this.setPapers,
@@ -50,10 +51,13 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
   }
 
   subscribeToPDFViewerStateChanges(pdfViewerApplication: PDFViewerApplication) {
-    const { eventBus, pdfDocument } = pdfViewerApplication;
+    const { eventBus, pdfDocument, pdfViewer } = pdfViewerApplication;
 
     if (pdfDocument !== null) {
       this.setState({ pdfDocument });
+    }
+    if (pdfViewer !== null) {
+      this.setState({ pdfViewer });
     }
     eventBus.on("documentloaded", (eventData: DocumentLoadedEvent) => {
       this.setState({ pdfDocument: eventData.source });

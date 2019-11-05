@@ -4,7 +4,6 @@ import { ScholarReaderContext } from "./state";
 import { BoundingBox } from "./types/api";
 
 interface PaperClippingProps {
-  clipBounds: BoundingBox;
   pageNumber: number;
   highlightBoxes: BoundingBox[];
 }

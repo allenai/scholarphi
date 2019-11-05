@@ -39,12 +39,10 @@ export class CitationTooltipBody extends React.Component<
           </div>
         ))}
         <ScholarReaderContext.Consumer>
-          {state => (
+          {({ papers }) => (
             <div className="citation-tooltip-body__stepper-container">
               <MobileStepper
-                hidden={
-                  selectors.countOfCitationsWithSummaries(state.papers, this.props.paperIds) <= 1
-                }
+                hidden={selectors.countOfCitationsWithSummaries(papers, this.props.paperIds) <= 1}
                 variant="dots"
                 steps={this.props.paperIds.length}
                 position="static"
