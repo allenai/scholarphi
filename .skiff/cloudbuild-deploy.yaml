@@ -2,10 +2,6 @@
 # It can be attached to a variety of triggers, the default being whenever
 # someone merges changes to the `master` branch.
 steps:
-# Init submodules. Only the `ui.build` step depends on this.
-- id: 'git.submodules'
-  name: gcr.io/cloud-builders/git
-  args: ['submodule', 'update', '--init', '--recursive']
 # Pull down the latest versions of each Docker image, so the build is faster.
 - id: 'api.pull'
   name: 'gcr.io/cloud-builders/docker'
@@ -55,7 +51,7 @@ steps:
     '--build-arg', 'NODE_ENV=production',
     '--build-arg', 'BABEL_ENV=production'
   ]
-  waitFor: [ 'ui.pull', 'git.submodules' ]
+  waitFor: [ 'ui.pull' ]
   dir: 'ui'
 - id: 'ingress.build'
   name: 'gcr.io/cloud-builders/docker'
