@@ -8,4 +8,4 @@ node_modules
 .vscode/settings.json
 
 # Compiled output
-dist
+build

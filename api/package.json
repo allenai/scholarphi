@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node src/index.ts",
-    "start:prod": "node dist/index.js",
+    "start:prod": "node build/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc --outDir dist/"
+    "build": "tsc --outDir build/"
   },
   "repository": {
     "type": "git",

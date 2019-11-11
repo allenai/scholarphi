@@ -27,7 +27,7 @@ COPY --from=build /app/package*.json ./
 RUN npm install --production
 
 # Copy over the build artifacts from the prior stage.
-COPY --from=build /app/dist ./dist
+COPY --from=build /app/build ./build
 
 ENV NODE_ENV ${NODE_ENV:-production}
 
