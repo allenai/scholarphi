@@ -13,6 +13,11 @@ RUN npm install
 # is an ok tradeoff for now.
 COPY . .
 
+# Google Cloud Build doesn't support submodules, so instead we pull the latest
+# published version.
+COPY --from=gcr.io/ai2-reviz/github.com/allenai/scholar-reader-pdfjs:latest \
+    /pdfjs /ui/public/pdf.js
+
 ARG NODE_ENV
 ENV NODE_ENV ${NODE_ENV:-production}
 
