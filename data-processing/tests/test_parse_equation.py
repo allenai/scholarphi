@@ -5,7 +5,7 @@ from explanations.parse_equation import Character, get_characters, get_symbols
 from tests.util import get_test_path
 
 
-def test_extract_characters():
+def test_get_characters():
     with open(get_test_path(os.path.join("mathml", "x_plus_y.xml"))) as mathml_file:
         mathml = mathml_file.read()
         characters = get_characters(mathml)
@@ -14,7 +14,7 @@ def test_extract_characters():
         assert Character("y", 2, 4, 5) in characters
 
 
-def test_extract_symbols_for_characters():
+def test_get_symbols_for_characters():
     with open(get_test_path(os.path.join("mathml", "x_plus_y.xml"))) as mathml_file:
         mathml = mathml_file.read()
         symbols = get_symbols(mathml)
@@ -28,7 +28,7 @@ def test_extract_symbols_for_characters():
     assert y.mathml.strip() == "<mi>y</mi>"
 
 
-def test_extract_symbols_for_subscript():
+def test_get_symbols_for_subscript():
     with open(get_test_path(os.path.join("mathml", "x_sub_i.xml"))) as mathml_file:
         mathml = mathml_file.read()
         symbols = get_symbols(mathml)
@@ -39,3 +39,30 @@ def test_extract_symbols_for_subscript():
     assert len(x_sub_i.characters) == 2
     assert 0 in x_sub_i.characters
     assert 1 in x_sub_i.characters
+
+
+def test_get_symboL_children():
+    with open(
+        get_test_path(os.path.join("mathml", "x_sub_t_sub_i.xml"))
+    ) as mathml_file:
+        mathml = mathml_file.read()
+        symbols = get_symbols(mathml)
+
+    assert len(symbols) == 5
+    x_sub_t_sub_i = list(
+        filter(lambda s: "msub" in s.mathml and "x" in s.mathml, symbols)
+    )[0]
+    t_sub_i = list(
+        filter(lambda s: "msub" in s.mathml and s is not x_sub_t_sub_i, symbols)
+    )[0]
+    x = list(filter(lambda s: s.mathml == "<mi>x</mi>", symbols))[0]
+    t = list(filter(lambda s: s.mathml == "<mi>t</mi>", symbols))[0]
+    i = list(filter(lambda s: s.mathml == "<mi>i</mi>", symbols))[0]
+
+    assert len(x_sub_t_sub_i.children) == 2
+    assert x in x_sub_t_sub_i.children
+    assert t_sub_i in x_sub_t_sub_i.children
+
+    assert len(t_sub_i.children) == 2
+    assert t in t_sub_i.children
+    assert i in t_sub_i.children
