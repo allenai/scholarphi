@@ -4,7 +4,7 @@ import * as nconf from "nconf";
 nconf
   .argv()
   .env()
-  .file({ file: "config/secret.json" })
+  .file({ file: process.env.SECRETS_FILE || "config/secret.json" })
   .defaults({
     database: {
       host: "scholar-reader.cjc2varstph5.us-east-2.rds.amazonaws.com",
@@ -17,7 +17,7 @@ nconf
 export const init = async (config: nconf.Provider) => {
   const server = new Server({
     port: 3000,
-    host: "localhost",
+    host: "0.0.0.0", 
     debug: {
       request: ["error"]
     }
@@ -30,6 +30,8 @@ export const init = async (config: nconf.Provider) => {
       prefix: "/api/v0/"
     }
   });
+
+  server.route({ method: 'GET', path: '/health', handler: () => '👍' })
 
   await server.start();
   console.log("Server running on %s", server.info.uri);
