@@ -41,7 +41,8 @@ export class Connection {
         port: config.get("database:port"),
         user: config.get("database:user"),
         password: config.get("database:password"),
-        database: config.get("database:database")
+        database: config.get("database:database"),
+        ssl: true
       }
     });
   }

@@ -5,4 +5,7 @@ config/secret.json
 node_modules
 
 # Editor settings
-.vscode/settings.json 
+.vscode/settings.json
+
+# Compiled output
+build
