@@ -1,6 +1,17 @@
-FROM node:12.13.0-alpine as build
-
+# We can't use the `alpine` base image, as pdf.js includes several dependencies
+# that require jcompling c and/or c++ code, so we need an OS with all the
+# provisional headers and such required for that exercise. That said ultimately
+# we use `nginx` at runtime, so the resulting image shouldn't be too big.
+FROM node:12.13.0 as build
 WORKDIR /ui
+
+# Google Cloud Build doesn't support submodules, so instead we pull the latest
+# published version.
+COPY --from=gcr.io/ai2-reviz/github.com/allenai/scholar-reader-pdfjs:latest \
+    /pdfjs /ui/public/pdf.js
+
+# Install pdf.js dependencies
+RUN cd public/pdf.js/ && npm install
 
 # Install dependencies
 COPY package*.json ./
@@ -12,11 +23,6 @@ RUN npm install
 # be rebuilt. Given we likely won't update `nginx`.conf` too often we feel this
 # is an ok tradeoff for now.
 COPY . .
-
-# Google Cloud Build doesn't support submodules, so instead we pull the latest
-# published version.
-COPY --from=gcr.io/ai2-reviz/github.com/allenai/scholar-reader-pdfjs:latest \
-    /pdfjs /ui/public/pdf.js
 
 ARG NODE_ENV
 ENV NODE_ENV ${NODE_ENV:-production}
