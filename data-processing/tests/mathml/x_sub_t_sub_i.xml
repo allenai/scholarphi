@@ -1,0 +1,17 @@
+<span class="katex">
+    <math
+        xmlns="http://www.w3.org/1998/Math/MathML">
+        <semantics>
+            <mrow>
+                <msub s2:index="5">
+                    <mi s2:start="0" s2:end="1" s2:index="0">x</mi>
+                    <msub s2:index="4" s2:start="2" s2:end="7">
+                        <mi s2:start="3" s2:end="4" s2:index="1">t</mi>
+                        <mi s2:start="5" s2:end="6" s2:index="2">i</mi>
+                    </msub>
+                </msub>
+            </mrow>
+            <annotation encoding="application/x-tex">x_{t_i}</annotation>
+        </semantics>
+    </math>
+</span>
