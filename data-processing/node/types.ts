@@ -10,6 +10,6 @@ export interface EquationParseResult {
   i: number;
   path: string;
   equation: string;
-  tokens: Token[] | null;
+  mathMl: string | null;
   errorMessage: string | null;
 }

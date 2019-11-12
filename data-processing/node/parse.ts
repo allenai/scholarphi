@@ -2,8 +2,7 @@
 import * as program from "commander";
 import * as csv from "fast-csv";
 import * as katex from "katex";
-import * as traverse from "traverse";
-import { EquationParseResult, Token } from "./types";
+import { EquationParseResult } from "./types";
 
 program
   .command("equations-csv <csv-file>")
@@ -19,16 +18,16 @@ program
         result = {
           ...baseResult,
           success: true,
-          tokens: null,
+          mathMl: null,
           errorMessage:
             "FormatError: Unexpected format of CSV row. Check that parameters for writing the CSV and reading the CSV are consistent."
         };
       } else {
         try {
-          const tokens = parse(equation);
-          result = { ...baseResult, success: true, tokens, errorMessage: null };
+          const mathMl = parse(equation);
+          result = { ...baseResult, success: true, mathMl, errorMessage: null };
         } catch (e) {
-          result = { ...baseResult, success: false, tokens: null, errorMessage: e.toString() };
+          result = { ...baseResult, success: false, mathMl: null, errorMessage: e.toString() };
         }
       }
       console.log(JSON.stringify(result));
@@ -41,47 +40,14 @@ program
     "Parse a TeX equation. Provide equation as a string, without surrounding delimiters (e.g., '$', '\\begin{equation}', etc."
   )
   .action(equation => {
-    const tokens = parse(equation);
-    for (const token of tokens) {
-      console.log(JSON.stringify(token));
-    }
+    console.log(parse(equation));
   });
 
 program.parse(process.argv);
 
 /**
- * Parse an equation and return a list of tokens and their positions.
+ * Parse an equation into a MathML tree with source location annotations.
  */
-function parse(equation: string): Token[] {
-  /*
-   * XXX(andrewhead): Uses KaTeX internal (undocumented) functions.
-   */
-  const tree = katex.__parse(equation);
-  const tokens = [];
-
-  /*
-   * KaTeX tree does not have a notion of 'children': children of a node can belong to properties
-   * with any name. For now, we traverse all nodes of the tree by just doing a traversal of all
-   * properties everywhere in the object.
-   */
-  traverse(tree).forEach(object => {
-    /*
-     * Only extract 'mathord' (i.e. non-operator symbols) for now.
-     */
-    if (
-      object !== undefined &&
-      object !== null &&
-      object.type === "mathord" &&
-      object.loc !== undefined
-    ) {
-      const token = {
-        start: object.loc.start,
-        end: object.loc.end,
-        text: object.text,
-        index: tokens.length
-      };
-      tokens.push(token);
-    }
-  });
-  return tokens;
+function parse(equation: string): string {
+  return katex.renderToString(equation, { output: "mathml" });
 }
