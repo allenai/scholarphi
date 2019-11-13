@@ -4,13 +4,9 @@ import cv2
 import fitz
 import numpy as np
 
-from explanations.types import (
-    BoundingBoxInfo,
-    PdfBoundingBox,
-    Point,
-    RasterBoundingBox,
-    Rectangle,
-)
+from explanations.types import (BoundingBoxInfo, CharacterId,
+                                CharacterLocations, PdfBoundingBox, Point,
+                                RasterBoundingBox, Rectangle, Symbol, SymbolId)
 
 
 def extract_bounding_boxes(
@@ -208,3 +204,28 @@ def _to_pdf_coordinates(
         height=pdf_top - pdf_bottom,
         page=page,
     )
+
+
+def get_symbol_bounding_box(
+    symbol: Symbol, symbol_id: SymbolId, character_boxes: CharacterLocations
+) -> Optional[PdfBoundingBox]:
+    boxes = []
+    for character_index in symbol.characters:
+        character_id = CharacterId(
+            symbol_id.tex_path, symbol_id.equation_index, character_index
+        )
+        boxes.extend(character_boxes.get(character_id, []))
+
+    if len(boxes) == 0:
+        return None
+
+    # Boxes for a symbol should be on only one page.
+    assert len(set([box.page for box in boxes])) == 1
+
+    left = min([box.left for box in boxes])
+    right = max([box.left + box.width for box in boxes])
+    top = min([box.top for box in boxes])
+    bottom = max([box.top + box.height for box in boxes])
+    page = boxes[0].page
+
+    return PdfBoundingBox(left, top, right - left, bottom - top, page)
