@@ -11,11 +11,14 @@ from explanations.types import (
     ArxivId,
     Match,
     Matches,
+    MathML,
     PdfBoundingBox,
     SymbolId,
     SymbolWithId,
 )
-from models.models import BoundingBox, Entity, EntityBoundingBox, MathMl, Paper
+from models.models import BoundingBox, Entity, EntityBoundingBox
+from models.models import MathMl as MathMlModel
+from models.models import Paper
 from models.models import Symbol as SymbolModel
 from models.models import SymbolChild, SymbolMatch, create_tables
 from scripts.command import Command
@@ -137,44 +140,79 @@ class UploadSymbols(Command[SymbolData, None]):
         except Paper.DoesNotExist:
             paper = Paper.create(s2_id=s2_id, arxiv_id=arxiv_id)
 
-        # First, create all symbols, so we can store them in memory as we link them with
-        # match records and parent-child relationships.
+        # Load MathML models into cache; they will be needed for creating multiple symbols.
+        mathml_cache: Dict[MathML, MathMlModel] = {}
+        for symbol_with_id in symbols_with_ids:
+            mathml = symbol_with_id.symbol.mathml
+            if mathml not in mathml_cache:
+                try:
+                    mathml_model = MathMlModel.get(MathMlModel.mathml == mathml)
+                except MathMlModel.DoesNotExist:
+                    mathml_model = MathMlModel.create(mathml=mathml)
+                mathml_cache[mathml] = mathml_model
+
+        # Create all symbols in bulk. This lets us resolve their IDs before we start referring to
+        # them from other tables. It also lets us refer to their models in the parent-child table.
         symbol_models: Dict[SymbolId, SymbolModel] = {}
         symbol_models_by_symbol_object_id: Dict[int, SymbolModel] = {}
-        for symbol_with_id in symbols_with_ids:
 
+        for symbol_with_id in symbols_with_ids:
             symbol = symbol_with_id.symbol
             symbol_id = symbol_with_id.symbol_id
-
-            try:
-                mathml = MathMl.get(MathMl.mathml == symbol.mathml)
-            except MathMl.DoesNotExist:
-                mathml = MathMl.create(mathml=symbol.mathml)
-
-            symbol_model = SymbolModel.create(paper=paper, mathml=mathml)
+            mathml_model = mathml_cache[symbol.mathml]
+            symbol_model = SymbolModel(paper=paper, mathml=mathml_model)
             symbol_models[symbol_id] = symbol_model
             symbol_models_by_symbol_object_id[id(symbol)] = symbol_model
 
+        SymbolModel.bulk_create(symbol_models.values(), 300)
+
+        # Upload bounding boxes for symbols. 'bulk_create' must have already been called on the
+        # the symbol models to make sure their model IDs can be used here.
+        entities = []
+        entity_bounding_boxes = []
+        bounding_boxes = []
+        for symbol_with_id in symbols_with_ids:
+
+            symbol_id = symbol_with_id.symbol_id
+            symbol_model = symbol_models[symbol_id]
+
             box = boxes.get(symbol_id)
             if box is not None:
-                entity = Entity.create(type="symbol", entity_id=symbol_model.id)
-                bounding_box = BoundingBox.create(
+                entity = Entity(type="symbol", entity_id=symbol_model.id)
+                entities.append(entity)
+                bounding_box = BoundingBox(
                     page=box.page,
                     left=box.left,
                     top=box.top,
                     width=box.width,
                     height=box.height,
                 )
-                EntityBoundingBox.create(bounding_box=bounding_box, entity=entity)
+                bounding_boxes.append(bounding_box)
 
+                entity_bounding_box = EntityBoundingBox(
+                    bounding_box=bounding_box, entity=entity
+                )
+                entity_bounding_boxes.append(entity_bounding_box)
+
+        BoundingBox.bulk_create(bounding_boxes, 100)
+        Entity.bulk_create(entities, 300)
+        EntityBoundingBox.bulk_create(entity_bounding_boxes, 300)
+
+        # Upload matches between this symbol and others.
+        symbol_match_models = []
         for symbol_id, symbol_matches in matches.items():
             symbol_model = symbol_models[symbol_id]
             for rank, match in enumerate(symbol_matches, start=1):
                 match_symbol_model = symbol_models[match.symbol_id]
-                SymbolMatch.create(
-                    symbol=symbol_model, match=match_symbol_model, rank=rank
+                symbol_match_models.append(
+                    SymbolMatch(
+                        symbol=symbol_model, match=match_symbol_model, rank=rank
+                    )
                 )
+        SymbolMatch.bulk_create(symbol_match_models, 200)
 
+        # Upload parent-child relationships between symbols.
+        symbol_child_models = []
         for symbol_with_id in symbols_with_ids:
 
             symbol = symbol_with_id.symbol
@@ -183,4 +221,8 @@ class UploadSymbols(Command[SymbolData, None]):
 
             for child in symbol.children:
                 child_model = symbol_models_by_symbol_object_id[id(child)]
-                SymbolChild.create(parent=symbol_model, child=child_model)
+                symbol_child_models.append(
+                    SymbolChild(parent=symbol_model, child=child_model)
+                )
+
+        SymbolChild.bulk_create(symbol_child_models, 300)
