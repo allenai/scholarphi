@@ -61,8 +61,19 @@
       "args": ["locate-equation-token-hues"],
       "cwd": "${workspaceFolder}",
       "env": {
-        "PYTHONPATH": ".",
-        "PATH": "/usr/local/bin"
+        "PYTHONPATH": "."
+      }
+    },
+    {
+      "name": "Locate Symbols",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/process.py",
+      "console": "integratedTerminal",
+      "args": ["locate-symbols"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "."
       }
     },
     {

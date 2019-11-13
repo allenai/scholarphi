@@ -5,8 +5,8 @@ from typing import Iterator, List, NamedTuple
 from explanations import directories
 from explanations.directories import get_arxiv_ids
 from explanations.file_utils import clean_directory, load_symbols
-from explanations.match_symbols import Matches, match_symbols
-from explanations.types import ArxivId, SymbolWithId
+from explanations.match_symbols import match_symbols
+from explanations.types import ArxivId, Matches, SymbolWithId
 from scripts.command import Command
 
 
@@ -31,9 +31,11 @@ class FindSymbolMatches(Command[SymbolsForPaper, Matches]):
             output_dir = directories.symbol_matches(arxiv_id)
             clean_directory(output_dir)
 
-            yield SymbolsForPaper(
-                arxiv_id=arxiv_id, symbols_with_ids=load_symbols(arxiv_id)
-            )
+            symbols_with_ids = load_symbols(arxiv_id)
+            if symbols_with_ids is None:
+                continue
+
+            yield SymbolsForPaper(arxiv_id=arxiv_id, symbols_with_ids=symbols_with_ids)
 
     def process(self, item: SymbolsForPaper) -> Iterator[Matches]:
         matches = match_symbols(item.symbols_with_ids)

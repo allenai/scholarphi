@@ -76,6 +76,9 @@ class LocateSymbols(Command[LocationTask, PdfBoundingBox]):
                     token_locations[character_id].append(box)
 
             symbols_with_ids = load_symbols(arxiv_id)
+            if symbols_with_ids is None:
+                continue
+
             for symbol_with_id in symbols_with_ids:
                 yield LocationTask(
                     arxiv_id=arxiv_id,

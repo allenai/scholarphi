@@ -122,6 +122,22 @@ class ColorizedEquation(NamedTuple):
 
 
 """
+SEARCH
+"""
+
+
+class Match(NamedTuple):
+    symbol_id: SymbolId
+    """
+    What part of the MathML matched? Currently an exact match.
+    """
+    mathml: str
+
+
+Matches = Dict[SymbolId, List[Match]]
+
+
+"""
 IMAGE PROCESSING
 """
 
