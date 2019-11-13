@@ -100,9 +100,12 @@ class Character(NamedTuple):
     end: int
 
 
+MathML = str
+
+
 class Symbol(NamedTuple):
     characters: List[CharacterIndex]
-    mathml: str
+    mathml: MathML
     """
     List of child symbols. Should be of type 'Symbol'. 'children' is a bit of misnomer. These is
     actually a list of all other symbols for which this is the closest ancestor.
@@ -127,14 +130,16 @@ SEARCH
 
 
 class Match(NamedTuple):
-    symbol_id: SymbolId
     """
-    What part of the MathML matched? Currently an exact match.
+    A MathML equation that matches a queried MathML equation. Rank is relative to the set of
+    MathML equations it was chosen from. Rank starts at 1.
     """
-    mathml: str
+
+    mathml: MathML
+    rank: int
 
 
-Matches = Dict[SymbolId, List[Match]]
+Matches = Dict[MathML, List[Match]]
 
 
 """

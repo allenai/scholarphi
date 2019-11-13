@@ -87,9 +87,14 @@ class SymbolChild(DatabaseModel):
     child = ForeignKeyField(Symbol)
 
 
-class SymbolMatch(DatabaseModel):
-    symbol = ForeignKeyField(Symbol)
-    match = ForeignKeyField(Symbol)
+class MathMlMatch(DatabaseModel):
+    """
+    A search result for a MathML equation for a paper.
+    """
+
+    paper = ForeignKeyField(Paper)
+    mathml = ForeignKeyField(MathMl)
+    match = ForeignKeyField(MathMl)
     rank = IntegerField(index=True)
 
 
@@ -127,9 +132,9 @@ def create_tables() -> None:
             Paper,
             Summary,
             MathMl,
+            MathMlMatch,
             Symbol,
             SymbolChild,
-            SymbolMatch,
             Citation,
             CitationPaper,
             Entity,
