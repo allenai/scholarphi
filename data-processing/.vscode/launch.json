@@ -29,6 +29,18 @@
       }
     },
     {
+      "name": "Compile Sources with Colorized Equations",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/process.py",
+      "console": "integratedTerminal",
+      "args": ["-v", "compile-tex-with-colorized-equations"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "."
+      }
+    },
+    {
       "name": "Raster Pages with Colorized Equation Tokens",
       "type": "python",
       "request": "launch",

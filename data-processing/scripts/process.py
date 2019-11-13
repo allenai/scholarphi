@@ -32,6 +32,7 @@ from scripts.locate_hues import (
     LocateEquationHues,
     LocateEquationTokenHues,
 )
+from scripts.locate_symbols import LocateSymbols
 from scripts.raster_pages import (
     RasterPages,
     RasterPagesWithColorizedCitations,
@@ -69,6 +70,7 @@ command_classes: List = [  # type: ignore
     LocateCitationHues,
     LocateEquationHues,
     LocateEquationTokenHues,
+    LocateSymbols,
     AnnotatePdfsWithCitationBoxes,
     AnnotatePdfsWithEquationBoxes,
     AnnotatePdfsWithEquationTokenBoxes,

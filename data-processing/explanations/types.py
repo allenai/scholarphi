@@ -1,4 +1,4 @@
-from typing import Any, List, NamedTuple, Optional
+from typing import Any, Dict, List, NamedTuple, Optional
 
 """
 FILE PROCESSING
@@ -81,10 +81,23 @@ CharacterIndex = int
 SymbolIndex = int
 
 
+class CharacterId(NamedTuple):
+    tex_path: str
+    equation_index: EquationIndex
+    character_index: CharacterIndex
+
+
 class SymbolId(NamedTuple):
     tex_path: str
     equation_index: EquationIndex
     symbol_index: SymbolIndex
+
+
+class Character(NamedTuple):
+    text: str
+    i: CharacterIndex
+    start: int
+    end: int
 
 
 class Symbol(NamedTuple):
@@ -100,13 +113,6 @@ class Symbol(NamedTuple):
 class SymbolWithId(NamedTuple):
     symbol_id: SymbolId
     symbol: Symbol
-
-
-class Character(NamedTuple):
-    text: str
-    i: CharacterIndex
-    start: int
-    end: int
 
 
 class ColorizedEquation(NamedTuple):
@@ -172,3 +178,6 @@ class RasterBoundingBox(NamedTuple):
 class BoundingBoxInfo(NamedTuple):
     pdf_box: PdfBoundingBox
     raster_box: RasterBoundingBox
+
+
+CharacterLocations = Dict[CharacterId, List[PdfBoundingBox]]

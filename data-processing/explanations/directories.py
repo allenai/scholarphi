@@ -61,14 +61,15 @@ HUE_LOCATIONS_FOR_EQUATIONS_DIR = os.path.join(
 HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR = os.path.join(
     DATA_DIR, "25-hue-locations-for-equation-tokens"
 )
+SYMBOL_LOCATIONS_DIR = os.path.join(DATA_DIR, "26-symbol-locations")
 ANNOTATED_PDFS_WITH_CITATION_BOXES_DIR = os.path.join(
-    DATA_DIR, "26-annotated-pdfs-with-citation-boxes"
+    DATA_DIR, "27-annotated-pdfs-with-citation-boxes"
 )
 ANNOTATED_PDFS_WITH_EQUATION_BOXES_DIR = os.path.join(
-    DATA_DIR, "27-annotated-pdfs-with-equation-boxes"
+    DATA_DIR, "28-annotated-pdfs-with-equation-boxes"
 )
 ANNOTATED_PDFS_WITH_EQUATION_TOKEN_BOXES_DIR = os.path.join(
-    DATA_DIR, "28-annotated-pdfs-with-equation-token-boxes"
+    DATA_DIR, "29-annotated-pdfs-with-equation-token-boxes"
 )
 
 # Directories for utilities
@@ -205,3 +206,7 @@ def hue_locations_for_equation_tokens(arxiv_id: str) -> RelativePath:
     return get_data_subdirectory_for_arxiv_id(
         HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR, arxiv_id
     )
+
+
+def symbol_locations(arxiv_id: str) -> RelativePath:
+    return get_data_subdirectory_for_arxiv_id(SYMBOL_LOCATIONS_DIR, arxiv_id)
