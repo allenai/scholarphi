@@ -4,24 +4,7 @@ from typing import Any, List, NamedTuple, Optional
 
 from bs4 import BeautifulSoup
 
-CharacterIndex = int
-
-
-class Character(NamedTuple):
-    text: str
-    i: CharacterIndex
-    start: int
-    end: int
-
-
-class Symbol(NamedTuple):
-    characters: List[CharacterIndex]
-    mathml: str
-    """
-    List of child symbols. Should be of type 'Symbol'. 'children' is a bit of misnomer. These is
-    actually a list of all other symbols for which this is the closest ancestor.
-    """
-    children: List[Any]
+from explanations.types import Character, CharacterIndex, Symbol
 
 
 class NodeSymbol(NamedTuple):

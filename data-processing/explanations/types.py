@@ -1,17 +1,12 @@
-from typing import Dict, List, NamedTuple, Optional
+from typing import Any, List, NamedTuple, Optional
 
 ArxivId = str
 S2Id = str
 S2AuthorId = str
+
 Path = str
 AbsolutePath = str
 RelativePath = str
-
-
-"""
-Contents of a set of tex files. Maps from path to TeX file to the file's colorized contents.
-"""
-TexContents = Dict[str, str]
 
 
 class Author(NamedTuple):
@@ -43,31 +38,24 @@ class Bibitem(NamedTuple):
 
 
 EquationIndex = int
+CharacterIndex = int
 
 
-class Equation(NamedTuple):
-    i: EquationIndex
-    tex: str
-
-
-class Token(NamedTuple):
+class Symbol(NamedTuple):
+    characters: List[CharacterIndex]
+    mathml: str
     """
-    Token from a TeX equation.
+    List of child symbols. Should be of type 'Symbol'. 'children' is a bit of misnomer. These is
+    actually a list of all other symbols for which this is the closest ancestor.
     """
+    children: List[Any]
 
-    token_index: int
+
+class Character(NamedTuple):
     text: str
+    i: CharacterIndex
     start: int
     end: int
-
-
-class TokenEquationPair(NamedTuple):
-    """
-    Token paired with the equation it's from.
-    """
-
-    token: Token
-    equation: Equation
 
 
 class FileContents(NamedTuple):
@@ -84,23 +72,16 @@ class ColorizedCitation(NamedTuple):
     keys: List[str]
 
 
-"""
-Map from a float hue [0..1] to the LaTeX equation with that color.
-"""
-ColorizedEquations = Dict[float, str]
-
-
 class ColorizedEquation(NamedTuple):
     hue: float
     tex: str
     i: EquationIndex
 
 
-"""
-Map from a float hue [0..1] to the token of a TeX equation with that color.
-"""
-ColorizedTokens = Dict[float, Token]
-ColorizedTokensByEquation = Dict[EquationIndex, ColorizedTokens]
+class SymbolId(NamedTuple):
+    tex_path: str
+    equation_index: int
+    symbol_index: int
 
 
 class CompilationResult(NamedTuple):
@@ -162,12 +143,3 @@ class RasterBoundingBox(NamedTuple):
 class BoundingBoxInfo(NamedTuple):
     pdf_box: PdfBoundingBox
     raster_box: RasterBoundingBox
-
-
-class Position(NamedTuple):
-    """
-    Position of token within TeX. The first line is 0, and the first character is 0.
-    """
-
-    line: int
-    character: int
