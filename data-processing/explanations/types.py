@@ -4,6 +4,7 @@ from typing import Any, List, NamedTuple, Optional
 FILE PROCESSING
 """
 
+ArxivId = str
 Path = str
 AbsolutePath = str
 RelativePath = str
@@ -29,7 +30,6 @@ class CompilationResult(NamedTuple):
 SEMANTIC SCHOLAR API
 """
 
-ArxivId = str
 S2Id = str
 S2AuthorId = str
 
@@ -78,12 +78,13 @@ EQUATION PARSING
 
 EquationIndex = int
 CharacterIndex = int
+SymbolIndex = int
 
 
 class SymbolId(NamedTuple):
     tex_path: str
-    equation_index: int
-    symbol_index: int
+    equation_index: EquationIndex
+    symbol_index: SymbolIndex
 
 
 class Symbol(NamedTuple):
@@ -94,6 +95,11 @@ class Symbol(NamedTuple):
     actually a list of all other symbols for which this is the closest ancestor.
     """
     children: List[Any]
+
+
+class SymbolWithId(NamedTuple):
+    symbol_id: SymbolId
+    symbol: Symbol
 
 
 class Character(NamedTuple):

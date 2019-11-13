@@ -22,10 +22,11 @@ from scripts.diff_images import (
     DiffImagesWithColorizedEquationTokens,
 )
 from scripts.extract_bibitems import ExtractBibitems
-from scripts.extract_equation_tokens import ExtractEquationTokens
+from scripts.extract_equation_tokens import ExtractSymbols
 from scripts.extract_equations import ExtractEquations
 from scripts.fetch_arxiv_sources import FetchArxivSources
 from scripts.fetch_s2_data import FetchS2Metadata
+from scripts.find_symbol_matches import FindSymbolMatches
 from scripts.locate_hues import (
     LocateCitationHues,
     LocateEquationHues,
@@ -49,7 +50,8 @@ command_classes: List = [  # type: ignore
     ExtractBibitems,
     ResolveBibitems,
     ExtractEquations,
-    ExtractEquationTokens,
+    ExtractSymbols,
+    FindSymbolMatches,
     ColorizeCitations,
     ColorizeEquations,
     ColorizeEquationTokens,

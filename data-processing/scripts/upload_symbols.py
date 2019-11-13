@@ -84,9 +84,7 @@ class UploadSymbols(Command[SymbolData, None]):
                     boxes[symbol_key].append(box)
 
             symbols: Dict[SymbolKey, str] = {}
-            symbols_path = os.path.join(
-                directories.equation_tokens(arxiv_id), "tokens.csv"
-            )
+            symbols_path = os.path.join(directories.symbols(arxiv_id), "tokens.csv")
             if not os.path.exists(symbols_path):
                 logging.warning("Could not find symbol hues for %s. Skipping", arxiv_id)
                 continue

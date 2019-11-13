@@ -1,9 +1,13 @@
+import csv
 import logging
 import os
 import shutil
-from typing import Iterator, List, Optional
+from typing import Dict, Iterator, List, Optional
 
 import fitz
+
+from explanations import directories
+from explanations.types import Symbol, SymbolId, SymbolWithId
 
 
 def open_pdf(pdf_path: str) -> fitz.Document:
@@ -61,3 +65,62 @@ def find_files(
                 if relative:
                     path = os.path.relpath(path, os.path.abspath(dir_))
                 yield path
+
+
+def _get_symbol_id(row: List[str]) -> SymbolId:
+    """
+    Get symbol ID for a row in a symbols data file.
+    """
+    return SymbolId(
+        tex_path=row[0], equation_index=int(row[1]), symbol_index=int(row[3])
+    )
+
+
+def load_symbols(arxiv_id: str) -> List[SymbolWithId]:
+
+    data_dir = directories.symbols(arxiv_id)
+    symbols_path = os.path.join(data_dir, "symbols.csv")
+    symbol_tokens_path = os.path.join(data_dir, "symbol_tokens.csv")
+    symbol_children_path = os.path.join(data_dir, "symbol_children.csv")
+
+    file_not_found = False
+    if not os.path.exists(symbols_path):
+        logging.info("Symbols data missing for paper %s. Skipping.", arxiv_id)
+        file_not_found = True
+    if not os.path.exists(symbol_tokens_path):
+        logging.info("Symbol tokens data missing for paper %s. Skipping.", arxiv_id)
+        file_not_found = True
+    if not os.path.exists(symbol_children_path):
+        logging.info("Symbol children data missing for paper %s. Skipping.", arxiv_id)
+        file_not_found = True
+
+    if file_not_found:
+        return []
+
+    symbols_by_id: Dict[SymbolId, Symbol] = {}
+
+    with open(symbols_path) as symbols_file:
+        reader = csv.reader(symbols_file)
+        for row in reader:
+            symbol_id = _get_symbol_id(row)
+            mathml = row[4]
+            symbols_by_id[symbol_id] = Symbol(characters=[], mathml=mathml, children=[])
+
+    with open(symbol_tokens_path) as symbol_tokens_file:
+        reader = csv.reader(symbol_tokens_file)
+        for row in reader:
+            symbol_id = _get_symbol_id(row)
+            character_index = int(row[4])
+            symbols_by_id[symbol_id].characters.append(character_index)
+
+    with open(symbol_children_path) as symbol_children_file:
+        reader = csv.reader(symbol_children_file)
+        for row in reader:
+            symbol = symbols_by_id[_get_symbol_id(row)]
+            child_symbol_id = SymbolId(row[0], int(row[1]), int(row[4]))
+            child_symbol = symbols_by_id[child_symbol_id]
+            symbol.children.append(child_symbol)
+
+    return [
+        SymbolWithId(symbol_id, symbol) for symbol_id, symbol in symbols_by_id.items()
+    ]
