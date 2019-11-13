@@ -1,8 +1,11 @@
 import re
 
-from explanations.colorize_tex import (TokenWithOrigin, colorize_citations,
-                                       colorize_equation_tokens,
-                                       colorize_equations)
+from explanations.colorize_tex import (
+    TokenWithOrigin,
+    colorize_citations,
+    colorize_equation_tokens,
+    colorize_equations,
+)
 
 COLOR_PATTERN = (
     r"\\llap{"
@@ -37,8 +40,8 @@ def test_color_equations():
     colorized, equations = next(colorize_equations(tex))
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 2
-    assert matches[0] == "$eq1$"
-    assert matches[1] == "$eq2$"
+    assert matches[0] == "eq1"
+    assert matches[1] == "eq2"
 
     equation0_info = equations[0]
     assert isinstance(equation0_info.hue, float)
@@ -52,7 +55,7 @@ def test_color_equation_in_argument():
     assert colorized.startswith("\\caption")
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 1
-    assert matches[0] == "$eq1$"
+    assert matches[0] == "eq1"
 
 
 def test_color_tokens():

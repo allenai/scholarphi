@@ -7,8 +7,7 @@ import numpy as np
 
 from explanations.parse_tex import ParseListener, walk_tex_parse_tree
 from explanations.types import ColorizedCitation, ColorizedEquation
-from TexSoup import (Buffer, OArg, RArg, TexCmd, TexEnv, TexNode,
-                     TokenWithPosition)
+from TexSoup import Buffer, OArg, RArg, TexCmd, TexEnv, TexNode, TokenWithPosition
 
 """
 All TeX coloring operations follow the same process.
@@ -262,7 +261,9 @@ def colorize_equations(tex: str) -> Iterator[EquationColorizationBatch]:
             hue_generator = generate_hues()
             hue = next(hue_generator)
 
-        colorized_tex = _insert_color_in_tex(colorized_tex, hue, e.start, e.end)
+        colorized_tex = _insert_color_in_tex(
+            colorized_tex, hue, e.content_start, e.content_start + len(e.content_tex)
+        )
         colorized_equations.insert(0, ColorizedEquation(hue, e.content_tex, e.i))
 
     if len(colorized_equations) > 0:
@@ -311,7 +312,13 @@ class EquationExtractor(ParseListener):
                 parser is modified to parse equation internals, this code must be changed.
                 """
                 equation_contents = next(node.contents)
-                assert isinstance(equation_contents, TokenWithPosition)
+                if not isinstance(equation_contents, TokenWithPosition):
+                    logging.warning(
+                        "Equation contents is not a token with position. Skipping: %s",
+                        node,
+                    )
+                    return
+
                 content_tex = str(equation_contents)
                 content_start = equation_contents.position
                 index = len(self.equations)
