@@ -49,9 +49,7 @@ class ColorizeEquationTokens(Command[TexAndTokens, ColorizationResult]):
             )
             clean_directory(output_root)
 
-            tokens_path = os.path.join(
-                directories.equation_tokens(arxiv_id), "tokens.csv"
-            )
+            tokens_path = os.path.join(directories.symbols(arxiv_id), "tokens.csv")
             if not os.path.exists(tokens_path):
                 logging.info(
                     "No equation token data found for paper %s. Skipping.", arxiv_id

@@ -8,18 +8,9 @@ from typing import Iterator, List, NamedTuple, Optional
 from explanations import directories
 from explanations.directories import EQUATIONS_DIR, NODE_DIRECTORY, get_arxiv_ids
 from explanations.file_utils import clean_directory
-from explanations.parse_equation import Character, Symbol, get_characters, get_symbols
-from explanations.types import ArxivId, Equation
+from explanations.parse_equation import get_characters, get_symbols
+from explanations.types import ArxivId, Character, Symbol
 from scripts.command import Command
-
-
-class EquationWithPath(NamedTuple):
-    arxiv_id: ArxivId
-    path: str
-    equation: Equation
-
-
-EquationsWithPath = List[EquationWithPath]
 
 
 class SymbolData(NamedTuple):
@@ -54,18 +45,20 @@ def _get_symbol_data(stdout: str) -> Iterator[SymbolData]:
         )
 
 
-class ExtractEquationTokens(Command[ArxivId, SymbolData]):
+class ExtractSymbols(Command[ArxivId, SymbolData]):
     @staticmethod
     def get_name() -> str:
-        return "extract-equation-tokens"
+        return "extract-symbols"
 
     @staticmethod
     def get_description() -> str:
-        return "Extract tokens and positions from TeX equations."
+        return (
+            "Extract symbols and the character tokens within them from TeX equations."
+        )
 
     def load(self) -> Iterator[ArxivId]:
         for arxiv_id in get_arxiv_ids(EQUATIONS_DIR):
-            clean_directory(directories.equation_tokens(arxiv_id))
+            clean_directory(directories.symbols(arxiv_id))
             yield arxiv_id
 
     def process(self, item: ArxivId) -> Iterator[SymbolData]:
@@ -103,7 +96,7 @@ class ExtractEquationTokens(Command[ArxivId, SymbolData]):
             )
 
     def save(self, item: ArxivId, result: SymbolData) -> None:
-        tokens_dir = directories.equation_tokens(item)
+        tokens_dir = directories.symbols(item)
         if not os.path.exists(tokens_dir):
             os.makedirs(tokens_dir)
 
