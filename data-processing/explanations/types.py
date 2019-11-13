@@ -1,12 +1,37 @@
 from typing import Any, List, NamedTuple, Optional
 
-ArxivId = str
-S2Id = str
-S2AuthorId = str
+"""
+FILE PROCESSING
+"""
 
 Path = str
 AbsolutePath = str
 RelativePath = str
+
+
+class FileContents(NamedTuple):
+    arxiv_id: ArxivId
+    """
+    Absolute path to the TeX file.
+    """
+    path: str
+    contents: str
+
+
+class CompilationResult(NamedTuple):
+    success: bool
+    compiled_pdfs: Optional[List[str]]
+    stdout: bytes
+    stderr: bytes
+
+
+"""
+SEMANTIC SCHOLAR API
+"""
+
+ArxivId = str
+S2Id = str
+S2AuthorId = str
 
 
 class Author(NamedTuple):
@@ -29,6 +54,16 @@ class S2Metadata(NamedTuple):
     references: List[Reference]
 
 
+"""
+CITATIONS
+"""
+
+
+class ColorizedCitation(NamedTuple):
+    hue: float
+    keys: List[str]
+
+
 class Bibitem(NamedTuple):
     key: str
     """
@@ -37,8 +72,18 @@ class Bibitem(NamedTuple):
     text: str
 
 
+"""
+EQUATION PARSING
+"""
+
 EquationIndex = int
 CharacterIndex = int
+
+
+class SymbolId(NamedTuple):
+    tex_path: str
+    equation_index: int
+    symbol_index: int
 
 
 class Symbol(NamedTuple):
@@ -58,37 +103,15 @@ class Character(NamedTuple):
     end: int
 
 
-class FileContents(NamedTuple):
-    arxiv_id: ArxivId
-    """
-    Absolute path to the TeX file.
-    """
-    path: str
-    contents: str
-
-
-class ColorizedCitation(NamedTuple):
-    hue: float
-    keys: List[str]
-
-
 class ColorizedEquation(NamedTuple):
     hue: float
     tex: str
     i: EquationIndex
 
 
-class SymbolId(NamedTuple):
-    tex_path: str
-    equation_index: int
-    symbol_index: int
-
-
-class CompilationResult(NamedTuple):
-    success: bool
-    compiled_pdfs: Optional[List[str]]
-    stdout: bytes
-    stderr: bytes
+"""
+IMAGE PROCESSING
+"""
 
 
 class Point(NamedTuple):
