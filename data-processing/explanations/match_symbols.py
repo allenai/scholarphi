@@ -1,40 +1,40 @@
-from typing import List
+from typing import Iterable, List
 
-from explanations.types import Match, Matches, Symbol, SymbolId, SymbolWithId
+from bs4 import BeautifulSoup
+
+from explanations.parse_equation import SYMBOL_TAGS
+from explanations.types import Match, Matches, MathML
 
 
-def match_symbols(symbols_with_ids: List[SymbolWithId]) -> Matches:
+def get_mathml_matches(mathml_equations: Iterable[MathML]) -> Matches:
+    """
+    In the future, this method might help match the MathML equations to each other. For now, it
+    simply makes a map from a MathML equation to a list of ranked matches of other things it
+    can match. That list currently comprises itself, and its descendant symbols.
+    """
     matches: Matches = {}
-    for symbol_with_id in symbols_with_ids:
-        symbol_id = symbol_with_id.symbol_id
-        symbol = symbol_with_id.symbol
-        _find_matches(symbol_id, symbol, symbols_with_ids, matches)
-
+    for mathml in mathml_equations:
+        if mathml not in matches:
+            matches[mathml] = _get_matches(mathml)
     return matches
 
 
-def _find_matches(
-    ancestor_id: SymbolId,
-    descendant: Symbol,
-    symbols_with_ids: List[SymbolWithId],
-    matches: Matches,
-) -> None:
-    for other_symbol_with_id in symbols_with_ids:
-        other_symbol_id = other_symbol_with_id.symbol_id
-        other_symbol = other_symbol_with_id.symbol
-        if other_symbol is descendant:
-            continue
+def _get_matches(mathml: MathML) -> List[Match]:
 
-        if other_symbol.mathml == descendant.mathml:
-            _add_match(matches, ancestor_id, other_symbol_id, other_symbol.mathml)
+    # Search nodes in breadth-first order. That lets us rank descendants based on their
+    # distance from the root.
+    root = BeautifulSoup(mathml, "lxml")
+    nodes = [root]
+    matches: List[Match] = []
 
-    for descendant_child in descendant.children:
-        _find_matches(ancestor_id, descendant_child, symbols_with_ids, matches)
+    while len(nodes) > 0:
+        node = nodes.pop(0)
 
+        if hasattr(node, "name") and node.name in SYMBOL_TAGS:
+            matches.append(Match(str(node), len(matches) + 1))
 
-def _add_match(
-    matches: Matches, symbol_id: SymbolId, matching_symbol_id: SymbolId, mathml: str
-) -> None:
-    if not symbol_id in matches:
-        matches[symbol_id] = []
-    matches[symbol_id].append(Match(matching_symbol_id, mathml))
+        if hasattr(node, "children"):
+            for child in node.children:
+                nodes.append(child)
+
+    return matches
