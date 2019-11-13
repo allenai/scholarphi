@@ -9,11 +9,8 @@ import numpy as np
 
 from explanations import directories
 from explanations.compile import get_compiled_pdfs
-from explanations.directories import (
-    get_arxiv_id_iteration_path,
-    get_arxiv_ids,
-    get_iteration_names,
-)
+from explanations.directories import (get_arxiv_id_iteration_path,
+                                      get_arxiv_ids, get_iteration_names)
 from explanations.file_utils import clean_directory, open_pdf
 from explanations.image_processing import get_cv2_images
 from explanations.types import AbsolutePath, ArxivId, RelativePath
@@ -95,7 +92,7 @@ class RasterPagesCommand(Command[RasterTask, fitz.Document], ABC):
         for page_index, image in enumerate(images):
             image_path = os.path.join(dest_dir, "page-%d.png" % (page_index,))
             cv2.imwrite(image_path, image)
-            logging.debug("Rasterd page to %s", image_path)
+            logging.debug("Rastered page to %s", image_path)
 
 
 class RasterPages(RasterPagesCommand):
