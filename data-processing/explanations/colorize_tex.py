@@ -7,7 +7,8 @@ import numpy as np
 
 from explanations.parse_tex import ParseListener, walk_tex_parse_tree
 from explanations.types import ColorizedCitation, ColorizedEquation
-from TexSoup import Buffer, OArg, RArg, TexCmd, TexEnv, TexNode, TokenWithPosition
+from TexSoup import (Buffer, OArg, RArg, TexCmd, TexEnv, TexNode,
+                     TokenWithPosition)
 
 """
 All TeX coloring operations follow the same process.
@@ -292,7 +293,7 @@ class Equation(NamedTuple):
 
 class EquationExtractor(ParseListener):
 
-    EQUATION_ENVIRONMENT_NAMES: List[str] = ["$"]
+    EQUATION_ENVIRONMENT_NAMES: List[str] = ["$", "equation", "["]
 
     def __init__(self) -> None:
         self.equations: List[Equation] = []
