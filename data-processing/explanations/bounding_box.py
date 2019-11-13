@@ -1,12 +1,21 @@
+import logging
 from typing import Dict, Iterable, Iterator, List, Optional
 
 import cv2
 import fitz
 import numpy as np
 
-from explanations.types import (BoundingBoxInfo, CharacterId,
-                                CharacterLocations, PdfBoundingBox, Point,
-                                RasterBoundingBox, Rectangle, Symbol, SymbolId)
+from explanations.types import (
+    BoundingBoxInfo,
+    CharacterId,
+    CharacterLocations,
+    PdfBoundingBox,
+    Point,
+    RasterBoundingBox,
+    Rectangle,
+    Symbol,
+    SymbolId,
+)
 
 
 def extract_bounding_boxes(
@@ -220,12 +229,21 @@ def get_symbol_bounding_box(
         return None
 
     # Boxes for a symbol should be on only one page.
-    assert len(set([box.page for box in boxes])) == 1
+    if len({box.page for box in boxes}) > 1:
+        logging.warning(
+            (
+                "Boxes found on more than one page for symbol %s. "
+                + "Only the boxes for one page will be considered."
+            ),
+            symbol,
+        )
 
-    left = min([box.left for box in boxes])
-    right = max([box.left + box.width for box in boxes])
-    top = min([box.top for box in boxes])
-    bottom = max([box.top + box.height for box in boxes])
     page = boxes[0].page
+    boxes_on_page = list(filter(lambda b: b.page == page, boxes))
+
+    left = min([box.left for box in boxes_on_page])
+    right = max([box.left + box.width for box in boxes_on_page])
+    top = min([box.top for box in boxes_on_page])
+    bottom = max([box.top + box.height for box in boxes_on_page])
 
     return PdfBoundingBox(left, top, right - left, bottom - top, page)

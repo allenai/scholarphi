@@ -1,17 +1,6 @@
-from typing import Dict, List, NamedTuple
+from typing import List
 
-from explanations.types import Symbol, SymbolId, SymbolWithId
-
-
-class Match(NamedTuple):
-    symbol_id: SymbolId
-    """
-    What part of the MathML matched? Currently an exact match.
-    """
-    mathml: str
-
-
-Matches = Dict[SymbolId, List[Match]]
+from explanations.types import Match, Matches, Symbol, SymbolId, SymbolWithId
 
 
 def match_symbols(symbols_with_ids: List[SymbolWithId]) -> Matches:

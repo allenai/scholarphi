@@ -67,13 +67,34 @@ class CitationPaper(DatabaseModel):
         primary_key = CompositeKey("citation", "paper")
 
 
+class MathMl(DatabaseModel):
+    mathml = TextField(unique=True, index=True)
+
+
 class Symbol(DatabaseModel):
     paper = ForeignKeyField(Paper)
-    tex = TextField(index=True)
+    mathml = ForeignKeyField(MathMl)
+
+
+class SymbolChild(DatabaseModel):
+    """
+    Some symbols are parents of other symbols. This has implications for interaction (i.e. 
+    a user may want to double click a child symbol to select the parent.) Any symbol will have
+    a maximum of one parent.
+    """
+
+    parent = ForeignKeyField(Symbol)
+    child = ForeignKeyField(Symbol)
+
+
+class SymbolMatch(DatabaseModel):
+    symbol = ForeignKeyField(Symbol)
+    match = ForeignKeyField(Symbol)
+    rank = IntegerField(index=True)
 
 
 class Entity(DatabaseModel):
-    type = TextField(choices=((1, "citation"), (2, "equation"), (3, "symbol")))
+    type = TextField(choices=((1, "citation"), (2, "symbol")))
     entity_id = IntegerField(index=True)
 
 
@@ -105,7 +126,10 @@ def create_tables() -> None:
         [
             Paper,
             Summary,
+            MathMl,
             Symbol,
+            SymbolChild,
+            SymbolMatch,
             Citation,
             CitationPaper,
             Entity,
