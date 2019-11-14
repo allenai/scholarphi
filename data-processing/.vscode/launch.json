@@ -88,6 +88,19 @@
         "PYTHONPATH": ".",
         "PATH": "/usr/local/bin"
       }
+    },
+    {
+      "name": "Upload Symbols",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/process.py",
+      "console": "integratedTerminal",
+      "args": ["upload-symbols"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": ".",
+        "PATH": "/usr/local/bin"
+      }
     }
   ]
 }
