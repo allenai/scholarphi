@@ -52,7 +52,11 @@ async function getPaper(s2Id: string): Promise<Paper | undefined> {
     return {
       s2Id,
       title: data.title,
-      authors: data.authors.map(a => ({ id: a.authorId, name: a.name, url: a.url })),
+      authors: data.authors.map(a => ({
+        id: a.authorId,
+        name: a.name,
+        url: a.url
+      })),
       abstract: data.abstract,
       url: data.url,
       year,
