@@ -7,8 +7,15 @@ import explanations.directories as directories
 from explanations.directories import SOURCES_DIR, get_arxiv_ids
 from explanations.file_utils import load_symbols
 from explanations.s2_data import get_s2_id
-from explanations.types import (ArxivId, Match, Matches, MathML,
-                                PdfBoundingBox, SymbolId, SymbolWithId)
+from explanations.types import (
+    ArxivId,
+    Match,
+    Matches,
+    MathML,
+    PdfBoundingBox,
+    SymbolId,
+    SymbolWithId,
+)
 from models.models import BoundingBox, Entity, EntityBoundingBox
 from models.models import MathMl as MathMlModel
 from models.models import MathMlMatch, Paper

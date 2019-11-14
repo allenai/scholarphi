@@ -71,22 +71,6 @@ class MathMl(DatabaseModel):
     mathml = TextField(unique=True, index=True)
 
 
-class Symbol(DatabaseModel):
-    paper = ForeignKeyField(Paper)
-    mathml = ForeignKeyField(MathMl)
-
-
-class SymbolChild(DatabaseModel):
-    """
-    Some symbols are parents of other symbols. This has implications for interaction (i.e. 
-    a user may want to double click a child symbol to select the parent.) Any symbol will have
-    a maximum of one parent.
-    """
-
-    parent = ForeignKeyField(Symbol)
-    child = ForeignKeyField(Symbol)
-
-
 class MathMlMatch(DatabaseModel):
     """
     A search result for a MathML equation for a paper.
@@ -96,6 +80,25 @@ class MathMlMatch(DatabaseModel):
     mathml = ForeignKeyField(MathMl)
     match = ForeignKeyField(MathMl)
     rank = IntegerField(index=True)
+
+
+class Symbol(DatabaseModel):
+    paper = ForeignKeyField(Paper)
+    mathml = ForeignKeyField(MathMl)
+
+
+class SymbolChild(DatabaseModel):
+    """
+    Some symbols are parents of other symbols. This has implications for interaction (i.e.
+    a user may want to double click a child symbol to select the parent.) Any symbol will have
+    a maximum of one parent.
+    """
+
+    parent = ForeignKeyField(Symbol)
+    child = ForeignKeyField(Symbol)
+
+    class Meta:
+        primary_key = CompositeKey("parent", "child")
 
 
 class Entity(DatabaseModel):
