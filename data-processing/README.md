@@ -118,8 +118,8 @@ executes a different stage of the processing pipeline.
 To see the set of available subcommands, run:
 
 ```bash
-PYTHONPATH=".:$PYTHONPATH"    # set up module search path
-python scripts/process.py -h  # show the list of subcommands
+export PYTHONPATH=".:$PYTHONPATH"  # set up module search path
+python scripts/process.py -h       # show the list of subcommands
 ```
 
 In general, subcommands should be executed in the order 
