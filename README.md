@@ -35,3 +35,11 @@ and
 for Allen AI engineering (see the 
 [wiki](https://github.com/allenai/wiki/wiki/Getting-Started)), 
 where it makes sense to use these guides.
+
+## Contributors
+
+* [Andrew Head](mailto:andrew.head@berkeley.edu)
+* [Kyle Lo](mailto:kylel@allenai.org)
+* [Sam Skjonsberg](mailto:sams@allenai.org)
+* [Dan Weld](mailto:danw@allenai.org)
+* [Marti Hearst](mailto:hearst@berkeley.edu)
