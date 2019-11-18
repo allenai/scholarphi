@@ -146,18 +146,6 @@ PDFs, or TeX files within a `data` directory. Most of them
 take as input results from running a previous command that 
 have been output to the `data` directory.
 
-If your system is anything like mine,
-you may need to add `cpanm` to your path, by adding this to
-your path: `/path/to/bin/` where this is the path to the
-`bin` directory that contains your installation of `perl`.
-
-**AutoTeX**: AutoTeX is the automatic TeX-building
-engine used at arXiv. Install AutoTeX using `cpanm`:
-
-```bash
-cpanm TeX::AutoTeX
-```
-
 ## Running tests
 
 If you're contributing to the code, run tests after making 
