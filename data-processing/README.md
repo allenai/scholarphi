@@ -101,6 +101,10 @@ cd node/     # change directory to the 'node' directory
 npm install  # install Node.js dependencies
 ```
 
+If the `npm install` command gives you an error, try
+upgrading your Node.js version (we used v10.16.0), and then
+run the command again.
+
 ## Getting started
 
 Whew! You made it through that dizzying set of setup 
