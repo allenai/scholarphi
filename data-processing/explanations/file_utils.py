@@ -4,14 +4,8 @@ import os
 import shutil
 from typing import Dict, Iterator, List, Optional
 
-import fitz
-
 from explanations import directories
 from explanations.types import ArxivId, Symbol, SymbolId, SymbolWithId, TokenWithOrigin
-
-
-def open_pdf(pdf_path: str) -> fitz.Document:
-    return fitz.open(pdf_path)
 
 
 def read_file_tolerant(path: str) -> Optional[str]:

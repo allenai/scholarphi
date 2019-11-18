@@ -174,6 +174,11 @@ class Point(NamedTuple):
     y: int
 
 
+class Dimensions(NamedTuple):
+    width: int
+    height: int
+
+
 class Rectangle(NamedTuple):
     """
     Rectangle within an image. Left and top refer to positions of pixels.

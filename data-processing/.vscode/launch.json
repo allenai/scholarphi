@@ -41,6 +41,18 @@
       }
     },
     {
+      "name": "Raster Pages",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/process.py",
+      "console": "integratedTerminal",
+      "args": ["-v", "raster-pages"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "."
+      }
+    },
+    {
       "name": "Raster Pages with Colorized Equation Tokens",
       "type": "python",
       "request": "launch",

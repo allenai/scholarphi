@@ -2,29 +2,24 @@ import csv
 import logging
 import os.path
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, Iterator, List, NamedTuple, Optional, cast
+from typing import (Any, Callable, Dict, Iterator, List, NamedTuple, Optional,
+                    cast)
 
 import cv2
-import fitz
 import numpy as np
+from PyPDF2 import PdfFileReader
 
 from explanations import directories
 from explanations.bounding_box import extract_bounding_boxes
 from explanations.compile import get_compiled_pdfs
-from explanations.directories import (
-    get_arxiv_ids,
-    get_data_subdirectory_for_arxiv_id,
-    get_data_subdirectory_for_iteration,
-    get_iteration_names,
-)
-from explanations.file_utils import clean_directory, open_pdf
-from explanations.types import (
-    ArxivId,
-    BoundingBoxInfo,
-    EquationId,
-    RasterBoundingBox,
-    Rectangle,
-)
+from explanations.directories import (get_arxiv_ids,
+                                      get_data_subdirectory_for_arxiv_id,
+                                      get_data_subdirectory_for_iteration,
+                                      get_iteration_names)
+from explanations.file_utils import clean_directory
+from explanations.types import (ArxivId, BoundingBoxInfo, Dimensions,
+                                EquationId, RasterBoundingBox, Rectangle,
+                                RelativePath)
 from scripts.command import Command
 
 PageNumber = int
@@ -39,7 +34,7 @@ class HueSearchRegion(NamedTuple):
     """
     Optionally filter which PDFs are searched for the hue.
     """
-    relative_pdf_path: Optional[str]
+    relative_pdf_path: Optional[RelativePath]
     """
     Optionally filter the search for hues to certain places in those PDFs.
     """
@@ -50,8 +45,8 @@ class SearchTask(NamedTuple):
     arxiv_id: ArxivId
     iteration: str
     page_images: Dict[int, np.ndarray]
-    pdf: fitz.Document
-    relative_pdf_path: str
+    pdf_page_dimensions: Dict[int, Dimensions]
+    relative_pdf_path: RelativePath
     search: HueSearchRegion
 
 
@@ -121,11 +116,18 @@ class LocateHuesCommand(Command[SearchTask, HueLocation], ABC):
                         hue_searches_by_pdf[pdf_path].append(search)
 
                 for relative_pdf_path, search_regions in hue_searches_by_pdf.items():
-                    pdf = open_pdf(
-                        os.path.join(
-                            directories.compilation_results(arxiv_id), relative_pdf_path
-                        )
-                    )
+
+                    # PDF reads with PyPDF2 are costly, so do them all at once.
+                    pdf_page_dimensions: Dict[int, Dimensions] = {}
+                    absolute_pdf_path = os.path.join(directories.compilation_results(arxiv_id), relative_pdf_path)
+                    with open(absolute_pdf_path, "rb") as pdf_file:
+                        pdf = PdfFileReader(pdf_file)
+                        for page_number in range(pdf.getNumPages()):
+                            page = pdf.getPage(page_number)
+                            width = page.mediaBox.getWidth()
+                            height = page.mediaBox.getHeight()
+                            pdf_page_dimensions[page_number] = Dimensions(width, height)
+
                     diff_images_pdf_path = os.path.join(
                         diff_images_dir, relative_pdf_path
                     )
@@ -144,7 +146,7 @@ class LocateHuesCommand(Command[SearchTask, HueLocation], ABC):
                             arxiv_id,
                             iteration,
                             page_images,
-                            pdf,
+                            pdf_page_dimensions,
                             relative_pdf_path,
                             search_region,
                         )
@@ -158,7 +160,7 @@ class LocateHuesCommand(Command[SearchTask, HueLocation], ABC):
                 else:
                     masks = []
             box_infos = extract_bounding_boxes(
-                image, item.pdf, page_number, item.search.hue, masks
+                image, item.pdf_page_dimensions[page_number], page_number, item.search.hue, masks
             )
             for box_info in box_infos:
                 yield HueLocation(item.search.hue, box_info)

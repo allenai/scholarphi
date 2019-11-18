@@ -1,12 +1,13 @@
 beautifulsoup4==4.8.0
-psycopg2
-requests
 numpy
 opencv-python==3.3.0.10
 peewee
-pyMuPDF
-pillow
+PyPDF2
+psycopg2
+reportlab
+requests
 TexSoup
+Wand
 
 # Development dependencies
 black
