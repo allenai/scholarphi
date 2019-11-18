@@ -161,7 +161,7 @@ python scripts/process.py compile-tex-with-colorized-citations
 python scripts/process.py raster-pages-with-colorized-citations
 python scripts/process.py diff-images-with-colorized-citations
 python scripts/process.py locate-citation-hues
-python scripts/process.py annotate-pdfs-with-citation-boxes  # optional: for debugging citation location extraction:w
+python scripts/process.py annotate-pdfs-with-citation-boxes  # optional: for debugging citation location extraction
 python scripts/process.py upload-citations
 ```
 
