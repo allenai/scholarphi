@@ -101,6 +101,10 @@ cd node/     # change directory to the 'node' directory
 npm install  # install Node.js dependencies
 ```
 
+If the `npm install` command gives you an error, try
+upgrading your Node.js version (we used v10.16.0), and then
+run the command again.
+
 ## Getting started
 
 Whew! You made it through that dizzying set of setup 
@@ -114,8 +118,8 @@ executes a different stage of the processing pipeline.
 To see the set of available subcommands, run:
 
 ```bash
-PYTHONPATH=".:$PYTHONPATH"    # set up module search path
-python scripts/process.py -h  # show the list of subcommands
+export PYTHONPATH=".:$PYTHONPATH"  # set up module search path
+python scripts/process.py -h       # show the list of subcommands
 ```
 
 In general, subcommands should be executed in the order 
