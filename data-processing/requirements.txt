@@ -1,4 +1,5 @@
 beautifulsoup4==4.8.0
+lxml
 numpy
 opencv-python==3.3.0.10
 peewee
