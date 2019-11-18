@@ -4,19 +4,15 @@ import os.path
 from typing import Dict, Iterator, List, NamedTuple
 
 from explanations import directories
-from explanations.colorize_tex import (
-    TokenColorizationBatch,
-    TokenWithOrigin,
-    colorize_equation_tokens,
-)
+from explanations.colorize_tex import TokenColorizationBatch, colorize_equation_tokens
 from explanations.directories import (
     get_arxiv_ids,
     get_data_subdirectory_for_arxiv_id,
     get_data_subdirectory_for_iteration,
 )
-from explanations.file_utils import clean_directory, read_file_tolerant
+from explanations.file_utils import clean_directory, load_tokens, read_file_tolerant
 from explanations.parse_tex import TexSoupParseError
-from explanations.types import ArxivId, Path
+from explanations.types import ArxivId, Path, TokenWithOrigin
 from explanations.unpack import unpack
 from scripts.command import Command
 
@@ -57,23 +53,10 @@ class ColorizeEquationTokens(Command[TexAndTokens, ColorizationResult]):
                 continue
 
             # Load token location information
-            tokens = []
-            tex_paths = set()
-            with open(tokens_path) as tokens_file:
-                reader = csv.reader(tokens_file)
-                for row in reader:
-                    tex_path = row[0]
-                    tokens.append(
-                        TokenWithOrigin(
-                            tex_path=tex_path,
-                            equation_index=int(row[1]),
-                            token_index=int(row[3]),
-                            start=int(row[4]),
-                            end=int(row[5]),
-                            text=row[6],
-                        )
-                    )
-                    tex_paths.add(tex_path)
+            tokens = load_tokens(arxiv_id)
+            if tokens is None:
+                continue
+            tex_paths = set({token.tex_path for token in tokens})
 
             # Load original sources for TeX files that need to be colorized
             contents_by_file = {}

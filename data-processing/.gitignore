@@ -19,5 +19,7 @@ arxiv_ids.txt
 # Pipeline inputs and outputs
 data
 
-# Local copies of dependencies
+# Dependencies
 src
+venv
+

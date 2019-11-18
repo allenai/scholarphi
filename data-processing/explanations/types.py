@@ -100,6 +100,19 @@ class Character(NamedTuple):
     end: int
 
 
+class TokenWithOrigin(NamedTuple):
+    """
+    A token and a character are the same thing, it just has two names for historical reasons.
+    """
+
+    tex_path: str
+    equation_index: int
+    token_index: int
+    start: int
+    end: int
+    text: str
+
+
 MathML = str
 
 
@@ -116,6 +129,11 @@ class Symbol(NamedTuple):
 class SymbolWithId(NamedTuple):
     symbol_id: SymbolId
     symbol: Symbol
+
+
+class EquationId(NamedTuple):
+    tex_path: str
+    equation_index: int
 
 
 class ColorizedEquation(NamedTuple):

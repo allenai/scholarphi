@@ -7,6 +7,7 @@ from scripts.annotate_pdfs import (
     AnnotatePdfsWithEquationBoxes,
     AnnotatePdfsWithEquationTokenBoxes,
 )
+from scripts.annotate_symbols import AnnotateTexWithSymbolMarkers
 from scripts.colorize_citations import ColorizeCitations
 from scripts.colorize_equation_tokens import ColorizeEquationTokens
 from scripts.colorize_equations import ColorizeEquations
@@ -74,6 +75,7 @@ command_classes: List = [  # type: ignore
     AnnotatePdfsWithCitationBoxes,
     AnnotatePdfsWithEquationBoxes,
     AnnotatePdfsWithEquationTokenBoxes,
+    AnnotateTexWithSymbolMarkers,
     UploadCitations,
     UploadSymbols,
 ]

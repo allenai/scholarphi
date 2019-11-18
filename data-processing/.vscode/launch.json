@@ -77,6 +77,18 @@
       }
     },
     {
+      "name": "Annotate TeX with symbol markers",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/process.py",
+      "console": "integratedTerminal",
+      "args": ["annotate-tex-with-symbol-markers"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "."
+      }
+    },
+    {
       "name": "Upload Citations",
       "type": "python",
       "request": "launch",
