@@ -11,8 +11,6 @@
   "author": "Andrew Head <head.andrewm@gmail.com>",
   "license": "UNLICENSED",
   "dependencies": {
-    "@types/commander": "^2.12.2",
-    "@types/traverse": "^0.6.32",
     "commander": "^3.0.2",
     "fast-csv": "^3.4.0",
     "katex": "git+ssh://git@github.com/allenai/katex.git",
@@ -20,6 +18,7 @@
     "ts-node": "^8.4.1"
   },
   "devDependencies": {
+    "@types/traverse": "^0.6.32",
     "@types/node": "^12.11.1",
     "tslint": "^5.20.0",
     "tslint-config-prettier": "^1.18.0",

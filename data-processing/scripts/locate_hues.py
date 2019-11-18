@@ -18,7 +18,13 @@ from explanations.directories import (
     get_iteration_names,
 )
 from explanations.file_utils import clean_directory, open_pdf
-from explanations.types import ArxivId, BoundingBoxInfo, RasterBoundingBox, Rectangle
+from explanations.types import (
+    ArxivId,
+    BoundingBoxInfo,
+    EquationId,
+    RasterBoundingBox,
+    Rectangle,
+)
 from scripts.command import Command
 
 PageNumber = int
@@ -290,11 +296,6 @@ class LocateEquationHues(LocateHuesCommand):
 
     def format_region_id(self, region_id: Optional[Any]) -> List[str]:
         return cast(List[str], region_id)
-
-
-class EquationId(NamedTuple):
-    tex_path: str
-    equation_index: int
 
 
 class TokenId(NamedTuple):

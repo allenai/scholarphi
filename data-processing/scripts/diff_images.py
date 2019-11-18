@@ -4,17 +4,14 @@ from abc import ABC, abstractmethod
 from typing import Iterator, NamedTuple
 
 import cv2
-import fitz
 import numpy as np
 
 from explanations import directories
 from explanations.compile import get_compiled_pdfs
-from explanations.directories import (
-    get_arxiv_ids,
-    get_data_subdirectory_for_arxiv_id,
-    get_data_subdirectory_for_iteration,
-    get_iteration_names,
-)
+from explanations.directories import (get_arxiv_ids,
+                                      get_data_subdirectory_for_arxiv_id,
+                                      get_data_subdirectory_for_iteration,
+                                      get_iteration_names)
 from explanations.file_utils import clean_directory
 from explanations.image_processing import diff_images
 from explanations.types import ArxivId
@@ -30,7 +27,7 @@ class PageRasterPair(NamedTuple):
     modified: np.ndarray
 
 
-class DiffImagesCommand(Command[PageRasterPair, fitz.Document], ABC):
+class DiffImagesCommand(Command[PageRasterPair, np.ndarray], ABC):
     """
     Diff images from a modified rendering of TeX files with the original rendering.
     """

@@ -1,11 +1,11 @@
 import re
 
 from explanations.colorize_tex import (
-    TokenWithOrigin,
     colorize_citations,
     colorize_equation_tokens,
     colorize_equations,
 )
+from explanations.types import TokenWithOrigin
 
 COLOR_PATTERN = (
     r"\\llap{"

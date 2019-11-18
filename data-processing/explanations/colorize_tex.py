@@ -5,9 +5,22 @@ from typing import Dict, Iterator, List, NamedTuple
 
 import numpy as np
 
-from explanations.parse_tex import ParseListener, walk_tex_parse_tree
-from explanations.types import ColorizedCitation, ColorizedEquation
-from TexSoup import Buffer, OArg, RArg, TexCmd, TexEnv, TexNode, TokenWithPosition
+from explanations.parse_tex import (
+    CitationExtractor,
+    Equation,
+    EquationExtractor,
+    ParseListener,
+    TexContents,
+    TexFileName,
+    walk_tex_parse_tree,
+)
+from explanations.types import (
+    ColorizedCitation,
+    ColorizedEquation,
+    EquationId,
+    TokenWithOrigin,
+)
+from TexSoup import Buffer, OArg, RArg, TexCmd, TexNode, TokenWithPosition
 
 """
 All TeX coloring operations follow the same process.
@@ -55,6 +68,11 @@ def _insert_color_in_tex(tex: str, hue: float, start: int, end: int) -> str:
         + _get_color_end_tex()
         + tex[end:]
     )
+
+
+class CharacterRange(NamedTuple):
+    start: int
+    end: int
 
 
 def _get_color_start_tex(hue: float) -> str:
@@ -135,35 +153,6 @@ def colorize_citations(tex: str) -> Iterator[CitationColorizationBatch]:
     # When finished coloring, check if there are any
     if len(colorized_citations) > 0:
         yield CitationColorizationBatch(colorized_tex, colorized_citations)
-
-
-class Citation(NamedTuple):
-    keys: List[str]
-    """
-    Indexes of characters in TeX where the citation appears.
-    """
-    start: int
-    end: int
-
-
-class CitationExtractor(ParseListener):
-
-    COMMAND_NAMES: List[str] = ["cite"]
-
-    def __init__(self) -> None:
-        self.citations: List[Citation] = []
-
-    def on_node_parsed(
-        self, buffer: Buffer, node: TexNode, start: int, end: int
-    ) -> None:
-        if isinstance(node, TexCmd):
-            if node.name in self.COMMAND_NAMES:
-                keys: List[str] = []
-                for arg in node.args:
-                    if isinstance(arg, RArg):
-                        keys = arg.value.split(",")
-                        break
-                self.citations.append(Citation(keys, start, end))
 
 
 def _disable_hyperref_coloring(tex: str) -> str:
@@ -270,76 +259,6 @@ def colorize_equations(tex: str) -> Iterator[EquationColorizationBatch]:
         yield EquationColorizationBatch(colorized_tex, colorized_equations)
 
 
-class Equation(NamedTuple):
-    """
-    TeX for full equation environment (e.g., "$x + y$").
-    """
-
-    tex: str
-    """
-    TeX for the equation markup, inside the environment (e.g., "x + y")
-    """
-    content_tex: str
-    i: int
-    """
-    Indexes of characters in TeX where the equation appears.
-    """
-    start: int
-    end: int
-    """
-    Index at which the equation markup starts (corresponds to start of 'content_tex'.)
-    """
-    content_start: int
-
-
-class EquationExtractor(ParseListener):
-
-    EQUATION_ENVIRONMENT_NAMES: List[str] = ["$", "equation", "["]
-
-    def __init__(self) -> None:
-        self.equations: List[Equation] = []
-
-    def on_node_parsed(
-        self, buffer: Buffer, node: TexNode, start: int, end: int
-    ) -> None:
-        if isinstance(node, TexEnv):
-            if node.name in self.EQUATION_ENVIRONMENT_NAMES:
-                tex = str(node)
-                """
-                XXX(andrewhead): the extraction of equation contents as the first element of
-                'contents' only works because the TexSoup parser does not attempt to further parse
-                what's inside an equation (i.e. other commands and nested equations). If the TexSoup
-                parser is modified to parse equation internals, this code must be changed.
-                """
-                equation_contents = next(node.contents)
-                if not isinstance(equation_contents, TokenWithPosition):
-                    logging.warning(
-                        "Equation contents is not a token with position. Skipping: %s",
-                        node,
-                    )
-                    return
-
-                content_tex = str(equation_contents)
-                content_start = equation_contents.position
-                index = len(self.equations)
-                self.equations.append(
-                    Equation(tex, content_tex, index, start, end, content_start)
-                )
-
-
-TexFileName = str
-TexContents = str
-
-
-class TokenWithOrigin(NamedTuple):
-    tex_path: str
-    equation_index: int
-    token_index: int
-    start: int
-    end: int
-    text: str
-
-
 class ColorizedTokenWithOrigin(NamedTuple):
     tex_path: str
     equation_index: int
@@ -348,11 +267,6 @@ class ColorizedTokenWithOrigin(NamedTuple):
     end: int
     text: str
     hue: float
-
-
-class EquationId(NamedTuple):
-    tex_path: str
-    i: int
 
 
 class TokenColorizationBatch(NamedTuple):
@@ -499,8 +413,3 @@ def _adjust_start_coloring_index(index: int, equation: str) -> int:
         prefix_length = len(script_prefix.group(0))
         return index - prefix_length
     return index
-
-
-class CharacterRange(NamedTuple):
-    start: int
-    end: int

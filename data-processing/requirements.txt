@@ -1,0 +1,16 @@
+beautifulsoup4==4.8.0
+psycopg2
+requests
+numpy
+opencv-python==3.3.0.10
+peewee
+pyMuPDF
+pillow
+TexSoup
+
+# Development dependencies
+black
+mypy
+pylint
+pytest
+pytest-cov

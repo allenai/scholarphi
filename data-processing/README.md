@@ -1,32 +1,151 @@
-# Explanation-Processing Pipeline
+# Data Processing Scripts
 
-Processing pipeline for extracting explanations from papers.
+Scripts for processing PDFs. The key goal of these scripts 
+is to identify entities of interest in papers—for example, 
+citations and symbols—extract those entities, and determine 
+their positions within the papers.
 
-## Setup
+## Installation
 
-### Python dependencies
+I'm going to level with you: if you want to run all stages 
+of the data processing pipeline, installation is going to be 
+pretty involved. Among other things, these scripts need to 
+compile LaTeX, analyze images, invoke Node.js libraries, and 
+upload data to a database. It's recommended you use a stable 
+Ubuntu distribution or OSX to follow these commands; it's 
+likely some of these dependencies (particularly image 
+processing) may be difficult to configure on Windows.
 
-```
-conda create -n reader python=3.6
-cd explanations/
-pip install -r requirements.txt
-pip install opencv-python==3.3.0.10       # dont know why, but this doesnt work in requirements.txt
-```
+So, let's install the dependencies. Before you install 
+Python dependencies, make sure you have installed PostgreSQL 
+and OpenSSL, which will be required for installing the 
+Python PostgreSQL connector. If you're on OSX, you should be 
+able to install both of these through Homebrew; on a Linux 
+machine, you should be able to install these through your 
+package manager of choice. If you have any trouble 
+configuring on OSX, see the troubleshooting instructions at 
+the bottom of this README for more ideas.
 
-NOTE: Andrew's transitioning to storing dependencies in an
-`environment.yml` file. You may want to install from that
-file instead. More instructions to come soon.
-
-### Perl dependencies
-
-Perl is used to run third-party code for compiling TeX and
-parsing TeX equations. If you haven't already, install Perl.
-First, install the `cpanm` command for installing Perl
-modules. Accept the defaults.
+Once you have installed these dependencies, install the 
+necessary Python dependencies. First, if you haven't 
+already, install Python 3 on your system.  Then, set up a 
+Python virtual environment and install dependencies to that 
+environment like so:
 
 ```bash
-cpan App::cpanminus
+pip install virtualenv           # install virtualenv for virtual environtment management
+virtualenv venv -p python3       # create a virtual environment in 'venv' that uses Python 3
+source venv/bin/activate         # activate the virtual environment
+pip install -r requirements.txt  # install dependencies into the virtual environment
 ```
+
+You also need to install a few Perl dependencies. These are 
+used for compiling LaTeX using arXiv's LaTeX compilation 
+utilities, namely AutoTeX. If you haven't already installed 
+Perl on your computer, do so. Then, run the following to 
+install the Perl dependencies:
+
+```bash
+cpan TeX::AutoTeX
+```
+
+These Perl libraries will in turn invoke the LaTeX compilers 
+on your computer. If you don't have a LaTeX distribution on 
+your computer, download one. Make sure to download a full 
+distribution, and not a mini-one, as these scripts are going 
+to want access to many, many of the available configurations 
+and packages available in a full LaTeX distribution.
+
+Then, tell the scripts how to connect to LaTeX, and the 
+database, by creating a `config.ini` file in this directory.  
+The contents of that directory should be like so:
+
+```
+[tex]
+texlive_path = <texlive-path>
+texlive_bin_path = <texlive-bin-path>
+
+[postgres]
+db_name = scholar-reader
+user = data-pipeline
+password = <password>
+host = scholar-reader.c5tvjmptvzlz.us-west-2.rds.amazonaws.com
+port = 5432
+```
+
+The `texlive_path` and `texlive_bin_path` variables are 
+required by the AutoTeX package; they're read from the 
+configuration by the Python scripts and passed in as 
+parameters to AutoTeX. 
+
+Finding these directories may be a bit tricky. You have 
+probably chosen the right folders if your `texlive_path` 
+directory contains both a `bin` and a `texmf-dist` 
+subdirectory, and if your `texlive_bin_path` contains both 
+`latex` and `pdflatex`. On my machine, my `texlive_path` was 
+`/usr/local/texlive/2017`, and my `texlive_bin_path` was 
+`/usr/local/texlive/2017/bin/x86_64-darwin`.
+
+Ask a database administrator (likely one of the maintainers 
+of this repository) for the database password. Otherwise, 
+you should be able to use the same configuration as above 
+for all other database-related configuration variables.
+
+Finally, you need to install dependencies needed by some 
+Node.js scripts. These scripts are stored in the `node/` 
+directory, and their dependencies will be too. Install the 
+dependencies for the Node.js code like so:
+
+```bash
+cd node/     # change directory to the 'node' directory
+npm install  # install Node.js dependencies
+```
+
+## Getting started
+
+Whew! You made it through that dizzying set of setup 
+instructions. Now let's start processing TeX.
+
+Your only interface to all of these scripts is a single 
+Python command, `python process/script.py`. This one command 
+provides you access to dozens of subcommands, each of which 
+executes a different stage of the processing pipeline.
+
+To see the set of available subcommands, run:
+
+```bash
+PYTHONPATH=".:$PYTHONPATH"    # set up module search path
+python scripts/process.py -h  # show the list of subcommands
+```
+
+In general, subcommands should be executed in the order 
+they're listed by the help output. Most commands require 
+results that are output from prior commands.
+
+Almost _none_ of these commands require any arguments, aside 
+from the very first command `python scripts/process.py 
+fetch-arxiv-sources`. You can discover the arguments 
+required for this command by running `python 
+scripts/proces.py fetch-arxiv-sources -h`.
+
+If you're just testing out the pipeline, consider making an 
+`arxiv_ids.txt` file with the following contents:
+
+```
+0801.4750
+```
+
+Then run the following command to start off the pipeline:
+
+```bash
+python scripts/process.py fetch-arxiv-sources
+```
+
+Almost all scripts output results as CSV files, images, 
+PDFs, or TeX files within a `data` directory. Most of them 
+take as input results from running a previous command that 
+have been output to the `data` directory.
+
 If your system is anything like mine,
 you may need to add `cpanm` to your path, by adding this to
 your path: `/path/to/bin/` where this is the path to the
@@ -39,38 +158,28 @@ engine used at arXiv. Install AutoTeX using `cpanm`:
 cpanm TeX::AutoTeX
 ```
 
-At the time this README was written, we were using AutoTeX
-version v0.906.0.
+## Running tests
 
-**LaTeXML**: LaTeXML converts TeX documents to an XML
-representation. We use it for parsing TeX equations.
-
-```bash
-cpanm LaTeXML
-```
-
-At the time this README was written, we were using LaTeXML
-v0.8.4.
-
-### Running the scripts
-
-See the `.vscode/launch.json` file for commands used to run
-the script from within VSCode.
+If you're contributing to the code, run tests after making 
+your changes to make sure everything's still working. We use 
+Pytest for the tests. Run the test suite with this command:
 
 ```bash
-PYTHONPATH="." python scripts/run.py arxiv_ids.txt -v --annotate-pdf --save-images
+pytest
 ```
 
-Run the above command with the `-h` command to learn about
-the other command options.
+## Troubleshooting the installation
 
-### Testing the code
+### Installing psycopg2
 
-Activate the virtual environment, then run `pytest` from
-this directory.
+`psycopg2` is a Python package used by our code to upload 
+results from the data processing pipeline to a database. We 
+had a few issues installing `psycopg2` on an OSX machine, as 
+the code needs to be compiled, and therefore assumes it will 
+have access to (at the least) libraries for OpenSSL and 
+PostgreSQL. We found adequate guidance for installing the 
+necessary dependencies for OSX in these two Stack Overflow 
+posts:
 
-### Troubleshooting and gotchas
-
-#### AutoTeX
-
-If it fails, it appears to truncate the `.tex` files to be empty.
+* https://stackoverflow.com/questions/21079820/how-to-find-pg-config-path
+* https://stackoverflow.com/questions/26288042/error-installing-psycopg2-library-not-found-for-lssl

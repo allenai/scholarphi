@@ -7,7 +7,7 @@ from typing import Dict, Iterator, List, Optional
 import fitz
 
 from explanations import directories
-from explanations.types import Symbol, SymbolId, SymbolWithId
+from explanations.types import ArxivId, Symbol, SymbolId, SymbolWithId, TokenWithOrigin
 
 
 def open_pdf(pdf_path: str) -> fitz.Document:
@@ -76,7 +76,33 @@ def _get_symbol_id(row: List[str]) -> SymbolId:
     )
 
 
-def load_symbols(arxiv_id: str) -> List[SymbolWithId]:
+def load_tokens(arxiv_id: ArxivId) -> Optional[List[TokenWithOrigin]]:
+    tokens_path = os.path.join(directories.symbols(arxiv_id), "tokens.csv")
+    if not os.path.exists(tokens_path):
+        logging.info("No equation token data found for paper %s. Skipping.", arxiv_id)
+        return None
+
+    # Load token location information
+    tokens = []
+    with open(tokens_path) as tokens_file:
+        reader = csv.reader(tokens_file)
+        for row in reader:
+            tex_path = row[0]
+            tokens.append(
+                TokenWithOrigin(
+                    tex_path=tex_path,
+                    equation_index=int(row[1]),
+                    token_index=int(row[3]),
+                    start=int(row[4]),
+                    end=int(row[5]),
+                    text=row[6],
+                )
+            )
+
+    return tokens
+
+
+def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
 
     data_dir = directories.symbols(arxiv_id)
     symbols_path = os.path.join(data_dir, "symbols.csv")
@@ -95,7 +121,7 @@ def load_symbols(arxiv_id: str) -> List[SymbolWithId]:
         file_not_found = True
 
     if file_not_found:
-        return []
+        return None
 
     symbols_by_id: Dict[SymbolId, Symbol] = {}
 
