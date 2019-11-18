@@ -4,14 +4,16 @@ from abc import ABC, abstractmethod
 from typing import Iterator, List, NamedTuple
 
 import cv2
-import fitz
 import numpy as np
 
 from explanations import directories
 from explanations.compile import get_compiled_pdfs
-from explanations.directories import (get_arxiv_id_iteration_path,
-                                      get_arxiv_ids, get_iteration_names)
-from explanations.file_utils import clean_directory, open_pdf
+from explanations.directories import (
+    get_arxiv_id_iteration_path,
+    get_arxiv_ids,
+    get_iteration_names,
+)
+from explanations.file_utils import clean_directory
 from explanations.image_processing import get_cv2_images
 from explanations.types import AbsolutePath, ArxivId, RelativePath
 from scripts.command import Command
@@ -19,10 +21,11 @@ from scripts.command import Command
 
 class RasterTask(NamedTuple):
     compiled_tex_path: RelativePath  # relative to directory for arXiv ID
-    pdf_path: RelativePath  # relative to iteration path
+    relative_pdf_path: RelativePath  # relative to iteration path
+    absolute_pdf_path: AbsolutePath
 
 
-class RasterPagesCommand(Command[RasterTask, fitz.Document], ABC):
+class RasterPagesCommand(Command[RasterTask, None], ABC):
     """
     Raster images of pages from a paper.
     Rasters are save to a directory parallel to the one from which the PDF was read.
@@ -66,22 +69,20 @@ class RasterPagesCommand(Command[RasterTask, fitz.Document], ABC):
                 paper_abs_path = os.path.join(self.get_papers_base_dir(), paper_dir)
                 pdf_paths = get_compiled_pdfs(paper_abs_path)
                 for path in pdf_paths:
-                    yield RasterTask(paper_dir, path)
+                    yield RasterTask(
+                        paper_dir, path, os.path.join(paper_abs_path, path)
+                    )
 
-    def process(self, item: RasterTask) -> Iterator[fitz.Document]:
-        pdf_path = os.path.join(
-            self.get_papers_base_dir(), item.compiled_tex_path, item.pdf_path
-        )
-        yield open_pdf(pdf_path)
+    def process(self, _: RasterTask) -> Iterator[None]:
+        yield None
 
-    def save(self, item: RasterTask, result: fitz.Document) -> None:
+    def save(self, item: RasterTask, _: None) -> None:
         output_dir = os.path.join(
             self.get_output_base_dir(),
             item.compiled_tex_path,
-            directories.escape_slashes(item.pdf_path),
+            directories.escape_slashes(item.relative_pdf_path),
         )
-
-        images = get_cv2_images(result)
+        images = get_cv2_images(item.absolute_pdf_path)
         self._save_images_to_directory(images, output_dir)
 
     def _save_images_to_directory(

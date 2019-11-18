@@ -138,7 +138,7 @@ If you're just testing out the pipeline, consider making an
 Then run the following command to start off the pipeline:
 
 ```bash
-python scripts/process.py fetch-arxiv-sources
+python scripts/process.py fetch-arxiv-sources arxiv_ids.txt
 ```
 
 Almost all scripts output results as CSV files, images, 

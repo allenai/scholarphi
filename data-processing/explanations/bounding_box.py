@@ -1,14 +1,14 @@
 import logging
-from typing import Dict, Iterable, Iterator, List, Optional
+from typing import Dict, Iterable, Iterator, List, NamedTuple, Optional
 
 import cv2
-import fitz
 import numpy as np
 
 from explanations.types import (
     BoundingBoxInfo,
     CharacterId,
     CharacterLocations,
+    Dimensions,
     PdfBoundingBox,
     Point,
     RasterBoundingBox,
@@ -20,7 +20,7 @@ from explanations.types import (
 
 def extract_bounding_boxes(
     diff_image: np.ndarray,
-    pdf: fitz.Document,
+    pdf_page_dimensions: Dimensions,
     page_number: int,
     hue: float,
     masks: Optional[Iterable[Rectangle]] = None,
@@ -29,9 +29,8 @@ def extract_bounding_boxes(
     See 'PixelMerger' for description of how bounding boxes are extracted.
     """
     image_height, image_width, _ = diff_image.shape
-    pdf_page = pdf[page_number]
-    page_width = pdf_page.rect.width
-    page_height = pdf_page.rect.height
+    page_width = pdf_page_dimensions.width
+    page_height = pdf_page_dimensions.height
 
     pixel_boxes = list(find_boxes_with_color(diff_image, hue, masks=masks))
     box_infos = []
