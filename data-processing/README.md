@@ -145,10 +145,42 @@ Then run the following command to start off the pipeline:
 python scripts/process.py fetch-arxiv-sources arxiv_ids.txt
 ```
 
+Once you have done this, you can run the rest of the steps 
+in the pipeline for extracting the positions of citations 
+and uploading those positions:
+
+```bash
+python scripts/process.py fetch-s2-metadata
+python scripts/process.py unpack-sources
+python scripts/process.py extract-bibitems
+python scripts/process.py resolve-bibitems
+python scripts/process.py colorize-citations
+python scripts/process.py compile-tex
+python scripts/process.py raster-pages
+python scripts/process.py compile-tex-with-colorized-citations
+python scripts/process.py raster-pages-with-colorized-citations
+python scripts/process.py diff-images-with-colorized-citations
+python scripts/process.py locate-citation-hues
+python scripts/process.py annotate-pdfs-with-citation-boxes  # optional: for debugging citation location extraction:w
+python scripts/process.py upload-citations
+```
+
 Almost all scripts output results as CSV files, images, 
-PDFs, or TeX files within a `data` directory. Most of them 
-take as input results from running a previous command that 
-have been output to the `data` directory.
+PDFs, or TeX files within a `data` directory. There's a 
+separate data subdirectory for the output of each 
+command—for example, `data/01-sources-archives`, 
+`data/02-s2-metadata`, `data/04-bibitems`, etc. Each of 
+these subdirectories has a directory that contains the 
+results of processing each arXiv paper, named with the arXiv 
+ID for that paper (with slashes escaped).
+
+Most commands take as input results from running a previous 
+command that have been output to the `data` directory.
+
+Instructions for extracting symbols from papers are a bit 
+more involved, and not yet documented; however the commands 
+are there, and you should be able to do it if your run 
+commands in the order they're listed in the command help.
 
 ## Running tests
 
