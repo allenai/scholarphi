@@ -82,18 +82,6 @@ See https://github.com/adobe-type-tools/cmap-resources
             heap[p[c]] = o(p[c]);
         });
       heap.load("3075009564");
-      /*
-      (function (expJson) {
-        try {
-          heap.addEventProperties(JSON.parse(expJson));
-          if (document.cookie && document.cookie.match('IS_SELENIUM=1')) {
-            heap.addEventProperties({isSelenium: true});
-          }
-        } catch (error) {
-          console.warn('failed to send exposures to heap', error);
-        }
-      })('{{HEAP_PROPS}}');
-      */
     </script>
 
     <!--#if FIREFOX || MOZCENTRAL-->
@@ -129,50 +117,6 @@ See https://github.com/adobe-type-tools/cmap-resources
   </head>
 
   <body tabindex="1" class="loadingInProgress">
-    <div id="thank">
-      <div>
-        <math>
-          <mi>x</mi>
-        </math>
-      </div>
-    </div>
-    <div id="thing">
-      <div>
-        <math>
-          <mi>x</mi>
-        </math>
-      </div>
-      <!--
-      <math>
-        <mi>x</mi>
-        <mo>=</mo>
-        <mrow>
-          <mfrac>
-            <mrow>
-              <mo>&#x2212;</mo>
-              <mi>b</mi>
-              <mo>&#x00B1;</mo>
-              <msqrt>
-                <msup>
-                  <mi>b</mi>
-                  <mn>2</mn>
-                </msup>
-                <mo>&#x2212;</mo>
-                <mn>4</mn>
-                <mi>a</mi>
-                <mi>c</mi>
-              </msqrt>
-            </mrow>
-            <mrow>
-              <mn>2</mn>
-              <mi>a</mi>
-            </mrow>
-          </mfrac>
-        </mrow>
-        <mtext>.</mtext>
-      </math>
-      -->
-    </div>
 
     <div id="outerContainer">
       <div id="sidebarContainer">

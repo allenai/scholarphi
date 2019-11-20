@@ -1,5 +1,6 @@
 import React from "react";
 import * as api from "./api";
+import Drawer from "./Drawer";
 import PageOverlay from "./PageOverlay";
 import { Pages, PaperId, Papers, ScholarReaderContext, State } from "./state";
 import "./style/index.less";
@@ -17,17 +18,23 @@ interface ScholarReaderProps {
 class ScholarReader extends React.Component<ScholarReaderProps, State> {
   constructor(props: ScholarReaderProps) {
     super(props);
+    /*
+     * Bind all setters to 'this' so that 'setState' resolves to this object when the setters
+     * are called from outside ScholarReader.
+     */
     this.state = {
       citations: [],
+      setCitations: this.setCitations.bind(this),
       symbols: [],
+      setSymbols: this.setSymbols.bind(this),
       papers: {},
+      setPapers: this.setPapers.bind(this),
       pages: {},
+      setPages: this.setPages.bind(this),
       pdfDocument: null,
       pdfViewer: null,
-      setCitations: this.setCitations,
-      setSymbols: this.setSymbols,
-      setPapers: this.setPapers,
-      setPages: this.setPages
+      openDrawer: false,
+      setOpenDrawer: this.setOpenDrawer.bind(this)
     };
   }
 
@@ -45,6 +52,10 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
 
   setPages(pages: Pages) {
     this.setState({ ...this.state, pages });
+  }
+
+  setOpenDrawer(open: boolean) {
+    this.setState({ ...this.state, openDrawer: open });
   }
 
   async componentDidMount() {
@@ -106,8 +117,8 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
 
   render() {
     return (
-      <>
-        <ScholarReaderContext.Provider value={this.state}>
+      <ScholarReaderContext.Provider value={this.state}>
+        <>
           {Object.keys(this.state.pages).map(pageNumberKey => {
             const pageNumber = Number(pageNumberKey);
             const pageModel = this.state.pages[pageNumber];
@@ -124,8 +135,9 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
               />
             );
           })}
-        </ScholarReaderContext.Provider>
-      </>
+          <Drawer />
+        </>
+      </ScholarReaderContext.Provider>
     );
   }
 }
