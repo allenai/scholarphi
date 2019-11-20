@@ -11,7 +11,23 @@ COPY --from=gcr.io/ai2-reviz/github.com/allenai/scholar-reader-pdfjs:latest \
     /pdfjs /ui/public/pdf.js
 
 # Install pdf.js dependencies
-RUN cd public/pdf.js/ && npm install
+RUN cd public/pdf.js/ && \
+    npm install && \
+    npm install -g gulp && \
+    npm install -g uglify-js
+
+# Build and minify the PDF.js dependencies.
+# TODO: 
+# This builds (and minifies in place, for simplicity) the PDF.js viewer's
+# dependencies. We're not, however, using the built output yet, as we
+# currently use a modified `viewer.html` file that's in `public` (as `index.html`).
+# We need to wire up a mechanism whereby we either override that file for 
+# production purposes only, for figure out how to generate it as part of 
+# the local development workflow.
+RUN cd public/pdf.js/ && gulp generic && \
+    cd build/generic/build && \ 
+    uglifyjs --compress --comments -o pdf.js -- pdf.js && \
+    uglifyjs --compress --comments -o pdf.worker.js -- pdf.worker.js
 
 # Install dependencies
 COPY package*.json ./
