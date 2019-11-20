@@ -4,17 +4,29 @@ import { Citation, Paper, Symbol } from "./types/api";
 import { PDFPageView, PDFViewer } from "./types/pdfjs-viewer";
 
 export interface State {
+  /*
+   * Paper data.
+   */
   citations: Readonly<Citation[]>;
+  setCitations(citations: Citation[]): void;
   symbols: Readonly<Symbol[]>;
+  setSymbols(symbols: Symbol[]): void;
   papers: Readonly<Papers>;
+  setPapers(papers: Papers): void;
+
+  /*
+   * PDF viewer state.
+   */
   pages: Readonly<Pages>;
+  setPages(pages: Pages): void;
   pdfDocument: PDFDocumentProxy | null;
   pdfViewer: PDFViewer | null;
 
-  setCitations(citations: Citation[]): void;
-  setSymbols(symbols: Symbol[]): void;
-  setPapers(papers: Papers): void;
-  setPages(pages: Pages): void;
+  /*
+   * User interface state.
+   */
+  openDrawer: boolean;
+  setOpenDrawer(open: boolean): void;
 }
 
 export type Papers = { [s2Id: string]: Paper };
@@ -37,24 +49,28 @@ export interface PaperId {
 }
 
 const defaultState: State = {
+  citations: [],
   setCitations: (citations: Citation[]) => {
     return;
   },
+  symbols: [],
   setSymbols: (symbols: Symbol[]) => {
     return;
   },
+  papers: {},
   setPapers: (papers: Papers) => {
     return;
   },
+  pages: {},
   setPages: (pages: Pages) => {
     return;
   },
-  citations: [],
-  symbols: [],
-  papers: {},
-  pages: {},
   pdfDocument: null,
-  pdfViewer: null
+  pdfViewer: null,
+  openDrawer: false,
+  setOpenDrawer: (open: boolean) => {
+    return;
+  }
 };
 
 export const ScholarReaderContext = React.createContext<State>(defaultState);
