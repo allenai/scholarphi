@@ -1,10 +1,10 @@
-// import "antd/dist/antd.css";
 import queryString from "query-string";
 import React from "react";
 import ReactDOM from "react-dom";
 import ScholarReader from "./ScholarReader";
 import { PaperId } from "./state";
 import { PDFViewerApplication } from "./types/pdfjs-viewer";
+require("mathjax-full/es5/core");
 
 declare global {
   interface Window {
@@ -37,4 +37,7 @@ if (url !== undefined) {
   }
 }
 
-ReactDOM.render(<ScholarReader paperId={paperId} />, document.querySelector("#scholar-reader"));
+ReactDOM.render(
+  <ScholarReader paperId={paperId} />,
+  document.querySelector("#scholar-reader")
+);

@@ -14,7 +14,10 @@ interface CitationAnnotationProps {
   pageView: PDFPageView;
 }
 
-export class CitationAnnotation extends React.Component<CitationAnnotationProps, {}> {
+export class CitationAnnotation extends React.Component<
+  CitationAnnotationProps,
+  {}
+> {
   render() {
     return (
       <Tooltip
@@ -24,7 +27,10 @@ export class CitationAnnotation extends React.Component<CitationAnnotationProps,
       >
         <div
           className="scholar-reader-annotation citation-annotation"
-          style={selectors.divDimensionStyles(this.props.pageView, this.props.location)}
+          style={selectors.divDimensionStyles(
+            this.props.pageView,
+            this.props.location
+          )}
         />
       </Tooltip>
     );
