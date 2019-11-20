@@ -30,8 +30,8 @@ npm install
 Then you can launch the app as follows:
 
 ```bash
-npm start 3001  # 3001 is the port number. Save port 3000
-                # for the development API server.
+PORT=3001 npm start  # 3001 is the port number. Save port 3000
+                     # for the development API server.
 ```
 
 A web browser should open automatically to open the app. You 
