@@ -11,7 +11,10 @@ interface SymbolAnnotationProps {
   pageView: PDFPageView;
 }
 
-export class SymbolAnnotation extends React.Component<SymbolAnnotationProps, {}> {
+export class SymbolAnnotation extends React.Component<
+  SymbolAnnotationProps,
+  {}
+> {
   render() {
     return (
       <Tooltip
@@ -21,8 +24,12 @@ export class SymbolAnnotation extends React.Component<SymbolAnnotationProps, {}>
       >
         <div
           className="scholar-reader-annotation symbol-annotation"
-          style={selectors.divDimensionStyles(this.props.pageView, this.props.location)}
-        ></div>
+          hidden={this.props.symbol.parent !== null}
+          style={selectors.divDimensionStyles(
+            this.props.pageView,
+            this.props.location
+          )}
+        />
       </Tooltip>
     );
   }

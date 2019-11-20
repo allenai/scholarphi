@@ -24,10 +24,15 @@ function scrollToSymbol(pdfViewer: PDFViewer, symbol: Symbol) {
   const SCROLL_OFFSET_X = -400;
   const SCROLL_OFFSET_Y = +100;
 
-  const box = symbol.bounding_boxes[0];
+  const box = symbol.bounding_box;
   pdfViewer.scrollPageIntoView({
     pageNumber: box.page + 1,
-    destArray: [undefined, { name: "XYZ" }, box.left + SCROLL_OFFSET_X, box.top + SCROLL_OFFSET_Y]
+    destArray: [
+      undefined,
+      { name: "XYZ" },
+      box.left + SCROLL_OFFSET_X,
+      box.top + SCROLL_OFFSET_Y
+    ]
   });
 }
 
@@ -46,7 +51,8 @@ export class SymbolTooltipBody extends React.Component<
   }
 
   previousSymbol(symbols: Symbol[]) {
-    const activeSymbolIndex = (this.state.activeSymbolIndex - 1) % symbols.length;
+    const activeSymbolIndex =
+      (this.state.activeSymbolIndex - 1) % symbols.length;
     this.setState({
       activeSymbolIndex,
       activeSymbol: symbols[activeSymbolIndex]
@@ -54,7 +60,8 @@ export class SymbolTooltipBody extends React.Component<
   }
 
   nextSymbol(symbols: Symbol[]) {
-    const activeSymbolIndex = (this.state.activeSymbolIndex + 1) % symbols.length;
+    const activeSymbolIndex =
+      (this.state.activeSymbolIndex + 1) % symbols.length;
     this.setState({
       activeSymbolIndex,
       activeSymbol: symbols[activeSymbolIndex]
@@ -70,21 +77,23 @@ export class SymbolTooltipBody extends React.Component<
     return (
       <div className="symbol-tooltip-body">
         {matchingSymbols.map((symbol, i) => {
-          const { bounding_boxes } = symbol;
+          const { bounding_box } = symbol;
           const hidden = i !== this.state.activeSymbolIndex;
           return (
-            <div key={selectors.symbolKey(symbol, bounding_boxes[0])} hidden={hidden}>
+            <div key={symbol.id} hidden={hidden}>
               {/* Only render if the symbol is not hidden. */}
               {hidden === false && (
                 <PaperClipping
-                  pageNumber={bounding_boxes[0].page + 1}
-                  highlightBoxes={bounding_boxes}
+                  pageNumber={bounding_box.page + 1}
+                  highlightBoxes={[bounding_box]}
                 />
               )}
             </div>
           );
         })}
-        <Button onClick={() => this.previousSymbol(matchingSymbols)}>Previous</Button>
+        <Button onClick={() => this.previousSymbol(matchingSymbols)}>
+          Previous
+        </Button>
         <ScholarReaderContext.Consumer>
           {({ pdfViewer }) => (
             <Button

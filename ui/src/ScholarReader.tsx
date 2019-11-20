@@ -4,7 +4,11 @@ import PageOverlay from "./PageOverlay";
 import { Pages, PaperId, Papers, ScholarReaderContext, State } from "./state";
 import "./style/index.less";
 import { Citation, Paper, Symbol } from "./types/api";
-import { DocumentLoadedEvent, PageRenderedEvent, PDFViewerApplication } from "./types/pdfjs-viewer";
+import {
+  DocumentLoadedEvent,
+  PageRenderedEvent,
+  PDFViewerApplication
+} from "./types/pdfjs-viewer";
 
 interface ScholarReaderProps {
   paperId?: PaperId;
@@ -87,13 +91,10 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
 
         const s2Ids = citations.map(c => c.papers).flat();
         if (s2Ids.length >= 1) {
-          const papers = (await api.papers(s2Ids)).reduce(
-            (papers, paper) => {
-              papers[paper.s2Id] = paper;
-              return papers;
-            },
-            {} as { [s2Id: string]: Paper }
-          );
+          const papers = (await api.papers(s2Ids)).reduce((papers, paper) => {
+            papers[paper.s2Id] = paper;
+            return papers;
+          }, {} as { [s2Id: string]: Paper });
           this.setPapers(papers);
         }
 
@@ -105,19 +106,26 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
 
   render() {
     return (
-      <ScholarReaderContext.Provider value={this.state}>
-        {Object.keys(this.state.pages).map(pageNumberKey => {
-          const pageNumber = Number(pageNumberKey);
-          const pageModel = this.state.pages[pageNumber];
-          /*
-           * By setting the key to the page number *and* the timestamp it was rendered, React will
-           * know to replace a page overlay when a pdf.js re-renders a page.
-           */
-          const key = `${pageNumber}-${pageModel.timeOfLastRender}`;
-          return <PageOverlay key={key} view={pageModel.view} pageNumber={pageNumber} />;
-        })}
-        ;
-      </ScholarReaderContext.Provider>
+      <>
+        <ScholarReaderContext.Provider value={this.state}>
+          {Object.keys(this.state.pages).map(pageNumberKey => {
+            const pageNumber = Number(pageNumberKey);
+            const pageModel = this.state.pages[pageNumber];
+            /*
+             * By setting the key to the page number *and* the timestamp it was rendered, React will
+             * know to replace a page overlay when a pdf.js re-renders a page.
+             */
+            const key = `${pageNumber}-${pageModel.timeOfLastRender}`;
+            return (
+              <PageOverlay
+                key={key}
+                view={pageModel.view}
+                pageNumber={pageNumber}
+              />
+            );
+          })}
+        </ScholarReaderContext.Provider>
+      </>
     );
   }
 }
@@ -126,7 +134,10 @@ async function waitForPDFViewerInitialization() {
   return new Promise<PDFViewerApplication>(resolve => {
     const CHECK_CYCLE_MS = 50;
     function check() {
-      if (window.PDFViewerApplication !== undefined && window.PDFViewerApplication.initialized) {
+      if (
+        window.PDFViewerApplication !== undefined &&
+        window.PDFViewerApplication.initialized
+      ) {
         resolve(window.PDFViewerApplication);
       } else {
         setTimeout(check, CHECK_CYCLE_MS);
