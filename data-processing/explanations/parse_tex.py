@@ -16,6 +16,8 @@ from TexSoup import (
     tokenize,
 )
 
+from explanations.types import Equation
+
 TexFileName = str
 TexContents = str
 
@@ -90,28 +92,6 @@ class EquationExtractor(ParseListener):
                 self.equations.append(
                     Equation(tex, content_tex, index, start, end, content_start)
                 )
-
-
-class Equation(NamedTuple):
-    """
-    TeX for full equation environment (e.g., "$x + y$").
-    """
-
-    tex: str
-    """
-    TeX for the equation markup, inside the environment (e.g., "x + y")
-    """
-    content_tex: str
-    i: int
-    """
-    Indexes of characters in TeX where the equation appears.
-    """
-    start: int
-    end: int
-    """
-    Index at which the equation markup starts (corresponds to start of 'content_tex'.)
-    """
-    content_start: int
 
 
 def wrap_read_tex_func(
