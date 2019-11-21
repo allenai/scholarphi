@@ -62,10 +62,22 @@ def test_color_tokens():
     file_contents = {"file": "$ignore$ $x + y$"}
     tokens = [
         TokenWithOrigin(
-            tex_path="file", equation_index=1, token_index=0, start=0, end=1, text="x"
+            tex_path="file",
+            equation_index=1,
+            equation="$x + y$",
+            token_index=0,
+            start=0,
+            end=1,
+            text="x",
         ),
         TokenWithOrigin(
-            tex_path="file", equation_index=1, token_index=1, start=4, end=5, text="y"
+            tex_path="file",
+            equation_index=1,
+            equation="$x + y$",
+            token_index=1,
+            start=4,
+            end=5,
+            text="y",
         ),
     ]
     colorized_files, _ = next(colorize_equation_tokens(file_contents, tokens))
@@ -81,16 +93,40 @@ def test_color_subscripts():
     file_contents = {"file": "$x_i x^i x\\sp1 x\\sb1$"}
     tokens = [
         TokenWithOrigin(
-            tex_path="file", equation_index=0, token_index=0, start=2, end=3, text="i"
+            tex_path="file",
+            equation_index=0,
+            equation="$x_i x^i x\\sp1 x\\sb1$",
+            token_index=0,
+            start=2,
+            end=3,
+            text="i",
         ),
         TokenWithOrigin(
-            tex_path="file", equation_index=0, token_index=1, start=6, end=7, text="i"
+            tex_path="file",
+            equation_index=0,
+            equation="$x_i x^i x\\sp1 x\\sb1$",
+            token_index=1,
+            start=6,
+            end=7,
+            text="i",
         ),
         TokenWithOrigin(
-            tex_path="file", equation_index=0, token_index=2, start=12, end=13, text="1"
+            tex_path="file",
+            equation_index=0,
+            equation="$x_i x^i x\\sp1 x\\sb1$",
+            token_index=2,
+            start=12,
+            end=13,
+            text="1",
         ),
         TokenWithOrigin(
-            tex_path="file", equation_index=0, token_index=3, start=18, end=19, text="1"
+            tex_path="file",
+            equation_index=0,
+            equation="$x_i x^i x\\sp1 x\\sb1$",
+            token_index=3,
+            start=18,
+            end=19,
+            text="1",
         ),
     ]
     colorized_files, _ = next(colorize_equation_tokens(file_contents, tokens))

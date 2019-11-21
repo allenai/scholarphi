@@ -82,6 +82,7 @@ class ExtractSymbols(Command[ArxivId, SymbolData]):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             encoding="utf-8",
+            check=False,
         )
 
         if result.returncode == 0:

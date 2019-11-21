@@ -23,23 +23,23 @@ def test_get_none_if_no_matching_characters():
 
 def test_get_character_bounding_box():
     s = symbol(characters=[0])
-    character_locations = {character_id(0): [PdfBoundingBox(0, 0, 10, 10, 0)]}
+    character_locations = {character_id(0): [PdfBoundingBox(0, 10, 10, 10, 0)]}
     box = get_symbol_bounding_box(s, symbol_id(), character_locations)
-    assert box == PdfBoundingBox(0, 0, 10, 10, 0)
+    assert box == PdfBoundingBox(0, 10, 10, 10, 0)
 
 
 def test_merge_bounding_boxes():
     s = symbol(characters=[0, 1])
     character_locations = {
         character_id(0): [
-            PdfBoundingBox(0, 0, 10, 10, 0),
-            # Expand the bounding box downward 10 pixels
             PdfBoundingBox(0, 10, 10, 10, 0),
+            # Expand the bounding box downward 10 pixels
+            PdfBoundingBox(0, 20, 10, 10, 0),
         ],
         # Expand the bounding box rightward 10 pixels
-        character_id(1): [PdfBoundingBox(10, 0, 10, 10, 0)],
+        character_id(1): [PdfBoundingBox(10, 10, 10, 10, 0)],
         # Ignore this bounding box for an irrelevant character
-        character_id(2): [PdfBoundingBox(20, 0, 10, 10, 0)],
+        character_id(2): [PdfBoundingBox(20, 10, 10, 10, 0)],
     }
     box = get_symbol_bounding_box(s, symbol_id(), character_locations)
-    assert box == PdfBoundingBox(0, 0, 20, 20, 0)
+    assert box == PdfBoundingBox(0, 20, 20, 20, 0)

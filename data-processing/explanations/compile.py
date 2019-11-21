@@ -56,6 +56,7 @@ def compile_tex(sources_dir: str) -> CompilationResult:
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        check=False,
     )
 
     pdfs = None
