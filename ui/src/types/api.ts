@@ -34,3 +34,13 @@ export interface Symbol {
   parent: number | null;
   children: number[];
 }
+
+export interface MathMl {
+  mathMl: string;
+  matches: MathMlMatch[];
+}
+
+export interface MathMlMatch {
+  rank: number;
+  mathMl: string;
+}

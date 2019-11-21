@@ -1,8 +1,10 @@
 import axios, { AxiosResponse } from "axios";
-import { Citation, Paper, Symbol } from "./types/api";
+import { Citation, MathMl, Paper, Symbol } from "./types/api";
 
 export async function citationsForArxivId(arxivId: string) {
-  const data = await doGet(axios.get(`/api/v0/papers/arxiv:${arxivId}/citations`));
+  const data = await doGet(
+    axios.get(`/api/v0/papers/arxiv:${arxivId}/citations`)
+  );
   return (data || []) as Citation[];
 }
 
@@ -18,8 +20,15 @@ export async function papers(s2Ids: string[]) {
 }
 
 export async function symbolsForArxivId(arxivId: string) {
-  const data = await doGet(axios.get(`/api/v0/papers/arxiv:${arxivId}/symbols`));
+  const data = await doGet(
+    axios.get(`/api/v0/papers/arxiv:${arxivId}/symbols`)
+  );
   return (data || []) as Symbol[];
+}
+
+export async function mathMlForArxivId(arxivId: string) {
+  const data = await doGet(axios.get(`/api/v0/papers/arxiv:${arxivId}/mathml`));
+  return (data || []) as MathMl[];
 }
 
 /**

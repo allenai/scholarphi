@@ -1,9 +1,25 @@
-import { Symbol } from "../types/api";
+import { MathMl, Symbol } from "../types/api";
 
 /**
- * Get a list of symbols that match a provided 'symbol'. Currently, this performs a text match.
- * In the future, this might have more nuanced matching behavior.
+ * Return an ordered list of symbols that match this one. Currently other symbols that have the
+ * same MathML, or an overlapping subtree. Exact matches are returned first.
  */
-export function getMatchingSymbols(symbols: Symbol[], symbol: Symbol) {
-  return symbols.filter(other => other.mathml === symbol.mathml);
+export function matchingSymbols(
+  symbol: Symbol,
+  symbols: Symbol[],
+  allMathMl: MathMl[]
+) {
+  let matchingSymbols: Symbol[] = [];
+
+  const mathMl = allMathMl.filter(m => m.mathMl === symbol.mathml)[0];
+  if (mathMl === undefined) {
+    return matchingSymbols;
+  }
+
+  for (const match of mathMl.matches) {
+    matchingSymbols = matchingSymbols.concat(
+      symbols.filter(s => s.mathml === match.mathMl)
+    );
+  }
+  return matchingSymbols;
 }

@@ -56,9 +56,16 @@ export class PaperClipping extends React.Component<PaperClippingProps, {}> {
        * measure the distance *down* from the top of the canvas. This is consisten with canvas
        * y-coordinates (https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_shapes).
        */
-      const boxPdfRectangle = [box.left, box.top - box.height, box.left + box.width, box.top];
+      const boxPdfRectangle = [
+        box.left,
+        box.top - box.height,
+        box.left + box.width,
+        box.top
+      ];
 
-      const canvasRect = clippingViewport.convertToViewportRectangle(boxPdfRectangle);
+      const canvasRect = clippingViewport.convertToViewportRectangle(
+        boxPdfRectangle
+      );
       const [left, bottom, right, top] = canvasRect;
       const width = right - left;
       const height = bottom - top;
@@ -76,8 +83,14 @@ export class PaperClipping extends React.Component<PaperClippingProps, {}> {
       if (i === 0) {
         const highlightCenterX = left + width / 2;
         const highlightCenterY = top + height / 2;
-        container.scrollLeft = Math.max(highlightCenterX - container.clientWidth / 2, 0);
-        container.scrollTop = Math.max(highlightCenterY - container.clientHeight / 2, 0);
+        container.scrollLeft = Math.max(
+          highlightCenterX - container.clientWidth / 2,
+          0
+        );
+        container.scrollTop = Math.max(
+          highlightCenterY - container.clientHeight / 2,
+          0
+        );
       }
     }
   }
@@ -102,3 +115,5 @@ export class PaperClipping extends React.Component<PaperClippingProps, {}> {
   containerRef: HTMLDivElement | null = null;
   canvasRef: HTMLCanvasElement | null = null;
 }
+
+export default PaperClipping;

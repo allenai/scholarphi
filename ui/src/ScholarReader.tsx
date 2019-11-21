@@ -4,7 +4,7 @@ import Drawer from "./Drawer";
 import PageOverlay from "./PageOverlay";
 import { Pages, PaperId, Papers, ScholarReaderContext, State } from "./state";
 import "./style/index.less";
-import { Citation, Paper, Symbol } from "./types/api";
+import { Citation, MathMl, Paper, Symbol } from "./types/api";
 import {
   DocumentLoadedEvent,
   PageRenderedEvent,
@@ -27,6 +27,8 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
       setCitations: this.setCitations.bind(this),
       symbols: [],
       setSymbols: this.setSymbols.bind(this),
+      mathMl: [],
+      setMathMl: this.setMathMl.bind(this),
       papers: {},
       setPapers: this.setPapers.bind(this),
       pages: {},
@@ -34,28 +36,38 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
       pdfDocument: null,
       pdfViewer: null,
       openDrawer: false,
-      setOpenDrawer: this.setOpenDrawer.bind(this)
+      setOpenDrawer: this.setOpenDrawer.bind(this),
+      selectedSymbol: null,
+      setSelectedSymbol: this.setSelectedSymbol.bind(this)
     };
   }
 
   setCitations(citations: Citation[]) {
-    this.setState({ ...this.state, citations });
+    this.setState({ citations });
   }
 
   setSymbols(symbols: Symbol[]) {
-    this.setState({ ...this.state, symbols });
+    this.setState({ symbols });
+  }
+
+  setMathMl(mathMl: MathMl[]) {
+    this.setState({ mathMl });
   }
 
   setPapers(papers: Papers) {
-    this.setState({ ...this.state, papers });
+    this.setState({ papers });
   }
 
   setPages(pages: Pages) {
-    this.setState({ ...this.state, pages });
+    this.setState({ pages });
   }
 
   setOpenDrawer(open: boolean) {
-    this.setState({ ...this.state, openDrawer: open });
+    this.setState({ openDrawer: open });
+  }
+
+  setSelectedSymbol(symbol: Symbol) {
+    this.setState({ selectedSymbol: symbol });
   }
 
   async componentDidMount() {
@@ -111,6 +123,11 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
 
         const symbols = await api.symbolsForArxivId(this.props.paperId.id);
         this.setSymbols(symbols);
+
+        if (symbols.length >= 1) {
+          const mathMl = await api.mathMlForArxivId(this.props.paperId.id);
+          this.setMathMl(mathMl);
+        }
       }
     }
   }
