@@ -1,28 +1,59 @@
 /**
- * Selectors
+ * SELECTORS
  */
 // Express MUI components with high specificity so we don't have to write '!important' for rules.
 @mui-tooltip: ~"div[role=tooltip] .MuiTooltip-tooltip";
+@drawer: ~".drawer .MuiPaper-root";
 
 /**
- * Colors
+ * COLORS
  */
 @white: #fff;
 @black: #222;
 @border-color: #ccc;
 
 @highlight-color: #00f;
-@highlight-opacity: 0.1;
 @highlight-hover-opacity: 0.2;
 
 /**
- * Font sizes
+ * TEXT STYLING
+ */
+@underline-width: 1px;
+@underline-color: @black;
+
+/**
+ * BORDERS
+ */
+@border-color: #ddd;
+@border-width: 1px;
+@border-radius: 10px;
+@border: @border-width @border-color solid;
+
+/**
+ * FONT SIZES
  */
 @large: 1.6rem;
 @medium: 1.4rem;
 
 /**
- * Spacing
+ * SPACE
  */
+@padding: @medium;
+@margin: @medium;
 @tooltip-content-vertical-padding: @medium * 0.5;
-@border-width: 0.5px;
+
+/**
+ * ELEMENT DIMENSIONS
+ */
+@paper-clipping-width: 500px;
+
+/**
+ * PDF VIEWER APPLICATION VARIABLES
+ * The syntax for each of these variables is:
+ *
+ * 'pdfjs-<sanitized-selector>-<css-property-name>: <css-value>
+ *
+ * XXX(andrewhead): If the pdf.js submodule is updated, these properties must be checked to
+ * ensure that they still match those in the pdf.js style files.
+ */
+@pdfjs-toolbarViewer-height: 32px;

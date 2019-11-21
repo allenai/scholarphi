@@ -24,7 +24,7 @@ export class SymbolAnnotation extends React.Component<
         title={<SymbolTooltipBody symbol={this.props.symbol} />}
       >
         <ScholarReaderContext.Consumer>
-          {({ setOpenDrawer }) => {
+          {({ setOpenDrawer, setSelectedSymbol }) => {
             return (
               <div
                 className="scholar-reader-annotation symbol-annotation"
@@ -33,7 +33,10 @@ export class SymbolAnnotation extends React.Component<
                   this.props.pageView,
                   this.props.location
                 )}
-                onClick={() => setOpenDrawer(true)}
+                onClick={() => {
+                  setSelectedSymbol(this.props.symbol);
+                  setOpenDrawer(true);
+                }}
               />
             );
           }}
