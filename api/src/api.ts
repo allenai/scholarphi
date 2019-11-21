@@ -59,6 +59,20 @@ export const plugin = {
 
     server.route({
       method: "GET",
+      path: "papers/arxiv:{arxivId}/mathml",
+      handler: request => {
+        const arxivId = request.params.arxivId;
+        return dbConnection.getMathMlForArxivId(arxivId);
+      },
+      options: {
+        validate: {
+          params: validation.arxivId
+        }
+      }
+    });
+
+    server.route({
+      method: "GET",
       path: "papers",
       handler: request => {
         let idString;
