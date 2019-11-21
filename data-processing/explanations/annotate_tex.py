@@ -2,7 +2,6 @@ import logging
 from typing import Dict, Iterable, List, NamedTuple, Set
 
 from explanations.parse_tex import (
-    Equation,
     EquationExtractor,
     TexContents,
     TexFileName,
@@ -11,6 +10,7 @@ from explanations.parse_tex import (
 from explanations.types import (
     Character,
     CharacterId,
+    Equation,
     EquationId,
     RelativePath,
     Symbol,

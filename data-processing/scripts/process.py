@@ -17,6 +17,7 @@ from scripts.compile_tex import (
     CompileTexSourcesWithColorizedEquations,
     CompileTexSourcesWithColorizedEquationTokens,
 )
+from scripts.debug_colorize_equation_tokens import DebugColorizeEquationTokens
 from scripts.diff_images import (
     DiffImagesWithColorizedCitations,
     DiffImagesWithColorizedEquations,
@@ -46,6 +47,7 @@ from scripts.upload_citations import UploadCitations
 from scripts.upload_symbols import UploadSymbols
 
 command_classes: List = [  # type: ignore
+    # Data processing commands
     FetchArxivSources,
     FetchS2Metadata,
     UnpackSources,
@@ -72,12 +74,14 @@ command_classes: List = [  # type: ignore
     LocateEquationHues,
     LocateEquationTokenHues,
     LocateSymbols,
+    UploadCitations,
+    UploadSymbols,
+    # Debugging commands
+    DebugColorizeEquationTokens,
     AnnotatePdfsWithCitationBoxes,
     AnnotatePdfsWithEquationBoxes,
     AnnotatePdfsWithEquationTokenBoxes,
     AnnotateTexWithSymbolMarkers,
-    UploadCitations,
-    UploadSymbols,
 ]
 
 

@@ -41,7 +41,7 @@ class AnnotateTexWithSymbolMarkers(Command[TexAndSymbols, AnnotationResult]):
         for arxiv_id in get_arxiv_ids(directories.SOURCES_DIR):
 
             output_root = get_data_subdirectory_for_arxiv_id(
-                directories.SOURCES_WITH_ANNOTATED_SYMBOLS, arxiv_id
+                directories.SOURCES_WITH_ANNOTATED_SYMBOLS_DIR, arxiv_id
             )
             clean_directory(output_root)
 
@@ -97,7 +97,7 @@ class AnnotateTexWithSymbolMarkers(Command[TexAndSymbols, AnnotationResult]):
 
     def save(self, item: TexAndSymbols, result: AnnotationResult) -> None:
         output_sources_path = get_data_subdirectory_for_arxiv_id(
-            directories.SOURCES_WITH_ANNOTATED_SYMBOLS, item.arxiv_id
+            directories.SOURCES_WITH_ANNOTATED_SYMBOLS_DIR, item.arxiv_id
         )
         logging.debug("Outputting to %s", output_sources_path)
 

@@ -4,10 +4,10 @@ import re
 from typing import Dict, Iterator, List, NamedTuple
 
 import numpy as np
+from TexSoup import Buffer, OArg, RArg, TexCmd, TexNode, TokenWithPosition
 
 from explanations.parse_tex import (
     CitationExtractor,
-    Equation,
     EquationExtractor,
     ParseListener,
     TexContents,
@@ -17,10 +17,10 @@ from explanations.parse_tex import (
 from explanations.types import (
     ColorizedCitation,
     ColorizedEquation,
+    Equation,
     EquationId,
     TokenWithOrigin,
 )
-from TexSoup import Buffer, OArg, RArg, TexCmd, TexNode, TokenWithPosition
 
 """
 All TeX coloring operations follow the same process.
@@ -60,7 +60,7 @@ def generate_hues() -> Iterator[float]:
     )
 
 
-def _insert_color_in_tex(tex: str, hue: float, start: int, end: int) -> str:
+def insert_color_in_tex(tex: str, hue: float, start: int, end: int) -> str:
     return (
         tex[:start]
         + _get_color_start_tex(hue)
@@ -147,7 +147,7 @@ def colorize_citations(tex: str) -> Iterator[CitationColorizationBatch]:
             # And get the hue for the next entity.
             hue = next(hue_generator)
 
-        colorized_tex = _insert_color_in_tex(colorized_tex, hue, c.start, c.end)
+        colorized_tex = insert_color_in_tex(colorized_tex, hue, c.start, c.end)
         colorized_citations.insert(0, ColorizedCitation(hue, c.keys))
 
     # When finished coloring, check if there are any
@@ -250,7 +250,7 @@ def colorize_equations(tex: str) -> Iterator[EquationColorizationBatch]:
             hue_generator = generate_hues()
             hue = next(hue_generator)
 
-        colorized_tex = _insert_color_in_tex(
+        colorized_tex = insert_color_in_tex(
             colorized_tex, hue, e.content_start, e.content_start + len(e.content_tex)
         )
         colorized_equations.insert(0, ColorizedEquation(hue, e.content_tex, e.i))
@@ -329,7 +329,10 @@ def colorize_equation_tokens(
                     EquationId(tex_filename, equation.i)
                 )
                 if equation_tokens is not None:
-                    colorized_tex, colorized_tokens_for_equation = _colorize_tokens_for_equation(
+                    (
+                        colorized_tex,
+                        colorized_tokens_for_equation,
+                    ) = _colorize_tokens_for_equation(
                         colorized_tex, equation, equation_tokens, token_skip
                     )
                     colorized_tokens.extend(colorized_tokens_for_equation)
@@ -381,7 +384,7 @@ def _colorize_tokens_for_equation(
         token_start = token.start
         token_start = _adjust_start_coloring_index(token_start, equation.content_tex)
 
-        tex = _insert_color_in_tex(
+        tex = insert_color_in_tex(
             tex,
             hue,
             equation.content_start + token_start,
