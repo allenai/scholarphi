@@ -1,23 +1,37 @@
 import colorsys
 import logging
+import os
 import re
 from typing import Dict, Iterator, List, NamedTuple
 
 import numpy as np
 
-from explanations.parse_tex import (CitationExtractor, ColorLinksExtractor,
-                                    EquationExtractor, TexContents,
-                                    TexFileName)
-from explanations.types import (ColorizedCitation, ColorizedEquation, Equation,
-                                EquationId, TokenWithOrigin)
+from explanations.parse_tex import (
+    CitationExtractor,
+    ColorLinksExtractor,
+    DocumentclassExtractor,
+    EquationExtractor,
+    TexContents,
+    TexFileName,
+)
+from explanations.types import (
+    ColorizedCitation,
+    ColorizedEquation,
+    Equation,
+    EquationId,
+    TokenWithOrigin,
+)
 
 """
 All TeX coloring operations follow the same process.
 
-First, detect character positions of entities that need to be colorized. This is done by defining a
-'ParseListener', which listens to a walk over the parse tree that TexSoup builds from TeX. TexSoup
-is used as it has a pretty sophisticated (though not perfect) algorithm for finding structure,
-commands, and environments in TeX.
+First, detect character positions of entities that need to be colorized. This is done an Extractor
+listens to a stream of tokens from a TeX scanner.
+
+Insert macros at the top of each file for custom coloring. These macros should make no assumptions
+about what TeX engine will be used to compile the TeX; they should not require that third-party
+packages have been loaded, and should check the definition of the TeX engine before attempting to
+execute a command that is unique to that engine.
 
 Then, color the detected entities from last to first. Coloring should always start with the
 entities with the highest character positions, and going in reverse until the entities with the
@@ -31,6 +45,24 @@ starts over from where it stopped, cylcing through the same hues again.
 If you want a better sense of the colorization process, see the 'colorize_citations' method, which
 has more explanatory comments than the other colorization methods.
 """
+
+# Load a preamble containing coloring commands
+with open(os.path.join("resources", "color_commands.tex")) as color_commands_file:
+    COLOR_MACRO_TEX = color_commands_file.read()
+
+
+def add_color_macros(tex: str) -> str:
+    documentclass_extractor = DocumentclassExtractor()
+    documentclass = documentclass_extractor.parse(tex)
+    if documentclass is None:
+        return COLOR_MACRO_TEX + "\n\n" + tex
+    return (
+        tex[: documentclass.end]
+        + "\n\n"
+        + COLOR_MACRO_TEX
+        + "\n"
+        + tex[documentclass.end :]
+    )
 
 
 # TODO(andrewhead): determine number of hues based on the number of hues that OpenCV is capable
@@ -86,13 +118,13 @@ def _get_color_start_tex(hue: float) -> str:
     those same pixels will still have the same hue, just at a higher value or lower saturation.
     """
     red, green, blue = colorsys.hsv_to_rgb(hue, 1, 1)
-    return r"\llap{{\pdfcolorstack0 push {{{red} {green} {blue} rg {red} {green} {blue} RG}}}}".format(
+    return r"\llap{{\scholarsetcolor{{{red},{green},{blue}}}}}".format(
         red=red, green=green, blue=blue
     )
 
 
 def _get_color_end_tex() -> str:
-    return r"\llap{\pdfcolorstack0 pop}"
+    return r"\llap{\scholarrevertcolor}"
 
 
 class CitationColorizationBatch(NamedTuple):
@@ -100,9 +132,14 @@ class CitationColorizationBatch(NamedTuple):
     colorized_citations: List[ColorizedCitation]
 
 
-def colorize_citations(tex: str) -> Iterator[CitationColorizationBatch]:
+def colorize_citations(
+    tex: str, insert_color_macros: bool = True
+) -> Iterator[CitationColorizationBatch]:
 
     citation_extractor = CitationExtractor()
+    if insert_color_macros:
+        tex = add_color_macros(tex)
+
     tex = _disable_hyperref_coloring(tex)
 
     citations = list(citation_extractor.parse(tex))
@@ -165,7 +202,13 @@ class EquationColorizationBatch(NamedTuple):
     colorized_equations: List[ColorizedEquation]
 
 
-def colorize_equations(tex: str) -> Iterator[EquationColorizationBatch]:
+def colorize_equations(
+    tex: str, insert_color_macros: bool = True
+) -> Iterator[EquationColorizationBatch]:
+
+    if insert_color_macros:
+        tex = add_color_macros(tex)
+
     equation_extractor = EquationExtractor()
     equations = list(equation_extractor.parse(tex))
 
@@ -221,7 +264,9 @@ def _get_tokens_for_equation(
 
 
 def colorize_equation_tokens(
-    file_contents: Dict[TexFileName, TexContents], tokens: List[TokenWithOrigin]
+    file_contents: Dict[TexFileName, TexContents],
+    tokens: List[TokenWithOrigin],
+    insert_color_macros: bool = True,
 ) -> Iterator[TokenColorizationBatch]:
 
     equations_by_file: Dict[TexFileName, List[Equation]] = {}
@@ -252,6 +297,8 @@ def colorize_equation_tokens(
 
         for tex_filename, tex in file_contents.items():
             colorized_tex = tex
+            if insert_color_macros:
+                colorized_tex = add_color_macros(colorized_tex)
 
             equations_reverse_order = sorted(
                 equations_by_file[tex_filename],

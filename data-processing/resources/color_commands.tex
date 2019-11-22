@@ -1,0 +1,37 @@
+% Load 'color' package in a way that will work for both LaTeX and plain TeX files.
+\input miniltx
+\input color
+
+% '@' needs to be processed in command names so we can access lower-level macros
+% (e.g., '\current@color', '\Gin@driver') that will defined by the TeX engines
+% to let us know what's doing the coloring, and to let us set colors.
+\makeatletter
+
+% Define names of color drivers
+% You can check the name of the current driver using '\Gin@driver{}'
+\def\pdftexdrivername{pdftex.def}
+\def\dvipsdrivername{dvips.def}
+
+% Command for setting the color for everything from here onward (even after this 
+% this command appears in has terminated.)
+\def\scholarsetcolor[#1]#2{%
+{\csname color@#1\endcsname\current@color{#2}%
+\ifx\Gin@driver\pdftexdrivername%
+\pdfcolorstack0 push {\current@color}%
+\else\ifx\Gin@driver\dvipsdrivername%
+\special{color push \current@color}%
+\else\typeout{Coloring not implemented for driver \Gin@driver}\INVALIDCOMMANDFORCEERROR%
+\fi\fi
+}}%
+% Command for reverting a color set in an 'scholarsetcolor' command.
+\def\scholarrevertcolor{%
+\ifx\Gin@driver\pdftexdrivername%
+\pdfcolorstack0 pop%
+\else\ifx\Gin@driver\dvipsdrivername%
+\special{color pop}%
+\else\typeout{Coloring not implemented for driver \Gin@driver}\INVALIDCOMMANDFORCEERROR%
+\fi\fi
+}%
+
+% Revert '@' top to just be a normal character.
+\makeatother

@@ -1,24 +1,65 @@
 import re
 
-from explanations.colorize_tex import (
-    colorize_citations,
-    colorize_equation_tokens,
-    colorize_equations,
-)
+from explanations.colorize_tex import (COLOR_MACRO_TEX, add_color_macros,
+                                       colorize_citations,
+                                       colorize_equation_tokens,
+                                       colorize_equations)
 from explanations.types import TokenWithOrigin
 
 COLOR_PATTERN = (
-    r"\\llap{"
-    + r"\\pdfcolorstack0 push {[0-9.]+ [0-9.]+ [0-9.]+ rg [0-9.]+ [0-9.]+ [0-9.]+ RG}}"
+    r"\\llap{\\scholarsetcolor{[0-9.]+,[0-9.]+,[0-9.]+}}"
     + r"(.*?)"
-    + r"\\llap{"
-    + r"\\pdfcolorstack0 pop}"
+    + r"\\llap{\\scholarrevertcolor}"
 )
+
+
+def test_add_color_macros_to_tex():
+    tex = "Body text"
+    with_macros = add_color_macros(tex)
+    assert with_macros == "\n".join([COLOR_MACRO_TEX, "", "Body text"])
+
+
+def test_add_color_macros_to_latex():
+    """
+    For LaTeX, macros must be placed beneath the \\documentclass command.
+    """
+    tex = "\n".join(["\\documentclass{article}", "Body text"])
+    with_macros = add_color_macros(tex)
+    assert with_macros == "\n".join(
+        ["\\documentclass{article}", "", COLOR_MACRO_TEX, "", "Body text",]
+    )
+
+
+def test_add_color_macros_to_latex_with_tricky_documentclass():
+    tex = "\n".join(
+        [
+            "%comment",
+            "  \\documentclass[11pt]",
+            "%",
+            "{article}",
+            "[optionalargs]",
+            "Body text",
+        ]
+    )
+    with_macros = add_color_macros(tex)
+    assert with_macros == "\n".join(
+        [
+            "%comment",
+            "  \\documentclass[11pt]",
+            "%",
+            "{article}",
+            "[optionalargs]",
+            "",
+            COLOR_MACRO_TEX,
+            "",
+            "Body text",
+        ]
+    )
 
 
 def test_color_citations():
     tex = "word.~\\cite{source1,source2}"
-    colorized, citations = next(colorize_citations(tex))
+    colorized, citations = next(colorize_citations(tex, insert_color_macros=False))
     assert colorized.startswith("word.~")
     print(colorized)
     matches = re.findall(COLOR_PATTERN, colorized)
@@ -37,7 +78,7 @@ def test_disable_hyperref_colors():
 
 def test_color_equations():
     tex = "$eq1$ and $eq2$"
-    colorized, equations = next(colorize_equations(tex))
+    colorized, equations = next(colorize_equations(tex, insert_color_macros=False))
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 2
     assert matches[0] == "eq1"
@@ -51,7 +92,7 @@ def test_color_equations():
 
 def test_color_equation_in_argument():
     tex = "\\caption{$eq1$}"
-    colorized, _ = next(colorize_equations(tex))
+    colorized, _ = next(colorize_equations(tex, insert_color_macros=False))
     assert colorized.startswith("\\caption")
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 1
@@ -80,7 +121,9 @@ def test_color_tokens():
             text="y",
         ),
     ]
-    colorized_files, _ = next(colorize_equation_tokens(file_contents, tokens))
+    colorized_files, _ = next(
+        colorize_equation_tokens(file_contents, tokens, insert_color_macros=False)
+    )
     colorized = colorized_files["file"]
     assert colorized.startswith("$ignore$")
     matches = re.findall(COLOR_PATTERN, colorized)
@@ -129,7 +172,9 @@ def test_color_subscripts():
             text="1",
         ),
     ]
-    colorized_files, _ = next(colorize_equation_tokens(file_contents, tokens))
+    colorized_files, _ = next(
+        colorize_equation_tokens(file_contents, tokens, insert_color_macros=False)
+    )
     colorized = colorized_files["file"]
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 4

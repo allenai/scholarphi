@@ -119,6 +119,54 @@ class EquationExtractor:
         return any([m.pattern.name == start_pattern_name for m in self._stack])
 
 
+class Documentclass(NamedTuple):
+    start: int
+    end: int
+
+
+class DocumentclassExtractor:
+    def parse(self, tex: str) -> Optional[Documentclass]:
+        patterns = [
+            Pattern("documentclass", r"\s*\\documentclass"),
+            Pattern("optional_arg", r"\[[^\]]*?\]"),
+            Pattern("required_arg", r"{[^}]*?}"),
+        ]
+
+        match_stage = "start"
+        start: int = -1
+        required_arg = None
+
+        scanner = scan_tex(tex, patterns, include_unmatched=True)
+        for match in scanner:
+
+            # Once we hit a token that's not the document class or argument, return the document
+            # class if the required argument has been found; otherwise, abort.
+            if match.pattern.name == "UNKNOWN":
+                if match_stage == "awaiting-optional-arg":
+                    return Documentclass(start, match.start)
+                return None
+
+            if match_stage == "start":
+                if match.pattern.name != "documentclass":
+                    return None
+                start = match.start
+                match_stage = "awaiting-required-arg"
+
+            elif match_stage == "awaiting-required-arg":
+                if match.pattern.name == "required_arg":
+                    match_stage = "awaiting-optional-arg"
+                    required_arg = match
+
+            elif match_stage == "awaiting-optional-arg":
+                if match.pattern.name == "optional_arg":
+                    end = match.end
+                    return Documentclass(start, end)
+
+        if required_arg is not None:
+            return Documentclass(start, required_arg.end)
+        return None
+
+
 class ColorLinks(NamedTuple):
     value: str
     value_start: int
@@ -147,8 +195,12 @@ class ColorLinksExtractor:
                 if colorlinks_match.group(1) is not None:
                     yield ColorLinks(
                         "true",
-                        optional_args_match.start(1) + colorlinks_match.start(1),
-                        optional_args_match.start(1) + colorlinks_match.end(1),
+                        match.start
+                        + optional_args_match.start(1)
+                        + colorlinks_match.start(1),
+                        match.start
+                        + optional_args_match.start(1)
+                        + colorlinks_match.end(1),
                     )
 
 
