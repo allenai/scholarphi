@@ -33,7 +33,7 @@ Patterns for parsing
 """
 COMMENT = Pattern("comment", "(?<![\\\\])%")
 NEWLINE = Pattern("newline", "\n")
-DEFAULT_PATTERNS = [COMMENT, NEWLINE]
+PRIVATE_PATTERNS = [COMMENT, NEWLINE]
 
 
 def scan_tex(tex: str, patterns: List[Pattern]) -> Iterator[Match]:
@@ -41,13 +41,13 @@ def scan_tex(tex: str, patterns: List[Pattern]) -> Iterator[Match]:
     TODO(andrewhead): Generally, don't report matches for input patterns when escaped.
     """
     all_patterns = []
-    all_patterns.extend(DEFAULT_PATTERNS)
+    all_patterns.extend(PRIVATE_PATTERNS)
     all_patterns.extend(patterns)
 
     patterns_by_name = {p.name: p for p in all_patterns}
 
     all_regex = [f"(?P<{p.name}>{p.regex})" for p in all_patterns]
-    regex = re.compile("|".join(all_regex))
+    regex = re.compile("|".join(all_regex), flags=re.DOTALL)
 
     scan_mode = NORMAL_MODE
 
@@ -66,7 +66,7 @@ def scan_tex(tex: str, patterns: List[Pattern]) -> Iterator[Match]:
         elif scan_mode is NORMAL_MODE:
             if pattern is COMMENT:
                 scan_mode = COMMENT_MODE
-            else:
+            elif pattern not in PRIVATE_PATTERNS:
                 yield Match(
                     pattern, group_dict[pattern_name], re_match.start(), re_match.end()
                 )

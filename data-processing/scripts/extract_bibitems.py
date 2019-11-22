@@ -6,7 +6,7 @@ from typing import Iterator
 import explanations.directories as directories
 from explanations.directories import SOURCES_DIR, get_arxiv_ids, sources
 from explanations.file_utils import clean_directory, find_files, read_file_tolerant
-from explanations.scrape_tex import TexSoupParseError, extract_bibitems
+from explanations.parse_tex import BibitemExtractor
 from explanations.types import Bibitem, FileContents
 from scripts.command import Command
 
@@ -31,17 +31,12 @@ class ExtractBibitems(Command[FileContents, Bibitem]):
                 yield FileContents(arxiv_id, path, contents)
 
     def process(self, item: FileContents) -> Iterator[Bibitem]:
-        try:
-            bibitems = extract_bibitems(item.contents)
-            logging.debug(
-                "Extracted %d bibitems from file %s", len(bibitems), item.path
-            )
-            for bibitem in bibitems:
-                yield bibitem
-        except TexSoupParseError as e:
-            logging.error("Could not parse TeX file %s with TexSoup: %s", item.path, e)
+        extractor = BibitemExtractor()
+        for bibitem in extractor.parse(item.contents):
+            yield bibitem
 
     def save(self, item: FileContents, result: Bibitem) -> None:
+        logging.debug("Extracted bibitem %s from file %s", result, item.path)
         results_dir = directories.bibitems(item.arxiv_id)
         if not os.path.exists(results_dir):
             os.makedirs(results_dir)
