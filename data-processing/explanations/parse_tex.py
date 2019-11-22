@@ -1,9 +1,11 @@
 import logging
 import re
-from typing import Iterator, List, NamedTuple
+from typing import Iterator, List, NamedTuple, Optional, Set
+
+from TexSoup import RArg, TexNode, TexSoup, TokenWithPosition
 
 from explanations.scan_tex import Match, Pattern, scan_tex
-from explanations.types import Equation
+from explanations.types import Bibitem, Equation
 
 TexFileName = str
 TexContents = str
@@ -148,3 +150,62 @@ class ColorLinksExtractor:
                         optional_args_match.start(1) + colorlinks_match.start(1),
                         optional_args_match.start(1) + colorlinks_match.end(1),
                     )
+
+
+class BibitemExtractor:
+    def __init__(self) -> None:
+        self.current_bibitem_label: Optional[str] = None
+        self.bibitem_text = ""
+        self.nodes_scanned: Set[TexNode] = set()
+        self.bibitems: List[Bibitem] = []
+
+    def parse(self, tex: str) -> Iterator[Bibitem]:
+        bibitem_pattern = Pattern("bibitem", r"\\bibitem.*?(?=\\bibitem|\n\n|$|\\end{)")
+        for bibitem in scan_tex(tex, [bibitem_pattern]):
+            try:
+                bibitem_soup = parse_soup(bibitem.text)
+            except TexSoupParseError:
+                continue
+            key = self._extract_key(bibitem_soup)
+            tokens = self._extract_text(bibitem_soup)
+            yield Bibitem(key, tokens)
+
+    def _extract_key(self, bibitem: TexSoup) -> Optional[str]:
+        for arg in bibitem[0].args:
+            if isinstance(arg, RArg):
+                return str(arg.value)
+        return None
+
+    def _extract_text(self, bibitem: TexSoup) -> str:
+        text = ""
+        for content in list(bibitem.contents)[1:]:
+            if isinstance(content, TexNode) and content.string is not None:
+                text += content.string
+            elif isinstance(content, TokenWithPosition):
+                text += str(content)
+        return _clean_bibitem_text(text)
+
+
+def _clean_bibitem_text(text: str) -> str:
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def parse_soup(tex: str) -> TexSoup:
+    """
+    Use this utility method for parsing TeX fragment into a TexSoup object.
+    Only use this for parsing fragments of TeX. Do not use it for parsing full files: TexSoup fails
+    on them often enough that your parser will fail on many files. Instead, for processing full TeX
+    files, consider using 'scan_tex' which is more bare but much more fault tolerant. You can use it
+    to build your own lightweight task-specific parsers like EquationExtractor.
+    """
+    try:
+        soup = TexSoup(tex)
+        return soup
+    except (TypeError, EOFError) as e:
+        raise TexSoupParseError(str(e))
+
+
+class TexSoupParseError(Exception):
+    """
+    Error parsing a TeX file using TexSoup.
+    """

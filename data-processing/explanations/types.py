@@ -65,7 +65,7 @@ class ColorizedCitation(NamedTuple):
 
 
 class Bibitem(NamedTuple):
-    key: str
+    key: Optional[str]
     """
     Plaintext extracted for bibitem.
     """
