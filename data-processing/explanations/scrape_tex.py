@@ -5,9 +5,9 @@ Utilities for scraping specific types of content out of TexSoup objects.
 import re
 from typing import Any, List, Optional, Set
 
-from explanations.parse_tex import parse_soup
+from TexSoup import RArg, TexCmd, TexNode, TexSoup, TokenWithPosition
+
 from explanations.types import Bibitem
-from TexSoup import RArg, TexCmd, TexNode, TokenWithPosition
 
 
 def extract_bibitems(tex: str) -> List[Bibitem]:
@@ -88,3 +88,23 @@ def _contains_break(text: str) -> bool:
 
 def _get_text_before_break(text: str) -> str:
     return re.split(TEX_BREAK, text, maxsplit=1)[0]
+
+
+def parse_soup(tex: str) -> TexSoup:
+    """
+    Use this utility method for parsing a TexSoup objct from TeX.
+    It's not recommended to use TexSoup objects for transforming TeX, however, as TeX soup sometimes
+    changes the TeX when it prints it back out. For now, TexSoup objects are best used for scraping
+    entities from the TeX, if you don't care about exactly where in the text those entites came from.
+    """
+    try:
+        soup = TexSoup(tex)
+        return soup
+    except (TypeError, EOFError) as e:
+        raise TexSoupParseError(str(e))
+
+
+class TexSoupParseError(Exception):
+    """
+    Error parsing a TeX file using TexSoup.
+    """

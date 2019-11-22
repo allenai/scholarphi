@@ -1,53 +1,15 @@
 import logging
-from abc import ABC, abstractmethod
-from typing import Callable, List, NamedTuple, Optional
-from unittest import mock
+import re
+from typing import Iterator, List, NamedTuple
 
-import TexSoup as TexSoupModule
-from TexSoup import (
-    Buffer,
-    RArg,
-    TexCmd,
-    TexEnv,
-    TexNode,
-    TexSoup,
-    TokenWithPosition,
-    read_tex,
-    tokenize,
-)
-
+from explanations.scan_tex import Match, Pattern, scan_tex
 from explanations.types import Equation
 
 TexFileName = str
 TexContents = str
 
 
-class ParseListener(ABC):
-    @abstractmethod
-    def on_node_parsed(
-        self, buffer: Buffer, node: TexNode, start: int, end: int
-    ) -> None:
-        pass
-
-
-class CitationExtractor(ParseListener):
-
-    COMMAND_NAMES: List[str] = ["cite"]
-
-    def __init__(self) -> None:
-        self.citations: List[Citation] = []
-
-    def on_node_parsed(
-        self, buffer: Buffer, node: TexNode, start: int, end: int
-    ) -> None:
-        if isinstance(node, TexCmd):
-            if node.name in self.COMMAND_NAMES:
-                keys: List[str] = []
-                for arg in node.args:
-                    if isinstance(arg, RArg):
-                        keys = arg.value.split(",")
-                        break
-                self.citations.append(Citation(keys, start, end))
+CITATION_COMMAND_NAMES = ["cite"]
 
 
 class Citation(NamedTuple):
@@ -59,116 +21,130 @@ class Citation(NamedTuple):
     end: int
 
 
-class EquationExtractor(ParseListener):
+class CitationExtractor:
+    def __init__(self) -> None:
+        self.PATTERNS: List[Pattern] = []
+        for command in CITATION_COMMAND_NAMES:
+            self.PATTERNS.append(Pattern(command, self._get_command_regex(command)))
 
-    EQUATION_ENVIRONMENT_NAMES: List[str] = ["$", "equation", "["]
+    def parse(self, tex: str) -> Iterator[Citation]:
+        scanner = scan_tex(tex, self.PATTERNS)
+        for match in scanner:
+            keys = self._extract_keys(match.pattern.name, match.text)
+            yield Citation(keys, match.start, match.end)
+
+    def _get_command_regex(self, command_name: str) -> str:
+        return r"\\" + command_name + "{[^}]*?}"
+
+    def _extract_keys(self, command_name: str, command_tex: str) -> List[str]:
+        keys_regex = r"\\" + command_name + "{([^}]*?)}"
+        keys_match = re.match(keys_regex, command_tex)
+        if keys_match is None or keys_match.group(1) is None:
+            logging.warning(
+                "Unexpectedly, no keys were found in citation %s.", command_tex
+            )
+            return []
+        return keys_match.group(1).split(",")
+
+
+MATH_ENVIRONMENT_PAIRS = {
+    "dollar": {"delimiter": r"(?<![\\])\$"},
+    "equation": {"start": r"\\begin{equation}", "end": r"\\end{equation}"},
+    "bracket": {"start": r"(?<![\\])\[", "end": r"(?<![\\])\]"},
+}
+
+
+class EquationExtractor:
+    """
+    TODO(andrewhead): Cases that this doesn't yet handle:
+    * Nested dollar signs: "$x + \\hbox{$y$}$"
+    """
 
     def __init__(self) -> None:
-        self.equations: List[Equation] = []
+        self.PATTERNS: List[Pattern] = []
+        for name, spec in MATH_ENVIRONMENT_PAIRS.items():
+            if "delimiter" in spec:
+                self.PATTERNS.append(Pattern(name + "_delimiter", spec["delimiter"]))
+            if "start" in spec and "end" in spec:
+                self.PATTERNS.append(Pattern(name + "_start", spec["start"]))
+                self.PATTERNS.append(Pattern(name + "_end", spec["end"]))
 
-    def on_node_parsed(
-        self, buffer: Buffer, node: TexNode, start: int, end: int
-    ) -> None:
-        if isinstance(node, TexEnv):
-            if node.name in self.EQUATION_ENVIRONMENT_NAMES:
-                tex = str(node)
-                """
-                XXX(andrewhead): the extraction of equation contents as the first element of
-                'contents' only works because the TexSoup parser does not attempt to further parse
-                what's inside an equation (i.e. other commands and nested equations). If the TexSoup
-                parser is modified to parse equation internals, this code must be changed.
-                """
-                equation_contents = next(node.contents)
-                if not isinstance(equation_contents, TokenWithPosition):
-                    logging.warning(
-                        "Equation contents is not a token with position. Skipping: %s",
-                        node,
+    def parse(self, tex: str) -> Iterator[Equation]:
+
+        self._stack: List[Match] = []  # pylint: disable=attribute-defined-outside-init
+        self._tex = tex  # pylint: disable=attribute-defined-outside-init
+        self._equation_index = 0  # pylint: disable=attribute-defined-outside-init
+
+        scanner = scan_tex(tex, self.PATTERNS)
+        for match in scanner:
+            for equation in self._process_token(match):
+                yield equation
+
+    def _process_token(self, match: Match) -> Iterator[Equation]:
+        pattern_name = match.pattern.name
+
+        if pattern_name.endswith("_start"):
+            self._stack.append(match)
+
+        elif self._in_environment(pattern_name):
+            start_pattern_name = self._get_start_pattern_name(pattern_name)
+            while self._stack[-1].pattern.name != start_pattern_name:
+                self._stack.pop()
+            start_match = self._stack.pop()
+
+            equation_tex = self._tex[start_match.start : match.end]
+            content_tex = self._tex[start_match.end : match.start]
+            yield Equation(
+                equation_tex,
+                content_tex,
+                self._equation_index,
+                start_match.start,
+                match.end,
+                start_match.end,
+            )
+            self._equation_index += 1
+
+        elif pattern_name.endswith("_delimiter"):
+            self._stack.append(match)
+
+    def _get_start_pattern_name(self, end_pattern_name: str) -> str:
+        if end_pattern_name.endswith("_delimiter"):
+            return end_pattern_name
+        return re.sub("_end$", "_start", end_pattern_name)
+
+    def _in_environment(self, end_pattern_name: str) -> bool:
+        start_pattern_name = self._get_start_pattern_name(end_pattern_name)
+        return any([m.pattern.name == start_pattern_name for m in self._stack])
+
+
+class ColorLinks(NamedTuple):
+    value: str
+    value_start: int
+    value_end: int
+
+
+class ColorLinksExtractor:
+    def parse(self, tex: str) -> Iterator[ColorLinks]:
+        usepackage_pattern = Pattern(
+            "usepackage", r"\\usepackage(?:\[[^\]]*?\])?{[^}]*?}"
+        )
+        scanner = scan_tex(tex, [usepackage_pattern])
+        for match in scanner:
+            for colorlinks in self._extract_colorlinks(match):
+                yield colorlinks
+
+    def _extract_colorlinks(self, match: Match) -> Iterator[ColorLinks]:
+        optional_args_regex = r"\\usepackage(?:\[([^\]]*?)\])?"
+        optional_args_match = re.search(optional_args_regex, match.text)
+        if optional_args_match is not None and optional_args_match.group(1) is not None:
+            optional_args = optional_args_match.group(1)
+            for colorlinks_match in re.finditer(
+                "(?:(?<=^)|(?<=,))\\s*colorlinks\\s*=\\s*(true)\\s*(?=,|$)",
+                optional_args,
+            ):
+                if colorlinks_match.group(1) is not None:
+                    yield ColorLinks(
+                        "true",
+                        optional_args_match.start(1) + colorlinks_match.start(1),
+                        optional_args_match.start(1) + colorlinks_match.end(1),
                     )
-                    return
-
-                content_tex = str(equation_contents)
-                content_start = equation_contents.position
-                index = len(self.equations)
-                self.equations.append(
-                    Equation(tex, content_tex, index, start, end, content_start)
-                )
-
-
-def wrap_read_tex_func(
-    read_tex_original: Callable[[Buffer], None], listeners: List[ParseListener]
-) -> Callable[[Buffer], None]:
-    def _wrapped(src: Buffer) -> None:
-        tex_buffer = src
-
-        position_before = tex_buffer.peek().position
-        node = read_tex_original(src)
-        position_after = _get_next_token_position_or_buffer_end_position(src)
-
-        for listener in listeners:
-            listener.on_node_parsed(tex_buffer, node, position_before, position_after)
-
-        return node
-
-    return _wrapped
-
-
-def walk_tex_parse_tree(
-    tex: str, listeners: Optional[List[ParseListener]] = None
-) -> None:
-    """
-    XXX(andrewhead): Walk the parse tree *not* with a TexSoup object, but by instrumenting TexSoup's
-    parser, i.e. the 'read_tex' method. This is because the vital positions of many tokens are lost
-    in TexSup objects, but it's available in the 'read_tex' method.
-
-    'read_tex' is wrapped to capture the start and end positions of tokens when it finishes parsing
-    a rule. It also calls a list of provided listeners whenever a rule is finished parsing.
-
-    'read_tex' is patched below with the mock library, because it is called recursively from within
-    the 'read_tex' method. The patch redirects nested calls to 'read_tex' with calls to the wrapped
-    version, to make sure it's called whenever a nested rule finishes parsing.
-    """
-    listeners = [] if listeners is None else listeners
-    read_tex_instrumented = wrap_read_tex_func(read_tex, listeners)
-
-    with mock.patch.object(
-        TexSoupModule.reader, "read_tex", side_effect=read_tex_instrumented
-    ):
-        tokens = tokenize(tex)
-        buffer = Buffer(tokens)
-        try:
-            while buffer.hasNext():
-                read_tex_instrumented(buffer)
-        except (TypeError, EOFError) as e:
-            raise TexSoupParseError(str(e))
-
-
-def _get_next_token_position_or_buffer_end_position(buffer: Buffer) -> int:
-
-    if buffer.peek():
-        next_token = buffer.peek()
-        assert isinstance(next_token.position, int)
-        return next_token.position
-
-    last_token = buffer.peek(-1)
-    assert isinstance(last_token.position, int)
-    return last_token.position + len(last_token)
-
-
-class TexSoupParseError(Exception):
-    """
-    Error parsing a TeX file using TexSoup.
-    """
-
-
-def parse_soup(tex: str) -> TexSoup:
-    """
-    Use this utility method for parsing a TexSoup objct from TeX.
-    It's not recommended to use TexSoup objects for transforming TeX, however, as TeX soup sometimes
-    changes the TeX when it prints it back out. For now, TexSoup objects are best used for scraping
-    entities from the TeX, if you don't care about exactly where in the text those entites came from.
-    """
-    try:
-        soup = TexSoup(tex)
-        return soup
-    except (TypeError, EOFError) as e:
-        raise TexSoupParseError(str(e))

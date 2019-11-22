@@ -6,8 +6,7 @@ from typing import Iterator
 import explanations.directories as directories
 from explanations.directories import SOURCES_DIR, get_arxiv_ids, sources
 from explanations.file_utils import clean_directory, find_files, read_file_tolerant
-from explanations.parse_tex import TexSoupParseError
-from explanations.scrape_tex import extract_bibitems
+from explanations.scrape_tex import TexSoupParseError, extract_bibitems
 from explanations.types import Bibitem, FileContents
 from scripts.command import Command
 

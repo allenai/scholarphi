@@ -19,7 +19,6 @@ from explanations.file_utils import (
     read_file_tolerant,
     save_compilation_results,
 )
-from explanations.parse_tex import TexSoupParseError
 from explanations.types import (
     ArxivId,
     CompilationResult,
@@ -111,18 +110,9 @@ class DebugColorizeEquationTokens(Command[TexAndTokens, Compilation]):
 
         for token in item.tokens:
             # Colorize the single token in the sources.
-            try:
-                colorization_result = next(
-                    colorize_equation_tokens(item.tex_contents, [token])
-                )
-            except TexSoupParseError:
-                logging.warning(
-                    "Could not parse TeX file for arXiv ID %s. Skipping paper.",
-                    item.arxiv_id,
-                )
-                # If there was a parse error, there will be a parse error for every pass over
-                # this paper. Skip all other passes over this paper.
-                return
+            colorization_result = next(
+                colorize_equation_tokens(item.tex_contents, [token])
+            )
 
             iteration_id = (
                 f"file-{escape_slashes(token.tex_path)}-"

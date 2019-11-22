@@ -5,13 +5,13 @@ from typing import Iterator, List, NamedTuple
 
 from explanations import directories
 from explanations.colorize_tex import colorize_equations
-from explanations.directories import (get_arxiv_ids,
-                                      get_data_subdirectory_for_arxiv_id,
-                                      get_data_subdirectory_for_iteration,
-                                      get_iteration_id)
-from explanations.file_utils import (clean_directory, find_files,
-                                     read_file_tolerant)
-from explanations.parse_tex import TexSoupParseError
+from explanations.directories import (
+    get_arxiv_ids,
+    get_data_subdirectory_for_arxiv_id,
+    get_data_subdirectory_for_iteration,
+    get_iteration_id,
+)
+from explanations.file_utils import clean_directory, find_files, read_file_tolerant
 from explanations.types import ColorizedEquation, FileContents
 from explanations.unpack import unpack
 from scripts.command import Command
@@ -49,16 +49,8 @@ class ColorizeEquations(Command[FileContents, ColorizationResult]):
                     yield FileContents(arxiv_id, text_path, contents)
 
     def process(self, item: FileContents) -> Iterator[ColorizationResult]:
-        try:
-            for i, batch in enumerate(colorize_equations(item.contents)):
-                yield ColorizationResult(i, batch.tex, batch.colorized_equations)
-        except TexSoupParseError as e:
-            logging.error(
-                "Failed to parse TeX file %s for arXiv ID %s: %s",
-                item.path,
-                item.arxiv_id,
-                e,
-            )
+        for i, batch in enumerate(colorize_equations(item.contents)):
+            yield ColorizationResult(i, batch.tex, batch.colorized_equations)
 
     def save(self, item: FileContents, result: ColorizationResult) -> None:
         iteration = result.iteration

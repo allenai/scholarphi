@@ -12,7 +12,6 @@ from explanations.file_utils import (
     load_tokens,
     read_file_tolerant,
 )
-from explanations.parse_tex import TexSoupParseError
 from explanations.types import ArxivId, Character, CharacterId, Path, Symbol, SymbolId
 from explanations.unpack import unpack
 from scripts.command import Command
@@ -85,15 +84,10 @@ class AnnotateTexWithSymbolMarkers(Command[TexAndSymbols, AnnotationResult]):
             yield TexAndSymbols(arxiv_id, contents_by_file, symbols, characters)
 
     def process(self, item: TexAndSymbols) -> Iterator[AnnotationResult]:
-        try:
-            annotated_files = annotate_symbols_and_equations(
-                item.tex_contents, item.symbols, item.characters
-            )
-            yield annotated_files
-        except TexSoupParseError as e:
-            logging.error(
-                "Failed to parse a TeX file for arXiv ID %s: %s", item.arxiv_id, e
-            )
+        annotated_files = annotate_symbols_and_equations(
+            item.tex_contents, item.symbols, item.characters
+        )
+        yield annotated_files
 
     def save(self, item: TexAndSymbols, result: AnnotationResult) -> None:
         output_sources_path = get_data_subdirectory_for_arxiv_id(
