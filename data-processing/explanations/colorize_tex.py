@@ -4,15 +4,13 @@ import re
 from typing import Dict, Iterator, List, NamedTuple
 
 import numpy as np
-from TexSoup import Buffer, OArg, RArg, TexCmd, TexNode, TokenWithPosition
 
 from explanations.parse_tex import (
     CitationExtractor,
+    ColorLinksExtractor,
     EquationExtractor,
-    ParseListener,
     TexContents,
     TexFileName,
-    walk_tex_parse_tree,
 )
 from explanations.types import (
     ColorizedCitation,
@@ -116,13 +114,11 @@ def colorize_citations(tex: str) -> Iterator[CitationColorizationBatch]:
     citation_extractor = CitationExtractor()
     tex = _disable_hyperref_coloring(tex)
 
-    walk_tex_parse_tree(tex, [citation_extractor])
+    citations = list(citation_extractor.parse(tex))
 
     # Order from last-to-first so we can add color commands without messing with the offsets of
     # citations that haven't yet been colored.
-    citations_reverse_order = sorted(
-        citation_extractor.citations, key=lambda c: c.start, reverse=True
-    )
+    citations_reverse_order = sorted(citations, key=lambda c: c.start, reverse=True)
 
     hue_generator = generate_hues()
     colorized_citations: List[ColorizedCitation] = []
@@ -160,65 +156,17 @@ def _disable_hyperref_coloring(tex: str) -> str:
     Coloring from the hyperref package will overwrite the coloring of citations. Disable coloring
     from the hyperref package.
     """
-    hyperref_color_extractor = HyperrefColorExtractor()
-    walk_tex_parse_tree(tex, [hyperref_color_extractor])
+    colorlinks_extractor = ColorLinksExtractor()
+    colorlinks_elements = list(colorlinks_extractor.parse(tex))
 
     colorlinks_reverse_order = sorted(
-        hyperref_color_extractor.colorlinks_assignments,
-        key=lambda c: c.start,
-        reverse=True,
+        colorlinks_elements, key=lambda c: c.value_start, reverse=True,
     )
 
-    for colorlinks_range in colorlinks_reverse_order:
-        tex = (
-            tex[: colorlinks_range.start]
-            + "colorlinks=false"
-            + tex[colorlinks_range.end :]
-        )
+    for colorlinks in colorlinks_reverse_order:
+        tex = tex[: colorlinks.value_start] + "false" + tex[colorlinks.value_end :]
 
     return tex
-
-
-class HyperrefColorExtractor(ParseListener):
-    def __init__(self) -> None:
-        self.colorlinks_assignments: List[CharacterRange] = []
-
-    def _is_node_hyperref_package(self, node: TexNode) -> bool:
-        if not isinstance(node, TexCmd):
-            return False
-
-        if not node.name == "usepackage":
-            return False
-
-        for arg in node.args:
-            if isinstance(arg, RArg):
-                if arg.value.strip() == "hyperref":
-                    return True
-
-        return False
-
-    def on_node_parsed(
-        self, buffer: Buffer, node: TexNode, start: int, end: int
-    ) -> None:
-        if not self._is_node_hyperref_package(node):
-            return
-
-        for arg in node.args:
-            if not isinstance(arg, OArg):
-                continue
-
-            for item in arg.contents:
-                if isinstance(item, TokenWithPosition):
-                    token_start = item.position
-                    for match in re.finditer(
-                        "(?:(?<=^)|(?<=,))\\s*colorlinks\\s*=\\s*true\\s*(?=,|$)",
-                        str(item),
-                    ):
-                        self.colorlinks_assignments.append(
-                            CharacterRange(
-                                token_start + match.start(), token_start + match.end()
-                            )
-                        )
 
 
 class EquationColorizationBatch(NamedTuple):
@@ -227,14 +175,10 @@ class EquationColorizationBatch(NamedTuple):
 
 
 def colorize_equations(tex: str) -> Iterator[EquationColorizationBatch]:
-    # TODO(andrewhead): Refactor this to share code with colorize_citations.
-
     equation_extractor = EquationExtractor()
-    walk_tex_parse_tree(tex, [equation_extractor])
+    equations = list(equation_extractor.parse(tex))
 
-    equations_reverse_order = sorted(
-        equation_extractor.equations, key=lambda e: e.start, reverse=True
-    )
+    equations_reverse_order = sorted(equations, key=lambda e: e.start, reverse=True)
 
     hue_generator = generate_hues()
     colorized_equations: List[ColorizedEquation] = []
@@ -300,8 +244,7 @@ def colorize_equation_tokens(
 
     for tex_filename, tex in file_contents.items():
         equation_extractor = EquationExtractor()
-        walk_tex_parse_tree(tex, [equation_extractor])
-        equations = equation_extractor.equations
+        equations = list(equation_extractor.parse(tex))
         equations_by_file[tex_filename] = equations
 
     # Number of tokens to skip when coloring. Starts at 0, and increases with each pass of

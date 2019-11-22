@@ -11,7 +11,6 @@ from explanations.directories import (
     get_data_subdirectory_for_iteration,
 )
 from explanations.file_utils import clean_directory, load_tokens, read_file_tolerant
-from explanations.parse_tex import TexSoupParseError
 from explanations.types import ArxivId, Path, TokenWithOrigin
 from explanations.unpack import unpack
 from scripts.command import Command
@@ -71,15 +70,10 @@ class ColorizeEquationTokens(Command[TexAndTokens, ColorizationResult]):
             yield TexAndTokens(arxiv_id, contents_by_file, tokens)
 
     def process(self, item: TexAndTokens) -> Iterator[ColorizationResult]:
-        try:
-            for i, result_batch in enumerate(
-                colorize_equation_tokens(item.tex_contents, item.tokens)
-            ):
-                yield ColorizationResult(i, result_batch)
-        except TexSoupParseError as e:
-            logging.error(
-                "Failed to parse a TeX file for arXiv ID %s: %s", item.arxiv_id, e
-            )
+        for i, result_batch in enumerate(
+            colorize_equation_tokens(item.tex_contents, item.tokens)
+        ):
+            yield ColorizationResult(i, result_batch)
 
     def save(self, item: TexAndTokens, result: ColorizationResult) -> None:
         iteration = result.iteration

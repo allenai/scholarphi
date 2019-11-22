@@ -1,12 +1,7 @@
 import logging
 from typing import Dict, Iterable, List, NamedTuple, Set
 
-from explanations.parse_tex import (
-    EquationExtractor,
-    TexContents,
-    TexFileName,
-    walk_tex_parse_tree,
-)
+from explanations.parse_tex import EquationExtractor, TexContents, TexFileName
 from explanations.types import (
     Character,
     CharacterId,
@@ -66,7 +61,7 @@ def annotate_symbols_and_equations_for_file(
 
     # Extract all equations
     equation_extractor = EquationExtractor()
-    walk_tex_parse_tree(tex, [equation_extractor])
+    equations = list(equation_extractor.parse(tex))
 
     # Group symbols by equation ID
     symbols_by_equation_id = _group_by_equation(symbols)
@@ -74,7 +69,7 @@ def annotate_symbols_and_equations_for_file(
     # Create a list of annotations
     annotations: List[Annotation] = []
     symbol_tex: Set[str] = set()
-    for equation in equation_extractor.equations:
+    for equation in equations:
         equation_id = EquationId(tex_path, equation.i)
         equation_symbols = symbols_by_equation_id.get(equation_id, [])
         equation_annotations = _create_annotations_for_equation(

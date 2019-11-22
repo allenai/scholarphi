@@ -4,6 +4,10 @@ from typing import Iterator, List, NamedTuple
 
 
 class Pattern(NamedTuple):
+    """
+    Names must be valid Python names.
+    """
+
     name: str
     """
     Regular expression should contain *no* capturing groups.
@@ -33,6 +37,9 @@ DEFAULT_PATTERNS = [COMMENT, NEWLINE]
 
 
 def scan_tex(tex: str, patterns: List[Pattern]) -> Iterator[Match]:
+    """
+    TODO(andrewhead): Generally, don't report matches for input patterns when escaped.
+    """
     all_patterns = []
     all_patterns.extend(DEFAULT_PATTERNS)
     all_patterns.extend(patterns)
