@@ -2,7 +2,8 @@ import csv
 import logging
 import os.path
 import shutil
-from typing import Dict, Iterator, List, NamedTuple
+from argparse import ArgumentParser
+from typing import Dict, Iterator, List, NamedTuple, Optional
 
 from explanations import directories
 from explanations.colorize_tex import colorize_equation_tokens, insert_color_in_tex
@@ -51,13 +52,31 @@ class DebugColorizeEquationTokens(Command[TexAndTokens, Compilation]):
     def get_description() -> str:
         return "Attempt to colorize tokens individually and save a list of errors."
 
+    @staticmethod
+    def init_parser(parser: ArgumentParser) -> None:
+        parser.add_argument(
+            "--arxiv-ids",
+            help="File containing list of arXiv IDs to process, with one ID per line.",
+        )
+
     def _get_output_root(self, arxiv_id: ArxivId) -> RelativePath:
         return get_data_subdirectory_for_arxiv_id(
             directories.ERRORS_FROM_COLORIZING_EQUATION_TOKENS_DIR, arxiv_id
         )
 
     def load(self) -> Iterator[TexAndTokens]:
+
+        arxiv_ids: Optional[List[ArxivId]] = None
+        if self.args.arxiv_ids is not None:
+            arxiv_ids = []
+            with open(self.args.arxiv_ids) as arxiv_ids_file:
+                for line in arxiv_ids_file:
+                    arxiv_id = line.strip()
+                    arxiv_ids.append(arxiv_id)
+
         for arxiv_id in get_arxiv_ids(directories.SOURCES_DIR):
+            if arxiv_ids is not None and arxiv_id not in arxiv_ids:
+                continue
 
             # Make sure that we have evidence that the paper can compile at all before attempting
             # to compile many variants of that file.
@@ -144,6 +163,14 @@ class DebugColorizeEquationTokens(Command[TexAndTokens, Compilation]):
                 compilation_result = compile_tex(output_sources_path)
                 yield Compilation(output_sources_path, token, compilation_result)
 
+                # If there was an error due to DVI mode, then don't try to compile this paper
+                # again; it will never compile until we change the coloring technique.
+                if self._had_dvi_failure(compilation_result):
+                    return
+
+    def _had_dvi_failure(self, result: CompilationResult):
+        return br"(\pdfcolorstack): not allowed in DVI mode" in result.stdout
+
     def save(self, item: TexAndTokens, result: Compilation) -> None:
 
         if result.result.success:
@@ -170,8 +197,13 @@ class DebugColorizeEquationTokens(Command[TexAndTokens, Compilation]):
             )
             save_compilation_results(result.source_path, result.result)
 
+        dvi_failure = self._had_dvi_failure(result.result)
         self._save_compilation_result(
-            item.arxiv_id, result.token, result.source_path, result.result.success
+            item.arxiv_id,
+            result.token,
+            result.source_path,
+            result.result.success,
+            dvi_failure,
         )
 
     def _save_compilation_result(
@@ -180,11 +212,22 @@ class DebugColorizeEquationTokens(Command[TexAndTokens, Compilation]):
         token: TokenWithOrigin,
         source_path: RelativePath,
         success: bool,
+        div_failure: bool,
     ) -> None:
 
         output_root = self._get_output_root(arxiv_id)
         errors_path = os.path.join(output_root, "compilation_results.csv")
 
+        # Leave a stamp in the directory if the compilation failed due to DVI problems.
+        if div_failure:
+            logging.warning(
+                "Could not compile arXiv ID %s because DVI mode is expected.", arxiv_id,
+            )
+            dvi_failure_stamp_path = os.path.join(output_root, "had_dvi_failure")
+            with open(dvi_failure_stamp_path, "w") as stamp_file:
+                stamp_file.write("")
+
+        # Write the result of compiling with this token to a log.
         colorize_simulation = insert_color_in_tex(
             token.equation, 0, token.start, token.end
         )

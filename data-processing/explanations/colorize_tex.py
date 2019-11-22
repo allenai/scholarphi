@@ -5,20 +5,11 @@ from typing import Dict, Iterator, List, NamedTuple
 
 import numpy as np
 
-from explanations.parse_tex import (
-    CitationExtractor,
-    ColorLinksExtractor,
-    EquationExtractor,
-    TexContents,
-    TexFileName,
-)
-from explanations.types import (
-    ColorizedCitation,
-    ColorizedEquation,
-    Equation,
-    EquationId,
-    TokenWithOrigin,
-)
+from explanations.parse_tex import (CitationExtractor, ColorLinksExtractor,
+                                    EquationExtractor, TexContents,
+                                    TexFileName)
+from explanations.types import (ColorizedCitation, ColorizedEquation, Equation,
+                                EquationId, TokenWithOrigin)
 
 """
 All TeX coloring operations follow the same process.
