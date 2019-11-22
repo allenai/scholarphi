@@ -36,7 +36,9 @@ NEWLINE = Pattern("newline", "\n")
 PRIVATE_PATTERNS = [COMMENT, NEWLINE]
 
 
-def scan_tex(tex: str, patterns: List[Pattern]) -> Iterator[Match]:
+def scan_tex(
+    tex: str, patterns: List[Pattern], include_unmatched: bool = False
+) -> Iterator[Match]:
     """
     TODO(andrewhead): Generally, don't report matches for input patterns when escaped.
     """
@@ -50,6 +52,7 @@ def scan_tex(tex: str, patterns: List[Pattern]) -> Iterator[Match]:
     regex = re.compile("|".join(all_regex), flags=re.DOTALL)
 
     scan_mode = NORMAL_MODE
+    last_match = None
 
     for re_match in regex.finditer(tex):
         group_dict = re_match.groupdict()
@@ -61,12 +64,27 @@ def scan_tex(tex: str, patterns: List[Pattern]) -> Iterator[Match]:
         pattern_name = pattern_names[0]
         pattern = patterns_by_name[pattern_name]
 
+        match = Match(
+            pattern, group_dict[pattern_name], re_match.start(), re_match.end()
+        )
+
         if scan_mode is COMMENT_MODE and pattern is NEWLINE:
             scan_mode = NORMAL_MODE
+
         elif scan_mode is NORMAL_MODE:
+            if include_unmatched:
+                if last_match is not None:
+                    if match.start != last_match.end:
+                        yield Match(
+                            pattern=Pattern("UNKNOWN", "INVALID"),
+                            start=last_match.end,
+                            end=match.start,
+                            text=tex[last_match.end : match.start],
+                        )
+                last_match = match
             if pattern is COMMENT:
                 scan_mode = COMMENT_MODE
             elif pattern not in PRIVATE_PATTERNS:
-                yield Match(
-                    pattern, group_dict[pattern_name], re_match.start(), re_match.end()
-                )
+                yield match
+
+        last_match = match

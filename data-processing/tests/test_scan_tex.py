@@ -36,3 +36,17 @@ def test_find_multiple():
     assert match2.start == 2
     assert match2.end == 3
     assert match2.pattern.name == "end"
+
+
+def test_get_unmatched():
+    scanner = scan_tex("a.b", [Pattern("letter", r"[a-z]")], include_unmatched=True)
+
+    # Scan past the first token
+    next(scanner)
+
+    # The second token should be an unmatched pattern
+    match2 = next(scanner)
+    assert match2.pattern.name == "UNKNOWN"
+    assert match2.start == 1
+    assert match2.end == 2
+    assert match2.text == "."

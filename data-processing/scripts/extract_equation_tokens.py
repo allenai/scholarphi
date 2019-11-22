@@ -69,6 +69,12 @@ class ExtractSymbols(Command[ArxivId, SymbolData]):
         equations_relative_path = os.path.relpath(
             equations_abs_path, node_directory_abs_path
         )
+        if not os.path.exists(equations_abs_path):
+            logging.warning(
+                "No directory of equations for arXiv ID %s. Skipping.", item
+            )
+            return
+
         result = subprocess.run(
             [
                 "npm",
