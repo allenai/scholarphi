@@ -52,7 +52,7 @@ class CitationExtractor:
 MATH_ENVIRONMENT_PAIRS = {
     "dollar": {"delimiter": r"(?<![\\])\$"},
     "equation": {"start": r"\\begin{equation}", "end": r"\\end{equation}"},
-    "bracket": {"start": r"(?<![\\])\[", "end": r"(?<![\\])\]"},
+    "bracket": {"start": r"(?<![\\])\\\[", "end": r"(?<![\\])\\\]"},
 }
 
 

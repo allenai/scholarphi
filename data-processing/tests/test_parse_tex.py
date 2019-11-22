@@ -32,6 +32,23 @@ def test_extract_equation_from_equation_environment():
     assert equation.tex == "\\begin{equation}x\\end{equation}"
 
 
+def test_dont_extract_equation_from_command_argument_brackets():
+    extractor = EquationExtractor()
+    equations = list(extractor.parse("\\documentclass[11pt]{article}"))
+    assert len(equations) == 0
+
+
+def test_extract_equation_from_brackets():
+    extractor = EquationExtractor()
+    equations = list(extractor.parse("\\[x + y\\]"))
+    assert len(equations) == 1
+
+    equation = equations[0]
+    assert equation.start == 0
+    assert equation.content_start == 2
+    assert equation.end == 9
+
+
 def test_extracts_nested_equations():
     extractor = EquationExtractor()
     equations = list(extractor.parse("$x + \\hbox{\\begin{equation}y\\end{equation}}$"))

@@ -168,7 +168,7 @@ class DebugColorizeEquationTokens(Command[TexAndTokens, Compilation]):
                 if self._had_dvi_failure(compilation_result):
                     return
 
-    def _had_dvi_failure(self, result: CompilationResult):
+    def _had_dvi_failure(self, result: CompilationResult) -> bool:
         return br"(\pdfcolorstack): not allowed in DVI mode" in result.stdout
 
     def save(self, item: TexAndTokens, result: Compilation) -> None:
