@@ -6,11 +6,11 @@ import subprocess
 from typing import Iterator, List, NamedTuple, Optional
 
 from explanations import directories
-from explanations.directories import EQUATIONS_DIR, NODE_DIRECTORY, get_arxiv_ids
+from explanations.directories import NODE_DIRECTORY
 from explanations.file_utils import clean_directory
 from explanations.parse_equation import get_characters, get_symbols
-from explanations.types import ArxivId, Character, Symbol
-from scripts.command import Command
+from explanations.types import ArxivId, Character, Path, Symbol
+from scripts.command import ArxivBatchCommand
 
 
 class SymbolData(NamedTuple):
@@ -23,29 +23,7 @@ class SymbolData(NamedTuple):
     errorMessage: str
 
 
-def _get_symbol_data(stdout: str) -> Iterator[SymbolData]:
-    for result in stdout.strip().splitlines():
-        data = json.loads(result)
-        characters = None
-        symbols = None
-
-        if data["success"] is True:
-            mathml = data["mathMl"]
-            characters = get_characters(mathml)
-            symbols = get_symbols(mathml)
-
-        yield SymbolData(
-            success=data["success"],
-            i=data["i"],
-            path=data["path"],
-            equation=data["equation"],
-            characters=characters,
-            symbols=symbols,
-            errorMessage=data["errorMessage"],
-        )
-
-
-class ExtractSymbols(Command[ArxivId, SymbolData]):
+class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
     @staticmethod
     def get_name() -> str:
         return "extract-symbols"
@@ -56,8 +34,11 @@ class ExtractSymbols(Command[ArxivId, SymbolData]):
             "Extract symbols and the character tokens within them from TeX equations."
         )
 
+    def get_arxiv_ids_dir(self) -> Path:
+        return directories.EQUATIONS_DIR
+
     def load(self) -> Iterator[ArxivId]:
-        for arxiv_id in get_arxiv_ids(EQUATIONS_DIR):
+        for arxiv_id in self.arxiv_ids:
             clean_directory(directories.symbols(arxiv_id))
             yield arxiv_id
 
@@ -193,3 +174,25 @@ class ExtractSymbols(Command[ArxivId, SymbolData]):
                                 result.symbols.index(child),
                             ]
                         )
+
+
+def _get_symbol_data(stdout: str) -> Iterator[SymbolData]:
+    for result in stdout.strip().splitlines():
+        data = json.loads(result)
+        characters = None
+        symbols = None
+
+        if data["success"] is True:
+            mathml = data["mathMl"]
+            characters = get_characters(mathml)
+            symbols = get_symbols(mathml)
+
+        yield SymbolData(
+            success=data["success"],
+            i=data["i"],
+            path=data["path"],
+            equation=data["equation"],
+            characters=characters,
+            symbols=symbols,
+            errorMessage=data["errorMessage"],
+        )

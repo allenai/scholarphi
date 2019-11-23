@@ -6,19 +6,21 @@ from typing import Iterator
 
 from explanations import directories
 from explanations.compile import compile_tex
-from explanations.directories import (
-    get_arxiv_id_iteration_path,
-    get_arxiv_ids,
-    get_iteration_names,
-)
+from explanations.directories import get_arxiv_id_iteration_path, get_iteration_names
 from explanations.file_utils import clean_directory, save_compilation_results
-from explanations.types import AbsolutePath, ArxivId, CompilationResult, RelativePath
-from scripts.command import Command
+from explanations.types import (
+    AbsolutePath,
+    ArxivId,
+    CompilationResult,
+    Path,
+    RelativePath,
+)
+from scripts.command import ArxivBatchCommand
 
 CompilationPath = AbsolutePath
 
 
-class CompileTexCommand(Command[CompilationPath, CompilationResult], ABC):
+class CompileTexCommand(ArxivBatchCommand[CompilationPath, CompilationResult], ABC):
     """
     Compile a TeX project, first copying it to a new directory.
     """
@@ -42,10 +44,13 @@ class CompileTexCommand(Command[CompilationPath, CompilationResult], ABC):
         Path to the data directory that will contain all compiled TeX sources.
         """
 
+    def get_arxiv_ids_dir(self) -> Path:
+        return self.get_sources_base_dir()
+
     def load(self) -> Iterator[CompilationPath]:
 
         sources_base_dir = self.get_sources_base_dir()
-        for arxiv_id in get_arxiv_ids(sources_base_dir):
+        for arxiv_id in self.arxiv_ids:
 
             # Clean all past output for this arXiv ID.
             output_dir_for_arxiv_id = directories.get_data_subdirectory_for_arxiv_id(

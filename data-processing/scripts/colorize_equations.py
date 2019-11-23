@@ -5,16 +5,14 @@ from typing import Iterator, List, NamedTuple
 
 from explanations import directories
 from explanations.colorize_tex import colorize_equations
-from explanations.directories import (
-    get_arxiv_ids,
-    get_data_subdirectory_for_arxiv_id,
-    get_data_subdirectory_for_iteration,
-    get_iteration_id,
-)
-from explanations.file_utils import clean_directory, find_files, read_file_tolerant
-from explanations.types import ColorizedEquation, FileContents
+from explanations.directories import (get_data_subdirectory_for_arxiv_id,
+                                      get_data_subdirectory_for_iteration,
+                                      get_iteration_id)
+from explanations.file_utils import (clean_directory, find_files,
+                                     read_file_tolerant)
+from explanations.types import ColorizedEquation, FileContents, Path
 from explanations.unpack import unpack
-from scripts.command import Command
+from scripts.command import ArxivBatchCommand
 
 
 class ColorizationResult(NamedTuple):
@@ -23,7 +21,7 @@ class ColorizationResult(NamedTuple):
     colorized_equations: List[ColorizedEquation]
 
 
-class ColorizeEquations(Command[FileContents, ColorizationResult]):
+class ColorizeEquations(ArxivBatchCommand[FileContents, ColorizationResult]):
     @staticmethod
     def get_name() -> str:
         return "colorize-equations"
@@ -32,8 +30,11 @@ class ColorizeEquations(Command[FileContents, ColorizationResult]):
     def get_description() -> str:
         return "Instrument TeX to colorize equations."
 
+    def get_arxiv_ids_dir(self) -> Path:
+        return directories.SOURCES_DIR
+
     def load(self) -> Iterator[FileContents]:
-        for arxiv_id in get_arxiv_ids(directories.SOURCES_DIR):
+        for arxiv_id in self.arxiv_ids:
 
             output_root = get_data_subdirectory_for_arxiv_id(
                 directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR, arxiv_id

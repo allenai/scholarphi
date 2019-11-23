@@ -4,13 +4,12 @@ from typing import Iterator, NamedTuple
 
 from explanations import directories
 from explanations.directories import (
-    get_arxiv_ids,
     get_data_subdirectory_for_iteration,
     get_iteration_names,
 )
 from explanations.file_utils import clean_directory
-from explanations.types import ArxivId
-from scripts.command import Command
+from explanations.types import ArxivId, Path
+from scripts.command import ArxivBatchCommand
 
 
 class EquationInfo(NamedTuple):
@@ -20,13 +19,11 @@ class EquationInfo(NamedTuple):
     tex: str
 
 
-class ExtractEquations(Command[EquationInfo, None]):
+class ExtractEquations(ArxivBatchCommand[EquationInfo, None]):
     """
     This script assumes that the script for colorizing equations in TeX has already been run.
     The output from that step includes the TeX extracted for all equations. This script
     then just has to collate the equations output from that earlier step.
-
-    TODO(andrewhead): Update this to extract all equations, not just inline equations.
     """
 
     @staticmethod
@@ -37,12 +34,17 @@ class ExtractEquations(Command[EquationInfo, None]):
     def get_description() -> str:
         return "Extract all equations from TeX sources"
 
+    def get_arxiv_ids_dir(self) -> Path:
+        return directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR
+
     def load(self) -> Iterator[EquationInfo]:
 
-        colorized_equations_base_dir = directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR
-        for arxiv_id in get_arxiv_ids(colorized_equations_base_dir):
+        for arxiv_id in self.arxiv_ids:
             clean_directory(directories.equations(arxiv_id))
 
+            colorized_equations_base_dir = (
+                directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR
+            )
             for iteration in get_iteration_names(
                 colorized_equations_base_dir, arxiv_id
             ):

@@ -5,10 +5,9 @@ import re
 from typing import Iterator, List, NamedTuple, Set
 
 from explanations import directories
-from explanations.directories import BIBITEMS_DIR
 from explanations.file_utils import clean_directory
-from explanations.types import ArxivId, Author, Bibitem, Reference
-from scripts.command import Command
+from explanations.types import ArxivId, Author, Bibitem, Path, Reference
+from scripts.command import ArxivBatchCommand
 
 
 class MatchTask(NamedTuple):
@@ -46,7 +45,7 @@ def ngram_sim(s1: str, s2: str) -> float:
     return len(s1_grams.intersection(s2_grams)) / min(len(s1_grams), len(s2_grams))
 
 
-class ResolveBibitems(Command[MatchTask, Match]):
+class ResolveBibitems(ArxivBatchCommand[MatchTask, Match]):
     @staticmethod
     def get_name() -> str:
         return "resolve-bibitems"
@@ -55,8 +54,11 @@ class ResolveBibitems(Command[MatchTask, Match]):
     def get_description() -> str:
         return "Find S2 IDs for bibitems."
 
+    def get_arxiv_ids_dir(self) -> Path:
+        return directories.BIBITEMS_DIR
+
     def load(self) -> Iterator[MatchTask]:
-        for arxiv_id in os.listdir(BIBITEMS_DIR):
+        for arxiv_id in self.arxiv_ids:
             clean_directory(directories.bibitem_resolutions(arxiv_id))
             bibitems_dir = directories.bibitems(arxiv_id)
             metadata_dir = directories.s2_metadata(arxiv_id)

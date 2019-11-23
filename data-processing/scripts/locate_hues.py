@@ -12,18 +12,17 @@ from PyPDF2 import PdfFileReader
 from explanations import directories
 from explanations.bounding_box import extract_bounding_boxes
 from explanations.compile import get_compiled_pdfs
-from explanations.directories import (get_arxiv_ids,
-                                      get_data_subdirectory_for_arxiv_id,
+from explanations.directories import (get_data_subdirectory_for_arxiv_id,
                                       get_data_subdirectory_for_iteration,
                                       get_iteration_names)
 from explanations.file_utils import clean_directory
 from explanations.types import (ArxivId, BoundingBoxInfo, Dimensions,
-                                EquationId, RasterBoundingBox, Rectangle,
+                                EquationId, Path, RasterBoundingBox, Rectangle,
                                 RelativePath)
-from scripts.command import Command
+from scripts.command import ArxivBatchCommand
 
 PageNumber = int
-PdfPath = str
+PdfPath = Path
 Hue = float
 MasksForPages = Dict[PageNumber, List[Rectangle]]
 
@@ -55,7 +54,7 @@ class HueLocation(NamedTuple):
     box_info: BoundingBoxInfo
 
 
-class LocateHuesCommand(Command[SearchTask, HueLocation], ABC):
+class LocateHuesCommand(ArxivBatchCommand[SearchTask, HueLocation], ABC):
     """
     Locate hues in paper diffs.
     At the time of writing this comment, this script assumed that each hue will only be used to
@@ -82,8 +81,11 @@ class LocateHuesCommand(Command[SearchTask, HueLocation], ABC):
         Load a list of hues for which you need bounding box locations.
         """
 
+    def get_arxiv_ids_dir(self) -> Path:
+        return self.get_diff_images_base_dir()
+
     def load(self) -> Iterator[SearchTask]:
-        for arxiv_id in get_arxiv_ids(self.get_diff_images_base_dir()):
+        for arxiv_id in self.arxiv_ids:
             output_dir = get_data_subdirectory_for_arxiv_id(
                 self.get_output_base_dir(), arxiv_id
             )

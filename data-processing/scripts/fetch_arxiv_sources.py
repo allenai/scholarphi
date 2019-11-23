@@ -18,7 +18,7 @@ class FetchArxivSources(ArxivBatchCommand[str, None]):
     def get_description() -> str:
         return "Fetch TeX sources for arXiv papers."
 
-    def get_input_dir(self) -> Optional[Path]:
+    def get_arxiv_ids_dir(self) -> Optional[Path]:
         return None
 
     def load(self) -> Iterator[ArxivId]:

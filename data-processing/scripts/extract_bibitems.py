@@ -4,14 +4,14 @@ import os.path
 from typing import Iterator
 
 import explanations.directories as directories
-from explanations.directories import SOURCES_DIR, get_arxiv_ids, sources
+from explanations.directories import sources
 from explanations.file_utils import clean_directory, find_files, read_file_tolerant
 from explanations.parse_tex import BibitemExtractor
-from explanations.types import Bibitem, FileContents
-from scripts.command import Command
+from explanations.types import Bibitem, FileContents, Path
+from scripts.command import ArxivBatchCommand
 
 
-class ExtractBibitems(Command[FileContents, Bibitem]):
+class ExtractBibitems(ArxivBatchCommand[FileContents, Bibitem]):
     @staticmethod
     def get_name() -> str:
         return "extract-bibitems"
@@ -20,8 +20,11 @@ class ExtractBibitems(Command[FileContents, Bibitem]):
     def get_description() -> str:
         return "Extract bibitems from TeX sources"
 
+    def get_arxiv_ids_dir(self) -> Path:
+        return directories.SOURCES_DIR
+
     def load(self) -> Iterator[FileContents]:
-        for arxiv_id in get_arxiv_ids(SOURCES_DIR):
+        for arxiv_id in self.arxiv_ids:
             sources_dir = sources(arxiv_id)
             clean_directory(directories.bibitems(arxiv_id))
             for path in find_files(sources_dir, [".tex", ".bbl"]):

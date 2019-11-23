@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from typing import Any, Generic, Iterator, List, Optional, TypeVar
 
+from explanations.directories import get_arxiv_ids
 from explanations.types import ArxivId, Path
 
 I = TypeVar("I")
@@ -60,7 +61,8 @@ class ArxivBatchCommand(Command[I, R], ABC):
     """
     A command for a batch job that will process a number of papers each indexed by arXiv ID.
     This command conveniently loads in a set of arXiv IDs from user input or, or from the
-    output directory of a prior job.
+    output directory of a prior job. It makes these arXiv IDs available in the
+    'self.arxiv_ids' property when the command is constructed.
     """
 
     def __init__(self, args: Any) -> None:
@@ -94,18 +96,22 @@ class ArxivBatchCommand(Command[I, R], ABC):
                 arxiv_ids.extend(arxiv_ids_file.readlines())
 
         if args.arxiv_ids is None and args.arxiv_ids_file is None:
-            input_path = self.get_input_dir()
+            input_path = self.get_arxiv_ids_dir()
             if input_path is None:
                 raise SystemExit(
                     "Error: This command has no arXiv IDs to process. You must provide arXiv IDs"
                     + "with the '--arxiv-ids' or '--arxiv-ids-file' arguments, or the "
-                    + "'get_input_dir' method must be specified for this command."
+                    + "'get_arxiv_ids_dir' method must be specified for this command."
                 )
+            arxiv_ids.extend(get_arxiv_ids(input_path))
 
         return arxiv_ids
 
     @abstractmethod
-    def get_input_dir(self) -> Optional[Path]:
+    def get_arxiv_ids_dir(self) -> Optional[Path]:
         """
-        Path to data directory containing a list of arXiv input directories to process.
+        Path to data directory containing folders where each is the name of an arXiv ID to process.
+        By defining this value, you provide an easy way for your command to load a list of arXiv
+        IDs to process based on the output of a previous job. Return 'None' if you want to require
+        a user to specify the arXiv IDs on the command line.
         """
