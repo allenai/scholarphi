@@ -1,13 +1,12 @@
 from typing import Iterator
 
 from explanations import directories
-from explanations.directories import SOURCE_ARCHIVES_DIR, get_arxiv_ids
-from explanations.types import ArxivId
+from explanations.types import ArxivId, Path
 from explanations.unpack import unpack
-from scripts.command import Command
+from scripts.command import ArxivBatchCommand
 
 
-class UnpackSources(Command[str, None]):
+class UnpackSources(ArxivBatchCommand[ArxivId, None]):
     @staticmethod
     def get_name() -> str:
         return "unpack-sources"
@@ -16,8 +15,11 @@ class UnpackSources(Command[str, None]):
     def get_description() -> str:
         return "Unpack fetched TeX sources."
 
+    def get_arxiv_ids_dir(self) -> Path:
+        return directories.SOURCE_ARCHIVES_DIR
+
     def load(self) -> Iterator[ArxivId]:
-        for arxiv_id in get_arxiv_ids(SOURCE_ARCHIVES_DIR):
+        for arxiv_id in self.arxiv_ids:
             yield arxiv_id
 
     def process(self, item: ArxivId) -> Iterator[None]:

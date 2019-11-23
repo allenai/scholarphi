@@ -7,15 +7,14 @@ from typing import Iterator
 import requests
 
 from explanations import directories
-from explanations.directories import SOURCE_ARCHIVES_DIR, get_arxiv_ids
-from explanations.types import ArxivId, Author, Reference, S2Metadata
-from scripts.command import Command
+from explanations.types import ArxivId, Author, Path, Reference, S2Metadata
+from scripts.command import ArxivBatchCommand
 
 """ Time to wait between consecutive requests to S2 API. """
 FETCH_DELAY = 3  # seconds
 
 
-class FetchS2Metadata(Command[ArxivId, S2Metadata]):
+class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
     @staticmethod
     def get_name() -> str:
         return "fetch-s2-metadata"
@@ -24,13 +23,16 @@ class FetchS2Metadata(Command[ArxivId, S2Metadata]):
     def get_description() -> str:
         return "Fetch S2 metadata for papers. Includes reference information."
 
+    def get_arxiv_ids_dir(self) -> Path:
+        return directories.SOURCE_ARCHIVES_DIR
+
     def load(self) -> Iterator[ArxivId]:
-        for arxiv_id in get_arxiv_ids(SOURCE_ARCHIVES_DIR):
+        for arxiv_id in self.arxiv_ids:
             yield arxiv_id
 
     def process(self, item: ArxivId) -> Iterator[S2Metadata]:
         # XXX(andrewhead): S2 API does not have versions of arXiv papers. I don't think this
-        # will practically be an issue, but it's something to pay attention to.
+        # will be an issue, but it's something to pay attention to.
         resp = requests.get(f"https://api.semanticscholar.org/v1/paper/arXiv:{item}")
         data = resp.json()
 

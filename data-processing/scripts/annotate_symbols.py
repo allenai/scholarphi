@@ -5,7 +5,7 @@ from typing import Dict, Iterator, List, NamedTuple
 
 from explanations import directories
 from explanations.annotate_tex import AnnotatedFile, annotate_symbols_and_equations
-from explanations.directories import get_arxiv_ids, get_data_subdirectory_for_arxiv_id
+from explanations.directories import get_data_subdirectory_for_arxiv_id
 from explanations.file_utils import (
     clean_directory,
     load_symbols,
@@ -14,7 +14,7 @@ from explanations.file_utils import (
 )
 from explanations.types import ArxivId, Character, CharacterId, Path, Symbol, SymbolId
 from explanations.unpack import unpack
-from scripts.command import Command
+from scripts.command import ArxivBatchCommand
 
 
 class TexAndSymbols(NamedTuple):
@@ -27,7 +27,7 @@ class TexAndSymbols(NamedTuple):
 AnnotationResult = List[AnnotatedFile]
 
 
-class AnnotateTexWithSymbolMarkers(Command[TexAndSymbols, AnnotationResult]):
+class AnnotateTexWithSymbolMarkers(ArxivBatchCommand[TexAndSymbols, AnnotationResult]):
     @staticmethod
     def get_name() -> str:
         return "annotate-tex-with-symbol-markers"
@@ -36,8 +36,11 @@ class AnnotateTexWithSymbolMarkers(Command[TexAndSymbols, AnnotationResult]):
     def get_description() -> str:
         return "Annotate TeX with markers for all equations and symbols."
 
+    def get_arxiv_ids_dir(self) -> Path:
+        return directories.SOURCES_DIR
+
     def load(self) -> Iterator[TexAndSymbols]:
-        for arxiv_id in get_arxiv_ids(directories.SOURCES_DIR):
+        for arxiv_id in self.arxiv_ids:
 
             output_root = get_data_subdirectory_for_arxiv_id(
                 directories.SOURCES_WITH_ANNOTATED_SYMBOLS_DIR, arxiv_id

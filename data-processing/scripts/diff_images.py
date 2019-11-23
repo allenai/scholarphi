@@ -8,14 +8,15 @@ import numpy as np
 
 from explanations import directories
 from explanations.compile import get_compiled_pdfs
-from explanations.directories import (get_arxiv_ids,
-                                      get_data_subdirectory_for_arxiv_id,
-                                      get_data_subdirectory_for_iteration,
-                                      get_iteration_names)
+from explanations.directories import (
+    get_data_subdirectory_for_arxiv_id,
+    get_data_subdirectory_for_iteration,
+    get_iteration_names,
+)
 from explanations.file_utils import clean_directory
 from explanations.image_processing import diff_images
-from explanations.types import ArxivId
-from scripts.command import Command
+from explanations.types import ArxivId, Path
+from scripts.command import ArxivBatchCommand
 
 
 class PageRasterPair(NamedTuple):
@@ -27,7 +28,7 @@ class PageRasterPair(NamedTuple):
     modified: np.ndarray
 
 
-class DiffImagesCommand(Command[PageRasterPair, np.ndarray], ABC):
+class DiffImagesCommand(ArxivBatchCommand[PageRasterPair, np.ndarray], ABC):
     """
     Diff images from a modified rendering of TeX files with the original rendering.
     """
@@ -46,8 +47,11 @@ class DiffImagesCommand(Command[PageRasterPair, np.ndarray], ABC):
         Path to the data directory where diff images should be output.
         """
 
+    def get_arxiv_ids_dir(self) -> Path:
+        return directories.PAPER_IMAGES_DIR
+
     def load(self) -> Iterator[PageRasterPair]:
-        for arxiv_id in get_arxiv_ids(directories.PAPER_IMAGES_DIR):
+        for arxiv_id in self.arxiv_ids:
             output_dir = get_data_subdirectory_for_arxiv_id(
                 self.get_output_base_dir(), arxiv_id
             )

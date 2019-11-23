@@ -5,24 +5,12 @@ import os.path
 from typing import Dict, Iterator, List, NamedTuple, Tuple, cast
 
 import explanations.directories as directories
-from explanations.directories import (
-    SOURCES_DIR,
-    get_arxiv_ids,
-    get_data_subdirectory_for_iteration,
-    get_iteration_names,
-)
-from explanations.types import ArxivId, Author, PdfBoundingBox, Reference
-from models.models import (
-    BoundingBox,
-    Citation,
-    CitationPaper,
-    Entity,
-    EntityBoundingBox,
-    Paper,
-    Summary,
-    create_tables,
-)
-from scripts.command import Command
+from explanations.directories import (get_data_subdirectory_for_iteration,
+                                      get_iteration_names)
+from explanations.types import ArxivId, Author, Path, PdfBoundingBox, Reference
+from models.models import (BoundingBox, Citation, CitationPaper, Entity,
+                           EntityBoundingBox, Paper, Summary, create_tables)
+from scripts.command import ArxivBatchCommand
 
 CitationKey = str
 CitationKeys = Tuple[CitationKey]
@@ -43,7 +31,7 @@ class CitationData(NamedTuple):
     s2_data: Dict[S2Id, Reference]
 
 
-class UploadCitations(Command[CitationData, None]):
+class UploadCitations(ArxivBatchCommand[CitationData, None]):
     """
     TODO(andrewhead): Ensure that the LaTeX compiler never produces more than one PDF. If so,
     we need to discover which PDF is the 'main' one that will get posted to arXiv.
@@ -57,8 +45,11 @@ class UploadCitations(Command[CitationData, None]):
     def get_description() -> str:
         return "Upload citation information to the database."
 
+    def get_arxiv_ids_dir(self) -> Path:
+        return directories.SOURCES_DIR
+
     def load(self) -> Iterator[CitationData]:
-        for arxiv_id in get_arxiv_ids(SOURCES_DIR):
+        for arxiv_id in self.arxiv_ids:
 
             boxes_by_hue_iteration: Dict[HueIteration, List[PdfBoundingBox]] = {}
             bounding_boxes_path = os.path.join(

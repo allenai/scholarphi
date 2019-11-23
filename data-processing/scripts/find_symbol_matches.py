@@ -3,11 +3,10 @@ import os.path
 from typing import Iterable, Iterator, NamedTuple
 
 from explanations import directories
-from explanations.directories import get_arxiv_ids
 from explanations.file_utils import clean_directory, load_symbols
 from explanations.match_symbols import get_mathml_matches
-from explanations.types import ArxivId, Matches, MathML
-from scripts.command import Command
+from explanations.types import ArxivId, Matches, MathML, Path
+from scripts.command import ArxivBatchCommand
 
 
 class MathMLForPaper(NamedTuple):
@@ -15,7 +14,7 @@ class MathMLForPaper(NamedTuple):
     mathml_equations: Iterable[MathML]
 
 
-class FindSymbolMatches(Command[MathMLForPaper, Matches]):
+class FindSymbolMatches(ArxivBatchCommand[MathMLForPaper, Matches]):
     @staticmethod
     def get_name() -> str:
         return "find-symbol-matches"
@@ -24,9 +23,12 @@ class FindSymbolMatches(Command[MathMLForPaper, Matches]):
     def get_description() -> str:
         return "Find matches between a symbol and all other symbols in each paper."
 
+    def get_arxiv_ids_dir(self) -> Path:
+        return directories.SYMBOLS_DIR
+
     def load(self) -> Iterator[MathMLForPaper]:
 
-        for arxiv_id in get_arxiv_ids(directories.SYMBOLS_DIR):
+        for arxiv_id in self.arxiv_ids:
 
             output_dir = directories.symbol_matches(arxiv_id)
             clean_directory(output_dir)

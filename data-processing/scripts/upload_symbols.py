@@ -4,24 +4,16 @@ import os.path
 from typing import Dict, Iterator, List, NamedTuple
 
 import explanations.directories as directories
-from explanations.directories import SOURCES_DIR, get_arxiv_ids
 from explanations.file_utils import load_symbols
 from explanations.s2_data import get_s2_id
-from explanations.types import (
-    ArxivId,
-    Match,
-    Matches,
-    MathML,
-    PdfBoundingBox,
-    SymbolId,
-    SymbolWithId,
-)
+from explanations.types import (ArxivId, Match, Matches, MathML, Path,
+                                PdfBoundingBox, SymbolId, SymbolWithId)
 from models.models import BoundingBox, Entity, EntityBoundingBox
 from models.models import MathMl as MathMlModel
 from models.models import MathMlMatch, Paper
 from models.models import Symbol as SymbolModel
 from models.models import SymbolChild, create_tables, database
-from scripts.command import Command
+from scripts.command import ArxivBatchCommand
 
 S2Id = str
 Hue = float
@@ -42,7 +34,7 @@ class SymbolData(NamedTuple):
     matches: Matches
 
 
-class UploadSymbols(Command[SymbolData, None]):
+class UploadSymbols(ArxivBatchCommand[SymbolData, None]):
     @staticmethod
     def get_name() -> str:
         return "upload-symbols"
@@ -51,8 +43,11 @@ class UploadSymbols(Command[SymbolData, None]):
     def get_description() -> str:
         return "Upload symbols to the database."
 
+    def get_arxiv_ids_dir(self) -> Path:
+        return directories.SOURCES_DIR
+
     def load(self) -> Iterator[SymbolData]:
-        for arxiv_id in get_arxiv_ids(SOURCES_DIR):
+        for arxiv_id in self.arxiv_ids:
 
             s2_id = get_s2_id(arxiv_id)
             if s2_id is None:

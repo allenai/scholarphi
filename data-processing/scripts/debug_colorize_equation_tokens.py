@@ -2,15 +2,13 @@ import csv
 import logging
 import os.path
 import shutil
-from argparse import ArgumentParser
-from typing import Dict, Iterator, List, NamedTuple, Optional
+from typing import Dict, Iterator, List, NamedTuple
 
 from explanations import directories
 from explanations.colorize_tex import colorize_equation_tokens, insert_color_in_tex
 from explanations.compile import compile_tex
 from explanations.directories import (
     escape_slashes,
-    get_arxiv_ids,
     get_data_subdirectory_for_arxiv_id,
     get_data_subdirectory_for_iteration,
 )
@@ -28,7 +26,7 @@ from explanations.types import (
     TokenWithOrigin,
 )
 from explanations.unpack import unpack
-from scripts.command import Command
+from scripts.command import ArxivBatchCommand
 
 
 class TexAndTokens(NamedTuple):
@@ -43,7 +41,7 @@ class Compilation(NamedTuple):
     result: CompilationResult
 
 
-class DebugColorizeEquationTokens(Command[TexAndTokens, Compilation]):
+class DebugColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, Compilation]):
     @staticmethod
     def get_name() -> str:
         return "debug-colorize-equation-tokens"
@@ -52,31 +50,16 @@ class DebugColorizeEquationTokens(Command[TexAndTokens, Compilation]):
     def get_description() -> str:
         return "Attempt to colorize tokens individually and save a list of errors."
 
-    @staticmethod
-    def init_parser(parser: ArgumentParser) -> None:
-        parser.add_argument(
-            "--arxiv-ids",
-            help="File containing list of arXiv IDs to process, with one ID per line.",
-        )
-
     def _get_output_root(self, arxiv_id: ArxivId) -> RelativePath:
         return get_data_subdirectory_for_arxiv_id(
             directories.ERRORS_FROM_COLORIZING_EQUATION_TOKENS_DIR, arxiv_id
         )
 
+    def get_arxiv_ids_dir(self) -> Path:
+        return directories.SOURCES_DIR
+
     def load(self) -> Iterator[TexAndTokens]:
-
-        arxiv_ids: Optional[List[ArxivId]] = None
-        if self.args.arxiv_ids is not None:
-            arxiv_ids = []
-            with open(self.args.arxiv_ids) as arxiv_ids_file:
-                for line in arxiv_ids_file:
-                    arxiv_id = line.strip()
-                    arxiv_ids.append(arxiv_id)
-
-        for arxiv_id in get_arxiv_ids(directories.SOURCES_DIR):
-            if arxiv_ids is not None and arxiv_id not in arxiv_ids:
-                continue
+        for arxiv_id in self.arxiv_ids:
 
             # Make sure that we have evidence that the paper can compile at all before attempting
             # to compile many variants of that file.

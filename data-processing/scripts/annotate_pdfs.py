@@ -6,17 +6,12 @@ from typing import Dict, Iterator, List, NamedTuple
 
 from explanations import directories
 from explanations.compile import get_compiled_pdfs
-from explanations.directories import get_arxiv_ids, get_data_subdirectory_for_arxiv_id
+from explanations.directories import get_data_subdirectory_for_arxiv_id
 from explanations.file_utils import clean_directory
 from explanations.image_processing import annotate_pdf
-from explanations.types import (
-    AbsolutePath,
-    ArxivId,
-    PdfBoundingBox,
-    PdfBoundingBoxAndHue,
-    RelativePath,
-)
-from scripts.command import Command
+from explanations.types import (AbsolutePath, ArxivId, Path, PdfBoundingBox,
+                                PdfBoundingBoxAndHue, RelativePath)
+from scripts.command import ArxivBatchCommand
 
 
 class PdfAndBoxes(NamedTuple):
@@ -26,7 +21,7 @@ class PdfAndBoxes(NamedTuple):
     boxes_and_hues: List[PdfBoundingBoxAndHue]
 
 
-class AnnotatePdfsCommand(Command[PdfAndBoxes, None], ABC):
+class AnnotatePdfsCommand(ArxivBatchCommand[PdfAndBoxes, None], ABC):
     """
     Annotate PDFs with bounding boxes.
     """
@@ -38,6 +33,9 @@ class AnnotatePdfsCommand(Command[PdfAndBoxes, None], ABC):
         Path to the data directory where annotated PDFs should be output.
         """
 
+    def get_arxiv_ids_dir(self) -> Path:
+        return directories.COMPILED_SOURCES_DIR
+
     @abstractmethod
     def load_bounding_boxes(
         self, arxiv_id: ArxivId
@@ -47,7 +45,7 @@ class AnnotatePdfsCommand(Command[PdfAndBoxes, None], ABC):
         """
 
     def load(self) -> Iterator[PdfAndBoxes]:
-        for arxiv_id in get_arxiv_ids(directories.COMPILED_SOURCES_DIR):
+        for arxiv_id in self.arxiv_ids:
             output_dir = get_data_subdirectory_for_arxiv_id(
                 self.get_output_base_dir(), arxiv_id
             )

@@ -5,16 +5,16 @@ from typing import Dict, Iterator, List, NamedTuple
 
 from explanations import directories
 from explanations.bounding_box import get_symbol_bounding_box
-from explanations.directories import get_arxiv_ids
 from explanations.file_utils import clean_directory, load_symbols
 from explanations.types import (
     ArxivId,
     CharacterId,
     CharacterLocations,
+    Path,
     PdfBoundingBox,
     SymbolWithId,
 )
-from scripts.command import Command
+from scripts.command import ArxivBatchCommand
 
 
 class LocationTask(NamedTuple):
@@ -23,7 +23,7 @@ class LocationTask(NamedTuple):
     symbol_with_id: SymbolWithId
 
 
-class LocateSymbols(Command[LocationTask, PdfBoundingBox]):
+class LocateSymbols(ArxivBatchCommand[LocationTask, PdfBoundingBox]):
     @staticmethod
     def get_name() -> str:
         return "locate-symbols"
@@ -35,11 +35,12 @@ class LocateSymbols(Command[LocationTask, PdfBoundingBox]):
             + "Requires 'locate-equation-token-hues' to have been run."
         )
 
+    def get_arxiv_ids_dir(self) -> Path:
+        return directories.HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR
+
     def load(self) -> Iterator[LocationTask]:
 
-        for arxiv_id in get_arxiv_ids(
-            directories.HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR
-        ):
+        for arxiv_id in self.arxiv_ids:
 
             output_dir = directories.symbol_locations(arxiv_id)
             clean_directory(output_dir)

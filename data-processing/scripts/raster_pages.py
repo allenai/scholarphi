@@ -8,15 +8,12 @@ import numpy as np
 
 from explanations import directories
 from explanations.compile import get_compiled_pdfs
-from explanations.directories import (
-    get_arxiv_id_iteration_path,
-    get_arxiv_ids,
-    get_iteration_names,
-)
+from explanations.directories import (get_arxiv_id_iteration_path,
+                                      get_iteration_names)
 from explanations.file_utils import clean_directory
 from explanations.image_processing import get_cv2_images
-from explanations.types import AbsolutePath, ArxivId, RelativePath
-from scripts.command import Command
+from explanations.types import AbsolutePath, ArxivId, Path, RelativePath
+from scripts.command import ArxivBatchCommand
 
 
 class RasterTask(NamedTuple):
@@ -25,7 +22,7 @@ class RasterTask(NamedTuple):
     absolute_pdf_path: AbsolutePath
 
 
-class RasterPagesCommand(Command[RasterTask, None], ABC):
+class RasterPagesCommand(ArxivBatchCommand[RasterTask, None], ABC):
     """
     Raster images of pages from a paper.
     Rasters are save to a directory parallel to the one from which the PDF was read.
@@ -54,10 +51,12 @@ class RasterPagesCommand(Command[RasterTask, None], ABC):
         Path to the data directory where images of the paper should be output.
         """
 
+    def get_arxiv_ids_dir(self) -> Path:
+        return self.get_papers_base_dir()
+
     def load(self) -> Iterator[RasterTask]:
 
-        papers_base_dir = self.get_papers_base_dir()
-        for arxiv_id in get_arxiv_ids(papers_base_dir):
+        for arxiv_id in self.arxiv_ids:
 
             # Clean all past output for this arXiv ID.
             output_dir_for_arxiv_id = directories.get_data_subdirectory_for_arxiv_id(
