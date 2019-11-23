@@ -6,21 +6,11 @@ from typing import Dict, Iterator, List, NamedTuple
 
 import numpy as np
 
-from explanations.parse_tex import (
-    CitationExtractor,
-    ColorLinksExtractor,
-    DocumentclassExtractor,
-    EquationExtractor,
-    TexContents,
-    TexFileName,
-)
-from explanations.types import (
-    ColorizedCitation,
-    ColorizedEquation,
-    Equation,
-    EquationId,
-    TokenWithOrigin,
-)
+from explanations.parse_tex import (CitationExtractor, ColorLinksExtractor,
+                                    DocumentclassExtractor, EquationExtractor,
+                                    TexContents, TexFileName)
+from explanations.types import (ColorizedCitation, ColorizedEquation, Equation,
+                                EquationId, TokenWithOrigin)
 
 """
 All TeX coloring operations follow the same process.
@@ -117,9 +107,12 @@ def _get_color_start_tex(hue: float) -> str:
     characters be faded and thus have different R, G, and B values no matter what the color. However,
     those same pixels will still have the same hue, just at a higher value or lower saturation.
     """
-    red, green, blue = colorsys.hsv_to_rgb(hue, 1, 1)
-    return r"\llap{{\scholarsetcolor{{{red},{green},{blue}}}}}".format(
-        red=red, green=green, blue=blue
+    red, green, blue = colorsys.hsv_to_rgb(hue, 1, 255)
+    red_scaled = red / 255.0
+    blue_scaled = blue / 255.0
+    green_scaled = green / 255.0
+    return r"\llap{{\scholarsetcolor[rgb]{{{red},{green},{blue}}}}}".format(
+        red=red_scaled, green=green_scaled, blue=blue_scaled
     )
 
 
