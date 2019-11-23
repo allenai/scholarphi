@@ -37,6 +37,9 @@ class PageOverlay extends React.Component<PageProps, {}> {
   }
 
   componentWillUnmount() {
+    /**
+     * TODO(andrewhead): this 'document.body.contains' might be expensive.
+     */
     if (
       document.body.contains(this.props.view.div) &&
       this.props.view.div.contains(this._element)
@@ -53,25 +56,24 @@ class PageOverlay extends React.Component<PageProps, {}> {
             [...citations],
             this.props.pageNumber
           );
-          const localizedSymbols = selectors.boxEntityPairsForPage(
-            [...symbols],
-            this.props.pageNumber
+          const localizedSymbols = symbols.filter(
+            s => s.bounding_box.page === this.props.pageNumber - 1
           );
           return (
             <>
               {localizedCitations.map(c => (
                 <CitationAnnotation
-                  key={selectors.citationKey(c.entity, c.boundingBox)}
+                  key={selectors.citationKey(c.citation, c.boundingBox)}
                   location={c.boundingBox}
-                  citation={c.entity}
+                  citation={c.citation}
                   pageView={this.props.view}
                 />
               ))}
               {localizedSymbols.map(s => (
                 <SymbolAnnotation
-                  key={selectors.symbolKey(s.entity, s.boundingBox)}
-                  location={s.boundingBox}
-                  symbol={s.entity}
+                  key={s.id}
+                  location={s.bounding_box}
+                  symbol={s}
                   pageView={this.props.view}
                 />
               ))}

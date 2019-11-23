@@ -65,7 +65,7 @@ class ColorizedCitation(NamedTuple):
 
 
 class Bibitem(NamedTuple):
-    key: str
+    key: Optional[str]
     """
     Plaintext extracted for bibitem.
     """
@@ -107,6 +107,7 @@ class TokenWithOrigin(NamedTuple):
 
     tex_path: str
     equation_index: int
+    equation: str
     token_index: int
     start: int
     end: int
@@ -134,6 +135,28 @@ class SymbolWithId(NamedTuple):
 class EquationId(NamedTuple):
     tex_path: str
     equation_index: int
+
+
+class Equation(NamedTuple):
+    """
+    TeX for full equation environment (e.g., "$x + y$").
+    """
+
+    tex: str
+    """
+    TeX for the equation markup, inside the environment (e.g., "x + y")
+    """
+    content_tex: str
+    i: int
+    """
+    Indexes of characters in TeX where the equation appears.
+    """
+    start: int
+    end: int
+    """
+    Index at which the equation markup starts (corresponds to start of 'content_tex'.)
+    """
+    content_start: int
 
 
 class ColorizedEquation(NamedTuple):

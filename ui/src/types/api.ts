@@ -22,14 +22,25 @@ export interface Paper {
   year: number | null;
 }
 
-export interface Citation extends Locatable {
+export interface Citation {
   papers: string[];
-}
-
-export interface Symbol extends Locatable {
-  tex: string;
-}
-
-export interface Locatable {
   bounding_boxes: BoundingBox[];
+}
+
+export interface Symbol {
+  id: number;
+  mathml: string;
+  bounding_box: BoundingBox;
+  parent: number | null;
+  children: number[];
+}
+
+export interface MathMl {
+  mathMl: string;
+  matches: MathMlMatch[];
+}
+
+export interface MathMlMatch {
+  rank: number;
+  mathMl: string;
 }

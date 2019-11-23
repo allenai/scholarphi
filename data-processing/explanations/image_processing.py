@@ -102,14 +102,6 @@ def annotate_pdf(
             page = reader.getPage(box.page)
             page.mergePage(canvas_reader.getPage(0))
 
-            # The PDF bounding boxes are relative to the bottom-left of the the page. Flip them to
-            # be relative to the top-left before drawing them (see comment above).
-            # top = float(page.mediaBox.getHeight()) - box.top
-            bottom = box.top - box.height
-            rect = (box.left, box.top, box.left + box.width, bottom)
-
-            # writer.addLink(box.page, 0, rect, [1, 1, 4])
-
         writer.write(out_pdf_file)
 
 
