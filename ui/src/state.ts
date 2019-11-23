@@ -1,20 +1,36 @@
 import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
-import { Citation, Paper, Symbol } from "./types/api";
+import { Citation, MathMl, Paper, Symbol } from "./types/api";
 import { PDFPageView, PDFViewer } from "./types/pdfjs-viewer";
 
 export interface State {
+  /*
+   * PAPER DATA
+   */
   citations: Readonly<Citation[]>;
+  setCitations(citations: Citation[]): void;
   symbols: Readonly<Symbol[]>;
+  setSymbols(symbols: Symbol[]): void;
+  mathMl: Readonly<MathMl[]>;
+  setMathMl(mathMl: MathMl[]): void;
   papers: Readonly<Papers>;
+  setPapers(papers: Papers): void;
+
+  /*
+   * PDF VIEWER STATE
+   */
   pages: Readonly<Pages>;
+  setPages(pages: Pages): void;
   pdfDocument: PDFDocumentProxy | null;
   pdfViewer: PDFViewer | null;
 
-  setCitations(citations: Citation[]): void;
-  setSymbols(symbols: Symbol[]): void;
-  setPapers(papers: Papers): void;
-  setPages(pages: Pages): void;
+  /*
+   * USER INTERFACE STATE
+   */
+  openDrawer: boolean;
+  setOpenDrawer(open: boolean): void;
+  selectedSymbol: Symbol | null;
+  setSelectedSymbol(symbol: Symbol | null): void;
 }
 
 export type Papers = { [s2Id: string]: Paper };
@@ -37,24 +53,22 @@ export interface PaperId {
 }
 
 const defaultState: State = {
-  setCitations: (citations: Citation[]) => {
-    return;
-  },
-  setSymbols: (symbols: Symbol[]) => {
-    return;
-  },
-  setPapers: (papers: Papers) => {
-    return;
-  },
-  setPages: (pages: Pages) => {
-    return;
-  },
   citations: [],
+  setCitations: () => {},
   symbols: [],
+  setSymbols: () => {},
+  mathMl: [],
+  setMathMl: () => {},
   papers: {},
+  setPapers: () => {},
   pages: {},
+  setPages: () => {},
   pdfDocument: null,
-  pdfViewer: null
+  pdfViewer: null,
+  openDrawer: false,
+  setOpenDrawer: () => {},
+  selectedSymbol: null,
+  setSelectedSymbol: () => {}
 };
 
 export const ScholarReaderContext = React.createContext<State>(defaultState);

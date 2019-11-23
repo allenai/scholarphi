@@ -13,7 +13,6 @@ from explanations.directories import (
     get_iteration_id,
 )
 from explanations.file_utils import clean_directory, find_files, read_file_tolerant
-from explanations.parse_tex import TexSoupParseError
 from explanations.types import ColorizedCitation, FileContents
 from explanations.unpack import unpack
 from scripts.command import Command
@@ -51,16 +50,8 @@ class ColorizeCitations(Command[FileContents, ColorizationResult]):
                     yield FileContents(arxiv_id, text_path, contents)
 
     def process(self, item: FileContents) -> Iterator[ColorizationResult]:
-        try:
-            for i, batch in enumerate(colorize_citations(item.contents)):
-                yield ColorizationResult(i, batch.tex, batch.colorized_citations)
-        except TexSoupParseError as e:
-            logging.error(
-                "Failed to parse TeX file %s for arXiv ID %s: %s",
-                item.path,
-                item.arxiv_id,
-                e,
-            )
+        for i, batch in enumerate(colorize_citations(item.contents)):
+            yield ColorizationResult(i, batch.tex, batch.colorized_citations)
 
     def save(self, item: FileContents, result: ColorizationResult) -> None:
         iteration = result.iteration

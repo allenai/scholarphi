@@ -242,7 +242,7 @@ def get_symbol_bounding_box(
 
     left = min([box.left for box in boxes_on_page])
     right = max([box.left + box.width for box in boxes_on_page])
-    top = min([box.top for box in boxes_on_page])
-    bottom = max([box.top + box.height for box in boxes_on_page])
+    top = max([box.top for box in boxes_on_page])
+    bottom = min([box.top - box.height for box in boxes_on_page])
 
-    return PdfBoundingBox(left, top, right - left, bottom - top, page)
+    return PdfBoundingBox(left, top, right - left, top - bottom, page)

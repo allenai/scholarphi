@@ -37,6 +37,19 @@ interface Symbol {
   children: number[];
 }
 
+interface MathMlMatch {
+  rank: number;
+  mathMl: string;
+}
+
+interface MathMl {
+  mathMl: string;
+  /**
+   * Matches are ordered by rank, from highest to lowest.
+   */
+  matches: MathMlMatch[];
+}
+
 export class Connection {
   constructor(config: nconf.Provider) {
     this._knex = Knex({
@@ -63,8 +76,8 @@ export class Connection {
   async getCitationsForPaper(paperSelector: PaperSelector) {
     const rows = await this._knex("paper")
       .select(
-        "citation.id as citation_id",
-        "citationpaper.paper_id as cited_paper_id",
+        "citation.id AS citation_id",
+        "citationpaper.paper_id AS cited_paper_id",
         "page",
         "left",
         "top",
@@ -110,10 +123,10 @@ export class Connection {
   async getSymbolsForArxivId(arxivId: string) {
     const rows = await this._knex("paper")
       .select(
-        "symbol.id as symbol_id",
+        "symbol.id AS symbol_id",
         "mathml",
         this._knex.raw("array_agg(children.child_id) children_ids"),
-        "parents.parent_id as parent_id",
+        "parents.parent_id AS parent_id",
         "page",
         "left",
         "top",
@@ -175,6 +188,44 @@ export class Connection {
     });
 
     return symbols;
+  }
+
+  async getMathMlForArxivId(arxivId: string) {
+    const rows = await this._knex("paper")
+      .select(
+        "mathml.mathml AS mathml",
+        "mathml2.mathml AS matching_mathml",
+        "mathmlmatch.rank AS rank"
+      )
+      .where({ arxiv_id: arxivId })
+      // Get list of MathML matches for paper.
+      .join("mathmlmatch", { "paper.s2_id": "mathmlmatch.paper_id" })
+      // Get MathML.
+      .join("mathml", { "mathmlmatch.mathml_id": "mathml.id" })
+      .join("mathml AS mathml2", { "mathmlmatch.match_id": "mathml2.id" })
+      .orderBy(["mathml.id", { column: "rank", order: "asc" }]);
+
+    const matchesByMathMl: { [mathml: string]: MathMlMatch[] } = {};
+    for (const row of rows) {
+      const mathMl = row.mathml;
+      if (matchesByMathMl[mathMl] === undefined) {
+        matchesByMathMl[mathMl] = [];
+      }
+      matchesByMathMl[mathMl].push({
+        mathMl: row.matching_mathml,
+        rank: row.rank
+      });
+    }
+
+    const allMathMl: MathMl[] = [];
+    for (const mathMl of Object.keys(matchesByMathMl)) {
+      allMathMl.push({
+        mathMl,
+        matches: matchesByMathMl[mathMl]
+      });
+    }
+
+    return allMathMl;
   }
 
   private _knex: Knex;

@@ -5,7 +5,8 @@ import shutil
 from typing import Dict, Iterator, List, Optional
 
 from explanations import directories
-from explanations.types import ArxivId, Symbol, SymbolId, SymbolWithId, TokenWithOrigin
+from explanations.types import (ArxivId, CompilationResult, Path, Symbol,
+                                SymbolId, SymbolWithId, TokenWithOrigin)
 
 
 def read_file_tolerant(path: str) -> Optional[str]:
@@ -86,6 +87,7 @@ def load_tokens(arxiv_id: ArxivId) -> Optional[List[TokenWithOrigin]]:
                 TokenWithOrigin(
                     tex_path=tex_path,
                     equation_index=int(row[1]),
+                    equation=row[2],
                     token_index=int(row[3]),
                     start=int(row[4]),
                     end=int(row[5]),
@@ -144,3 +146,37 @@ def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
     return [
         SymbolWithId(symbol_id, symbol) for symbol_id, symbol in symbols_by_id.items()
     ]
+
+
+def save_compilation_results(
+    path: Path, result: CompilationResult, verbose: bool = True
+) -> None:
+    results_dir = os.path.join(path, "compilation_results")
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir)
+
+    if verbose:
+        if result.success:
+            logging.debug(
+                "Successfully compiled TeX. Generated PDFs %s",
+                str(result.compiled_pdfs),
+            )
+        else:
+            logging.warning(
+                "Could not compile TeX in %s. See logs in %s.", path, results_dir
+            )
+
+    with open(os.path.join(results_dir, "result"), "w") as success_file:
+        success_file.write(str(result.success))
+
+    if result.compiled_pdfs is not None:
+        with open(os.path.join(results_dir, "pdf_names.csv"), "w") as pdf_names_file:
+            writer = csv.writer(pdf_names_file, quoting=csv.QUOTE_ALL)
+            for i, pdf in enumerate(result.compiled_pdfs):
+                writer.writerow([i, pdf])
+
+    with open(os.path.join(results_dir, "stdout.log"), "wb") as stdout_file:
+        stdout_file.write(result.stdout)
+
+    with open(os.path.join(results_dir, "stderr.log"), "wb") as stderr_file:
+        stderr_file.write(result.stderr)

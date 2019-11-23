@@ -12,7 +12,6 @@ from explanations.file_utils import (
     load_tokens,
     read_file_tolerant,
 )
-from explanations.parse_tex import TexSoupParseError
 from explanations.types import ArxivId, Character, CharacterId, Path, Symbol, SymbolId
 from explanations.unpack import unpack
 from scripts.command import Command
@@ -41,7 +40,7 @@ class AnnotateTexWithSymbolMarkers(Command[TexAndSymbols, AnnotationResult]):
         for arxiv_id in get_arxiv_ids(directories.SOURCES_DIR):
 
             output_root = get_data_subdirectory_for_arxiv_id(
-                directories.SOURCES_WITH_ANNOTATED_SYMBOLS, arxiv_id
+                directories.SOURCES_WITH_ANNOTATED_SYMBOLS_DIR, arxiv_id
             )
             clean_directory(output_root)
 
@@ -85,19 +84,14 @@ class AnnotateTexWithSymbolMarkers(Command[TexAndSymbols, AnnotationResult]):
             yield TexAndSymbols(arxiv_id, contents_by_file, symbols, characters)
 
     def process(self, item: TexAndSymbols) -> Iterator[AnnotationResult]:
-        try:
-            annotated_files = annotate_symbols_and_equations(
-                item.tex_contents, item.symbols, item.characters
-            )
-            yield annotated_files
-        except TexSoupParseError as e:
-            logging.error(
-                "Failed to parse a TeX file for arXiv ID %s: %s", item.arxiv_id, e
-            )
+        annotated_files = annotate_symbols_and_equations(
+            item.tex_contents, item.symbols, item.characters
+        )
+        yield annotated_files
 
     def save(self, item: TexAndSymbols, result: AnnotationResult) -> None:
         output_sources_path = get_data_subdirectory_for_arxiv_id(
-            directories.SOURCES_WITH_ANNOTATED_SYMBOLS, item.arxiv_id
+            directories.SOURCES_WITH_ANNOTATED_SYMBOLS_DIR, item.arxiv_id
         )
         logging.debug("Outputting to %s", output_sources_path)
 

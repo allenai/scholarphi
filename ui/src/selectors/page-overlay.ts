@@ -1,21 +1,16 @@
-import { BoundingBox, Locatable } from "../types/api";
+import { Citation } from "../types/api";
 
-export function boxEntityPairsForPage<T extends Locatable>(
-  entities: T[],
+export function boxEntityPairsForPage(
+  citations: Citation[],
   pageNumber: number
-): BoxEntityPair<T>[] {
-  const locatablesWithBoxes = [];
-  for (const entity of entities) {
-    for (const boundingBox of entity.bounding_boxes) {
+) {
+  const citationsWithBoxes = [];
+  for (const citation of citations) {
+    for (const boundingBox of citation.bounding_boxes) {
       if (boundingBox.page === pageNumber - 1) {
-        locatablesWithBoxes.push({ boundingBox, entity });
+        citationsWithBoxes.push({ boundingBox, citation });
       }
     }
   }
-  return locatablesWithBoxes;
-}
-
-interface BoxEntityPair<T extends Locatable> {
-  entity: T;
-  boundingBox: BoundingBox;
+  return citationsWithBoxes;
 }

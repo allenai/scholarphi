@@ -2,7 +2,13 @@
  * Container for paper clipping.
  */
 .paper-clipping {
-  width: 500px;
+  width: @paper-clipping-width;
   height: 200px;
-  overflow: scroll;
+  margin: @padding;
+  border: @border-width @border-color solid;
+  border-radius: @border-radius;
+  /**
+   * Set to 'auto' if you want users to be able to scroll.
+   */
+  overflow: hidden;
 }

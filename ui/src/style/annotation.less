@@ -5,14 +5,17 @@
   position: absolute;
 }
 
+.scholar-reader-annotation {
+  border-bottom: @underline-width @underline-color solid;
+}
+
 /**
  * Highlight over citations.
  */
 .scholar-reader-annotation {
-  background-color: @highlight-color;
-  opacity: @highlight-opacity;
-
   &:hover {
     opacity: @highlight-hover-opacity;
+    background-color: @highlight-color;
+    cursor: pointer;
   }
 }
