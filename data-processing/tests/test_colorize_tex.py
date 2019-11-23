@@ -1,13 +1,16 @@
 import re
 
-from explanations.colorize_tex import (COLOR_MACRO_TEX, add_color_macros,
-                                       colorize_citations,
-                                       colorize_equation_tokens,
-                                       colorize_equations)
+from explanations.colorize_tex import (
+    COLOR_MACRO_TEX,
+    add_color_macros,
+    colorize_citations,
+    colorize_equation_tokens,
+    colorize_equations,
+)
 from explanations.types import TokenWithOrigin
 
 COLOR_PATTERN = (
-    r"\\llap{\\scholarsetcolor{[0-9.]+,[0-9.]+,[0-9.]+}}"
+    r"\\llap{\\scholarsetcolor\[rgb\]{[0-9.]+,[0-9.]+,[0-9.]+}}"
     + r"(.*?)"
     + r"\\llap{\\scholarrevertcolor}"
 )
