@@ -1,18 +1,15 @@
 import time
-from argparse import ArgumentParser
-from typing import Iterator
+from typing import Iterator, Optional
 
 from explanations.fetch_arxiv import fetch
-from scripts.command import Command
-
-arxiv_id = str
-
+from explanations.types import ArxivId, Path
+from scripts.command import ArxivBatchCommand
 
 """ Time to wait between consecutive requests to arXiv. """
 FETCH_DELAY = 10  # seconds
 
 
-class FetchArxivSources(Command[str, None]):
+class FetchArxivSources(ArxivBatchCommand[str, None]):
     @staticmethod
     def get_name() -> str:
         return "fetch-arxiv-sources"
@@ -21,21 +18,14 @@ class FetchArxivSources(Command[str, None]):
     def get_description() -> str:
         return "Fetch TeX sources for arXiv papers."
 
-    @staticmethod
-    def init_parser(parser: ArgumentParser) -> None:
-        parser.add_argument(
-            "arxiv_ids",
-            help="File containing list of arXiv IDs "
-            + " for which to fetch sources, with one ID per line.",
-        )
+    def get_input_dir(self) -> Optional[Path]:
+        return None
 
-    def load(self) -> Iterator[arxiv_id]:
-        with open(self.args.arxiv_ids) as arxiv_ids_file:
-            for line in arxiv_ids_file:
-                arxivId = line.strip()
-                yield arxivId
+    def load(self) -> Iterator[ArxivId]:
+        for arxiv_id in self.arxiv_ids:
+            yield arxiv_id
 
-    def process(self, item: arxiv_id) -> Iterator[None]:
+    def process(self, item: ArxivId) -> Iterator[None]:
         fetch(item)
         # This method of delaying fetches assumes that calls to 'process' will be made sequentially
         # and not in parallel. Delay mechanisms will need to be more sophisticated if we transition
@@ -43,5 +33,5 @@ class FetchArxivSources(Command[str, None]):
         time.sleep(FETCH_DELAY)
         yield None
 
-    def save(self, item: arxiv_id, result: None) -> None:
+    def save(self, item: ArxivId, result: None) -> None:
         pass
