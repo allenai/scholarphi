@@ -41,8 +41,12 @@ def get_cv2_images(pdf_path: AbsolutePath) -> List[np.ndarray]:
             image.background_color = "white"
             image.alpha_channel = "remove"
 
-            # XXX(andrewhead): For some reason, the width and height dimensions of the PDF get
-            # flipped when the image is loaded into a numpy array. Flip them back.
+            # When calling 'np.array(image)' on Ubuntu Bionic, the code sometimes gets a
+            # segmentation fault. 'export_pixels' seems to not cause this fault.
+            np_image = np.array(image.export_pixels(), dtype='uint8')
+            np_image = np_image.reshape(
+                (image.height, image.width, 4)  # pylint: disable=unsubscriptable-object
+            )
             np_image = np.array(image)
             shape = np_image.shape
             np_image = np_image.reshape(
