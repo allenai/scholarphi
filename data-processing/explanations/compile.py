@@ -9,7 +9,7 @@ from typing import List
 
 from explanations.types import CompilationResult
 
-TEX_CONFIG = "config.ini"
+COMPILE_CONFIG = "config.ini"
 PDF_MESSAGE_PREFIX = b"Generated PDF: "
 PDF_MESSAGE_SUFFIX = b"<end of PDF name>"
 
@@ -43,12 +43,17 @@ def compile_tex(sources_dir: str) -> CompilationResult:
     _set_sources_dir_permissions(sources_dir)
 
     config = configparser.ConfigParser()
-    config.read(TEX_CONFIG)
+    config.read(COMPILE_CONFIG)
     texlive_path = config["tex"]["texlive_path"]
     texlive_bin_path = config["tex"]["texlive_bin_path"]
+    if "perl" in config and "binary" in config["perl"]:
+        perl_binary = config["perl"]["binary"]
+    else:
+        perl_binary = "perl"
 
     result = subprocess.run(
         [
+            perl_binary,
             os.path.join("perl", "compile_tex.pl"),
             sources_dir,
             texlive_path,

@@ -4,7 +4,7 @@ numpy
 opencv-python==3.3.0.10
 peewee
 PyPDF2
-psycopg2
+psycopg2-binary
 reportlab
 requests
 TexSoup
