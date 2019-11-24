@@ -35,8 +35,6 @@ RUN apt-get install -y nodejs
 # Let ImageMagick to read and write PDFs
 RUN sed -i '/pattern="PDF"/s/rights="none"/rights="read | write"/' /etc/ImageMagick-6/policy.xml
 
-WORKDIR /data-processing
-
 # Install pip requireements
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
@@ -48,14 +46,20 @@ RUN source ~/perl5/perlbrew/etc/bashrc \
   && cpanm TeX::AutoTeX
 
 # Install Node.js dependencies
+WORKDIR /data-processing/node
 RUN apt-get install -y git
-COPY node/package*.json node/
-RUN (cd node && npm install)
+COPY node/package*.json ./
+RUN npm install
+# As KaTeX is undegoing rapid changes, install it from sources
+RUN npm install -g yarn
+RUN npm run prepare-katex
+RUN npm run install-katex
 
 # Install vim for when we inevitably want to inspect files
 RUN apt-get install -y vim
 
 # Copy over the source code
+WORKDIR /data-processing
 COPY . .
 
 # Set default Python to Python 3
