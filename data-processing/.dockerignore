@@ -1,5 +1,5 @@
-config.ini
 mypy.ini
 Dockerfile
 node/node_modules
 .vscode
+venv
