@@ -4,6 +4,8 @@
   "description": "Utilies for data mining for the Scholar reading application.",
   "main": "index.js",
   "scripts": {
+    "prepare-katex": "git clone https://github.com/allenai/KaTeX.git && cd KaTeX && git submodule init && git submodule update && yarn && npm link",
+    "install-katex": "npm link katex",
     "build": "tsc -p tsconfig.json",
     "start": "ts-node parse.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,7 +15,6 @@
   "dependencies": {
     "commander": "^3.0.2",
     "fast-csv": "^3.4.0",
-    "katex": "allenai/katex",
     "traverse": "^0.6.6",
     "ts-node": "^8.4.1"
   },
