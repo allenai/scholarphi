@@ -99,7 +99,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                 tokens_dir,
             )
 
-        with open(os.path.join(tokens_dir, "parse_results.json"), "a") as results_file:
+        with open(os.path.join(tokens_dir, "parse_results.csv"), "a") as results_file:
             writer = csv.writer(results_file, quoting=csv.QUOTE_ALL)
             writer.writerow(
                 [
