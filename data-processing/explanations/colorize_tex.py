@@ -6,11 +6,22 @@ from typing import Dict, Iterator, List, NamedTuple, Optional
 
 import numpy as np
 
-from explanations.parse_tex import (CitationExtractor, ColorLinksExtractor,
-                                    DocumentclassExtractor, EquationExtractor,
-                                    TexContents, TexFileName)
-from explanations.types import (ColorizedCitation, ColorizedEquation, Equation,
-                                EquationId, TokenWithOrigin)
+from explanations.parse_tex import (
+    CitationExtractor,
+    ColorLinksExtractor,
+    DocumentclassExtractor,
+    EquationExtractor,
+    TexContents,
+    TexFileName,
+)
+from explanations.types import (
+    CharacterRange,
+    ColorizedCitation,
+    ColorizedEquation,
+    Equation,
+    EquationId,
+    TokenWithOrigin,
+)
 
 """
 All TeX coloring operations follow the same process.
@@ -79,11 +90,6 @@ def insert_color_in_tex(tex: str, hue: float, start: int, end: int) -> str:
         + _get_color_end_tex()
         + tex[end:]
     )
-
-
-class CharacterRange(NamedTuple):
-    start: int
-    end: int
 
 
 def _get_color_start_tex(hue: float) -> str:
@@ -375,14 +381,13 @@ def _colorize_tokens_for_equation(
         except StopIteration:
             break
 
-        token_start = token.start
-        token_start = _adjust_start_coloring_index(token_start, equation.content_tex)
+        color_positions = _get_color_positions(token, equation)
 
         tex = insert_color_in_tex(
             tex,
             hue,
-            equation.content_start + token_start,
-            equation.content_start + token.end,
+            equation.content_start + color_positions.start,
+            equation.content_start + color_positions.end,
         )
         colorized_tokens.append(
             ColorizedTokenWithOrigin(
@@ -399,14 +404,46 @@ def _colorize_tokens_for_equation(
     return TokenEquationColorizationBatch(tex, colorized_tokens)
 
 
-def _adjust_start_coloring_index(index: int, equation: str) -> int:
+def _get_color_positions(token: TokenWithOrigin, equation: Equation) -> CharacterRange:
     """
-    It's invalid to start coloring right after subscript or superscript notation (_, ^, \\sb, \\sp).
-    Instead, coloring commands must appear before the subscript or superscript notation.
+    Sometimes, if you try to insert coloring commands at the boundary of where a symbol appears
+    in TeX, it can cause errors. For example, you can't put coloring commands...
+
+    * Right outside of brackets (e.g., "{x}")
+    * Right after subscripts or superscripts (_, ^, \\sb, \\sp)
+    * Between a dot or a hat and the symbol it modifies (e.g., "\\hat x")
+
+    In the future, we may want to change our TeX equation parser (KaTeX) to yield symbol positions
+    where coloring commands can always be placed on the boundaries of that symbol. For some of the
+    above cases, this would be superior. For example, it could let us detect an r-hat as an r-hat
+    instead of an r.
+    
+    Until we make those changes, this function turns symbol character positions into valid
+    positions for inserting coloring commands.
     """
-    equation_before_color = equation[:index]
-    script_prefix = re.search(r"([_^]|(\\sp)|(\\sb))$", equation_before_color)
+    equation_tex = equation.content_tex
+
+    token_string = equation_tex[token.start : token.end]
+    before_token = equation_tex[: token.start]
+
+    # Adjust color commands to be on the inside of a group denoted by curly braces.
+    if token_string.startswith("{") and token_string.endswith("}"):
+        return CharacterRange(token.start + 1, token.end - 1)
+
+    # If there is an accent (e.g., 'dot' or 'hat') that come before a symbol followed by a space,
+    # color commands must come before the accent.
+    accent_prefix = re.search(r"(\\(dot|hat)\s+)$", before_token)
+    if accent_prefix is not None:
+        accent_start = accent_prefix.start()
+        return CharacterRange(accent_start, token.end)
+
+    # Coloring commands must come before subscript or superscript markers.
+    script_prefix = re.search(r"([_^]|(\\sp)|(\\sb))$", before_token)
     if script_prefix is not None:
-        prefix_length = len(script_prefix.group(0))
-        return index - prefix_length
-    return index
+        prefix_start = script_prefix.start()
+        return CharacterRange(prefix_start, token.end)
+
+    # And coloring commands should never go outside the bounds of the equation.
+    start = max(token.start, 0)
+    end = min(token.end, len(equation_tex))
+    return CharacterRange(start, end)

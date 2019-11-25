@@ -100,6 +100,11 @@ class Character(NamedTuple):
     end: int
 
 
+class CharacterRange(NamedTuple):
+    start: int
+    end: int
+
+
 class TokenWithOrigin(NamedTuple):
     """
     A token and a character are the same thing, it just has two names for historical reasons.
