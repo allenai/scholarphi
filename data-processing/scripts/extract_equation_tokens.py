@@ -129,10 +129,9 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                         )
                     except Exception:  # pylint: disable=broad-except
                         logging.warning(
-                            "Couldn't write row for symbol for arXiv %s: can't be converted to utf-8",
+                            "Couldn't write row for token for arXiv %s: can't be converted to utf-8",
                             item,
                         )
-                        return
 
         if result.symbols is not None and len(result.symbols) > 0:
             with open(
@@ -152,15 +151,22 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                 )
 
                 for symbol_index, symbol in enumerate(result.symbols):
-                    symbols_writer.writerow(
-                        [
-                            result.path,
-                            result.i,
-                            result.equation,
-                            symbol_index,
-                            symbol.mathml,
-                        ]
-                    )
+                    try:
+                        symbols_writer.writerow(
+                            [
+                                result.path,
+                                result.i,
+                                result.equation,
+                                symbol_index,
+                                symbol.mathml,
+                            ]
+                        )
+                    except Exception:  # pylint: disable=broad-except
+                        logging.warning(
+                            "Couldn't write row for symbol for arXiv %s: can't be converted to utf-8",
+                            item,
+                        )
+                        continue
                     for character in symbol.characters:
                         symbol_tokens_writer.writerow(
                             [
