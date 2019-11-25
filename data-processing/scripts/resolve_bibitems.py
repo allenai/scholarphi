@@ -72,6 +72,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, Match]):
                     references_path,
                     arxiv_id,
                 )
+                return
             with open(references_path) as references_file:
                 reader = csv.reader(references_file)
                 for row in reader:
@@ -99,6 +100,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, Match]):
                     bibitems_path,
                     arxiv_id,
                 )
+                return
             with open(bibitems_path, encoding="utf-8") as bibitems_file:
                 reader = csv.reader(bibitems_file)
                 for row in reader:
