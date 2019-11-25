@@ -21,6 +21,7 @@ from explanations.file_utils import (
 from explanations.types import (
     ArxivId,
     CompilationResult,
+    FileContents,
     Path,
     RelativePath,
     TokenWithOrigin,
@@ -31,7 +32,7 @@ from scripts.command import ArxivBatchCommand
 
 class TexAndTokens(NamedTuple):
     arxiv_id: ArxivId
-    tex_contents: Dict[Path, str]
+    tex_contents: Dict[Path, FileContents]
     tokens: List[TokenWithOrigin]
 
 
@@ -102,9 +103,9 @@ class DebugColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, Compilation]):
                 absolute_tex_path = os.path.join(
                     directories.sources(arxiv_id), tex_path
                 )
-                contents = read_file_tolerant(absolute_tex_path)
-                if contents is not None:
-                    contents_by_file[tex_path] = contents
+                file_contents = read_file_tolerant(absolute_tex_path)
+                if file_contents is not None:
+                    contents_by_file[tex_path] = file_contents
 
             yield TexAndTokens(arxiv_id, contents_by_file, tokens)
 
@@ -139,8 +140,10 @@ class DebugColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, Compilation]):
                     colorized_tex,
                 ) in colorization_result.colorized_files.items():
                     full_tex_path = os.path.join(output_sources_path, tex_path)
-                    with open(full_tex_path, "w") as tex_file:
-                        tex_file.write(colorized_tex)
+                    with open(
+                        full_tex_path, "w", encoding=colorized_tex.encoding
+                    ) as tex_file:
+                        tex_file.write(colorized_tex.contents)
 
                 # Compile the colorized files
                 compilation_result = compile_tex(output_sources_path)

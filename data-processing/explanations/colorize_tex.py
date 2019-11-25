@@ -6,12 +6,23 @@ from typing import Dict, Iterator, List, NamedTuple, Optional
 
 import numpy as np
 
-from explanations.parse_tex import (CitationExtractor, ColorLinksExtractor,
-                                    DocumentclassExtractor, EquationExtractor,
-                                    TexContents, TexFileName)
-from explanations.types import (CharacterRange, ColorizedCitation,
-                                ColorizedEquation, Equation, EquationId,
-                                TokenWithOrigin)
+from explanations.parse_tex import (
+    CitationExtractor,
+    ColorLinksExtractor,
+    DocumentclassExtractor,
+    EquationExtractor,
+    TexContents,
+    TexFileName,
+)
+from explanations.types import (
+    CharacterRange,
+    ColorizedCitation,
+    ColorizedEquation,
+    Equation,
+    EquationId,
+    FileContents,
+    TokenWithOrigin,
+)
 
 """
 All TeX coloring operations follow the same process.
@@ -249,7 +260,7 @@ class ColorizedTokenWithOrigin(NamedTuple):
 
 
 class TokenColorizationBatch(NamedTuple):
-    colorized_files: Dict[TexFileName, TexContents]
+    colorized_files: Dict[TexFileName, FileContents]
     colorized_tokens: List[ColorizedTokenWithOrigin]
 
 
@@ -265,7 +276,7 @@ def _get_tokens_for_equation(
 
 
 def colorize_equation_tokens(
-    file_contents: Dict[TexFileName, TexContents],
+    file_contents: Dict[TexFileName, FileContents],
     tokens: List[TokenWithOrigin],
     insert_color_macros: bool = True,
     preset_hue: Optional[float] = None,
@@ -280,7 +291,8 @@ def colorize_equation_tokens(
             tokens_by_equation[equation_id] = []
         tokens_by_equation[equation_id].append(token)
 
-    for tex_filename, tex in file_contents.items():
+    for tex_filename, tex_file_contents in file_contents.items():
+        tex = tex_file_contents.contents
         equation_extractor = EquationExtractor()
         if insert_color_macros:
             tex = add_color_macros(tex)
@@ -296,11 +308,11 @@ def colorize_equation_tokens(
     more_batches = True
     while more_batches:
 
-        colorized_files: Dict[TexFileName, TexContents] = {}
+        colorized_files: Dict[TexFileName, FileContents] = {}
         colorized_tokens = []
 
-        for tex_filename, tex in file_contents.items():
-            colorized_tex = tex
+        for tex_filename, tex_file_contents in file_contents.items():
+            colorized_tex = tex_file_contents.contents
             if insert_color_macros:
                 colorized_tex = add_color_macros(colorized_tex)
 
@@ -322,7 +334,9 @@ def colorize_equation_tokens(
                     )
                     colorized_tokens.extend(colorized_tokens_for_equation)
 
-            colorized_files[tex_filename] = colorized_tex
+            colorized_files[tex_filename] = FileContents(
+                tex_file_contents.path, colorized_tex, tex_file_contents.encoding
+            )
 
         # If some tokens were colorized...
         if len(colorized_tokens) > 0:

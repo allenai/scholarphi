@@ -1,12 +1,13 @@
 import logging
-from typing import Dict, Iterable, List, NamedTuple, Set
+from typing import Dict, Iterable, List, NamedTuple, Set, Tuple
 
-from explanations.parse_tex import EquationExtractor, TexContents, TexFileName
+from explanations.parse_tex import EquationExtractor, TexFileName
 from explanations.types import (
     Character,
     CharacterId,
     Equation,
     EquationId,
+    FileContents,
     RelativePath,
     Symbol,
     SymbolId,
@@ -19,7 +20,8 @@ CharacterDict = Dict[CharacterId, Character]
 
 class AnnotatedFile(NamedTuple):
     tex_path: RelativePath
-    annotated_tex: str
+    contents: str
+    encoding: str
     symbol_tex: Iterable[str]
 
 
@@ -40,24 +42,26 @@ SYMBOL_END = "<</symbol>>"
 
 
 def annotate_symbols_and_equations(
-    file_contents: Dict[TexFileName, TexContents],
+    file_contents: Dict[TexFileName, FileContents],
     symbols: SymbolDict,
     characters: CharacterDict,
 ) -> List[AnnotatedFile]:
 
     annotated_files: List[AnnotatedFile] = []
     for tex_path, tex in file_contents.items():
-        annotated_file = annotate_symbols_and_equations_for_file(
-            tex, tex_path, symbols, characters
+        annotated_contents, symbol_tex = annotate_symbols_and_equations_for_file(
+            tex.contents, tex_path, symbols, characters
         )
-        annotated_files.append(annotated_file)
+        annotated_files.append(
+            AnnotatedFile(tex_path, annotated_contents, tex.encoding, symbol_tex)
+        )
 
     return annotated_files
 
 
 def annotate_symbols_and_equations_for_file(
     tex: str, tex_path: RelativePath, symbols: SymbolDict, characters: CharacterDict
-) -> AnnotatedFile:
+) -> Tuple[str, Set[str]]:
 
     # Extract all equations
     equation_extractor = EquationExtractor()
@@ -89,7 +93,7 @@ def annotate_symbols_and_equations_for_file(
             annotated_tex[:position] + annotation.text + annotated_tex[position:]
         )
 
-    return AnnotatedFile(tex_path, annotated_tex, symbol_tex)
+    return annotated_tex, symbol_tex
 
 
 def _create_annotations_for_equation(

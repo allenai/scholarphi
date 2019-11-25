@@ -11,12 +11,19 @@ RelativePath = str
 
 
 class FileContents(NamedTuple):
-    arxiv_id: ArxivId
     """
-    Absolute path to the TeX file.
+    Relative or absolute; depends on the path passed in for file reading.
     """
-    path: str
+
+    path: Path
+    """
+    Contents of the file.
+    """
     contents: str
+    """
+    Character encoding of the file.
+    """
+    encoding: str
 
 
 class CompilationResult(NamedTuple):
