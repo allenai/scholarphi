@@ -173,7 +173,7 @@ def test_color_inside_brackets():
         TokenWithOrigin(
             tex_path="file",
             equation_index=0,
-            equation="${x}$",
+            equation="{x}",
             token_index=0,
             start=0,
             end=3,

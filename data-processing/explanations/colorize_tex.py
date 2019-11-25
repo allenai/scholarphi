@@ -6,22 +6,12 @@ from typing import Dict, Iterator, List, NamedTuple, Optional
 
 import numpy as np
 
-from explanations.parse_tex import (
-    CitationExtractor,
-    ColorLinksExtractor,
-    DocumentclassExtractor,
-    EquationExtractor,
-    TexContents,
-    TexFileName,
-)
-from explanations.types import (
-    CharacterRange,
-    ColorizedCitation,
-    ColorizedEquation,
-    Equation,
-    EquationId,
-    TokenWithOrigin,
-)
+from explanations.parse_tex import (CitationExtractor, ColorLinksExtractor,
+                                    DocumentclassExtractor, EquationExtractor,
+                                    TexContents, TexFileName)
+from explanations.types import (CharacterRange, ColorizedCitation,
+                                ColorizedEquation, Equation, EquationId,
+                                TokenWithOrigin)
 
 """
 All TeX coloring operations follow the same process.
@@ -292,6 +282,8 @@ def colorize_equation_tokens(
 
     for tex_filename, tex in file_contents.items():
         equation_extractor = EquationExtractor()
+        if insert_color_macros:
+            tex = add_color_macros(tex)
         equations = list(equation_extractor.parse(tex))
         equations_by_file[tex_filename] = equations
 
