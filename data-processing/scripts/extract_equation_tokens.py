@@ -101,15 +101,21 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
 
         with open(os.path.join(tokens_dir, "parse_results.csv"), "a") as results_file:
             writer = csv.writer(results_file, quoting=csv.QUOTE_ALL)
-            writer.writerow(
-                [
-                    result.path,
-                    result.i,
-                    result.equation,
-                    result.success,
-                    result.errorMessage,
-                ]
-            )
+            try:
+                writer.writerow(
+                    [
+                        result.path,
+                        result.i,
+                        result.equation,
+                        result.success,
+                        result.errorMessage,
+                    ]
+                )
+            except Exception:  # pylint: disable=broad-except
+                logging.warning(
+                    "Couldn't write parse results for arXiv %s: can't be converted to utf-8",
+                    item,
+                )
 
         if result.characters is not None and len(result.characters) > 0:
             with open(os.path.join(tokens_dir, "tokens.csv"), "a") as tokens_file:
