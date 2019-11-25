@@ -1,4 +1,6 @@
 import MuiDrawer from "@material-ui/core/Drawer";
+import IconButton from "@material-ui/core/IconButton";
+import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import React from "react";
 import SearchResults from "./SearchResults";
 import * as selectors from "./selectors";
@@ -34,7 +36,7 @@ export class Drawer extends React.Component {
 
     return (
       <ScholarReaderContext.Consumer>
-        {({ openDrawer, selectedSymbol, symbols, mathMl }) => {
+        {({ openDrawer, setOpenDrawer, selectedSymbol, symbols, mathMl }) => {
           return (
             <MuiDrawer
               className="drawer"
@@ -42,6 +44,11 @@ export class Drawer extends React.Component {
               anchor="right"
               open={openDrawer}
             >
+              <div className="drawer__header">
+                <IconButton onClick={() => setOpenDrawer(false)}>
+                  <ChevronRightIcon />
+                </IconButton>
+              </div>
               <div>
                 {selectedSymbol !== null && (
                   <SearchResults
@@ -50,7 +57,7 @@ export class Drawer extends React.Component {
                       [...symbols],
                       [...mathMl]
                     )}
-                    pageSize={10}
+                    pageSize={5}
                   />
                 )}
               </div>

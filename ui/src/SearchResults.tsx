@@ -47,9 +47,7 @@ export class SearchResults extends React.Component<
   render() {
     const startIndex = this.state.pageNumber * this.props.pageSize;
     const endIndex = (this.state.pageNumber + 1) * this.props.pageSize;
-    const numPages = Math.floor(
-      this.props.results.length / this.props.pageSize
-    );
+    const numPages = Math.ceil(this.props.results.length / this.props.pageSize);
     return (
       <div className="search-results">
         <ScholarReaderContext.Consumer>
