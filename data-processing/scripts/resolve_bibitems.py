@@ -66,6 +66,12 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, Match]):
             references = []
 
             references_path = os.path.join(metadata_dir, "references.csv")
+            if not os.path.exists(references_path):
+                logging.warning(
+                    "Could not find %s, skipping reference resolution for paper %s",
+                    references_path,
+                    arxiv_id,
+                )
             with open(references_path) as references_file:
                 reader = csv.reader(references_file)
                 for row in reader:
@@ -87,6 +93,12 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, Match]):
             bibitems = []
 
             bibitems_path = os.path.join(bibitems_dir, "bibitems.csv")
+            if not os.path.exists(bibitems_path):
+                logging.warning(
+                    "Could not find %s, skipping reference resolution for paper %s",
+                    bibitems_path,
+                    arxiv_id,
+                )
             with open(bibitems_path, encoding="utf-8") as bibitems_file:
                 reader = csv.reader(bibitems_file)
                 for row in reader:
