@@ -87,7 +87,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, Match]):
             bibitems = []
 
             bibitems_path = os.path.join(bibitems_dir, "bibitems.csv")
-            with open(bibitems_path) as bibitems_file:
+            with open(bibitems_path, encoding="utf-8") as bibitems_file:
                 reader = csv.reader(bibitems_file)
                 for row in reader:
                     bibitems.append(Bibitem(key=row[0], text=row[1]))

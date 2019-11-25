@@ -1,16 +1,8 @@
 import configparser
 
-from peewee import (
-    CharField,
-    CompositeKey,
-    DateTimeField,
-    FloatField,
-    ForeignKeyField,
-    IntegerField,
-    Model,
-    PostgresqlDatabase,
-    TextField,
-)
+from peewee import (CharField, CompositeKey, DateTimeField, FloatField,
+                    ForeignKeyField, IntegerField, Model, PostgresqlDatabase,
+                    TextField)
 
 DATABASE_CONFIG = "config.ini"
 
@@ -63,7 +55,7 @@ class Paper(OutputModel):
 
 
 class Summary(OutputModel):
-    paper = ForeignKeyField(Paper)
+    paper = ForeignKeyField(Paper, on_delete="CASCADE")
     title = TextField()
     authors = TextField()
     doi = TextField(null=True)
@@ -76,12 +68,12 @@ class Summary(OutputModel):
 
 
 class Citation(OutputModel):
-    paper = ForeignKeyField(Paper)
+    paper = ForeignKeyField(Paper, on_delete="CASCADE")
 
 
 class CitationPaper(OutputModel):
-    citation = ForeignKeyField(Citation)
-    paper = ForeignKeyField(Paper)
+    citation = ForeignKeyField(Citation, on_delete="CASCADE")
+    paper = ForeignKeyField(Paper, on_delete="CASCADE")
 
     class Meta:
         primary_key = CompositeKey("citation", "paper")
@@ -96,15 +88,15 @@ class MathMlMatch(OutputModel):
     A search result for a MathML equation for a paper.
     """
 
-    paper = ForeignKeyField(Paper)
-    mathml = ForeignKeyField(MathMl)
-    match = ForeignKeyField(MathMl)
+    paper = ForeignKeyField(Paper, on_delete="CASCADE")
+    mathml = ForeignKeyField(MathMl, on_delete="CASCADE")
+    match = ForeignKeyField(MathMl, on_delete="CASCADE")
     rank = IntegerField(index=True)
 
 
 class Symbol(OutputModel):
-    paper = ForeignKeyField(Paper)
-    mathml = ForeignKeyField(MathMl)
+    paper = ForeignKeyField(Paper, on_delete="CASCADE")
+    mathml = ForeignKeyField(MathMl, on_delete="CASCADE")
 
 
 class SymbolChild(OutputModel):
@@ -114,8 +106,8 @@ class SymbolChild(OutputModel):
     a maximum of one parent.
     """
 
-    parent = ForeignKeyField(Symbol)
-    child = ForeignKeyField(Symbol)
+    parent = ForeignKeyField(Symbol, on_delete="CASCADE")
+    child = ForeignKeyField(Symbol, on_delete="CASCADE")
 
     class Meta:
         primary_key = CompositeKey("parent", "child")
@@ -139,8 +131,8 @@ class BoundingBox(OutputModel):
 
 
 class EntityBoundingBox(OutputModel):
-    entity = ForeignKeyField(Entity)
-    bounding_box = ForeignKeyField(BoundingBox)
+    entity = ForeignKeyField(Entity, on_delete="CASCADE")
+    bounding_box = ForeignKeyField(BoundingBox, on_delete="CASCADE")
 
     class Meta:
         primary_key = CompositeKey("entity", "bounding_box")
