@@ -3,6 +3,7 @@ import configparser
 from peewee import (
     CharField,
     CompositeKey,
+    DateTimeField,
     FloatField,
     ForeignKeyField,
     IntegerField,
@@ -16,33 +17,52 @@ DATABASE_CONFIG = "config.ini"
 
 config = configparser.ConfigParser()
 config.read(DATABASE_CONFIG)
-db_name = config["postgres"]["db_name"]
-postgres_user = config["postgres"]["user"]
-postgres_password = config["postgres"]["password"]
-postgres_host = config["postgres"]["host"]
-postgres_port = config["postgres"]["port"]
 
 
-database = PostgresqlDatabase(
-    db_name,
-    user=postgres_user,
-    password=postgres_password,
-    host=postgres_host,
-    port=postgres_port,
-)
+def init_database(
+    conf: configparser.ConfigParser, config_section: str
+) -> PostgresqlDatabase:
+    db_name = conf[config_section]["db_name"]
+    user = conf[config_section]["user"]
+    password = conf[config_section]["password"]
+    host = conf[config_section]["host"]
+    port = conf[config_section]["port"]
+    return PostgresqlDatabase(
+        db_name, user=user, password=password, host=host, port=port
+    )
 
 
-class DatabaseModel(Model):  # type: ignore
+input_database = init_database(config, "input-db")
+output_database = init_database(config, "output-db")
+
+
+class InputModel(Model):  # type: ignore
+    """
+    Input models are read but never written. These specifications of input models in this file
+    only need to define the fields we want to read, and they may not be a complete specification
+    of the table (i.e. they might leave out indexes or columns).
+    """
+
     class Meta:
-        database = database
+        database = input_database
 
 
-class Paper(DatabaseModel):
+class Metadata(InputModel):
+    metadata_id = TextField()
+    created_ts = DateTimeField()
+
+
+class OutputModel(Model):  # type: ignore
+    class Meta:
+        database = output_database
+
+
+class Paper(OutputModel):
     s2_id = CharField(primary_key=True)
     arxiv_id = CharField(index=True, null=True)
 
 
-class Summary(DatabaseModel):
+class Summary(OutputModel):
     paper = ForeignKeyField(Paper)
     title = TextField()
     authors = TextField()
@@ -55,11 +75,11 @@ class Summary(DatabaseModel):
     abstract = TextField(null=True)
 
 
-class Citation(DatabaseModel):
+class Citation(OutputModel):
     paper = ForeignKeyField(Paper)
 
 
-class CitationPaper(DatabaseModel):
+class CitationPaper(OutputModel):
     citation = ForeignKeyField(Citation)
     paper = ForeignKeyField(Paper)
 
@@ -67,11 +87,11 @@ class CitationPaper(DatabaseModel):
         primary_key = CompositeKey("citation", "paper")
 
 
-class MathMl(DatabaseModel):
+class MathMl(OutputModel):
     mathml = TextField(unique=True, index=True)
 
 
-class MathMlMatch(DatabaseModel):
+class MathMlMatch(OutputModel):
     """
     A search result for a MathML equation for a paper.
     """
@@ -82,12 +102,12 @@ class MathMlMatch(DatabaseModel):
     rank = IntegerField(index=True)
 
 
-class Symbol(DatabaseModel):
+class Symbol(OutputModel):
     paper = ForeignKeyField(Paper)
     mathml = ForeignKeyField(MathMl)
 
 
-class SymbolChild(DatabaseModel):
+class SymbolChild(OutputModel):
     """
     Some symbols are parents of other symbols. This has implications for interaction (i.e.
     a user may want to double click a child symbol to select the parent.) Any symbol will have
@@ -101,12 +121,12 @@ class SymbolChild(DatabaseModel):
         primary_key = CompositeKey("parent", "child")
 
 
-class Entity(DatabaseModel):
+class Entity(OutputModel):
     type = TextField(choices=((1, "citation"), (2, "symbol")))
     entity_id = IntegerField(index=True)
 
 
-class BoundingBox(DatabaseModel):
+class BoundingBox(OutputModel):
     """
     Expressed in PDF coordinates.
     """
@@ -118,7 +138,7 @@ class BoundingBox(DatabaseModel):
     height = FloatField()
 
 
-class EntityBoundingBox(DatabaseModel):
+class EntityBoundingBox(OutputModel):
     entity = ForeignKeyField(Entity)
     bounding_box = ForeignKeyField(BoundingBox)
 
@@ -130,7 +150,7 @@ def create_tables() -> None:
     """
     Initialize any tables that haven't yet been created.
     """
-    database.create_tables(
+    output_database.create_tables(
         [
             Paper,
             Summary,

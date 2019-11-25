@@ -9,7 +9,7 @@ from scripts.command import ArxivBatchCommand
 FETCH_DELAY = 10  # seconds
 
 
-class FetchArxivSources(ArxivBatchCommand[str, None]):
+class FetchArxivSources(ArxivBatchCommand[ArxivId, None]):
     @staticmethod
     def get_name() -> str:
         return "fetch-arxiv-sources"

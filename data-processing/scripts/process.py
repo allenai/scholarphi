@@ -1,6 +1,6 @@
 import argparse
 import logging
-from typing import List
+from typing import Any, List
 
 from scripts.annotate_pdfs import (
     AnnotatePdfsWithCitationBoxes,
@@ -11,6 +11,7 @@ from scripts.annotate_symbols import AnnotateTexWithSymbolMarkers
 from scripts.colorize_citations import ColorizeCitations
 from scripts.colorize_equation_tokens import ColorizeEquationTokens
 from scripts.colorize_equations import ColorizeEquations
+from scripts.command import Command
 from scripts.compile_tex import (
     CompileTexSources,
     CompileTexSourcesWithColorizedCitations,
@@ -27,6 +28,7 @@ from scripts.extract_bibitems import ExtractBibitems
 from scripts.extract_equation_tokens import ExtractSymbols
 from scripts.extract_equations import ExtractEquations
 from scripts.fetch_arxiv_sources import FetchArxivSources
+from scripts.fetch_new_arxiv_ids import FetchNewArxivIds
 from scripts.fetch_s2_data import FetchS2Metadata
 from scripts.find_symbol_matches import FindSymbolMatches
 from scripts.locate_hues import (
@@ -46,18 +48,26 @@ from scripts.unpack_sources import UnpackSources
 from scripts.upload_citations import UploadCitations
 from scripts.upload_symbols import UploadSymbols
 
-command_classes: List = [  # type: ignore
-    # Data processing commands
+PREPARATION_COMMANDS: List = [  # type: ignore
+    FetchNewArxivIds,
+]
+
+"""
+All of the main pipeline commands are batch commands that can be run on a set of arXiv IDs. The
+sequence here is the recommended sequence of running the commands if you are batch processing all
+entities in a set of papers.
+"""
+MAIN_PIPELINE_COMMANDS: List = [  # type: ignore
     FetchArxivSources,
     FetchS2Metadata,
     UnpackSources,
     ExtractBibitems,
     ResolveBibitems,
-    ExtractEquations,
-    ExtractSymbols,
     FindSymbolMatches,
     ColorizeCitations,
     ColorizeEquations,
+    ExtractEquations,
+    ExtractSymbols,
     ColorizeEquationTokens,
     CompileTexSources,
     CompileTexSourcesWithColorizedCitations,
@@ -76,13 +86,17 @@ command_classes: List = [  # type: ignore
     LocateSymbols,
     UploadCitations,
     UploadSymbols,
-    # Debugging commands
+]
+
+DEBUG_COMMANDS: List = [  # type: ignore
     DebugColorizeEquationTokens,
     AnnotatePdfsWithCitationBoxes,
     AnnotatePdfsWithEquationBoxes,
     AnnotatePdfsWithEquationTokenBoxes,
     AnnotateTexWithSymbolMarkers,
 ]
+
+ALL_COMMANDS = PREPARATION_COMMANDS + MAIN_PIPELINE_COMMANDS + DEBUG_COMMANDS
 
 
 if __name__ == "__main__":
@@ -91,7 +105,7 @@ if __name__ == "__main__":
     parser.add_argument("-v", help="print debugging information", action="store_true")
     subparsers = parser.add_subparsers(help="data processing commands")
 
-    for CommandClass in command_classes:
+    for CommandClass in ALL_COMMANDS:
         command_parser = subparsers.add_parser(
             CommandClass.get_name(), help=CommandClass.get_description()
         )
@@ -108,6 +122,10 @@ if __name__ == "__main__":
 
     CommandClass = args.command_class
     command = CommandClass(args)
-    for item in command.load():
-        for result in command.process(item):
-            command.save(item, result)
+    run_command(command)
+
+
+def run_command(cmd: Command[Any, Any]) -> None:
+    for item in cmd.load():
+        for result in cmd.process(item):
+            cmd.save(item, result)

@@ -6,6 +6,7 @@ from explanations.types import AbsolutePath, RelativePath
 DATA_DIR = "data"
 
 # Main directories for processing papers
+ARXIV_IDS_DIR = os.path.join(DATA_DIR, "00-arxiv-ids")
 SOURCE_ARCHIVES_DIR = os.path.join(DATA_DIR, "01-sources-archives")
 S2_METADATA_DIR = os.path.join(DATA_DIR, "02-s2-metadata")
 SOURCES_DIR = os.path.join(DATA_DIR, "03-sources")
@@ -71,8 +72,12 @@ ANNOTATED_PDFS_WITH_EQUATION_BOXES_DIR = os.path.join(
 ANNOTATED_PDFS_WITH_EQUATION_TOKEN_BOXES_DIR = os.path.join(
     DATA_DIR, "29-annotated-pdfs-with-equation-token-boxes"
 )
-SOURCES_WITH_ANNOTATED_SYMBOLS_DIR = os.path.join(DATA_DIR, "30-sources-with-annotated-symbols")
-ERRORS_FROM_COLORIZING_EQUATION_TOKENS_DIR = os.path.join(DATA_DIR, "31-errors-from-colorizing-equation-tokens")
+SOURCES_WITH_ANNOTATED_SYMBOLS_DIR = os.path.join(
+    DATA_DIR, "30-sources-with-annotated-symbols"
+)
+ERRORS_FROM_COLORIZING_EQUATION_TOKENS_DIR = os.path.join(
+    DATA_DIR, "31-errors-from-colorizing-equation-tokens"
+)
 
 # Directories for utilities
 NODE_DIRECTORY = "node"
@@ -129,6 +134,10 @@ def get_arxiv_id_iteration_path(arxiv_id: str, iteration: str) -> RelativePath:
 def get_iteration_id(tex_path: str, iteration: int) -> RelativePath:
     escaped_tex_path = escape_slashes(tex_path)
     return f"{escaped_tex_path}-iteration-{iteration}"
+
+
+def arxiv_ids(arxiv_id: str) -> RelativePath:
+    return get_data_subdirectory_for_arxiv_id(ARXIV_IDS_DIR, arxiv_id)
 
 
 def source_archives(arxiv_id: str) -> RelativePath:
