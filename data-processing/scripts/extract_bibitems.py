@@ -44,6 +44,6 @@ class ExtractBibitems(ArxivBatchCommand[FileContents, Bibitem]):
         if not os.path.exists(results_dir):
             os.makedirs(results_dir)
         results_path = os.path.join(results_dir, "bibitems.csv")
-        with open(results_path, "a") as results_file:
+        with open(results_path, "a", encoding="utf-8") as results_file:
             writer = csv.writer(results_file, quoting=csv.QUOTE_ALL)
             writer.writerow([result.key, result.text])
