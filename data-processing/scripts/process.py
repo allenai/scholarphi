@@ -99,6 +99,12 @@ DEBUG_COMMANDS: List = [  # type: ignore
 ALL_COMMANDS = PREPARATION_COMMANDS + MAIN_PIPELINE_COMMANDS + DEBUG_COMMANDS
 
 
+def run_command(cmd: Command[Any, Any]) -> None:
+    for item in cmd.load():
+        for result in cmd.process(item):
+            cmd.save(item, result)
+
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Process arXiv papers.")
@@ -123,9 +129,3 @@ if __name__ == "__main__":
     CommandClass = args.command_class
     command = CommandClass(args)
     run_command(command)
-
-
-def run_command(cmd: Command[Any, Any]) -> None:
-    for item in cmd.load():
-        for result in cmd.process(item):
-            cmd.save(item, result)
