@@ -135,6 +135,86 @@ def test_color_tokens():
     assert matches[1] == "y"
 
 
+def test_color_hats_dots():
+    file_contents = {"file": "$\\hat x + \\dot  y$"}
+    tokens = [
+        TokenWithOrigin(
+            tex_path="file",
+            equation_index=0,
+            equation="$\\hat x + \\dot  y$",
+            token_index=0,
+            start=5,
+            end=6,
+            text="x",
+        ),
+        TokenWithOrigin(
+            tex_path="file",
+            equation_index=0,
+            equation="$\\hat x + \\dot  y$",
+            token_index=1,
+            start=15,
+            end=16,
+            text="y",
+        ),
+    ]
+    colorized_files, _ = next(
+        colorize_equation_tokens(file_contents, tokens, insert_color_macros=False)
+    )
+    colorized = colorized_files["file"]
+    matches = re.findall(COLOR_PATTERN, colorized)
+    assert len(matches) == 2
+    assert matches[0] == "\\hat x"
+    assert matches[1] == "\\dot  y"
+
+
+def test_color_inside_brackets():
+    file_contents = {"file": "${x}$"}
+    tokens = [
+        TokenWithOrigin(
+            tex_path="file",
+            equation_index=0,
+            equation="${x}$",
+            token_index=0,
+            start=0,
+            end=3,
+            text="x",
+        )
+    ]
+    colorized_files, _ = next(
+        colorize_equation_tokens(file_contents, tokens, insert_color_macros=False)
+    )
+    colorized = colorized_files["file"]
+    matches = re.findall(COLOR_PATTERN, colorized)
+    assert len(matches) == 1
+    assert matches[0] != "{x}"
+    assert matches[0] == "x"
+
+
+def test_adjust_indexes_to_within_bounds():
+    file_contents = {"file": "$x$ ignore text after"}
+    tokens = [
+        TokenWithOrigin(
+            tex_path="file",
+            equation_index=0,
+            equation="$x$",
+            token_index=0,
+            start=0,
+            # For reasons I don't yet know, KaTeX sometimes returns character indexes that are
+            # outside the equation. This will result in coloring bleeding over the edges of
+            # equations into the surrounding text, and sometimes TeX compilation errors.
+            end=10,
+            text="x",
+        )
+    ]
+    colorized_files, _ = next(
+        colorize_equation_tokens(file_contents, tokens, insert_color_macros=False)
+    )
+    colorized = colorized_files["file"]
+    matches = re.findall(COLOR_PATTERN, colorized)
+    assert len(matches) == 1
+    assert matches[0] == "x"
+
+
 def test_color_subscripts():
     file_contents = {"file": "$x_i x^i x\\sp1 x\\sb1$"}
     tokens = [
