@@ -94,12 +94,18 @@ class ColorizeEquations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
             with open(hues_path, "a") as hues_file:
                 writer = csv.writer(hues_file, quoting=csv.QUOTE_ALL)
                 for colorized_equation in colorized_equations:
-                    writer.writerow(
-                        [
-                            item.tex_path,
-                            colorized_equation.i,
-                            iteration_id,
-                            colorized_equation.hue,
-                            colorized_equation.tex,
-                        ]
-                    )
+                    try:
+                        writer.writerow(
+                            [
+                                item.tex_path,
+                                colorized_equation.i,
+                                iteration_id,
+                                colorized_equation.hue,
+                                colorized_equation.tex,
+                            ]
+                        )
+                    except Exception:  # pylint: disable=broad-except
+                        logging.warning(
+                            "Couldn't write row for equation for arXiv %s: can't be converted to utf-8",
+                            item.arxiv_id,
+                        )

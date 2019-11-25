@@ -6,13 +6,19 @@ from typing import Iterator, List, NamedTuple
 
 from explanations import directories
 from explanations.colorize_tex import colorize_citations
-from explanations.directories import (get_data_subdirectory_for_arxiv_id,
-                                      get_data_subdirectory_for_iteration,
-                                      get_iteration_id)
-from explanations.file_utils import (clean_directory, find_files,
-                                     read_file_tolerant)
-from explanations.types import (ArxivId, ColorizedCitation, FileContents, Path,
-                                RelativePath)
+from explanations.directories import (
+    get_data_subdirectory_for_arxiv_id,
+    get_data_subdirectory_for_iteration,
+    get_iteration_id,
+)
+from explanations.file_utils import clean_directory, find_files, read_file_tolerant
+from explanations.types import (
+    ArxivId,
+    ColorizedCitation,
+    FileContents,
+    Path,
+    RelativePath,
+)
 from explanations.unpack import unpack
 from scripts.command import ArxivBatchCommand
 
@@ -89,11 +95,22 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
             with open(hues_path, "a") as hues_file:
                 writer = csv.writer(hues_file, quoting=csv.QUOTE_ALL)
                 for colorized_citation in colorized_citations:
-                    writer.writerow(
-                        [
-                            item.tex_path,
-                            iteration_id,
-                            colorized_citation.hue,
-                            json.dumps(colorized_citation.keys),
-                        ]
-                    )
+                    # TODO(andrewhead): It might be better to save this CSV data with the same
+                    # encoding as the file the TeX was read from, for the citations, for the
+                    # equations, and for the symbols. There might be some gotchas for character
+                    # positions not lining up between the ones we save using Unicode here and the
+                    # positions in the intended encoding in the original files.
+                    try:
+                        writer.writerow(
+                            [
+                                item.tex_path,
+                                iteration_id,
+                                colorized_citation.hue,
+                                json.dumps(colorized_citation.keys),
+                            ]
+                        )
+                    except Exception:  # pylint: disable=broad-except
+                        logging.warning(
+                            "Couldn't write row for citation for arXiv %s: can't be converted to utf-8",
+                            item.arxiv_id,
+                        )
