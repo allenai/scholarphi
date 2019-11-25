@@ -145,35 +145,42 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                 )
 
                 for symbol_index, symbol in enumerate(result.symbols):
-                    symbols_writer.writerow(
-                        [
-                            result.path,
-                            result.i,
-                            result.equation,
-                            symbol_index,
-                            symbol.mathml,
-                        ]
-                    )
-                    for character in symbol.characters:
-                        symbol_tokens_writer.writerow(
+                    try:
+                        symbols_writer.writerow(
                             [
                                 result.path,
                                 result.i,
                                 result.equation,
                                 symbol_index,
-                                character,
+                                symbol.mathml,
                             ]
                         )
-                    for child in symbol.children:
-                        symbol_children_writer.writerow(
-                            [
-                                result.path,
-                                result.i,
-                                result.equation,
-                                symbol_index,
-                                result.symbols.index(child),
-                            ]
+                    except Exception:  # pylint: disable=broad-except
+                        logging.warning(
+                            "Couldn't write row for symbol for arXiv %s: can't be converted to utf-8",
+                            item,
                         )
+                    else:
+                        for character in symbol.characters:
+                            symbol_tokens_writer.writerow(
+                                [
+                                    result.path,
+                                    result.i,
+                                    result.equation,
+                                    symbol_index,
+                                    character,
+                                ]
+                            )
+                        for child in symbol.children:
+                            symbol_children_writer.writerow(
+                                [
+                                    result.path,
+                                    result.i,
+                                    result.equation,
+                                    symbol_index,
+                                    result.symbols.index(child),
+                                ]
+                            )
 
 
 def _get_symbol_data(stdout: str) -> Iterator[SymbolData]:
