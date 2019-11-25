@@ -6,13 +6,21 @@ from typing import Dict, Iterator, List, NamedTuple
 import explanations.directories as directories
 from explanations.file_utils import load_symbols
 from explanations.s2_data import get_s2_id
-from explanations.types import (ArxivId, Match, Matches, MathML, Path,
-                                PdfBoundingBox, SymbolId, SymbolWithId)
+from explanations.types import (
+    ArxivId,
+    Match,
+    Matches,
+    MathML,
+    Path,
+    PdfBoundingBox,
+    SymbolId,
+    SymbolWithId,
+)
 from models.models import BoundingBox, Entity, EntityBoundingBox
 from models.models import MathMl as MathMlModel
 from models.models import MathMlMatch, Paper
 from models.models import Symbol as SymbolModel
-from models.models import SymbolChild, create_tables, database
+from models.models import SymbolChild, create_tables, output_database
 from scripts.command import ArxivBatchCommand
 
 S2Id = str
@@ -151,7 +159,7 @@ class UploadSymbols(ArxivBatchCommand[SymbolData, None]):
                         rank=match.rank,
                     )
                 )
-        with database.atomic():
+        with output_database.atomic():
             MathMlMatch.bulk_create(mathml_match_models, 200)
 
         # Create all symbols in bulk. This lets us resolve their IDs before we start referring to
@@ -167,7 +175,7 @@ class UploadSymbols(ArxivBatchCommand[SymbolData, None]):
             symbol_models[symbol_id] = symbol_model
             symbol_models_by_symbol_object_id[id(symbol)] = symbol_model
 
-        with database.atomic():
+        with output_database.atomic():
             SymbolModel.bulk_create(symbol_models.values(), 300)
 
         # Upload bounding boxes for symbols. 'bulk_create' must have already been called on the
@@ -198,11 +206,11 @@ class UploadSymbols(ArxivBatchCommand[SymbolData, None]):
                 )
                 entity_bounding_boxes.append(entity_bounding_box)
 
-        with database.atomic():
+        with output_database.atomic():
             BoundingBox.bulk_create(bounding_boxes, 100)
-        with database.atomic():
+        with output_database.atomic():
             Entity.bulk_create(entities, 300)
-        with database.atomic():
+        with output_database.atomic():
             EntityBoundingBox.bulk_create(entity_bounding_boxes, 300)
 
         # Upload parent-child relationships between symbols.
@@ -218,5 +226,5 @@ class UploadSymbols(ArxivBatchCommand[SymbolData, None]):
                 symbol_child_models.append(
                     SymbolChild(parent=symbol_model, child=child_model)
                 )
-        with database.atomic():
+        with output_database.atomic():
             SymbolChild.bulk_create(symbol_child_models, 300)

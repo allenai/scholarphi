@@ -5,6 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Run Pipeline",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/run_pipeline.py",
+      "console": "integratedTerminal",
+      "args": ["-v"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "."
+      }
+    },
+    {
       "name": "Extract Equation Tokens",
       "type": "python",
       "request": "launch",

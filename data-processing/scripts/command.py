@@ -71,39 +71,19 @@ class ArxivBatchCommand(Command[I, R], ABC):
 
     @staticmethod
     def init_parser(parser: ArgumentParser) -> None:
-        parser.add_argument(
-            "--arxiv-ids", type=str, nargs="+", help="arXiv IDs to process"
-        )
-        parser.add_argument(
-            "--arxiv-ids-file",
-            type=str,
-            help=(
-                "Name of a file containing arXiv IDs to process, with one arXiv ID per line. "
-                + "If both this argument and --arxiv-ids is specified, arXiv IDs from both will be loaded"
-            ),
-        )
+        add_arxiv_id_filter_args(parser)
 
     def _load_arxiv_ids(self, args: Any) -> List[ArxivId]:
-        arxiv_ids: List[ArxivId] = []
-
-        if args.arxiv_ids is not None:
-            arxiv_ids.extend(args.arxiv_ids)
-
-        if args.arxiv_ids_file is not None:
-            if not os.path.exists(args.arxiv_ids_file):
-                raise SystemExit("Error: arXiv IDs file not found.")
-            with open(args.arxiv_ids_file) as arxiv_ids_file:
-                arxiv_ids.extend(arxiv_ids_file.readlines())
-
-        if args.arxiv_ids is None and args.arxiv_ids_file is None:
+        arxiv_ids = load_arxiv_ids_using_args(args)
+        if arxiv_ids is None:
             input_path = self.get_arxiv_ids_dir()
             if input_path is None:
                 raise SystemExit(
-                    "Error: This command has no arXiv IDs to process. You must provide arXiv IDs"
+                    "Error: This command has no arXiv IDs to process. You must provide arXiv IDs "
                     + "with the '--arxiv-ids' or '--arxiv-ids-file' arguments, or the "
                     + "'get_arxiv_ids_dir' method must be specified for this command."
                 )
-            arxiv_ids.extend(get_arxiv_ids(input_path))
+            arxiv_ids = list(get_arxiv_ids(input_path))
 
         return arxiv_ids
 
@@ -115,3 +95,52 @@ class ArxivBatchCommand(Command[I, R], ABC):
         IDs to process based on the output of a previous job. Return 'None' if you want to require
         a user to specify the arXiv IDs on the command line.
         """
+
+
+def add_arxiv_id_filter_args(parser: ArgumentParser) -> None:
+    parser.add_argument("--arxiv-ids", type=str, nargs="+", help="arXiv IDs to process")
+    parser.add_argument(
+        "--arxiv-ids-file",
+        type=str,
+        help=(
+            "Name of a file containing arXiv IDs to process, with one arXiv ID per line. "
+            + "If both this argument and --arxiv-ids is specified, arXiv IDs from both will be loaded"
+        ),
+    )
+
+
+def load_arxiv_ids_using_args(args: Any) -> Optional[List[ArxivId]]:
+    if args.arxiv_ids is None and args.arxiv_ids_file is None:
+        return None
+
+    arxiv_ids: List[ArxivId] = []
+    if args.arxiv_ids is not None:
+        arxiv_ids.extend(args.arxiv_ids)
+
+    if args.arxiv_ids_file is not None:
+        arxiv_ids.extend(read_arxiv_ids_from_file(args.arxiv_ids_file))
+
+    return arxiv_ids
+
+
+def read_arxiv_ids_from_file(path: Path) -> List[ArxivId]:
+    if not os.path.exists(path):
+        raise SystemExit("Error: arXiv IDs %s file not found." % (path,))
+    with open(path) as arxiv_ids_file:
+        return [l.strip() for l in arxiv_ids_file.readlines()]
+
+
+class Args:
+    """
+    Empty object on which arbitrary attributes can be set.
+    """
+
+
+def create_args(**kwargs: Any) -> Args:
+    """
+    Create an artificial set of args that can be passed to a command.
+    """
+    arguments = Args()
+    for key, value in kwargs.items():
+        setattr(arguments, key, value)
+    return arguments
