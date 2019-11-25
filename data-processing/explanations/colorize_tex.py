@@ -2,7 +2,7 @@ import colorsys
 import logging
 import os
 import re
-from typing import Dict, Iterator, List, NamedTuple
+from typing import Dict, Iterator, List, NamedTuple, Optional
 
 import numpy as np
 
@@ -125,8 +125,9 @@ class CitationColorizationBatch(NamedTuple):
     colorized_citations: List[ColorizedCitation]
 
 
-
-def colorize_citations(tex: str, insert_color_macros: bool = True, preset_hue: float = None) -> Iterator[CitationColorizationBatch]:
+def colorize_citations(
+    tex: str, insert_color_macros: bool = True, preset_hue: Optional[float] = None
+) -> Iterator[CitationColorizationBatch]:
 
     citation_extractor = CitationExtractor()
     if insert_color_macros:
@@ -200,7 +201,9 @@ class EquationColorizationBatch(NamedTuple):
     colorized_equations: List[ColorizedEquation]
 
 
-def colorize_equations(tex: str, insert_color_macros: bool = True, preset_hue: float = None) -> Iterator[EquationColorizationBatch]:
+def colorize_equations(
+    tex: str, insert_color_macros: bool = True, preset_hue: Optional[float] = None
+) -> Iterator[EquationColorizationBatch]:
     # TODO(andrewhead): Refactor this to share code with colorize_citations.
     if insert_color_macros:
         tex = add_color_macros(tex)
@@ -266,7 +269,10 @@ def _get_tokens_for_equation(
 
 
 def colorize_equation_tokens(
-    file_contents: Dict[TexFileName, TexContents], tokens: List[TokenWithOrigin], insert_color_macros: bool = True, preset_hue: float = None
+    file_contents: Dict[TexFileName, TexContents],
+    tokens: List[TokenWithOrigin],
+    insert_color_macros: bool = True,
+    preset_hue: Optional[float] = None,
 ) -> Iterator[TokenColorizationBatch]:
 
     equations_by_file: Dict[TexFileName, List[Equation]] = {}
@@ -310,7 +316,12 @@ def colorize_equation_tokens(
                     EquationId(tex_filename, equation.i)
                 )
                 if equation_tokens is not None:
-                    (colorized_tex, colorized_tokens_for_equation,) = _colorize_tokens_for_equation(colorized_tex, equation, equation_tokens, token_skip, preset_hue)
+                    (
+                        colorized_tex,
+                        colorized_tokens_for_equation,
+                    ) = _colorize_tokens_for_equation(
+                        colorized_tex, equation, equation_tokens, token_skip, preset_hue
+                    )
                     colorized_tokens.extend(colorized_tokens_for_equation)
 
             colorized_files[tex_filename] = colorized_tex
@@ -337,7 +348,11 @@ class TokenEquationColorizationBatch(NamedTuple):
 
 
 def _colorize_tokens_for_equation(
-    tex: str, equation: Equation, tokens: List[TokenWithOrigin], skip: int = 0, preset_hue: float = None
+    tex: str,
+    equation: Equation,
+    tokens: List[TokenWithOrigin],
+    skip: int = 0,
+    preset_hue: Optional[float] = None,
 ) -> TokenEquationColorizationBatch:
     """
     Colorize tokens in an equation until there are no more hues.
