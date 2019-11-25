@@ -5,18 +5,29 @@ import shutil
 from typing import Dict, Iterator, List, Optional
 
 from explanations import directories
-from explanations.types import (ArxivId, CompilationResult, Path, Symbol,
-                                SymbolId, SymbolWithId, TokenWithOrigin)
+from explanations.types import (
+    ArxivId,
+    CompilationResult,
+    FileContents,
+    Path,
+    Symbol,
+    SymbolId,
+    SymbolWithId,
+    TokenWithOrigin,
+)
+
+Contents = str
+Encoding = str
 
 
-def read_file_tolerant(path: str) -> Optional[str]:
+def read_file_tolerant(path: str) -> Optional[FileContents]:
     """
     Attempt to read the contents of a file using several encodings.
     """
     for encoding in ["utf-8", "latin-1"]:
         with open(path, "r", encoding=encoding) as file_:
             try:
-                return file_.read()
+                return FileContents(path, file_.read(), encoding)
             except Exception:  # pylint: disable=broad-except
                 logging.debug(
                     "Could not decode file %s using encoding %s", path, encoding

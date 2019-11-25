@@ -1,13 +1,10 @@
 import re
 
-from explanations.colorize_tex import (
-    COLOR_MACRO_TEX,
-    add_color_macros,
-    colorize_citations,
-    colorize_equation_tokens,
-    colorize_equations,
-)
-from explanations.types import TokenWithOrigin
+from explanations.colorize_tex import (COLOR_MACRO_TEX, add_color_macros,
+                                       colorize_citations,
+                                       colorize_equation_tokens,
+                                       colorize_equations)
+from explanations.types import FileContents, TokenWithOrigin
 
 COLOR_PATTERN = (
     r"\\llap{\\scholarsetcolor\[rgb\]{[0-9.]+,[0-9.]+,[0-9.]+}}"
@@ -103,7 +100,7 @@ def test_color_equation_in_argument():
 
 
 def test_color_tokens():
-    file_contents = {"file": "$ignore$ $x + y$"}
+    file_contents = {"file": FileContents("file", "$ignore$ $x + y$", "encoding")}
     tokens = [
         TokenWithOrigin(
             tex_path="file",
@@ -127,7 +124,7 @@ def test_color_tokens():
     colorized_files, _ = next(
         colorize_equation_tokens(file_contents, tokens, insert_color_macros=False)
     )
-    colorized = colorized_files["file"]
+    colorized = colorized_files["file"].contents
     assert colorized.startswith("$ignore$")
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 2
@@ -136,7 +133,7 @@ def test_color_tokens():
 
 
 def test_color_hats_dots():
-    file_contents = {"file": "$\\hat x + \\dot  y$"}
+    file_contents = {"file": FileContents("file", "$\\hat x + \\dot  y$", "encoding")}
     tokens = [
         TokenWithOrigin(
             tex_path="file",
@@ -160,7 +157,7 @@ def test_color_hats_dots():
     colorized_files, _ = next(
         colorize_equation_tokens(file_contents, tokens, insert_color_macros=False)
     )
-    colorized = colorized_files["file"]
+    colorized = colorized_files["file"].contents
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 2
     assert matches[0] == "\\hat x"
@@ -168,7 +165,7 @@ def test_color_hats_dots():
 
 
 def test_color_inside_brackets():
-    file_contents = {"file": "${x}$"}
+    file_contents = {"file": FileContents("file", "${x}$", "encoding")}
     tokens = [
         TokenWithOrigin(
             tex_path="file",
@@ -183,7 +180,7 @@ def test_color_inside_brackets():
     colorized_files, _ = next(
         colorize_equation_tokens(file_contents, tokens, insert_color_macros=False)
     )
-    colorized = colorized_files["file"]
+    colorized = colorized_files["file"].contents
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 1
     assert matches[0] != "{x}"
@@ -191,7 +188,7 @@ def test_color_inside_brackets():
 
 
 def test_adjust_indexes_to_within_bounds():
-    file_contents = {"file": "$x$ ignore text after"}
+    file_contents = {"file": FileContents("file", "$x$ ignore text after", "encoding")}
     tokens = [
         TokenWithOrigin(
             tex_path="file",
@@ -209,14 +206,16 @@ def test_adjust_indexes_to_within_bounds():
     colorized_files, _ = next(
         colorize_equation_tokens(file_contents, tokens, insert_color_macros=False)
     )
-    colorized = colorized_files["file"]
+    colorized = colorized_files["file"].contents
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 1
     assert matches[0] == "x"
 
 
 def test_color_subscripts():
-    file_contents = {"file": "$x_i x^i x\\sp1 x\\sb1$"}
+    file_contents = {
+        "file": FileContents("file", "$x_i x^i x\\sp1 x\\sb1$", "encoding")
+    }
     tokens = [
         TokenWithOrigin(
             tex_path="file",
@@ -258,7 +257,7 @@ def test_color_subscripts():
     colorized_files, _ = next(
         colorize_equation_tokens(file_contents, tokens, insert_color_macros=False)
     )
-    colorized = colorized_files["file"]
+    colorized = colorized_files["file"].contents
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 4
     # Subscript and superscript commands must also be wrapped in the coloring commands

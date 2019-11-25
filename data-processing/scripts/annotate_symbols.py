@@ -12,14 +12,22 @@ from explanations.file_utils import (
     load_tokens,
     read_file_tolerant,
 )
-from explanations.types import ArxivId, Character, CharacterId, Path, Symbol, SymbolId
+from explanations.types import (
+    ArxivId,
+    Character,
+    CharacterId,
+    FileContents,
+    Path,
+    Symbol,
+    SymbolId,
+)
 from explanations.unpack import unpack
 from scripts.command import ArxivBatchCommand
 
 
 class TexAndSymbols(NamedTuple):
     arxiv_id: ArxivId
-    tex_contents: Dict[Path, str]
+    tex_contents: Dict[Path, FileContents]
     symbols: Dict[SymbolId, Symbol]
     characters: Dict[CharacterId, Character]
 
@@ -80,9 +88,9 @@ class AnnotateTexWithSymbolMarkers(ArxivBatchCommand[TexAndSymbols, AnnotationRe
                 absolute_tex_path = os.path.join(
                     directories.sources(arxiv_id), tex_path
                 )
-                contents = read_file_tolerant(absolute_tex_path)
-                if contents is not None:
-                    contents_by_file[tex_path] = contents
+                file_contents = read_file_tolerant(absolute_tex_path)
+                if file_contents is not None:
+                    contents_by_file[tex_path] = file_contents
 
             yield TexAndSymbols(arxiv_id, contents_by_file, symbols, characters)
 
@@ -109,8 +117,10 @@ class AnnotateTexWithSymbolMarkers(ArxivBatchCommand[TexAndSymbols, AnnotationRe
                 full_tex_path = os.path.join(
                     output_sources_path, annotated_file.tex_path
                 )
-                with open(full_tex_path, "w") as tex_file:
-                    tex_file.write(annotated_file.annotated_tex)
+                with open(
+                    full_tex_path, "w", encoding=annotated_file.encoding
+                ) as tex_file:
+                    tex_file.write(annotated_file.contents)
 
             symbols_tex_path = os.path.join(output_sources_path, "symbol_tex.csv")
             with open(symbols_tex_path, "a") as symbols_tex_file:
