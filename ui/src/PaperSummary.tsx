@@ -1,5 +1,6 @@
 import React from "react";
 import AuthorList from "./AuthorList";
+import FavoriteButton from "./FavoriteButton";
 import S2Link from "./S2Link";
 import { ScholarReaderContext } from "./state";
 
@@ -39,7 +40,7 @@ export class PaperSummary extends React.Component<
                   setJumpPaperId(null);
                 }
               }}
-              className="paper-summary"
+              className="paper-summary favorite-container"
             >
               <div className="paper-summary__section">
                 <p className="paper-summary__title">
@@ -77,6 +78,12 @@ export class PaperSummary extends React.Component<
                   </p>
                 </div>
               )}
+              <FavoriteButton
+                favoritableId={{
+                  type: "paper-summary",
+                  entityId: this.props.paperId
+                }}
+              />
             </div>
           );
         }}

@@ -1,4 +1,5 @@
 import React from "react";
+import FavoriteButton from "./FavoriteButton";
 import PaperClipping from "./PaperClipping";
 import { ScholarReaderContext } from "./state";
 import { Symbol } from "./types/api";
@@ -13,12 +14,19 @@ export class SymbolPreview extends React.Component<SymbolPreviewProps> {
       <ScholarReaderContext.Consumer>
         {({ setJumpSymbol }) => (
           <div
-            className="symbol-preview"
-            onClick={() => setJumpSymbol(this.props.symbol)}
+            className="symbol-preview favorite-container"
           >
             <PaperClipping
               pageNumber={this.props.symbol.bounding_box.page + 1}
               highlightBoxes={[this.props.symbol.bounding_box]}
+              onClick={() => setJumpSymbol(this.props.symbol)}
+            />
+            <FavoriteButton
+              opaque
+              favoritableId={{
+                type: "symbol-view",
+                entityId: this.props.symbol.id
+              }}
             />
           </div>
         )}
