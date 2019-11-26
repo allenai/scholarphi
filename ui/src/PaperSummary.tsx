@@ -19,7 +19,9 @@ export class PaperSummary extends React.Component<PaperSummaryProps, {}> {
                 <p className="citation-summary__title">
                   <S2Link url={paper.url}>{paper.title}</S2Link>
                 </p>
-                {paper.authors.length > 0 && <AuthorList authors={paper.authors} />}
+                {paper.authors.length > 0 && (
+                  <AuthorList authors={paper.authors} />
+                )}
               </div>
               <div className="citation-summary__section">
                 <p className="citation-summary__abstract">{paper.abstract}</p>

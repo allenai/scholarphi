@@ -4,12 +4,13 @@ import { Author } from "./types/api";
 
 interface AuthorListProps {
   authors: Author[];
+  link?: boolean;
 }
 
 class AuthorList extends React.Component<AuthorListProps, {}> {
   render() {
     return (
-      <p className="citation-summary__authors">
+      <span className="author-list">
         {this.props.authors.map((author, i) => {
           let textConnector;
           if (i === 0) {
@@ -22,11 +23,14 @@ class AuthorList extends React.Component<AuthorListProps, {}> {
           return (
             <span key={author.id}>
               {textConnector}
-              <S2Link url={author.url}>{author.name}</S2Link>
+              {this.props.link && (
+                <S2Link url={author.url}>{author.name}</S2Link>
+              )}
+              {!this.props.link && <>{author.name}</>}
             </span>
           );
         })}
-      </p>
+      </span>
     );
   }
 }
