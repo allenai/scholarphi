@@ -2,6 +2,7 @@ import MuiDrawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import React from "react";
+import PaperList from "./PaperList";
 import SearchResults from "./SearchResults";
 import * as selectors from "./selectors";
 import { ScholarReaderContext } from "./state";
@@ -25,9 +26,9 @@ export class Drawer extends React.Component {
      * notify the PDF viewer by adding a class, as the PDF viewer has no knowledge of the state
      * of this React application.
      */
-    const { pdfViewer, openDrawer } = this.context;
+    const { pdfViewer, drawerState } = this.context;
     if (pdfViewer !== null) {
-      if (openDrawer) {
+      if (drawerState !== "closed") {
         pdfViewer.container.classList.add(PDF_VIEWER_DRAWER_OPEN_CLASS);
       } else {
         pdfViewer.container.classList.remove(PDF_VIEWER_DRAWER_OPEN_CLASS);
@@ -36,21 +37,21 @@ export class Drawer extends React.Component {
 
     return (
       <ScholarReaderContext.Consumer>
-        {({ openDrawer, setOpenDrawer, selectedSymbol, symbols, mathMl }) => {
+        {({ drawerState, setDrawerState, selectedSymbol, symbols, mathMl }) => {
           return (
             <MuiDrawer
               className="drawer"
               variant="persistent"
               anchor="right"
-              open={openDrawer}
+              open={drawerState !== "closed"}
             >
               <div className="drawer__header">
-                <IconButton onClick={() => setOpenDrawer(false)}>
+                <IconButton onClick={() => setDrawerState("closed")}>
                   <ChevronRightIcon />
                 </IconButton>
               </div>
               <div>
-                {selectedSymbol !== null && (
+                {drawerState === "show-symbols" && selectedSymbol !== null && (
                   <SearchResults
                     results={selectors.matchingSymbols(
                       selectedSymbol,
@@ -60,6 +61,7 @@ export class Drawer extends React.Component {
                     pageSize={5}
                   />
                 )}
+                {drawerState === "show-citations" && <PaperList />}
               </div>
             </MuiDrawer>
           );

@@ -2,7 +2,14 @@ import React from "react";
 import * as api from "./api";
 import Drawer from "./Drawer";
 import PageOverlay from "./PageOverlay";
-import { Pages, PaperId, Papers, ScholarReaderContext, State } from "./state";
+import {
+  DrawerState,
+  Pages,
+  PaperId,
+  Papers,
+  ScholarReaderContext,
+  State
+} from "./state";
 import "./style/index.less";
 import { Citation, MathMl, Paper, Symbol } from "./types/api";
 import {
@@ -35,8 +42,8 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
       setPages: this.setPages.bind(this),
       pdfDocument: null,
       pdfViewer: null,
-      openDrawer: false,
-      setOpenDrawer: this.setOpenDrawer.bind(this),
+      drawerState: "closed",
+      setDrawerState: this.setDrawerState.bind(this),
       selectedSymbol: null,
       setSelectedSymbol: this.setSelectedSymbol.bind(this),
       jumpSymbol: null,
@@ -64,8 +71,8 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
     this.setState({ pages });
   }
 
-  setOpenDrawer(open: boolean) {
-    this.setState({ openDrawer: open });
+  setDrawerState(state: DrawerState) {
+    this.setState({ drawerState: state });
   }
 
   setSelectedSymbol(symbol: Symbol | null) {

@@ -4,7 +4,7 @@ import { Author } from "./types/api";
 
 interface AuthorListProps {
   authors: Author[];
-  link?: boolean;
+  showLinks?: boolean;
 }
 
 class AuthorList extends React.Component<AuthorListProps, {}> {
@@ -23,10 +23,10 @@ class AuthorList extends React.Component<AuthorListProps, {}> {
           return (
             <span key={author.id}>
               {textConnector}
-              {this.props.link && (
+              {this.props.showLinks && (
                 <S2Link url={author.url}>{author.name}</S2Link>
               )}
-              {!this.props.link && <>{author.name}</>}
+              {!this.props.showLinks && <>{author.name}</>}
             </span>
           );
         })}

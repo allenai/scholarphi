@@ -2,6 +2,7 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import React from "react";
 import Citation from "./Citation";
+import { ScholarReaderContext } from "./state";
 
 interface CitationTooltipBodyProps {
   paperIds: string[];
@@ -19,11 +20,20 @@ export class CitationTooltipBody extends React.Component<
         </div>
         <div className="tooltip-body__section">
           <List aria-label="cited papers">
-            {this.props.paperIds.map((paperId, i) => (
-              <ListItem disableGutters key={paperId} button onClick={() => {}}>
-                <Citation key={paperId} paperId={paperId} />
-              </ListItem>
-            ))}
+            <ScholarReaderContext.Consumer>
+              {({ setDrawerState }) => {
+                return this.props.paperIds.map(paperId => (
+                  <ListItem
+                    disableGutters
+                    key={paperId}
+                    button
+                    onClick={() => setDrawerState("show-citations")}
+                  >
+                    <Citation key={paperId} paperId={paperId} />
+                  </ListItem>
+                ));
+              }}
+            </ScholarReaderContext.Consumer>
           </List>
         </div>
       </div>

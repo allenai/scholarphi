@@ -27,8 +27,8 @@ export interface State {
   /*
    * USER INTERFACE STATE
    */
-  openDrawer: boolean;
-  setOpenDrawer(open: boolean): void;
+  drawerState: DrawerState;
+  setDrawerState(state: DrawerState): void;
   selectedSymbol: Symbol | null;
   setSelectedSymbol(symbol: Symbol | null): void;
   jumpSymbol: Symbol | null;
@@ -37,6 +37,7 @@ export interface State {
 
 export type Papers = { [s2Id: string]: Paper };
 export type Pages = { [pageNumber: number]: PageModel };
+export type DrawerState = "show-citations" | "show-symbols" | "closed";
 
 interface PageModel {
   /**
@@ -67,8 +68,8 @@ const defaultState: State = {
   setPages: () => {},
   pdfDocument: null,
   pdfViewer: null,
-  openDrawer: false,
-  setOpenDrawer: () => {},
+  drawerState: "closed",
+  setDrawerState: () => {},
   selectedSymbol: null,
   setSelectedSymbol: () => {},
   jumpSymbol: null,
