@@ -1,20 +1,32 @@
 /**
- * Position of citations annotation absolutely on each page.
+ * Position annotations absolutely on each page.
  */
 .scholar-reader-annotation {
   position: absolute;
 }
 
+/**
+ * Increase the hitbox of an annotation.
+ */
 .scholar-reader-annotation {
-  border-bottom: @underline-width @underline-color solid;
+  margin: -@highlight-hitbox-padding;
+  padding: @highlight-hitbox-padding;
 }
 
 /**
- * Highlight over citations.
+ * Place an underline as the main indicator of an annotation.
+ */
+.scholar-reader-annotation {
+  border-bottom: @underline-width @underline-color solid;
+  padding-bottom: @underline-offset;
+}
+
+/**
+ * Highlight the area of an annotation on hover.
  */
 .scholar-reader-annotation {
   &:hover {
-    opacity: @highlight-hover-opacity;
+    // opacity: @highlight-hover-opacity;
     background-color: @highlight-color;
     cursor: pointer;
   }
