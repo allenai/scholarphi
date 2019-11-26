@@ -220,7 +220,7 @@ def common_read_hues(
         return []
 
     hues = []
-    with open(hues_path) as hues_file:
+    with open(hues_path, encoding="utf-8") as hues_file:
         reader = csv.reader(hues_file)
         for row in reader:
             hues.append(
@@ -360,7 +360,7 @@ class LocateEquationTokenHues(LocateHuesCommand):
             ),
             "token_hues.csv",
         )
-        with open(token_hues_path) as token_hues_file:
+        with open(token_hues_path, encoding="utf-8") as token_hues_file:
             reader = csv.reader(token_hues_file)
             for row in reader:
                 equation_id = EquationId(tex_path=row[0], equation_index=int(row[1]))
