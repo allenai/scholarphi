@@ -66,7 +66,6 @@ class PageOverlay extends React.Component<PageProps, {}> {
                   key={selectors.citationKey(c.citation, c.boundingBox)}
                   location={c.boundingBox}
                   citation={c.citation}
-                  pageView={this.props.view}
                 />
               ))}
               {localizedSymbols.map(s => (
@@ -74,7 +73,6 @@ class PageOverlay extends React.Component<PageProps, {}> {
                   key={s.id}
                   location={s.bounding_box}
                   symbol={s}
-                  pageView={this.props.view}
                 />
               ))}
             </>

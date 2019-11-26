@@ -22,14 +22,39 @@
 @{mui-tooltip} {
   max-width: 400px !important;
 
-  .citation-tooltip-body {
-    padding: @medium * 0.25;
+  .tooltip-body {
+    padding: @medium * 0.5;
   }
+
+  .tooltip-body__section:not(:first-of-type) {
+    padding-top: @medium * 0.5;
+  }
+}
+
+/**
+ * Align buttons to the right.
+ */
+.tooltip-body__action-buttons {
+  text-align: right;
+}
+
+/**
+ * Space out the action buttons.
+ */
+.tooltip-body__action-buttons .tooltip-body__action-button {
+  margin-left: @medium * 0.5;
 }
 
 /**
  * Tooltip text.
  */
+@{mui-tooltip} {
+  color: @black;
+  font-size: @medium;
+  line-height: 1em;
+  font-weight: lighter;
+}
+
 .citation-summary {
   color: @black;
   font-size: @medium;
