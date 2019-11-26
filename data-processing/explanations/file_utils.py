@@ -90,7 +90,7 @@ def load_tokens(arxiv_id: ArxivId) -> Optional[List[TokenWithOrigin]]:
 
     # Load token location information
     tokens = []
-    with open(tokens_path) as tokens_file:
+    with open(tokens_path, encoding="utf-8") as tokens_file:
         reader = csv.reader(tokens_file)
         for row in reader:
             tex_path = row[0]
@@ -132,21 +132,21 @@ def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
 
     symbols_by_id: Dict[SymbolId, Symbol] = {}
 
-    with open(symbols_path) as symbols_file:
+    with open(symbols_path, encoding="utf-8") as symbols_file:
         reader = csv.reader(symbols_file)
         for row in reader:
             symbol_id = _get_symbol_id(row)
             mathml = row[4]
             symbols_by_id[symbol_id] = Symbol(characters=[], mathml=mathml, children=[])
 
-    with open(symbol_tokens_path) as symbol_tokens_file:
+    with open(symbol_tokens_path, encoding="utf-8") as symbol_tokens_file:
         reader = csv.reader(symbol_tokens_file)
         for row in reader:
             symbol_id = _get_symbol_id(row)
             character_index = int(row[4])
             symbols_by_id[symbol_id].characters.append(character_index)
 
-    with open(symbol_children_path) as symbol_children_file:
+    with open(symbol_children_path, encoding="utf-8") as symbol_children_file:
         reader = csv.reader(symbol_children_file)
         for row in reader:
             symbol = symbols_by_id[_get_symbol_id(row)]

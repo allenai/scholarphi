@@ -99,7 +99,9 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                 tokens_dir,
             )
 
-        with open(os.path.join(tokens_dir, "parse_results.csv"), "a") as results_file:
+        with open(
+            os.path.join(tokens_dir, "parse_results.csv"), "a", encoding="utf-8"
+        ) as results_file:
             writer = csv.writer(results_file, quoting=csv.QUOTE_ALL)
             try:
                 writer.writerow(
@@ -118,7 +120,9 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                 )
 
         if result.characters is not None and len(result.characters) > 0:
-            with open(os.path.join(tokens_dir, "tokens.csv"), "a") as tokens_file:
+            with open(
+                os.path.join(tokens_dir, "tokens.csv"), "a", encoding="utf-8"
+            ) as tokens_file:
                 writer = csv.writer(tokens_file, quoting=csv.QUOTE_ALL)
                 for token in result.characters:
                     try:
@@ -141,11 +145,11 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
 
         if result.symbols is not None and len(result.symbols) > 0:
             with open(
-                os.path.join(tokens_dir, "symbols.csv"), "a"
+                os.path.join(tokens_dir, "symbols.csv"), "a", encoding="utf-8"
             ) as symbols_file, open(
-                os.path.join(tokens_dir, "symbol_children.csv"), "a"
+                os.path.join(tokens_dir, "symbol_children.csv"), "a", encoding="utf-8"
             ) as symbol_children_file, open(
-                os.path.join(tokens_dir, "symbol_tokens.csv"), "a"
+                os.path.join(tokens_dir, "symbol_tokens.csv"), "a", encoding="utf-8"
             ) as symbol_tokens_file:
 
                 symbols_writer = csv.writer(symbols_file, quoting=csv.QUOTE_ALL)

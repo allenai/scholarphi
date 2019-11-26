@@ -217,7 +217,7 @@ class DebugColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, Compilation]):
         colorize_simulation = insert_color_in_tex(
             token.equation, 0, token.start, token.end
         )
-        with open(errors_path, "a") as errors_file:
+        with open(errors_path, "a", encoding="utf-8") as errors_file:
             writer = csv.writer(errors_file)
             writer.writerow(
                 [

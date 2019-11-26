@@ -54,7 +54,7 @@ class ExtractEquations(ArxivBatchCommand[EquationInfo, None]):
                 equation_hues_path = os.path.join(
                     colorized_sources_dir, "equation_hues.csv"
                 )
-                with open(equation_hues_path) as equation_hues_file:
+                with open(equation_hues_path, encoding="utf-8") as equation_hues_file:
                     reader = csv.reader(equation_hues_file)
                     for row in reader:
                         yield EquationInfo(arxiv_id, row[0], int(row[1]), row[4])
@@ -67,6 +67,6 @@ class ExtractEquations(ArxivBatchCommand[EquationInfo, None]):
         if not os.path.exists(results_dir):
             os.makedirs(results_dir)
         results_path = os.path.join(results_dir, "equations.csv")
-        with open(results_path, "a") as results_file:
+        with open(results_path, "a", encoding="utf-8") as results_file:
             writer = csv.writer(results_file, quoting=csv.QUOTE_ALL)
             writer.writerow([item.path, item.i, item.tex])

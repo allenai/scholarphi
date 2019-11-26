@@ -102,7 +102,7 @@ class UploadSymbols(ArxivBatchCommand[SymbolData, None]):
                     arxiv_id,
                 )
                 continue
-            with open(matches_path) as matches_file:
+            with open(matches_path, encoding="utf-8") as matches_file:
                 reader = csv.reader(matches_file)
                 for row in reader:
                     mathml = row[0]

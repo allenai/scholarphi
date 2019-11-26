@@ -64,7 +64,7 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
             os.makedirs(s2_metadata_dir)
 
         references_path = os.path.join(s2_metadata_dir, "references.csv")
-        with open(references_path, "w") as references_file:
+        with open(references_path, "w", encoding="utf-8") as references_file:
             writer = csv.writer(references_file, quoting=csv.QUOTE_ALL)
             for reference in result.references:
                 authors_string = ", ".join([a.name for a in reference.authors])

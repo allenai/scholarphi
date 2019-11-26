@@ -91,7 +91,7 @@ class ColorizeEquations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
                 tex_file.write(colorized_tex)
 
             hues_path = os.path.join(output_sources_path, "equation_hues.csv")
-            with open(hues_path, "a") as hues_file:
+            with open(hues_path, "a", encoding="utf-8") as hues_file:
                 writer = csv.writer(hues_file, quoting=csv.QUOTE_ALL)
                 for colorized_equation in colorized_equations:
                     try:
