@@ -1,5 +1,6 @@
 import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
+import { FavoritableId } from "./FavoriteButton";
 import { Citation, MathMl, Paper, Symbol } from "./types/api";
 import { PDFPageView, PDFViewer } from "./types/pdfjs-viewer";
 
@@ -27,6 +28,8 @@ export interface State {
   /*
    * USER INTERFACE STATE
    */
+  favorites: { [favoritableKey: string]: boolean };
+  toggleFavorite(favoritableId: FavoritableId): void;
   drawerState: DrawerState;
   setDrawerState(state: DrawerState): void;
   jumpPaperId: string | null;
@@ -70,6 +73,8 @@ const defaultState: State = {
   setPages: () => {},
   pdfDocument: null,
   pdfViewer: null,
+  favorites: {},
+  toggleFavorite: () => {},
   drawerState: "closed",
   setDrawerState: () => {},
   jumpPaperId: null,

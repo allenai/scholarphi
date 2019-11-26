@@ -25,6 +25,9 @@ export class SearchResults extends React.Component<
 
   constructor(props: SearchResultsProps) {
     super(props);
+    /*
+     * TODO(andrewhead): MathML filters should be reset for every search. Make sure they are.
+     */
     this.state = { pageNumber: 0, filters: {} };
   }
 

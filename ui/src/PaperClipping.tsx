@@ -6,6 +6,7 @@ import { BoundingBox } from "./types/api";
 interface PaperClippingProps {
   pageNumber: number;
   highlightBoxes: BoundingBox[];
+  onClick?: React.MouseEventHandler;
 }
 
 export class PaperClipping extends React.Component<PaperClippingProps, {}> {
@@ -102,6 +103,7 @@ export class PaperClipping extends React.Component<PaperClippingProps, {}> {
           this.containerRef = ref;
         }}
         className="paper-clipping"
+        onClick={this.props.onClick}
       >
         <canvas
           ref={ref => {

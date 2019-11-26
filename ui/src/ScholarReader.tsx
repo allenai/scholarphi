@@ -1,6 +1,7 @@
 import React from "react";
 import * as api from "./api";
 import Drawer from "./Drawer";
+import { FavoritableId, favoritesKey } from "./FavoriteButton";
 import PageOverlay from "./PageOverlay";
 import {
   DrawerState,
@@ -42,6 +43,8 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
       setPages: this.setPages.bind(this),
       pdfDocument: null,
       pdfViewer: null,
+      favorites: {},
+      toggleFavorite: this.toggleFavorite.bind(this),
       drawerState: "closed",
       setDrawerState: this.setDrawerState.bind(this),
       jumpPaperId: null,
@@ -71,6 +74,17 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
 
   setPages(pages: Pages) {
     this.setState({ pages });
+  }
+
+  toggleFavorite(favoritableId: FavoritableId) {
+    const favorites = { ...this.state.favorites };
+    const key = favoritesKey(favoritableId);
+    if (favorites[key] === undefined || favorites[key] === false) {
+      favorites[key] = true;
+    } else {
+      favorites[key] = false;
+    }
+    this.setState({ favorites });
   }
 
   setDrawerState(state: DrawerState) {
