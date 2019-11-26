@@ -2,6 +2,7 @@ import MuiDrawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import React from "react";
+import { Favorites } from "./Favorites";
 import PaperList from "./PaperList";
 import SearchResults from "./SearchResults";
 import { ScholarReaderContext } from "./state";
@@ -50,6 +51,7 @@ export class Drawer extends React.Component {
                 </IconButton>
               </div>
               <div className="drawer__content">
+                <Favorites />
                 {drawerState === "show-symbols" && (
                   <SearchResults pageSize={4} />
                 )}

@@ -35,14 +35,28 @@ export class FavoriteButton extends React.Component<FavoriteButtonProps> {
 }
 
 type FavoritableType = "paper-summary" | "symbol-view";
+type EntityId = string | number;
 
 export interface FavoritableId {
   type: FavoritableType;
-  entityId: string | number;
+  entityId: EntityId;
 }
 
 export function favoritesKey(id: FavoritableId) {
   return `${id.type}-${id.entityId}`;
+}
+
+export function keyToFavoritesId(key: string) {
+  let entityId: string | number;
+  let type: string;
+  [type, entityId] = key.split(/-(?=[^-]+$)/);
+  if (type === "symbol-view") {
+    entityId = Number(entityId);
+  }
+  return {
+    type,
+    entityId
+  } as FavoritableId;
 }
 
 export default FavoriteButton;
