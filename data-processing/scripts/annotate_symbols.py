@@ -123,8 +123,14 @@ class AnnotateTexWithSymbolMarkers(ArxivBatchCommand[TexAndSymbols, AnnotationRe
                     tex_file.write(annotated_file.contents)
 
             symbols_tex_path = os.path.join(output_sources_path, "symbol_tex.csv")
-            with open(symbols_tex_path, "a") as symbols_tex_file:
+            with open(symbols_tex_path, "a", encoding="utf-8") as symbols_tex_file:
                 writer = csv.writer(symbols_tex_file, quoting=csv.QUOTE_ALL)
                 for annotated_file in result:
                     for symbol_tex in annotated_file.symbol_tex:
-                        writer.writerow([annotated_file.tex_path, symbol_tex])
+                        try:
+                            writer.writerow([annotated_file.tex_path, symbol_tex])
+                        except Exception:  # pylint: disable=broad-except
+                            logging.warning(
+                                "Couldn't write row for annotated line for arXiv %s: can't be converted to utf-8",
+                                item.arxiv_id,
+                            )

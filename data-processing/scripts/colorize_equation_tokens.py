@@ -102,7 +102,7 @@ class ColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, ColorizationResult]
                     tex_file.write(colorized_tex.contents)
 
             hues_path = os.path.join(output_sources_path, "token_hues.csv")
-            with open(hues_path, "a") as hues_file:
+            with open(hues_path, "a", encoding="utf-8") as hues_file:
                 writer = csv.writer(hues_file, quoting=csv.QUOTE_ALL)
                 for colorized_token in result.result.colorized_tokens:
                     writer.writerow(

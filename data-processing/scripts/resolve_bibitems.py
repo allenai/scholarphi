@@ -73,7 +73,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, Match]):
                     arxiv_id,
                 )
                 return
-            with open(references_path) as references_file:
+            with open(references_path, encoding="utf-8") as references_file:
                 reader = csv.reader(references_file)
                 for row in reader:
                     references.append(
@@ -139,7 +139,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, Match]):
             os.makedirs(resolutions_dir)
 
         resolutions_path = os.path.join(resolutions_dir, "resolutions.csv")
-        with open(resolutions_path, "a") as resolutions_file:
+        with open(resolutions_path, "a", encoding="utf-8") as resolutions_file:
             writer = csv.writer(resolutions_file, quoting=csv.QUOTE_ALL)
             writer.writerow(
                 [

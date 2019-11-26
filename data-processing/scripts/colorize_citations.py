@@ -92,7 +92,7 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
                 tex_file.write(colorized_tex)
 
             hues_path = os.path.join(output_sources_path, "citation_hues.csv")
-            with open(hues_path, "a") as hues_file:
+            with open(hues_path, "a", encoding="utf-8") as hues_file:
                 writer = csv.writer(hues_file, quoting=csv.QUOTE_ALL)
                 for colorized_citation in colorized_citations:
                     # TODO(andrewhead): It might be better to save this CSV data with the same

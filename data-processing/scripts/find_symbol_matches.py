@@ -51,7 +51,7 @@ class FindSymbolMatches(ArxivBatchCommand[MathMLForPaper, Matches]):
             os.makedirs(output_dir)
 
         matches_path = os.path.join(output_dir, "matches.csv")
-        with open(matches_path, "a") as matches_file:
+        with open(matches_path, "a", encoding="utf-8") as matches_file:
             writer = csv.writer(matches_file, quoting=csv.QUOTE_ALL)
             for mathml, matches in result.items():
                 for match in matches:

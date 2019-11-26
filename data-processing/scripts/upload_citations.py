@@ -115,7 +115,7 @@ class UploadCitations(ArxivBatchCommand[CitationData, None]):
                     "Could not find citation resolutions for %s. Skipping", arxiv_id
                 )
                 continue
-            with open(key_resolutions_path) as key_resolutions_file:
+            with open(key_resolutions_path, encoding="utf-8") as key_resolutions_file:
                 reader = csv.reader(key_resolutions_file)
                 for row in reader:
                     key = row[0]
@@ -139,7 +139,7 @@ class UploadCitations(ArxivBatchCommand[CitationData, None]):
                     arxiv_id,
                 )
                 continue
-            with open(s2_metadata_path) as s2_metadata_file:
+            with open(s2_metadata_path, encoding="utf-8") as s2_metadata_file:
                 reader = csv.reader(s2_metadata_file)
                 for row in reader:
                     s2_data[row[0]] = Reference(
