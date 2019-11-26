@@ -38,7 +38,9 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
       openDrawer: false,
       setOpenDrawer: this.setOpenDrawer.bind(this),
       selectedSymbol: null,
-      setSelectedSymbol: this.setSelectedSymbol.bind(this)
+      setSelectedSymbol: this.setSelectedSymbol.bind(this),
+      jumpSymbol: null,
+      setJumpSymbol: this.setJumpSymbol.bind(this)
     };
   }
 
@@ -66,8 +68,15 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
     this.setState({ openDrawer: open });
   }
 
-  setSelectedSymbol(symbol: Symbol) {
+  setSelectedSymbol(symbol: Symbol | null) {
     this.setState({ selectedSymbol: symbol });
+  }
+
+  setJumpSymbol(symbol: Symbol | null) {
+    this.setState({ jumpSymbol: symbol });
+    if (symbol !== null) {
+      this.jumpToSymbol(symbol);
+    }
   }
 
   async componentDidMount() {
@@ -129,6 +138,29 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
           this.setMathMl(mathMl);
         }
       }
+    }
+  }
+
+  jumpToSymbol(symbol: Symbol) {
+    /*
+     * Based roughly on the scroll offsets used for pdf.js "find" functionality:
+     * https://github.com/mozilla/pdf.js/blob/16ae7c6960c1296370c1600312f283a68e82b137/web/pdf_find_controller.js#L190-L191
+     * TODO(andrewhead): this offset should be in viewport coordinates, not PDF coordinates.
+     */
+    const SCROLL_OFFSET_X = -400;
+    const SCROLL_OFFSET_Y = +100;
+
+    if (this.state.pdfViewer !== null) {
+      const box = symbol.bounding_box;
+      this.state.pdfViewer.scrollPageIntoView({
+        pageNumber: box.page + 1,
+        destArray: [
+          undefined,
+          { name: "XYZ" },
+          box.left + SCROLL_OFFSET_X,
+          box.top + SCROLL_OFFSET_Y
+        ]
+      });
     }
   }
 

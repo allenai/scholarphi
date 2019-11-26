@@ -1,47 +1,22 @@
-import Tooltip from "@material-ui/core/Tooltip";
 import React from "react";
-import * as selectors from "./selectors";
-import { ScholarReaderContext } from "./state";
+import Annotation from "./Annotation";
 import SymbolTooltipBody from "./SymbolTooltipBody";
 import { BoundingBox, Symbol } from "./types/api";
-import { PDFPageView } from "./types/pdfjs-viewer";
 
 interface SymbolAnnotationProps {
   location: BoundingBox;
   symbol: Symbol;
-  pageView: PDFPageView;
 }
 
-export class SymbolAnnotation extends React.Component<
-  SymbolAnnotationProps,
-  {}
-> {
+export class SymbolAnnotation extends React.Component<SymbolAnnotationProps> {
   render() {
     return (
-      <Tooltip
-        interactive
-        className="symbol-tooltip"
-        title={<SymbolTooltipBody symbol={this.props.symbol} />}
-      >
-        <ScholarReaderContext.Consumer>
-          {({ setOpenDrawer, setSelectedSymbol }) => {
-            return (
-              <div
-                className="scholar-reader-annotation symbol-annotation"
-                hidden={this.props.symbol.parent !== null}
-                style={selectors.divDimensionStyles(
-                  this.props.pageView,
-                  this.props.location
-                )}
-                onClick={() => {
-                  setSelectedSymbol(this.props.symbol);
-                  setOpenDrawer(true);
-                }}
-              />
-            );
-          }}
-        </ScholarReaderContext.Consumer>
-      </Tooltip>
+      <div hidden={this.props.symbol.parent !== null}>
+        <Annotation
+          location={this.props.location}
+          tooltipContent={<SymbolTooltipBody symbol={this.props.symbol} />}
+        />
+      </div>
     );
   }
 }

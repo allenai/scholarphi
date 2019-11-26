@@ -31,6 +31,8 @@ export interface State {
   setOpenDrawer(open: boolean): void;
   selectedSymbol: Symbol | null;
   setSelectedSymbol(symbol: Symbol | null): void;
+  jumpSymbol: Symbol | null;
+  setJumpSymbol(symbol: Symbol | null): void;
 }
 
 export type Papers = { [s2Id: string]: Paper };
@@ -68,7 +70,9 @@ const defaultState: State = {
   openDrawer: false,
   setOpenDrawer: () => {},
   selectedSymbol: null,
-  setSelectedSymbol: () => {}
+  setSelectedSymbol: () => {},
+  jumpSymbol: null,
+  setJumpSymbol: () => {}
 };
 
 export const ScholarReaderContext = React.createContext<State>(defaultState);

@@ -3,28 +3,6 @@ import React from "react";
 import PaperClipping from "./PaperClipping";
 import { ScholarReaderContext } from "./state";
 import { Symbol } from "./types/api";
-import { PDFViewer } from "./types/pdfjs-viewer";
-
-function scrollToSymbol(pdfViewer: PDFViewer, symbol: Symbol) {
-  /*
-   * Based roughly on the scroll offsets used for pdf.js "find" functionality:
-   * https://github.com/mozilla/pdf.js/blob/16ae7c6960c1296370c1600312f283a68e82b137/web/pdf_find_controller.js#L190-L191
-   * TODO(andrewhead): this offset should be in viewport coordinates, not PDF coordinates.
-   */
-  const SCROLL_OFFSET_X = -400;
-  const SCROLL_OFFSET_Y = +100;
-
-  const box = symbol.bounding_box;
-  pdfViewer.scrollPageIntoView({
-    pageNumber: box.page + 1,
-    destArray: [
-      undefined,
-      { name: "XYZ" },
-      box.left + SCROLL_OFFSET_X,
-      box.top + SCROLL_OFFSET_Y
-    ]
-  });
-}
 
 interface SearchResultsProps {
   results: Symbol[];
@@ -51,15 +29,13 @@ export class SearchResults extends React.Component<
     return (
       <div className="search-results">
         <ScholarReaderContext.Consumer>
-          {({ pdfViewer }) => (
+          {({ setJumpSymbol }) => (
             <>
               {this.props.results.slice(startIndex, endIndex).map(symbol => (
                 <div
                   className="search-results__result"
                   key={symbol.id}
-                  onClick={() =>
-                    pdfViewer !== null && scrollToSymbol(pdfViewer, symbol)
-                  }
+                  onClick={() => setJumpSymbol(symbol)}
                 >
                   <PaperClipping
                     pageNumber={symbol.bounding_box.page + 1}

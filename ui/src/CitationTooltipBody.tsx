@@ -28,7 +28,7 @@ export class CitationTooltipBody extends React.Component<
 
   render() {
     return (
-      <div className="citation-tooltip-body">
+      <div className="tooltip-body citation-tooltip-body">
         {this.props.paperIds.map((paperId, i) => (
           <div
             className="citation-tooltip-body__paper-summary-container"
@@ -42,7 +42,12 @@ export class CitationTooltipBody extends React.Component<
           {({ papers }) => (
             <div className="citation-tooltip-body__stepper-container">
               <MobileStepper
-                hidden={selectors.countOfCitationsWithSummaries(papers, this.props.paperIds) <= 1}
+                hidden={
+                  selectors.countOfCitationsWithSummaries(
+                    papers,
+                    this.props.paperIds
+                  ) <= 1
+                }
                 variant="dots"
                 steps={this.props.paperIds.length}
                 position="static"
@@ -50,8 +55,15 @@ export class CitationTooltipBody extends React.Component<
                 nextButton={
                   <Button
                     size="small"
-                    onClick={() => this.setState({ activeCitation: this.state.activeCitation + 1 })}
-                    disabled={this.state.activeCitation === this.props.paperIds.length - 1}
+                    onClick={() =>
+                      this.setState({
+                        activeCitation: this.state.activeCitation + 1
+                      })
+                    }
+                    disabled={
+                      this.state.activeCitation ===
+                      this.props.paperIds.length - 1
+                    }
                   >
                     Next <KeyboardArrowRight />
                   </Button>
@@ -59,7 +71,11 @@ export class CitationTooltipBody extends React.Component<
                 backButton={
                   <Button
                     size="small"
-                    onClick={() => this.setState({ activeCitation: this.state.activeCitation - 1 })}
+                    onClick={() =>
+                      this.setState({
+                        activeCitation: this.state.activeCitation - 1
+                      })
+                    }
                     disabled={this.state.activeCitation === 0}
                   >
                     <KeyboardArrowLeft />
