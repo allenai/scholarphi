@@ -44,6 +44,8 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
       pdfViewer: null,
       drawerState: "closed",
       setDrawerState: this.setDrawerState.bind(this),
+      jumpPaperId: null,
+      setJumpPaperId: this.setJumpPaperId.bind(this),
       selectedSymbol: null,
       setSelectedSymbol: this.setSelectedSymbol.bind(this),
       jumpSymbol: null,
@@ -73,6 +75,10 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
 
   setDrawerState(state: DrawerState) {
     this.setState({ drawerState: state });
+  }
+
+  setJumpPaperId(s2Id: string) {
+    this.setState({ jumpPaperId: s2Id });
   }
 
   setSelectedSymbol(symbol: Symbol | null) {

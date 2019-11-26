@@ -29,6 +29,8 @@ export interface State {
    */
   drawerState: DrawerState;
   setDrawerState(state: DrawerState): void;
+  jumpPaperId: string | null;
+  setJumpPaperId(s2Id: string | null): void;
   selectedSymbol: Symbol | null;
   setSelectedSymbol(symbol: Symbol | null): void;
   jumpSymbol: Symbol | null;
@@ -70,6 +72,8 @@ const defaultState: State = {
   pdfViewer: null,
   drawerState: "closed",
   setDrawerState: () => {},
+  jumpPaperId: null,
+  setJumpPaperId: () => {},
   selectedSymbol: null,
   setSelectedSymbol: () => {},
   jumpSymbol: null,

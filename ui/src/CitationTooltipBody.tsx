@@ -21,15 +21,18 @@ export class CitationTooltipBody extends React.Component<
         <div className="tooltip-body__section">
           <List aria-label="cited papers">
             <ScholarReaderContext.Consumer>
-              {({ setDrawerState }) => {
-                return this.props.paperIds.map(paperId => (
+              {({ setDrawerState, setJumpPaperId }) => {
+                return this.props.paperIds.map(s2Id => (
                   <ListItem
                     disableGutters
-                    key={paperId}
+                    key={s2Id}
                     button
-                    onClick={() => setDrawerState("show-citations")}
+                    onClick={() => {
+                      setDrawerState("show-citations");
+                      setJumpPaperId(s2Id);
+                    }}
                   >
-                    <Citation key={paperId} paperId={paperId} />
+                    <Citation key={s2Id} paperId={s2Id} />
                   </ListItem>
                 ));
               }}
