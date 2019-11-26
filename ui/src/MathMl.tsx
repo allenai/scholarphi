@@ -25,6 +25,7 @@ export class MathMl extends React.Component<MathMlProps, {}> {
     const mathMlSantized = DOMPurify.sanitize(mathMl);
     return (
       <div
+        className="mathml"
         ref={ref => {
           this.element = ref;
         }}
@@ -46,6 +47,9 @@ const adaptor = browserAdaptor();
 RegisterHTMLHandler(adaptor);
 
 const INPUT_JAX = new MathJaxMathML();
+/*
+ * TODO(andrewhead): Set 'fontURL' option to point to font files.
+ */
 const OUTPUT_JAX = new CHTML();
 const MATHJAX_OPTIONS = {
   InputJax: INPUT_JAX,

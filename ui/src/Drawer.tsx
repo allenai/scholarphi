@@ -4,7 +4,6 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import React from "react";
 import PaperList from "./PaperList";
 import SearchResults from "./SearchResults";
-import * as selectors from "./selectors";
 import { ScholarReaderContext } from "./state";
 
 const PDF_VIEWER_DRAWER_OPEN_CLASS = "drawer-open";
@@ -37,7 +36,7 @@ export class Drawer extends React.Component {
 
     return (
       <ScholarReaderContext.Consumer>
-        {({ drawerState, setDrawerState, selectedSymbol, symbols, mathMl }) => {
+        {({ drawerState, setDrawerState }) => {
           return (
             <MuiDrawer
               className="drawer"
@@ -50,16 +49,9 @@ export class Drawer extends React.Component {
                   <ChevronRightIcon />
                 </IconButton>
               </div>
-              <div>
-                {drawerState === "show-symbols" && selectedSymbol !== null && (
-                  <SearchResults
-                    results={selectors.matchingSymbols(
-                      selectedSymbol,
-                      [...symbols],
-                      [...mathMl]
-                    )}
-                    pageSize={5}
-                  />
+              <div className="drawer__content">
+                {drawerState === "show-symbols" && (
+                  <SearchResults pageSize={4} />
                 )}
                 {drawerState === "show-citations" && <PaperList />}
               </div>

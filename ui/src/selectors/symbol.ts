@@ -58,6 +58,21 @@ export function firstMostSimilarSymbol(
 }
 
 /**
+ * Get a list of the unique MathML equations used in this set of symbols. Guaranteed to match the
+ * order they were found when iterating through the list sequentially. Therefore if you sort the
+ * the symbols, the MathML returned will match that sort order.
+ */
+export function symbolMathMls(symbols: Symbol[]) {
+  const uniqueMathMls = [];
+  for (const symbol of symbols) {
+    if (uniqueMathMls.indexOf(symbol.mathml) === -1) {
+      uniqueMathMls.push(symbol.mathml);
+    }
+  }
+  return uniqueMathMls;
+}
+
+/**
  * Sort symbols by their position in the paper. The first symbols will be those that
  * appear at the top of the first pages.
  */
