@@ -82,6 +82,9 @@ export class SearchResults extends React.Component<
             const numPages = Math.ceil(filtered.length / this.props.pageSize);
             return (
               <>
+                <div className="search-results__section search-results__header">
+                  <h1>Symbol search</h1>
+                </div>
                 <div className="search-results__section">
                   Show me symbols that look like:
                   {symbolMathMls.map(mathMl => {
@@ -91,9 +94,11 @@ export class SearchResults extends React.Component<
                         ? "contained"
                         : "outlined";
                     return (
-                      <div className="search-results__filter-button">
+                      <div
+                        key={mathMl}
+                        className="search-results__filter-button"
+                      >
                         <Button
-                          key={mathMl}
                           size="small"
                           variant={variant}
                           onClick={() => {

@@ -13,9 +13,7 @@ export class SymbolPreview extends React.Component<SymbolPreviewProps> {
     return (
       <ScholarReaderContext.Consumer>
         {({ setJumpSymbol }) => (
-          <div
-            className="symbol-preview favorite-container"
-          >
+          <div className="symbol-preview favorite-container">
             <PaperClipping
               pageNumber={this.props.symbol.bounding_box.page + 1}
               highlightBoxes={[this.props.symbol.bounding_box]}
