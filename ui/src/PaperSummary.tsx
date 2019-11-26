@@ -27,10 +27,20 @@ export class PaperSummary extends React.Component<
   render() {
     return (
       <ScholarReaderContext.Consumer>
-        {({ papers }) => {
+        {({ papers, jumpPaperId, setJumpPaperId }) => {
           const paper = papers[this.props.paperId];
           return (
-            <div className="paper-summary">
+            <div
+              ref={ref => {
+                if (jumpPaperId === this.props.paperId) {
+                  if (ref !== null) {
+                    ref.scrollIntoView();
+                  }
+                  setJumpPaperId(null);
+                }
+              }}
+              className="paper-summary"
+            >
               <div className="paper-summary__section">
                 <p className="paper-summary__title">
                   <S2Link url={paper.url}>{paper.title}</S2Link>
