@@ -1,0 +1,45 @@
+/**
+ * Paperlist dimensions
+ */
+.paper-list {
+  max-width: 450px;
+}
+
+/**
+ * Paper summary layout.
+ */
+.paper-summary {
+  margin: @medium * 1.5;
+  padding: @medium * 1.5;
+  border: @border;
+  border-radius: @border-radius;
+}
+
+/**
+ * Paper summary fonts.
+ */
+.paper-summary {
+  color: @black;
+  font-size: @medium;
+  line-height: @medium * 1.2;
+  font-weight: lighter;
+
+  &__section {
+    padding-bottom: @tooltip-content-vertical-padding;
+  }
+
+  &__title {
+    font-size: @large;
+    line-height: @large * 1.2;
+    font-weight: bold;
+  }
+
+  &__authors,
+  &__year {
+    color: lighten(@black, 10%);
+  }
+
+  &__abstract__show-more-label {
+    color: deepskyblue;
+  }
+}

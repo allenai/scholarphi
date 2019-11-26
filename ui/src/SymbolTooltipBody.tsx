@@ -17,7 +17,7 @@ export class SymbolTooltipBody extends React.Component<SymbolTooltipBodyProps> {
           {({
             symbols,
             mathMl,
-            setOpenDrawer,
+            setDrawerState,
             setSelectedSymbol,
             setJumpSymbol
           }) => {
@@ -65,7 +65,7 @@ export class SymbolTooltipBody extends React.Component<SymbolTooltipBodyProps> {
                 )}
                 {exactMatchSymbol === null && nearMatchSymbol === null && (
                   <div className="tooltip-body__label tooltip-body__section">
-                    This is the first place this symbol has appeared.
+                    This is the only place this symbol appears.
                   </div>
                 )}
                 {(exactMatchSymbol !== null || nearMatchSymbol !== null) && (
@@ -86,7 +86,7 @@ export class SymbolTooltipBody extends React.Component<SymbolTooltipBodyProps> {
                       className="tooltip-body__action-button"
                       onClick={() => {
                         setSelectedSymbol(this.props.symbol);
-                        setOpenDrawer(true);
+                        setDrawerState("show-symbols");
                       }}
                     >
                       View {matches.length} other References
