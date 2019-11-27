@@ -1,6 +1,7 @@
 import logging
 import re
-from typing import Iterator, List, NamedTuple, Optional, Set
+from typing import (Any, Callable, Dict, Iterator, List, NamedTuple, Optional,
+                    Set, Union)
 
 from TexSoup import RArg, TexNode, TexSoup, TokenWithPosition
 
@@ -127,7 +128,7 @@ class CitationExtractor:
         """
         A citation command typically has this structure:
 
-        \command[prenote][postnote]{keys}[punctuation]
+        \\command[prenote][postnote]{keys}[punctuation]
 
         where prenote, postnote, and punctuation are all optional.
         Reference: https://ctan.math.illinois.edu/macros/latex/contrib/biblatex/doc/biblatex.pdf
@@ -146,11 +147,66 @@ class CitationExtractor:
         return keys_match.group(1).split(",")
 
 
-MATH_ENVIRONMENT_PAIRS = {
-    "dollar": {"delimiter": r"(?<![\\])\$"},
-    "equation": {"start": r"\\begin{equation}", "end": r"\\end{equation}"},
-    "bracket": {"start": r"(?<![\\])\\\[", "end": r"(?<![\\])\\\]"},
+class NamedEnv(NamedTuple):
+    name: str
+    star: bool
+
+
+class DelimitedEnv(NamedTuple):
+    delimiter: str
+
+
+class StartEndEnv(NamedTuple):
+    start: str
+    end: str
+
+
+EnvSpec = Union[DelimitedEnv, NamedEnv, StartEndEnv]
+
+
+"""
+List of math environments from: https://latex.wikia.org/wiki/List_of_LaTeX_environments
+TODO(andrewhead): Support 'alignat'.
+"""
+MATH_ENVIRONMENT_SPECS: Dict[str, EnvSpec] = {
+    # Inline math
+    "dollar": DelimitedEnv(r"(?<![\\])\$"),
+    "parens": StartEndEnv(r"(?<![\\])\\\(", r"(?<![\\])\\\)"),
+    "math": NamedEnv("math", star=False),
+    # Display math
+    "dollardollar": DelimitedEnv(r"(?<![\\])\$\$"),
+    "bracket": StartEndEnv(r"(?<![\\])\\\[", r"(?<![\\])\\\]"),
+    "displaymath": NamedEnv("displaymath", star=True),
+    "equation": NamedEnv("equation", star=True),
+    "split": NamedEnv("split", star=True),
+    "array": NamedEnv("array", star=True),
+    "eqnarray": NamedEnv("eqnarray", star=True),
+    "multiline": NamedEnv("multiline", star=True),
+    "gather": NamedEnv("gather", star=True),
+    "align": NamedEnv("align", star=True),
+    "flalign": NamedEnv("flalign", star=True),
 }
+
+
+def make_math_environment_patterns() -> List[Pattern]:
+
+    begin: Callable[[str], str] = lambda name: r"\\begin{" + name + r"}"
+    end: Callable[[str], str] = lambda name: r"\\end{" + name + r"}"
+
+    patterns: List[Pattern] = []
+    for name, spec in MATH_ENVIRONMENT_SPECS.items():
+        if isinstance(spec, DelimitedEnv):
+            patterns.append(Pattern(name + "_delimiter", spec.delimiter))
+        elif isinstance(spec, StartEndEnv):
+            patterns.append(Pattern(name + "_start", spec.start))
+            patterns.append(Pattern(name + "_end", spec.end))
+        elif isinstance(spec, NamedEnv):
+            patterns.append(Pattern(name + "_start", begin(spec.name)))
+            patterns.append(Pattern(name + "_end", end(spec.name)))
+            if spec.star:
+                patterns.append(Pattern(name + "s_start", begin(spec.name + r"\*")))
+                patterns.append(Pattern(name + "s_end", end(spec.name + r"\*")))
+    return patterns
 
 
 class EquationExtractor:
@@ -160,13 +216,7 @@ class EquationExtractor:
     """
 
     def __init__(self) -> None:
-        self.PATTERNS: List[Pattern] = []
-        for name, spec in MATH_ENVIRONMENT_PAIRS.items():
-            if "delimiter" in spec:
-                self.PATTERNS.append(Pattern(name + "_delimiter", spec["delimiter"]))
-            if "start" in spec and "end" in spec:
-                self.PATTERNS.append(Pattern(name + "_start", spec["start"]))
-                self.PATTERNS.append(Pattern(name + "_end", spec["end"]))
+        self.PATTERNS = make_math_environment_patterns()
 
     def parse(self, tex: str) -> Iterator[Equation]:
 
