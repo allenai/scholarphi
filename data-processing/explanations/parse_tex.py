@@ -11,9 +11,6 @@ TexFileName = str
 TexContents = str
 
 
-CITATION_COMMAND_NAMES = ["cite"]
-
-
 class Citation(NamedTuple):
     keys: List[str]
     """
@@ -23,23 +20,123 @@ class Citation(NamedTuple):
     end: int
 
 
+"""
+All citation commands from the biblatex package.
+The citation extractor takes advantage of the fact that almost all of these citation commands
+have the same format (see the regular expression in the citation extractor).
+
+Some of these commands are defined in more than one package. If so, we only list it under
+the first package comment subheading below.
+
+If you commands to this list, make sure to escape special characters (e.g., "*") as needed
+so these commands can be added to a regular expression.
+
+References:
+* biblatex manual. Section 3.8: Citation Commands,
+  https://ctan.math.illinois.edu/macros/latex/contrib/biblatex/doc/biblatex.pdf
+* natbib manual. Sections 2.3-6.
+  http://texdoc.net/texmf-dist/doc/latex/natbib/natbib.pdf
+* cite manual. http://ctan.mirrors.hoobly.com/macros/latex/contrib/cite/cite.pdf
+
+TODO(andrewhead): Provide support for the 'multicite' family of commands.
+TODO(andrewhead): Provide support for the 'volcite' family of commands.
+TODO(andrewhead): Provide support for low-level commands ('citename', 'citelist', 'citefield')
+TODO(andrewhead): Provide support for 'mcite' family of commands.
+TODO(andrewhead): Provide support for 'citetext' family of commands.
+"""
+CITATION_COMMAND_NAMES = [
+    # LaTeX built-in commands
+    "cite",
+    # biblatex
+    "Cite",
+    "parencite",
+    "Parencite",
+    "footcite",
+    "footcitetext",
+    "textcite",
+    "Textcite",
+    "smartcite",
+    "Smartcite",
+    r"cite\*",
+    r"parencite\*",
+    "supercite",
+    "autocite",
+    "Autocite",
+    r"autocite\*",
+    r"Autocite\*",
+    "citeauthor",
+    r"citeauthor\*",
+    "Citeauthor",
+    r"Citeauthor\*",
+    "citetitle",
+    r"citetitle\*",
+    "citeyear",
+    r"citeyear\*",
+    "citedate",
+    r"citedate\*",
+    "citeurl",
+    "fullcite",
+    "footfullcite",
+    "notecite",
+    "Notecite",
+    "pnotecite",
+    "Pnotecite",
+    "fnotecite",
+    # natbib
+    "citet",
+    "Citet",
+    r"citet\*",
+    r"Citet\*",
+    "citep",
+    "Citep",
+    r"citep\*",
+    r"Citep\*",
+    "citealt",
+    "Citealt",
+    r"citealt\*",
+    r"Citealt\*",
+    "citealp",
+    "Citealp",
+    r"citealp\*",
+    r"Citealp\*",
+    "citenum",
+    "citeyearpar",
+    "citefullauthor",
+    "Citefullauthor",
+    "citetalias",
+    "citepalias",
+    # 'cite' package
+    "citen",
+    "citeonline",
+]
+
+
 class CitationExtractor:
     def __init__(self) -> None:
-        self.PATTERNS: List[Pattern] = []
-        for command in CITATION_COMMAND_NAMES:
-            self.PATTERNS.append(Pattern(command, self._get_command_regex(command)))
+        self.PATTERNS: List[Pattern] = [
+            Pattern("citation", self._get_command_regex(CITATION_COMMAND_NAMES))
+        ]
 
     def parse(self, tex: str) -> Iterator[Citation]:
         scanner = scan_tex(tex, self.PATTERNS)
         for match in scanner:
-            keys = self._extract_keys(match.pattern.name, match.text)
+            keys = self._extract_keys(match.text)
             yield Citation(keys, match.start, match.end)
 
-    def _get_command_regex(self, command_name: str) -> str:
-        return r"\\" + command_name + "{[^}]*?}"
+    def _get_command_regex(self, commands: List[str]) -> str:
+        """
+        A citation command typically has this structure:
 
-    def _extract_keys(self, command_name: str, command_tex: str) -> List[str]:
-        keys_regex = r"\\" + command_name + "{([^}]*?)}"
+        \command[prenote][postnote]{keys}[punctuation]
+
+        where prenote, postnote, and punctuation are all optional.
+        Reference: https://ctan.math.illinois.edu/macros/latex/contrib/biblatex/doc/biblatex.pdf
+        """
+        command_names = r"(?:" + "|".join([r"\\" + c for c in commands]) + ")"
+        return command_names + r"(?:\[[^\]]*\]){0,2}{[^}]*?}(?:\[[^\]]*\])?"
+
+    def _extract_keys(self, command_tex: str) -> List[str]:
+        keys_regex = r".*(?:\[[^\]]*\]){0,2}{([^}]*?)}(?:\[[^\]]*\])?$"
         keys_match = re.match(keys_regex, command_tex)
         if keys_match is None or keys_match.group(1) is None:
             logging.warning(

@@ -1,9 +1,5 @@
-from explanations.parse_tex import (
-    BibitemExtractor,
-    CitationExtractor,
-    ColorLinksExtractor,
-    EquationExtractor,
-)
+from explanations.parse_tex import (BibitemExtractor, CitationExtractor,
+                                    ColorLinksExtractor, EquationExtractor)
 
 
 def test_extract_equation_from_dollar_sign():
@@ -83,6 +79,13 @@ def test_extract_citation():
     assert citation.keys == ["key1", "key2"]
     assert citation.start == 4
     assert citation.end == 20
+
+
+def test_extract_citation_from_cite_star():
+    extractor = CitationExtractor()
+    citations = list(extractor.parse("text\\cite*{key}"))
+    assert len(citations) == 1
+    assert citations[0].keys == ["key"]
 
 
 def test_extract_colorlinks():
