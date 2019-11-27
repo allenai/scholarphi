@@ -1,5 +1,9 @@
-from explanations.parse_tex import (BibitemExtractor, CitationExtractor,
-                                    ColorLinksExtractor, EquationExtractor)
+from explanations.parse_tex import (
+    BibitemExtractor,
+    CitationExtractor,
+    ColorLinksExtractor,
+    EquationExtractor,
+)
 
 
 def test_extract_equation_from_dollar_sign():
@@ -26,6 +30,16 @@ def test_extract_equation_from_equation_environment():
     assert equation.end == 31
     assert equation.content_tex == "x"
     assert equation.tex == "\\begin{equation}x\\end{equation}"
+
+
+def test_extract_equation_from_star_environment():
+    extractor = EquationExtractor()
+    equations = list(extractor.parse("\\begin{equation*}x\\end{equation*}"))
+    assert len(equations) == 1
+
+    equation = equations[0]
+    assert equation.start == 0
+    assert equation.end == 33
 
 
 def test_dont_extract_equation_from_command_argument_brackets():
