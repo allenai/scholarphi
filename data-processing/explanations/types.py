@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Any, Dict, List, NamedTuple, Optional
 
 """
@@ -10,7 +11,8 @@ AbsolutePath = str
 RelativePath = str
 
 
-class FileContents(NamedTuple):
+@dataclass(frozen=True)
+class FileContents:
     """
     Relative or absolute; depends on the path passed in for file reading.
     """
@@ -64,11 +66,6 @@ class S2Metadata(NamedTuple):
 """
 CITATIONS
 """
-
-
-class ColorizedCitation(NamedTuple):
-    hue: float
-    keys: List[str]
 
 
 class Bibitem(NamedTuple):
@@ -147,34 +144,6 @@ class SymbolWithId(NamedTuple):
 class EquationId(NamedTuple):
     tex_path: str
     equation_index: int
-
-
-class Equation(NamedTuple):
-    """
-    TeX for full equation environment (e.g., "$x + y$").
-    """
-
-    tex: str
-    """
-    TeX for the equation markup, inside the environment (e.g., "x + y")
-    """
-    content_tex: str
-    i: int
-    """
-    Indexes of characters in TeX where the equation appears.
-    """
-    start: int
-    end: int
-    """
-    Index at which the equation markup starts (corresponds to start of 'content_tex'.)
-    """
-    content_start: int
-
-
-class ColorizedEquation(NamedTuple):
-    hue: float
-    tex: str
-    i: EquationIndex
 
 
 """

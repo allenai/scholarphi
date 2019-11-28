@@ -4,20 +4,14 @@ import os.path
 from typing import Iterator, List, NamedTuple
 
 from explanations import directories
-from explanations.colorize_tex import colorize_equations
+from explanations.colorize_tex import ColorizedEntity, colorize_equations
 from explanations.directories import (
     get_data_subdirectory_for_arxiv_id,
     get_data_subdirectory_for_iteration,
     get_iteration_id,
 )
 from explanations.file_utils import clean_directory, find_files, read_file_tolerant
-from explanations.types import (
-    ArxivId,
-    ColorizedEquation,
-    FileContents,
-    Path,
-    RelativePath,
-)
+from explanations.types import ArxivId, FileContents, Path, RelativePath
 from explanations.unpack import unpack
 from scripts.command import ArxivBatchCommand
 
@@ -31,7 +25,7 @@ class ColorizationTask(NamedTuple):
 class ColorizationResult(NamedTuple):
     iteration: int
     tex: str
-    colorized_equations: List[ColorizedEquation]
+    colorized_equations: List[ColorizedEntity]
 
 
 class ColorizeEquations(ArxivBatchCommand[ColorizationTask, ColorizationResult]):
@@ -64,7 +58,7 @@ class ColorizeEquations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
 
     def process(self, item: ColorizationTask) -> Iterator[ColorizationResult]:
         for i, batch in enumerate(colorize_equations(item.file_contents.contents)):
-            yield ColorizationResult(i, batch.tex, batch.colorized_equations)
+            yield ColorizationResult(i, batch.tex, batch.entities)
 
     def save(self, item: ColorizationTask, result: ColorizationResult) -> None:
         iteration = result.iteration
@@ -98,10 +92,10 @@ class ColorizeEquations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
                         writer.writerow(
                             [
                                 item.tex_path,
-                                colorized_equation.i,
+                                colorized_equation.identifier["index"],
                                 iteration_id,
                                 colorized_equation.hue,
-                                colorized_equation.tex,
+                                colorized_equation.data["content_tex"],
                             ]
                         )
                     except Exception:  # pylint: disable=broad-except

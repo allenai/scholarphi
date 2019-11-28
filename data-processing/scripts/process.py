@@ -18,7 +18,11 @@ from scripts.compile_tex import (
     CompileTexSourcesWithColorizedEquations,
     CompileTexSourcesWithColorizedEquationTokens,
 )
-from scripts.debug_colorize_equation_tokens import DebugColorizeEquationTokens
+from scripts.debug_colorize_tex import (
+    DebugColorizeCitations,
+    DebugColorizeEquations,
+    DebugColorizeEquationTokens,
+)
 from scripts.diff_images import (
     DiffImagesWithColorizedCitations,
     DiffImagesWithColorizedEquations,
@@ -89,6 +93,8 @@ MAIN_PIPELINE_COMMANDS: List = [  # type: ignore
 ]
 
 DEBUG_COMMANDS: List = [  # type: ignore
+    DebugColorizeCitations,
+    DebugColorizeEquations,
     DebugColorizeEquationTokens,
     AnnotatePdfsWithCitationBoxes,
     AnnotatePdfsWithEquationBoxes,
@@ -99,7 +105,7 @@ DEBUG_COMMANDS: List = [  # type: ignore
 ALL_COMMANDS = PREPARATION_COMMANDS + MAIN_PIPELINE_COMMANDS + DEBUG_COMMANDS
 
 
-def run_command(cmd: Command[Any, Any]) -> None:
+def run_command(cmd: Command) -> None:
     for item in cmd.load():
         for result in cmd.process(item):
             cmd.save(item, result)

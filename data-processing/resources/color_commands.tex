@@ -46,7 +46,7 @@
 \pdfcolorstack0 push {\current@color}%
 \else\ifx\Gin@driver\dvipsdrivername%
 \special{color push \current@color}%
-\else\typeout{Coloring not implemented for driver \Gin@driver}\INVALIDCOMMANDFORCEERROR%
+\else\message{Coloring not implemented for driver \Gin@driver}%
 \fi\fi%
 }}
 % Command for reverting a color set in an 'scholarsetcolor' command.
@@ -55,7 +55,7 @@
 \pdfcolorstack0 pop%
 \else\ifx\Gin@driver\dvipsdrivername%
 \special{color pop}%
-\else\typeout{Coloring not implemented for driver \Gin@driver}\INVALIDCOMMANDFORCEERROR%
+\else\message{Coloring not implemented for driver \Gin@driver}%
 \fi\fi%
 }%
 }

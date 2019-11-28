@@ -5,7 +5,7 @@ import os
 import os.path
 import re
 import subprocess
-from typing import List
+from typing import Iterator, List
 
 from explanations.types import CompilationResult
 
@@ -93,3 +93,21 @@ def get_compiled_pdfs(compiled_tex_dir: str) -> List[str]:
             return pdf_paths
 
     return []
+
+
+def get_errors(tex_engine_output: bytes, context: int = 5) -> Iterator[bytes]:
+    """
+    Extract a list of TeX errors from the TeX compiler's output. 'context' is the number of
+    lines to extract after each error symbol ('!'). The list of errors produced by this method may
+    be inaccurate and incomplete.
+    """
+    lines = tex_engine_output.splitlines()
+    for i, line in enumerate(lines):
+        if line.startswith(b"!"):
+            yield b"\n".join(lines[i : i + context])
+
+
+def is_driver_unimplemented(tex_engine_output: bytes) -> bool:
+    # This string should be exactly the same as the one that we program the color command to emit
+    # when no driver is found, in 'color_commands.tex'.
+    return br"Coloring not implemented for driver" in tex_engine_output
