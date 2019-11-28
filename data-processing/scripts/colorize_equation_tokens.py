@@ -4,12 +4,12 @@ import os.path
 from typing import Dict, Iterator, List, NamedTuple
 
 from explanations import directories
-from explanations.colorize_tex import TokenColorizationBatch, colorize_equation_tokens
-from explanations.directories import (
-    get_data_subdirectory_for_arxiv_id,
-    get_data_subdirectory_for_iteration,
-)
-from explanations.file_utils import clean_directory, load_tokens, read_file_tolerant
+from explanations.colorize_tex import (TokenColorizationBatch,
+                                       colorize_equation_tokens)
+from explanations.directories import (get_data_subdirectory_for_arxiv_id,
+                                      get_data_subdirectory_for_iteration)
+from explanations.file_utils import (clean_directory, load_tokens,
+                                     read_file_tolerant)
 from explanations.types import ArxivId, FileContents, Path, TokenWithOrigin
 from explanations.unpack import unpack
 from scripts.command import ArxivBatchCommand

@@ -2,27 +2,22 @@ import colorsys
 import logging
 import os
 import re
-from typing import Dict, Iterator, List, NamedTuple, Optional
+from dataclasses import dataclass
+from typing import Any, Callable, Dict, Iterator, List, NamedTuple, Optional, cast
 
 import numpy as np
 
 from explanations.parse_tex import (
+    Citation,
     CitationExtractor,
     ColorLinksExtractor,
     DocumentclassExtractor,
+    Entity,
+    Equation,
     EquationExtractor,
-    TexContents,
     TexFileName,
 )
-from explanations.types import (
-    CharacterRange,
-    ColorizedCitation,
-    ColorizedEquation,
-    Equation,
-    EquationId,
-    FileContents,
-    TokenWithOrigin,
-)
+from explanations.types import CharacterRange, EquationId, FileContents, TokenWithOrigin
 
 """
 All TeX coloring operations follow the same process.
@@ -77,10 +72,9 @@ def generate_hues() -> Iterator[float]:
     for hue in HUES:
         yield hue
     logging.debug(
-        (
-            "Out of hues. Hopefully the caller is restarting this generator to keep coloring."
-        )
+        "Out of hues. Hopefully the caller is restarting this generator to keep coloring."
     )
+    return
 
 
 def insert_color_in_tex(tex: str, hue: float, start: int, end: int) -> str:
@@ -127,126 +121,143 @@ def _get_color_end_tex() -> str:
     return r"\llap{\scholarrevertcolor}"
 
 
-class CitationColorizationBatch(NamedTuple):
+@dataclass(frozen=True)
+class ColorizedEntity:
+    hue: float
+    "Hue (from 0 to 1) of the color assigned to entity."
+
+    identifier: Dict[str, Any]
+    "Unique identifier that will distinguish this entity from others from the same tex_path."
+
     tex: str
-    colorized_citations: List[ColorizedCitation]
+    "TeX for this entity."
+
+    context_tex: str
+    "A fixed amount of context before and after the TeX where this entity appears."
+
+    data: Dict[str, Any]
+    "Additional data for the entity that should be saved to CSV."
+
+
+class ColorizationBatch(NamedTuple):
+    tex: str
+    entities: List[ColorizedEntity]
 
 
 def colorize_citations(
-    tex: str, insert_color_macros: bool = True, preset_hue: Optional[float] = None
-) -> Iterator[CitationColorizationBatch]:
+    tex: str,
+    insert_color_macros: bool = True,
+    batch_size: Optional[int] = None,
+    preset_hue: Optional[float] = None,
+) -> Iterator[ColorizationBatch]:
+    """
+    'batch_size' is the maximum number of citations to process at a time. It defaults to the number
+    of hues available for coloring. You cannot specify more than the number of hues.
+    """
 
-    citation_extractor = CitationExtractor()
+    def get_entity_metadata(entity: Entity) -> Dict[str, Any]:
+        citation = cast(Citation, entity)
+        return {"keys": citation.keys}
+
+    batches = colorize_entities(
+        tex,
+        CitationExtractor(),
+        get_entity_metadata,
+        insert_color_macros,
+        batch_size,
+        preset_hue,
+    )
+    for batch in batches:
+        yield batch
+
+
+def colorize_equations(
+    tex: str,
+    insert_color_macros: bool = True,
+    batch_size: Optional[int] = None,
+    preset_hue: Optional[float] = None,
+) -> Iterator[ColorizationBatch]:
+    def get_entity_metadata(entity: Entity) -> Dict[str, Any]:
+        equation = cast(Equation, entity)
+        return {"content_tex": equation.content_tex}
+
+    batches = colorize_entities(
+        tex,
+        EquationExtractor(),
+        get_entity_metadata,
+        insert_color_macros,
+        batch_size,
+        preset_hue,
+    )
+    for batch in batches:
+        yield batch
+
+
+def colorize_entities(
+    tex: str,
+    entity_extractor: Any,
+    get_entity_metadata: Callable[[Entity], Dict[str, Any]],
+    insert_color_macros: bool = True,
+    batch_size: Optional[int] = None,
+    preset_hue: Optional[float] = None,
+) -> Iterator[ColorizationBatch]:
+
+    batch_size = min(batch_size, NUM_HUES) if batch_size is not None else NUM_HUES
+    CONTEXT_SIZE = 100
+
     if insert_color_macros:
         tex = add_color_macros(tex)
-
     tex = _disable_hyperref_coloring(tex)
 
-    citations = list(citation_extractor.parse(tex))
+    entities = list(entity_extractor.parse(tex))
 
-    # Order from last-to-first so we can add color commands without messing with the offsets of
-    # citations that haven't yet been colored.
-    citations_reverse_order = sorted(citations, key=lambda c: c.start, reverse=True)
+    # Order entities from last-to-first so we can add color commands without messing with the offsets of
+    # entities that haven't yet been colored.
+    entities_reverse_order = sorted(entities, key=lambda e: e.start, reverse=True)
 
     hue_generator = generate_hues()
-    colorized_citations: List[ColorizedCitation] = []
+    colorized_entities: List[ColorizedEntity] = []
 
     colorized_tex = tex
-    for c in citations_reverse_order:
-        try:
-            if preset_hue is None:
-                hue = next(hue_generator)
-            else:
-                hue = preset_hue
-        except StopIteration:
+    item_index = 0
+    for e, ei in zip(entities_reverse_order, range(len(entities) - 1, -1, -1)):
+        if preset_hue is not None:
+            hue = preset_hue
+        else:
+            hue = next(hue_generator)
+
+        entity_tex = tex[e.start : e.end]
+        content_tex = tex[max(0, e.start - CONTEXT_SIZE) : e.end + CONTEXT_SIZE]
+
+        colorized_entities.insert(
+            0,
+            ColorizedEntity(
+                hue, {"index": ei}, entity_tex, content_tex, get_entity_metadata(e),
+            ),
+        )
+        colorized_tex = insert_color_in_tex(colorized_tex, hue, e.start, e.end)
+
+        item_index += 1
+
+        if item_index == batch_size:
             # When the hues run out, notify caller that a batch has been finished.
             # Provide the caller with the colorized tex and list of colors.
-            yield CitationColorizationBatch(colorized_tex, colorized_citations)
+            yield ColorizationBatch(colorized_tex, colorized_entities)
 
             # Then reset the TeX so it is not colorized so we can start coloring with the
             # same hues without collisions. And clear the list of colors assigned.
             colorized_tex = tex
-            colorized_citations = []
+            colorized_entities = []
 
             # Reset the hue generator.
             hue_generator = generate_hues()
 
-            # And get the hue for the next entity.
-            if preset_hue is None:
-                hue = next(hue_generator)
-            else:
-                hue = preset_hue
+            # Reset the citation counter to 0.
+            item_index = 0
 
-        colorized_tex = insert_color_in_tex(colorized_tex, hue, c.start, c.end)
-        colorized_citations.insert(0, ColorizedCitation(hue, c.keys))
-
-    # When finished coloring, check if there are any
-    if len(colorized_citations) > 0:
-        yield CitationColorizationBatch(colorized_tex, colorized_citations)
-
-
-def _disable_hyperref_coloring(tex: str) -> str:
-    """
-    Coloring from the hyperref package will overwrite the coloring of citations. Disable coloring
-    from the hyperref package.
-    """
-    colorlinks_extractor = ColorLinksExtractor()
-    colorlinks_elements = list(colorlinks_extractor.parse(tex))
-
-    colorlinks_reverse_order = sorted(
-        colorlinks_elements, key=lambda c: c.value_start, reverse=True,
-    )
-
-    for colorlinks in colorlinks_reverse_order:
-        tex = tex[: colorlinks.value_start] + "false" + tex[colorlinks.value_end :]
-
-    return tex
-
-
-class EquationColorizationBatch(NamedTuple):
-    tex: str
-    colorized_equations: List[ColorizedEquation]
-
-
-def colorize_equations(
-    tex: str, insert_color_macros: bool = True, preset_hue: Optional[float] = None
-) -> Iterator[EquationColorizationBatch]:
-    # TODO(andrewhead): Refactor this to share code with colorize_citations.
-    if insert_color_macros:
-        tex = add_color_macros(tex)
-
-    equation_extractor = EquationExtractor()
-    equations = list(equation_extractor.parse(tex))
-
-    equations_reverse_order = sorted(equations, key=lambda e: e.start, reverse=True)
-
-    hue_generator = generate_hues()
-    colorized_equations: List[ColorizedEquation] = []
-
-    colorized_tex = tex
-    for e in equations_reverse_order:
-        try:
-            if preset_hue is None:
-                hue = next(hue_generator)
-            else:
-                hue = preset_hue
-        except StopIteration:
-            yield EquationColorizationBatch(colorized_tex, colorized_equations)
-            colorized_tex = tex
-            colorized_equations = []
-            hue_generator = generate_hues()
-            if preset_hue is None:
-                hue = next(hue_generator)
-            else:
-                hue = preset_hue
-
-        colorized_tex = insert_color_in_tex(
-            colorized_tex, hue, e.content_start, e.content_start + len(e.content_tex)
-        )
-        colorized_equations.insert(0, ColorizedEquation(hue, e.content_tex, e.i))
-
-    if len(colorized_equations) > 0:
-        yield EquationColorizationBatch(colorized_tex, colorized_equations)
+    # When finished coloring, yield any colorized entities that haven't yet bee yielded.
+    if len(colorized_entities) > 0:
+        yield ColorizationBatch(colorized_tex, colorized_entities)
 
 
 class ColorizedTokenWithOrigin(NamedTuple):
@@ -453,3 +464,21 @@ def _get_color_positions(token: TokenWithOrigin, equation: Equation) -> Characte
     start = max(token.start, 0)
     end = min(token.end, len(equation_tex))
     return CharacterRange(start, end)
+
+
+def _disable_hyperref_coloring(tex: str) -> str:
+    """
+    Coloring from the hyperref package will overwrite the coloring of citations. Disable coloring
+    from the hyperref package.
+    """
+    colorlinks_extractor = ColorLinksExtractor()
+    colorlinks_elements = list(colorlinks_extractor.parse(tex))
+
+    colorlinks_reverse_order = sorted(
+        colorlinks_elements, key=lambda c: c.value_start, reverse=True,
+    )
+
+    for colorlinks in colorlinks_reverse_order:
+        tex = tex[: colorlinks.value_start] + "false" + tex[colorlinks.value_end :]
+
+    return tex

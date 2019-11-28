@@ -5,20 +5,14 @@ import os.path
 from typing import Iterator, List, NamedTuple
 
 from explanations import directories
-from explanations.colorize_tex import colorize_citations
+from explanations.colorize_tex import ColorizedEntity, colorize_citations
 from explanations.directories import (
     get_data_subdirectory_for_arxiv_id,
     get_data_subdirectory_for_iteration,
     get_iteration_id,
 )
 from explanations.file_utils import clean_directory, find_files, read_file_tolerant
-from explanations.types import (
-    ArxivId,
-    ColorizedCitation,
-    FileContents,
-    Path,
-    RelativePath,
-)
+from explanations.types import ArxivId, FileContents, Path, RelativePath
 from explanations.unpack import unpack
 from scripts.command import ArxivBatchCommand
 
@@ -32,7 +26,7 @@ class ColorizationTask(NamedTuple):
 class ColorizationResult(NamedTuple):
     iteration: int
     tex: str
-    colorized_citations: List[ColorizedCitation]
+    colorized_citations: List[ColorizedEntity]
 
 
 class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult]):
@@ -65,7 +59,7 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
 
     def process(self, item: ColorizationTask) -> Iterator[ColorizationResult]:
         for i, batch in enumerate(colorize_citations(item.file_contents.contents)):
-            yield ColorizationResult(i, batch.tex, batch.colorized_citations)
+            yield ColorizationResult(i, batch.tex, batch.entities)
 
     def save(self, item: ColorizationTask, result: ColorizationResult) -> None:
         iteration = result.iteration
@@ -106,7 +100,7 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
                                 item.tex_path,
                                 iteration_id,
                                 colorized_citation.hue,
-                                json.dumps(colorized_citation.keys),
+                                json.dumps(colorized_citation.data["keys"]),
                             ]
                         )
                     except Exception:  # pylint: disable=broad-except

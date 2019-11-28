@@ -137,6 +137,18 @@
         "PYTHONPATH": ".",
         "PATH": "/usr/local/bin"
       }
+    },
+    {
+      "name": "Debug Colorize Equations",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/process.py",
+      "console": "integratedTerminal",
+      "args": ["-v", "debug-colorize-equations"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "."
+      }
     }
   ]
 }

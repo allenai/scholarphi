@@ -1,24 +1,29 @@
 import logging
 import re
-from typing import (Any, Callable, Dict, Iterator, List, NamedTuple, Optional,
-                    Set, Union)
+from dataclasses import dataclass
+from typing import Callable, Dict, Iterator, List, NamedTuple, Optional, Set, Union
 
 from TexSoup import RArg, TexNode, TexSoup, TokenWithPosition
 
 from explanations.scan_tex import Match, Pattern, scan_tex
-from explanations.types import Bibitem, Equation
+from explanations.types import Bibitem
 
 TexFileName = str
 TexContents = str
 
 
-class Citation(NamedTuple):
-    keys: List[str]
-    """
-    Indexes of characters in TeX where the citation appears.
-    """
+@dataclass(frozen=True)
+class Entity:
     start: int
+    "Character position where this entity begins in the TeX."
+
     end: int
+    "Character position where this entity ends in the TeX."
+
+
+@dataclass(frozen=True)
+class Citation(Entity):
+    keys: List[str]
 
 
 """
@@ -122,7 +127,7 @@ class CitationExtractor:
         scanner = scan_tex(tex, self.PATTERNS)
         for match in scanner:
             keys = self._extract_keys(match.text)
-            yield Citation(keys, match.start, match.end)
+            yield Citation(match.start, match.end, keys)
 
     def _get_command_regex(self, commands: List[str]) -> str:
         """
@@ -209,6 +214,21 @@ def make_math_environment_patterns() -> List[Pattern]:
     return patterns
 
 
+@dataclass(frozen=True)
+class Equation(Entity):
+    i: int
+    "Index of this equation in the TeX document."
+
+    tex: str
+    "TeX for the full equation environment (e.g., '$x + y$')."
+
+    content_start: int
+    "Index of character where the contents (i.e. 'content_tex') of the equation starts"
+
+    content_tex: str
+    "TeX for the equation contents, inside the environment (e.g., 'x + y')."
+
+
 class EquationExtractor:
     """
     TODO(andrewhead): Cases that this doesn't yet handle:
@@ -244,12 +264,12 @@ class EquationExtractor:
             equation_tex = self._tex[start_match.start : match.end]
             content_tex = self._tex[start_match.end : match.start]
             yield Equation(
-                equation_tex,
-                content_tex,
-                self._equation_index,
                 start_match.start,
                 match.end,
+                self._equation_index,
+                equation_tex,
                 start_match.end,
+                content_tex,
             )
             self._equation_index += 1
 
@@ -266,9 +286,9 @@ class EquationExtractor:
         return any([m.pattern.name == start_pattern_name for m in self._stack])
 
 
-class Documentclass(NamedTuple):
-    start: int
-    end: int
+@dataclass(frozen=True)
+class Documentclass(Entity):
+    pass
 
 
 class DocumentclassExtractor:

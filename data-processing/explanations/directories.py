@@ -75,8 +75,14 @@ ANNOTATED_PDFS_WITH_EQUATION_TOKEN_BOXES_DIR = os.path.join(
 SOURCES_WITH_ANNOTATED_SYMBOLS_DIR = os.path.join(
     DATA_DIR, "30-sources-with-annotated-symbols"
 )
-ERRORS_FROM_COLORIZING_EQUATION_TOKENS_DIR = os.path.join(
-    DATA_DIR, "31-errors-from-colorizing-equation-tokens"
+DEBUGGING_COLORIZING_CITATIONS_DIR = os.path.join(
+    DATA_DIR, "31-debugging-colorizing-citations"
+)
+DEBUGGING_COLORIZING_EQUATIONS_DIR = os.path.join(
+    DATA_DIR, "32-debugging-colorizing-equations"
+)
+DEBUGGING_COLORIZING_EQUATION_TOKENS_DIR = os.path.join(
+    DATA_DIR, "33-debugging-colorizing-equation-tokens"
 )
 
 # Directories for utilities

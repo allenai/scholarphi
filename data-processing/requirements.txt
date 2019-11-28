@@ -1,7 +1,7 @@
 beautifulsoup4==4.8.0
 lxml
 numpy
-opencv-python==3.3.0.10
+opencv-python==3.4.2.16
 peewee
 PyPDF2
 psycopg2-binary

@@ -1,9 +1,12 @@
 import re
 
-from explanations.colorize_tex import (COLOR_MACRO_TEX, add_color_macros,
-                                       colorize_citations,
-                                       colorize_equation_tokens,
-                                       colorize_equations)
+from explanations.colorize_tex import (
+    COLOR_MACRO_TEX,
+    add_color_macros,
+    colorize_citations,
+    colorize_equation_tokens,
+    colorize_equations,
+)
 from explanations.types import FileContents, TokenWithOrigin
 
 COLOR_PATTERN = (
@@ -65,7 +68,7 @@ def test_color_citations():
     matches = re.findall(COLOR_PATTERN, colorized)
     assert matches[0] == "\\cite{source1,source2}"
     assert len(citations) == 1
-    assert citations[0].keys == ["source1", "source2"]
+    assert citations[0].data["keys"] == ["source1", "source2"]
 
 
 def test_disable_hyperref_colors():
@@ -81,13 +84,13 @@ def test_color_equations():
     colorized, equations = next(colorize_equations(tex, insert_color_macros=False))
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 2
-    assert matches[0] == "eq1"
-    assert matches[1] == "eq2"
+    assert matches[0] == "$eq1$"
+    assert matches[1] == "$eq2$"
 
     equation0_info = equations[0]
     assert isinstance(equation0_info.hue, float)
-    assert equation0_info.tex == "eq1"
-    assert equation0_info.i == 0
+    assert equation0_info.identifier["index"] == 0
+    assert equation0_info.data["content_tex"] == "eq1"
 
 
 def test_color_equation_in_argument():
@@ -96,7 +99,7 @@ def test_color_equation_in_argument():
     assert colorized.startswith("\\caption")
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 1
-    assert matches[0] == "eq1"
+    assert matches[0] == "$eq1$"
 
 
 def test_color_tokens():

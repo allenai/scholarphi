@@ -28,9 +28,9 @@ the bottom of this README for more ideas.
 
 Once you have installed these dependencies, install the 
 necessary Python dependencies. First, if you haven't 
-already, install Python 3 on your system.  Then, set up a 
-Python virtual environment and install dependencies to that 
-environment like so:
+already, install Python 3.7 or higher on your system.  Then, 
+set up a Python virtual environment and install dependencies 
+to that environment like so:
 
 ```bash
 pip install virtualenv           # install virtualenv for virtual environtment management
