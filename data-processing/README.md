@@ -142,7 +142,7 @@ If you're just testing out the pipeline, consider making an
 Then run the following command to start off the pipeline:
 
 ```bash
-python scripts/process.py fetch-arxiv-sources arxiv_ids.txt
+python scripts/process.py fetch-arxiv-sources --arxiv-ids-file arxiv_ids.txt
 ```
 
 Once you have done this, you can run the rest of the steps 
