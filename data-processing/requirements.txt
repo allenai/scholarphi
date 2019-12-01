@@ -9,6 +9,7 @@ reportlab
 requests
 TexSoup
 Wand
+dataclasses
 
 # Development dependencies
 black
