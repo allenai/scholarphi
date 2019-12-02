@@ -18,6 +18,9 @@ SYMBOL_MATCHES_DIR = os.path.join(DATA_DIR, "08-symbol-matches")
 SOURCES_WITH_COLORIZED_CITATIONS_DIR = os.path.join(
     DATA_DIR, "09-sources-with-colorized-citations"
 )
+SOURCES_WITH_COLORIZED_CITATIONS_PRESET_HUE_DIR = os.path.join(
+    DATA_DIR, "09x-sources-with-colorized-citations-preset-hue"
+)
 SOURCES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
     DATA_DIR, "10-sources-with-colorized-equations"
 )

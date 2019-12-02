@@ -41,11 +41,14 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
     def get_arxiv_ids_dir(self) -> Path:
         return directories.SOURCES_DIR
 
+    def get_sources_with_colorized_citations_dir(self) -> str:
+        return directories.SOURCES_WITH_COLORIZED_CITATIONS_DIR
+
     def load(self) -> Iterator[ColorizationTask]:
         for arxiv_id in self.arxiv_ids:
 
             output_root = get_data_subdirectory_for_arxiv_id(
-                directories.SOURCES_WITH_COLORIZED_CITATIONS_DIR, arxiv_id
+                self.get_sources_with_colorized_citations_dir(), arxiv_id
             )
             clean_directory(output_root)
 
@@ -68,7 +71,7 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
 
         iteration_id = get_iteration_id(item.tex_path, iteration)
         output_sources_path = get_data_subdirectory_for_iteration(
-            directories.SOURCES_WITH_COLORIZED_CITATIONS_DIR,
+            self.get_sources_with_colorized_citations_dir(),
             item.arxiv_id,
             iteration_id,
         )
@@ -108,3 +111,23 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
                             "Couldn't write row for citation for arXiv %s: can't be converted to utf-8",
                             item.arxiv_id,
                         )
+
+
+class ColorizeCitationsPresetHue(ColorizeCitations):
+    @staticmethod
+    def get_name() -> str:
+        return "colorize-citations-preset-hue"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Instrument TeX to colorize citations with preset hue."
+
+    def get_sources_with_colorized_citations_dir(self) -> str:
+        return directories.SOURCES_WITH_COLORIZED_CITATIONS_PRESET_HUE_DIR
+
+    def process(self, item: ColorizationTask) -> Iterator[ColorizationResult]:
+        # gold_rgb = (255, 215, 0)
+        # gold_hsv = colorsys.rgb_to_hsv(*gold_rgb)
+        # >> (0.14052287581699346, 1.0, 255)
+        for i, batch in enumerate(colorize_citations(item.file_contents.contents, preset_hue=0.14052287581699346)):
+            yield ColorizationResult(i, batch.tex, batch.entities)

@@ -8,7 +8,7 @@ from scripts.annotate_pdfs import (
     AnnotatePdfsWithEquationTokenBoxes,
 )
 from scripts.annotate_symbols import AnnotateTexWithSymbolMarkers
-from scripts.colorize_citations import ColorizeCitations
+from scripts.colorize_citations import ColorizeCitations, ColorizeCitationsPresetHue
 from scripts.colorize_equation_tokens import ColorizeEquationTokens
 from scripts.colorize_equations import ColorizeEquations
 from scripts.command import Command
@@ -68,6 +68,7 @@ MAIN_PIPELINE_COMMANDS: List = [  # type: ignore
     ExtractBibitems,
     ResolveBibitems,
     ColorizeCitations,
+    ColorizeCitationsPresetHue,
     ColorizeEquations,
     ExtractEquations,
     ExtractSymbols,
