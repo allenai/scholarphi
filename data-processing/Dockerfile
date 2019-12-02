@@ -63,7 +63,7 @@ WORKDIR /data-processing
 COPY . .
 
 # Set default Python to Python 3
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 
 # Set up path to include Python scripts
 ENV PYTHONPATH="/data-processing"
