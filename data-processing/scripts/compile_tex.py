@@ -118,6 +118,22 @@ class CompileTexSourcesWithColorizedCitations(CompileTexCommand):
         return directories.COMPILED_SOURCES_WITH_COLORIZED_CITATIONS_DIR
 
 
+class VisualValidateCompileTexSourcesWithColorizedCitations(CompileTexSourcesWithColorizedCitations):
+    @staticmethod
+    def get_name() -> str:
+        return "visual-validate-compile-tex-with-colorized-citations"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Compile TeX sources with colorized citations (preset hue)."
+
+    def get_sources_base_dir(self) -> str:
+        return directories.VISUAL_VALIDATE_SOURCES_WITH_COLORIZED_CITATIONS_DIR
+
+    def get_output_base_dir(self) -> AbsolutePath:
+        return directories.VISUAL_VALIDATE_COMPILED_SOURCES_WITH_COLORIZED_CITATIONS_DIR
+
+
 class CompileTexSourcesWithColorizedEquations(CompileTexCommand):
     @staticmethod
     def get_name() -> str:

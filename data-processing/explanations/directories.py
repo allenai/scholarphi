@@ -18,8 +18,8 @@ SYMBOL_MATCHES_DIR = os.path.join(DATA_DIR, "08-symbol-matches")
 SOURCES_WITH_COLORIZED_CITATIONS_DIR = os.path.join(
     DATA_DIR, "09-sources-with-colorized-citations"
 )
-SOURCES_WITH_COLORIZED_CITATIONS_PRESET_HUE_DIR = os.path.join(
-    DATA_DIR, "09x-sources-with-colorized-citations-preset-hue"
+VISUAL_VALIDATE_SOURCES_WITH_COLORIZED_CITATIONS_DIR = os.path.join(
+    DATA_DIR, "09x-visual-validate-sources-with-colorized-citations"
 )
 SOURCES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
     DATA_DIR, "10-sources-with-colorized-equations"
@@ -30,6 +30,9 @@ SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
 COMPILED_SOURCES_DIR = os.path.join(DATA_DIR, "12-compiled-sources")
 COMPILED_SOURCES_WITH_COLORIZED_CITATIONS_DIR = os.path.join(
     DATA_DIR, "13-compiled-sources-with-colorized-citations"
+)
+VISUAL_VALIDATE_COMPILED_SOURCES_WITH_COLORIZED_CITATIONS_DIR = os.path.join(
+    DATA_DIR, "13x-visual-validate-compiled-sources-with-colorized-citations"
 )
 COMPILED_SOURCES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
     DATA_DIR, "14-compiled-sources-with-colorized-equations"

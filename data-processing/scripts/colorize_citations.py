@@ -113,17 +113,17 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
                         )
 
 
-class ColorizeCitationsPresetHue(ColorizeCitations):
+class VisualValidateColorizeCitations(ColorizeCitations):
     @staticmethod
     def get_name() -> str:
-        return "colorize-citations-preset-hue"
+        return "visual-validate-colorize-citations"
 
     @staticmethod
     def get_description() -> str:
         return "Instrument TeX to colorize citations with preset hue."
 
     def get_sources_with_colorized_citations_dir(self) -> str:
-        return directories.SOURCES_WITH_COLORIZED_CITATIONS_PRESET_HUE_DIR
+        return directories.VISUAL_VALIDATE_SOURCES_WITH_COLORIZED_CITATIONS_DIR
 
     def process(self, item: ColorizationTask) -> Iterator[ColorizationResult]:
         # gold_rgb = (255, 215, 0)

@@ -8,13 +8,13 @@ from scripts.annotate_pdfs import (
     AnnotatePdfsWithEquationTokenBoxes,
 )
 from scripts.annotate_symbols import AnnotateTexWithSymbolMarkers
-from scripts.colorize_citations import ColorizeCitations, ColorizeCitationsPresetHue
+from scripts.colorize_citations import ColorizeCitations, VisualValidateColorizeCitations
 from scripts.colorize_equation_tokens import ColorizeEquationTokens
 from scripts.colorize_equations import ColorizeEquations
 from scripts.command import Command
 from scripts.compile_tex import (
     CompileTexSources,
-    CompileTexSourcesWithColorizedCitations,
+    CompileTexSourcesWithColorizedCitations, VisualValidateCompileTexSourcesWithColorizedCitations,
     CompileTexSourcesWithColorizedEquations,
     CompileTexSourcesWithColorizedEquationTokens,
 )
@@ -68,7 +68,7 @@ MAIN_PIPELINE_COMMANDS: List = [  # type: ignore
     ExtractBibitems,
     ResolveBibitems,
     ColorizeCitations,
-    ColorizeCitationsPresetHue,
+    VisualValidateColorizeCitations,
     ColorizeEquations,
     ExtractEquations,
     ExtractSymbols,
@@ -76,6 +76,7 @@ MAIN_PIPELINE_COMMANDS: List = [  # type: ignore
     ColorizeEquationTokens,
     CompileTexSources,
     CompileTexSourcesWithColorizedCitations,
+    VisualValidateCompileTexSourcesWithColorizedCitations,
     CompileTexSourcesWithColorizedEquations,
     CompileTexSourcesWithColorizedEquationTokens,
     RasterPages,
