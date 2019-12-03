@@ -40,11 +40,14 @@ class ColorizeEquations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
     def get_arxiv_ids_dir(self) -> Path:
         return directories.SOURCES_DIR
 
+    def get_sources_with_colorized_equations_dir(self) -> str:
+        return directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR
+
     def load(self) -> Iterator[ColorizationTask]:
         for arxiv_id in self.arxiv_ids:
 
             output_root = get_data_subdirectory_for_arxiv_id(
-                directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR, arxiv_id
+                self.get_sources_with_colorized_equations_dir(), arxiv_id
             )
             clean_directory(output_root)
 
@@ -67,7 +70,7 @@ class ColorizeEquations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
 
         iteration_id = get_iteration_id(item.tex_path, iteration)
         output_sources_path = get_data_subdirectory_for_iteration(
-            directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR,
+            self.get_sources_with_colorized_equations_dir(),
             item.arxiv_id,
             iteration_id,
         )
@@ -103,3 +106,23 @@ class ColorizeEquations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
                             "Couldn't write row for equation for arXiv %s: can't be converted to utf-8",
                             item.arxiv_id,
                         )
+
+
+class VisualValidateColorizeEquations(ColorizeEquations):
+    @staticmethod
+    def get_name() -> str:
+        return "visual-validate-colorize-equations"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Instrument TeX to colorize equations with preset hue"
+
+    def get_sources_with_colorized_equations_dir(self) -> str:
+        return directories.VISUAL_VALIDATE_SOURCES_WITH_COLORIZED_EQUATIONS_DIR
+
+    def process(self, item: ColorizationTask) -> Iterator[ColorizationResult]:
+        # gold_rgb = (255, 215, 0)
+        # gold_hsv = colorsys.rgb_to_hsv(*gold_rgb)
+        # >> (0.14052287581699346, 1.0, 255)
+        for i, batch in enumerate(colorize_equations(item.file_contents.contents, preset_hue=0.14052287581699346)):
+            yield ColorizationResult(i, batch.tex, batch.entities)

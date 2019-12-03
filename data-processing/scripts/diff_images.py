@@ -169,6 +169,24 @@ class DiffImagesWithColorizedEquations(DiffImagesCommand):
         return directories.DIFF_IMAGES_WITH_COLORIZED_EQUATIONS_DIR
 
 
+class VisualValidateDiffImagesWithColorizedEquations(DiffImagesWithColorizedEquations):
+    @staticmethod
+    def get_name() -> str:
+        return "visual-validate-diff-images-with-colorized-equations"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Diff images of pages with colorized equations (preset hue) with uncolorized images."
+
+    @staticmethod
+    def get_raster_base_dir() -> str:
+        return directories.VISUAL_VALIDATE_PAPER_WITH_COLORIZED_EQUATIONS_IMAGES_DIR
+
+    @staticmethod
+    def get_output_base_dir() -> str:
+        return directories.VISUAL_VALIDATE_DIFF_IMAGES_WITH_COLORIZED_EQUATIONS_DIR
+
+
 class DiffImagesWithColorizedEquationTokens(DiffImagesCommand):
     @staticmethod
     def get_name() -> str:

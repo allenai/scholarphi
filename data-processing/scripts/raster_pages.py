@@ -151,7 +151,6 @@ class VisualValidateRasterPagesWithColorizedCitations(RasterPagesWithColorizedCi
         return directories.VISUAL_VALIDATE_PAPER_WITH_COLORIZED_CITATIONS_IMAGES_DIR
 
 
-
 class RasterPagesWithColorizedEquations(RasterPagesCommand):
     @staticmethod
     def get_name() -> str:
@@ -171,6 +170,22 @@ class RasterPagesWithColorizedEquations(RasterPagesCommand):
 
     def get_output_base_dir(self) -> AbsolutePath:
         return directories.PAPER_WITH_COLORIZED_EQUATIONS_IMAGES_DIR
+
+
+class VisualValidateRasterPagesWithColorizedEquations(RasterPagesWithColorizedEquations):
+    @staticmethod
+    def get_name() -> str:
+        return "visual-validate-raster-pages-with-colorized-equations"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Raster images of pages from papers with colorized equations (preset hue)."
+
+    def get_papers_base_dir(self) -> AbsolutePath:
+        return directories.VISUAL_VALIDATE_COMPILED_SOURCES_WITH_COLORIZED_EQUATIONS_DIR
+
+    def get_output_base_dir(self) -> AbsolutePath:
+        return directories.VISUAL_VALIDATE_PAPER_WITH_COLORIZED_EQUATIONS_IMAGES_DIR
 
 
 class RasterPagesWithColorizedEquationTokens(RasterPagesCommand):

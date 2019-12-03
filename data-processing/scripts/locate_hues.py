@@ -301,11 +301,14 @@ class LocateEquationHues(LocateHuesCommand):
     def get_description() -> str:
         return "Find bounding boxes of equations by hue."
 
+    def get_sources_with_colorized_equations_dir(self) -> str:
+        return directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR
+
     def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
         return common_read_hues(
             hues_path=os.path.join(
                 get_data_subdirectory_for_iteration(
-                    directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR,
+                    self.get_sources_with_colorized_equations_dir(),
                     arxiv_id,
                     iteration,
                 ),
@@ -322,6 +325,30 @@ class LocateEquationHues(LocateHuesCommand):
     @staticmethod
     def get_output_base_dir() -> str:
         return directories.HUE_LOCATIONS_FOR_EQUATIONS_DIR
+
+    def format_region_id(self, region_id: Optional[Any]) -> List[str]:
+        return cast(List[str], region_id)
+
+
+class VisualValidateLocateEquationHues(LocateEquationHues):
+    @staticmethod
+    def get_name() -> str:
+        return "visual-validate-locate-equation-hues"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Find bounding boxes of equations by hue (preset)."
+
+    def get_sources_with_colorized_equations_dir(self) -> str:
+        return directories.VISUAL_VALIDATE_SOURCES_WITH_COLORIZED_EQUATIONS_DIR
+
+    @staticmethod
+    def get_diff_images_base_dir() -> str:
+        return directories.VISUAL_VALIDATE_DIFF_IMAGES_WITH_COLORIZED_EQUATIONS_DIR
+
+    @staticmethod
+    def get_output_base_dir() -> str:
+        return directories.VISUAL_VALIDATE_HUE_LOCATIONS_FOR_EQUATIONS_DIR
 
     def format_region_id(self, region_id: Optional[Any]) -> List[str]:
         return cast(List[str], region_id)

@@ -155,6 +155,22 @@ class CompileTexSourcesWithColorizedEquations(CompileTexCommand):
         return directories.COMPILED_SOURCES_WITH_COLORIZED_EQUATIONS_DIR
 
 
+class VisualValidateCompileTexSourcesWithColorizedEquations(CompileTexSourcesWithColorizedEquations):
+    @staticmethod
+    def get_name() -> str:
+        return "visual-validate-compile-tex-with-colorized-equations"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Compile TeX sources with colorized equations (preset hue)."
+
+    def get_sources_base_dir(self) -> str:
+        return directories.VISUAL_VALIDATE_SOURCES_WITH_COLORIZED_EQUATIONS_DIR
+
+    def get_output_base_dir(self) -> AbsolutePath:
+        return directories.VISUAL_VALIDATE_COMPILED_SOURCES_WITH_COLORIZED_EQUATIONS_DIR
+
+
 class CompileTexSourcesWithColorizedEquationTokens(CompileTexCommand):
     @staticmethod
     def get_name() -> str:

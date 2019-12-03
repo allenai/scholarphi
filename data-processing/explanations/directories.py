@@ -24,6 +24,9 @@ VISUAL_VALIDATE_SOURCES_WITH_COLORIZED_CITATIONS_DIR = os.path.join(
 SOURCES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
     DATA_DIR, "10-sources-with-colorized-equations"
 )
+VISUAL_VALIDATE_SOURCES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
+    DATA_DIR, "10x-visual-validate-sources-with-colorized-equations"
+)
 SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
     DATA_DIR, "11-sources-with-colorized-equation-tokens"
 )
@@ -36,6 +39,9 @@ VISUAL_VALIDATE_COMPILED_SOURCES_WITH_COLORIZED_CITATIONS_DIR = os.path.join(
 )
 COMPILED_SOURCES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
     DATA_DIR, "14-compiled-sources-with-colorized-equations"
+)
+VISUAL_VALIDATE_COMPILED_SOURCES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
+    DATA_DIR, "14x-visual-validate-compiled-sources-with-colorized-equations"
 )
 COMPILED_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
     DATA_DIR, "15-compiled-sources-with-colorized-equation-tokens"
@@ -50,6 +56,9 @@ VISUAL_VALIDATE_PAPER_WITH_COLORIZED_CITATIONS_IMAGES_DIR = os.path.join(
 PAPER_WITH_COLORIZED_EQUATIONS_IMAGES_DIR = os.path.join(
     DATA_DIR, "18-paper-with-colorized-equations-images"
 )
+VISUAL_VALIDATE_PAPER_WITH_COLORIZED_EQUATIONS_IMAGES_DIR = os.path.join(
+    DATA_DIR, "18x-visual-validate-paper-with-colorized-equations-images"
+)
 PAPER_WITH_COLORIZED_EQUATION_TOKENS_IMAGES_DIR = os.path.join(
     DATA_DIR, "19-paper-with-colorized-equation-tokens-images"
 )
@@ -62,6 +71,9 @@ VISUAL_VALIDATE_DIFF_IMAGES_WITH_COLORIZED_CITATIONS_DIR = os.path.join(
 DIFF_IMAGES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
     DATA_DIR, "21-diff-images-with-colorized-equations"
 )
+VISUAL_VALIDATE_DIFF_IMAGES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
+    DATA_DIR, "21x-visual-validate-diff-images-with-colorized-equations"
+)
 DIFF_IMAGES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
     DATA_DIR, "22-diff-images-with-colorized-equation-tokens"
 )
@@ -73,6 +85,9 @@ VISUAL_VALIDATE_HUE_LOCATIONS_FOR_CITATIONS_DIR = os.path.join(
 )
 HUE_LOCATIONS_FOR_EQUATIONS_DIR = os.path.join(
     DATA_DIR, "24-hue-locations-for-equations"
+)
+VISUAL_VALIDATE_HUE_LOCATIONS_FOR_EQUATIONS_DIR = os.path.join(
+    DATA_DIR, "24x-visual-validate-hue-locations-for-equations"
 )
 HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR = os.path.join(
     DATA_DIR, "25-hue-locations-for-equation-tokens"
