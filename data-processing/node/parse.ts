@@ -49,5 +49,5 @@ program.parse(process.argv);
  * Parse an equation into a MathML tree with source location annotations.
  */
 function parse(equation: string): string {
-  return katex.renderToString(equation, { output: "mathml" });
+  return katex.renderToString(equation, { output: "mathml", throwOnError: false });
 }
