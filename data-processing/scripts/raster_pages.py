@@ -135,6 +135,23 @@ class RasterPagesWithColorizedCitations(RasterPagesCommand):
         return directories.PAPER_WITH_COLORIZED_CITATIONS_IMAGES_DIR
 
 
+class VisualValidateRasterPagesWithColorizedCitations(RasterPagesWithColorizedCitations):
+    @staticmethod
+    def get_name() -> str:
+        return "visual-validate-raster-pages-with-colorized-citations"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Raster images of pages from papers with colorized citations (preset hue)."
+
+    def get_papers_base_dir(self) -> AbsolutePath:
+        return directories.VISUAL_VALIDATE_COMPILED_SOURCES_WITH_COLORIZED_CITATIONS_DIR
+
+    def get_output_base_dir(self) -> AbsolutePath:
+        return directories.VISUAL_VALIDATE_PAPER_WITH_COLORIZED_CITATIONS_IMAGES_DIR
+
+
+
 class RasterPagesWithColorizedEquations(RasterPagesCommand):
     @staticmethod
     def get_name() -> str:

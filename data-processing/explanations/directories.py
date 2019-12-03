@@ -44,6 +44,9 @@ PAPER_IMAGES_DIR = os.path.join(DATA_DIR, "16-paper-images")
 PAPER_WITH_COLORIZED_CITATIONS_IMAGES_DIR = os.path.join(
     DATA_DIR, "17-paper-with-colorized-citations-images"
 )
+VISUAL_VALIDATE_PAPER_WITH_COLORIZED_CITATIONS_IMAGES_DIR = os.path.join(
+    DATA_DIR, "17x-visual-validate-paper-with-colorized-citations-images/"
+)
 PAPER_WITH_COLORIZED_EQUATIONS_IMAGES_DIR = os.path.join(
     DATA_DIR, "18-paper-with-colorized-equations-images"
 )

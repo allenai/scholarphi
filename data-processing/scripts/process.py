@@ -43,7 +43,7 @@ from scripts.locate_hues import (
 from scripts.locate_symbols import LocateSymbols
 from scripts.raster_pages import (
     RasterPages,
-    RasterPagesWithColorizedCitations,
+    RasterPagesWithColorizedCitations, VisualValidateRasterPagesWithColorizedCitations,
     RasterPagesWithColorizedEquations,
     RasterPagesWithColorizedEquationTokens,
 )
@@ -81,6 +81,7 @@ MAIN_PIPELINE_COMMANDS: List = [  # type: ignore
     CompileTexSourcesWithColorizedEquationTokens,
     RasterPages,
     RasterPagesWithColorizedCitations,
+    VisualValidateRasterPagesWithColorizedCitations,
     RasterPagesWithColorizedEquations,
     RasterPagesWithColorizedEquationTokens,
     DiffImagesWithColorizedCitations,
