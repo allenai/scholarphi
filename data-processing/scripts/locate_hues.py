@@ -245,11 +245,14 @@ class LocateCitationHues(LocateHuesCommand):
     def get_description() -> str:
         return "Find bounding boxes of citations by hue."
 
+    def get_sources_with_colorized_citations_dir(self) -> str:
+        return directories.SOURCES_WITH_COLORIZED_CITATIONS_DIR
+
     def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
         return common_read_hues(
             hues_path=os.path.join(
                 get_data_subdirectory_for_iteration(
-                    directories.SOURCES_WITH_COLORIZED_CITATIONS_DIR,
+                    self.get_sources_with_colorized_citations_dir(),
                     arxiv_id,
                     iteration,
                 ),
@@ -265,6 +268,28 @@ class LocateCitationHues(LocateHuesCommand):
     @staticmethod
     def get_output_base_dir() -> str:
         return directories.HUE_LOCATIONS_FOR_CITATIONS_DIR
+
+
+class VisualValidateLocateCitationHues(LocateCitationHues):
+    @staticmethod
+    def get_name() -> str:
+        return "visual-validate-locate-citation-hues"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Find bounding boxes of citations by hue (preset)."
+
+    def get_sources_with_colorized_citations_dir(self) -> str:
+        return directories.VISUAL_VALIDATE_SOURCES_WITH_COLORIZED_CITATIONS_DIR
+
+    @staticmethod
+    def get_diff_images_base_dir() -> str:
+        return directories.VISUAL_VALIDATE_DIFF_IMAGES_WITH_COLORIZED_CITATIONS_DIR
+
+    @staticmethod
+    def get_output_base_dir() -> str:
+        return directories.VISUAL_VALIDATE_HUE_LOCATIONS_FOR_CITATIONS_DIR
+
 
 
 class LocateEquationHues(LocateHuesCommand):

@@ -68,6 +68,9 @@ DIFF_IMAGES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
 HUE_LOCATIONS_FOR_CITATIONS_DIR = os.path.join(
     DATA_DIR, "23-hue-locations-for-citations"
 )
+VISUAL_VALIDATE_HUE_LOCATIONS_FOR_CITATIONS_DIR = os.path.join(
+    DATA_DIR, "23x-visual-validate-hue-locations-for-citations/"
+)
 HUE_LOCATIONS_FOR_EQUATIONS_DIR = os.path.join(
     DATA_DIR, "24-hue-locations-for-equations"
 )

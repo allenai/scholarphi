@@ -36,7 +36,7 @@ from scripts.fetch_new_arxiv_ids import FetchNewArxivIds
 from scripts.fetch_s2_data import FetchS2Metadata
 from scripts.find_symbol_matches import FindSymbolMatches
 from scripts.locate_hues import (
-    LocateCitationHues,
+    LocateCitationHues, VisualValidateLocateCitationHues,
     LocateEquationHues,
     LocateEquationTokenHues,
 )
@@ -87,7 +87,7 @@ MAIN_PIPELINE_COMMANDS: List = [  # type: ignore
     DiffImagesWithColorizedCitations, VisualValidateDiffImagesWithColorizedCitations,
     DiffImagesWithColorizedEquations,
     DiffImagesWithColorizedEquationTokens,
-    LocateCitationHues,
+    LocateCitationHues, VisualValidateLocateCitationHues,
     LocateEquationHues,
     LocateEquationTokenHues,
     LocateSymbols,
