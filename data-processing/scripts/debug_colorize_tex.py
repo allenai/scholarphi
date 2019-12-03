@@ -340,6 +340,11 @@ class DebugColorizeEquationTokens(DebugColorizeCommand):
                 identifier,
                 colorized_token.text,
                 "NO CONTEXT RETRIEVED",
-                {"text": colorized_token.text},
+                {
+                    "text": colorized_token.text,
+                    "start": colorized_token.start,
+                    "end": colorized_token.end,
+                    "equation": token.equation,
+                },
             )
             yield ColorizationResult(colorized_contents, colorized_entity)
