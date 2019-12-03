@@ -56,6 +56,9 @@ PAPER_WITH_COLORIZED_EQUATION_TOKENS_IMAGES_DIR = os.path.join(
 DIFF_IMAGES_WITH_COLORIZED_CITATIONS_DIR = os.path.join(
     DATA_DIR, "20-diff-images-with-colorized-citations"
 )
+VISUAL_VALIDATE_DIFF_IMAGES_WITH_COLORIZED_CITATIONS_DIR = os.path.join(
+    DATA_DIR, "20x-visual-validate-diff-images-with-colorized-citations"
+)
 DIFF_IMAGES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
     DATA_DIR, "21-diff-images-with-colorized-equations"
 )

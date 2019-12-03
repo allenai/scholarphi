@@ -133,6 +133,24 @@ class DiffImagesWithColorizedCitations(DiffImagesCommand):
         return directories.DIFF_IMAGES_WITH_COLORIZED_CITATIONS_DIR
 
 
+class VisualValidateDiffImagesWithColorizedCitations(DiffImagesWithColorizedCitations):
+    @staticmethod
+    def get_name() -> str:
+        return "visual-validate-diff-images-with-colorized-citations"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Diff images of pages with colorized citations (preset hue) with uncolorized images."
+
+    @staticmethod
+    def get_raster_base_dir() -> str:
+        return directories.VISUAL_VALIDATE_PAPER_WITH_COLORIZED_CITATIONS_IMAGES_DIR
+
+    @staticmethod
+    def get_output_base_dir() -> str:
+        return directories.VISUAL_VALIDATE_DIFF_IMAGES_WITH_COLORIZED_CITATIONS_DIR
+
+
 class DiffImagesWithColorizedEquations(DiffImagesCommand):
     @staticmethod
     def get_name() -> str:

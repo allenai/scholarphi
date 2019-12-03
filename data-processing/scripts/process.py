@@ -24,7 +24,7 @@ from scripts.debug_colorize_tex import (
     DebugColorizeEquationTokens,
 )
 from scripts.diff_images import (
-    DiffImagesWithColorizedCitations,
+    DiffImagesWithColorizedCitations, VisualValidateDiffImagesWithColorizedCitations,
     DiffImagesWithColorizedEquations,
     DiffImagesWithColorizedEquationTokens,
 )
@@ -84,7 +84,7 @@ MAIN_PIPELINE_COMMANDS: List = [  # type: ignore
     VisualValidateRasterPagesWithColorizedCitations,
     RasterPagesWithColorizedEquations,
     RasterPagesWithColorizedEquationTokens,
-    DiffImagesWithColorizedCitations,
+    DiffImagesWithColorizedCitations, VisualValidateDiffImagesWithColorizedCitations,
     DiffImagesWithColorizedEquations,
     DiffImagesWithColorizedEquationTokens,
     LocateCitationHues,
