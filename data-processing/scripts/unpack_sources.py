@@ -23,7 +23,7 @@ class UnpackSources(ArxivBatchCommand[ArxivId, None]):
             yield arxiv_id
 
     def process(self, item: ArxivId) -> Iterator[None]:
-        unpack(item, directories.sources(item))
+        unpack(item, directories.get_data_subdirectory_for_arxiv_id(directories.SOURCES_DIR, item))
         yield None
 
     def save(self, item: ArxivId, result: None) -> None:

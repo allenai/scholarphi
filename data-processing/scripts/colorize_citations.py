@@ -52,7 +52,7 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
             )
             clean_directory(output_root)
 
-            original_sources_path = directories.sources(arxiv_id)
+            original_sources_path = directories.get_data_subdirectory_for_arxiv_id(directories.SOURCES_DIR, arxiv_id)
             for tex_path in find_files(original_sources_path, [".tex"], relative=True):
                 file_contents = read_file_tolerant(
                     os.path.join(original_sources_path, tex_path)

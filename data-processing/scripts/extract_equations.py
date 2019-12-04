@@ -40,7 +40,7 @@ class ExtractEquations(ArxivBatchCommand[EquationInfo, None]):
     def load(self) -> Iterator[EquationInfo]:
 
         for arxiv_id in self.arxiv_ids:
-            clean_directory(directories.equations(arxiv_id))
+            clean_directory(directories.get_data_subdirectory_for_arxiv_id(directories.EQUATIONS_DIR, arxiv_id))
 
             colorized_equations_base_dir = (
                 directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR
@@ -63,7 +63,7 @@ class ExtractEquations(ArxivBatchCommand[EquationInfo, None]):
         yield None
 
     def save(self, item: EquationInfo, _: None) -> None:
-        results_dir = directories.equations(item.arxiv_id)
+        results_dir = directories.get_data_subdirectory_for_arxiv_id(directories.EQUATIONS_DIR, item.arxiv_id)
         if not os.path.exists(results_dir):
             os.makedirs(results_dir)
         results_path = os.path.join(results_dir, "equations.csv")

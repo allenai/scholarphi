@@ -190,3 +190,19 @@ class CompileTexSourcesWithColorizedEquationTokens(CompileTexCommand):
 
     def get_output_base_dir(self) -> AbsolutePath:
         return directories.COMPILED_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR
+
+
+class VisualValidateCompileTexSourcesWithColorizedEquationTokens(CompileTexSourcesWithColorizedEquationTokens):
+    @staticmethod
+    def get_name() -> str:
+        return "visual-validate-compile-tex-with-colorized-equation-tokens"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Compile TeX sources with colorized equation tokens (preset hue)."
+
+    def get_sources_base_dir(self) -> str:
+        return directories.VISUAL_VALIDATE_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR
+
+    def get_output_base_dir(self) -> AbsolutePath:
+        return directories.VISUAL_VALIDATE_COMPILED_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR

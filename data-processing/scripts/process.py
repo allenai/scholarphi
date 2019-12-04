@@ -10,13 +10,13 @@ from scripts.annotate_pdfs import (
 from scripts.annotate_symbols import AnnotateTexWithSymbolMarkers
 from scripts.colorize_citations import ColorizeCitations, VisualValidateColorizeCitations
 from scripts.colorize_equations import ColorizeEquations, VisualValidateColorizeEquations
-from scripts.colorize_equation_tokens import ColorizeEquationTokens
+from scripts.colorize_equation_tokens import ColorizeEquationTokens, VisualValidateColorizeEquationTokens
 from scripts.command import Command
 from scripts.compile_tex import (
     CompileTexSources,
     CompileTexSourcesWithColorizedCitations, VisualValidateCompileTexSourcesWithColorizedCitations,
     CompileTexSourcesWithColorizedEquations, VisualValidateCompileTexSourcesWithColorizedEquations,
-    CompileTexSourcesWithColorizedEquationTokens,
+    CompileTexSourcesWithColorizedEquationTokens, VisualValidateCompileTexSourcesWithColorizedEquationTokens
 )
 from scripts.debug_colorize_tex import (
     DebugColorizeCitations,
@@ -26,7 +26,7 @@ from scripts.debug_colorize_tex import (
 from scripts.diff_images import (
     DiffImagesWithColorizedCitations, VisualValidateDiffImagesWithColorizedCitations,
     DiffImagesWithColorizedEquations, VisualValidateDiffImagesWithColorizedEquations,
-    DiffImagesWithColorizedEquationTokens,
+    DiffImagesWithColorizedEquationTokens, VisualValidateDiffImagesWithColorizedEquationTokens
 )
 from scripts.extract_bibitems import ExtractBibitems
 from scripts.extract_equation_tokens import ExtractSymbols
@@ -38,14 +38,14 @@ from scripts.find_symbol_matches import FindSymbolMatches
 from scripts.locate_hues import (
     LocateCitationHues, VisualValidateLocateCitationHues,
     LocateEquationHues, VisualValidateLocateEquationHues,
-    LocateEquationTokenHues,
+    LocateEquationTokenHues, VisualValidateLocateEquationTokenHues
 )
 from scripts.locate_symbols import LocateSymbols
 from scripts.raster_pages import (
     RasterPages,
     RasterPagesWithColorizedCitations, VisualValidateRasterPagesWithColorizedCitations,
     RasterPagesWithColorizedEquations, VisualValidateRasterPagesWithColorizedEquations,
-    RasterPagesWithColorizedEquationTokens,
+    RasterPagesWithColorizedEquationTokens, VisualValidateRasterPagesWithColorizedEquationTokens
 )
 from scripts.resolve_bibitems import ResolveBibitems
 from scripts.unpack_sources import UnpackSources
@@ -72,21 +72,21 @@ MAIN_PIPELINE_COMMANDS: List = [  # type: ignore
     ExtractEquations,
     ExtractSymbols,
     FindSymbolMatches,
-    ColorizeEquationTokens,
+    ColorizeEquationTokens, VisualValidateColorizeEquationTokens,
     CompileTexSources,
     CompileTexSourcesWithColorizedCitations, VisualValidateCompileTexSourcesWithColorizedCitations,
     CompileTexSourcesWithColorizedEquations, VisualValidateCompileTexSourcesWithColorizedEquations,
-    CompileTexSourcesWithColorizedEquationTokens,
+    CompileTexSourcesWithColorizedEquationTokens, VisualValidateCompileTexSourcesWithColorizedEquationTokens,
     RasterPages,
     RasterPagesWithColorizedCitations, VisualValidateRasterPagesWithColorizedCitations,
     RasterPagesWithColorizedEquations, VisualValidateRasterPagesWithColorizedEquations,
-    RasterPagesWithColorizedEquationTokens,
+    RasterPagesWithColorizedEquationTokens, VisualValidateRasterPagesWithColorizedEquationTokens,
     DiffImagesWithColorizedCitations, VisualValidateDiffImagesWithColorizedCitations,
     DiffImagesWithColorizedEquations, VisualValidateDiffImagesWithColorizedEquations,
-    DiffImagesWithColorizedEquationTokens,
+    DiffImagesWithColorizedEquationTokens, VisualValidateDiffImagesWithColorizedEquationTokens,
     LocateCitationHues, VisualValidateLocateCitationHues,
     LocateEquationHues, VisualValidateLocateEquationHues,
-    LocateEquationTokenHues,
+    LocateEquationTokenHues, VisualValidateLocateEquationTokenHues,
     LocateSymbols,
     UploadCitations,
     UploadSymbols,

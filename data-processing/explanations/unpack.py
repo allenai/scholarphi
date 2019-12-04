@@ -48,7 +48,7 @@ def _unpack(archive_path: str, dest_dir: str) -> None:
 
 
 def unpack(arxiv_id: str, unpack_path: str) -> Optional[str]:
-    archive_path = directories.source_archives(arxiv_id)
+    archive_path = directories.get_data_subdirectory_for_arxiv_id(directories.SOURCE_ARCHIVES_DIR, arxiv_id)
     if not os.path.exists(archive_path):
         logging.warning("No source archive directory found for %s", arxiv_id)
         return None

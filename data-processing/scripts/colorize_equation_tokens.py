@@ -38,15 +38,18 @@ class ColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, ColorizationResult]
     def get_arxiv_ids_dir(self) -> Path:
         return directories.SOURCES_DIR
 
+    def get_sources_with_colorized_equation_tokens_dir(self) -> str:
+        return directories.SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR
+
     def load(self) -> Iterator[TexAndTokens]:
         for arxiv_id in self.arxiv_ids:
 
             output_root = get_data_subdirectory_for_arxiv_id(
-                directories.SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR, arxiv_id
+                self.get_sources_with_colorized_equation_tokens_dir(), arxiv_id
             )
             clean_directory(output_root)
 
-            tokens_path = os.path.join(directories.symbols(arxiv_id), "tokens.csv")
+            tokens_path = os.path.join(directories.get_data_subdirectory_for_arxiv_id(directories.SYMBOLS_DIR, arxiv_id), "tokens.csv")
             if not os.path.exists(tokens_path):
                 logging.info(
                     "No equation token data found for paper %s. Skipping.", arxiv_id
@@ -63,7 +66,8 @@ class ColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, ColorizationResult]
             contents_by_file = {}
             for tex_path in tex_paths:
                 absolute_tex_path = os.path.join(
-                    directories.sources(arxiv_id), tex_path
+                    directories.get_data_subdirectory_for_arxiv_id(directories.SOURCES_DIR, arxiv_id),
+                    tex_path
                 )
                 file_contents = read_file_tolerant(absolute_tex_path)
                 if file_contents is not None:
@@ -81,7 +85,7 @@ class ColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, ColorizationResult]
         iteration = result.iteration
         iteration_id = f"all-files-{iteration}"
         output_sources_path = get_data_subdirectory_for_iteration(
-            directories.SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR,
+            self.get_sources_with_colorized_equation_tokens_dir(),
             item.arxiv_id,
             iteration_id,
         )
@@ -116,3 +120,25 @@ class ColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, ColorizationResult]
                             colorized_token.text,
                         ]
                     )
+
+
+class VisualValidateColorizeEquationTokens(ColorizeEquationTokens):
+    @staticmethod
+    def get_name() -> str:
+        return "visual-validate-colorize-equation-tokens"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Instrument TeX to colorize tokens in equations with preset hue"
+
+    def get_sources_with_colorized_equation_tokens_dir(self) -> str:
+        return directories.VISUAL_VALIDATE_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR
+
+    def process(self, item: TexAndTokens) -> Iterator[ColorizationResult]:
+        # gold_rgb = (255, 215, 0)
+        # gold_hsv = colorsys.rgb_to_hsv(*gold_rgb)
+        # >> (0.14052287581699346, 1.0, 255)
+        for i, result_batch in enumerate(
+            colorize_equation_tokens(item.tex_contents, item.tokens, preset_hue=0.14052287581699346)
+        ):
+            yield ColorizationResult(i, result_batch)

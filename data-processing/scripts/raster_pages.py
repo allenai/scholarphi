@@ -207,3 +207,19 @@ class RasterPagesWithColorizedEquationTokens(RasterPagesCommand):
 
     def get_output_base_dir(self) -> AbsolutePath:
         return directories.PAPER_WITH_COLORIZED_EQUATION_TOKENS_IMAGES_DIR
+
+
+class VisualValidateRasterPagesWithColorizedEquationTokens(RasterPagesWithColorizedEquationTokens):
+    @staticmethod
+    def get_name() -> str:
+        return "visual-validate-raster-pages-with-colorized-equation-tokens"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Raster images of pages from papers with colorized equation tokens (preset hue)."
+
+    def get_papers_base_dir(self) -> AbsolutePath:
+        return directories.VISUAL_VALIDATE_COMPILED_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR
+
+    def get_output_base_dir(self) -> AbsolutePath:
+        return directories.VISUAL_VALIDATE_PAPER_WITH_COLORIZED_EQUATION_TOKENS_IMAGES_DIR

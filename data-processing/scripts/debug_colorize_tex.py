@@ -92,7 +92,7 @@ class DebugColorizeCommand(ArxivBatchCommand[ColorizationTask, Compilation], ABC
 
             # Make sure that we have evidence that the paper can compile at all before attempting
             # to compile many variants of that file.
-            past_compilation_dir = directories.compilation_results(arxiv_id)
+            past_compilation_dir = directories.get_data_subdirectory_for_arxiv_id(directories.COMPILED_SOURCES_DIR, arxiv_id)
             if not os.path.exists(past_compilation_dir):
                 logging.info(
                     "Skipping paper %s. No existing compilation results.", arxiv_id
@@ -109,7 +109,7 @@ class DebugColorizeCommand(ArxivBatchCommand[ColorizationTask, Compilation], ABC
                     )
                     continue
 
-            original_sources_path = directories.sources(arxiv_id)
+            original_sources_path = directories.get_data_subdirectory_for_arxiv_id(directories.SOURCES_DIR, arxiv_id)
             for tex_path in find_files(original_sources_path, [".tex"], relative=True):
                 file_contents = read_file_tolerant(
                     os.path.join(original_sources_path, tex_path)
@@ -308,7 +308,7 @@ class DebugColorizeEquationTokens(DebugColorizeCommand):
         file_contents = task.file_contents
         tex_path = task.tex_path
 
-        tokens_path = os.path.join(directories.symbols(arxiv_id), "tokens.csv")
+        tokens_path = os.path.join(directories.get_data_subdirectory_for_arxiv_id(directories.SYMBOLS_DIR, arxiv_id), "tokens.csv")
         if not os.path.exists(tokens_path):
             logging.info(
                 "No equation token data found for paper %s. Skipping.", arxiv_id

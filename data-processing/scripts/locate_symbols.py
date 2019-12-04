@@ -42,12 +42,12 @@ class LocateSymbols(ArxivBatchCommand[LocationTask, PdfBoundingBox]):
 
         for arxiv_id in self.arxiv_ids:
 
-            output_dir = directories.symbol_locations(arxiv_id)
+            output_dir = directories.get_data_subdirectory_for_arxiv_id(directories.SYMBOL_LOCATIONS_DIR, arxiv_id)
             clean_directory(output_dir)
 
             token_locations: Dict[CharacterId, List[PdfBoundingBox]] = {}
             token_locations_path = os.path.join(
-                directories.hue_locations_for_equation_tokens(arxiv_id),
+                directories.get_data_subdirectory_for_arxiv_id(directories.HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR, arxiv_id),
                 "hue_locations.csv",
             )
             if not os.path.exists(token_locations_path):
@@ -95,7 +95,7 @@ class LocateSymbols(ArxivBatchCommand[LocationTask, PdfBoundingBox]):
             yield box
 
     def save(self, item: LocationTask, result: PdfBoundingBox) -> None:
-        output_dir = directories.symbol_locations(item.arxiv_id)
+        output_dir = directories.get_data_subdirectory_for_arxiv_id(directories.SYMBOL_LOCATIONS_DIR, item.arxiv_id)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 

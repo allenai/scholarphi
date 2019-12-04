@@ -30,8 +30,8 @@ class ExtractBibitems(ArxivBatchCommand[ExtractionTask, Bibitem]):
 
     def load(self) -> Iterator[ExtractionTask]:
         for arxiv_id in self.arxiv_ids:
-            sources_dir = sources(arxiv_id)
-            clean_directory(directories.bibitems(arxiv_id))
+            sources_dir = directories.get_data_subdirectory_for_arxiv_id(directories.SOURCES_DIR, arxiv_id)
+            clean_directory(directories.get_data_subdirectory_for_arxiv_id(directories.BIBITEMS_DIR, arxiv_id))
             for path in find_files(sources_dir, [".tex", ".bbl"]):
                 file_contents = read_file_tolerant(path)
                 if file_contents is None:
@@ -47,7 +47,7 @@ class ExtractBibitems(ArxivBatchCommand[ExtractionTask, Bibitem]):
         logging.debug(
             "Extracted bibitem %s from file %s", result, item.file_contents.path
         )
-        results_dir = directories.bibitems(item.arxiv_id)
+        results_dir = directories.get_data_subdirectory_for_arxiv_id(directories.BIBITEMS_DIR, item.arxiv_id)
         if not os.path.exists(results_dir):
             os.makedirs(results_dir)
         results_path = os.path.join(results_dir, "bibitems.csv")

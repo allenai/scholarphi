@@ -5,7 +5,7 @@ from typing import List
 
 import requests
 
-from explanations.directories import SOURCE_ARCHIVES_DIR, source_archives
+from explanations.directories import SOURCE_ARCHIVES_DIR, get_data_subdirectory_for_arxiv_id
 from explanations.types import ArxivId
 from models.models import Metadata
 
@@ -15,7 +15,7 @@ USER_AGENT = "Andrew Head, for academic research on dissemination of scientific 
 def save_source_archive(arxiv_id: ArxivId, content: bytes) -> None:
     if not os.path.exists(SOURCE_ARCHIVES_DIR):
         os.makedirs(SOURCE_ARCHIVES_DIR)
-    archive_path = source_archives(arxiv_id)
+    archive_path = get_data_subdirectory_for_arxiv_id(SOURCE_ARCHIVES_DIR, arxiv_id)
     with open(archive_path, "wb") as archive:
         archive.write(content)
 

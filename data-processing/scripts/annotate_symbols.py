@@ -55,7 +55,7 @@ class AnnotateTexWithSymbolMarkers(ArxivBatchCommand[TexAndSymbols, AnnotationRe
             )
             clean_directory(output_root)
 
-            symbols_dir = directories.symbols(arxiv_id)
+            symbols_dir = directories.get_data_subdirectory_for_arxiv_id(directories.SYMBOLS_DIR, arxiv_id)
             tokens_path = os.path.join(symbols_dir, "tokens.csv")
             if not os.path.exists(tokens_path):
                 logging.info(
@@ -86,7 +86,7 @@ class AnnotateTexWithSymbolMarkers(ArxivBatchCommand[TexAndSymbols, AnnotationRe
             contents_by_file = {}
             for tex_path in tex_paths:
                 absolute_tex_path = os.path.join(
-                    directories.sources(arxiv_id), tex_path
+                    directories.get_data_subdirectory_for_arxiv_id(directories.SOURCES_DIR, arxiv_id), tex_path
                 )
                 file_contents = read_file_tolerant(absolute_tex_path)
                 if file_contents is not None:

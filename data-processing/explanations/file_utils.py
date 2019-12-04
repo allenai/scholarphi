@@ -83,7 +83,7 @@ def _get_symbol_id(row: List[str]) -> SymbolId:
 
 
 def load_tokens(arxiv_id: ArxivId) -> Optional[List[TokenWithOrigin]]:
-    tokens_path = os.path.join(directories.symbols(arxiv_id), "tokens.csv")
+    tokens_path = os.path.join(directories.get_data_subdirectory_for_arxiv_id(directories.SYMBOLS_DIR, arxiv_id), "tokens.csv")
     if not os.path.exists(tokens_path):
         logging.info("No equation token data found for paper %s. Skipping.", arxiv_id)
         return None
@@ -111,7 +111,7 @@ def load_tokens(arxiv_id: ArxivId) -> Optional[List[TokenWithOrigin]]:
 
 def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
 
-    data_dir = directories.symbols(arxiv_id)
+    data_dir = directories.get_data_subdirectory_for_arxiv_id(directories.SYMBOLS_DIR, arxiv_id)
     symbols_path = os.path.join(data_dir, "symbols.csv")
     symbol_tokens_path = os.path.join(data_dir, "symbol_tokens.csv")
     symbol_children_path = os.path.join(data_dir, "symbol_children.csv")

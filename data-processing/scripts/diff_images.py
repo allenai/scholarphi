@@ -58,13 +58,13 @@ class DiffImagesCommand(ArxivBatchCommand[PageRasterPair, np.ndarray], ABC):
             clean_directory(output_dir)
 
             # Get PDF names from results of compiling the uncolorized TeX sources.
-            pdf_paths = get_compiled_pdfs(directories.compilation_results(arxiv_id))
+            pdf_paths = get_compiled_pdfs(directories.get_data_subdirectory_for_arxiv_id(directories.COMPILED_SOURCES_DIR, arxiv_id))
             if len(pdf_paths) == 0:
                 continue
 
             for iteration in get_iteration_names(self.get_raster_base_dir(), arxiv_id):
 
-                original_images_dir = directories.paper_images(arxiv_id)
+                original_images_dir = directories.get_data_subdirectory_for_arxiv_id(directories.PAPER_IMAGES_DIR, arxiv_id)
                 modified_images_dir = get_data_subdirectory_for_iteration(
                     self.get_raster_base_dir(), arxiv_id, iteration
                 )
@@ -203,3 +203,21 @@ class DiffImagesWithColorizedEquationTokens(DiffImagesCommand):
     @staticmethod
     def get_output_base_dir() -> str:
         return directories.DIFF_IMAGES_WITH_COLORIZED_EQUATION_TOKENS_DIR
+
+
+class VisualValidateDiffImagesWithColorizedEquationTokens(DiffImagesWithColorizedEquationTokens):
+    @staticmethod
+    def get_name() -> str:
+        return "visual-validate-diff-images-with-colorized-equation-tokens"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Diff images of pages with colorized equation tokens (preset hue) with uncolorized images."
+
+    @staticmethod
+    def get_raster_base_dir() -> str:
+        return directories.VISUAL_VALIDATE_PAPER_WITH_COLORIZED_EQUATION_TOKENS_IMAGES_DIR
+
+    @staticmethod
+    def get_output_base_dir() -> str:
+        return directories.VISUAL_VALIDATE_DIFF_IMAGES_WITH_COLORIZED_EQUATION_TOKENS_DIR

@@ -30,6 +30,9 @@ VISUAL_VALIDATE_SOURCES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
 SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
     DATA_DIR, "11-sources-with-colorized-equation-tokens"
 )
+VISUAL_VALIDATE_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
+    DATA_DIR, "11x-visual-validate-sources-with-colorized-equation-tokens"
+)
 COMPILED_SOURCES_DIR = os.path.join(DATA_DIR, "12-compiled-sources")
 COMPILED_SOURCES_WITH_COLORIZED_CITATIONS_DIR = os.path.join(
     DATA_DIR, "13-compiled-sources-with-colorized-citations"
@@ -45,6 +48,9 @@ VISUAL_VALIDATE_COMPILED_SOURCES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
 )
 COMPILED_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
     DATA_DIR, "15-compiled-sources-with-colorized-equation-tokens"
+)
+VISUAL_VALIDATE_COMPILED_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
+    DATA_DIR, "15x-visual-validate-compiled-sources-with-colorized-equation-tokens"
 )
 PAPER_IMAGES_DIR = os.path.join(DATA_DIR, "16-paper-images")
 PAPER_WITH_COLORIZED_CITATIONS_IMAGES_DIR = os.path.join(
@@ -62,6 +68,9 @@ VISUAL_VALIDATE_PAPER_WITH_COLORIZED_EQUATIONS_IMAGES_DIR = os.path.join(
 PAPER_WITH_COLORIZED_EQUATION_TOKENS_IMAGES_DIR = os.path.join(
     DATA_DIR, "19-paper-with-colorized-equation-tokens-images"
 )
+VISUAL_VALIDATE_PAPER_WITH_COLORIZED_EQUATION_TOKENS_IMAGES_DIR = os.path.join(
+    DATA_DIR, "19x-visual-validate-paper-with-colorized-equation-tokens-images"
+)
 DIFF_IMAGES_WITH_COLORIZED_CITATIONS_DIR = os.path.join(
     DATA_DIR, "20-diff-images-with-colorized-citations"
 )
@@ -77,6 +86,9 @@ VISUAL_VALIDATE_DIFF_IMAGES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
 DIFF_IMAGES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
     DATA_DIR, "22-diff-images-with-colorized-equation-tokens"
 )
+VISUAL_VALIDATE_DIFF_IMAGES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
+    DATA_DIR, "22x-visual-validate-diff-images-with-colorized-equation-tokens"
+)
 HUE_LOCATIONS_FOR_CITATIONS_DIR = os.path.join(
     DATA_DIR, "23-hue-locations-for-citations"
 )
@@ -91,6 +103,9 @@ VISUAL_VALIDATE_HUE_LOCATIONS_FOR_EQUATIONS_DIR = os.path.join(
 )
 HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR = os.path.join(
     DATA_DIR, "25-hue-locations-for-equation-tokens"
+)
+VISUAL_VALIDATE_HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR = os.path.join(
+    DATA_DIR, "25x-visual-validate-hue-locations-for-equation-tokens"
 )
 SYMBOL_LOCATIONS_DIR = os.path.join(DATA_DIR, "26-symbol-locations")
 ANNOTATED_PDFS_WITH_CITATION_BOXES_DIR = os.path.join(
@@ -172,88 +187,96 @@ def get_iteration_id(tex_path: str, iteration: int) -> RelativePath:
     return f"{escaped_tex_path}-iteration-{iteration}"
 
 
-def arxiv_ids(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(ARXIV_IDS_DIR, arxiv_id)
+# TODO: kyle removed
+# def arxiv_ids(arxiv_id: str) -> RelativePath:
+#     return get_data_subdirectory_for_arxiv_id(ARXIV_IDS_DIR, arxiv_id)
 
 
-def source_archives(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(SOURCE_ARCHIVES_DIR, arxiv_id)
+# TODO: kyle removed
+# def source_archives(arxiv_id: str) -> RelativePath:
+#     return get_data_subdirectory_for_arxiv_id(SOURCE_ARCHIVES_DIR, arxiv_id)
 
 
-def s2_metadata(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(S2_METADATA_DIR, arxiv_id)
+# TODO: kyle removed
+# def s2_metadata(arxiv_id: str) -> RelativePath:
+#     return get_data_subdirectory_for_arxiv_id(S2_METADATA_DIR, arxiv_id)
 
 
-def sources(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(SOURCES_DIR, arxiv_id)
+# TODO: kyle removed
+# def sources(arxiv_id: str) -> RelativePath:
+#     return get_data_subdirectory_for_arxiv_id(SOURCES_DIR, arxiv_id)
 
 
-def equations(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(EQUATIONS_DIR, arxiv_id)
+# TODO: kyle removed
+# def equations(arxiv_id: str) -> RelativePath:
+#     return get_data_subdirectory_for_arxiv_id(EQUATIONS_DIR, arxiv_id)
 
 
-def symbols(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(SYMBOLS_DIR, arxiv_id)
+# TODO: kyle removed
+# def symbols(arxiv_id: str) -> RelativePath:
+#     return get_data_subdirectory_for_arxiv_id(SYMBOLS_DIR, arxiv_id)
 
 
-def symbol_matches(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(SYMBOL_MATCHES_DIR, arxiv_id)
+# TODO: kyle removed
+# def symbol_matches(arxiv_id: str) -> RelativePath:
+#     return get_data_subdirectory_for_arxiv_id(SYMBOL_MATCHES_DIR, arxiv_id)
 
 
-def bibitems(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(BIBITEMS_DIR, arxiv_id)
+# TODO: kyle removed
+# def bibitems(arxiv_id: str) -> RelativePath:
+#     return get_data_subdirectory_for_arxiv_id(BIBITEMS_DIR, arxiv_id)
 
 
-def bibitem_resolutions(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(BIBITEM_RESOLUTIONS_DIR, arxiv_id)
+# TODO: looks unused
+# def bibitem_resolutions(arxiv_id: str) -> RelativePath:
+#     return get_data_subdirectory_for_arxiv_id(BIBITEM_RESOLUTIONS_DIR, arxiv_id)
 
 
-def sources_with_colorized_citations(
-    arxiv_id: str, tex_path: str, iteration: int
-) -> RelativePath:
-    iteration_id = get_iteration_id(tex_path, iteration)
-    return os.path.join(sources_with_colorized_citations_root(arxiv_id), iteration_id)
+# TODO: looks unused
+# def sources_with_colorized_citations(arxiv_id: str, tex_path: str, iteration: int) -> RelativePath:
+#     return os.path.join(sources_with_colorized_citations_root(arxiv_id), get_iteration_id(tex_path, iteration))
 
 
-def sources_with_colorized_citations_root(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(
-        SOURCES_WITH_COLORIZED_CITATIONS_DIR, arxiv_id
-    )
+# TODO: looks unused
+# def sources_with_colorized_citations_root(arxiv_id: str) -> RelativePath:
+#     return get_data_subdirectory_for_arxiv_id(SOURCES_WITH_COLORIZED_CITATIONS_DIR, arxiv_id)
 
 
-def sources_with_colorized_equations(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(
-        SOURCES_WITH_COLORIZED_EQUATIONS_DIR, arxiv_id
-    )
+# TODO: looks unused
+# def sources_with_colorized_equations(arxiv_id: str) -> RelativePath:
+#     return get_data_subdirectory_for_arxiv_id(SOURCES_WITH_COLORIZED_EQUATIONS_DIR, arxiv_id)
 
 
-def sources_with_colorized_equation_tokens(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(
-        SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR, arxiv_id
-    )
+# TODO: looks unused
+# def sources_with_colorized_equation_tokens(arxiv_id: str) -> RelativePath:
+#     return get_data_subdirectory_for_arxiv_id(SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR, arxiv_id)
 
 
-def compilation_results(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(COMPILED_SOURCES_DIR, arxiv_id)
+# TODO: kyle removed
+# def compilation_results(arxiv_id: str) -> RelativePath:
+#     return get_data_subdirectory_for_arxiv_id(COMPILED_SOURCES_DIR, arxiv_id)
 
 
-def paper_images(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(PAPER_IMAGES_DIR, arxiv_id)
+# TODO: kyle removed
+# def paper_images(arxiv_id: str) -> RelativePath:
+#     return get_data_subdirectory_for_arxiv_id(PAPER_IMAGES_DIR, arxiv_id)
 
 
-def hue_locations_for_citations(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(HUE_LOCATIONS_FOR_CITATIONS_DIR, arxiv_id)
+# TODO: kyle removed
+# def hue_locations_for_citations(arxiv_id: str) -> RelativePath:
+#     return get_data_subdirectory_for_arxiv_id(HUE_LOCATIONS_FOR_CITATIONS_DIR, arxiv_id)
 
 
-def hue_locations_for_equations(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(HUE_LOCATIONS_FOR_EQUATIONS_DIR, arxiv_id)
+# TODO: kyle removed
+# def hue_locations_for_equations(arxiv_id: str) -> RelativePath:
+#     return get_data_subdirectory_for_arxiv_id(HUE_LOCATIONS_FOR_EQUATIONS_DIR, arxiv_id)
 
 
-def hue_locations_for_equation_tokens(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(
-        HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR, arxiv_id
-    )
+# TODO: kyle removed
+# def hue_locations_for_equation_tokens(arxiv_id: str) -> RelativePath:
+#     return get_data_subdirectory_for_arxiv_id(HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR, arxiv_id)
 
 
-def symbol_locations(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(SYMBOL_LOCATIONS_DIR, arxiv_id)
+# TODO: kyle removed
+# def symbol_locations(arxiv_id: str) -> RelativePath:
+#     return get_data_subdirectory_for_arxiv_id(SYMBOL_LOCATIONS_DIR, arxiv_id)

@@ -67,7 +67,8 @@ class UploadSymbols(ArxivBatchCommand[SymbolData, None]):
 
             boxes: Dict[SymbolId, PdfBoundingBox] = {}
             boxes_path = os.path.join(
-                directories.symbol_locations(arxiv_id), "symbol_locations.csv"
+                directories.get_data_subdirectory_for_arxiv_id(directories.SYMBOL_LOCATIONS_DIR, arxiv_id),
+                "symbol_locations.csv"
             )
             if not os.path.exists(boxes_path):
                 logging.warning(
@@ -94,7 +95,7 @@ class UploadSymbols(ArxivBatchCommand[SymbolData, None]):
 
             matches: Matches = {}
             matches_path = os.path.join(
-                directories.symbol_matches(arxiv_id), "matches.csv"
+                directories.get_data_subdirectory_for_arxiv_id(directories.SYMBOL_MATCHES_DIR, arxiv_id), "matches.csv"
             )
             if not os.path.exists(matches_path):
                 logging.warning(

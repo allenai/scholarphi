@@ -48,12 +48,16 @@ class UploadCitations(ArxivBatchCommand[CitationData, None]):
     def get_arxiv_ids_dir(self) -> Path:
         return directories.SOURCES_DIR
 
+    def get_hue_locations_for_citations_dir(self):
+        return directories.HUE_LOCATIONS_FOR_CITATIONS_DIR
+
     def load(self) -> Iterator[CitationData]:
         for arxiv_id in self.arxiv_ids:
 
             boxes_by_hue_iteration: Dict[HueIteration, List[PdfBoundingBox]] = {}
             bounding_boxes_path = os.path.join(
-                directories.hue_locations_for_citations(arxiv_id), "hue_locations.csv"
+                directories.get_data_subdirectory_for_arxiv_id(self.get_hue_locations_for_citations_dir(), arxiv_id),
+                "hue_locations.csv"
             )
             if not os.path.exists(bounding_boxes_path):
                 logging.warning(
@@ -108,7 +112,7 @@ class UploadCitations(ArxivBatchCommand[CitationData, None]):
 
             key_s2_ids: Dict[CitationKey, S2Id] = {}
             key_resolutions_path = os.path.join(
-                directories.bibitem_resolutions(arxiv_id), "resolutions.csv"
+                directories.get_data_subdirectory_for_arxiv_id(directories.BIBITEM_RESOLUTIONS_DIR, arxiv_id), "resolutions.csv"
             )
             if not os.path.exists(key_resolutions_path):
                 logging.warning(
@@ -122,7 +126,7 @@ class UploadCitations(ArxivBatchCommand[CitationData, None]):
                     s2_id = row[1]
                     key_s2_ids[key] = s2_id
 
-            s2_id_path = os.path.join(directories.s2_metadata(arxiv_id), "s2_id")
+            s2_id_path = os.path.join(directories.get_data_subdirectory_for_arxiv_id(directories.S2_METADATA_DIR, arxiv_id), "s2_id")
             if not os.path.exists(s2_id_path):
                 logging.warning("Could not find S2 ID file for %s. Skipping", arxiv_id)
                 continue
@@ -131,7 +135,7 @@ class UploadCitations(ArxivBatchCommand[CitationData, None]):
 
             s2_data: Dict[S2Id, Reference] = {}
             s2_metadata_path = os.path.join(
-                directories.s2_metadata(arxiv_id), "references.csv"
+                directories.get_data_subdirectory_for_arxiv_id(directories.S2_METADATA_DIR, arxiv_id), "references.csv"
             )
             if not os.path.exists(s2_metadata_path):
                 logging.warning(

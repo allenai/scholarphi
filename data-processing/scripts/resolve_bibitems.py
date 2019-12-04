@@ -59,9 +59,9 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, Match]):
 
     def load(self) -> Iterator[MatchTask]:
         for arxiv_id in self.arxiv_ids:
-            clean_directory(directories.bibitem_resolutions(arxiv_id))
-            bibitems_dir = directories.bibitems(arxiv_id)
-            metadata_dir = directories.s2_metadata(arxiv_id)
+            clean_directory(directories.get_data_subdirectory_for_arxiv_id(directories.BIBITEM_RESOLUTIONS_DIR, arxiv_id))
+            bibitems_dir = directories.get_data_subdirectory_for_arxiv_id(directories.BIBITEMS_DIR, arxiv_id)
+            metadata_dir = directories.get_data_subdirectory_for_arxiv_id(directories.S2_METADATA_DIR, arxiv_id)
 
             references = []
 
@@ -134,7 +134,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, Match]):
                 )
 
     def save(self, item: MatchTask, result: Match) -> None:
-        resolutions_dir = directories.bibitem_resolutions(item.arxiv_id)
+        resolutions_dir = directories.get_data_subdirectory_for_arxiv_id(directories.BIBITEM_RESOLUTIONS_DIR, item.arxiv_id)
         if not os.path.exists(resolutions_dir):
             os.makedirs(resolutions_dir)
 

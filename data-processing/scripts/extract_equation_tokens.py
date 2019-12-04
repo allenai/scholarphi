@@ -39,12 +39,12 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
 
     def load(self) -> Iterator[ArxivId]:
         for arxiv_id in self.arxiv_ids:
-            clean_directory(directories.symbols(arxiv_id))
+            clean_directory(directories.get_data_subdirectory_for_arxiv_id(directories.SYMBOLS_DIR, arxiv_id))
             yield arxiv_id
 
     def process(self, item: ArxivId) -> Iterator[SymbolData]:
         equations_abs_path = os.path.abspath(
-            os.path.join(directories.equations(item), "equations.csv")
+            os.path.join(directories.get_data_subdirectory_for_arxiv_id(directories.EQUATIONS_DIR, item), "equations.csv")
         )
         node_directory_abs_path = os.path.abspath(NODE_DIRECTORY)
         equations_relative_path = os.path.relpath(
@@ -84,7 +84,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
             )
 
     def save(self, item: ArxivId, result: SymbolData) -> None:
-        tokens_dir = directories.symbols(item)
+        tokens_dir = directories.get_data_subdirectory_for_arxiv_id(directories.SYMBOLS_DIR, item)
         if not os.path.exists(tokens_dir):
             os.makedirs(tokens_dir)
 

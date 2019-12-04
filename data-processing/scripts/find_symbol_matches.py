@@ -30,7 +30,7 @@ class FindSymbolMatches(ArxivBatchCommand[MathMLForPaper, Matches]):
 
         for arxiv_id in self.arxiv_ids:
 
-            output_dir = directories.symbol_matches(arxiv_id)
+            output_dir = directories.get_data_subdirectory_for_arxiv_id(directories.SYMBOL_MATCHES_DIR, arxiv_id)
             clean_directory(output_dir)
 
             symbols_with_ids = load_symbols(arxiv_id)
@@ -46,7 +46,7 @@ class FindSymbolMatches(ArxivBatchCommand[MathMLForPaper, Matches]):
         yield matches
 
     def save(self, item: MathMLForPaper, result: Matches) -> None:
-        output_dir = directories.symbol_matches(item.arxiv_id)
+        output_dir = directories.get_data_subdirectory_for_arxiv_id(directories.SYMBOL_MATCHES_DIR, item.arxiv_id)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 

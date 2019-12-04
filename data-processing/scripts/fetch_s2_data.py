@@ -59,7 +59,7 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
 
     def save(self, item: ArxivId, result: S2Metadata) -> None:
 
-        s2_metadata_dir = directories.s2_metadata(item)
+        s2_metadata_dir = directories.get_data_subdirectory_for_arxiv_id(directories.S2_METADATA_DIR, item)
         if not os.path.exists(s2_metadata_dir):
             os.makedirs(s2_metadata_dir)
 

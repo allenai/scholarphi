@@ -53,13 +53,14 @@ class AnnotatePdfsCommand(ArxivBatchCommand[PdfAndBoxes, None], ABC):
 
             boxes_and_hues = self.load_bounding_boxes(arxiv_id)
 
-            pdf_paths = get_compiled_pdfs(directories.compilation_results(arxiv_id))
+            pdf_paths = get_compiled_pdfs(directories.get_data_subdirectory_for_arxiv_id(directories.COMPILED_SOURCES_DIR, arxiv_id))
             if len(pdf_paths) == 0:
                 continue
 
             for relative_pdf_path in pdf_paths:
                 absolute_pdf_path = os.path.join(
-                    directories.compilation_results(arxiv_id), relative_pdf_path
+                    directories.get_data_subdirectory_for_arxiv_id(directories.COMPILED_SOURCES_DIR, arxiv_id),
+                    relative_pdf_path
                 )
                 if relative_pdf_path in boxes_and_hues:
                     yield PdfAndBoxes(
@@ -131,7 +132,7 @@ class AnnotatePdfsWithCitationBoxes(AnnotatePdfsCommand):
         self, arxiv_id: ArxivId
     ) -> Dict[str, List[PdfBoundingBoxAndHue]]:
         return common_load_bounding_boxes(
-            directories.hue_locations_for_citations(arxiv_id)
+            directories.get_data_subdirectory_for_arxiv_id(directories.HUE_LOCATIONS_FOR_CITATIONS_DIR, arxiv_id)
         )
 
 
@@ -152,7 +153,7 @@ class AnnotatePdfsWithEquationBoxes(AnnotatePdfsCommand):
         self, arxiv_id: ArxivId
     ) -> Dict[str, List[PdfBoundingBoxAndHue]]:
         return common_load_bounding_boxes(
-            directories.hue_locations_for_equations(arxiv_id)
+            directories.get_data_subdirectory_for_arxiv_id(directories.HUE_LOCATIONS_FOR_EQUATIONS_DIR, arxiv_id)
         )
 
 
@@ -173,5 +174,5 @@ class AnnotatePdfsWithEquationTokenBoxes(AnnotatePdfsCommand):
         self, arxiv_id: ArxivId
     ) -> Dict[str, List[PdfBoundingBoxAndHue]]:
         return common_load_bounding_boxes(
-            directories.hue_locations_for_equation_tokens(arxiv_id)
+            directories.get_data_subdirectory_for_arxiv_id(directories.HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR, arxiv_id)
         )

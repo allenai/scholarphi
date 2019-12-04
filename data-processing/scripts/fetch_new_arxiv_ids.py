@@ -54,7 +54,9 @@ class FetchNewArxivIds(Command[ArxivId, ArxivId]):
     def save(self, item: ArxivId, _: ArxivId) -> None:
         if not os.path.exists(directories.ARXIV_IDS_DIR):
             os.makedirs(directories.ARXIV_IDS_DIR)
-        with open(directories.arxiv_ids(item), "w") as arxiv_ids_stamp:
+
+        fname = directories.get_data_subdirectory_for_arxiv_id(directories.ARXIV_IDS_DIR, arxiv_id=item)
+        with open(fname, "w") as arxiv_ids_stamp:
             arxiv_ids_stamp.write("")
 
         if self.args.output_file is not None:
