@@ -378,10 +378,16 @@ class LocateEquationTokenHues(LocateHuesCommand):
             + "'"
         )
 
+    def hue_locations_for_equations_dir(self) -> str:
+        return directories.HUE_LOCATIONS_FOR_EQUATIONS_DIR
+
+    def sources_with_colorized_equation_tokens_dir(self) -> str:
+        return directories.SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR
+
     def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
 
         equation_boxes_path = os.path.join(
-            directories.get_data_subdirectory_for_arxiv_id(directories.HUE_LOCATIONS_FOR_EQUATIONS_DIR, arxiv_id),
+            directories.get_data_subdirectory_for_arxiv_id(self.hue_locations_for_equations_dir(), arxiv_id),
             "hue_locations.csv"
         )
         bounding_boxes: Dict[EquationId, BoundingBoxesByPdf] = {}
@@ -408,7 +414,7 @@ class LocateEquationTokenHues(LocateHuesCommand):
         token_hues_by_equation: Dict[EquationId, Dict[int, Hue]] = {}
         token_hues_path = os.path.join(
             get_data_subdirectory_for_iteration(
-                directories.SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR,
+                self.sources_with_colorized_equation_tokens_dir(),
                 arxiv_id,
                 iteration,
             ),
@@ -486,95 +492,16 @@ class VisualValidateLocateEquationTokenHues(LocateEquationTokenHues):
             + "'"
         )
 
-    def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
+    def hue_locations_for_equations_dir(self) -> str:
+        return directories.VISUAL_VALIDATE_HUE_LOCATIONS_FOR_EQUATIONS_DIR
 
-        equation_boxes_path = os.path.join(
-            directories.get_data_subdirectory_for_arxiv_id(directories.VISUAL_VALIDATE_HUE_LOCATIONS_FOR_EQUATIONS_DIR, arxiv_id),
-            "hue_locations.csv"
-        )
-        bounding_boxes: Dict[EquationId, BoundingBoxesByPdf] = {}
-        with open(equation_boxes_path) as hue_boxes_file:
-            reader = csv.reader(hue_boxes_file)
-            for row in reader:
-                equation_id = EquationId(row[-2], int(row[-1]))
-                if equation_id not in bounding_boxes:
-                    bounding_boxes[equation_id] = {}
-
-                pdf_path = row[0]
-                if pdf_path not in bounding_boxes[equation_id]:
-                    bounding_boxes[equation_id][pdf_path] = []
-
-                box = RasterBoundingBox(
-                    page=int(row[3]),
-                    left=int(row[8]),
-                    top=int(row[9]),
-                    width=int(row[10]),
-                    height=int(row[11]),
-                )
-                bounding_boxes[equation_id][pdf_path].append(box)
-
-        token_hues_by_equation: Dict[EquationId, Dict[int, Hue]] = {}
-        token_hues_path = os.path.join(
-            get_data_subdirectory_for_iteration(
-                directories.SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR,
-                arxiv_id,
-                iteration,
-            ),
-            "token_hues.csv",
-        )
-        with open(token_hues_path, encoding="utf-8") as token_hues_file:
-            reader = csv.reader(token_hues_file)
-            for row in reader:
-                equation_id = EquationId(tex_path=row[0], equation_index=int(row[1]))
-                token_index = int(row[2])
-                hue = float(row[3])
-                if equation_id not in token_hues_by_equation:
-                    token_hues_by_equation[equation_id] = {}
-                token_hues_by_equation[equation_id][token_index] = hue
-
-        hue_searches = []
-        for equation_id, boxes_by_pdf in bounding_boxes.items():
-            for pdf_path, boxes in boxes_by_pdf.items():
-                masks_by_page: MasksForPages = {}
-                for box in boxes:
-                    if box.page not in masks_by_page:
-                        masks_by_page[box.page] = []
-                    masks_by_page[box.page].append(
-                        Rectangle(box.left, box.top, box.width, box.height)
-                    )
-
-                if equation_id in token_hues_by_equation:
-                    for token_index, hue in token_hues_by_equation[equation_id].items():
-                        region_id = TokenId(
-                            equation_id.tex_path,
-                            equation_id.equation_index,
-                            token_index,
-                        )
-                        hue_searches.append(
-                            HueSearchRegion(
-                                hue=hue,
-                                region_id=region_id,
-                                relative_pdf_path=pdf_path,
-                                masks=masks_by_page,
-                            )
-                        )
-
-        return hue_searches
-
-    def format_region_id(
-        self, region_id: Optional[Any]  # pylint: disable=unused-argument
-    ) -> List[str]:
-        region_id = cast(TokenId, region_id)
-        return [
-            region_id.tex_path,
-            str(region_id.equation_index),
-            str(region_id.token_index),
-        ]
+    def sources_with_colorized_equation_tokens_dir(self) -> str:
+        return directories.VISUAL_VALIDATE_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR
 
     @staticmethod
     def get_diff_images_base_dir() -> str:
-        return directories.DIFF_IMAGES_WITH_COLORIZED_EQUATION_TOKENS_DIR
+        return directories.VISUAL_VALIDATE_DIFF_IMAGES_WITH_COLORIZED_EQUATION_TOKENS_DIR
 
     @staticmethod
     def get_output_base_dir() -> str:
-        return directories.HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR
+        return directories.VISUAL_VALIDATE_HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR
