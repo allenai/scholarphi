@@ -4,7 +4,6 @@ import os.path
 from typing import Iterator, NamedTuple
 
 import explanations.directories as directories
-from explanations.directories import sources
 from explanations.file_utils import clean_directory, find_files, read_file_tolerant
 from explanations.parse_tex import BibitemExtractor
 from explanations.types import ArxivId, Bibitem, FileContents, Path
