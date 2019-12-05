@@ -1,0 +1,12 @@
+% Convenience commands for checking if command is defined or not. Work in TeX and LaTeX
+\def\scholarifundefined#1#2{%
+\expandafter\ifx\csname #1\endcsname\relax%
+#2%
+\fi%
+}
+\def\scholarifdefined#1#2{%
+\expandafter\ifx\csname #1\endcsname\relax%
+\else%
+#2%
+\fi%
+}

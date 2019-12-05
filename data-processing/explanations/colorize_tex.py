@@ -8,6 +8,7 @@ from typing import Any, Callable, Dict, Iterator, List, NamedTuple, Optional, ca
 import numpy as np
 
 from explanations.parse_tex import (
+    BeginDocumentExtractor,
     Citation,
     CitationExtractor,
     ColorLinksExtractor,
@@ -43,23 +44,39 @@ If you want a better sense of the colorization process, see the 'colorize_citati
 has more explanatory comments than the other colorization methods.
 """
 
-# Load a preamble containing coloring commands
-with open(os.path.join("resources", "color_commands.tex")) as color_commands_file:
-    COLOR_MACRO_TEX = color_commands_file.read()
+# Load preambles for TeX files that will load the colorization commands.
+with open(os.path.join("resources", "01-macros.tex")) as file_:
+    COLOR_MACROS_BASE_MACROS = file_.read()
+with open(os.path.join("resources", "02a-latex-import-color.tex")) as file_:
+    COLOR_MACROS_LATEX_IMPORTS = file_.read()
+with open(os.path.join("resources", "02b-tex-import-color.tex")) as file_:
+    COLOR_MACROS_TEX_IMPORTS = file_.read()
+with open(os.path.join("resources", "03-load-color-commands.tex")) as file_:
+    COLOR_MACROS = file_.read()
+
+TEX_COLOR_MACROS = "\n".join(
+    [COLOR_MACROS_BASE_MACROS, COLOR_MACROS_TEX_IMPORTS, COLOR_MACROS]
+)
+LATEX_COLOR_MACROS = "\n".join(
+    [COLOR_MACROS_BASE_MACROS, COLOR_MACROS_LATEX_IMPORTS, COLOR_MACROS]
+)
 
 
 def add_color_macros(tex: str) -> str:
     documentclass_extractor = DocumentclassExtractor()
     documentclass = documentclass_extractor.parse(tex)
-    if documentclass is None:
-        return COLOR_MACRO_TEX + "\n\n" + tex
-    return (
-        tex[: documentclass.end]
-        + "\n\n"
-        + COLOR_MACRO_TEX
-        + "\n"
-        + tex[documentclass.end :]
-    )
+    if documentclass is not None:
+        begin_document_extractor = BeginDocumentExtractor()
+        begin_document = begin_document_extractor.parse(tex)
+        if begin_document is not None:
+            return (
+                tex[: begin_document.start]
+                + "\n"
+                + LATEX_COLOR_MACROS
+                + "\n"
+                + tex[begin_document.start :]
+            )
+    return TEX_COLOR_MACROS + "\n\n" + tex
 
 
 # TODO(andrewhead): determine number of hues based on the number of hues that OpenCV is capable
@@ -434,7 +451,7 @@ def _get_color_positions(token: TokenWithOrigin, equation: Equation) -> Characte
     where coloring commands can always be placed on the boundaries of that symbol. For some of the
     above cases, this would be superior. For example, it could let us detect an r-hat as an r-hat
     instead of an r.
-    
+
     Until we make those changes, this function turns symbol character positions into valid
     positions for inserting coloring commands.
     """

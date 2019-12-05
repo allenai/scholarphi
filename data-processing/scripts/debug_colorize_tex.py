@@ -5,35 +5,22 @@ import os.path
 import shutil
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Iterator, List, Optional
+from typing import Any, Iterator, List
 
 from explanations import directories
-from explanations.colorize_tex import (
-    ColorizedEntity,
-    colorize_citations,
-    colorize_equation_tokens,
-    colorize_equations,
-)
-from explanations.compile import compile_tex, get_errors, is_driver_unimplemented
-from explanations.directories import (
-    escape_slashes,
-    get_data_subdirectory_for_arxiv_id,
-    get_data_subdirectory_for_iteration,
-)
-from explanations.file_utils import (
-    clean_directory,
-    find_files,
-    load_tokens,
-    read_file_tolerant,
-    save_compilation_results,
-)
-from explanations.types import (
-    ArxivId,
-    CompilationResult,
-    FileContents,
-    Path,
-    RelativePath,
-)
+from explanations.colorize_tex import (ColorizedEntity, colorize_citations,
+                                       colorize_equation_tokens,
+                                       colorize_equations)
+from explanations.compile import (compile_tex, get_errors,
+                                  is_driver_unimplemented)
+from explanations.directories import (escape_slashes,
+                                      get_data_subdirectory_for_arxiv_id,
+                                      get_data_subdirectory_for_iteration)
+from explanations.file_utils import (clean_directory, find_files, load_tokens,
+                                     read_file_tolerant,
+                                     save_compilation_results)
+from explanations.types import (ArxivId, CompilationResult, FileContents, Path,
+                                RelativePath)
 from explanations.unpack import unpack
 from scripts.command import ArxivBatchCommand
 
