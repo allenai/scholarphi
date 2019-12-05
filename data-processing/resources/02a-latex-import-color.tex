@@ -1,0 +1,9 @@
+% Assumes '01-macros.tex' has already been loaded.
+% This preamble should be included only at the end of the preamble, so that
+% it can check to see whether the color commands were already loaded. If so, we 
+% we don't want to load them a second time.
+
+\scholarifundefined{color}{%
+\message{color command not loaded. Importing color package.}%
+\usepackage{color}%
+}

@@ -1,7 +1,8 @@
 import logging
 import re
 from dataclasses import dataclass
-from typing import Callable, Dict, Iterator, List, NamedTuple, Optional, Set, Union
+from typing import (Callable, Dict, Iterator, List, NamedTuple, Optional, Set,
+                    Union)
 
 from TexSoup import RArg, TexNode, TexSoup, TokenWithPosition
 
@@ -284,6 +285,22 @@ class EquationExtractor:
     def _in_environment(self, end_pattern_name: str) -> bool:
         start_pattern_name = self._get_start_pattern_name(end_pattern_name)
         return any([m.pattern.name == start_pattern_name for m in self._stack])
+
+
+@dataclass(frozen=True)
+class BeginDocument(Entity):
+    pass
+
+
+class BeginDocumentExtractor:
+    def parse(self, tex: str) -> Optional[BeginDocument]:
+        pattern = Pattern("begin_document", r"(?<![\\])\\begin{document}")
+        scanner = scan_tex(tex, [pattern], include_unmatched=False)
+        try:
+            match = next(scanner)
+            return BeginDocument(match.start, match.end)
+        except StopIteration:
+            return None
 
 
 @dataclass(frozen=True)

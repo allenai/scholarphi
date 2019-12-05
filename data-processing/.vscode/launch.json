@@ -17,12 +17,12 @@
       }
     },
     {
-      "name": "Extract Equation Tokens",
+      "name": "Extract Symbols",
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}/scripts/process.py",
       "console": "integratedTerminal",
-      "args": ["extract-equation-tokens"],
+      "args": ["extract-symbols", "--arxiv-ids", "1508.07252"],
       "cwd": "${workspaceFolder}",
       "env": {
         "PYTHONPATH": "."

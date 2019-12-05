@@ -1,7 +1,10 @@
 import re
 
 from explanations.colorize_tex import (
-    COLOR_MACRO_TEX,
+    COLOR_MACROS,
+    COLOR_MACROS_BASE_MACROS,
+    COLOR_MACROS_LATEX_IMPORTS,
+    COLOR_MACROS_TEX_IMPORTS,
     add_color_macros,
     colorize_citations,
     colorize_equation_tokens,
@@ -19,44 +22,34 @@ COLOR_PATTERN = (
 def test_add_color_macros_to_tex():
     tex = "Body text"
     with_macros = add_color_macros(tex)
-    assert with_macros == "\n".join([COLOR_MACRO_TEX, "", "Body text"])
+    assert with_macros == "\n".join(
+        [
+            COLOR_MACROS_BASE_MACROS,
+            COLOR_MACROS_TEX_IMPORTS,
+            COLOR_MACROS,
+            "",
+            "Body text",
+        ]
+    )
 
 
 def test_add_color_macros_to_latex():
     """
     For LaTeX, macros must be placed beneath the \\documentclass command.
     """
-    tex = "\n".join(["\\documentclass{article}", "Body text"])
+    tex_lines = [
+        "\\documentclass{article}",
+        "\\usepackage{otherpackage}",
+        "\\begin{document}",
+        "Body text",
+        "\\end{document}",
+    ]
+    tex = "\n".join(tex_lines)
     with_macros = add_color_macros(tex)
     assert with_macros == "\n".join(
-        ["\\documentclass{article}", "", COLOR_MACRO_TEX, "", "Body text",]
-    )
-
-
-def test_add_color_macros_to_latex_with_tricky_documentclass():
-    tex = "\n".join(
-        [
-            "%comment",
-            "  \\documentclass[11pt]",
-            "%",
-            "{article}",
-            "[optionalargs]",
-            "Body text",
-        ]
-    )
-    with_macros = add_color_macros(tex)
-    assert with_macros == "\n".join(
-        [
-            "%comment",
-            "  \\documentclass[11pt]",
-            "%",
-            "{article}",
-            "[optionalargs]",
-            "",
-            COLOR_MACRO_TEX,
-            "",
-            "Body text",
-        ]
+        tex_lines[0:2]
+        + ["", COLOR_MACROS_BASE_MACROS, COLOR_MACROS_LATEX_IMPORTS, COLOR_MACROS,]
+        + tex_lines[2:]
     )
 
 
