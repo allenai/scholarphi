@@ -95,7 +95,12 @@ class ColorizeEquations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
                                 colorized_equation.identifier["index"],
                                 iteration_id,
                                 colorized_equation.hue,
+                                colorized_equation.tex,
+                                colorized_equation.data["content_start"],
                                 colorized_equation.data["content_tex"],
+                                colorized_equation.data["depth"],
+                                colorized_equation.data["start"],
+                                colorized_equation.data["end"],
                             ]
                         )
                     except Exception:  # pylint: disable=broad-except

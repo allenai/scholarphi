@@ -1,31 +1,13 @@
 import logging
 import re
-from dataclasses import dataclass
 from typing import (Callable, Dict, Iterator, List, NamedTuple, Optional, Set,
                     Union)
 
 from TexSoup import RArg, TexNode, TexSoup, TokenWithPosition
 
 from explanations.scan_tex import Match, Pattern, scan_tex
-from explanations.types import Bibitem
-
-TexFileName = str
-TexContents = str
-
-
-@dataclass(frozen=True)
-class Entity:
-    start: int
-    "Character position where this entity begins in the TeX."
-
-    end: int
-    "Character position where this entity ends in the TeX."
-
-
-@dataclass(frozen=True)
-class Citation(Entity):
-    keys: List[str]
-
+from explanations.types import (BeginDocument, Bibitem, Citation, ColorLinks,
+                                Documentclass, Equation)
 
 """
 All citation commands from the biblatex package.
@@ -215,21 +197,6 @@ def make_math_environment_patterns() -> List[Pattern]:
     return patterns
 
 
-@dataclass(frozen=True)
-class Equation(Entity):
-    i: int
-    "Index of this equation in the TeX document."
-
-    tex: str
-    "TeX for the full equation environment (e.g., '$x + y$')."
-
-    content_start: int
-    "Index of character where the contents (i.e. 'content_tex') of the equation starts"
-
-    content_tex: str
-    "TeX for the equation contents, inside the environment (e.g., 'x + y')."
-
-
 class EquationExtractor:
     """
     TODO(andrewhead): Cases that this doesn't yet handle:
@@ -262,6 +229,7 @@ class EquationExtractor:
                 self._stack.pop()
             start_match = self._stack.pop()
 
+            depth = len(self._stack)
             equation_tex = self._tex[start_match.start : match.end]
             content_tex = self._tex[start_match.end : match.start]
             yield Equation(
@@ -271,6 +239,7 @@ class EquationExtractor:
                 equation_tex,
                 start_match.end,
                 content_tex,
+                depth,
             )
             self._equation_index += 1
 
@@ -287,11 +256,6 @@ class EquationExtractor:
         return any([m.pattern.name == start_pattern_name for m in self._stack])
 
 
-@dataclass(frozen=True)
-class BeginDocument(Entity):
-    pass
-
-
 class BeginDocumentExtractor:
     def parse(self, tex: str) -> Optional[BeginDocument]:
         pattern = Pattern("begin_document", r"(?<![\\])\\begin{document}")
@@ -301,11 +265,6 @@ class BeginDocumentExtractor:
             return BeginDocument(match.start, match.end)
         except StopIteration:
             return None
-
-
-@dataclass(frozen=True)
-class Documentclass(Entity):
-    pass
 
 
 class DocumentclassExtractor:
@@ -349,12 +308,6 @@ class DocumentclassExtractor:
         if required_arg is not None:
             return Documentclass(start, required_arg.end)
         return None
-
-
-class ColorLinks(NamedTuple):
-    value: str
-    value_start: int
-    value_end: int
 
 
 class ColorLinksExtractor:
