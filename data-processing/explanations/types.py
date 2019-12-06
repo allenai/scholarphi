@@ -77,6 +77,66 @@ class Bibitem(NamedTuple):
 
 
 """
+TEX PARSING
+"""
+
+TexFileName = str
+TexContents = str
+
+
+@dataclass(frozen=True)
+class Entity:
+    start: int
+    "Character position where this entity begins in the TeX."
+
+    end: int
+    "Character position where this entity ends in the TeX."
+
+
+@dataclass(frozen=True)
+class Citation(Entity):
+    keys: List[str]
+
+
+@dataclass(frozen=True)
+class Equation(Entity):
+    i: int
+    "Index of this equation in the TeX document."
+
+    tex: str
+    "TeX for the full equation environment (e.g., '$x + y$')."
+
+    content_start: int
+    "Index of character where the contents (i.e. 'content_tex') of the equation starts"
+
+    content_tex: str
+    "TeX for the equation contents, inside the environment (e.g., 'x + y')."
+
+    depth: int
+    """
+    Depth within a tree of equations. Most equations will not be nested in others, so will have a
+    depth of 0 if not nested in another equation. As an example, if this equation is nested in
+    another equation, which is nested in another equation, it will have a depth of 2.
+    """
+
+
+@dataclass(frozen=True)
+class BeginDocument(Entity):
+    pass
+
+
+@dataclass(frozen=True)
+class Documentclass(Entity):
+    pass
+
+
+class ColorLinks(NamedTuple):
+    value: str
+    value_start: int
+    value_end: int
+
+
+"""
 EQUATION PARSING
 """
 
@@ -109,14 +169,14 @@ class CharacterRange(NamedTuple):
     end: int
 
 
-class TokenWithOrigin(NamedTuple):
+@dataclass(frozen=True)
+class TokenWithOrigin:
     """
     A token and a character are the same thing, it just has two names for historical reasons.
     """
 
     tex_path: str
-    equation_index: int
-    equation: str
+    equation: Equation
     token_index: int
     start: int
     end: int
@@ -141,7 +201,8 @@ class SymbolWithId(NamedTuple):
     symbol: Symbol
 
 
-class EquationId(NamedTuple):
+@dataclass(frozen=True)
+class EquationId:
     tex_path: str
     equation_index: int
 

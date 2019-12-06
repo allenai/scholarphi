@@ -8,6 +8,8 @@ from explanations import directories
 from explanations.types import (
     ArxivId,
     CompilationResult,
+    Equation,
+    EquationId,
     FileContents,
     Path,
     Symbol,
@@ -82,10 +84,43 @@ def _get_symbol_id(row: List[str]) -> SymbolId:
     )
 
 
+def load_equations(arxiv_id: ArxivId) -> Optional[Dict[EquationId, Equation]]:
+    equations_path = os.path.join(directories.equations(arxiv_id), "equations.csv")
+    if not os.path.exists(equations_path):
+        logging.warning("No equation data found for paper %s. Skipping.", arxiv_id)
+        return None
+
+    equations: Dict[EquationId, Equation] = {}
+    with open(equations_path, encoding="utf-8") as equations_file:
+        reader = csv.reader(equations_file)
+        for row in reader:
+            tex_path = row[0]
+            equation_index = int(row[1])
+            equation = Equation(
+                int(row[8]),
+                int(row[9]),
+                int(row[2]),
+                row[4],
+                int(row[5]),
+                row[6],
+                int(row[7]),
+            )
+            equation_id = EquationId(tex_path, equation_index)
+            equations[equation_id] = equation
+
+    return equations
+
+
 def load_tokens(arxiv_id: ArxivId) -> Optional[List[TokenWithOrigin]]:
+    equations = load_equations(arxiv_id)
+    if equations is None:
+        return None
+
     tokens_path = os.path.join(directories.symbols(arxiv_id), "tokens.csv")
     if not os.path.exists(tokens_path):
-        logging.info("No equation token data found for paper %s. Skipping.", arxiv_id)
+        logging.warning(
+            "No equation token data found for paper %s. Skipping.", arxiv_id
+        )
         return None
 
     # Load token location information
@@ -94,11 +129,17 @@ def load_tokens(arxiv_id: ArxivId) -> Optional[List[TokenWithOrigin]]:
         reader = csv.reader(tokens_file)
         for row in reader:
             tex_path = row[0]
+            equation_index = int(row[1])
+            equation_id = EquationId(tex_path, equation_index)
+            if equation_id not in equations:
+                logging.warning(
+                    "Couldn't find equation with ID %s for token", equation_id
+                )
+                continue
             tokens.append(
                 TokenWithOrigin(
                     tex_path=tex_path,
-                    equation_index=int(row[1]),
-                    equation=row[2],
+                    equation=equations[equation_id],
                     token_index=int(row[3]),
                     start=int(row[4]),
                     end=int(row[5]),

@@ -3,22 +3,27 @@ import logging
 import os
 import re
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Iterator, List, NamedTuple, Optional, cast
+from typing import Any, Callable, Dict, Iterator, List, NamedTuple, Optional, Set, cast
 
 import numpy as np
 
 from explanations.parse_tex import (
     BeginDocumentExtractor,
-    Citation,
     CitationExtractor,
     ColorLinksExtractor,
     DocumentclassExtractor,
+    EquationExtractor,
+)
+from explanations.types import (
+    CharacterRange,
+    Citation,
     Entity,
     Equation,
-    EquationExtractor,
+    EquationId,
+    FileContents,
     TexFileName,
+    TokenWithOrigin,
 )
-from explanations.types import CharacterRange, EquationId, FileContents, TokenWithOrigin
 
 """
 All TeX coloring operations follow the same process.
@@ -196,7 +201,13 @@ def colorize_equations(
 ) -> Iterator[ColorizationBatch]:
     def get_entity_metadata(entity: Entity) -> Dict[str, Any]:
         equation = cast(Equation, entity)
-        return {"content_tex": equation.content_tex}
+        return {
+            "content_start": equation.content_start,
+            "content_tex": equation.content_tex,
+            "depth": equation.depth,
+            "start": entity.start,
+            "end": entity.end,
+        }
 
     batches = colorize_entities(
         tex,
@@ -310,22 +321,18 @@ def colorize_equation_tokens(
     preset_hue: Optional[float] = None,
 ) -> Iterator[TokenColorizationBatch]:
 
-    equations_by_file: Dict[TexFileName, List[Equation]] = {}
+    equations_by_file: Dict[TexFileName, Set[Equation]] = {}
     tokens_by_equation: Dict[EquationId, List[TokenWithOrigin]] = {}
 
     for token in tokens:
-        equation_id = EquationId(token.tex_path, token.equation_index)
+        equation_id = EquationId(token.tex_path, token.equation.i)
         if equation_id not in tokens_by_equation:
             tokens_by_equation[equation_id] = []
         tokens_by_equation[equation_id].append(token)
 
-    for tex_filename, tex_file_contents in file_contents.items():
-        tex = tex_file_contents.contents
-        equation_extractor = EquationExtractor()
-        if insert_color_macros:
-            tex = add_color_macros(tex)
-        equations = list(equation_extractor.parse(tex))
-        equations_by_file[tex_filename] = equations
+        if not token.tex_path in equations_by_file:
+            equations_by_file[token.tex_path] = set()
+        equations_by_file[token.tex_path].add(token.equation)
 
     # Number of tokens to skip when coloring. Starts at 0, and increases with each pass of
     # coloring. Multiple passes will be needed as the distinct hues for tokens runs out fast.
@@ -344,10 +351,15 @@ def colorize_equation_tokens(
             if insert_color_macros:
                 colorized_tex = add_color_macros(colorized_tex)
 
+            # Filter equations to those that are not nested in other equations, to avoid coloring a
+            # token more than once. It could work to color multiple times, though right now it will
+            # break colorization as a token's position will be broken for the second coloring.
+            equations_filtered = filter(
+                lambda e: e.depth == 0, equations_by_file[tex_filename]
+            )
+
             equations_reverse_order = sorted(
-                equations_by_file[tex_filename],
-                key=lambda e: e.content_start,
-                reverse=True,
+                equations_filtered, key=lambda e: e.content_start, reverse=True,
             )
             for equation in equations_reverse_order:
                 equation_tokens = tokens_by_equation.get(
@@ -426,7 +438,7 @@ def _colorize_tokens_for_equation(
         colorized_tokens.append(
             ColorizedTokenWithOrigin(
                 token.tex_path,
-                token.equation_index,
+                token.equation.i,
                 token.token_index,
                 token.start,
                 token.end,
