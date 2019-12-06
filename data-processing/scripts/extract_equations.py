@@ -1,24 +1,25 @@
 import csv
 import os.path
 from dataclasses import dataclass
-from typing import Iterator
+from typing import Iterator, List
 
 from explanations import directories
-from explanations.directories import (get_data_subdirectory_for_iteration,
-                                      get_iteration_names)
+from explanations.directories import (
+    get_data_subdirectory_for_iteration,
+    get_iteration_names,
+)
 from explanations.file_utils import clean_directory
-from explanations.types import ArxivId, Equation, Path
+from explanations.types import ArxivId, Path
 from scripts.command import ArxivBatchCommand
 
 
 @dataclass(frozen=True)
-class EquationItem:
+class EquationData:
     arxiv_id: ArxivId
-    tex_path: Path
-    equation: Equation
+    csv_row: List[str]
 
 
-class ExtractEquations(ArxivBatchCommand[EquationItem, None]):
+class ExtractEquations(ArxivBatchCommand[EquationData, None]):
     """
     This script assumes that the script for colorizing equations in TeX has already been run.
     The output from that step includes the TeX extracted for all equations. This script
@@ -36,7 +37,7 @@ class ExtractEquations(ArxivBatchCommand[EquationItem, None]):
     def get_arxiv_ids_dir(self) -> Path:
         return directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR
 
-    def load(self) -> Iterator[EquationItem]:
+    def load(self) -> Iterator[EquationData]:
 
         for arxiv_id in self.arxiv_ids:
             clean_directory(directories.equations(arxiv_id))
@@ -56,28 +57,16 @@ class ExtractEquations(ArxivBatchCommand[EquationItem, None]):
                 with open(equation_hues_path, encoding="utf-8") as equation_hues_file:
                     reader = csv.reader(equation_hues_file)
                     for row in reader:
-                        yield EquationItem(
-                            arxiv_id=arxiv_id,
-                            tex_path=row[0],
-                            equation=Equation(
-                                int(row[8]),
-                                int(row[9]),
-                                int(row[1]),
-                                row[4],
-                                int(row[5]),
-                                row[6],
-                                int(row[7]),
-                            ),
-                        )
+                        yield EquationData(arxiv_id=arxiv_id, csv_row=row)
 
-    def process(self, _: EquationItem) -> Iterator[None]:
+    def process(self, _: EquationData) -> Iterator[None]:
         yield None
 
-    def save(self, item: EquationItem, _: None) -> None:
+    def save(self, item: EquationData, _: None) -> None:
         results_dir = directories.equations(item.arxiv_id)
         if not os.path.exists(results_dir):
             os.makedirs(results_dir)
         results_path = os.path.join(results_dir, "equations.csv")
         with open(results_path, "a", encoding="utf-8") as results_file:
             writer = csv.writer(results_file, quoting=csv.QUOTE_ALL)
-            writer.writerow([item.tex_path, item.equation.i, item.equation.content_tex])
+            writer.writerow(item.csv_row)

@@ -2,6 +2,7 @@ from explanations.parse_tex import (
     BibitemExtractor,
     CitationExtractor,
     ColorLinksExtractor,
+    DocumentclassExtractor,
     EquationExtractor,
 )
 
@@ -100,6 +101,13 @@ def test_extract_citation_from_cite_star():
     citations = list(extractor.parse("text\\cite*{key}"))
     assert len(citations) == 1
     assert citations[0].keys == ["key"]
+
+
+def test_extract_documentclass_after_comment_ending_with_whitespace():
+    extractor = DocumentclassExtractor()
+    tex = "\n\n%\\documentclass{IEEEtran}    \n\\documentclass{article}"
+    documentclass = extractor.parse(tex)
+    assert documentclass is not None
 
 
 def test_extract_colorlinks():

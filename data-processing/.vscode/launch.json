@@ -22,7 +22,19 @@
       "request": "launch",
       "program": "${workspaceFolder}/scripts/process.py",
       "console": "integratedTerminal",
-      "args": ["extract-symbols", "--arxiv-ids", "1508.07252"],
+      "args": ["extract-symbols"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "."
+      }
+    },
+    {
+      "name": "Colorize Citations",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/process.py",
+      "console": "integratedTerminal",
+      "args": ["-v", "colorize-citations"],
       "cwd": "${workspaceFolder}",
       "env": {
         "PYTHONPATH": "."

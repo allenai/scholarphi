@@ -11,13 +11,14 @@ program
   )
   .action(csvPath => {
     csv.parseFile(csvPath).on("data", row => {
-      const [path, i, equation] = row;
+      const [path, i] = row;
+      const equation = row[6];
       const baseResult = { i, path, equation };
       let result: EquationParseResult;
-      if (row.length !== 3) {
+      if (row.length < 7) {
         result = {
           ...baseResult,
-          success: true,
+          success: false,
           mathMl: null,
           errorMessage:
             "FormatError: Unexpected format of CSV row. Check that parameters for writing the CSV and reading the CSV are consistent."
@@ -27,7 +28,12 @@ program
           const mathMl = parse(equation);
           result = { ...baseResult, success: true, mathMl, errorMessage: null };
         } catch (e) {
-          result = { ...baseResult, success: false, mathMl: null, errorMessage: e.toString() };
+          result = {
+            ...baseResult,
+            success: false,
+            mathMl: null,
+            errorMessage: e.toString()
+          };
         }
       }
       console.log(JSON.stringify(result));
@@ -49,5 +55,8 @@ program.parse(process.argv);
  * Parse an equation into a MathML tree with source location annotations.
  */
 function parse(equation: string): string {
-  return katex.renderToString(equation, { output: "mathml", throwOnError: true });
+  return katex.renderToString(equation, {
+    output: "mathml",
+    throwOnError: true
+  });
 }
