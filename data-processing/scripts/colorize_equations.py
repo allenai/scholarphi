@@ -97,6 +97,7 @@ class ColorizeEquations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
                                 colorized_equation.hue,
                                 colorized_equation.tex,
                                 colorized_equation.data["content_start"],
+                                colorized_equation.data["content_end"],
                                 colorized_equation.data["content_tex"],
                                 colorized_equation.data["depth"],
                                 colorized_equation.data["start"],

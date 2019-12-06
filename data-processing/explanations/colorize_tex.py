@@ -203,11 +203,20 @@ def colorize_equations(
         equation = cast(Equation, entity)
         return {
             "content_start": equation.content_start,
+            "content_end": equation.content_end,
             "content_tex": equation.content_tex,
             "depth": equation.depth,
             "start": entity.start,
             "end": entity.end,
         }
+
+    def when(entity: Entity) -> bool:
+        equation = cast(Equation, entity)
+        return equation.depth == 0
+
+    def get_color_positions(entity: Entity) -> CharacterRange:
+        equation = cast(Equation, entity)
+        return CharacterRange(equation.content_start, equation.content_end)
 
     batches = colorize_entities(
         tex,
@@ -216,6 +225,8 @@ def colorize_equations(
         insert_color_macros,
         batch_size,
         preset_hue,
+        when,
+        get_color_positions,
     )
     for batch in batches:
         yield batch
@@ -228,6 +239,8 @@ def colorize_entities(
     insert_color_macros: bool = True,
     batch_size: Optional[int] = None,
     preset_hue: Optional[float] = None,
+    when: Optional[Callable[[Entity], bool]] = None,
+    get_color_positions: Optional[Callable[[Entity], CharacterRange]] = None,
 ) -> Iterator[ColorizationBatch]:
 
     batch_size = min(batch_size, NUM_HUES) if batch_size is not None else NUM_HUES
@@ -249,6 +262,12 @@ def colorize_entities(
     colorized_tex = tex
     item_index = 0
     for e, ei in zip(entities_reverse_order, range(len(entities) - 1, -1, -1)):
+
+        # Decide whether or not to color this entity
+        if when is not None and not when(e):
+            continue
+
+        # Get a hue to color this entity
         if preset_hue is not None:
             hue = preset_hue
         else:
@@ -257,19 +276,27 @@ def colorize_entities(
         entity_tex = tex[e.start : e.end]
         content_tex = tex[max(0, e.start - CONTEXT_SIZE) : e.end + CONTEXT_SIZE]
 
+        # Save a reference to this colorized entity to return to the caller
         colorized_entities.insert(
             0,
             ColorizedEntity(
                 hue, {"index": ei}, entity_tex, content_tex, get_entity_metadata(e),
             ),
         )
-        colorized_tex = insert_color_in_tex(colorized_tex, hue, e.start, e.end)
+
+        # Determine what range of characters to color
+        color_character_range = CharacterRange(e.start, e.end)
+        if get_color_positions is not None:
+            color_character_range = get_color_positions(e)
+        colorized_tex = insert_color_in_tex(
+            colorized_tex, hue, color_character_range.start, color_character_range.end
+        )
 
         item_index += 1
 
+        # When the hues run out, notify caller that a batch has been finished.
+        # Provide the caller with the colorized tex and list of colors.
         if item_index == batch_size:
-            # When the hues run out, notify caller that a batch has been finished.
-            # Provide the caller with the colorized tex and list of colors.
             yield ColorizationBatch(colorized_tex, colorized_entities)
 
             # Then reset the TeX so it is not colorized so we can start coloring with the
@@ -301,17 +328,6 @@ class ColorizedTokenWithOrigin(NamedTuple):
 class TokenColorizationBatch(NamedTuple):
     colorized_files: Dict[TexFileName, FileContents]
     colorized_tokens: List[ColorizedTokenWithOrigin]
-
-
-def _get_tokens_for_equation(
-    tokens: List[TokenWithOrigin], equation_index: int, tex_path: str
-) -> List[TokenWithOrigin]:
-    return list(
-        filter(
-            lambda t: t.tex_path == tex_path and t.equation_index == equation_index,
-            tokens,
-        )
-    )
 
 
 def colorize_equation_tokens(

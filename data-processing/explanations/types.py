@@ -85,12 +85,19 @@ TexContents = str
 
 
 @dataclass(frozen=True)
-class Entity:
+class CharacterRange:
     start: int
-    "Character position where this entity begins in the TeX."
+    "Character position where this range begins in the TeX."
 
     end: int
-    "Character position where this entity ends in the TeX."
+    "Character position where this range ends in the TeX."
+
+
+@dataclass(frozen=True)
+class Entity(CharacterRange):
+    """
+    Every entity has, at the least, a start and end position.
+    """
 
 
 @dataclass(frozen=True)
@@ -107,7 +114,10 @@ class Equation(Entity):
     "TeX for the full equation environment (e.g., '$x + y$')."
 
     content_start: int
-    "Index of character where the contents (i.e. 'content_tex') of the equation starts"
+    "Index of character where the contents (i.e. 'content_tex') of the equation starts."
+
+    content_end: int
+    "Index of character where the contents of the equation ends."
 
     content_tex: str
     "TeX for the equation contents, inside the environment (e.g., 'x + y')."
@@ -160,11 +170,6 @@ class SymbolId(NamedTuple):
 class Character(NamedTuple):
     text: str
     i: CharacterIndex
-    start: int
-    end: int
-
-
-class CharacterRange(NamedTuple):
     start: int
     end: int
 

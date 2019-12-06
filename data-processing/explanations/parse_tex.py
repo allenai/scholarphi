@@ -1,18 +1,13 @@
 import logging
 import re
-from typing import Callable, Dict, Iterator, List, NamedTuple, Optional, Set, Union
+from typing import (Callable, Dict, Iterator, List, NamedTuple, Optional, Set,
+                    Union)
 
 from TexSoup import RArg, TexNode, TexSoup, TokenWithPosition
 
 from explanations.scan_tex import Match, Pattern, scan_tex
-from explanations.types import (
-    BeginDocument,
-    Bibitem,
-    Citation,
-    ColorLinks,
-    Documentclass,
-    Equation,
-)
+from explanations.types import (BeginDocument, Bibitem, Citation, ColorLinks,
+                                Documentclass, Equation)
 
 """
 All citation commands from the biblatex package.
@@ -163,7 +158,7 @@ TODO(andrewhead): Support 'alignat'.
 """
 MATH_ENVIRONMENT_SPECS: Dict[str, EnvSpec] = {
     # Inline math
-    "dollar": DelimitedEnv(r"(?<![\\])\$"),
+    "dollar": DelimitedEnv(r"(?<![\\])\$(?!\$)"),
     "parens": StartEndEnv(r"(?<![\\])\\\(", r"(?<![\\])\\\)"),
     "math": NamedEnv("math", star=False),
     # Display math
@@ -243,6 +238,7 @@ class EquationExtractor:
                 self._equation_index,
                 equation_tex,
                 start_match.end,
+                match.start,
                 content_tex,
                 depth,
             )

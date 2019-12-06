@@ -77,8 +77,8 @@ def test_color_equations():
     colorized, equations = next(colorize_equations(tex, insert_color_macros=False))
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 2
-    assert matches[0] == "$eq1$"
-    assert matches[1] == "$eq2$"
+    assert matches[0] == "eq1"
+    assert matches[1] == "eq2"
 
     equation0_info = equations[0]
     assert isinstance(equation0_info.hue, float)
@@ -92,12 +92,12 @@ def test_color_equation_in_argument():
     assert colorized.startswith("\\caption")
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 1
-    assert matches[0] == "$eq1$"
+    assert matches[0] == "eq1"
 
 
 def test_color_tokens():
     file_contents = {"file": FileContents("file", "$ignore$ $x + y$", "encoding")}
-    equation = Equation(9, 16, 1, "$x + y$", 10, "x + y", 0)
+    equation = Equation(9, 16, 1, "$x + y$", 10, 15, "x + y", 0)
     tokens = [
         TokenWithOrigin(
             tex_path="file", equation=equation, token_index=0, start=0, end=1, text="x",
@@ -119,7 +119,9 @@ def test_color_tokens():
 
 def test_color_hats_dots():
     file_contents = {"file": FileContents("file", "$\\hat x + \\dot  y$", "encoding")}
-    equation = Equation(0, 18, 0, "$\\hat x + \\dot  y$", 1, "\\hat x + \\dot  y", 0)
+    equation = Equation(
+        0, 18, 0, "$\\hat x + \\dot  y$", 1, 19, "\\hat x + \\dot  y", 0
+    )
     tokens = [
         TokenWithOrigin(
             tex_path="file", equation=equation, token_index=0, start=5, end=6, text="x",
@@ -145,7 +147,7 @@ def test_color_hats_dots():
 
 def test_color_inside_brackets():
     file_contents = {"file": FileContents("file", "${x}$", "encoding")}
-    equation = Equation(0, 5, 0, "${x}$", 1, "{x}", 0)
+    equation = Equation(0, 5, 0, "${x}$", 1, 4, "{x}", 0)
     tokens = [
         TokenWithOrigin(
             tex_path="file", equation=equation, token_index=0, start=0, end=3, text="x",
@@ -163,7 +165,7 @@ def test_color_inside_brackets():
 
 def test_adjust_indexes_to_within_bounds():
     file_contents = {"file": FileContents("file", "$x$ ignore text after", "encoding")}
-    equation = Equation(0, 3, 0, "$x$", 1, "x", 0)
+    equation = Equation(0, 3, 0, "$x$", 1, 2, "x", 0)
     tokens = [
         TokenWithOrigin(
             tex_path="file",
@@ -191,7 +193,7 @@ def test_color_subscripts():
         "file": FileContents("file", "$x_i x^i x\\sp1 x\\sb1$", "encoding")
     }
     equation = Equation(
-        0, 21, 0, "$x_i x^i x\\sp1 x\\sb1$", 1, "x_i x^i x\\sp1 x\\sb1", 0
+        0, 21, 0, "$x_i x^i x\\sp1 x\\sb1$", 1, 20, "x_i x^i x\\sp1 x\\sb1", 0
     )
     tokens = [
         TokenWithOrigin(
@@ -242,10 +244,11 @@ def test_dont_color_nested_equations():
         1,
         "\\begin{equation}\\hbox{$x$}\\end{equation}",
         16,
+        24,
         "\\hbox{$x$}",
         depth=0,
     )
-    inner_equation = Equation(22, 25, 0, "$x$", 1, "x", depth=1)
+    inner_equation = Equation(22, 25, 0, "$x$", 1, 2, "x", depth=1)
     # Simulate the same token being found twice: once within the outer equation, and once within
     # the inner equation.
     tokens = [

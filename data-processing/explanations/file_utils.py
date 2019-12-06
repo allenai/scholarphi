@@ -97,13 +97,14 @@ def load_equations(arxiv_id: ArxivId) -> Optional[Dict[EquationId, Equation]]:
             tex_path = row[0]
             equation_index = int(row[1])
             equation = Equation(
-                int(row[8]),
                 int(row[9]),
+                int(row[10]),
                 int(row[1]),
                 row[4],
                 int(row[5]),
-                row[6],
-                int(row[7]),
+                int(row[6]),
+                row[7],
+                int(row[8]),
             )
             equation_id = EquationId(tex_path, equation_index)
             equations[equation_id] = equation
