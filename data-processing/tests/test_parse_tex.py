@@ -43,6 +43,16 @@ def test_extract_equation_from_star_environment():
     assert equation.end == 33
 
 
+def test_extract_equation_from_double_dollar_signs():
+    extractor = EquationExtractor()
+    equations = list(extractor.parse("$$x$$"))
+    assert len(equations) == 1
+
+    equation = equations[0]
+    assert equation.start == 0
+    assert equation.end == 5
+
+
 def test_dont_extract_equation_from_command_argument_brackets():
     extractor = EquationExtractor()
     equations = list(extractor.parse("\\documentclass[11pt]{article}"))

@@ -12,10 +12,10 @@ program
   .action(csvPath => {
     csv.parseFile(csvPath).on("data", row => {
       const [path, i] = row;
-      const equation = row[6];
+      const equation = row[7];
       const baseResult = { i, path, equation };
       let result: EquationParseResult;
-      if (row.length < 7) {
+      if (row.length < 8) {
         result = {
           ...baseResult,
           success: false,
