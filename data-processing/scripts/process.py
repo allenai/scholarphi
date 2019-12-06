@@ -1,6 +1,6 @@
 import argparse
 import logging
-from typing import Any, List
+from typing import List
 
 from scripts.annotate_pdfs import (
     AnnotatePdfsWithCitationBoxes,
@@ -29,8 +29,8 @@ from scripts.diff_images import (
     DiffImagesWithColorizedEquationTokens,
 )
 from scripts.extract_bibitems import ExtractBibitems
-from scripts.extract_equation_tokens import ExtractSymbols
 from scripts.extract_equations import ExtractEquations
+from scripts.extract_symbols import ExtractSymbols
 from scripts.fetch_arxiv_sources import FetchArxivSources
 from scripts.fetch_new_arxiv_ids import FetchNewArxivIds
 from scripts.fetch_s2_data import FetchS2Metadata

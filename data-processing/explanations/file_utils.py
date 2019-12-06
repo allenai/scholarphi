@@ -99,7 +99,7 @@ def load_equations(arxiv_id: ArxivId) -> Optional[Dict[EquationId, Equation]]:
             equation = Equation(
                 int(row[8]),
                 int(row[9]),
-                int(row[2]),
+                int(row[1]),
                 row[4],
                 int(row[5]),
                 row[6],

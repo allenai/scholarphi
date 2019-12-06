@@ -1,13 +1,18 @@
 import logging
 import re
-from typing import (Callable, Dict, Iterator, List, NamedTuple, Optional, Set,
-                    Union)
+from typing import Callable, Dict, Iterator, List, NamedTuple, Optional, Set, Union
 
 from TexSoup import RArg, TexNode, TexSoup, TokenWithPosition
 
 from explanations.scan_tex import Match, Pattern, scan_tex
-from explanations.types import (BeginDocument, Bibitem, Citation, ColorLinks,
-                                Documentclass, Equation)
+from explanations.types import (
+    BeginDocument,
+    Bibitem,
+    Citation,
+    ColorLinks,
+    Documentclass,
+    Equation,
+)
 
 """
 All citation commands from the biblatex package.
@@ -270,7 +275,7 @@ class BeginDocumentExtractor:
 class DocumentclassExtractor:
     def parse(self, tex: str) -> Optional[Documentclass]:
         patterns = [
-            Pattern("documentclass", r"\s*\\documentclass"),
+            Pattern("documentclass", r"\\documentclass"),
             Pattern("optional_arg", r"\[[^\]]*?\]"),
             Pattern("required_arg", r"{[^}]*?}"),
         ]
