@@ -34,9 +34,9 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
         # XXX(andrewhead): S2 API does not have versions of arXiv papers. I don't think this
         # will be an issue, but it's something to pay attention to.
         resp = requests.get(f"https://api.semanticscholar.org/v1/paper/arXiv:{item}")
-        data = resp.json()
 
         if resp.ok:
+            data = resp.json()
             references = []
             for reference_data in data["references"]:
                 authors = []
