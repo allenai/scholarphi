@@ -1,24 +1,26 @@
 import colorsys
 import logging
 from io import BytesIO
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import cv2
 import numpy as np
 from PyPDF2 import PdfFileReader, PdfFileWriter
+from PyPDF2.utils import PdfReadError
 from reportlab.pdfgen.canvas import Canvas
 from wand.image import Image
 
 from explanations.types import AbsolutePath, Dimensions, PdfBoundingBoxAndHue
 
 
-def get_cv2_images(pdf_path: AbsolutePath) -> List[np.ndarray]:
+def get_cv2_images(pdf_path: AbsolutePath) -> List[Optional[np.ndarray]]:
     """
     Get CV2 images for PDF, as a list with one image for each page.
     """
     page_images = []
 
     with open(pdf_path, "rb") as pdf_file:
+        logging.info("Reading PDF %s", pdf_path)
         pdf = PdfFileReader(pdf_file)
 
         for page_index in range(pdf.getNumPages()):
@@ -32,7 +34,16 @@ def get_cv2_images(pdf_path: AbsolutePath) -> List[np.ndarray]:
             pdf_writer = PdfFileWriter()
             pdf_writer.addPage(page)
             bytes_io = BytesIO()
-            pdf_writer.write(bytes_io)
+            try:
+                pdf_writer.write(bytes_io)
+            except PdfReadError:
+                logging.warning(
+                    "Could not read page %d of PDF %s. Skipping page.",
+                    page_index,
+                    pdf_path,
+                )
+                page_images.append(None)
+                continue
 
             bytes_io.seek(0)
             image = Image(file=bytes_io)
@@ -43,7 +54,7 @@ def get_cv2_images(pdf_path: AbsolutePath) -> List[np.ndarray]:
 
             # When calling 'np.array(image)' on Ubuntu Bionic, the code sometimes gets a
             # segmentation fault. 'export_pixels' seems to not cause this fault.
-            np_image = np.array(image.export_pixels(), dtype='uint8')
+            np_image = np.array(image.export_pixels(), dtype="uint8")
             np_image = np_image.reshape(
                 (image.height, image.width, 4)  # pylint: disable=unsubscriptable-object
             )
