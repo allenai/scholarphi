@@ -106,6 +106,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
             try:
                 writer.writerow(
                     [
+                        item,
                         result.path,
                         result.i,
                         result.equation,
