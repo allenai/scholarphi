@@ -1,21 +1,21 @@
 import logging
 import re
-from typing import Iterator, List, NamedTuple
+from dataclasses import dataclass
+from typing import Iterable, Iterator, List, Optional
 
 
-class Pattern(NamedTuple):
-    """
-    Names must be valid Python names.
-    """
+@dataclass(frozen=True)
+class Pattern:
 
     name: str
-    """
-    Regular expression should contain *no* capturing groups.
-    """
+    " Names must be valid Python names. "
+
     regex: str
+    " Regular expression should contain *no* capturing groups. "
 
 
-class Match(NamedTuple):
+@dataclass(frozen=True)
+class Match:
     pattern: Pattern
     text: str
     start: int
@@ -42,49 +42,100 @@ def scan_tex(
     """
     TODO(andrewhead): Generally, don't report matches for input patterns when escaped.
     """
-    all_patterns = []
-    all_patterns.extend(PRIVATE_PATTERNS)
-    all_patterns.extend(patterns)
+    scanner = TexScanner(tex)
+    while True:
+        try:
+            step = scanner.next(patterns, include_unmatched)
+        except StopIteration:
+            return
+        if step.skipped is not None:
+            for skipped in step.skipped:
+                yield skipped
+        yield step.match
 
-    patterns_by_name = {p.name: p for p in all_patterns}
 
-    all_regex = [f"(?P<{p.name}>{p.regex})" for p in all_patterns]
-    regex = re.compile("|".join(all_regex), flags=re.DOTALL)
+@dataclass(frozen=True)
+class ScanStep:
 
-    scan_mode = NORMAL_MODE
-    last_match = None
+    match: Match
+    " The match found in the most recent scan. "
 
-    for re_match in regex.finditer(tex):
-        group_dict = re_match.groupdict()
-        pattern_names = [name for name, text in group_dict.items() if text is not None]
-        if len(pattern_names) != 1:
-            logging.warning("TeX scanner produced an invalid match: %s", re_match)
-            continue
+    skipped: Optional[List[Match]]
+    """
+    If the caller requested that the scanner include 'unmatched' tokens, this includes an ordered
+    list of uncommented tokens that appeared before the match.
+    """
 
-        pattern_name = pattern_names[0]
-        pattern = patterns_by_name[pattern_name]
 
-        match = Match(
-            pattern, group_dict[pattern_name], re_match.start(), re_match.end()
-        )
+class TexScanner:
+    def __init__(self, tex: str) -> None:
+        self.tex = tex
+        self.i: int = 0
+        self.mode = NORMAL_MODE
+        self.last_match = None
 
-        if scan_mode is COMMENT_MODE and pattern is NEWLINE:
-            scan_mode = NORMAL_MODE
+    def next(self, patterns: Iterable[Pattern], include_unmatched: bool) -> ScanStep:
+        """
+        Find next substring matching one of the input patterns. If 'include_unmatched' is True,
+        the returned result will include an ordered list of skipped, uncommented tokens.
+        Raises 'StopIteration' after the last match has been found.
+        """
+        scan_patterns = PRIVATE_PATTERNS + list(patterns)
 
-        elif scan_mode is NORMAL_MODE:
-            if include_unmatched:
-                if last_match is not None:
-                    if match.start != last_match.end:
-                        yield Match(
-                            pattern=Pattern("UNKNOWN", "INVALID"),
-                            start=last_match.end,
-                            end=match.start,
-                            text=tex[last_match.end : match.start],
-                        )
-                last_match = match
-            if pattern is COMMENT:
-                scan_mode = COMMENT_MODE
-            elif pattern not in PRIVATE_PATTERNS:
-                yield match
+        patterns_by_name = {p.name: p for p in scan_patterns}
+        regexes = [f"(?P<{p.name}>{p.regex})" for p in scan_patterns]
+        regex = re.compile("|".join(regexes), flags=re.DOTALL)
 
-        last_match = match
+        skipped: List[Match] = []
+        match = None
+
+        while match is None:
+            re_match = regex.search(self.tex, self.i)
+            if re_match is None:
+                raise StopIteration
+
+            group_dict = re_match.groupdict()
+            pattern_names = [
+                name for name, text in group_dict.items() if text is not None
+            ]
+            if len(pattern_names) != 1:
+                logging.warning("TeX scanner produced an invalid match: %s", re_match)
+                raise StopIteration
+
+            pattern_name = pattern_names[0]
+            pattern = patterns_by_name[pattern_name]
+
+            # If this is normal scanning mode and some characters were skipped, report these
+            # as skipped tokens.
+            if (
+                self.mode is NORMAL_MODE
+                and re_match.start() > self.i
+                and include_unmatched
+            ):
+                skipped.append(
+                    Match(
+                        pattern=Pattern("UNKNOWN", "INVALID"),
+                        start=self.i,
+                        end=re_match.start(),
+                        text=self.tex[self.i : re_match.start()],
+                    )
+                )
+
+            if self.mode is COMMENT_MODE and pattern is NEWLINE:
+                self.mode = NORMAL_MODE
+
+            elif self.mode is NORMAL_MODE:
+                if pattern is COMMENT:
+                    self.mode = COMMENT_MODE
+                elif pattern not in PRIVATE_PATTERNS:
+                    match = Match(
+                        pattern,
+                        group_dict[pattern_name],
+                        re_match.start(),
+                        re_match.end(),
+                    )
+
+            self.i = re_match.end()
+
+        skipped = skipped if include_unmatched else None
+        return ScanStep(match, skipped)
