@@ -1,10 +1,8 @@
-from explanations.parse_tex import (
-    BibitemExtractor,
-    CitationExtractor,
-    ColorLinksExtractor,
-    DocumentclassExtractor,
-    EquationExtractor,
-)
+from explanations.parse_tex import (BibitemExtractor, CitationExtractor,
+                                    ColorLinksExtractor,
+                                    DocumentclassExtractor, EquationExtractor,
+                                    MacroExtractor)
+from explanations.types import MacroDefinition
 
 
 def test_extract_equation_from_dollar_sign():
@@ -178,3 +176,43 @@ def test_extract_bibitem_stop_at_newline():
     assert len(bibitems) == 1
     assert bibitems[0].key == "key1"
     assert bibitems[0].text == "token1"
+
+
+def test_extract_macro():
+    tex = "\\macro"
+    extractor = MacroExtractor()
+    macros = list(extractor.parse(tex, MacroDefinition("macro", "")))
+    assert len(macros) == 1
+    assert macros[0].start == 0
+    assert macros[0].end == 6
+
+
+def test_extract_macro_with_delimited_parameter():
+    tex = "\\macro arg."
+    extractor = MacroExtractor()
+    macros = list(extractor.parse(tex, MacroDefinition("macro", "#1.")))
+    assert len(macros) == 1
+    assert macros[0].start == 0
+    assert macros[0].end == 11
+    assert macros[0].tex == "\\macro arg."
+
+
+def test_extract_macro_with_undelimited_parameter():
+    # the scanner for undelimited parameter '#1' should match the first non-blank token 'a'.
+    tex = "\\macro  a"
+    extractor = MacroExtractor()
+    macros = list(extractor.parse(tex, MacroDefinition("macro", "#1")))
+    assert len(macros) == 1
+    assert macros[0].start == 0
+    assert macros[0].end == 9
+    assert macros[0].tex == "\\macro  a"
+
+
+def test_extract_macro_balance_nested_braces_for_argument():
+    tex = "\\macro{{nested}}"
+    extractor = MacroExtractor()
+    macros = list(extractor.parse(tex, MacroDefinition("macro", "#1")))
+    assert len(macros) == 1
+    assert macros[0].start == 0
+    assert macros[0].end == 16
+    assert macros[0].tex == "\\macro{{nested}}"
