@@ -146,6 +146,20 @@ class ColorLinks(NamedTuple):
     value_end: int
 
 
+@dataclass(frozen=True)
+class MacroDefinition:
+    name: str
+    " Name of macro. For example, 'omega' if you want to detect \\omega{}. "
+
+    parameter_string: str
+    " Parameter string for macro, in TeX format, e.g., '[#1]#2'. As with TeX, can be empty string. "
+
+
+@dataclass(frozen=True)
+class Macro(Entity):
+    tex: str
+
+
 """
 EQUATION PARSING
 """

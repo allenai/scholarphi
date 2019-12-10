@@ -13,6 +13,13 @@ class Pattern:
     regex: str
     " Regular expression should contain *no* capturing groups. "
 
+    disallow_leading_backslash: bool = True
+    """
+    If True, adjust the regular expression so the pattern will only match if there is no backslash
+    before the pattern. Useful especially for detecting symbols in TeX, e.g., if you want to
+    match "$" but not "\\$".
+    """
+
 
 @dataclass(frozen=True)
 class Match:
@@ -31,8 +38,8 @@ COMMENT_MODE = 1
 """
 Patterns for parsing
 """
-COMMENT = Pattern("comment", "(?<![\\\\])%")
-NEWLINE = Pattern("newline", "\n")
+COMMENT = Pattern("comment", "%")
+NEWLINE = Pattern("newline", "\n", disallow_leading_backslash=False)
 PRIVATE_PATTERNS = [COMMENT, NEWLINE]
 
 
@@ -46,7 +53,7 @@ def scan_tex(
     while True:
         try:
             step = scanner.next(patterns, include_unmatched)
-        except StopIteration:
+        except EndOfInput:
             return
         if step.skipped is not None:
             for skipped in step.skipped:
@@ -67,14 +74,26 @@ class ScanStep:
     """
 
 
+class EndOfInput(Exception):
+    pass
+
+
 class TexScanner:
-    def __init__(self, tex: str) -> None:
+    """
+    For simple TeX scanning, you should be able to use the 'scan_tex' convenience method above.
+    If you need to vary which patterns you're searching for based on where you are in the scan,
+    then create a 'TeXScanner' object and invoke like it is invoked in 'scan_tex'.
+    """
+
+    def __init__(self, tex: str, i: int = 0) -> None:
         self.tex = tex
-        self.i: int = 0
+        self.i = i
         self.mode = NORMAL_MODE
         self.last_match = None
 
-    def next(self, patterns: Iterable[Pattern], include_unmatched: bool) -> ScanStep:
+    def next(
+        self, patterns: Iterable[Pattern], include_unmatched: bool = False
+    ) -> ScanStep:
         """
         Find next substring matching one of the input patterns. If 'include_unmatched' is True,
         the returned result will include an ordered list of skipped, uncommented tokens.
@@ -83,7 +102,12 @@ class TexScanner:
         scan_patterns = PRIVATE_PATTERNS + list(patterns)
 
         patterns_by_name = {p.name: p for p in scan_patterns}
-        regexes = [f"(?P<{p.name}>{p.regex})" for p in scan_patterns]
+        regexes = []
+        for p in scan_patterns:
+            p_regex = p.regex
+            if p.disallow_leading_backslash:
+                p_regex = r"(?<![\\])" + p_regex
+            regexes.append(f"(?P<{p.name}>{p_regex})")
         regex = re.compile("|".join(regexes), flags=re.DOTALL)
 
         skipped: List[Match] = []
@@ -92,7 +116,7 @@ class TexScanner:
         while match is None:
             re_match = regex.search(self.tex, self.i)
             if re_match is None:
-                raise StopIteration
+                raise EndOfInput
 
             group_dict = re_match.groupdict()
             pattern_names = [
@@ -100,7 +124,9 @@ class TexScanner:
             ]
             if len(pattern_names) != 1:
                 logging.warning("TeX scanner produced an invalid match: %s", re_match)
-                raise StopIteration
+                raise ValueError(
+                    "TeX scanner produced an invlalid match: %s" % re_match
+                )
 
             pattern_name = pattern_names[0]
             pattern = patterns_by_name[pattern_name]
@@ -139,3 +165,25 @@ class TexScanner:
 
         skipped = skipped if include_unmatched else None
         return ScanStep(match, skipped)
+
+
+def has_balanced_braces(tex: str) -> bool:
+    """
+    Determine whether a TeX string contains balanced braces.
+    """
+
+    LEFT_BRACE = Pattern("left_brace", r"\{")
+    RIGHT_BRACE = Pattern("right_brace", r"\}")
+    patterns = [LEFT_BRACE, RIGHT_BRACE]
+
+    brace_depth = 0
+    scanner = TexScanner(tex)
+    while True:
+        try:
+            step = scanner.next(patterns)
+        except EndOfInput:
+            return brace_depth == 0
+        if step.match.pattern.name == "left_brace":
+            brace_depth += 1
+        elif step.match.pattern.name == "right_brace":
+            brace_depth -= 1
