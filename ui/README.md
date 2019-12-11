@@ -20,8 +20,7 @@ npm install
 Then you can launch the app as follows:
 
 ```bash
-PORT=3001 npm start  # 3001 is the port number. Save port 3000
-                     # for the development API server.
+npm start
 ```
 
 A web browser should open automatically to open the app. You
@@ -32,6 +31,9 @@ You can in theory provide the URL for any PDF as the value
 of the `file` query parameter. That said, at the time this
 README was written, there was only a few PDFs for which the
 augmented reading experience is available.
+
+If you'd like to view a list of all available papers, visit
+[this URL](http://localhost:3001/papers/).
 
 ## Architecture
 
@@ -65,7 +67,7 @@ To use a local version of the API, export the `PROXY` environment
 variable like so:
 
 ```bash
-export PROXY='http://localhost:3000'
+export PROXY='http://localhost:3001'
 ```
 
 See the README in the `api/` sibling directory for more information

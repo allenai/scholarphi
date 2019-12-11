@@ -12,6 +12,13 @@ export interface Author {
   url: string;
 }
 
+export interface PaperIdWithCounts {
+  s2Id: string;
+  arxivId: string;
+  extractedSymbolCount: number;
+  extractedCitationCount: number;
+}
+
 export interface Paper {
   s2Id: string;
   title: string;

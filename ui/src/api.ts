@@ -1,11 +1,15 @@
 import axios, { AxiosResponse } from "axios";
-import { Citation, MathMl, Paper, Symbol } from "./types/api";
+import { Citation, MathMl, Paper, Symbol, PaperIdWithCounts } from "./types/api";
 
 export async function citationsForArxivId(arxivId: string) {
   const data = await doGet(
     axios.get(`/api/v0/papers/arxiv:${arxivId}/citations`)
   );
   return (data || []) as Citation[];
+}
+
+export async function getAllPapers() {
+  return await doGet<PaperIdWithCounts[]>(axios.get('/api/v0/papers/list'));
 }
 
 export async function papers(s2Ids: string[]) {
@@ -34,7 +38,7 @@ export async function mathMlForArxivId(arxivId: string) {
 /**
  * 'get' is a Promise returned by 'axios.get()'
  */
-async function doGet(get: Promise<AxiosResponse<any>>) {
+async function doGet<T>(get: Promise<AxiosResponse<T>>) {
   try {
     const response = await get;
     if (response.status === 200) {

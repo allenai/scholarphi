@@ -63,6 +63,13 @@ export interface AnnotationData {
   boundingBox: BoundingBox;
 }
 
+interface PaperWithEntityCounts {
+  s2_id: string;
+  arxiv_id?: string;
+  citations: string;
+  symbols: string;
+}
+
 export class Connection {
   constructor(config: nconf.Provider) {
     this._knex = Knex({
@@ -76,6 +83,30 @@ export class Connection {
         ssl: true
       }
     });
+  }
+
+  async getAllPapers() {
+    const response = await this._knex.raw<{ rows: PaperWithEntityCounts[] }>(`
+      SELECT paper.*,
+             (
+                SELECT COUNT(*)
+                  FROM citation
+                 WHERE citation.paper_id = paper.s2_id
+             ) AS citations,
+             (
+                SELECT COUNT(*)
+                  FROM symbol
+                 WHERE symbol.paper_id = paper.s2_id
+             ) AS symbols
+        FROM paper
+    ORDER BY symbols DESC, citations DESC
+    `);
+    return response.rows.map(row => ({
+      s2Id: row.s2_id,
+      arxivId: row.arxiv_id,
+      extractedCitationCount: parseInt(row.citations),
+      extractedSymbolCount: parseInt(row.symbols)
+    }));
   }
 
   async getCitationsForS2Id(s2Id: string) {

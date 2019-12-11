@@ -4,7 +4,7 @@
   "description": "API for the Semantic Scholar Reader",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "ts-node-dev src/index.ts",
     "start:prod": "node build/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc --outDir build/"
@@ -21,6 +21,7 @@
     "@types/lodash": "^4.14.144",
     "@types/nconf": "^0.10.0",
     "ts-node": "^8.4.1",
+    "ts-node-dev": "^1.0.0-pre.44",
     "tslint": "^5.20.0",
     "typescript": "^3.6.4"
   },
