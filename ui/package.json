@@ -2,7 +2,7 @@
   "name": "moody",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:3000",
+  "proxy": "https://s2-reader.apps.allenai.org",
   "dependencies": {
     "@material-ui/core": "^4.5.2",
     "@material-ui/icons": "^4.5.1",
@@ -11,7 +11,6 @@
     "lodash": "^4.17.15",
     "mathjax": "^3.0.0",
     "mathjax-full": "^3.0.0",
-    "pdfjs-dist": "^2.2.228",
     "query-string": "^6.8.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
@@ -97,7 +96,7 @@
     "less": "^3.10.3",
     "less-loader": "^5.0.0",
     "node-sass": "^4.12.0",
-    "react-scripts": "^3.0.1",
+    "react-scripts": "^3.3.0",
     "rewire": "^4.0.1",
     "tslint": "^5.18.0",
     "tslint-react": "^4.0.0",
