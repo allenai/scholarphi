@@ -11,6 +11,14 @@ steps:
     'docker pull gcr.io/$PROJECT_ID/$REPO_NAME-api:latest || exit 0'
   ]
   waitFor: [ '-' ]
+- id: 'ui-build.pull'
+  name: 'gcr.io/cloud-builders/docker'
+  entrypoint: '/bin/bash'
+  args: [
+    '-c',
+    'docker pull gcr.io/$PROJECT_ID/$REPO_NAME-ui-build:latest || exit 0'
+  ]
+  waitFor: [ '-' ]
 - id: 'ui.pull'
   name: 'gcr.io/cloud-builders/docker'
   entrypoint: '/bin/bash'
@@ -36,10 +44,23 @@ steps:
     '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-api:$COMMIT_SHA',
     '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-api:latest',
     '.',
-    '--build-arg', 'FLASK_ENV=production'
+    '--build-arg', 'NODE_ENV=production'
   ]
   waitFor: [ 'api.pull' ]
   dir: 'api'
+- id: 'ui-build.build'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'build',
+    '--target', 'build',
+    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui-build:latest',
+    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui-build:$COMMIT_SHA',
+    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui-build:latest',
+    '.',
+    '--build-arg', 'NODE_ENV=production'
+  ]
+  waitFor: [ 'ui-build.pull' ]
+  dir: 'ui'
 - id: 'ui.build'
   name: 'gcr.io/cloud-builders/docker'
   args: [
@@ -47,11 +68,12 @@ steps:
     '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui:latest',
     '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui:$COMMIT_SHA',
     '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui:latest',
+    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui-build:latest',
     '.',
     '--build-arg', 'NODE_ENV=production',
     '--build-arg', 'BABEL_ENV=production'
   ]
-  waitFor: [ 'ui.pull' ]
+  waitFor: [ 'ui.pull', 'ui-build.build' ]
   dir: 'ui'
 - id: 'ingress.build'
   name: 'gcr.io/cloud-builders/docker'
@@ -124,7 +146,8 @@ images: [
   'gcr.io/$PROJECT_ID/$REPO_NAME-ui:$COMMIT_SHA',
   'gcr.io/$PROJECT_ID/$REPO_NAME-ui:latest',
   'gcr.io/$PROJECT_ID/$REPO_NAME-ingress:$COMMIT_SHA',
-  'gcr.io/$PROJECT_ID/$REPO_NAME-ingress:latest'
+  'gcr.io/$PROJECT_ID/$REPO_NAME-ingress:latest',
+  'gcr.io/$PROJECT_ID/$REPO_NAME-ui-build:latest'
 ]
 artifacts:
   objects:
