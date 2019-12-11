@@ -49,6 +49,12 @@ class PageOverlay extends React.Component<PageProps, {}> {
   }
 
   render() {
+    /**
+     * Set the width and height of the page overlay to be the same as the page.
+     */
+    this._element.style.width = this.props.view.div.style.width;
+    this._element.style.height = this.props.view.div.style.height;
+
     return ReactDOM.createPortal(
       <ScholarReaderContext.Consumer>
         {({ citations, symbols }) => {
