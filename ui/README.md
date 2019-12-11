@@ -51,6 +51,10 @@ git submodule update
 bash bin/build_pdf.js.sh
 ```
 
+Of note, make sure you restore the HEAP analytics tracking snippet
+after regenerating `viewer.html`. It should be easy to identify in the
+resulting `git diff`.
+
 The code for the enhancements we add to the PDF is present in
 `src/`. We've elected to use [TypeScript](https://www.typescriptlang.org)
 and [React](https://reactjs.org/) for writing the interface.
