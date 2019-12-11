@@ -1,8 +1,16 @@
 import configparser
 
-from peewee import (CharField, CompositeKey, DateTimeField, FloatField,
-                    ForeignKeyField, IntegerField, Model, PostgresqlDatabase,
-                    TextField)
+from peewee import (
+    CharField,
+    CompositeKey,
+    DateTimeField,
+    FloatField,
+    ForeignKeyField,
+    IntegerField,
+    Model,
+    PostgresqlDatabase,
+    TextField,
+)
 
 DATABASE_CONFIG = "config.ini"
 
@@ -114,7 +122,7 @@ class SymbolChild(OutputModel):
 
 
 class Entity(OutputModel):
-    type = TextField(choices=((1, "citation"), (2, "symbol")))
+    type = TextField(choices=(("citation", None), ("symbol", None)))
     entity_id = IntegerField(index=True)
 
 
@@ -138,6 +146,16 @@ class EntityBoundingBox(OutputModel):
         primary_key = CompositeKey("entity", "bounding_box")
 
 
+class Annotation(BoundingBox):
+    """
+    Human annotation of an entity on a paper. Creating instances of this model with the automated
+    data processing pipeline would be unexpected.
+    """
+
+    paper = ForeignKeyField(Paper, on_delete="CASCADE")
+    type = TextField(choices=(("citation", None), ("symbol", None)), index=True)
+
+
 def create_tables() -> None:
     """
     Initialize any tables that haven't yet been created.
@@ -155,6 +173,7 @@ def create_tables() -> None:
             Entity,
             BoundingBox,
             EntityBoundingBox,
+            Annotation,
         ],
         safe=True,
     )

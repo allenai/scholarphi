@@ -21,6 +21,27 @@ export const arxivId = Joi.object({
     /*
      * Older arXiv ID format.
      */
-    Joi.string().pattern(/[a-zA-Z0-9-]+\.[A-Z]{2}\/[0-9]{2}[0-9]{2}[0-9]+(v[0-9]+)/)
+    Joi.string().pattern(
+      /[a-zA-Z0-9-]+\.[A-Z]{2}\/[0-9]{2}[0-9]{2}[0-9]+(v[0-9]+)/
+    )
   )
+});
+
+/**
+ * Validation for 'Annotation' type.
+ */
+export const annotation = Joi.object({
+  type: Joi.string()
+    .allow("citation", "symbol")
+    .required(),
+  boundingBox: Joi.object({
+    page: Joi.number()
+      .integer()
+      .min(0)
+      .required(),
+    left: Joi.number().required(),
+    top: Joi.number().required(),
+    width: Joi.number().required(),
+    height: Joi.number().required()
+  }).required()
 });
