@@ -51,8 +51,6 @@ git submodule update
 bash bin/build_pdf.js.sh
 ```
 
-To apply the effect, commit the resulting changes.
-
 The code for the enhancements we add to the PDF is present in
 `src/`. We've elected to use [TypeScript](https://www.typescriptlang.org)
 and [React](https://reactjs.org/) for writing the interface.
@@ -61,14 +59,14 @@ and [React](https://reactjs.org/) for writing the interface.
 
 By default the UI proxies API requests to the production
 API (https://s2-reader.apps.allenai.org). This makes it possible
-to run a local UI server without any additional depenendencies.
+to run a self-standing version of the UI locally.
 
-If you are testing out the application, you should also make
-sure that the API server is running on port 3000. Then edit
-`package.json` and update the `proxy` property as follows:
+To use a local version of the API, export the `PROXY` environment
+variable like so:
 
-```json
-"proxy": "http://localhost:3000"
+```bash
+export PROXY='http://localhost:3000'
 ```
 
-See the README in the `api/` sibling directory for instructions.
+See the README in the `api/` sibling directory for more information
+about running it locally.
