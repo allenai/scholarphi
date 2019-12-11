@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import CitationAnnotation from "./CitationAnnotation";
+import SelectionCanvas from "./SelectionLayer";
 import * as selectors from "./selectors";
 import { ScholarReaderContext } from "./state";
 import SymbolAnnotation from "./SymbolAnnotation";
@@ -67,6 +68,10 @@ class PageOverlay extends React.Component<PageProps, {}> {
           );
           return (
             <>
+              <SelectionCanvas
+                key="event-layer"
+                onSelection={() => console.log("Selection")}
+              />
               {localizedCitations.map(c => (
                 <CitationAnnotation
                   key={selectors.citationKey(c.citation, c.boundingBox)}
