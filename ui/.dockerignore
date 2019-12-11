@@ -1,6 +1,7 @@
-.vscode
-node_modules
-build
-public/pdf.js
+.vscode/
+node_modules/
+build/
+pdf.js/
 **/*.md
+**/*.log
 Dockerfile
