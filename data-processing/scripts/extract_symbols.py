@@ -3,12 +3,13 @@ import json
 import logging
 import os.path
 import subprocess
+from argparse import ArgumentParser
 from typing import Iterator, List, NamedTuple, Optional
 
 from explanations import directories
 from explanations.directories import NODE_DIRECTORY
 from explanations.file_utils import clean_directory
-from explanations.parse_equation import get_characters, get_symbols
+from explanations.parse_equation import KATEX_ERROR_COLOR, get_characters, get_symbols
 from explanations.types import ArxivId, Character, Path, Symbol
 from scripts.command import ArxivBatchCommand
 
@@ -34,6 +35,30 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
             "Extract symbols and the character tokens within them from TeX equations."
         )
 
+    @staticmethod
+    def init_parser(parser: ArgumentParser) -> None:
+        super(ExtractSymbols, ExtractSymbols).init_parser(parser)
+        parser.add_argument(
+            "--katex-throw-on-error",
+            action="store_true",
+            help=(
+                "Whether KaTeX should throw an error when it fails to parse and equation."
+                + " Use this flag if you're trying to diagnose sources of KaTeX parse errors."
+                + " Otherwise, omit this so that a partial, perhaps slightly inaccurate parse "
+                + " is run even if errors are found in equations."
+            ),
+        )
+        parser.add_argument(
+            "--katex-error-color",
+            type=str,
+            help=(
+                "Hex code that KaTeX should use when creating nodes for parts of equations that"
+                + " failed to parse. It only makes sense to set this if '--katex-throw-on-error'"
+                + " is not set."
+            ),
+            default=KATEX_ERROR_COLOR,
+        )
+
     def get_arxiv_ids_dir(self) -> Path:
         return directories.EQUATIONS_DIR
 
@@ -56,15 +81,25 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
             )
             return
 
+        command_args = [
+            "npm",
+            # Suppress boilerplate 'npm' output we don't care about.
+            "--silent",
+            "start",
+            "equations-csv",
+            equations_relative_path,
+        ]
+
+        if self.args.katex_throw_on_error or (self.args.katex_error_color is not None):
+            command_args += ["--"]
+            if self.args.katex_throw_on_error:
+                command_args += ["--throw-on-error"]
+            if self.args.katex_error_color is not None:
+                command_args += ["--error-color", self.args.katex_error_color]
+
+        logging.debug("Running command with arguments: %s", command_args)
         result = subprocess.run(
-            [
-                "npm",
-                # Suppress boilerplate 'npm' output we don't care about.
-                "--silent",
-                "start",
-                "equations-csv",
-                equations_relative_path,
-            ],
+            command_args,
             cwd=NODE_DIRECTORY,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,

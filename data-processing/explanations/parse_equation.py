@@ -13,6 +13,12 @@ class NodeSymbol(NamedTuple):
     mathml: str
 
 
+"""
+KaTeX error color is set to white because this is a color where we'll minimize the chance of
+misdetecting colored equations as errors---anything that's set to 'white' in a paper would be
+invisible and we wouldn't want to detect it anyway.
+"""
+KATEX_ERROR_COLOR = "#ffffff"
 CHARACTER_TAGS = ["mi"]
 SYMBOL_TAGS = ["msubsup", "msub", "msup", "mi"]
 

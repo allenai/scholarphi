@@ -9,6 +9,7 @@ from explanations.directories import (
     get_iteration_names,
 )
 from explanations.file_utils import clean_directory
+from explanations.sanitize_equation import sanitize_equation
 from explanations.types import ArxivId, Path
 from scripts.command import ArxivBatchCommand
 
@@ -32,7 +33,13 @@ class ExtractEquations(ArxivBatchCommand[EquationData, None]):
 
     @staticmethod
     def get_description() -> str:
-        return "Extract all equations from TeX sources"
+        return (
+            "Extract equations from TeX sources for processing by KaTeX. Extracted equations may "
+            + "different than they appeared in the original TeX, as they may have been sanitized "
+            + "so that KaTeX can parse them without failure. If equations have been modified, "
+            + "they will still have the same length so that the positions of entities found in the "
+            + "equations will still correspond to the right character locations in the original TeX."
+        )
 
     def get_arxiv_ids_dir(self) -> Path:
         return directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR
@@ -57,7 +64,10 @@ class ExtractEquations(ArxivBatchCommand[EquationData, None]):
                 with open(equation_hues_path, encoding="utf-8") as equation_hues_file:
                     reader = csv.reader(equation_hues_file)
                     for row in reader:
-                        yield EquationData(arxiv_id=arxiv_id, csv_row=row)
+                        equation = row[7]
+                        sanitized = sanitize_equation(equation)
+                        updated_row = row + [sanitized]
+                        yield EquationData(arxiv_id=arxiv_id, csv_row=updated_row)
 
     def process(self, _: EquationData) -> Iterator[None]:
         yield None
