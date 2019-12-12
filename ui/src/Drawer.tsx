@@ -1,11 +1,14 @@
 import MuiDrawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import Grid from "@material-ui/core/Grid";
+import Box from "@material-ui/core/Box";
 import React from "react";
 import { Favorites } from "./Favorites";
 import PaperList from "./PaperList";
 import SearchResults from "./SearchResults";
 import { ScholarReaderContext } from "./state";
+import FeedbackButton from "./FeedbackButton";
 
 const PDF_VIEWER_DRAWER_OPEN_CLASS = "drawer-open";
 
@@ -34,7 +37,25 @@ export class Drawer extends React.Component {
 
     return (
       <ScholarReaderContext.Consumer>
-        {({ drawerState, setDrawerState }) => {
+        {({ drawerState, setDrawerState, selectedSymbol, selectedCitation }) => {
+          let extraContext;
+          switch (drawerState) {
+            case "show-citations": {
+              extraContext = Object.assign(
+                { drawerState },
+                selectedCitation ? { citationId: selectedCitation.id } : null
+              );
+              break;
+            }
+            case "show-symbols": {
+              extraContext = Object.assign(
+                { drawerState },
+                selectedSymbol ? { symbolId: selectedSymbol.id } : null
+              );
+              break;
+            }
+          }
+
           return (
             <MuiDrawer
               className="drawer"
@@ -43,9 +64,18 @@ export class Drawer extends React.Component {
               open={drawerState !== "closed"}
             >
               <div className="drawer__header">
-                <IconButton onClick={() => setDrawerState("closed")}>
-                  <ChevronRightIcon />
-                </IconButton>
+                <Box p={1}>
+                  <Grid container alignItems="center">
+                    <Grid item xs>
+                      <IconButton onClick={() => setDrawerState("closed")}>
+                        <ChevronRightIcon />
+                      </IconButton>
+                    </Grid>
+                    <Grid item>
+                      <FeedbackButton extraContext={ extraContext } />
+                    </Grid>
+                  </Grid>
+                </Box>
               </div>
               <div className="drawer__content">
                 <Favorites />

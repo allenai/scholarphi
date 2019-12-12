@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 import * as api from "./api";
 import Drawer from "./Drawer";
 import { FavoritableId, favoritesKey } from "./FavoriteButton";
@@ -25,6 +26,7 @@ import {
   PageRenderedEvent,
   PDFViewerApplication
 } from "./types/pdfjs-viewer";
+import FeedbackButton from "./FeedbackButton";
 
 interface ScholarReaderProps {
   paperId?: PaperId;
@@ -38,6 +40,7 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
      * are called from outside ScholarReader.
      */
     this.state = {
+      paperId: props.paperId,
       citations: [],
       setCitations: this.setCitations.bind(this),
       symbols: [],
@@ -58,6 +61,8 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
       setJumpPaperId: this.setJumpPaperId.bind(this),
       selectedSymbol: null,
       setSelectedSymbol: this.setSelectedSymbol.bind(this),
+      selectedCitation: null,
+      setSelectedCitation: this.setSelectedCitation.bind(this),
       jumpSymbol: null,
       setJumpSymbol: this.setJumpSymbol.bind(this),
       userAnnotationsEnabled: false,
@@ -115,6 +120,10 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
 
   setSelectedSymbol(symbol: Symbol | null) {
     this.setState({ selectedSymbol: symbol });
+  }
+
+  setSelectedCitation(citation: Citation | null) {
+    this.setState({ selectedCitation: citation  });
   }
 
   setJumpSymbol(symbol: Symbol | null) {
@@ -279,6 +288,8 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
   }
 
   render() {
+    const elFeedbackContainer =
+      document.getElementById('scholarReaderGlobalFeedbackButton');
     return (
       <ScholarReaderContext.Provider value={this.state}>
         <>
@@ -299,6 +310,10 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
             );
           })}
           <Drawer />
+          {elFeedbackContainer ? createPortal(
+            <FeedbackButton variant="toolbar" />,
+            elFeedbackContainer
+          ) : null}
         </>
       </ScholarReaderContext.Provider>
     );

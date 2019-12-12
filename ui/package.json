@@ -2,7 +2,7 @@
   "name": "moody",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://s2-reader.apps.allenai.org",
+  "proxy": "http://localhost:3000",
   "dependencies": {
     "@material-ui/core": "^4.5.2",
     "@material-ui/icons": "^4.5.1",
