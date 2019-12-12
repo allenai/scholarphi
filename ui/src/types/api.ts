@@ -14,7 +14,7 @@ export interface Author {
 
 export interface PaperIdWithCounts {
   s2Id: string;
-  arxivId: string;
+  arxivId?: string;
   extractedSymbolCount: number;
   extractedCitationCount: number;
 }

@@ -21,6 +21,7 @@ import TableRow from '@material-ui/core/TableRow';
 import ErrorIcon from '@material-ui/icons/Error';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import axios from 'axios';
 
@@ -36,8 +37,31 @@ interface PaperListState {
     papers: PaperWithMeta[];
 }
 
+
+export interface S2ApiPaper {
+    abstract: string;
+    arxivId?: string;
+    authors: S2ApiAuthor[];
+    doi: string;
+    title: string;
+    url: string;
+    venue: string;
+    year: string;
+}
+
+interface S2ApiAuthor {
+    authorId: string;
+    name: string;
+    url: string;
+}
+
+// We only retain a the fields from S2ApiPaper that we need, as otherwise
+// we can very easily overflow localStorage.
 interface PaperWithMeta extends PaperIdWithCounts {
-    title?: string;
+    title: string;
+    authors: S2ApiAuthor[];
+    venue: string;
+    year: string;
 }
 
 interface CachedPaperWithMeta {
@@ -66,8 +90,13 @@ async function getPaperInfoFromS2(paper: PaperIdWithCounts): Promise<PaperWithMe
         }
     }
     const s2ApiUrl =`https://api.semanticscholar.org/v1/paper/${paper.s2Id}`;
-    const { data } = await axios.get<{ title?: string }>(s2ApiUrl);
-    const paperWithMeta = Object.assign(paper, { title: data.title });
+    const { data: s2Paper } = await axios.get<S2ApiPaper>(s2ApiUrl);
+    const paperWithMeta = Object.assign(paper, {
+        title: s2Paper.title,
+        authors: s2Paper.authors,
+        venue: s2Paper.venue,
+        year: s2Paper.year
+    });
     if (localStorage) {
         localStorage.setItem(paper.s2Id, JSON.stringify({
             // cache for 24 hours, JavaScript timestamps are expressed in ms
@@ -116,7 +145,7 @@ const PaperList = () => {
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell>Title</TableCell>
+                                <TableCell>Paper</TableCell>
                                 <TableCell>ArXiv ID</TableCell>
                                 <TableCell>Symbols</TableCell>
                                 <TableCell>Citations</TableCell>
@@ -127,9 +156,23 @@ const PaperList = () => {
                             {papers.map(paper => (
                                 <TableRow key={paper.s2Id}>
                                     <TableCell>
-                                        <a href={`https://semanticscholar.org/paper/${paper.s2Id}`}>
-                                            {paper.title || paper.s2Id}
-                                        </a>
+                                        <Typography variant="subtitle1">
+                                            <strong>
+                                                <a href={`https://semanticscholar.org/paper/${paper.s2Id}`}>
+                                                    {paper.title || paper.s2Id}
+                                                </a>
+                                            </strong>
+                                        </Typography>
+                                        {paper.authors.map((author, idx) => (
+                                            <>
+                                                <a key={author.url} href={author.url}>
+                                                    {author.name}
+                                                </a>
+                                                {idx !== paper.authors.length - 1 ? ', ' : null}
+                                            </>
+                                        ))}
+                                        {" "}&bull; {paper.venue}
+                                        {" "}&bull; {paper.year}
                                     </TableCell>
                                     <TableCell>{paper.arxivId
                                         ? <a href={`https://arxiv.org/abs/${paper.arxivId}`}>
