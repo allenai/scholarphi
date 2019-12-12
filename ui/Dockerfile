@@ -9,8 +9,7 @@ RUN npm install
 COPY . .
 ARG NODE_ENV
 ENV NODE_ENV ${NODE_ENV:-production}
-RUN npm run build && \
-    npm run postbuild
+RUN npm run build
 
 FROM nginx:1.17.0-alpine as runtime
 
