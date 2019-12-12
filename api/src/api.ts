@@ -215,5 +215,15 @@ export const plugin = {
         }
       }
     });
+
+    server.route({
+      method: "GET",
+      path: "papers/list",
+      handler: async (request, h) => {
+        const papers = await dbConnection.getAllPapers();
+        return papers;
+      }
+    });
+
   }
 };
