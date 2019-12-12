@@ -45,7 +45,7 @@ export interface S2ApiPaper {
     doi: string;
     title: string;
     url: string;
-    venue: string;
+    venue?: string;
     year: string;
 }
 
@@ -60,7 +60,7 @@ interface S2ApiAuthor {
 interface PaperWithMeta extends PaperIdWithCounts {
     title: string;
     authors: S2ApiAuthor[];
-    venue: string;
+    venue?: string;
     year: string;
 }
 
@@ -171,8 +171,8 @@ const PaperList = () => {
                                                 {idx !== paper.authors.length - 1 ? ', ' : null}
                                             </>
                                         ))}
-                                        {" "}&bull; {paper.venue}
-                                        {" "}&bull; {paper.year}
+                                        {paper.venue && ` • ${paper.venue}`}
+                                        {" •"} {paper.year}
                                     </TableCell>
                                     <TableCell>{paper.arxivId
                                         ? <a href={`https://arxiv.org/abs/${paper.arxivId}`}>
