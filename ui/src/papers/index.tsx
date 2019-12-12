@@ -164,12 +164,12 @@ const PaperList = () => {
                                             </strong>
                                         </Typography>
                                         {paper.authors.map((author, idx) => (
-                                            <>
-                                                <a key={author.url} href={author.url}>
+                                            <React.Fragment key={author.url}>
+                                                <a href={author.url}>
                                                     {author.name}
                                                 </a>
                                                 {idx !== paper.authors.length - 1 ? ', ' : null}
-                                            </>
+                                            </React.Fragment>
                                         ))}
                                         {paper.venue && ` • ${paper.venue}`}
                                         {" •"} {paper.year}
