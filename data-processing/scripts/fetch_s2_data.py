@@ -34,27 +34,29 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
         # XXX(andrewhead): S2 API does not have versions of arXiv papers. I don't think this
         # will be an issue, but it's something to pay attention to.
         resp = requests.get(f"https://api.semanticscholar.org/v1/paper/arXiv:{item}")
-        data = resp.json()
 
-        references = []
-        for reference_data in data["references"]:
-            authors = []
-            for author_data in reference_data["authors"]:
-                authors.append(Author(author_data["authorId"], author_data["name"]))
-            reference = Reference(
-                s2Id=reference_data["paperId"],
-                arxivId=reference_data["arxivId"],
-                doi=reference_data["doi"],
-                title=reference_data["title"],
-                authors=authors,
-                venue=reference_data["venue"],
-                year=reference_data["year"],
-            )
-            references.append(reference)
+        if resp.ok:
+            data = resp.json()
+            references = []
+            for reference_data in data["references"]:
+                authors = []
+                for author_data in reference_data["authors"]:
+                    authors.append(Author(author_data["authorId"], author_data["name"]))
+                reference = Reference(
+                    s2Id=reference_data["paperId"],
+                    arxivId=reference_data["arxivId"],
+                    doi=reference_data["doi"],
+                    title=reference_data["title"],
+                    authors=authors,
+                    venue=reference_data["venue"],
+                    year=reference_data["year"],
+                )
+                references.append(reference)
 
-        s2_metadata = S2Metadata(s2id=data["paperId"], references=references)
-        logging.debug("Fetched S2 metadata for arXiv paper %s", item)
-        yield s2_metadata
+            s2_metadata = S2Metadata(s2id=data["paperId"], references=references)
+            logging.debug("Fetched S2 metadata for arXiv paper %s", item)
+            yield s2_metadata
+
         time.sleep(FETCH_DELAY)
 
     def save(self, item: ArxivId, result: S2Metadata) -> None:

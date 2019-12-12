@@ -1,7 +1,7 @@
 import * as Hapi from "@hapi/hapi";
 import * as Joi from "@hapi/joi";
 import * as nconf from "nconf";
-import { Connection } from "./queries";
+import { AnnotationData, Connection } from "./queries";
 import * as s2Api from "./s2-api";
 import * as validation from "./validation";
 
@@ -101,5 +101,129 @@ export const plugin = {
         }
       }
     });
+
+    server.route({
+      method: "GET",
+      path: "papers/arxiv:{arxivId}/annotations",
+      handler: request => {
+        const arxivId = request.params.arxivId;
+        return dbConnection.getAnnotationsForArxivId(arxivId);
+      },
+      options: {
+        validate: {
+          params: validation.arxivId
+        }
+      }
+    });
+
+    /**
+     * Example usage:
+     * requests.post(
+     *   "http://localhost:3000/api/v0/papers/arxiv:1508.07252/annotations",
+     *   json={
+     *     "type": "symbol",
+     *     "boundingBox": {
+     *       "page": 0,
+     *       "left": 10,
+     *       "top": 20,
+     *       "width": 100,
+     *       "height": 20
+     *     }
+     *   }
+     * )
+     */
+    server.route({
+      method: "POST",
+      path: "papers/arxiv:{arxivId}/annotations",
+      handler: async (request, h) => {
+        const arxivId = request.params.arxivId;
+        const id = dbConnection.postAnnotationForArxivId(
+          arxivId,
+          request.payload as AnnotationData
+        );
+        return h.response(id).code(201);
+      },
+      options: {
+        validate: {
+          params: validation.arxivId,
+          payload: validation.annotation
+        }
+      }
+    });
+
+    /**
+     * Example usage:
+     * requests.put(
+     *   "http://localhost:3000/api/v0/papers/arxiv:1508.07252/annotation/2",
+     *   json={
+     *     "type": "symbol",
+     *     "boundingBox": {
+     *       "page": 0,
+     *       "left": 10,
+     *       "top": 20,
+     *       "width": 100,
+     *       "height": 20
+     *     }
+     *   }
+     * )
+     */
+    server.route({
+      method: "PUT",
+      path: "papers/arxiv:{arxivId}/annotation/{id}",
+      handler: async (request, h) => {
+        const { arxivId, id } = request.params;
+        const { created, annotation } = await dbConnection.putAnnotation(
+          arxivId,
+          Number(id),
+          request.payload as AnnotationData
+        );
+        return h.response(annotation).code(created ? 201 : 200);
+      },
+      options: {
+        validate: {
+          params: validation.arxivId.append({
+            id: Joi.number()
+              .integer()
+              .required()
+          }),
+          payload: validation.annotation
+        }
+      }
+    });
+
+    /**
+     * Example usage:
+     * requests.delete(
+     *   "http://localhost:3000/api/v0/papers/arxiv:1508.07252/annotation/2
+     * ")
+     */
+    server.route({
+      method: "DELETE",
+      path: "papers/arxiv:{arxivId}/annotation/{id}",
+      handler: async (request, h) => {
+        const { arxivId, id } = request.params;
+        await dbConnection.deleteAnnotation(arxivId, Number(id));
+        return h.response().code(204);
+      },
+      options: {
+        validate: {
+          params: validation.arxivId.append({
+            id: Joi.number()
+              .integer()
+              .required()
+          })
+        }
+      }
+    });
+
+    server.route({
+      method: "GET",
+      path: "papers/list",
+      handler: async (request, h) => {
+        const papers = await dbConnection.getAllPapers();
+        return papers;
+      }
+    });
+
   }
 };

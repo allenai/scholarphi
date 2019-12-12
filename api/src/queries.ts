@@ -50,6 +50,26 @@ interface MathMl {
   matches: MathMlMatch[];
 }
 
+interface Annotation extends AnnotationData {
+  id: number;
+}
+
+/**
+ * See also the REST API validation for 'annotation' in 'validation.ts'. JSON objects that have
+ * passed that validation should be of type 'AnnotationData'.
+ */
+export interface AnnotationData {
+  type: "citation" | "symbol";
+  boundingBox: BoundingBox;
+}
+
+interface PaperWithEntityCounts {
+  s2_id: string;
+  arxiv_id?: string;
+  citations: string;
+  symbols: string;
+}
+
 export class Connection {
   constructor(config: nconf.Provider) {
     this._knex = Knex({
@@ -63,6 +83,30 @@ export class Connection {
         ssl: true
       }
     });
+  }
+
+  async getAllPapers() {
+    const response = await this._knex.raw<{ rows: PaperWithEntityCounts[] }>(`
+      SELECT paper.*,
+             (
+                SELECT COUNT(*)
+                  FROM citation
+                 WHERE citation.paper_id = paper.s2_id
+             ) AS citations,
+             (
+                SELECT COUNT(*)
+                  FROM symbol
+                 WHERE symbol.paper_id = paper.s2_id
+             ) AS symbols
+        FROM paper
+    ORDER BY symbols DESC, citations DESC
+    `);
+    return response.rows.map(row => ({
+      s2Id: row.s2_id,
+      arxivId: row.arxiv_id,
+      extractedCitationCount: parseInt(row.citations),
+      extractedSymbolCount: parseInt(row.symbols)
+    }));
   }
 
   async getCitationsForS2Id(s2Id: string) {
@@ -226,6 +270,100 @@ export class Connection {
     }
 
     return allMathMl;
+  }
+
+  async getAnnotationsForArxivId(arxivId: string) {
+    const rows = await this._knex("paper")
+      .select(
+        "annotation.id AS annotation_id",
+        "type",
+        "page",
+        "left",
+        "top",
+        "width",
+        "height"
+      )
+      .where({ arxiv_id: arxivId })
+      // Get annotations.
+      .join("annotation", { "paper.s2_id": "annotation.paper_id" });
+
+    const annotations: Annotation[] = rows.map(row => ({
+      id: row.annotation_id,
+      type: row.annotation_id,
+      boundingBox: {
+        page: row.page,
+        left: row.left,
+        top: row.top,
+        width: row.width,
+        height: row.height
+      }
+    }));
+    return annotations;
+  }
+
+  async postAnnotationForArxivId(
+    arxivId: string,
+    annotationData: AnnotationData
+  ) {
+    const { type } = annotationData;
+    const { page, left, top, width, height } = annotationData.boundingBox;
+    const result = await this._knex.raw(
+      'INSERT INTO annotation (page, "left", top, width, height, paper_id, "type") ' +
+        "SELECT ?, ?, ?, ?, ?, s2_id, ? " +
+        "FROM paper WHERE arxiv_id = ? " +
+        "RETURNING annotation.id",
+      [page, left, top, width, height, type, arxivId]
+    );
+    return result.rows[0].id;
+  }
+
+  async putAnnotation(
+    arxivId: string,
+    id: number,
+    annotationData: AnnotationData
+  ) {
+    let created = false;
+    const { type } = annotationData;
+    const { page, left, top, width, height } = annotationData.boundingBox;
+
+    const updatedRowIds = await this._knex("annotation")
+      .update({ page, left, top, width, height, type })
+      .where({ "annotation.id": id })
+      .whereIn(
+        "annotation.paper_id",
+        this._knex("paper")
+          .select("s2_id")
+          .where({ "paper.arxiv_id": arxivId })
+      )
+      .returning("id");
+
+    if (updatedRowIds.length == 0) {
+      await this._knex.raw(
+        'INSERT INTO annotation (id, page, "left", top, width, height, paper_id, "type") ' +
+          "SELECT ?, ?, ?, ?, ?, ?, s2_id, ? " +
+          "FROM paper WHERE arxiv_id = ?",
+        [id, page, left, top, width, height, type, arxivId]
+      );
+      created = true;
+    }
+
+    const annotation = { ...annotationData, id };
+    return {
+      created,
+      annotation
+    };
+  }
+
+  async deleteAnnotation(arxivId: string, id: number) {
+    await this._knex("annotation")
+      .delete()
+      .where({ "annotation.id": id })
+      .whereIn(
+        "annotation.paper_id",
+        this._knex("paper")
+          .select("s2_id")
+          .where({ "paper.arxiv_id": arxivId })
+      );
   }
 
   private _knex: Knex;

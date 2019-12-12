@@ -1,9 +1,8 @@
-from explanations.parse_tex import (
-    BibitemExtractor,
-    CitationExtractor,
-    ColorLinksExtractor,
-    EquationExtractor,
-)
+from explanations.parse_tex import (BibitemExtractor, CitationExtractor,
+                                    ColorLinksExtractor,
+                                    DocumentclassExtractor, EquationExtractor,
+                                    MacroExtractor)
+from explanations.types import MacroDefinition
 
 
 def test_extract_equation_from_dollar_sign():
@@ -40,6 +39,16 @@ def test_extract_equation_from_star_environment():
     equation = equations[0]
     assert equation.start == 0
     assert equation.end == 33
+
+
+def test_extract_equation_from_double_dollar_signs():
+    extractor = EquationExtractor()
+    equations = list(extractor.parse("$$x$$"))
+    assert len(equations) == 1
+
+    equation = equations[0]
+    assert equation.start == 0
+    assert equation.end == 5
 
 
 def test_dont_extract_equation_from_command_argument_brackets():
@@ -102,6 +111,13 @@ def test_extract_citation_from_cite_star():
     assert citations[0].keys == ["key"]
 
 
+def test_extract_documentclass_after_comment_ending_with_whitespace():
+    extractor = DocumentclassExtractor()
+    tex = "\n\n%\\documentclass{IEEEtran}    \n\\documentclass{article}"
+    documentclass = extractor.parse(tex)
+    assert documentclass is not None
+
+
 def test_extract_colorlinks():
     extractor = ColorLinksExtractor()
     tex = "\\usepackage[arg1,colorlinks=true,arg2]{hyperref}"
@@ -160,3 +176,43 @@ def test_extract_bibitem_stop_at_newline():
     assert len(bibitems) == 1
     assert bibitems[0].key == "key1"
     assert bibitems[0].text == "token1"
+
+
+def test_extract_macro():
+    tex = "\\macro"
+    extractor = MacroExtractor()
+    macros = list(extractor.parse(tex, MacroDefinition("macro", "")))
+    assert len(macros) == 1
+    assert macros[0].start == 0
+    assert macros[0].end == 6
+
+
+def test_extract_macro_with_delimited_parameter():
+    tex = "\\macro arg."
+    extractor = MacroExtractor()
+    macros = list(extractor.parse(tex, MacroDefinition("macro", "#1.")))
+    assert len(macros) == 1
+    assert macros[0].start == 0
+    assert macros[0].end == 11
+    assert macros[0].tex == "\\macro arg."
+
+
+def test_extract_macro_with_undelimited_parameter():
+    # the scanner for undelimited parameter '#1' should match the first non-blank token 'a'.
+    tex = "\\macro  a"
+    extractor = MacroExtractor()
+    macros = list(extractor.parse(tex, MacroDefinition("macro", "#1")))
+    assert len(macros) == 1
+    assert macros[0].start == 0
+    assert macros[0].end == 9
+    assert macros[0].tex == "\\macro  a"
+
+
+def test_extract_macro_balance_nested_braces_for_argument():
+    tex = "\\macro{{nested}}"
+    extractor = MacroExtractor()
+    macros = list(extractor.parse(tex, MacroDefinition("macro", "#1")))
+    assert len(macros) == 1
+    assert macros[0].start == 0
+    assert macros[0].end == 16
+    assert macros[0].tex == "\\macro{{nested}}"

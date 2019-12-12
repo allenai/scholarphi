@@ -1,13 +1,16 @@
 import re
 
 from explanations.colorize_tex import (
-    COLOR_MACRO_TEX,
+    COLOR_MACROS,
+    COLOR_MACROS_BASE_MACROS,
+    COLOR_MACROS_LATEX_IMPORTS,
+    COLOR_MACROS_TEX_IMPORTS,
     add_color_macros,
     colorize_citations,
     colorize_equation_tokens,
     colorize_equations,
 )
-from explanations.types import FileContents, TokenWithOrigin
+from explanations.types import Equation, FileContents, TokenWithOrigin
 
 COLOR_PATTERN = (
     r"\\llap{\\scholarsetcolor\[rgb\]{[0-9.]+,[0-9.]+,[0-9.]+}}"
@@ -19,44 +22,34 @@ COLOR_PATTERN = (
 def test_add_color_macros_to_tex():
     tex = "Body text"
     with_macros = add_color_macros(tex)
-    assert with_macros == "\n".join([COLOR_MACRO_TEX, "", "Body text"])
+    assert with_macros == "\n".join(
+        [
+            COLOR_MACROS_BASE_MACROS,
+            COLOR_MACROS_TEX_IMPORTS,
+            COLOR_MACROS,
+            "",
+            "Body text",
+        ]
+    )
 
 
 def test_add_color_macros_to_latex():
     """
     For LaTeX, macros must be placed beneath the \\documentclass command.
     """
-    tex = "\n".join(["\\documentclass{article}", "Body text"])
+    tex_lines = [
+        "\\documentclass{article}",
+        "\\usepackage{otherpackage}",
+        "\\begin{document}",
+        "Body text",
+        "\\end{document}",
+    ]
+    tex = "\n".join(tex_lines)
     with_macros = add_color_macros(tex)
     assert with_macros == "\n".join(
-        ["\\documentclass{article}", "", COLOR_MACRO_TEX, "", "Body text",]
-    )
-
-
-def test_add_color_macros_to_latex_with_tricky_documentclass():
-    tex = "\n".join(
-        [
-            "%comment",
-            "  \\documentclass[11pt]",
-            "%",
-            "{article}",
-            "[optionalargs]",
-            "Body text",
-        ]
-    )
-    with_macros = add_color_macros(tex)
-    assert with_macros == "\n".join(
-        [
-            "%comment",
-            "  \\documentclass[11pt]",
-            "%",
-            "{article}",
-            "[optionalargs]",
-            "",
-            COLOR_MACRO_TEX,
-            "",
-            "Body text",
-        ]
+        tex_lines[0:2]
+        + ["", COLOR_MACROS_BASE_MACROS, COLOR_MACROS_LATEX_IMPORTS, COLOR_MACROS,]
+        + tex_lines[2:]
     )
 
 
@@ -84,8 +77,8 @@ def test_color_equations():
     colorized, equations = next(colorize_equations(tex, insert_color_macros=False))
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 2
-    assert matches[0] == "$eq1$"
-    assert matches[1] == "$eq2$"
+    assert matches[0] == "eq1"
+    assert matches[1] == "eq2"
 
     equation0_info = equations[0]
     assert isinstance(equation0_info.hue, float)
@@ -99,29 +92,18 @@ def test_color_equation_in_argument():
     assert colorized.startswith("\\caption")
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 1
-    assert matches[0] == "$eq1$"
+    assert matches[0] == "eq1"
 
 
 def test_color_tokens():
     file_contents = {"file": FileContents("file", "$ignore$ $x + y$", "encoding")}
+    equation = Equation(9, 16, 1, "$x + y$", 10, 15, "x + y", 0)
     tokens = [
         TokenWithOrigin(
-            tex_path="file",
-            equation_index=1,
-            equation="$x + y$",
-            token_index=0,
-            start=0,
-            end=1,
-            text="x",
+            tex_path="file", equation=equation, token_index=0, start=0, end=1, text="x",
         ),
         TokenWithOrigin(
-            tex_path="file",
-            equation_index=1,
-            equation="$x + y$",
-            token_index=1,
-            start=4,
-            end=5,
-            text="y",
+            tex_path="file", equation=equation, token_index=1, start=4, end=5, text="y",
         ),
     ]
     colorized_files, _ = next(
@@ -137,20 +119,16 @@ def test_color_tokens():
 
 def test_color_hats_dots():
     file_contents = {"file": FileContents("file", "$\\hat x + \\dot  y$", "encoding")}
+    equation = Equation(
+        0, 18, 0, "$\\hat x + \\dot  y$", 1, 19, "\\hat x + \\dot  y", 0
+    )
     tokens = [
         TokenWithOrigin(
-            tex_path="file",
-            equation_index=0,
-            equation="$\\hat x + \\dot  y$",
-            token_index=0,
-            start=5,
-            end=6,
-            text="x",
+            tex_path="file", equation=equation, token_index=0, start=5, end=6, text="x",
         ),
         TokenWithOrigin(
             tex_path="file",
-            equation_index=0,
-            equation="$\\hat x + \\dot  y$",
+            equation=equation,
             token_index=1,
             start=15,
             end=16,
@@ -169,15 +147,10 @@ def test_color_hats_dots():
 
 def test_color_inside_brackets():
     file_contents = {"file": FileContents("file", "${x}$", "encoding")}
+    equation = Equation(0, 5, 0, "${x}$", 1, 4, "{x}", 0)
     tokens = [
         TokenWithOrigin(
-            tex_path="file",
-            equation_index=0,
-            equation="{x}",
-            token_index=0,
-            start=0,
-            end=3,
-            text="x",
+            tex_path="file", equation=equation, token_index=0, start=0, end=3, text="x",
         )
     ]
     colorized_files, _ = next(
@@ -192,11 +165,11 @@ def test_color_inside_brackets():
 
 def test_adjust_indexes_to_within_bounds():
     file_contents = {"file": FileContents("file", "$x$ ignore text after", "encoding")}
+    equation = Equation(0, 3, 0, "$x$", 1, 2, "x", 0)
     tokens = [
         TokenWithOrigin(
             tex_path="file",
-            equation_index=0,
-            equation="$x$",
+            equation=equation,
             token_index=0,
             start=0,
             # For reasons I don't yet know, KaTeX sometimes returns character indexes that are
@@ -219,29 +192,19 @@ def test_color_subscripts():
     file_contents = {
         "file": FileContents("file", "$x_i x^i x\\sp1 x\\sb1$", "encoding")
     }
+    equation = Equation(
+        0, 21, 0, "$x_i x^i x\\sp1 x\\sb1$", 1, 20, "x_i x^i x\\sp1 x\\sb1", 0
+    )
     tokens = [
         TokenWithOrigin(
-            tex_path="file",
-            equation_index=0,
-            equation="$x_i x^i x\\sp1 x\\sb1$",
-            token_index=0,
-            start=2,
-            end=3,
-            text="i",
+            tex_path="file", equation=equation, token_index=0, start=2, end=3, text="i",
+        ),
+        TokenWithOrigin(
+            tex_path="file", equation=equation, token_index=1, start=6, end=7, text="i",
         ),
         TokenWithOrigin(
             tex_path="file",
-            equation_index=0,
-            equation="$x_i x^i x\\sp1 x\\sb1$",
-            token_index=1,
-            start=6,
-            end=7,
-            text="i",
-        ),
-        TokenWithOrigin(
-            tex_path="file",
-            equation_index=0,
-            equation="$x_i x^i x\\sp1 x\\sb1$",
+            equation=equation,
             token_index=2,
             start=12,
             end=13,
@@ -249,8 +212,7 @@ def test_color_subscripts():
         ),
         TokenWithOrigin(
             tex_path="file",
-            equation_index=0,
-            equation="$x_i x^i x\\sp1 x\\sb1$",
+            equation=equation,
             token_index=3,
             start=18,
             end=19,
@@ -268,3 +230,49 @@ def test_color_subscripts():
     assert matches[1] == "^i"
     assert matches[2] == "\\sp1"
     assert matches[3] == "\\sb1"
+
+
+def test_dont_color_nested_equations():
+    file_contents = {
+        "file": FileContents(
+            "file", "\\begin{equation}\\hbox{$x$}\\end{equation}", "encoding"
+        )
+    }
+    outer_equation = Equation(
+        0,
+        40,
+        1,
+        "\\begin{equation}\\hbox{$x$}\\end{equation}",
+        16,
+        24,
+        "\\hbox{$x$}",
+        depth=0,
+    )
+    inner_equation = Equation(22, 25, 0, "$x$", 1, 2, "x", depth=1)
+    # Simulate the same token being found twice: once within the outer equation, and once within
+    # the inner equation.
+    tokens = [
+        TokenWithOrigin(
+            tex_path="file",
+            equation=outer_equation,
+            token_index=0,
+            start=7,
+            end=8,
+            text="x",
+        ),
+        TokenWithOrigin(
+            tex_path="file",
+            equation=inner_equation,
+            token_index=0,
+            start=0,
+            end=1,
+            text="x",
+        ),
+    ]
+    colorized_files, _ = next(
+        colorize_equation_tokens(file_contents, tokens, insert_color_macros=False)
+    )
+    colorized = colorized_files["file"].contents
+    matches = re.findall(COLOR_PATTERN, colorized)
+    assert len(matches) == 1
+    assert matches[0] == "x"

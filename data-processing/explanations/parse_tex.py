@@ -1,30 +1,15 @@
 import logging
 import re
-from dataclasses import dataclass
-from typing import Callable, Dict, Iterator, List, NamedTuple, Optional, Set, Union
+from typing import (Callable, Dict, Iterator, List, NamedTuple, Optional, Set,
+                    Union)
 
 from TexSoup import RArg, TexNode, TexSoup, TokenWithPosition
 
-from explanations.scan_tex import Match, Pattern, scan_tex
-from explanations.types import Bibitem
-
-TexFileName = str
-TexContents = str
-
-
-@dataclass(frozen=True)
-class Entity:
-    start: int
-    "Character position where this entity begins in the TeX."
-
-    end: int
-    "Character position where this entity ends in the TeX."
-
-
-@dataclass(frozen=True)
-class Citation(Entity):
-    keys: List[str]
-
+from explanations.scan_tex import (EndOfInput, Match, Pattern, TexScanner,
+                                   has_balanced_braces, scan_tex)
+from explanations.types import (BeginDocument, Bibitem, Citation, ColorLinks,
+                                Documentclass, Equation, Macro,
+                                MacroDefinition)
 
 """
 All citation commands from the biblatex package.
@@ -175,12 +160,12 @@ TODO(andrewhead): Support 'alignat'.
 """
 MATH_ENVIRONMENT_SPECS: Dict[str, EnvSpec] = {
     # Inline math
-    "dollar": DelimitedEnv(r"(?<![\\])\$"),
-    "parens": StartEndEnv(r"(?<![\\])\\\(", r"(?<![\\])\\\)"),
+    "dollar": DelimitedEnv(r"\$(?!\$)"),
+    "parens": StartEndEnv(r"\\\(", r"\\\)"),
     "math": NamedEnv("math", star=False),
     # Display math
-    "dollardollar": DelimitedEnv(r"(?<![\\])\$\$"),
-    "bracket": StartEndEnv(r"(?<![\\])\\\[", r"(?<![\\])\\\]"),
+    "dollardollar": DelimitedEnv(r"\$\$"),
+    "bracket": StartEndEnv(r"\\\[", r"\\\]"),
     "displaymath": NamedEnv("displaymath", star=True),
     "equation": NamedEnv("equation", star=True),
     "split": NamedEnv("split", star=True),
@@ -193,10 +178,18 @@ MATH_ENVIRONMENT_SPECS: Dict[str, EnvSpec] = {
 }
 
 
+def begin_environment_regex(name: str) -> str:
+    return r"\\begin{" + name + r"}"
+
+
+def end_environment_regex(name: str) -> str:
+    return r"\\end{" + name + r"}"
+
+
 def make_math_environment_patterns() -> List[Pattern]:
 
-    begin: Callable[[str], str] = lambda name: r"\\begin{" + name + r"}"
-    end: Callable[[str], str] = lambda name: r"\\end{" + name + r"}"
+    begin = begin_environment_regex
+    end = end_environment_regex
 
     patterns: List[Pattern] = []
     for name, spec in MATH_ENVIRONMENT_SPECS.items():
@@ -212,21 +205,6 @@ def make_math_environment_patterns() -> List[Pattern]:
                 patterns.append(Pattern(name + "s_start", begin(spec.name + r"\*")))
                 patterns.append(Pattern(name + "s_end", end(spec.name + r"\*")))
     return patterns
-
-
-@dataclass(frozen=True)
-class Equation(Entity):
-    i: int
-    "Index of this equation in the TeX document."
-
-    tex: str
-    "TeX for the full equation environment (e.g., '$x + y$')."
-
-    content_start: int
-    "Index of character where the contents (i.e. 'content_tex') of the equation starts"
-
-    content_tex: str
-    "TeX for the equation contents, inside the environment (e.g., 'x + y')."
 
 
 class EquationExtractor:
@@ -261,6 +239,7 @@ class EquationExtractor:
                 self._stack.pop()
             start_match = self._stack.pop()
 
+            depth = len(self._stack)
             equation_tex = self._tex[start_match.start : match.end]
             content_tex = self._tex[start_match.end : match.start]
             yield Equation(
@@ -269,7 +248,9 @@ class EquationExtractor:
                 self._equation_index,
                 equation_tex,
                 start_match.end,
+                match.start,
                 content_tex,
+                depth,
             )
             self._equation_index += 1
 
@@ -286,15 +267,21 @@ class EquationExtractor:
         return any([m.pattern.name == start_pattern_name for m in self._stack])
 
 
-@dataclass(frozen=True)
-class Documentclass(Entity):
-    pass
+class BeginDocumentExtractor:
+    def parse(self, tex: str) -> Optional[BeginDocument]:
+        pattern = Pattern("begin_document", r"\\begin{document}")
+        scanner = scan_tex(tex, [pattern], include_unmatched=False)
+        try:
+            match = next(scanner)
+            return BeginDocument(match.start, match.end)
+        except StopIteration:
+            return None
 
 
 class DocumentclassExtractor:
     def parse(self, tex: str) -> Optional[Documentclass]:
         patterns = [
-            Pattern("documentclass", r"\s*\\documentclass"),
+            Pattern("documentclass", r"\\documentclass"),
             Pattern("optional_arg", r"\[[^\]]*?\]"),
             Pattern("required_arg", r"{[^}]*?}"),
         ]
@@ -332,12 +319,6 @@ class DocumentclassExtractor:
         if required_arg is not None:
             return Documentclass(start, required_arg.end)
         return None
-
-
-class ColorLinks(NamedTuple):
-    value: str
-    value_start: int
-    value_end: int
 
 
 class ColorLinksExtractor:
@@ -407,6 +388,98 @@ class BibitemExtractor:
 
 def _clean_bibitem_text(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
+
+
+class MacroExtractor:
+    """
+    This extractor follows the argument-parsing logic described on p203-4 of the TeXBook.
+    """
+
+    LEFT_BRACE = Pattern("left_brace", r"\{")
+    RIGHT_BRACE = Pattern("right_brace", r"\}")
+
+    def parse(self, tex: str, macro_definition: MacroDefinition) -> Iterator[Macro]:
+        parser = self._parse(tex, macro_definition)
+        while True:
+            try:
+                macro = next(parser)
+                yield macro
+            # Run until the scanner has indicated that the end of input has been reached.
+            except EndOfInput:
+                return
+
+    def _parse(self, tex: str, macro_definition: MacroDefinition) -> Iterator[Macro]:
+        self.scanner = TexScanner(tex)  # pylint: disable=attribute-defined-outside-init
+        name_pattern = Pattern("macro", r"\\" + macro_definition.name)
+
+        # This loop will run until the scanner raises an 'EndOfInput' or indicates another error.
+        while True:
+
+            # Parse the macro name.
+            step = self.scanner.next([name_pattern])
+            macro_start = step.match.start
+            token_end = step.match.end
+
+            # Parse each of the expected tokens in the parameter string.
+            tokens = re.split(r"(#\d+)", macro_definition.parameter_string)
+            if tokens[0] == '':
+                del tokens[0]
+            if len(tokens) >= 1 and tokens[len(tokens) - 1] == '':
+                del tokens[len(tokens) - 1]
+            for i, token in enumerate(tokens):
+                if re.match(r"#\d+", token):
+                    if ((i == len(tokens) - 1) or
+                        (re.match(r"#\d+", tokens[i + 1]))):
+                        token_end = self._scan_undelimited_parameter()
+                    else:
+                        token_end = self._scan_delimited_parameter(tokens[i + 1], tex)
+                else:
+                    token_end = self._scan_delimiter(token)
+
+            # The macros text is the text of the name and all parameters.
+            yield Macro(macro_start, token_end, tex[macro_start: token_end])
+
+    def _scan_undelimited_parameter(self) -> int:
+        patterns = [self.LEFT_BRACE, Pattern("nonspace_character", r"\S")]
+        step = self.scanner.next(patterns)
+
+        # If a non-space character, match just the first character.
+        if step.match.pattern.name == "nonspace_character":
+            return step.match.end
+        
+        # If the first match is a left-brace, parse until the braces are balanced.
+        brace_depth = 1
+        brace_patterns = [self.LEFT_BRACE, self.RIGHT_BRACE]
+        while True:
+            step = self.scanner.next(brace_patterns)
+            if step.match.pattern.name == "left_brace":
+                brace_depth += 1
+            elif step.match.pattern.name == "right_brace":
+                brace_depth -= 1
+            if brace_depth == 0:
+                return step.match.end
+
+    def _scan_delimited_parameter(self, delimiter: str, tex: str) -> int:
+        scan_start = self.scanner.i
+
+        # Scan for the delimiter with a lookahead so that the scanner doesn't consume the tokens
+        # for the delimiter while searching for it.
+        delimiter_pattern = Pattern("delimiter", "(?=" + re.escape(delimiter) + ")")
+
+        while True:
+            step = self.scanner.next([delimiter_pattern])
+            text_before_delimiter = tex[scan_start: step.match.start]
+            if has_balanced_braces(text_before_delimiter):
+                return step.match.start
+
+    def _scan_delimiter(self, delimiter: str) -> int:
+        pattern = Pattern("delimiter", re.escape(delimiter))
+        step = self.scanner.next([pattern], include_unmatched=True)
+        if step.skipped is not None and len(step.skipped) > 0:
+            logging.warning(
+                "Unexpectedly found unmatched text before macro argument delimiter."
+            )
+        return step.match.end
 
 
 def parse_soup(tex: str) -> TexSoup:

@@ -24,6 +24,15 @@ if __name__ == "__main__":
         help="Number of days in the past for which to fetch arXiv papers. Cannot be used with "
         + "arguments that specify which arXiv IDs to process)",
     )
+    command_names = [c.get_name() for c in MAIN_PIPELINE_COMMANDS]
+    parser.add_argument(
+        "--start",
+        help="Command to start running the pipeline at.",
+        choices=command_names,
+    )
+    parser.add_argument(
+        "--end", help="Command to stop running the pipeline at.", choices=command_names
+    )
 
     args = parser.parse_args()
     if args.v:
@@ -41,8 +50,26 @@ if __name__ == "__main__":
         run_command(fetch_arxiv_ids_command)
         arxiv_ids = read_arxiv_ids_from_file(arxiv_ids_path)
 
+    reached_start_command = False
+    if args.start is None:
+        reached_start_command = True
+
     for CommandClass in MAIN_PIPELINE_COMMANDS:
+
+        if args.start is not None and CommandClass.get_name() == args.start:
+            reached_start_command = True
+
+        if not reached_start_command:
+            logging.info(
+                "Start command not yet reached. Skipping %s", CommandClass.get_name()
+            )
+            continue
+
         command_args = create_args(v=args.v, arxiv_ids=arxiv_ids, arxiv_ids_file=None)
         command = CommandClass(command_args)
         logging.debug("Launching command %s", CommandClass.get_name())
         run_command(command)
+
+        if args.end is not None and CommandClass.get_name() == args.end:
+            logging.info("Finished the end command. Skipping the rest of the commands.")
+            break

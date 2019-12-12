@@ -17,12 +17,24 @@
       }
     },
     {
-      "name": "Extract Equation Tokens",
+      "name": "Extract Symbols",
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}/scripts/process.py",
       "console": "integratedTerminal",
-      "args": ["extract-equation-tokens"],
+      "args": ["extract-symbols"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "."
+      }
+    },
+    {
+      "name": "Colorize Citations",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/process.py",
+      "console": "integratedTerminal",
+      "args": ["-v", "colorize-citations"],
       "cwd": "${workspaceFolder}",
       "env": {
         "PYTHONPATH": "."

@@ -4,12 +4,25 @@ import logging
 import os.path
 from typing import Dict, Iterator, List, NamedTuple, Tuple, cast
 
+from peewee import IntegrityError
+
 import explanations.directories as directories
-from explanations.directories import (get_data_subdirectory_for_iteration,
-                                      get_iteration_names)
+from explanations.directories import (
+    get_data_subdirectory_for_iteration,
+    get_iteration_names,
+)
 from explanations.types import ArxivId, Author, Path, PdfBoundingBox, Reference
-from models.models import (BoundingBox, Citation, CitationPaper, Entity,
-                           EntityBoundingBox, Paper, Summary, create_tables)
+from models.models import (
+    BoundingBox,
+    Citation,
+    CitationPaper,
+    Entity,
+    EntityBoundingBox,
+    Paper,
+    Summary,
+    create_tables,
+    output_database,
+)
 from scripts.command import ArxivBatchCommand
 
 CitationKey = str
@@ -225,7 +238,19 @@ class UploadCitations(ArxivBatchCommand[CitationData, None]):
 
             citation = Citation.create(paper=paper)
             for cited_paper in cited_papers:
-                CitationPaper.create(paper=cited_paper, citation=citation)
+                try:
+                    with output_database.atomic():
+                        CitationPaper.create(paper=cited_paper, citation=citation)
+                except IntegrityError:
+                    logging.warning(  # pylint: disable=logging-not-lazy
+                        (
+                            "Cited paper %s and citation %s are already linked. This suggests a bug in "
+                            + "the citation resolution code; perhaps multiple citation keys were "
+                            + "matched to the same paper?"
+                        ),
+                        cited_paper.arxiv_id,
+                        citation.id,
+                    )
 
             entity = Entity.create(type="citation", entity_id=citation.id)
 
