@@ -221,7 +221,7 @@ export const plugin = {
       path: "papers/list",
       handler: async (request, h) => {
         const papers = await dbConnection.getAllPapers();
-        return h.response(papers).code(200);
+        return papers;
       }
     });
 
