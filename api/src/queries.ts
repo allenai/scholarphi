@@ -290,7 +290,7 @@ export class Connection {
 
     const annotations: Annotation[] = rows.map(row => ({
       id: row.annotation_id,
-      type: row.annotation_id,
+      type: row.type,
       boundingBox: {
         page: row.page,
         left: row.left,
@@ -323,11 +323,10 @@ export class Connection {
     id: number,
     annotationData: AnnotationData
   ) {
-    let created = false;
     const { type } = annotationData;
     const { page, left, top, width, height } = annotationData.boundingBox;
 
-    const updatedRowIds = await this._knex("annotation")
+    await this._knex("annotation")
       .update({ page, left, top, width, height, type })
       .where({ "annotation.id": id })
       .whereIn(
@@ -338,21 +337,8 @@ export class Connection {
       )
       .returning("id");
 
-    if (updatedRowIds.length == 0) {
-      await this._knex.raw(
-        'INSERT INTO annotation (id, page, "left", top, width, height, paper_id, "type") ' +
-          "SELECT ?, ?, ?, ?, ?, ?, s2_id, ? " +
-          "FROM paper WHERE arxiv_id = ?",
-        [id, page, left, top, width, height, type, arxivId]
-      );
-      created = true;
-    }
-
     const annotation = { ...annotationData, id };
-    return {
-      created,
-      annotation
-    };
+    return annotation;
   }
 
   async deleteAnnotation(arxivId: string, id: number) {
