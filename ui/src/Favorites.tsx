@@ -23,18 +23,23 @@ export class Favorites extends React.Component {
                 }
               }
               if (symbol !== undefined) {
-                return <div className="favorite"><SymbolPreview symbol={symbol} key={favoritesKey} /></div>;
+                return (
+                  <div className="favorite">
+                    <SymbolPreview symbol={symbol} key={favoritesKey} />
+                  </div>
+                );
               }
             } else if (favoritesId.type === "paper-summary") {
               return (
                 <div className="favorite">
-                <PaperSummary
-                  paperId={favoritesId.entityId as string}
-                  key={favoritesKey}
-                />
+                  <PaperSummary
+                    paperId={favoritesId.entityId as string}
+                    key={favoritesKey}
+                  />
                 </div>
               );
             }
+            return null;
           });
         }}
       </ScholarReaderContext.Consumer>

@@ -1,5 +1,6 @@
 import React from "react";
 import Selection, { Point } from "./Selection";
+import * as uiUtils from "./ui-utils";
 
 interface SelectionCanvasProps {
   onSelection: (anchor: Point, active: Point) => void;
@@ -8,26 +9,6 @@ interface SelectionCanvasProps {
 interface SelectionCanvasState {
   anchor: Point | null;
   active: Point | null;
-}
-
-function getMouseXY(event: React.MouseEvent) {
-  const rect = event.currentTarget.getBoundingClientRect();
-  const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
-  return { x, y };
-}
-
-function isKeypressEscape(event: React.KeyboardEvent) {
-  if (
-    event.key !== undefined &&
-    (event.key === "Esc" || event.key === "Escape")
-  ) {
-    return true;
-  }
-  if (event.keyCode !== undefined && event.keyCode === 27) {
-    return true;
-  }
-  return false;
 }
 
 export class SelectionCanvas extends React.Component<
@@ -51,7 +32,7 @@ export class SelectionCanvas extends React.Component<
             /*
              * Start selection.
              */
-            this.setState({ anchor: getMouseXY(e) });
+            this.setState({ anchor: uiUtils.getMouseXY(e) });
           } else if (this.state.anchor !== null) {
             /*
              * Finalize selection.
@@ -67,15 +48,15 @@ export class SelectionCanvas extends React.Component<
             /*
              * Update selection.
              */
-            this.setState({ active: getMouseXY(e) });
+            this.setState({ active: uiUtils.getMouseXY(e) });
           }
         }}
+        /*
+         * To capture keydown events, tabIndex above must be set to 0.
+         */
         tabIndex={0}
         onKeyDown={e => {
-          /*
-           * To capture keydown events, tabIndex above must be set to 0.
-           */
-          if (isKeypressEscape(e)) {
+          if (uiUtils.isKeypressEscape(e)) {
             this.setState({ anchor: null, active: null });
           }
         }}

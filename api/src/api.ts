@@ -137,7 +137,7 @@ export const plugin = {
       path: "papers/arxiv:{arxivId}/annotations",
       handler: async (request, h) => {
         const arxivId = request.params.arxivId;
-        const id = dbConnection.postAnnotationForArxivId(
+        const id = await dbConnection.postAnnotationForArxivId(
           arxivId,
           request.payload as AnnotationData
         );
@@ -152,6 +152,8 @@ export const plugin = {
     });
 
     /**
+     * This PUT route only lets you update an annotation; it does not let you create a new
+     * annotation. For the time being, the only way to create a new annotation is with POST.
      * Example usage:
      * requests.put(
      *   "http://localhost:3000/api/v0/papers/arxiv:1508.07252/annotation/2",
@@ -172,12 +174,12 @@ export const plugin = {
       path: "papers/arxiv:{arxivId}/annotation/{id}",
       handler: async (request, h) => {
         const { arxivId, id } = request.params;
-        const { created, annotation } = await dbConnection.putAnnotation(
+        const annotation = await dbConnection.putAnnotation(
           arxivId,
           Number(id),
           request.payload as AnnotationData
         );
-        return h.response(annotation).code(created ? 201 : 200);
+        return h.response(annotation).code(200);
       },
       options: {
         validate: {
