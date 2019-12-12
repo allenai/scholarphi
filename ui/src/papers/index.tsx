@@ -70,7 +70,7 @@ interface CachedPaperWithMeta {
 }
 
 /**
- * This wrapper returns paper metadata from a local cache for up to 24 hours.a
+ * This wrapper returns paper metadata from a local cache for up to 24 hours.
  *
  * This is to prevent clients from overloading Semantic Scholar's API. It's a
  * very basic mechanism and should likely be replaced with something in the
