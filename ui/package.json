@@ -19,7 +19,6 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "postbuild": "node scripts/postbuild.js",
     "test": "react-scripts test --env=jsdom"
   },
   "eslintConfig": {
