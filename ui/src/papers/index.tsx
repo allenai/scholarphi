@@ -55,7 +55,7 @@ interface S2ApiAuthor {
     url: string;
 }
 
-// We only retain a the fields from S2ApiPaper that we need, as otherwise
+// We only retain the fields from S2ApiPaper that we need, as otherwise
 // we can very easily overflow localStorage.
 interface PaperWithMeta extends PaperIdWithCounts {
     title: string;
