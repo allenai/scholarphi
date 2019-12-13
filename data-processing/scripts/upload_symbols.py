@@ -20,7 +20,7 @@ from models.models import BoundingBox, Entity, EntityBoundingBox
 from models.models import MathMl as MathMlModel
 from models.models import MathMlMatch, Paper
 from models.models import Symbol as SymbolModel
-from models.models import SymbolChild, create_tables, output_database
+from models.models import SymbolChild, init_database_connections, output_database
 from scripts.command import ArxivBatchCommand
 
 S2Id = str
@@ -125,7 +125,7 @@ class UploadSymbols(ArxivBatchCommand[SymbolData, None]):
         boxes = item.boxes
         matches = item.matches
 
-        create_tables()
+        init_database_connections()
 
         try:
             paper = Paper.get(Paper.s2_id == s2_id)
