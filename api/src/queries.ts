@@ -81,7 +81,8 @@ export class Connection {
         password: config.get("database:password"),
         database: config.get("database:database"),
         ssl: true
-      }
+      },
+      searchPath: [config.get("database:schema")]
     });
   }
 

@@ -7,22 +7,12 @@ from typing import Dict, Iterator, List, NamedTuple, Tuple, cast
 from peewee import IntegrityError
 
 import explanations.directories as directories
-from explanations.directories import (
-    get_data_subdirectory_for_iteration,
-    get_iteration_names,
-)
+from explanations.directories import (get_data_subdirectory_for_iteration,
+                                      get_iteration_names)
 from explanations.types import ArxivId, Author, Path, PdfBoundingBox, Reference
-from models.models import (
-    BoundingBox,
-    Citation,
-    CitationPaper,
-    Entity,
-    EntityBoundingBox,
-    Paper,
-    Summary,
-    create_tables,
-    output_database,
-)
+from models.models import (BoundingBox, Citation, CitationPaper, Entity,
+                           EntityBoundingBox, Paper, Summary,
+                           init_database_connections, output_database)
 from scripts.command import ArxivBatchCommand
 
 CitationKey = str
@@ -186,7 +176,7 @@ class UploadCitations(ArxivBatchCommand[CitationData, None]):
         key_s2_ids = item.key_s2_ids
         s2_data = item.s2_data
 
-        create_tables()
+        init_database_connections()
 
         try:
             paper = Paper.get(Paper.s2_id == s2_id)
