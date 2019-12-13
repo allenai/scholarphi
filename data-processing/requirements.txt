@@ -1,3 +1,4 @@
+awscli
 beautifulsoup4==4.8.0
 lxml
 numpy

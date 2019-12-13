@@ -1,18 +1,16 @@
-import argparse
 import logging
+import sys
+from argparse import ArgumentParser
 
-from scripts.command import (
-    add_arxiv_id_filter_args,
-    create_args,
-    load_arxiv_ids_using_args,
-    read_arxiv_ids_from_file,
-)
+from scripts.command import (add_arxiv_id_filter_args, create_args,
+                             load_arxiv_ids_using_args,
+                             read_arxiv_ids_from_file)
 from scripts.fetch_new_arxiv_ids import FetchNewArxivIds
 from scripts.process import MAIN_PIPELINE_COMMANDS, run_command
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(
+    parser = ArgumentParser(
         description="Run pipeline to extract entities from arXiv papers."
     )
     parser.add_argument("-v", help="print debugging information", action="store_true")
@@ -29,6 +27,15 @@ if __name__ == "__main__":
         "--start",
         help="Command to start running the pipeline at.",
         choices=command_names,
+    )
+    parser.add_argument(
+        "--source",
+        default="arxiv",
+        choices=["arxiv", "s3"],
+        help=(
+            "Where to download sources from. If 'arxiv', download sources from arXiv.org. If "
+            + "'s3', download from S2's S3 bucket for arXiv sources."
+        ),
     )
     parser.add_argument(
         "--end", help="Command to stop running the pipeline at.", choices=command_names
@@ -65,7 +72,22 @@ if __name__ == "__main__":
             )
             continue
 
-        command_args = create_args(v=args.v, arxiv_ids=arxiv_ids, arxiv_ids_file=None)
+        # Initialize arguments for each command to defaults.
+        command_args_parser = ArgumentParser()
+        CommandClass.init_parser(command_args_parser)
+        command_args = command_args_parser.parse_known_args("")[0]
+
+        # Pass pipeline arguments to command.
+        command_args.arxiv_ids = arxiv_ids
+        command_args.arxiv_ids_file = None
+        command_args.v = args.v
+        command_args.source = args.source
+
+        logging.debug(
+            "Creating command %s with args %s",
+            CommandClass.get_name(),
+            vars(command_args),
+        )
         command = CommandClass(command_args)
         logging.debug("Launching command %s", CommandClass.get_name())
         run_command(command)
