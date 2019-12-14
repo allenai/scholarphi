@@ -44,7 +44,7 @@ class StorePipelineLog(Command[None, None]):  # pylint: disable=unsubscriptable-
     def process(self, _: None) -> Iterator[None]:
         yield None
 
-    def save(self, item: None, _: None) -> None:
+    def save(self, _: None, __: None) -> None:
 
         upload_path = f"s3://{S3_BUCKET}/{self.args.s3_prefix}/logs/"
         command_args = [

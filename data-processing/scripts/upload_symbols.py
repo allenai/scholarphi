@@ -6,22 +6,14 @@ from typing import Dict, Iterator, List, NamedTuple
 import explanations.directories as directories
 from explanations.file_utils import load_symbols
 from explanations.s2_data import get_s2_id
-from explanations.types import (
-    ArxivId,
-    Match,
-    Matches,
-    MathML,
-    Path,
-    PdfBoundingBox,
-    SymbolId,
-    SymbolWithId,
-)
+from explanations.types import (ArxivId, Match, Matches, MathML, Path,
+                                PdfBoundingBox, SymbolId, SymbolWithId)
 from models.models import BoundingBox, Entity, EntityBoundingBox
 from models.models import MathMl as MathMlModel
 from models.models import MathMlMatch, Paper
 from models.models import Symbol as SymbolModel
-from models.models import SymbolChild, init_database_connections, output_database
-from scripts.command import ArxivBatchCommand
+from models.models import SymbolChild, output_database
+from scripts.command import UploadCommand
 
 S2Id = str
 Hue = float
@@ -42,7 +34,7 @@ class SymbolData(NamedTuple):
     matches: Matches
 
 
-class UploadSymbols(ArxivBatchCommand[SymbolData, None]):
+class UploadSymbols(UploadCommand[SymbolData, None]):
     @staticmethod
     def get_name() -> str:
         return "upload-symbols"
@@ -124,8 +116,6 @@ class UploadSymbols(ArxivBatchCommand[SymbolData, None]):
         symbols_with_ids = item.symbols_with_ids
         boxes = item.boxes
         matches = item.matches
-
-        init_database_connections()
 
         try:
             paper = Paper.get(Paper.s2_id == s2_id)

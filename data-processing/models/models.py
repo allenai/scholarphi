@@ -210,15 +210,13 @@ def init_database_connections(output_schema_name: Optional[str] = None) -> None:
         safe=True,
     )
 
+    # Provide 'api' user with read access to the new schema.
     output_database.execute_sql(
-        "GRANT USAGE ON SCHEMA %s TO %s" % (output_schema_name, "api")
+        "GRANT ALL ON SCHEMA %s TO %s" % (output_schema_name, "api")
     )
     output_database.execute_sql(
-        "GRANT SELECT ON ALL TABLES IN SCHEMA %s TO %s" % (output_schema_name, "api")
+        "GRANT ALL ON ALL TABLES IN SCHEMA %s TO %s" % (output_schema_name, "api")
     )
     output_database.execute_sql(
-        "GRANT INSERT, UPDATE, DELETE ON TABLE %s TO %s" % ("annotation", "api")
-    )
-    output_database.execute_sql(
-        "GRANT SELECT, USAGE ON SEQUENCE %s TO %s" % ("annotation_id_seq", "api")
+        "GRANT ALL ON ALL SEQUENCES IN SCHEMA %s TO %s" % (output_schema_name, "api")
     )
