@@ -20,7 +20,7 @@ def get_cv2_images(pdf_path: AbsolutePath) -> List[Optional[np.ndarray]]:
     page_images = []
 
     with open(pdf_path, "rb") as pdf_file:
-        logging.info("Reading PDF %s", pdf_path)
+        logging.debug("Reading PDF %s", pdf_path)
         pdf = PdfFileReader(pdf_file)
 
         for page_index in range(pdf.getNumPages()):

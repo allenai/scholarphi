@@ -3,9 +3,11 @@ from typing import Iterator, List
 
 from explanations.types import AbsolutePath, RelativePath
 
-DATA_DIR = "data"
+LOGS_DIR = "logs"
 
 # Main directories for processing papers
+DATA_DIR = "data"
+
 ARXIV_IDS_DIR = os.path.join(DATA_DIR, "00-arxiv-ids")
 SOURCE_ARCHIVES_DIR = os.path.join(DATA_DIR, "01-sources-archives")
 S2_METADATA_DIR = os.path.join(DATA_DIR, "02-s2-metadata")

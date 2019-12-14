@@ -19,6 +19,9 @@ arxiv_ids.txt
 # Pipeline inputs and outputs
 data
 
+# Pipeline logs
+logs
+
 # Dependencies
 src
 venv
