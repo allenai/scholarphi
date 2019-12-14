@@ -73,8 +73,24 @@ if __name__ == "__main__":
         action="store_true",
         help="Save results of running the pipeline to the database.",
     )
+    parser.add_argument(
+        "--database-schema",
+        type=str,
+        default=f"schema_{datetime.utcnow().strftime('%Y%m%d_%M%H%S')}",
+        help=(
+            "Name of the Postgres schema into which to upload results. To upload into the live "
+            + "database, set this to 'public' (though this is not recommended). Schema names must "
+            + "follow the naming rules for Postgres identifiers "
+            + "(see https://www.postgresql.org/docs/9.2/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS)."
+            + " '--upload-to-database' must be set if this is option is set."
+        ),
+    )
 
     args = parser.parse_args()
+    if args.database_schema is not None and not args.upload_to_database:
+        parser.error(
+            "argument '--database-schema' requires '--upload-to-database' to be set."
+        )
 
     # Set up logging
     console_log_handler = logging.StreamHandler(sys.stdout)
@@ -153,6 +169,8 @@ if __name__ == "__main__":
         command_args.v = args.v
         command_args.source = args.source
         command_args.log_names = [log_filename]
+        if args.upload_to_database:
+            command_args.schema = args.database_schema
 
         if CommandClass == StorePipelineLog:
             logging.debug("Flushing file log before storing pipeline logs.")

@@ -7,13 +7,22 @@ from typing import Dict, Iterator, List, NamedTuple, Tuple, cast
 from peewee import IntegrityError
 
 import explanations.directories as directories
-from explanations.directories import (get_data_subdirectory_for_iteration,
-                                      get_iteration_names)
+from explanations.directories import (
+    get_data_subdirectory_for_iteration,
+    get_iteration_names,
+)
 from explanations.types import ArxivId, Author, Path, PdfBoundingBox, Reference
-from models.models import (BoundingBox, Citation, CitationPaper, Entity,
-                           EntityBoundingBox, Paper, Summary,
-                           init_database_connections, output_database)
-from scripts.command import ArxivBatchCommand
+from models.models import (
+    BoundingBox,
+    Citation,
+    CitationPaper,
+    Entity,
+    EntityBoundingBox,
+    Paper,
+    Summary,
+    output_database,
+)
+from scripts.command import UploadCommand
 
 CitationKey = str
 CitationKeys = Tuple[CitationKey]
@@ -34,7 +43,7 @@ class CitationData(NamedTuple):
     s2_data: Dict[S2Id, Reference]
 
 
-class UploadCitations(ArxivBatchCommand[CitationData, None]):
+class UploadCitations(UploadCommand[CitationData, None]):
     """
     TODO(andrewhead): Ensure that the LaTeX compiler never produces more than one PDF. If so,
     we need to discover which PDF is the 'main' one that will get posted to arXiv.
@@ -175,8 +184,6 @@ class UploadCitations(ArxivBatchCommand[CitationData, None]):
         citations_by_hue_iteration = item.citations_by_hue_iteration
         key_s2_ids = item.key_s2_ids
         s2_data = item.s2_data
-
-        init_database_connections()
 
         try:
             paper = Paper.get(Paper.s2_id == s2_id)
