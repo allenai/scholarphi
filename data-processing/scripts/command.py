@@ -5,6 +5,7 @@ from typing import Any, Generic, Iterator, List, Optional, TypeVar
 
 from explanations.directories import get_arxiv_ids
 from explanations.types import ArxivId, Path
+from models.models import init_database_connections
 
 I = TypeVar("I")
 R = TypeVar("R")
@@ -128,6 +129,29 @@ def read_arxiv_ids_from_file(path: Path) -> List[ArxivId]:
         raise SystemExit("Error: arXiv IDs %s file not found." % (path,))
     with open(path) as arxiv_ids_file:
         return [l.strip() for l in arxiv_ids_file.readlines()]
+
+
+class UploadCommand(ArxivBatchCommand[I, R], ABC):
+    """
+    A command for a batch job that uploads results to the output database. This command takes
+    care of initializing the databases and setting up a new schema in the database for the upload.
+    """
+
+    def __init__(self, args: Any) -> None:
+        super().__init__(args)
+        init_database_connections(output_schema_name=args.schema)
+
+    @staticmethod
+    def init_parser(parser: ArgumentParser) -> None:
+        super(UploadCommand, UploadCommand).init_parser(parser)
+        parser.add_argument(
+            "--schema",
+            type=str,
+            help=(
+                "Name of schema to which data will be output. Defaults to the time at which this"
+                + " command object was created."
+            ),
+        )
 
 
 class Args:

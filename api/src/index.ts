@@ -10,14 +10,15 @@ nconf
       host: "scholar-reader.c5tvjmptvzlz.us-west-2.rds.amazonaws.com",
       port: 5432,
       database: "scholar-reader",
-      user: "api"
+      user: "api",
+      schema: "public"
     }
   });
 
 export const init = async (config: nconf.Provider) => {
   const server = new Server({
     port: 3000,
-    host: "0.0.0.0", 
+    host: "0.0.0.0",
     debug: {
       request: ["error"]
     }
@@ -31,7 +32,7 @@ export const init = async (config: nconf.Provider) => {
     }
   });
 
-  server.route({ method: 'GET', path: '/health', handler: () => '👍' })
+  server.route({ method: "GET", path: "/health", handler: () => "👍" });
 
   await server.start();
   console.log("Server running on %s", server.info.uri);

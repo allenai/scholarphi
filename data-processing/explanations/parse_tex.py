@@ -298,9 +298,10 @@ class DocumentclassExtractor:
             if match.pattern.name == "UNKNOWN":
                 if match_stage == "awaiting-optional-arg":
                     return Documentclass(start, match.start)
-                return None
+                elif not match.text.isspace():
+                    break
 
-            if match_stage == "start":
+            elif match_stage == "start":
                 if match.pattern.name != "documentclass":
                     return None
                 start = match.start
