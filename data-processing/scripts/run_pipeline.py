@@ -1,12 +1,25 @@
 import logging
+import os
 import sys
+import uuid
 from argparse import ArgumentParser
+from datetime import datetime
 
-from scripts.command import (add_arxiv_id_filter_args, create_args,
-                             load_arxiv_ids_using_args,
-                             read_arxiv_ids_from_file)
+from explanations import directories
+from scripts.command import (
+    add_arxiv_id_filter_args,
+    create_args,
+    load_arxiv_ids_using_args,
+    read_arxiv_ids_from_file,
+)
 from scripts.fetch_new_arxiv_ids import FetchNewArxivIds
-from scripts.process import MAIN_PIPELINE_COMMANDS, run_command
+from scripts.process import (
+    DATABASE_UPLOAD_COMMANDS,
+    MAIN_PIPELINE_COMMANDS,
+    STORE_RESULTS_COMMANDS,
+    run_command,
+)
+from scripts.store_pipeline_log import StorePipelineLog
 
 if __name__ == "__main__":
 
@@ -14,6 +27,25 @@ if __name__ == "__main__":
         description="Run pipeline to extract entities from arXiv papers."
     )
     parser.add_argument("-v", help="print debugging information", action="store_true")
+    parser.add_argument(
+        "--log-prefix",
+        type=str,
+        default="pipeline",
+        help=(
+            "Prefix to place at the beginning of the log file name. The log will be output to "
+            + "<prefix>-<timestamp>-<uuid>.log. Prefix should be an ASCII string. A UUID is "
+            + "in the file name to distinguish it from other logs created at the same time."
+        ),
+    )
+    command_names = [c.get_name() for c in MAIN_PIPELINE_COMMANDS]
+    parser.add_argument(
+        "--start",
+        help="Command to start running the pipeline at.",
+        choices=command_names,
+    )
+    parser.add_argument(
+        "--end", help="Command to stop running the pipeline at.", choices=command_names
+    )
     add_arxiv_id_filter_args(parser)
     parser.add_argument(
         "--days",
@@ -21,12 +53,6 @@ if __name__ == "__main__":
         default=1,
         help="Number of days in the past for which to fetch arXiv papers. Cannot be used with "
         + "arguments that specify which arXiv IDs to process)",
-    )
-    command_names = [c.get_name() for c in MAIN_PIPELINE_COMMANDS]
-    parser.add_argument(
-        "--start",
-        help="Command to start running the pipeline at.",
-        choices=command_names,
     )
     parser.add_argument(
         "--source",
@@ -38,12 +64,36 @@ if __name__ == "__main__":
         ),
     )
     parser.add_argument(
-        "--end", help="Command to stop running the pipeline at.", choices=command_names
+        "--skip-store-results",
+        action="store_true",
+        help="Don't upload results to S3 when data processing is complete.",
+    )
+    parser.add_argument(
+        "--upload-to-database",
+        action="store_true",
+        help="Save results of running the pipeline to the database.",
     )
 
     args = parser.parse_args()
-    if args.v:
-        logging.basicConfig(level=logging.DEBUG)
+
+    # Set up logging
+    console_log_handler = logging.StreamHandler(sys.stdout)
+    console_log_level = logging.DEBUG if args.v else logging.INFO
+    console_log_handler.setLevel(console_log_level)
+
+    timestamp = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+    log_filename = f"{args.log_prefix}-{timestamp}-{uuid.uuid4()}.log"
+    if not os.path.exists(directories.LOGS_DIR):
+        os.makedirs(directories.LOGS_DIR)
+    log_file_path = os.path.join(directories.LOGS_DIR, log_filename)
+    file_log_handler = logging.FileHandler(log_file_path, mode="w", encoding="utf-8")
+    file_log_handler.setLevel(logging.DEBUG)
+
+    logging.basicConfig(
+        format="%(asctime)s [%(levelname)s]: %(message)s",
+        level=logging.DEBUG,
+        handlers=[console_log_handler, file_log_handler],
+    )
 
     # Load arXiv IDs either from arguments or by fetching recent arXiv IDs.
     arxiv_ids = load_arxiv_ids_using_args(args)
@@ -61,16 +111,36 @@ if __name__ == "__main__":
     if args.start is None:
         reached_start_command = True
 
-    for CommandClass in MAIN_PIPELINE_COMMANDS:
+    command_classes = MAIN_PIPELINE_COMMANDS
+    if args.upload_to_database:
+        logging.debug(
+            "Registering commands to be run for uploading results to the database."
+        )
+        command_classes += DATABASE_UPLOAD_COMMANDS
+    if not args.skip_store_results:
+        command_classes += STORE_RESULTS_COMMANDS
 
-        if args.start is not None and CommandClass.get_name() == args.start:
-            reached_start_command = True
+    logging.debug("Assembling the list of commands to be run.")
+    filtered_commands = []
+    start_reached = True if args.start is None else False
+    for CommandClass in command_classes:
+        command_name = CommandClass.get_name()
+        if not start_reached and args.start is not None:
+            if command_name == args.start:
+                start_reached = True
+            else:
+                continue
+        if start_reached:
+            filtered_commands.append(CommandClass)
+            if args.end is not None and command_name == args.end:
+                break
 
-        if not reached_start_command:
-            logging.info(
-                "Start command not yet reached. Skipping %s", CommandClass.get_name()
-            )
-            continue
+    logging.debug(
+        "The following commands will be run, in this order: %s",
+        [CommandClass.get_name() for CommandClass in filtered_commands],
+    )
+
+    for CommandClass in filtered_commands:
 
         # Initialize arguments for each command to defaults.
         command_args_parser = ArgumentParser()
@@ -82,6 +152,11 @@ if __name__ == "__main__":
         command_args.arxiv_ids_file = None
         command_args.v = args.v
         command_args.source = args.source
+        command_args.log_names = [log_filename]
+
+        if CommandClass == StorePipelineLog:
+            logging.debug("Flushing file log before storing pipeline logs.")
+            file_log_handler.flush()
 
         logging.debug(
             "Creating command %s with args %s",
@@ -89,9 +164,5 @@ if __name__ == "__main__":
             vars(command_args),
         )
         command = CommandClass(command_args)
-        logging.debug("Launching command %s", CommandClass.get_name())
+        logging.info("Launching command %s", CommandClass.get_name())
         run_command(command)
-
-        if args.end is not None and CommandClass.get_name() == args.end:
-            logging.info("Finished the end command. Skipping the rest of the commands.")
-            break

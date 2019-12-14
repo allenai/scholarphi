@@ -48,6 +48,8 @@ from scripts.raster_pages import (
     RasterPagesWithColorizedEquationTokens,
 )
 from scripts.resolve_bibitems import ResolveBibitems
+from scripts.store_pipeline_log import StorePipelineLog
+from scripts.store_results import StoreResults
 from scripts.unpack_sources import UnpackSources
 from scripts.upload_citations import UploadCitations
 from scripts.upload_symbols import UploadSymbols
@@ -88,6 +90,15 @@ MAIN_PIPELINE_COMMANDS: List = [  # type: ignore
     LocateEquationHues,
     LocateEquationTokenHues,
     LocateSymbols,
+]
+
+STORE_RESULTS_COMMANDS: List = [  # type: ignore
+    StoreResults,
+    # Store pipeline logs after results, so that we can include the result storage in the pipeline logs.
+    StorePipelineLog,
+]
+
+DATABASE_UPLOAD_COMMANDS: List = [  # type: ignore
     UploadCitations,
     UploadSymbols,
 ]
@@ -102,10 +113,16 @@ DEBUG_COMMANDS: List = [  # type: ignore
     AnnotateTexWithSymbolMarkers,
 ]
 
-ALL_COMMANDS = PREPARATION_COMMANDS + MAIN_PIPELINE_COMMANDS + DEBUG_COMMANDS
+ALL_COMMANDS = (
+    PREPARATION_COMMANDS
+    + MAIN_PIPELINE_COMMANDS
+    + STORE_RESULTS_COMMANDS
+    + DATABASE_UPLOAD_COMMANDS
+    + DEBUG_COMMANDS
+)
 
 
-def run_command(cmd: Command) -> None:
+def run_command(cmd: Command) -> None:  # type: ignore
     for item in cmd.load():
         for result in cmd.process(item):
             cmd.save(item, result)
