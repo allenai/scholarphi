@@ -1,8 +1,11 @@
 import configparser
+from datetime import datetime
+from typing import Optional
 
 from peewee import (
     CharField,
     CompositeKey,
+    DatabaseProxy,
     DateTimeField,
     FloatField,
     ForeignKeyField,
@@ -19,21 +22,8 @@ config = configparser.ConfigParser()
 config.read(DATABASE_CONFIG)
 
 
-def init_database(
-    conf: configparser.ConfigParser, config_section: str
-) -> PostgresqlDatabase:
-    db_name = conf[config_section]["db_name"]
-    user = conf[config_section]["user"]
-    password = conf[config_section]["password"]
-    host = conf[config_section]["host"]
-    port = conf[config_section]["port"]
-    return PostgresqlDatabase(
-        db_name, user=user, password=password, host=host, port=port
-    )
-
-
-input_database = init_database(config, "input-db")
-output_database = init_database(config, "output-db")
+input_database = DatabaseProxy()
+output_database = DatabaseProxy()
 
 
 class InputModel(Model):  # type: ignore
@@ -156,10 +146,51 @@ class Annotation(BoundingBox):
     type = TextField(choices=(("citation", None), ("symbol", None)), index=True)
 
 
-def create_tables() -> None:
+def init_database(
+    conf: configparser.ConfigParser, config_section: str, schema: Optional[str] = None
+) -> PostgresqlDatabase:
     """
-    Initialize any tables that haven't yet been created.
+    Specify a default schema that the database should use for creating a querying tables with
+    the 'schema' parameter. This can allow you to upload data to development tables, rather
+    than the public schema which is queried by the live application.
     """
+
+    db_name = conf[config_section]["db_name"]
+    user = conf[config_section]["user"]
+    password = conf[config_section]["password"]
+    host = conf[config_section]["host"]
+    port = conf[config_section]["port"]
+
+    # Set the default schema for creating and querying tables by setting as the sole schema in the
+    # database connection's search path.
+    options = f'-c search_path="{schema}"' if schema is not None else ""
+    print(options)
+
+    return PostgresqlDatabase(
+        db_name, user=user, password=password, host=host, port=port, options=options,
+    )
+
+
+def init_database_connections(output_schema_name: Optional[str] = None) -> None:
+    """
+    Initialize database connections.
+    """
+
+    # By default, data will be placed in a schema with the timestamp of the time that this
+    # connection to the database was established.
+    if output_schema_name is None:
+        timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        output_schema_name = f"schema_{timestamp}"
+
+    input_database.initialize(init_database(config, "input-db"))
+    output_database.initialize(init_database(config, "output-db", output_schema_name))
+
+    # Schema must be created before tables, because Peewee will attempt to create the tables
+    # within the schema.
+    output_database.execute_sql(
+        "CREATE SCHEMA IF NOT EXISTS %s" % (output_schema_name,)
+    )
+
     output_database.create_tables(
         [
             Paper,
@@ -175,5 +206,17 @@ def create_tables() -> None:
             EntityBoundingBox,
             Annotation,
         ],
+        # Don't create the tables if they're already created.
         safe=True,
+    )
+
+    # Provide 'api' user with read access to the new schema.
+    output_database.execute_sql(
+        "GRANT ALL ON SCHEMA %s TO %s" % (output_schema_name, "api")
+    )
+    output_database.execute_sql(
+        "GRANT ALL ON ALL TABLES IN SCHEMA %s TO %s" % (output_schema_name, "api")
+    )
+    output_database.execute_sql(
+        "GRANT ALL ON ALL SEQUENCES IN SCHEMA %s TO %s" % (output_schema_name, "api")
     )

@@ -20,10 +20,9 @@ from models.models import (
     EntityBoundingBox,
     Paper,
     Summary,
-    create_tables,
     output_database,
 )
-from scripts.command import ArxivBatchCommand
+from scripts.command import UploadCommand
 
 CitationKey = str
 CitationKeys = Tuple[CitationKey]
@@ -44,7 +43,7 @@ class CitationData(NamedTuple):
     s2_data: Dict[S2Id, Reference]
 
 
-class UploadCitations(ArxivBatchCommand[CitationData, None]):
+class UploadCitations(UploadCommand[CitationData, None]):
     """
     TODO(andrewhead): Ensure that the LaTeX compiler never produces more than one PDF. If so,
     we need to discover which PDF is the 'main' one that will get posted to arXiv.
@@ -185,8 +184,6 @@ class UploadCitations(ArxivBatchCommand[CitationData, None]):
         citations_by_hue_iteration = item.citations_by_hue_iteration
         key_s2_ids = item.key_s2_ids
         s2_data = item.s2_data
-
-        create_tables()
 
         try:
             paper = Paper.get(Paper.s2_id == s2_id)
