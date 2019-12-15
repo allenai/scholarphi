@@ -84,6 +84,10 @@ class PageOverlay extends React.Component<PageProps, {}> {
           );
           return (
             <>
+              <SelectionCanvas
+                key="event-layer"
+                onSelection={() => console.log("Selection")}
+              />
               {localizedCitations.map(c => (
                 <CitationAnnotation
                   key={selectors.citationKey(c.citation, c.boundingBox)}

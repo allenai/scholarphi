@@ -327,7 +327,15 @@ export class Connection {
     const { page, left, top, width, height } = annotationData.boundingBox;
 
     await this._knex("annotation")
-      .update({ page, left, top, width, height, type })
+      .update({
+        page,
+        left,
+        top,
+        width,
+        height,
+        type,
+        updated_at: this._knex.raw("NOW()")
+      })
       .where({ "annotation.id": id })
       .whereIn(
         "annotation.paper_id",
