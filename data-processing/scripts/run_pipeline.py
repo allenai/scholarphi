@@ -12,6 +12,10 @@ from scripts.command import (
     load_arxiv_ids_using_args,
     read_arxiv_ids_from_file,
 )
+from scripts.fetch_arxiv_sources import (
+    DEFAULT_S3_ARXIV_SOURCES_BUCKET,
+    FetchArxivSources,
+)
 from scripts.fetch_new_arxiv_ids import FetchNewArxivIds
 from scripts.process import (
     DATABASE_UPLOAD_COMMANDS,
@@ -20,6 +24,7 @@ from scripts.process import (
     run_command,
 )
 from scripts.store_pipeline_log import StorePipelineLog
+from scripts.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
 
 if __name__ == "__main__":
 
@@ -64,9 +69,21 @@ if __name__ == "__main__":
         ),
     )
     parser.add_argument(
+        "--s3-arxiv-sources-bucket",
+        type=str,
+        default=DEFAULT_S3_ARXIV_SOURCES_BUCKET,
+        help="If '--source' is 's3', arXiv sources will be downloaded from this S3 bucket.",
+    )
+    parser.add_argument(
         "--skip-store-results",
         action="store_true",
         help="Don't upload results to S3 when data processing is complete.",
+    )
+    parser.add_argument(
+        "--s3-output-bucket",
+        type=str,
+        default=DEFAULT_S3_LOGS_BUCKET,
+        help="S3 bucket to upload results and logs to.",
     )
     parser.add_argument(
         "--upload-to-database",
@@ -82,15 +99,9 @@ if __name__ == "__main__":
             + "database, set this to 'public' (though this is not recommended). Schema names must "
             + "follow the naming rules for Postgres identifiers "
             + "(see https://www.postgresql.org/docs/9.2/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS)."
-            + " '--upload-to-database' must be set if this is option is set."
         ),
     )
-
     args = parser.parse_args()
-    if args.database_schema is not None and not args.upload_to_database:
-        parser.error(
-            "argument '--database-schema' requires '--upload-to-database' to be set."
-        )
 
     # Set up logging
     console_log_handler = logging.StreamHandler(sys.stdout)
@@ -169,8 +180,11 @@ if __name__ == "__main__":
         command_args.v = args.v
         command_args.source = args.source
         command_args.log_names = [log_filename]
-        if args.upload_to_database:
-            command_args.schema = args.database_schema
+        command_args.schema = args.database_schema
+        if CommandClass == FetchArxivSources:
+            command_args.s3_bucket = args.s3_arxiv_sources_bucket
+        if CommandClass in [StorePipelineLog, StoreResults]:
+            command_args.s3_bucket = args.s3_output_bucket
 
         if CommandClass == StorePipelineLog:
             logging.debug("Flushing file log before storing pipeline logs.")

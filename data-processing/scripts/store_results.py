@@ -12,7 +12,7 @@ from explanations import directories
 from explanations.types import ArxivId
 from scripts.command import ArxivBatchCommand
 
-S3_BUCKET = "s2-reader-pipeline-logs"
+DEFAULT_S3_LOGS_BUCKET = "s2-reader-pipeline-logs"
 
 
 @dataclass(frozen=True)
@@ -59,6 +59,12 @@ class StoreResults(ArxivBatchCommand[ArxivId, None]):
     def init_parser(parser: ArgumentParser) -> None:
         super(StoreResults, StoreResults).init_parser(parser)
         parser.add_argument(
+            "--s3-bucket",
+            type=str,
+            default=DEFAULT_S3_LOGS_BUCKET,
+            help="S3 bucket to upload results and logs to.",
+        )
+        parser.add_argument(
             "--s3-prefix",
             type=str,
             default="master",
@@ -79,7 +85,9 @@ class StoreResults(ArxivBatchCommand[ArxivId, None]):
 
     def save(self, item: ArxivId, _: None) -> None:
 
-        upload_path = f"s3://{S3_BUCKET}/{self.args.s3_prefix}/dump/by_arxiv_id/{item}"
+        upload_path = (
+            f"s3://{self.args.s3_bucket}/{self.args.s3_prefix}/dump/by_arxiv_id/{item}"
+        )
         command_args = [
             "aws",
             "s3",
@@ -136,7 +144,7 @@ class StoreResults(ArxivBatchCommand[ArxivId, None]):
                     )
                     shutil.copy(path, dest_path)
 
-            upload_path = f"s3://{S3_BUCKET}/{self.args.s3_prefix}/results"
+            upload_path = f"s3://{self.args.s3_bucket}/{self.args.s3_prefix}/results"
             command_args = ["aws", "s3", "sync", staging_dir_path, upload_path]
             logging.debug("Uploading results with command %s", command_args)
             command_result = subprocess.run(

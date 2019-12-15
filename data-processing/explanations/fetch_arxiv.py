@@ -14,7 +14,6 @@ from explanations.types import ArxivId
 from models.models import Metadata
 
 USER_AGENT = "Andrew Head, for academic research on dissemination of scientific insight <head.andrewm@gmail.com>"
-S3_BUCKET = "s2-arxiv-sources"
 
 
 def save_source_archive(arxiv_id: ArxivId, content: bytes) -> None:
@@ -32,7 +31,7 @@ def fetch_from_arxiv(arxiv_id: ArxivId) -> None:
     save_source_archive(arxiv_id, response.content)
 
 
-def fetch_from_s3(arxiv_id: ArxivId) -> None:
+def fetch_from_s3(arxiv_id: ArxivId, bucket: str) -> None:
     logging.debug("Fetching sources for arXiv paper %s from s3 storage.", arxiv_id)
     arxiv_id_tokens = arxiv_id.split(".")
     year_month_match = re.match(r"\d{4}", arxiv_id_tokens[0])
@@ -47,7 +46,7 @@ def fetch_from_s3(arxiv_id: ArxivId) -> None:
         return
 
     year_month = year_month_match.group(0)
-    s3_path = f"s3://{S3_BUCKET}/bymonth/{year_month}"
+    s3_path = f"s3://{bucket}/bymonth/{year_month}"
     with TemporaryDirectory() as download_dir_path:
         command_args = [
             "aws",
