@@ -8,7 +8,7 @@
 /**
  * Enlarge the hitbox of an annotation
  */
-.scholar-reader-annotation {
+.scholar-reader-annotation:not(.user-annotation) {
   margin: -@highlight-hitbox-padding;
   padding: @highlight-hitbox-padding;
 }
@@ -16,7 +16,7 @@
 /**
  * Provide an underline as the default indicator of an annotation
  */
-.scholar-reader-annotation {
+.scholar-reader-annotation:not(.user-annotation) {
   border-bottom: @underline-width @underline-color solid;
   padding-bottom: @underline-offset;
 }
@@ -24,9 +24,9 @@
 /**
  * Highlight the area of an annotation on hover
  */
-.scholar-reader-annotation {
-  &:hover {
-    // opacity: @highlight-hover-opacity;
+.scholar-reader-annotation:not(.user-annotation) {
+  &:hover,
+  &.selected {
     background-color: @highlight-color;
     cursor: pointer;
   }

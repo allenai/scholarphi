@@ -1,7 +1,14 @@
 import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
 import { FavoritableId } from "./FavoriteButton";
-import { Citation, MathMl, Paper, Symbol } from "./types/api";
+import {
+  Annotation,
+  AnnotationData,
+  Citation,
+  MathMl,
+  Paper,
+  Symbol
+} from "./types/api";
 import { PDFPageView, PDFViewer } from "./types/pdfjs-viewer";
 
 export interface State {
@@ -38,6 +45,17 @@ export interface State {
   setSelectedSymbol(symbol: Symbol | null): void;
   jumpSymbol: Symbol | null;
   setJumpSymbol(symbol: Symbol | null): void;
+  selectedAnnotationId: string | null;
+  setSelectedAnnotationId(id: string | null): void;
+  userAnnotationsEnabled: boolean;
+  setUserAnnotationsEnabled(enabled: boolean): void;
+  userAnnotationType: "symbol" | "citation";
+  setUserAnnotationType(type: "symbol" | "citation"): void;
+  userAnnotations: Readonly<Annotation[]>;
+  addUserAnnotation(annotationData: AnnotationData): void;
+  updateUserAnnotation(id: number, annotation: Annotation): void;
+  deleteUserAnnotation(id: number): void;
+  setUserAnnotations(annotations: Annotation[]): void;
 }
 
 export type Papers = { [s2Id: string]: Paper };
@@ -82,7 +100,18 @@ const defaultState: State = {
   selectedSymbol: null,
   setSelectedSymbol: () => {},
   jumpSymbol: null,
-  setJumpSymbol: () => {}
+  setJumpSymbol: () => {},
+  userAnnotationsEnabled: false,
+  userAnnotationType: "citation",
+  setUserAnnotationType: () => {},
+  setUserAnnotationsEnabled: () => {},
+  userAnnotations: [],
+  addUserAnnotation: () => {},
+  updateUserAnnotation: () => {},
+  deleteUserAnnotation: () => {},
+  setUserAnnotations: () => {},
+  selectedAnnotationId: null,
+  setSelectedAnnotationId: () => {}
 };
 
 export const ScholarReaderContext = React.createContext<State>(defaultState);

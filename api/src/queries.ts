@@ -17,6 +17,7 @@ interface BoundingBox {
 }
 
 interface Citation {
+  id: number;
   papers: string[];
   bounding_boxes: BoundingBox[];
 }
@@ -144,9 +145,10 @@ export class Connection {
 
     const citations: CitationsById = {};
     for (const row of rows) {
-      const key = row["citation_id"];
+      const key = Number(row["citation_id"]);
       if (!citations.hasOwnProperty(key)) {
         citations[key] = {
+          id: key,
           bounding_boxes: [],
           papers: []
         };
@@ -290,7 +292,7 @@ export class Connection {
 
     const annotations: Annotation[] = rows.map(row => ({
       id: row.annotation_id,
-      type: row.annotation_id,
+      type: row.type,
       boundingBox: {
         page: row.page,
         left: row.left,
@@ -323,12 +325,19 @@ export class Connection {
     id: number,
     annotationData: AnnotationData
   ) {
-    let created = false;
     const { type } = annotationData;
     const { page, left, top, width, height } = annotationData.boundingBox;
 
-    const updatedRowIds = await this._knex("annotation")
-      .update({ page, left, top, width, height, type })
+    await this._knex("annotation")
+      .update({
+        page,
+        left,
+        top,
+        width,
+        height,
+        type,
+        updated_at: this._knex.raw("NOW()")
+      })
       .where({ "annotation.id": id })
       .whereIn(
         "annotation.paper_id",
@@ -338,21 +347,8 @@ export class Connection {
       )
       .returning("id");
 
-    if (updatedRowIds.length == 0) {
-      await this._knex.raw(
-        'INSERT INTO annotation (id, page, "left", top, width, height, paper_id, "type") ' +
-          "SELECT ?, ?, ?, ?, ?, ?, s2_id, ? " +
-          "FROM paper WHERE arxiv_id = ?",
-        [id, page, left, top, width, height, type, arxivId]
-      );
-      created = true;
-    }
-
     const annotation = { ...annotationData, id };
-    return {
-      created,
-      annotation
-    };
+    return annotation;
   }
 
   async deleteAnnotation(arxivId: string, id: number) {

@@ -10,12 +10,9 @@ import { ScholarReaderContext } from "./state";
 const PDF_VIEWER_DRAWER_OPEN_CLASS = "drawer-open";
 
 export class Drawer extends React.Component {
-  static contextType = ScholarReaderContext;
-  context!: React.ContextType<typeof ScholarReaderContext>;
-
   componentWillUnmount() {
     const { pdfViewer } = this.context;
-    if (pdfViewer !== null) {
+    if (pdfViewer !== undefined && pdfViewer !== null) {
       pdfViewer.container.classList.remove(PDF_VIEWER_DRAWER_OPEN_CLASS);
     }
   }
@@ -27,7 +24,7 @@ export class Drawer extends React.Component {
      * of this React application.
      */
     const { pdfViewer, drawerState } = this.context;
-    if (pdfViewer !== null) {
+    if (pdfViewer !== undefined && pdfViewer !== null) {
       if (drawerState !== "closed") {
         pdfViewer.container.classList.add(PDF_VIEWER_DRAWER_OPEN_CLASS);
       } else {
