@@ -60,17 +60,17 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
       setSelectedSymbol: this.setSelectedSymbol.bind(this),
       jumpSymbol: null,
       setJumpSymbol: this.setJumpSymbol.bind(this),
-      annotationEnabled: false,
-      setAnnotationEnabled: this.setAnnotationEnabled.bind(this),
-      annotationType: "citation",
-      setAnnotationType: this.setAnnotationType.bind(this),
-      annotations: [],
-      addAnnotation: this.addAnnotation.bind(this),
-      updateAnnotation: this.updateAnnotation.bind(this),
-      deleteAnnotation: this.deleteAnnotation.bind(this),
-      setAnnotations: this.setAnnotations.bind(this),
-      selectedAnnotation: null,
-      setSelectedAnnotation: this.setSelectedAnnotation.bind(this)
+      userAnnotationsEnabled: false,
+      setUserAnnotationsEnabled: this.setUserAnnotationsEnabled.bind(this),
+      userAnnotationType: "citation",
+      setUserAnnotationType: this.setUserAnnotationType.bind(this),
+      userAnnotations: [],
+      addUserAnnotation: this.addUserAnnotation.bind(this),
+      updateUserAnnotation: this.updateUserAnnotation.bind(this),
+      deleteUserAnnotation: this.deleteUserAnnotation.bind(this),
+      setUserAnnotations: this.setUserAnnotations.bind(this),
+      selectedAnnotationId: null,
+      setSelectedAnnotationId: this.setSelectedAnnotationId.bind(this)
     };
   }
 
@@ -124,27 +124,31 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
     }
   }
 
-  setAnnotationEnabled(enabled: boolean) {
-    this.setState({ annotationEnabled: enabled });
+  setSelectedAnnotationId(id: string | null) {
+    this.setState({ selectedAnnotationId: id });
   }
 
-  setAnnotationType(type: "citation" | "symbol") {
-    this.setState({ annotationType: type });
+  setUserAnnotationsEnabled(enabled: boolean) {
+    this.setState({ userAnnotationsEnabled: enabled });
   }
 
-  async addAnnotation(annotationData: AnnotationData) {
+  setUserAnnotationType(type: "citation" | "symbol") {
+    this.setState({ userAnnotationType: type });
+  }
+
+  async addUserAnnotation(annotationData: AnnotationData) {
     if (this.props.paperId !== undefined) {
       const id = await api.postAnnotation(
         this.props.paperId.id,
         annotationData
       );
       const annotation = { ...annotationData, id };
-      this.setAnnotations([...this.state.annotations, annotation]);
-      this.setSelectedAnnotation(annotation);
+      this.setUserAnnotations([...this.state.userAnnotations, annotation]);
+      this.setSelectedAnnotationId(`user-annotation-${id}`);
     }
   }
 
-  async updateAnnotation(id: number, annotation: Annotation) {
+  async updateUserAnnotation(id: number, annotation: Annotation) {
     if (this.props.paperId !== undefined) {
       const { type, boundingBox } = annotation;
       const annotationData = { type, boundingBox };
@@ -158,39 +162,35 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
        * Update annotation type for creating new annotations to the type of the most recently
        * changed annotation.
        */
-      this.setAnnotationType(updatedAnnotation.type);
+      this.setUserAnnotationType(updatedAnnotation.type);
 
-      const annotations = this.state.annotations.map(a =>
+      const annotations = this.state.userAnnotations.map(a =>
         a.id === id ? updatedAnnotation : a
       );
-      this.setAnnotations(annotations);
+      this.setUserAnnotations(annotations);
     }
   }
 
-  async deleteAnnotation(id: number) {
+  async deleteUserAnnotation(id: number) {
     if (this.props.paperId !== undefined) {
       await api.deleteAnnotation(this.props.paperId.id, id);
-      const annotations = this.state.annotations.filter(a => a.id !== id);
-      this.setAnnotations(annotations);
+      const annotations = this.state.userAnnotations.filter(a => a.id !== id);
+      this.setUserAnnotations(annotations);
     }
   }
 
-  setAnnotations(annotations: Annotation[]) {
-    this.setState({ annotations });
-  }
-
-  setSelectedAnnotation(annotation: Annotation | null) {
-    this.setState({ selectedAnnotation: annotation });
+  setUserAnnotations(annotations: Annotation[]) {
+    this.setState({ userAnnotations: annotations });
   }
 
   async componentDidMount() {
     waitForPDFViewerInitialization().then(application => {
       this.subscribeToPDFViewerStateChanges(application);
     });
-    this.loadCitations();
+    this.loadDataFromApi();
     document.onkeypress = (e: KeyboardEvent) => {
-      if (e.key !== "a" && e.ctrlKey && e.shiftKey) {
-        this.setAnnotationEnabled(!this.state.annotationEnabled);
+      if (e.ctrlKey && e.shiftKey && e.key !== "a") {
+        this.setUserAnnotationsEnabled(!this.state.userAnnotationsEnabled);
       }
     };
   }
@@ -224,7 +224,7 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
     });
   }
 
-  async loadCitations() {
+  async loadDataFromApi() {
     if (this.props.paperId !== undefined) {
       if (this.props.paperId.type === "arxiv") {
         const citations = await api.citationsForArxivId(this.props.paperId.id);
@@ -250,7 +250,7 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
         const annotations = await api.annnotationsForArxivId(
           this.props.paperId.id
         );
-        this.setAnnotations(annotations);
+        this.setUserAnnotations(annotations);
       }
     }
   }

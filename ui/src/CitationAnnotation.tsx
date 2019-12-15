@@ -15,6 +15,7 @@ export class CitationAnnotation extends React.Component<
   render() {
     return (
       <Annotation
+        id={`citation-${this.props.citation.id}-annotation`}
         location={this.props.location}
         tooltipContent={
           <CitationTooltipBody paperIds={this.props.citation.papers} />

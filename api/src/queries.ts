@@ -17,6 +17,7 @@ interface BoundingBox {
 }
 
 interface Citation {
+  id: number;
   papers: string[];
   bounding_boxes: BoundingBox[];
 }
@@ -144,9 +145,10 @@ export class Connection {
 
     const citations: CitationsById = {};
     for (const row of rows) {
-      const key = row["citation_id"];
+      const key = Number(row["citation_id"]);
       if (!citations.hasOwnProperty(key)) {
         citations[key] = {
+          id: key,
           bounding_boxes: [],
           papers: []
         };

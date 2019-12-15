@@ -56,22 +56,29 @@ class PageOverlay extends React.Component<PageProps, {}> {
   }
 
   onSelectionMade(anchor: Point, active: Point) {
-    const { addAnnotation, annotationType } = this.context;
-    addAnnotation(
-      selectionToAnnotation(this.props.view, anchor, active, annotationType)
+    const { addUserAnnotation, userAnnotationType } = this.context;
+    addUserAnnotation(
+      selectionToAnnotation(this.props.view, anchor, active, userAnnotationType)
     );
   }
 
   render() {
     /**
-     * Set the width and height of the page overlay to be the same as the page.
+     * If user annotations are enabled, the overlay needs to be set to the full size of the page
+     * so that it can capture mouse events. If not, the overlay should not have any size, as
+     * the layers below (e.g., the text layer) need to capture the mouse events.
      */
-    this._element.style.width = this.props.view.div.style.width;
-    this._element.style.height = this.props.view.div.style.height;
+    if (this.context.userAnnotationsEnabled) {
+      this._element.style.width = this.props.view.div.style.width;
+      this._element.style.height = this.props.view.div.style.height;
+    } else {
+      this._element.style.width = "0px";
+      this._element.style.height = "0px";
+    }
 
     return ReactDOM.createPortal(
       <ScholarReaderContext.Consumer>
-        {({ citations, symbols, annotationEnabled, annotations }) => {
+        {({ citations, symbols, userAnnotationsEnabled, userAnnotations }) => {
           const localizedCitations = selectors.boxEntityPairsForPage(
             [...citations],
             this.props.pageNumber
@@ -79,18 +86,14 @@ class PageOverlay extends React.Component<PageProps, {}> {
           const localizedSymbols = symbols.filter(
             s => s.bounding_box.page === this.props.pageNumber - 1
           );
-          const localizedAnnotations = annotations.filter(
+          const localizedUserAnnotations = userAnnotations.filter(
             a => a.boundingBox.page === this.props.pageNumber - 1
           );
           return (
             <>
-              <SelectionCanvas
-                key="event-layer"
-                onSelection={() => console.log("Selection")}
-              />
               {localizedCitations.map(c => (
                 <CitationAnnotation
-                  key={selectors.citationKey(c.citation, c.boundingBox)}
+                  key={c.citation.id}
                   location={c.boundingBox}
                   citation={c.citation}
                 />
@@ -102,13 +105,13 @@ class PageOverlay extends React.Component<PageProps, {}> {
                   symbol={s}
                 />
               ))}
-              {annotationEnabled && (
+              {userAnnotationsEnabled && (
                 <>
                   <SelectionCanvas
                     key="selection-canvas"
                     onSelection={this.onSelectionMade.bind(this)}
                   />
-                  {localizedAnnotations.map(a => (
+                  {localizedUserAnnotations.map(a => (
                     <UserAnnotation
                       key={`user-annotation-${a.id}`}
                       annotation={a}
