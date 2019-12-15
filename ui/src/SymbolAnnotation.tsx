@@ -13,6 +13,7 @@ export class SymbolAnnotation extends React.Component<SymbolAnnotationProps> {
     return (
       <div hidden={this.props.symbol.parent !== null}>
         <Annotation
+          id={`symbol-${this.props.symbol.id}-annotation`}
           location={this.props.location}
           tooltipContent={<SymbolTooltipBody symbol={this.props.symbol} />}
         />

@@ -12,7 +12,14 @@ import {
   State
 } from "./state";
 import "./style/index.less";
-import { Citation, MathMl, Paper, Symbol } from "./types/api";
+import {
+  Annotation,
+  AnnotationData,
+  Citation,
+  MathMl,
+  Paper,
+  Symbol
+} from "./types/api";
 import {
   DocumentLoadedEvent,
   PageRenderedEvent,
@@ -52,7 +59,18 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
       selectedSymbol: null,
       setSelectedSymbol: this.setSelectedSymbol.bind(this),
       jumpSymbol: null,
-      setJumpSymbol: this.setJumpSymbol.bind(this)
+      setJumpSymbol: this.setJumpSymbol.bind(this),
+      userAnnotationsEnabled: false,
+      setUserAnnotationsEnabled: this.setUserAnnotationsEnabled.bind(this),
+      userAnnotationType: "citation",
+      setUserAnnotationType: this.setUserAnnotationType.bind(this),
+      userAnnotations: [],
+      addUserAnnotation: this.addUserAnnotation.bind(this),
+      updateUserAnnotation: this.updateUserAnnotation.bind(this),
+      deleteUserAnnotation: this.deleteUserAnnotation.bind(this),
+      setUserAnnotations: this.setUserAnnotations.bind(this),
+      selectedAnnotationId: null,
+      setSelectedAnnotationId: this.setSelectedAnnotationId.bind(this)
     };
   }
 
@@ -106,11 +124,75 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
     }
   }
 
+  setSelectedAnnotationId(id: string | null) {
+    this.setState({ selectedAnnotationId: id });
+  }
+
+  setUserAnnotationsEnabled(enabled: boolean) {
+    this.setState({ userAnnotationsEnabled: enabled });
+  }
+
+  setUserAnnotationType(type: "citation" | "symbol") {
+    this.setState({ userAnnotationType: type });
+  }
+
+  async addUserAnnotation(annotationData: AnnotationData) {
+    if (this.props.paperId !== undefined) {
+      const id = await api.postAnnotation(
+        this.props.paperId.id,
+        annotationData
+      );
+      const annotation = { ...annotationData, id };
+      this.setUserAnnotations([...this.state.userAnnotations, annotation]);
+      this.setSelectedAnnotationId(`user-annotation-${id}`);
+    }
+  }
+
+  async updateUserAnnotation(id: number, annotation: Annotation) {
+    if (this.props.paperId !== undefined) {
+      const { type, boundingBox } = annotation;
+      const annotationData = { type, boundingBox };
+      const updatedAnnotation = await api.putAnnotation(
+        this.props.paperId.id,
+        id,
+        annotationData
+      );
+
+      /*
+       * Update annotation type for creating new annotations to the type of the most recently
+       * changed annotation.
+       */
+      this.setUserAnnotationType(updatedAnnotation.type);
+
+      const annotations = this.state.userAnnotations.map(a =>
+        a.id === id ? updatedAnnotation : a
+      );
+      this.setUserAnnotations(annotations);
+    }
+  }
+
+  async deleteUserAnnotation(id: number) {
+    if (this.props.paperId !== undefined) {
+      await api.deleteAnnotation(this.props.paperId.id, id);
+      const annotations = this.state.userAnnotations.filter(a => a.id !== id);
+      this.setUserAnnotations(annotations);
+    }
+  }
+
+  setUserAnnotations(annotations: Annotation[]) {
+    this.setState({ userAnnotations: annotations });
+  }
+
   async componentDidMount() {
     waitForPDFViewerInitialization().then(application => {
       this.subscribeToPDFViewerStateChanges(application);
     });
-    this.loadCitations();
+    this.loadDataFromApi();
+    document.onkeypress = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key !== "a") {
+        this.setUserAnnotationsEnabled(!this.state.userAnnotationsEnabled);
+      }
+    };
   }
 
   subscribeToPDFViewerStateChanges(pdfViewerApplication: PDFViewerApplication) {
@@ -142,7 +224,7 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
     });
   }
 
-  async loadCitations() {
+  async loadDataFromApi() {
     if (this.props.paperId !== undefined) {
       if (this.props.paperId.type === "arxiv") {
         const citations = await api.citationsForArxivId(this.props.paperId.id);
@@ -164,6 +246,11 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
           const mathMl = await api.mathMlForArxivId(this.props.paperId.id);
           this.setMathMl(mathMl);
         }
+
+        const annotations = await api.annnotationsForArxivId(
+          this.props.paperId.id
+        );
+        this.setUserAnnotations(annotations);
       }
     }
   }

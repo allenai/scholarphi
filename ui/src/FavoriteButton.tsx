@@ -1,5 +1,6 @@
 import IconButton from "@material-ui/core/IconButton";
 import StarIcon from "@material-ui/icons/Star";
+import classNames from "classnames";
 import React from "react";
 import { ScholarReaderContext } from "./state";
 
@@ -17,9 +18,9 @@ export class FavoriteButton extends React.Component<FavoriteButtonProps> {
           const color = isFavorite === true ? "secondary" : "inherit";
           return (
             <div
-              className={`favorite-button ${
-                this.props.opaque ? "favorite-button--opaque" : ""
-              }`}
+              className={classNames("favorite-button", {
+                "favorite-button--opaque": this.props.opaque
+              })}
             >
               <IconButton
                 onClick={() => toggleFavorite(this.props.favoritableId)}

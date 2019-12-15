@@ -30,6 +30,7 @@ export interface Paper {
 }
 
 export interface Citation {
+  id: number;
   papers: string[];
   bounding_boxes: BoundingBox[];
 }
@@ -50,4 +51,15 @@ export interface MathMl {
 export interface MathMlMatch {
   rank: number;
   mathMl: string;
+}
+
+export type AnnotationId = number;
+
+export interface AnnotationData {
+  type: "citation" | "symbol";
+  boundingBox: BoundingBox;
+}
+
+export interface Annotation extends AnnotationData {
+  id: AnnotationId;
 }

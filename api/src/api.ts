@@ -137,7 +137,7 @@ export const plugin = {
       path: "papers/arxiv:{arxivId}/annotations",
       handler: async (request, h) => {
         const arxivId = request.params.arxivId;
-        const id = dbConnection.postAnnotationForArxivId(
+        const id = await dbConnection.postAnnotationForArxivId(
           arxivId,
           request.payload as AnnotationData
         );
@@ -172,12 +172,12 @@ export const plugin = {
       path: "papers/arxiv:{arxivId}/annotation/{id}",
       handler: async (request, h) => {
         const { arxivId, id } = request.params;
-        const { created, annotation } = await dbConnection.putAnnotation(
+        const annotation = await dbConnection.putAnnotation(
           arxivId,
           Number(id),
           request.payload as AnnotationData
         );
-        return h.response(annotation).code(created ? 201 : 200);
+        return h.response(annotation).code(200);
       },
       options: {
         validate: {
@@ -224,6 +224,5 @@ export const plugin = {
         return papers;
       }
     });
-
   }
 };
