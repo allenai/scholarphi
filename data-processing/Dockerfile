@@ -25,8 +25,10 @@ RUN apt-get install -y postgresql
 # Install Python
 RUN apt-get install -y python3.7
 RUN apt-get install -y python3-distutils
+RUN apt-get install -y python3.7-dev
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-RUN python3 get-pip.py --force-reinstall
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
+RUN python get-pip.py --force-reinstall
 
 # Install Node.js
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash
@@ -61,9 +63,6 @@ RUN apt-get install -y vim
 # Copy over the source code
 WORKDIR /data-processing
 COPY . .
-
-# Set default Python to Python 3
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
 # Set up path to include Python scripts
 ENV PYTHONPATH="/data-processing"
