@@ -99,6 +99,8 @@ def fetch_from_s3(arxiv_id: ArxivId, bucket: str) -> None:
                 arxiv_id,
             )
         downloaded_file_path = os.path.join(download_dir_path, downloaded_files[0])
+        if not os.path.exists(directories.SOURCE_ARCHIVES_DIR):
+            os.makedirs(directories.SOURCE_ARCHIVES_DIR)
         shutil.move(downloaded_file_path, directories.source_archives(arxiv_id))
 
 
