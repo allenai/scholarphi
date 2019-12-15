@@ -5,7 +5,7 @@ from typing import Iterator
 
 from explanations import directories
 from scripts.command import Command
-from scripts.store_results import S3_BUCKET
+from scripts.store_results import DEFAULT_S3_LOGS_BUCKET
 
 
 class StorePipelineLog(Command[None, None]):  # pylint: disable=unsubscriptable-object
@@ -32,6 +32,12 @@ class StorePipelineLog(Command[None, None]):  # pylint: disable=unsubscriptable-
             ),
         )
         parser.add_argument(
+            "--s3-bucket",
+            type=str,
+            default=DEFAULT_S3_LOGS_BUCKET,
+            help="S3 bucket to upload results and logs to.",
+        )
+        parser.add_argument(
             "--s3-prefix",
             type=str,
             default="master",
@@ -46,7 +52,7 @@ class StorePipelineLog(Command[None, None]):  # pylint: disable=unsubscriptable-
 
     def save(self, _: None, __: None) -> None:
 
-        upload_path = f"s3://{S3_BUCKET}/{self.args.s3_prefix}/logs/"
+        upload_path = f"s3://{self.args.s3_bucket}/{self.args.s3_prefix}/logs/"
         command_args = [
             "aws",
             "s3",

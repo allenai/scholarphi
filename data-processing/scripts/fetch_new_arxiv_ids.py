@@ -1,15 +1,20 @@
 import logging
 import os
 from argparse import ArgumentParser
-from typing import Iterator
+from typing import Any, Iterator
 
 from explanations import directories
 from explanations.fetch_arxiv import fetch_new_arxiv_ids
 from explanations.types import ArxivId
+from models.models import init_database_connections
 from scripts.command import Command
 
 
 class FetchNewArxivIds(Command[ArxivId, ArxivId]):
+    def __init__(self, args: Any) -> None:
+        super().__init__(args)
+        init_database_connections()
+
     @staticmethod
     def get_name() -> str:
         return "fetch-new-arxiv-ids"

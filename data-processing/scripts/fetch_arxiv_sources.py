@@ -6,6 +6,8 @@ from explanations.fetch_arxiv import fetch_from_arxiv, fetch_from_s3
 from explanations.types import ArxivId, Path
 from scripts.command import ArxivBatchCommand
 
+DEFAULT_S3_ARXIV_SOURCES_BUCKET = "s2-arxiv-sources"
+
 """ Time to wait between consecutive requests to arXiv. """
 FETCH_DELAY = 10  # seconds
 
@@ -31,6 +33,12 @@ class FetchArxivSources(ArxivBatchCommand[ArxivId, None]):
                 + "'s3', download from S2's S3 bucket for arXiv sources."
             ),
         )
+        parser.add_argument(
+            "--s3-bucket",
+            type=str,
+            default=DEFAULT_S3_ARXIV_SOURCES_BUCKET,
+            help="If '--source' is 's3', this is the S3 bucket sources will be downloaded from.",
+        )
 
     def get_arxiv_ids_dir(self) -> Optional[Path]:
         return None
@@ -48,7 +56,7 @@ class FetchArxivSources(ArxivBatchCommand[ArxivId, None]):
             time.sleep(FETCH_DELAY)
             yield None
         elif self.args.source == "s3":
-            fetch_from_s3(item)
+            fetch_from_s3(item, self.args.s3_bucket)
             yield None
 
     def save(self, item: ArxivId, result: None) -> None:
