@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 from peewee import (
+    SQL,
     CharField,
     CompositeKey,
     DatabaseProxy,
@@ -144,6 +145,10 @@ class Annotation(BoundingBox):
 
     paper = ForeignKeyField(Paper, on_delete="CASCADE")
     type = TextField(choices=(("citation", None), ("symbol", None)), index=True)
+
+    created_at = DateTimeField(constraints=[SQL("DEFAULT now()")])
+    # The client is responsible for updating this field whenever they update the model.
+    updated_at = DateTimeField(constraints=[SQL("DEFAULT now()")])
 
 
 def init_database(

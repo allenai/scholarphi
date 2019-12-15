@@ -1,7 +1,6 @@
 import logging
 import re
-from typing import (Callable, Dict, Iterator, List, NamedTuple, Optional, Set,
-                    Union)
+from typing import Dict, Iterator, List, NamedTuple, Optional, Set, Union
 
 from TexSoup import RArg, TexNode, TexSoup, TokenWithPosition
 
@@ -447,7 +446,7 @@ class MacroExtractor:
         # If a non-space character, match just the first character.
         if step.match.pattern.name == "nonspace_character":
             return step.match.end
-        
+
         # If the first match is a left-brace, parse until the braces are balanced.
         brace_depth = 1
         brace_patterns = [self.LEFT_BRACE, self.RIGHT_BRACE]
