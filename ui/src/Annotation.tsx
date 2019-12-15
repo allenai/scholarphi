@@ -16,6 +16,7 @@ interface AnnotationProps {
   location: BoundingBox;
   tooltipContent: React.ReactNode;
   onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
+  highlighted?: Boolean | false;
 }
 
 interface AnnotationState {
@@ -94,7 +95,8 @@ export class Annotation extends React.Component<
                     "scholar-reader-annotation",
                     this.props.className,
                     {
-                      selected: this.isSelected()
+                      selected: this.isSelected(),
+                      "annotation-highlighted": this.props.highlighted,
                     }
                   )}
                   tabIndex={0}

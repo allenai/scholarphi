@@ -58,6 +58,8 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
       setJumpPaperId: this.setJumpPaperId.bind(this),
       selectedSymbol: null,
       setSelectedSymbol: this.setSelectedSymbol.bind(this),
+      highlightedSymbols: new Set(),
+      setHighlightedSymbols: this.setHighlightedSymbols.bind(this),
       jumpSymbol: null,
       setJumpSymbol: this.setJumpSymbol.bind(this),
       userAnnotationsEnabled: false,
@@ -115,6 +117,10 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
 
   setSelectedSymbol(symbol: Symbol | null) {
     this.setState({ selectedSymbol: symbol });
+  }
+
+  setHighlightedSymbols(symbolIds: Set<number>) {
+    this.setState({ highlightedSymbols: symbolIds });
   }
 
   setJumpSymbol(symbol: Symbol | null) {

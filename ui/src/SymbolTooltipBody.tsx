@@ -3,38 +3,66 @@ import React from "react";
 import PaperClipping from "./PaperClipping";
 import * as selectors from "./selectors";
 import { ScholarReaderContext } from "./state";
-import { Symbol } from "./types/api";
+import { Symbol, MathMl } from "./types/api";
 
 interface SymbolTooltipBodyProps {
   symbol: Symbol;
+  symbols: Symbol[];
+  mathMl: MathMl[];
+  setHighlightedSymbols: (symbolIds: Set<number>) => void;
+  clearHighlightedSymbols: () => void;
 }
 
-export class SymbolTooltipBody extends React.Component<SymbolTooltipBodyProps> {
+interface SymbolTooltipBodyState {
+  matchLength: number;
+}
+
+export class SymbolTooltipBody extends React.Component<
+  SymbolTooltipBodyProps, 
+  SymbolTooltipBodyState
+> {
+  constructor(props: SymbolTooltipBodyProps) {
+    super(props);
+    this.state = { 
+      matchLength: 0,
+    }
+  }
+
+  componentDidMount() {
+    const { 
+      symbol,
+      mathMl, 
+      symbols, 
+      setHighlightedSymbols 
+    } = this.props;
+    const highlightedSymbols = selectors.matchingSymbolIds(symbol, symbols, mathMl);
+    setHighlightedSymbols(highlightedSymbols.add(symbol.id));
+    this.setState({ matchLength: highlightedSymbols.size-1 }) // -1 for the id of this symbol
+  }
+
+  componentWillUnmount() {
+    this.props.clearHighlightedSymbols();
+  }
+
   render() {
     return (
       <div className="tooltip-body symbol-tooltip-body">
         <ScholarReaderContext.Consumer>
           {({
-            symbols,
-            mathMl,
             setDrawerState,
-            setSelectedSymbol,
-            setJumpSymbol
+            setJumpSymbol,
+            setSelectedSymbol, 
           }) => {
-            const matches = selectors.matchingSymbols(
-              this.props.symbol,
-              [...symbols],
-              [...mathMl]
-            );
             const exactMatchSymbol = selectors.firstMatchingSymbol(
               this.props.symbol,
-              [...symbols]
+              this.props.symbols
             );
             const nearMatchSymbol = selectors.firstMostSimilarSymbol(
               this.props.symbol,
-              [...symbols],
-              [...mathMl]
+              this.props.symbols,
+              this.props.mathMl,
             );
+            
             return (
               <>
                 {exactMatchSymbol !== null && (
@@ -89,7 +117,7 @@ export class SymbolTooltipBody extends React.Component<SymbolTooltipBodyProps> {
                         setDrawerState("show-symbols");
                       }}
                     >
-                      View {matches.length} other References
+                      View {this.state.matchLength} other References
                     </Button>
                   </div>
                 )}

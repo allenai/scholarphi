@@ -20,6 +20,7 @@ export class CitationAnnotation extends React.Component<
         tooltipContent={
           <CitationTooltipBody paperIds={this.props.citation.papers} />
         }
+        highlighted={false}
       />
     );
   }

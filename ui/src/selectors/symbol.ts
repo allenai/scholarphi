@@ -25,6 +25,20 @@ export function matchingSymbols(
 }
 
 /**
+ * Return a set of matching symbolIds
+ */
+export function matchingSymbolIds(
+  symbol: Symbol,
+  symbols: Symbol[],
+  allMathMl: MathMl[]
+) {
+  return new Set(
+    matchingSymbols(symbol, symbols, allMathMl).map(s => s.id)
+  );
+}
+
+
+/**
  * Get the first symbol from the set with exactly-matching MathML.
  */
 export function firstMatchingSymbol(symbol: Symbol, symbols: Symbol[]) {

@@ -43,6 +43,8 @@ export interface State {
   setJumpPaperId(s2Id: string | null): void;
   selectedSymbol: Symbol | null;
   setSelectedSymbol(symbol: Symbol | null): void;
+  highlightedSymbols: Set<number>;
+  setHighlightedSymbols(symbolIds: Set<number>): void;
   jumpSymbol: Symbol | null;
   setJumpSymbol(symbol: Symbol | null): void;
   selectedAnnotationId: string | null;
@@ -99,6 +101,8 @@ const defaultState: State = {
   setJumpPaperId: () => {},
   selectedSymbol: null,
   setSelectedSymbol: () => {},
+  highlightedSymbols: new Set(),
+  setHighlightedSymbols: () => {},
   jumpSymbol: null,
   setJumpSymbol: () => {},
   userAnnotationsEnabled: false,
