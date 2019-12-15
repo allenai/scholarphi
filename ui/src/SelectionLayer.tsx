@@ -9,6 +9,7 @@ interface SelectionCanvasProps {
 interface SelectionCanvasState {
   anchor: Point | null;
   active: Point | null;
+  hasFocus: boolean;
 }
 
 export class SelectionCanvas extends React.Component<
@@ -19,47 +20,83 @@ export class SelectionCanvas extends React.Component<
     super(props);
     this.state = {
       anchor: null,
-      active: null
+      active: null,
+      hasFocus: false
     };
+  }
+
+  onClick(e: React.MouseEvent<HTMLDivElement>) {
+    this.terminateIfEventOutsideElement(e);
+    if (this.state.hasFocus && this.state.anchor === null) {
+      /*
+       * Start selection.
+       */
+      this.setState({ anchor: uiUtils.getMouseXY(e) });
+    } else if (this.state.anchor !== null) {
+      /*
+       * Finalize selection.
+       */
+      if (this.state.active !== null) {
+        this.props.onSelection(this.state.anchor, this.state.active);
+      }
+      this.terminateSelection();
+    }
+  }
+
+  onMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    this.terminateIfEventOutsideElement(e);
+    if (this.state.hasFocus && this.state.anchor !== null) {
+      /*
+       * Update selection.
+       */
+      this.setState({ active: uiUtils.getMouseXY(e) });
+    }
+  }
+
+  onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+    this.terminateIfEventOutsideElement(e);
+    if (this.state.hasFocus && uiUtils.isKeypressEscape(e)) {
+      this.terminateSelection();
+    }
+  }
+
+  onFocus() {
+    this.setState({ hasFocus: true });
+  }
+
+  onBlur() {
+    this.setState({ hasFocus: false });
+    this.terminateSelection();
+  }
+
+  terminateIfEventOutsideElement(
+    e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>
+  ) {
+    if (e.currentTarget !== this.elementRef) {
+      this.terminateSelection();
+    }
+  }
+
+  terminateSelection() {
+    this.setState({ anchor: null, active: null });
   }
 
   render() {
     return (
       <div
-        className="selection-canvas"
-        onClick={e => {
-          if (this.state.anchor === null) {
-            /*
-             * Start selection.
-             */
-            this.setState({ anchor: uiUtils.getMouseXY(e) });
-          } else if (this.state.anchor !== null) {
-            /*
-             * Finalize selection.
-             */
-            if (this.state.active !== null) {
-              this.props.onSelection(this.state.anchor, this.state.active);
-            }
-            this.setState({ anchor: null, active: null });
-          }
+        className="selection-layer"
+        ref={ref => {
+          this.elementRef = ref;
         }}
-        onMouseMove={e => {
-          if (this.state.anchor !== null) {
-            /*
-             * Update selection.
-             */
-            this.setState({ active: uiUtils.getMouseXY(e) });
-          }
-        }}
+        onFocus={this.onFocus.bind(this)}
+        onBlur={this.onBlur.bind(this)}
+        onClick={this.onClick.bind(this)}
+        onMouseMove={this.onMouseMove.bind(this)}
         /*
-         * To capture keydown events, tabIndex above must be set to 0.
+         * Capture keydown and focus events by setting tabIndex to 0.
          */
         tabIndex={0}
-        onKeyDown={e => {
-          if (uiUtils.isKeypressEscape(e)) {
-            this.setState({ anchor: null, active: null });
-          }
-        }}
+        onKeyDown={this.onKeyDown.bind(this)}
       >
         {this.state.anchor !== null && this.state.active !== null && (
           <Selection anchor={this.state.anchor} active={this.state.active} />
@@ -67,6 +104,8 @@ export class SelectionCanvas extends React.Component<
       </div>
     );
   }
+
+  private elementRef: HTMLDivElement | null = null;
 }
 
 export default SelectionCanvas;

@@ -20,16 +20,16 @@ export class UserAnnotationTooltipBody extends React.Component<
   context!: React.ContextType<typeof ScholarReaderContext>;
 
   updateType(e: React.ChangeEvent<HTMLInputElement>) {
-    const { updateAnnotation } = this.context;
-    updateAnnotation(this.props.annotation.id, {
+    const { updateUserAnnotation } = this.context;
+    updateUserAnnotation(this.props.annotation.id, {
       ...this.props.annotation,
       type: e.target.value as "citation" | "symbol"
     });
   }
 
   delete() {
-    const { deleteAnnotation } = this.context;
-    deleteAnnotation(this.props.annotation.id);
+    const { deleteUserAnnotation } = this.context;
+    deleteUserAnnotation(this.props.annotation.id);
   }
 
   render() {

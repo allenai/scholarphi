@@ -45,17 +45,17 @@ export interface State {
   setSelectedSymbol(symbol: Symbol | null): void;
   jumpSymbol: Symbol | null;
   setJumpSymbol(symbol: Symbol | null): void;
-  annotationEnabled: boolean;
-  setAnnotationEnabled(enabled: boolean): void;
-  annotationType: "symbol" | "citation";
-  setAnnotationType(type: "symbol" | "citation"): void;
-  annotations: Readonly<Annotation[]>;
-  addAnnotation(annotationData: AnnotationData): void;
-  updateAnnotation(id: number, annotation: Annotation): void;
-  deleteAnnotation(id: number): void;
-  setAnnotations(annotations: Annotation[]): void;
-  selectedAnnotation: Annotation | null;
-  setSelectedAnnotation(annotation: Annotation | null): void;
+  selectedAnnotationId: string | null;
+  setSelectedAnnotationId(id: string | null): void;
+  userAnnotationsEnabled: boolean;
+  setUserAnnotationsEnabled(enabled: boolean): void;
+  userAnnotationType: "symbol" | "citation";
+  setUserAnnotationType(type: "symbol" | "citation"): void;
+  userAnnotations: Readonly<Annotation[]>;
+  addUserAnnotation(annotationData: AnnotationData): void;
+  updateUserAnnotation(id: number, annotation: Annotation): void;
+  deleteUserAnnotation(id: number): void;
+  setUserAnnotations(annotations: Annotation[]): void;
 }
 
 export type Papers = { [s2Id: string]: Paper };
@@ -101,17 +101,17 @@ const defaultState: State = {
   setSelectedSymbol: () => {},
   jumpSymbol: null,
   setJumpSymbol: () => {},
-  annotationEnabled: false,
-  annotationType: "citation",
-  setAnnotationType: () => {},
-  setAnnotationEnabled: () => {},
-  annotations: [],
-  addAnnotation: () => {},
-  updateAnnotation: () => {},
-  deleteAnnotation: () => {},
-  setAnnotations: () => {},
-  selectedAnnotation: null,
-  setSelectedAnnotation: () => {}
+  userAnnotationsEnabled: false,
+  userAnnotationType: "citation",
+  setUserAnnotationType: () => {},
+  setUserAnnotationsEnabled: () => {},
+  userAnnotations: [],
+  addUserAnnotation: () => {},
+  updateUserAnnotation: () => {},
+  deleteUserAnnotation: () => {},
+  setUserAnnotations: () => {},
+  selectedAnnotationId: null,
+  setSelectedAnnotationId: () => {}
 };
 
 export const ScholarReaderContext = React.createContext<State>(defaultState);

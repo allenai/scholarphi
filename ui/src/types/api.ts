@@ -30,6 +30,7 @@ export interface Paper {
 }
 
 export interface Citation {
+  id: number;
   papers: string[];
   bounding_boxes: BoundingBox[];
 }
