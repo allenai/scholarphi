@@ -3,8 +3,23 @@ import AuthorList from "./AuthorList";
 import FavoriteButton from "./FavoriteButton";
 import S2Link from "./S2Link";
 import { ScholarReaderContext } from "./state";
+import Button from "@material-ui/core/Button";
+import SaveIcon from "@material-ui/icons/Bookmark";
+import CiteIcon from "@material-ui/icons/FormatQuote";
 
 const TRUNCATED_ABSTRACT_LENGTH = 300;
+
+function warnOfUnimplementedActionAndTrack(actionType: string) {
+  alert("Sorry, that feature isn't implemented yet. Clicking it tells us " +
+        "you're interested in the feature, increasing the likelihood that " +
+        "it'll be implemented!");
+  if (window.heap) {
+    window.heap.track(
+      "Click on Unimplmented Action",
+      { actionType }
+    );
+  }
+}
 
 interface PaperSummaryProps {
   paperId: string;
@@ -78,6 +93,22 @@ export class PaperSummary extends React.Component<
                   </p>
                 </div>
               )}
+              <div className="paper-summary__section">
+                  <Button
+                    startIcon={<CiteIcon />}
+                    className="paper-summary__action"
+                    onClick={() => warnOfUnimplementedActionAndTrack("cite")}
+                  >
+                    Cite
+                  </Button>
+                  <Button
+                    startIcon={<SaveIcon />}
+                    className="paper-summary__action"
+                    onClick={() => warnOfUnimplementedActionAndTrack("save")}
+                  >
+                    Save
+                  </Button>
+              </div>
               <FavoriteButton
                 favoritableId={{
                   type: "paper-summary",

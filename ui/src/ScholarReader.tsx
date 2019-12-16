@@ -29,6 +29,21 @@ import {
 import FeedbackButton from "./FeedbackButton";
 import { isKeypressEscape } from "./ui-utils";
 
+/**
+ * The global `window` includes several globals we rely upon. This code adds
+ * type information so that we can interact with these APIs with type
+ * guarantees.
+ */
+interface HeapAnalyticsClient {
+  track: (eventName: string, eventProperties?: object) => void;
+}
+declare global {
+  interface Window {
+    PDFViewerApplication?: PDFViewerApplication;
+    heap?: HeapAnalyticsClient;
+  }
+}
+
 interface ScholarReaderProps {
   paperId?: PaperId;
 }
