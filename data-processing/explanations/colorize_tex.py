@@ -99,12 +99,21 @@ def generate_hues() -> Iterator[float]:
     return
 
 
-def insert_color_in_tex(tex: str, hue: float, start: int, end: int) -> str:
+def insert_color_in_tex(
+    tex: str, hue: float, start: int, end: int, braces: bool = False
+) -> str:
+    """
+    Set 'braces' if you want the TeX (including coloring commands) to be wrapped in curly braces.
+    This is particularly helpful for coloring symbols, so that single letters that may be an
+    argument of a macro will still be considered as just one argument to that macro.
+    """
     return (
         tex[:start]
+        + ("{" if braces else "")
         + _get_color_start_tex(hue)
         + tex[start:end]
         + _get_color_end_tex()
+        + ("}" if braces else "")
         + tex[end:]
     )
 
@@ -112,12 +121,8 @@ def insert_color_in_tex(tex: str, hue: float, start: int, end: int) -> str:
 def _get_color_start_tex(hue: float) -> str:
     """
     Coloring macros were chosen carefully to satisfy a few needs:
-    1. Be portable to many documents: llap should work in any TeX file. The pdfcolorstack commands
-       will be available for any TeX files compiled with pdfTeX.
-    2. Don't disrupt the layout of text: for example, without 'llap', these coloring commands
-       insert "what's-it's" that can change hyphenation rules and therefore how the lines break. We
-       observed that happening in some early tests. 'llap' seems to, in most [but not all??] cases
-       avoid influencing how the text is laid out.
+    1. Be portable to many documents.
+    2. Don't disrupt the layout of text.
 
     Other approaches that didn't pan out (talk to andrewhead@ if you want to know why) but
     which might be worth looking into if you wanted to extend the coloring algorithm was using
@@ -134,13 +139,13 @@ def _get_color_start_tex(hue: float) -> str:
     red_scaled = red / 255.0
     blue_scaled = blue / 255.0
     green_scaled = green / 255.0
-    return r"\llap{{\scholarsetcolor[rgb]{{{red},{green},{blue}}}}}".format(
+    return r"\scholarsetcolor[rgb]{{{red},{green},{blue}}}".format(
         red=red_scaled, green=green_scaled, blue=blue_scaled
     )
 
 
 def _get_color_end_tex() -> str:
-    return r"\llap{\scholarrevertcolor}"
+    return r"\scholarrevertcolor{}"
 
 
 @dataclass(frozen=True)
@@ -443,13 +448,14 @@ def _colorize_tokens_for_equation(
         except StopIteration:
             break
 
-        color_positions = _get_color_positions(token, equation)
+        color_positions = _get_token_color_positions(token, equation)
 
         tex = insert_color_in_tex(
             tex,
             hue,
             equation.content_start + color_positions.start,
             equation.content_start + color_positions.end,
+            braces=True,
         )
         colorized_tokens.append(
             ColorizedTokenWithOrigin(
@@ -466,48 +472,42 @@ def _colorize_tokens_for_equation(
     return TokenEquationColorizationBatch(tex, colorized_tokens)
 
 
-def _get_color_positions(token: TokenWithOrigin, equation: Equation) -> CharacterRange:
+def _get_token_color_positions(
+    token: TokenWithOrigin, equation: Equation
+) -> CharacterRange:
     """
     Sometimes, if you try to insert coloring commands at the boundary of where a symbol appears
-    in TeX, it can cause errors. For example, you can't put coloring commands...
+    in TeX, it can cause errors. For example, it can be error-prone to put color commands...
 
-    * Right outside of brackets (e.g., "{x}")
-    * Right after subscripts or superscripts (_, ^, \\sb, \\sp)
-    * Between a dot or a hat and the symbol it modifies (e.g., "\\hat x")
+    1. Right outside of braces from the original TeX (e.g., "{x}")
+    2. Right after subscripts or superscripts (_, ^, \\sb, \\sp)
+    3. Between a dot or a hat and the symbol it modifies (e.g., "\\hat x")
 
-    In the future, we may want to change our TeX equation parser (KaTeX) to yield symbol positions
-    where coloring commands can always be placed on the boundaries of that symbol. For some of the
-    above cases, this would be superior. For example, it could let us detect an r-hat as an r-hat
-    instead of an r.
-
-    Until we make those changes, this function turns symbol character positions into valid
-    positions for inserting coloring commands.
+    By putting color commands inside of braces, problems #2 and #3 can be avoided. For #1,
+    and for a few other cases, this function adjusts the positions that coloring commands
+    will be placed to avoid tricky TeX compilation gotchas.
     """
     equation_tex = equation.content_tex
-
     token_string = equation_tex[token.start : token.end]
-    before_token = equation_tex[: token.start]
+
+    token_start = token.start
+    token_end = token.end
 
     # Adjust color commands to be on the inside of a group denoted by curly braces.
     if token_string.startswith("{") and token_string.endswith("}"):
         return CharacterRange(token.start + 1, token.end - 1)
 
-    # If there is an accent (e.g., 'dot' or 'hat') that come before a symbol followed by a space,
-    # color commands must come before the accent.
-    accent_prefix = re.search(r"(\\(dot|hat)\s+)$", before_token)
-    if accent_prefix is not None:
-        accent_start = accent_prefix.start()
-        return CharacterRange(accent_start, token.end)
-
-    # Coloring commands must come before subscript or superscript markers.
-    script_prefix = re.search(r"([_^]|(\\sp)|(\\sb))$", before_token)
-    if script_prefix is not None:
-        prefix_start = script_prefix.start()
-        return CharacterRange(prefix_start, token.end)
+    # If the token contains an ampersand, then probably this is a mistake, and it was
+    # only included because the ampersand was replaced with space before the KaTeX parse,
+    # and that space was included in this token in the parse. Remove the ampersand from the token.
+    match = re.search(r"\s*&\s*$", token_string)
+    if match is not None:
+        print("Found", match, "in", token_string, ":", match.start())
+        token_end = token_start + match.start()
 
     # And coloring commands should never go outside the bounds of the equation.
-    start = max(token.start, 0)
-    end = min(token.end, len(equation_tex))
+    start = max(token_start, 0)
+    end = min(token_end, len(equation_tex))
     return CharacterRange(start, end)
 
 

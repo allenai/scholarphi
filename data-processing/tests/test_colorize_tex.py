@@ -13,9 +13,9 @@ from explanations.colorize_tex import (
 from explanations.types import Equation, FileContents, TokenWithOrigin
 
 COLOR_PATTERN = (
-    r"\\llap{\\scholarsetcolor\[rgb\]{[0-9.]+,[0-9.]+,[0-9.]+}}"
+    r"\\scholarsetcolor\[rgb\]{[0-9.]+,[0-9.]+,[0-9.]+}"
     + r"(.*?)"
-    + r"\\llap{\\scholarrevertcolor}"
+    + r"\\scholarrevertcolor"
 )
 
 
@@ -117,34 +117,6 @@ def test_color_tokens():
     assert matches[1] == "y"
 
 
-def test_color_hats_dots():
-    file_contents = {"file": FileContents("file", "$\\hat x + \\dot  y$", "encoding")}
-    equation = Equation(
-        0, 18, 0, "$\\hat x + \\dot  y$", 1, 19, "\\hat x + \\dot  y", 0
-    )
-    tokens = [
-        TokenWithOrigin(
-            tex_path="file", equation=equation, token_index=0, start=5, end=6, text="x",
-        ),
-        TokenWithOrigin(
-            tex_path="file",
-            equation=equation,
-            token_index=1,
-            start=15,
-            end=16,
-            text="y",
-        ),
-    ]
-    colorized_files, _ = next(
-        colorize_equation_tokens(file_contents, tokens, insert_color_macros=False)
-    )
-    colorized = colorized_files["file"].contents
-    matches = re.findall(COLOR_PATTERN, colorized)
-    assert len(matches) == 2
-    assert matches[0] == "\\hat x"
-    assert matches[1] == "\\dot  y"
-
-
 def test_color_inside_brackets():
     file_contents = {"file": FileContents("file", "${x}$", "encoding")}
     equation = Equation(0, 5, 0, "${x}$", 1, 4, "{x}", 0)
@@ -186,50 +158,6 @@ def test_adjust_indexes_to_within_bounds():
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 1
     assert matches[0] == "x"
-
-
-def test_color_subscripts():
-    file_contents = {
-        "file": FileContents("file", "$x_i x^i x\\sp1 x\\sb1$", "encoding")
-    }
-    equation = Equation(
-        0, 21, 0, "$x_i x^i x\\sp1 x\\sb1$", 1, 20, "x_i x^i x\\sp1 x\\sb1", 0
-    )
-    tokens = [
-        TokenWithOrigin(
-            tex_path="file", equation=equation, token_index=0, start=2, end=3, text="i",
-        ),
-        TokenWithOrigin(
-            tex_path="file", equation=equation, token_index=1, start=6, end=7, text="i",
-        ),
-        TokenWithOrigin(
-            tex_path="file",
-            equation=equation,
-            token_index=2,
-            start=12,
-            end=13,
-            text="1",
-        ),
-        TokenWithOrigin(
-            tex_path="file",
-            equation=equation,
-            token_index=3,
-            start=18,
-            end=19,
-            text="1",
-        ),
-    ]
-    colorized_files, _ = next(
-        colorize_equation_tokens(file_contents, tokens, insert_color_macros=False)
-    )
-    colorized = colorized_files["file"].contents
-    matches = re.findall(COLOR_PATTERN, colorized)
-    assert len(matches) == 4
-    # Subscript and superscript commands must also be wrapped in the coloring commands
-    assert matches[0] == "_i"
-    assert matches[1] == "^i"
-    assert matches[2] == "\\sp1"
-    assert matches[3] == "\\sb1"
 
 
 def test_dont_color_nested_equations():
