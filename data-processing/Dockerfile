@@ -64,5 +64,10 @@ RUN apt-get install -y vim
 WORKDIR /data-processing
 COPY . .
 
+# Configure AWS credentials
+RUN mv .aws/ ~
+
 # Set up path to include Python scripts
 ENV PYTHONPATH="/data-processing"
+
+ENTRYPOINT ["python", "scripts/run_pipeline.py", "-v"]
