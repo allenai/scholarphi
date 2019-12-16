@@ -1,7 +1,11 @@
-from explanations.parse_tex import (BibitemExtractor, CitationExtractor,
-                                    ColorLinksExtractor,
-                                    DocumentclassExtractor, EquationExtractor,
-                                    MacroExtractor)
+from explanations.parse_tex import (
+    BibitemExtractor,
+    CitationExtractor,
+    ColorLinksExtractor,
+    DocumentclassExtractor,
+    EquationExtractor,
+    MacroExtractor,
+)
 from explanations.types import MacroDefinition
 
 
@@ -41,6 +45,15 @@ def test_extract_equation_from_star_environment():
     assert equation.end == 33
 
 
+def test_extract_equation_environment_with_argument():
+    extractor = EquationExtractor()
+    equations = list(extractor.parse("\\begin{array}{c}x\\end{array}"))
+    assert len(equations) == 1
+
+    equation = equations[0]
+    assert equation.content_start == 16
+
+
 def test_extract_equation_from_double_dollar_signs():
     extractor = EquationExtractor()
     equations = list(extractor.parse("$$x$$"))
@@ -68,7 +81,7 @@ def test_extract_equation_from_brackets():
     assert equation.end == 9
 
 
-def test_extracts_nested_equations():
+def test_extract_nested_equations():
     extractor = EquationExtractor()
     equations = list(extractor.parse("$x + \\hbox{\\begin{equation}y\\end{equation}}$"))
     assert len(equations) == 2
@@ -78,7 +91,7 @@ def test_extracts_nested_equations():
     assert inner.end == 42
 
 
-def test_handles_unclosed_environments():
+def test_handle_unclosed_environments():
     extractor = EquationExtractor()
     equations = list(extractor.parse("$x + \\hbox{\\begin{equation}y}$"))
     assert len(equations) == 1
@@ -87,7 +100,7 @@ def test_handles_unclosed_environments():
     assert equation.end == 30
 
 
-def test_ignores_escaped_dollar_sign():
+def test_ignore_escaped_dollar_sign():
     extractor = EquationExtractor()
     equations = list(extractor.parse("\\$\\$"))
     assert len(equations) == 0

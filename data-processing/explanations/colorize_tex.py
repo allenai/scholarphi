@@ -502,7 +502,6 @@ def _get_token_color_positions(
     # and that space was included in this token in the parse. Remove the ampersand from the token.
     match = re.search(r"\s*&\s*$", token_string)
     if match is not None:
-        print("Found", match, "in", token_string, ":", match.start())
         token_end = token_start + match.start()
 
     # And coloring commands should never go outside the bounds of the equation.
