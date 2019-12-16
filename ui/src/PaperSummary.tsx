@@ -6,6 +6,9 @@ import { ScholarReaderContext } from "./state";
 import Button from "@material-ui/core/Button";
 import SaveIcon from "@material-ui/icons/Bookmark";
 import CiteIcon from "@material-ui/icons/FormatQuote";
+import InfluentialCitationIcon from "./icon/InfluentialCitationIcon";
+import ChartIcon from "./icon/ChartIcon";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const TRUNCATED_ABSTRACT_LENGTH = 300;
 
@@ -45,6 +48,7 @@ export class PaperSummary extends React.Component<
       <ScholarReaderContext.Consumer>
         {({ papers, jumpPaperId, setJumpPaperId }) => {
           const paper = papers[this.props.paperId];
+          const hasMetrics = paper.citationVelocity !== 0 || paper.influentialCitationCount !== 0;
           return (
             <div
               ref={ref => {
@@ -93,7 +97,43 @@ export class PaperSummary extends React.Component<
                   </p>
                 </div>
               )}
-              <div className="paper-summary__section">
+              <div className="paper-summary__metrics-and-actions">
+                  {hasMetrics ? (
+                    <div className="paper-summary__metrics">
+                      {paper.influentialCitationCount > 0 ? (
+                        <Tooltip
+                          placement="bottom-start"
+                          title={
+                            <>
+                              <strong>{paper.influentialCitationCount} influential
+                              citation{paper.influentialCitationCount !== 1 ? 's' : ''}</strong>
+                            </>
+                          }
+                        >
+                          <div className="paper-summary__metrics__metric">
+                            <InfluentialCitationIcon width="12" height="12" />
+                            {paper.influentialCitationCount}
+                          </div>
+                        </Tooltip>
+                      ): null}
+                      {paper.citationVelocity > 0 ? (
+                        <Tooltip
+                          placement="bottom-start"
+                          title={
+                            <>
+                              <strong>Averaging {paper.citationVelocity} citation{paper.citationVelocity !== 1 ? 's ' : ' '}
+                              per year</strong>
+                            </>
+                          }
+                        >
+                          <div className="paper-summary__metrics__metric">
+                            <ChartIcon width="15" height="15" />
+                            {paper.citationVelocity}
+                          </div>
+                        </Tooltip>
+                      ): null}
+                    </div>
+                  ) : null}
                   <Button
                     startIcon={<CiteIcon />}
                     className="paper-summary__action"
