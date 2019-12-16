@@ -40,6 +40,7 @@ const FeedbackButton = ({ variant, extraContext }: Props) => {
                         title="Submit Feedback"
                     >
                         <FeedbackIcon fontSize="large" />
+                        <span>Submit Feedback</span>
                     </button>
                 )}</ScholarReaderContext.Consumer>
             )

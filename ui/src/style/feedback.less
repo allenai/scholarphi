@@ -17,5 +17,25 @@
  * This selector provides styles specific to that context.
  */
 .toolbar__feedback-button {
+  display: flex;
+  align-items: center;
   width: auto;
+  min-width: auto;
+
+  > span {
+    width: auto;
+    height: auto;
+    display: block;
+    white-space: nowrap;
+    margin-left: @medium * 0.5;
+  }
+}
+
+/**
+ * For some reason PDF.js's viewer doesn't add the `:cursor` style to the
+ * toolbar buttons. We add that for consistency with other clickable UI
+ * elements.
+ */
+.toolbarButton {
+  cursor: pointer;
 }
