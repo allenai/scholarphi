@@ -29,13 +29,17 @@ interface Props {
     extraContext?: Object;
 }
 
+function openFeedbackWindow(url: string) {
+    window.open(url, "scholar-reader-feedback", "width=640,height=829");
+}
+
 const FeedbackButton = ({ variant, extraContext }: Props) => {
     switch (variant) {
         case "toolbar": {
             return (
                 <ScholarReaderContext.Consumer>{({ paperId }) => (
                     <button
-                        onClick={() => window.open(mkFeedbackLink(paperId, extraContext), '_blank')}
+                        onClick={() => openFeedbackWindow(mkFeedbackLink(paperId, extraContext))}
                         className="toolbarButton hiddenLargeView toolbar__feedback-button"
                         title="Submit Feedback"
                     >
@@ -50,7 +54,7 @@ const FeedbackButton = ({ variant, extraContext }: Props) => {
             return (
                 <ScholarReaderContext.Consumer>{({ paperId }) => (
                     <Button
-                        onClick={() => window.open(mkFeedbackLink(paperId, extraContext), '_blank' )}
+                        onClick={() => openFeedbackWindow(mkFeedbackLink(paperId, extraContext))}
                         className="feedback-button"
                     >
                         <FeedbackIcon fontSize="large" />
