@@ -15,6 +15,7 @@ export interface State {
   /*
    * PAPER DATA
    */
+  paperId?: PaperId;
   citations: Readonly<Citation[]>;
   setCitations(citations: Citation[]): void;
   symbols: Readonly<Symbol[]>;
@@ -43,6 +44,8 @@ export interface State {
   setJumpPaperId(s2Id: string | null): void;
   selectedSymbol: Symbol | null;
   setSelectedSymbol(symbol: Symbol | null): void;
+  selectedCitation: Citation | null;
+  setSelectedCitation(citation: Citation | null): void;
   jumpSymbol: Symbol | null;
   setJumpSymbol(symbol: Symbol | null): void;
   selectedAnnotationId: string | null;
@@ -79,6 +82,7 @@ export interface PaperId {
 }
 
 const defaultState: State = {
+  paperId: undefined,
   citations: [],
   setCitations: () => {},
   symbols: [],
@@ -99,6 +103,8 @@ const defaultState: State = {
   setJumpPaperId: () => {},
   selectedSymbol: null,
   setSelectedSymbol: () => {},
+  selectedCitation: null,
+  setSelectedCitation: () => {},
   jumpSymbol: null,
   setJumpSymbol: () => {},
   userAnnotationsEnabled: false,
