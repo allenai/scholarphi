@@ -1,15 +1,15 @@
 import logging
 import re
 from dataclasses import dataclass
-from typing import Dict, Iterator, List, NamedTuple, Optional, Set, Union
+from typing import Dict, Iterator, List, Optional, Set, Union
 
 from TexSoup import RArg, TexNode, TexSoup, TokenWithPosition
 
 from explanations.scan_tex import (EndOfInput, Match, Pattern, TexScanner,
                                    has_balanced_braces, scan_tex)
 from explanations.types import (BeginDocument, Bibitem, Citation, ColorLinks,
-                                Documentclass, Equation, Macro,
-                                MacroDefinition)
+                                Documentclass, Equation, LengthAssignment,
+                                Macro, MacroDefinition)
 
 """
 All citation commands from the biblatex package.
@@ -160,7 +160,8 @@ EnvSpec = Union[DelimitedEnv, NamedEnv, StartEndEnv]
 
 """
 List of math environments from: https://latex.wikia.org/wiki/List_of_LaTeX_environments
-TODO(andrewhead): Support 'alignat'.
+TODO(andrewhead): Support 'alignat' and 'matrix'.
+TODO(andrewhead): Determine if any other environments besides 'array' have arguments.
 """
 MATH_ENVIRONMENT_SPECS: Dict[str, EnvSpec] = {
     # Inline math
@@ -269,6 +270,56 @@ class EquationExtractor:
     def _in_environment(self, end_pattern_name: str) -> bool:
         start_pattern_name = self._get_start_pattern_name(end_pattern_name)
         return any([m.pattern.name == start_pattern_name for m in self._stack])
+
+
+
+"""
+Valid units of measure in TeX and related engines.
+"""
+LENGTH_UNITS = [
+    # From The TeXBook, "Chapter 10: Dimensions", p57.
+    "pt",
+    "pc",
+    "in",
+    "bp",
+    "cm",
+    "mm",
+    "dd",
+    "cc",
+    "sp",
+    # From the LaTeX book on Wikibooks: https://en.wikibooks.org/wiki/LaTeX/Lengths
+    "ex",
+    "em",
+    "nd",
+    "nc",
+]
+
+"""
+Parameters for laying out arrays in LaTeX. From "The LaTeX2E Sources" by Braams et al.,
+version 2019-10-01 Patch Level 1, page 341.
+"""
+ARRAY_PARAMETERS = [
+    "arraycolsep",
+    "tabcolsep",
+    "arrayrulewidth",
+    "doublerulesep",
+    "arraystretch",
+]
+
+
+class EquationLengthAssignmentExtractor:
+    """
+    Extracts length assignments of the form "\\[parameter]=[#][unit of measurement]",
+    for example "\\arraycolsep=2pt"
+    """
+    def parse(self, tex: str) -> Iterator[LengthAssignment]:
+        parameter_names_pattern = r"(?:" + "|".join([r"\\" + p for p in ARRAY_PARAMETERS]) + ")"
+        unit_pattern = r"(?:" + "|".join(LENGTH_UNITS) + ")"
+        assignment_pattern = parameter_names_pattern + r"\s*=\s*[0-9\.]+\s*" + unit_pattern
+        pattern = Pattern("length_assignment", assignment_pattern)
+        scanner = scan_tex(tex, [pattern])
+        for match in scanner:
+            yield LengthAssignment(match.start, match.end)
 
 
 class BeginDocumentExtractor:

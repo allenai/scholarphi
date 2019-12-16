@@ -131,6 +131,11 @@ class Equation(Entity):
 
 
 @dataclass(frozen=True)
+class LengthAssignment(Entity):
+    pass
+
+
+@dataclass(frozen=True)
 class BeginDocument(Entity):
     pass
 

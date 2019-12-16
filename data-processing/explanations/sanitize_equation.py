@@ -1,4 +1,5 @@
 from explanations.parse_tex import (
+    EquationLengthAssignmentExtractor,
     MacroExtractor,
     begin_environment_regex,
     end_environment_regex,
@@ -30,8 +31,12 @@ def _replace_unwanted_commands_with_spaces(tex: str) -> str:
     macro_extractor = MacroExtractor()
     for macro_definition in UNWANTED_MACROS:
         for macro in macro_extractor.parse(tex, macro_definition):
-            macro_length = macro.end - macro.start
-            tex = tex[: macro.start] + (" " * macro_length) + tex[macro.end :]
+            tex = _replace_substring_with_space(tex, macro.start, macro.end)
+
+    length_assignment_extractor = EquationLengthAssignmentExtractor()
+    length_assignments = length_assignment_extractor.parse(tex)
+    for assignment in length_assignments:
+        tex = _replace_substring_with_space(tex, assignment.start, assignment.end)
 
     UNWANTED_PATTERNS = [
         Pattern("ampersand", "&"),
@@ -40,7 +45,10 @@ def _replace_unwanted_commands_with_spaces(tex: str) -> str:
     ]
     unwanted_matches = scan_tex(tex, UNWANTED_PATTERNS)
     for match in unwanted_matches:
-        match_length = match.end - match.start
-        tex = tex[: match.start] + (" " * match_length) + tex[match.end :]
+        tex = _replace_substring_with_space(tex, match.start, match.end)
 
     return tex
+
+
+def _replace_substring_with_space(s: str, start: int, end: int) -> str:
+    return s[:start] + (" " * (end - start)) + s[end:]
