@@ -33,6 +33,17 @@ interface ScholarReaderProps {
 }
 
 class ScholarReader extends React.Component<ScholarReaderProps, State> {
+  // See:
+  // https://reactjs.org/docs/react-component.html#static-getderivedstatefromprops
+  static getDerivedStateFromProps(
+    props: ScholarReaderProps,
+    currentState: State
+  ): Partial<State> | null {
+    if (props.paperId === currentState.paperId) {
+      return null;
+    }
+    return { paperId: props.paperId };
+  }
   constructor(props: ScholarReaderProps) {
     super(props);
     /*
