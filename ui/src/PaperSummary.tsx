@@ -15,7 +15,7 @@ function warnOfUnimplementedActionAndTrack(actionType: string) {
         "it'll be implemented!");
   if (window.heap) {
     window.heap.track(
-      "Click on Unimplmented Action",
+      "Click on Unimplemented Action",
       { actionType }
     );
   }
