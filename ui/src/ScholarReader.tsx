@@ -203,16 +203,30 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
     this.setState({ userAnnotations: annotations });
   }
 
+  closeDrawerOnEscape = (event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      this.setDrawerState("closed");
+    }
+  }
+
+  toggleUserAnnotationState = (event: KeyboardEvent) => {
+    if (event.ctrlKey && event.shiftKey && event.key !== "a") {
+      this.setUserAnnotationsEnabled(!this.state.userAnnotationsEnabled);
+    }
+  }
+
   async componentDidMount() {
     waitForPDFViewerInitialization().then(application => {
       this.subscribeToPDFViewerStateChanges(application);
     });
     this.loadDataFromApi();
-    document.onkeypress = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.shiftKey && e.key !== "a") {
-        this.setUserAnnotationsEnabled(!this.state.userAnnotationsEnabled);
-      }
-    };
+    window.addEventListener('keypress', this.toggleUserAnnotationState);
+    window.addEventListener('keydown', this.closeDrawerOnEscape);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keypress', this.toggleUserAnnotationState);
+    window.removeEventListener('keydown', this.closeDrawerOnEscape);
   }
 
   subscribeToPDFViewerStateChanges(pdfViewerApplication: PDFViewerApplication) {
