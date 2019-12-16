@@ -1,7 +1,6 @@
 import React from "react";
 import FeedbackIcon from "@material-ui/icons/FeedbackOutlined";
 import Button from "@material-ui/core/Button";
-import { makeStyles } from "@material-ui/core/styles"
 import { ScholarReaderContext, PaperId } from "./state";
 import queryString from "querystring";
 
@@ -21,17 +20,6 @@ function mkFeedbackLink(paperId?: PaperId, extraContext?: Object) {
     return `${baseUrl}?${queryString.stringify(params)}`;
 }
 
-const useStyles = makeStyles({
-    button: {
-        padding: "8px",
-        minWidth: "auto",
-        borderRadius: "50%",
-    },
-    toolbar: {
-        width: "auto"
-    }
-});
-
 // Controls the visual appearance of the button. The toolbar variant mimics
 // the appearance of buttons rendered by the default PDF viewing experience.
 type ButtonVariant = "default" | "toolbar";
@@ -42,15 +30,13 @@ interface Props {
 }
 
 const FeedbackButton = ({ variant, extraContext }: Props) => {
-    const classNames = useStyles();
-
     switch (variant) {
         case "toolbar": {
             return (
                 <ScholarReaderContext.Consumer>{({ paperId }) => (
                     <button
                         onClick={() => window.open(mkFeedbackLink(paperId, extraContext), '_blank')}
-                        className={`${classNames.toolbar} toolbarButton hiddenLargeView"`}
+                        className="toolbarButton hiddenLargeView toolbar__feedback-button"
                         title="Submit Feedback"
                     >
                         <FeedbackIcon fontSize="large" />
@@ -64,7 +50,7 @@ const FeedbackButton = ({ variant, extraContext }: Props) => {
                 <ScholarReaderContext.Consumer>{({ paperId }) => (
                     <Button
                         onClick={() => window.open(mkFeedbackLink(paperId, extraContext), '_blank' )}
-                        className={`${classNames.button} hiddenLargeView`}
+                        className="feedback-button"
                     >
                         <FeedbackIcon fontSize="large" />
                     </Button>

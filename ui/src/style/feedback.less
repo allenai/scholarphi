@@ -1,0 +1,21 @@
+/**
+ * Styles for the <FeedbackButton />
+ */
+
+ @{mui-button-base} {
+  &.feedback-button {
+    padding: @medium * 0.75;
+    width: auto;
+    min-width: auto;
+    border-radius: 50%;
+    line-height: 1;
+  }
+}
+
+/**
+ * We render the <FeedbackButton /> into the PDF.js's default toolbar.
+ * This selector provides styles specific to that context.
+ */
+.toolbar__feedback-button {
+  width: auto;
+}
