@@ -1,5 +1,6 @@
 import logging
 import re
+from dataclasses import dataclass
 from typing import Dict, Iterator, List, NamedTuple, Optional, Set, Union
 
 from TexSoup import RArg, TexNode, TexSoup, TokenWithPosition
@@ -136,16 +137,20 @@ class CitationExtractor:
         return keys_match.group(1).split(",")
 
 
-class NamedEnv(NamedTuple):
+@dataclass(frozen=True)
+class NamedEnv:
     name: str
     star: bool
+    arg_pattern: str = ""
 
 
-class DelimitedEnv(NamedTuple):
+@dataclass(frozen=True)
+class DelimitedEnv:
     delimiter: str
 
 
-class StartEndEnv(NamedTuple):
+@dataclass(frozen=True)
+class StartEndEnv:
     start: str
     end: str
 
@@ -168,7 +173,7 @@ MATH_ENVIRONMENT_SPECS: Dict[str, EnvSpec] = {
     "displaymath": NamedEnv("displaymath", star=True),
     "equation": NamedEnv("equation", star=True),
     "split": NamedEnv("split", star=True),
-    "array": NamedEnv("array", star=True),
+    "array": NamedEnv("array", arg_pattern=r"(?:\{[^}]*\})?", star=True),
     "eqnarray": NamedEnv("eqnarray", star=True),
     "multiline": NamedEnv("multiline", star=True),
     "gather": NamedEnv("gather", star=True),
@@ -177,8 +182,8 @@ MATH_ENVIRONMENT_SPECS: Dict[str, EnvSpec] = {
 }
 
 
-def begin_environment_regex(name: str) -> str:
-    return r"\\begin{" + name + r"}"
+def begin_environment_regex(name: str, arg_pattern: str = "") -> str:
+    return r"\\begin{" + name + r"}" + r"(\s*" + arg_pattern + ")"
 
 
 def end_environment_regex(name: str) -> str:
@@ -198,10 +203,10 @@ def make_math_environment_patterns() -> List[Pattern]:
             patterns.append(Pattern(name + "_start", spec.start))
             patterns.append(Pattern(name + "_end", spec.end))
         elif isinstance(spec, NamedEnv):
-            patterns.append(Pattern(name + "_start", begin(spec.name)))
+            patterns.append(Pattern(name + "_start", begin(spec.name, spec.arg_pattern)))
             patterns.append(Pattern(name + "_end", end(spec.name)))
             if spec.star:
-                patterns.append(Pattern(name + "s_start", begin(spec.name + r"\*")))
+                patterns.append(Pattern(name + "s_start", begin(spec.name + r"\*", spec.arg_pattern)))
                 patterns.append(Pattern(name + "s_end", end(spec.name + r"\*")))
     return patterns
 
