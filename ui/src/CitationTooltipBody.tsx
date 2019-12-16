@@ -1,11 +1,9 @@
 import List from "@material-ui/core/List";
-import Box from "@material-ui/core/Box";
 import ListItem from "@material-ui/core/ListItem";
 import React from "react";
 import Citation from "./Citation";
 import * as api from "./types/api";
 import { ScholarReaderContext } from "./state";
-import Grid from '@material-ui/core/Grid';
 import FeedbackButton from "./FeedbackButton";
 
 interface CitationTooltipBodyProps {
@@ -19,21 +17,13 @@ export class CitationTooltipBody extends React.Component<
   render() {
     return (
       <div className="tooltip-body citation-tooltip-body">
-        <Box padding="8px 8px 0">
-          <Grid container alignItems="center" spacing={2}>
-            <Grid item xs>
-              <div className="tooltip-body__section tooltip-body__label citation-tooltip-body__header">
-                <strong>
-                  This citation was matched to {this.props.paperIds.length}
-                  {this.props.paperIds.length > 1 ? " papers" : " paper"}:
-                </strong>
-              </div>
-              </Grid>
-              <Grid item>
-                <FeedbackButton extraContext={{ citationId: this.props.citation.id }} />
-              </Grid>
-            </Grid>
-        </Box>
+        <div className="tooltip-body__section tooltip-body__label tooltip-body__header">
+          <div className="tooltip-body__label">
+            This citation was matched to {this.props.paperIds.length}
+            {this.props.paperIds.length > 1 ? " papers" : " paper"}:
+          </div>
+          <FeedbackButton extraContext={{ citationId: this.props.citation.id }} />
+        </div>
         <div className="tooltip-body__section">
           <List aria-label="cited papers">
             <ScholarReaderContext.Consumer>
@@ -49,9 +39,7 @@ export class CitationTooltipBody extends React.Component<
                       setJumpPaperId(s2Id);
                     }}
                   >
-                    <Box padding="0 8px">
-                      <Citation key={s2Id} paperId={s2Id} />
-                    </Box>
+                    <Citation key={s2Id} paperId={s2Id} />
                   </ListItem>
                 ));
               }}

@@ -1,5 +1,4 @@
 import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
 import FeedbackButton from "./FeedbackButton";
 import React from "react";
 import PaperClipping from "./PaperClipping";
@@ -41,16 +40,12 @@ export class SymbolTooltipBody extends React.Component<SymbolTooltipBodyProps> {
               <>
                 {exactMatchSymbol !== null && (
                   <>
-                    <Grid container alignItems="center" spacing={2}>
-                      <Grid item xs>
-                        <div className="tooltip-body__label tooltip-body__section">
+                    <div className="tooltip-body__section tooltip-body__header">
+                       <div className="tooltip-body__label">
                           This symbol is also mentioned at:
                         </div>
-                      </Grid>
-                      <Grid item>
-                        <FeedbackButton extraContext={{ symbolId: this.props.symbol.id }} />
-                      </Grid>
-                    </Grid>
+                       <FeedbackButton extraContext={{ symbolId: this.props.symbol.id }} />
+                    </div>
                     <div className="tooltip-body__section">
                       <PaperClipping
                         pageNumber={exactMatchSymbol.bounding_box.page + 1}
@@ -61,17 +56,13 @@ export class SymbolTooltipBody extends React.Component<SymbolTooltipBodyProps> {
                 )}
                 {exactMatchSymbol === null && nearMatchSymbol !== null && (
                   <>
-                    <Grid container alignItems="center" spacing={2}>
-                      <Grid item xs>
-                        <div className="tooltip-body__label tooltip-body__section">
+                    <div className="tooltip-body__section tooltip-body__header">
+                       <div className="tooltip-body__label">
                           A similar symbol is referenced at:
                         </div>
-                      </Grid>
-                      <Grid item>
-                        <FeedbackButton extraContext={{ symbolId: this.props.symbol.id }} />
-                      </Grid>
-                    </Grid>
-                    <div className="tooltip-body__section">
+                       <FeedbackButton extraContext={{ symbolId: this.props.symbol.id }} />
+                    </div>
+                   <div className="tooltip-body__section">
                       <PaperClipping
                         pageNumber={nearMatchSymbol.bounding_box.page + 1}
                         highlightBoxes={[nearMatchSymbol.bounding_box]}

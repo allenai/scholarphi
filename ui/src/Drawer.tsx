@@ -1,8 +1,6 @@
 import MuiDrawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
 import React from "react";
 import { Favorites } from "./Favorites";
 import PaperList from "./PaperList";
@@ -64,18 +62,12 @@ export class Drawer extends React.Component {
               open={drawerState !== "closed"}
             >
               <div className="drawer__header">
-                <Box p={1}>
-                  <Grid container alignItems="center">
-                    <Grid item xs>
-                      <IconButton onClick={() => setDrawerState("closed")}>
-                        <ChevronRightIcon />
-                      </IconButton>
-                    </Grid>
-                    <Grid item>
-                      <FeedbackButton extraContext={ extraContext } />
-                    </Grid>
-                  </Grid>
-                </Box>
+                <div>
+                  <IconButton onClick={() => setDrawerState("closed")}>
+                    <ChevronRightIcon />
+                  </IconButton>
+                </div>
+                <FeedbackButton extraContext={ extraContext } />
               </div>
               <div className="drawer__content">
                 <Favorites />
