@@ -71,7 +71,7 @@ To use a local version of the API, export the `PROXY` environment
 variable like so:
 
 ```bash
-export PROXY='http://localhost:3001'
+export PROXY='http://localhost:3000'
 ```
 
 See the README in the `api/` sibling directory for more information

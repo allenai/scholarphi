@@ -11,6 +11,8 @@ export function divDimensionStyles(pageView: PDFPageView, box: BoundingBox) {
    * location detection in the data processing scripts?
    */
   const SCALE_CORRECTION = 0.9975;
+  const HEIGHT_CORRECTION = -2;
+  const WIDTH_CORRECTION = -2;
   const viewport = pageView.pdfPage.getViewport({
     scale: pageView.viewport.scale * SCALE_CORRECTION
   });
@@ -23,10 +25,10 @@ export function divDimensionStyles(pageView: PDFPageView, box: BoundingBox) {
    * https://github.com/wojtekmaj/react-pdf/blob/73f505eca1bf1ae243a2b7068fce1e86b98b408a/src/Page/AnnotationLayer.jsx#L104
    */
   return {
-    left: viewportBox[0],
+    left: viewportBox[0] - WIDTH_CORRECTION,
     top: viewportBox[1],
-    width: viewportBox[2] - viewportBox[0],
-    height: viewportBox[1] - viewportBox[3]
+    width: viewportBox[2] - viewportBox[0] + (2 * WIDTH_CORRECTION),
+    height: viewportBox[1] - viewportBox[3] + HEIGHT_CORRECTION
   };
 }
 
