@@ -41,6 +41,7 @@ export class UserAnnotation extends React.Component<UserAnnotationProps> {
           "symbol-user-annotation": this.props.annotation.type === "symbol"
         })}
         location={this.props.annotation.boundingBox}
+        scaleCorrection={1}
         tooltipContent={
           <UserAnnotationTooltipBody annotation={this.props.annotation} />
         }
