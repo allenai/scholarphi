@@ -27,6 +27,7 @@ import {
   PDFViewerApplication
 } from "./types/pdfjs-viewer";
 import FeedbackButton from "./FeedbackButton";
+import { isKeypressEscape } from "./ui-utils";
 
 interface ScholarReaderProps {
   paperId?: PaperId;
@@ -204,7 +205,7 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
   }
 
   closeDrawerOnEscape = (event: KeyboardEvent) => {
-    if (event.key === "Escape") {
+    if (isKeypressEscape(event)) {
       this.setDrawerState("closed");
     }
   }

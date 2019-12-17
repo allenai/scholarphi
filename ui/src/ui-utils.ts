@@ -7,7 +7,7 @@ export function getMouseXY(event: React.MouseEvent) {
   return { x, y };
 }
 
-export function isKeypressEscape(event: React.KeyboardEvent) {
+export function isKeypressEscape(event: React.KeyboardEvent | KeyboardEvent) {
   if (
     event.key !== undefined &&
     (event.key === "Esc" || event.key === "Escape")
