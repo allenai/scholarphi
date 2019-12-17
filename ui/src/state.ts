@@ -1,14 +1,7 @@
 import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
 import { FavoritableId } from "./FavoriteButton";
-import {
-  Annotation,
-  AnnotationData,
-  Citation,
-  MathMl,
-  Paper,
-  Symbol
-} from "./types/api";
+import { Annotation, AnnotationData, Citation, MathMl, Paper, Symbol } from "./types/api";
 import { PDFPageView, PDFViewer } from "./types/pdfjs-viewer";
 
 export interface State {
@@ -48,6 +41,8 @@ export interface State {
   setSelectedCitation(citation: Citation | null): void;
   jumpSymbol: Symbol | null;
   setJumpSymbol(symbol: Symbol | null): void;
+  annotationsShowing: boolean;
+  setAnnotationsShowing(showing: boolean): void;
   selectedAnnotationId: string | null;
   setSelectedAnnotationId(id: string | null): void;
   userAnnotationsEnabled: boolean;
@@ -107,6 +102,8 @@ const defaultState: State = {
   setSelectedCitation: () => {},
   jumpSymbol: null,
   setJumpSymbol: () => {},
+  annotationsShowing: false,
+  setAnnotationsShowing: () => {},
   userAnnotationsEnabled: false,
   userAnnotationType: "citation",
   setUserAnnotationType: () => {},

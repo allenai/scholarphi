@@ -7,7 +7,7 @@ interface S2LinkProps {
 /**
  * Link to an S2 resource.
  */
-class S2Link extends React.Component<S2LinkProps, {}> {
+class S2Link extends React.PureComponent<S2LinkProps, {}> {
   render() {
     return (
       <a className="s2-link" target="_blank" rel="noopener noreferrer" href={this.props.url}>
