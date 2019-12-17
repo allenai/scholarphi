@@ -8,7 +8,7 @@ interface SymbolAnnotationProps {
   symbol: Symbol;
 }
 
-export class SymbolAnnotation extends React.Component<SymbolAnnotationProps> {
+export class SymbolAnnotation extends React.PureComponent<SymbolAnnotationProps> {
   render() {
     return (
       <div hidden={this.props.symbol.parent !== null}>

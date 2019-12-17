@@ -34,7 +34,7 @@ const MAXIMUM_ANNOTATION_HEIGHT = 30;
  *
  * The structure of this class is based on the example at https://reactjs.org/docs/portals.html.
  */
-class PageOverlay extends React.Component<PageProps, {}> {
+class PageOverlay extends React.PureComponent<PageProps, {}> {
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
 

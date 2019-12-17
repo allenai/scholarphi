@@ -1,6 +1,6 @@
 import Button from "@material-ui/core/Button";
-import FeedbackButton from "./FeedbackButton";
 import React from "react";
+import FeedbackButton from "./FeedbackButton";
 import PaperClipping from "./PaperClipping";
 import * as selectors from "./selectors";
 import { ScholarReaderContext } from "./state";
@@ -10,7 +10,7 @@ interface SymbolTooltipBodyProps {
   symbol: Symbol;
 }
 
-export class SymbolTooltipBody extends React.Component<SymbolTooltipBodyProps> {
+export class SymbolTooltipBody extends React.PureComponent<SymbolTooltipBodyProps> {
   render() {
     return (
       <div className="tooltip-body symbol-tooltip-body">

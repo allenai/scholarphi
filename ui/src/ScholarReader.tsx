@@ -3,37 +3,19 @@ import { createPortal } from "react-dom";
 import * as api from "./api";
 import Drawer from "./Drawer";
 import { FavoritableId, favoritesKey } from "./FavoriteButton";
-import PageOverlay from "./PageOverlay";
-import {
-  DrawerState,
-  Pages,
-  PaperId,
-  Papers,
-  ScholarReaderContext,
-  State
-} from "./state";
-import "./style/index.less";
-import {
-  Annotation,
-  AnnotationData,
-  Citation,
-  MathMl,
-  Paper,
-  Symbol
-} from "./types/api";
-import {
-  DocumentLoadedEvent,
-  PageRenderedEvent,
-  PDFViewerApplication
-} from "./types/pdfjs-viewer";
 import FeedbackButton from "./FeedbackButton";
+import PageOverlay from "./PageOverlay";
+import { DrawerState, Pages, PaperId, Papers, ScholarReaderContext, State } from "./state";
+import "./style/index.less";
+import { Annotation, AnnotationData, Citation, MathMl, Paper, Symbol } from "./types/api";
+import { DocumentLoadedEvent, PageRenderedEvent, PDFViewerApplication } from "./types/pdfjs-viewer";
 import { isKeypressEscape } from "./ui-utils";
 
 interface ScholarReaderProps {
   paperId?: PaperId;
 }
 
-class ScholarReader extends React.Component<ScholarReaderProps, State> {
+class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
   // See:
   // https://reactjs.org/docs/react-component.html#static-getderivedstatefromprops
   static getDerivedStateFromProps(
