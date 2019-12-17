@@ -27,6 +27,8 @@ export interface Paper {
   url: string;
   venue: string | null;
   year: number | null;
+  citationVelocity: number;
+  influentialCitationCount: number;
 }
 
 export interface Citation {
