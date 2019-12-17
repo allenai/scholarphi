@@ -14,6 +14,11 @@ interface AnnotationProps {
   id: string;
   className?: string;
   location: BoundingBox;
+  /**
+   * Correction factor to apply to bounding box coordinates before rendering the annotation.
+   * You normally should not need to set this and should be able to trust the defaults.
+   */
+  scaleCorrection?: number;
   tooltipContent: React.ReactNode;
   onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
 }
@@ -88,7 +93,8 @@ export class Annotation extends React.Component<
                   onClick={this.select.bind(this)}
                   style={selectors.divDimensionStyles(
                     pages[this.props.location.page + 1].view,
-                    this.props.location
+                    this.props.location,
+                    this.props.scaleCorrection
                   )}
                   className={classNames(
                     "scholar-reader-annotation",
