@@ -59,6 +59,8 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       setSelectedCitation: this.setSelectedCitation.bind(this),
       jumpSymbol: null,
       setJumpSymbol: this.setJumpSymbol.bind(this),
+      annotationsShowing: false,
+      setAnnotationsShowing: this.setAnnotationsShowing.bind(this),
       userAnnotationsEnabled: false,
       setUserAnnotationsEnabled: this.setUserAnnotationsEnabled.bind(this),
       userAnnotationType: "citation",
@@ -71,6 +73,13 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       selectedAnnotationId: null,
       setSelectedAnnotationId: this.setSelectedAnnotationId.bind(this)
     };
+    /**
+     * Bind event handlers so that they are always called with 'this' as its context.
+     */
+    this.toggleUserAnnotationState = this.toggleUserAnnotationState.bind(this)
+    this.closeDrawerOnEscape = this.closeDrawerOnEscape.bind(this)
+    this.showAnnotationsOnAltDown = this.showAnnotationsOnAltDown.bind(this)
+    this.hideAnnotationsOnAltUp = this.hideAnnotationsOnAltUp.bind(this)
   }
 
   setCitations(citations: Citation[]) {
@@ -125,6 +134,10 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     if (symbol !== null) {
       this.jumpToSymbol(symbol);
     }
+  }
+
+  setAnnotationsShowing(showing: boolean) {
+    this.setState({ annotationsShowing: showing });
   }
 
   setSelectedAnnotationId(id: string | null) {
@@ -186,13 +199,25 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     this.setState({ userAnnotations: annotations });
   }
 
-  closeDrawerOnEscape = (event: KeyboardEvent) => {
+  closeDrawerOnEscape(event: KeyboardEvent) {
     if (isKeypressEscape(event)) {
       this.setDrawerState("closed");
     }
   }
 
-  toggleUserAnnotationState = (event: KeyboardEvent) => {
+  showAnnotationsOnAltDown(event: KeyboardEvent) {
+      if (event.altKey) {
+        this.setAnnotationsShowing(true);
+      }
+  }
+
+  hideAnnotationsOnAltUp(event: KeyboardEvent) {
+      if (event.keyCode === 18 || event.key === "Alt") {
+          this.setAnnotationsShowing(false);
+      }
+  }
+
+  toggleUserAnnotationState(event: KeyboardEvent) {
     if (event.ctrlKey && event.shiftKey && event.key !== "a") {
       this.setUserAnnotationsEnabled(!this.state.userAnnotationsEnabled);
     }
@@ -205,11 +230,15 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     this.loadDataFromApi();
     window.addEventListener('keypress', this.toggleUserAnnotationState);
     window.addEventListener('keydown', this.closeDrawerOnEscape);
+    window.addEventListener('keydown', this.showAnnotationsOnAltDown);
+    window.addEventListener('keyup', this.hideAnnotationsOnAltUp);
   }
 
   componentWillUnmount() {
     window.removeEventListener('keypress', this.toggleUserAnnotationState);
     window.removeEventListener('keydown', this.closeDrawerOnEscape);
+    window.removeEventListener('keydown', this.showAnnotationsOnAltDown);
+    window.removeEventListener('keyup', this.hideAnnotationsOnAltUp);
   }
 
   subscribeToPDFViewerStateChanges(pdfViewerApplication: PDFViewerApplication) {
