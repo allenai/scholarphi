@@ -8,7 +8,7 @@ interface CitationAnnotationProps {
   citation: Citation;
 }
 
-export class CitationAnnotation extends React.Component<
+export class CitationAnnotation extends React.PureComponent<
   CitationAnnotationProps,
   {}
 > {

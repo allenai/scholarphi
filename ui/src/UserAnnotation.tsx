@@ -9,7 +9,7 @@ interface UserAnnotationProps {
   annotation: AnnotationObject;
 }
 
-export class UserAnnotation extends React.Component<UserAnnotationProps> {
+export class UserAnnotation extends React.PureComponent<UserAnnotationProps> {
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
 

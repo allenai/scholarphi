@@ -2,7 +2,7 @@ import React from "react";
 import PaperSummary from "./PaperSummary";
 import { ScholarReaderContext } from "./state";
 
-export class PaperList extends React.Component {
+export class PaperList extends React.PureComponent {
   render() {
     return (
       <ScholarReaderContext.Consumer>

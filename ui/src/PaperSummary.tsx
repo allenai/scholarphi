@@ -1,14 +1,14 @@
+import Button from "@material-ui/core/Button";
+import Tooltip from "@material-ui/core/Tooltip";
+import SaveIcon from "@material-ui/icons/Bookmark";
+import CiteIcon from "@material-ui/icons/FormatQuote";
 import React from "react";
 import AuthorList from "./AuthorList";
 import FavoriteButton from "./FavoriteButton";
+import ChartIcon from "./icon/ChartIcon";
+import InfluentialCitationIcon from "./icon/InfluentialCitationIcon";
 import S2Link from "./S2Link";
 import { ScholarReaderContext } from "./state";
-import Button from "@material-ui/core/Button";
-import SaveIcon from "@material-ui/icons/Bookmark";
-import CiteIcon from "@material-ui/icons/FormatQuote";
-import InfluentialCitationIcon from "./icon/InfluentialCitationIcon";
-import ChartIcon from "./icon/ChartIcon";
-import Tooltip from "@material-ui/core/Tooltip";
 import { truncateText } from "./ui-utils";
 
 function warnOfUnimplementedActionAndTrack(actionType: string) {
@@ -31,7 +31,7 @@ interface PaperSummaryState {
   showFullAbstract: boolean;
 }
 
-export class PaperSummary extends React.Component<
+export class PaperSummary extends React.PureComponent<
   PaperSummaryProps,
   PaperSummaryState
 > {

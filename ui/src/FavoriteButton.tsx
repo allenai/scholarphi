@@ -9,7 +9,7 @@ interface FavoriteButtonProps {
   opaque?: boolean;
 }
 
-export class FavoriteButton extends React.Component<FavoriteButtonProps> {
+export class FavoriteButton extends React.PureComponent<FavoriteButtonProps> {
   render() {
     return (
       <ScholarReaderContext.Consumer>

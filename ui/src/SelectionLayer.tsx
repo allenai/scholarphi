@@ -12,7 +12,7 @@ interface SelectionCanvasState {
   hasFocus: boolean;
 }
 
-export class SelectionCanvas extends React.Component<
+export class SelectionCanvas extends React.PureComponent<
   SelectionCanvasProps,
   SelectionCanvasState
 > {
