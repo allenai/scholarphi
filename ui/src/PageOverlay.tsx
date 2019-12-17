@@ -16,6 +16,11 @@ interface PageProps {
 }
 
 /**
+ * Maximum height for an annotation before it is filtered out as an outlier.
+ */
+const MAXIMUM_ANNOTATION_HEIGHT = 30;
+
+/**
  * This component is an overlay, mounted on top PDF pages, which are *not* under the control of
  * React. Because the parent page elements may appear or disappear at any time, this component
  * has a unique structure. Its life cycle is:
@@ -82,9 +87,10 @@ class PageOverlay extends React.Component<PageProps, {}> {
           const localizedCitations = selectors.boxEntityPairsForPage(
             [...citations],
             this.props.pageNumber
-          );
+          ).filter(c => c.boundingBox.height < MAXIMUM_ANNOTATION_HEIGHT);
           const localizedSymbols = symbols.filter(
-            s => s.bounding_box.page === this.props.pageNumber - 1
+            s => s.bounding_box.page === this.props.pageNumber - 1 &&
+            s.bounding_box.height < MAXIMUM_ANNOTATION_HEIGHT
           );
           const localizedUserAnnotations = userAnnotations.filter(
             a => a.boundingBox.page === this.props.pageNumber - 1
