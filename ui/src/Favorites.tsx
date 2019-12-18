@@ -4,7 +4,7 @@ import PaperSummary from "./PaperSummary";
 import { ScholarReaderContext } from "./state";
 import SymbolPreview from "./SymbolPreview";
 
-export class Favorites extends React.Component {
+export class Favorites extends React.PureComponent {
   render() {
     return (
       <ScholarReaderContext.Consumer>

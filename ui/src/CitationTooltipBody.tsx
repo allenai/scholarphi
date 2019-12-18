@@ -2,16 +2,16 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import React from "react";
 import Citation from "./Citation";
-import * as api from "./types/api";
-import { ScholarReaderContext } from "./state";
 import FeedbackButton from "./FeedbackButton";
+import { ScholarReaderContext } from "./state";
+import * as api from "./types/api";
 
 interface CitationTooltipBodyProps {
   paperIds: string[];
   citation: api.Citation;
 }
 
-export class CitationTooltipBody extends React.Component<
+export class CitationTooltipBody extends React.PureComponent<
   CitationTooltipBodyProps
 > {
   render() {
