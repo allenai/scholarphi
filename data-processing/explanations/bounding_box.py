@@ -1,21 +1,13 @@
 import logging
-from typing import Dict, Iterable, Iterator, List, NamedTuple, Optional
+from typing import Dict, Iterable, Iterator, List, Optional, Tuple
 
 import cv2
 import numpy as np
 
-from explanations.types import (
-    BoundingBoxInfo,
-    CharacterId,
-    CharacterLocations,
-    Dimensions,
-    PdfBoundingBox,
-    Point,
-    RasterBoundingBox,
-    Rectangle,
-    Symbol,
-    SymbolId,
-)
+from explanations.types import (BoundingBoxInfo, CharacterId,
+                                CharacterLocations, Dimensions, PdfBoundingBox,
+                                Point, RasterBoundingBox, Rectangle, Symbol,
+                                SymbolId)
 
 
 def extract_bounding_boxes(
@@ -246,3 +238,230 @@ def get_symbol_bounding_box(
     bottom = min([box.top - box.height for box in boxes_on_page])
 
     return PdfBoundingBox(left, top, right - left, top - bottom, page)
+
+
+
+def subtract(rect1: Rectangle, rect2: Rectangle) -> Iterator[Rectangle]:
+    """
+    Get a collection of rectangles that make up the difference between 'rect1' and 'rect2'.
+    The returned rectangles will have the dimensions of rectangles called "split[1..4]" below.
+    Note that the number of rectangles returned will depend on how rect1 and rect2 overlap.
+
+    rect1
+    ----------------------------------------------
+    |                                            |
+    |                                   (split 1)|
+    |············· -----------------·············|
+    |              | rect2         |             |
+    |     (split 2)|               |    (split 3)|
+    |··············-----------------·············|
+    |                                   (split 4)|
+    ----------------------------------------------
+    """
+
+    rect1_right = rect1.left + rect1.width
+    rect1_bottom = rect1.top + rect1.height
+    rect2_right = rect2.left + rect2.width
+    rect2_bottom = rect2.top + rect2.height
+
+    if not (are_intersecting(rect1, rect2)):
+        yield Rectangle(rect1.left, rect1.top, rect1.width, rect1.height)
+        return
+
+    # Create 'split 1'
+    if rect2.top >= rect1.top and rect2.top <= rect1_bottom:
+        height = rect2.top - rect1.top
+        if height > 0:
+            yield Rectangle(rect1.left, rect1.top, rect1.width, height)
+
+    # Create 'split 2'
+    if rect2.left >= rect1.left and rect2.left <= rect1_right:
+        diff_top = max(rect1.top, rect2.top)
+        diff_bottom = min(rect1_bottom, rect2_bottom)
+        width = rect2.left - rect1.left
+        height = diff_bottom - diff_top
+        if width > 0 and height > 0:
+            yield Rectangle(rect1.left, diff_top, width, height)
+
+    # Create 'split 3'
+    if rect2_right <= rect1_right and rect2_right >= rect1.left:
+        diff_top = max(rect1.top, rect2.top)
+        diff_bottom = min(rect1_bottom, rect2_bottom)
+        width = rect1_right - rect2_right
+        height = diff_bottom - diff_top
+        if width > 0 and height > 0:
+            yield Rectangle(rect2_right, diff_top, width, height)
+
+    # Create 'split 4'
+    if rect2_bottom <= rect1_bottom and rect2_bottom >= rect1.top:
+        height = rect1_bottom - rect2_bottom
+        if height > 0:
+            yield Rectangle(rect1.left, rect2_bottom, rect1.width, height)
+
+
+
+def are_intersecting(rect1: Rectangle, rect2: Rectangle) -> bool:
+
+    between = lambda x, x1, x2: x >= x1 and x <= x2
+
+    horizontal_range_overlap = any(
+        [
+            between(rect1.left, rect2.left, rect2.left + rect2.width),
+            between(rect1.left + rect1.width, rect2.left, rect2.left + rect2.width),
+            between(rect2.left, rect1.left, rect1.left + rect1.width),
+            between(rect2.left + rect2.width, rect1.left, rect1.left + rect1.width),
+        ]
+    )
+    vertical_range_overlap = any(
+        [
+            between(rect1.top, rect2.top, rect2.top + rect2.height),
+            between(rect1.top + rect1.height, rect2.top, rect2.top + rect2.height),
+            between(rect2.top, rect1.top, rect1.top + rect1.height),
+            between(rect2.top + rect2.height, rect1.top, rect1.top + rect1.height),
+        ]
+    )
+
+    return horizontal_range_overlap and vertical_range_overlap
+
+
+
+def subtract_from_multiple(
+    rects: Iterable[Rectangle], other: Rectangle
+) -> Iterator[Rectangle]:
+    """
+    Assumes all rectangles in 'rects' are mutually exclusive.
+    """
+    for rect in rects:
+        for diff_rect in subtract(rect, other):
+            yield diff_rect
+
+
+def subtract_multiple(
+    rect: Rectangle, other_rects: Iterable[Rectangle]
+) -> Iterator[Rectangle]:
+
+    difference = [rect]
+    for other_rect in other_rects:
+        difference = list(subtract_from_multiple(difference, other_rect))
+
+    for diff_rect in difference:
+        yield diff_rect
+
+
+def subtract_multiple_from_multiple(
+    rects: Iterable[Rectangle], other_rects: Iterable[Rectangle]
+) -> Iterator[Rectangle]:
+
+    rects_unioned = union(rects)
+    for rect in rects_unioned:
+        for diff_rect in subtract_multiple(rect, other_rects):
+            yield diff_rect
+
+
+def union(rects: Iterable[Rectangle]) -> Iterator[Rectangle]:
+    """
+    In case the exact rectangles returned are important to you, the union is computed by taking the
+    difference of rectangles later in the iterable from rectangles that were earlier in the
+    iterable using the 'subtract' methods, and adding the differences to the union.
+    """
+
+    rects = iter(rects)
+    try:
+        first_rect = next(rects)
+        yield first_rect
+        union_rects = [first_rect]
+    except StopIteration:
+        return
+
+    while True:
+        try:
+            rect = next(rects)
+        except StopIteration:
+            return
+
+        for new_rect in subtract_multiple(rect, union_rects):
+            yield new_rect
+            union_rects = union_rects + [new_rect]
+
+
+def intersect(
+    rects: Iterable[Rectangle], other_rects: Iterable[Rectangle]
+) -> Iterator[Rectangle]:
+    """
+    In case the exact rectangles returned are important to you, the intersection is computed by
+    first computing the union of all rectangles, then subtracting the difference between 'rects'
+    and 'other_rects', and then subtracting the difference between 'other_rects' and 'rects'.
+    """
+
+    rects = list(rects)
+    other_rects = list(other_rects)
+    diff1 = list(subtract_multiple_from_multiple(rects, other_rects))
+    diff2 = list(subtract_multiple_from_multiple(  # pylint: disable=arguments-out-of-order
+        other_rects, rects
+    ))
+    union_rects = union(rects + other_rects)
+
+    union_minus_diff1 = subtract_multiple_from_multiple(union_rects, diff1)
+    union_minus_diffs = subtract_multiple_from_multiple(union_minus_diff1, diff2)
+    for rect in union_minus_diffs:
+        yield rect
+
+
+def sum_areas(rects: Iterable[Rectangle]) -> float:
+    """
+    Assumes rectangles do not overlap with each other.
+    """
+    total_area = 0
+    for rect in rects:
+        total_area += (rect.width * rect.height)
+    return total_area
+
+
+def iou(rects: Iterable[Rectangle], other_rects: Iterable[Rectangle]) -> float:
+    """
+    Compute the intersection-over-union between two sets of rectangles. Rectangles within
+    each iterable *can* overlap with each other.
+    """
+    rects = list(rects)
+    other_rects = list(other_rects)
+
+    intersection_rects = intersect(rects, other_rects)
+    intersection_area = sum_areas(intersection_rects)
+
+    union_rects = union(rects + other_rects)
+    union_area = sum_areas(union_rects)
+
+    return intersection_area / union_area
+
+
+def iou_per_rectangle(
+    rects: Iterable[Rectangle], other_rects: Iterable[Rectangle]
+) -> Dict[Rectangle, float]:
+    """
+    Compute the intersection between each rectangle in 'rects' and all rectangles that overlap
+    with it in 'other_rects'.
+    """
+    other_rects = list(other_rects)
+    ious: Dict[Rectangle, float] = {}
+
+    for rect in rects:
+        overlapping_rects = filter(lambda o: are_intersecting(rect, o), other_rects)
+        rect_iou = iou([rect], overlapping_rects)
+        ious[rect] = rect_iou
+
+    return ious
+
+
+def compute_accuracy(
+    expected: Iterable[Rectangle], actual: Iterable[Rectangle], minimum_iou: float = 0.5
+) -> Tuple[float, float]:
+
+    expected = list(expected)
+    actual = list(actual)
+    ious = iou_per_rectangle(expected, actual)
+
+    count_found = len(list(filter(lambda i: i > minimum_iou, ious.values())))
+    precision = float(count_found) / len(expected)
+    recall = float(count_found) / len(actual)
+
+    return (precision, recall)
