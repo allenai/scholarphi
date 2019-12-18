@@ -103,12 +103,14 @@ export class Connection {
         FROM paper
     ORDER BY symbols DESC, citations DESC
     `);
-    return response.rows.map(row => ({
-      s2Id: row.s2_id,
-      arxivId: row.arxiv_id,
-      extractedCitationCount: parseInt(row.citations),
-      extractedSymbolCount: parseInt(row.symbols)
-    }));
+    return response.rows
+      .filter(row => parseInt(row.citations) > 0 || parseInt(row.symbols) > 0)
+      .map(row => ({
+        s2Id: row.s2_id,
+        arxivId: row.arxiv_id,
+        extractedCitationCount: parseInt(row.citations),
+        extractedSymbolCount: parseInt(row.symbols)
+      }));
   }
 
   async getCitationsForS2Id(s2Id: string) {
