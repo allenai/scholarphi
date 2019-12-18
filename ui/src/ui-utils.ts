@@ -29,6 +29,9 @@ const ELLIPSIS = '…';
  * ellipsis upon truncation by default.  If the text is shorter than the provided limit, the full
  * text is returned.
  *
+ * This method was ported from Semantic Scholar's UI codebase. It's a UI
+ * utility.
+ *
  * @param {string} text The text to truncate.
  * @param {number} limit The maximum number of characters to show.
  * @param {boolean} whether to include an ellipsis after the truncation, defaults to true
