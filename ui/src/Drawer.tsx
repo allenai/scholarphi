@@ -3,14 +3,14 @@ import IconButton from "@material-ui/core/IconButton";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import React from "react";
 import { Favorites } from "./Favorites";
+import FeedbackButton from "./FeedbackButton";
 import PaperList from "./PaperList";
 import SearchResults from "./SearchResults";
 import { ScholarReaderContext } from "./state";
-import FeedbackButton from "./FeedbackButton";
 
 const PDF_VIEWER_DRAWER_OPEN_CLASS = "drawer-open";
 
-export class Drawer extends React.Component {
+export class Drawer extends React.PureComponent {
   componentWillUnmount() {
     const { pdfViewer } = this.context;
     if (pdfViewer !== undefined && pdfViewer !== null) {

@@ -7,7 +7,7 @@ interface CitationProperties {
   paperId: string;
 }
 
-export class Citation extends React.Component<CitationProperties> {
+export class Citation extends React.PureComponent<CitationProperties> {
   render() {
     return (
       <ScholarReaderContext.Consumer>
