@@ -22,6 +22,8 @@ export interface S2ApiPaper {
   url: string;
   venue: string;
   year: string;
+  influentialCitationCount?: number;
+  citationVelocity?: number;
 }
 
 interface S2ApiAuthor {

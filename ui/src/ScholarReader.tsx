@@ -3,36 +3,19 @@ import { createPortal } from "react-dom";
 import * as api from "./api";
 import Drawer from "./Drawer";
 import { FavoritableId, favoritesKey } from "./FavoriteButton";
-import PageOverlay from "./PageOverlay";
-import {
-  DrawerState,
-  Pages,
-  PaperId,
-  Papers,
-  ScholarReaderContext,
-  State
-} from "./state";
-import "./style/index.less";
-import {
-  Annotation,
-  AnnotationData,
-  Citation,
-  MathMl,
-  Paper,
-  Symbol
-} from "./types/api";
-import {
-  DocumentLoadedEvent,
-  PageRenderedEvent,
-  PDFViewerApplication
-} from "./types/pdfjs-viewer";
 import FeedbackButton from "./FeedbackButton";
+import PageOverlay from "./PageOverlay";
+import { DrawerState, Pages, PaperId, Papers, ScholarReaderContext, State } from "./state";
+import "./style/index.less";
+import { Annotation, AnnotationData, Citation, MathMl, Paper, Symbol } from "./types/api";
+import { DocumentLoadedEvent, PageRenderedEvent, PDFViewerApplication } from "./types/pdfjs-viewer";
+import { isKeypressEscape } from "./ui-utils";
 
 interface ScholarReaderProps {
   paperId?: PaperId;
 }
 
-class ScholarReader extends React.Component<ScholarReaderProps, State> {
+class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
   // See:
   // https://reactjs.org/docs/react-component.html#static-getderivedstatefromprops
   static getDerivedStateFromProps(
@@ -76,6 +59,8 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
       setSelectedCitation: this.setSelectedCitation.bind(this),
       jumpSymbol: null,
       setJumpSymbol: this.setJumpSymbol.bind(this),
+      annotationsShowing: false,
+      setAnnotationsShowing: this.setAnnotationsShowing.bind(this),
       userAnnotationsEnabled: false,
       setUserAnnotationsEnabled: this.setUserAnnotationsEnabled.bind(this),
       userAnnotationType: "citation",
@@ -88,6 +73,13 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
       selectedAnnotationId: null,
       setSelectedAnnotationId: this.setSelectedAnnotationId.bind(this)
     };
+    /**
+     * Bind event handlers so that they are always called with 'this' as its context.
+     */
+    this.toggleUserAnnotationState = this.toggleUserAnnotationState.bind(this)
+    this.closeDrawerOnEscape = this.closeDrawerOnEscape.bind(this)
+    this.showAnnotationsOnAltDown = this.showAnnotationsOnAltDown.bind(this)
+    this.hideAnnotationsOnAltUp = this.hideAnnotationsOnAltUp.bind(this)
   }
 
   setCitations(citations: Citation[]) {
@@ -142,6 +134,10 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
     if (symbol !== null) {
       this.jumpToSymbol(symbol);
     }
+  }
+
+  setAnnotationsShowing(showing: boolean) {
+    this.setState({ annotationsShowing: showing });
   }
 
   setSelectedAnnotationId(id: string | null) {
@@ -203,16 +199,46 @@ class ScholarReader extends React.Component<ScholarReaderProps, State> {
     this.setState({ userAnnotations: annotations });
   }
 
+  closeDrawerOnEscape(event: KeyboardEvent) {
+    if (isKeypressEscape(event)) {
+      this.setDrawerState("closed");
+    }
+  }
+
+  showAnnotationsOnAltDown(event: KeyboardEvent) {
+      if (event.altKey) {
+        this.setAnnotationsShowing(true);
+      }
+  }
+
+  hideAnnotationsOnAltUp(event: KeyboardEvent) {
+      if (event.keyCode === 18 || event.key === "Alt") {
+          this.setAnnotationsShowing(false);
+      }
+  }
+
+  toggleUserAnnotationState(event: KeyboardEvent) {
+    if (event.ctrlKey && event.shiftKey && event.key !== "a") {
+      this.setUserAnnotationsEnabled(!this.state.userAnnotationsEnabled);
+    }
+  }
+
   async componentDidMount() {
     waitForPDFViewerInitialization().then(application => {
       this.subscribeToPDFViewerStateChanges(application);
     });
     this.loadDataFromApi();
-    document.onkeypress = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.shiftKey && e.key !== "a") {
-        this.setUserAnnotationsEnabled(!this.state.userAnnotationsEnabled);
-      }
-    };
+    window.addEventListener('keypress', this.toggleUserAnnotationState);
+    window.addEventListener('keydown', this.closeDrawerOnEscape);
+    window.addEventListener('keydown', this.showAnnotationsOnAltDown);
+    window.addEventListener('keyup', this.hideAnnotationsOnAltUp);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keypress', this.toggleUserAnnotationState);
+    window.removeEventListener('keydown', this.closeDrawerOnEscape);
+    window.removeEventListener('keydown', this.showAnnotationsOnAltDown);
+    window.removeEventListener('keyup', this.hideAnnotationsOnAltUp);
   }
 
   subscribeToPDFViewerStateChanges(pdfViewerApplication: PDFViewerApplication) {

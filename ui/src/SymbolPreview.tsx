@@ -8,7 +8,7 @@ interface SymbolPreviewProps {
   symbol: Symbol;
 }
 
-export class SymbolPreview extends React.Component<SymbolPreviewProps> {
+export class SymbolPreview extends React.PureComponent<SymbolPreviewProps> {
   render() {
     return (
       <ScholarReaderContext.Consumer>

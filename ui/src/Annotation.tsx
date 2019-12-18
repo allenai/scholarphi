@@ -27,7 +27,7 @@ interface AnnotationState {
   selected: boolean;
 }
 
-export class Annotation extends React.Component<
+export class Annotation extends React.PureComponent<
   AnnotationProps,
   AnnotationState
 > {

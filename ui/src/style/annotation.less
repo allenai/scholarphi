@@ -9,16 +9,15 @@
  * Enlarge the hitbox of an annotation
  */
 .scholar-reader-annotation:not(.user-annotation) {
-  margin: -@highlight-hitbox-padding;
-  padding: @highlight-hitbox-padding;
+  margin: -@highlight-hitbox-padding * 2/3 -@highlight-hitbox-padding;
+  padding: @highlight-hitbox-padding * 2/3 @highlight-hitbox-padding;
 }
 
 /**
- * Provide an underline as the default indicator of an annotation
+ * Provide an underline as a hint that the annotation is interactive 
  */
-.scholar-reader-annotation:not(.user-annotation) {
-  border-bottom: @underline-width @underline-color solid;
-  padding-bottom: @underline-offset;
+.scholar-reader-annotation.annotation-hint {
+  border-bottom: @underline-width @underline-color dotted;
 }
 
 /**

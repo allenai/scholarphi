@@ -16,7 +16,7 @@ interface SearchResultState {
 
 type Filters = { [mathMl: string]: boolean };
 
-export class SearchResults extends React.Component<
+export class SearchResults extends React.PureComponent<
   SearchResultsProps,
   SearchResultState
 > {

@@ -14,7 +14,7 @@ export function divDimensionStyles(
   box: BoundingBox,
   scaleCorrection?: number
 ) {
-  scaleCorrection = scaleCorrection || 0.9975;
+  scaleCorrection = scaleCorrection || 1;
   const viewport = pageView.pdfPage.getViewport({
     scale: pageView.viewport.scale * scaleCorrection
   });

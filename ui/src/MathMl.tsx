@@ -13,7 +13,7 @@ interface MathMlProps {
   mathMl: string;
 }
 
-export class MathMl extends React.Component<MathMlProps, {}> {
+export class MathMl extends React.PureComponent<MathMlProps, {}> {
   async componentDidMount() {
     if (this.element !== null) {
       typesetElement(this.element);

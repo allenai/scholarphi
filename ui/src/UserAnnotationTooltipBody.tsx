@@ -13,7 +13,7 @@ interface UserAnnotationTooltipBodyProps {
   annotation: Annotation;
 }
 
-export class UserAnnotationTooltipBody extends React.Component<
+export class UserAnnotationTooltipBody extends React.PureComponent<
   UserAnnotationTooltipBodyProps
 > {
   static contextType = ScholarReaderContext;
