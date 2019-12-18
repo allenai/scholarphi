@@ -9,8 +9,7 @@ import CiteIcon from "@material-ui/icons/FormatQuote";
 import InfluentialCitationIcon from "./icon/InfluentialCitationIcon";
 import ChartIcon from "./icon/ChartIcon";
 import Tooltip from "@material-ui/core/Tooltip";
-
-const TRUNCATED_ABSTRACT_LENGTH = 300;
+import { truncateText } from "./ui-utils";
 
 function warnOfUnimplementedActionAndTrack(actionType: string) {
   alert("Sorry, that feature isn't implemented yet. Clicking it tells us " +
@@ -49,6 +48,7 @@ export class PaperSummary extends React.Component<
         {({ papers, jumpPaperId, setJumpPaperId }) => {
           const paper = papers[this.props.paperId];
           const hasMetrics = paper.citationVelocity !== 0 || paper.influentialCitationCount !== 0;
+          const truncatedAbstract = paper.abstract ? truncateText(paper.abstract, 300) : null;
           return (
             <div
               ref={ref => {
@@ -78,12 +78,11 @@ export class PaperSummary extends React.Component<
                 <div className="paper-summary__section">
                   <p className="paper-summary__abstract">
                     {this.state.showFullAbstract ||
-                    paper.abstract.length < TRUNCATED_ABSTRACT_LENGTH ? (
+                    truncatedAbstract === paper.abstract ? (
                       paper.abstract
                     ) : (
                       <>
-                        {paper.abstract.substr(0, TRUNCATED_ABSTRACT_LENGTH) +
-                          "..."}
+                        {truncatedAbstract}
                         <span
                           className="paper-summary__abstract__show-more-label"
                           onClick={() => {

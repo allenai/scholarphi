@@ -33,6 +33,7 @@ export class CitationTooltipBody extends React.Component<
                     disableGutters
                     key={s2Id}
                     button
+                    className="tooltip-body__citation"
                     onClick={() => {
                       setSelectedCitation(this.props.citation);
                       setDrawerState("show-citations");
