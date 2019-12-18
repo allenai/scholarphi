@@ -16,6 +16,11 @@ interface PageProps {
 }
 
 /**
+ * Maximum height for an annotation before it is filtered out as an outlier.
+ */
+const MAXIMUM_ANNOTATION_HEIGHT = 30;
+
+/**
  * This component is an overlay, mounted on top PDF pages, which are *not* under the control of
  * React. Because the parent page elements may appear or disappear at any time, this component
  * has a unique structure. Its life cycle is:
@@ -29,7 +34,7 @@ interface PageProps {
  *
  * The structure of this class is based on the example at https://reactjs.org/docs/portals.html.
  */
-class PageOverlay extends React.Component<PageProps, {}> {
+class PageOverlay extends React.PureComponent<PageProps, {}> {
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
 
@@ -78,13 +83,14 @@ class PageOverlay extends React.Component<PageProps, {}> {
 
     return ReactDOM.createPortal(
       <ScholarReaderContext.Consumer>
-        {({ citations, symbols, userAnnotationsEnabled, userAnnotations }) => {
+        {({ citations, symbols, annotationsShowing, userAnnotationsEnabled, userAnnotations }) => {
           const localizedCitations = selectors.boxEntityPairsForPage(
             [...citations],
             this.props.pageNumber
-          );
+          ).filter(c => c.boundingBox.height < MAXIMUM_ANNOTATION_HEIGHT);
           const localizedSymbols = symbols.filter(
-            s => s.bounding_box.page === this.props.pageNumber - 1
+            s => s.bounding_box.page === this.props.pageNumber - 1 &&
+            s.bounding_box.height < MAXIMUM_ANNOTATION_HEIGHT
           );
           const localizedUserAnnotations = userAnnotations.filter(
             a => a.boundingBox.page === this.props.pageNumber - 1
@@ -94,6 +100,7 @@ class PageOverlay extends React.Component<PageProps, {}> {
               {localizedCitations.map(c => (
                 <CitationAnnotation
                   key={c.citation.id}
+                  showHint={annotationsShowing}
                   location={c.boundingBox}
                   citation={c.citation}
                 />
@@ -101,10 +108,12 @@ class PageOverlay extends React.Component<PageProps, {}> {
               {localizedSymbols.map(s => (
                 <SymbolAnnotation
                   key={s.id}
+                  showHint={annotationsShowing}
                   location={s.bounding_box}
                   symbol={s}
                 />
               ))}
+              }
               {userAnnotationsEnabled && (
                 <>
                   <SelectionCanvas

@@ -7,7 +7,7 @@ interface AuthorListProps {
   showLinks?: boolean;
 }
 
-class AuthorList extends React.Component<AuthorListProps, {}> {
+class AuthorList extends React.PureComponent<AuthorListProps, {}> {
   render() {
     return (
       <span className="author-list">

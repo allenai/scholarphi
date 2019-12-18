@@ -9,7 +9,7 @@ interface PaperClippingProps {
   onClick?: React.MouseEventHandler;
 }
 
-export class PaperClipping extends React.Component<PaperClippingProps, {}> {
+export class PaperClipping extends React.PureComponent<PaperClippingProps, {}> {
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
 

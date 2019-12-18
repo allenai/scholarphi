@@ -20,6 +20,8 @@ interface Paper {
   url: string;
   venue: string | null;
   year: number | null;
+  citationVelocity: number;
+  influentialCitationCount: number;
 }
 
 /**
@@ -60,7 +62,9 @@ async function getPaper(s2Id: string): Promise<Paper | undefined> {
       abstract: data.abstract,
       url: data.url,
       year,
-      venue: data.venue
+      venue: data.venue,
+      citationVelocity: data.citationVelocity || 0,
+      influentialCitationCount: data.influentialCitationCount || 0
     };
   }
 }

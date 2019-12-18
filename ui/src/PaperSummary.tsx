@@ -1,10 +1,27 @@
+import Button from "@material-ui/core/Button";
+import Tooltip from "@material-ui/core/Tooltip";
+import SaveIcon from "@material-ui/icons/Bookmark";
+import CiteIcon from "@material-ui/icons/FormatQuote";
 import React from "react";
 import AuthorList from "./AuthorList";
 import FavoriteButton from "./FavoriteButton";
+import ChartIcon from "./icon/ChartIcon";
+import InfluentialCitationIcon from "./icon/InfluentialCitationIcon";
 import S2Link from "./S2Link";
 import { ScholarReaderContext } from "./state";
+import { truncateText } from "./ui-utils";
 
-const TRUNCATED_ABSTRACT_LENGTH = 300;
+function warnOfUnimplementedActionAndTrack(actionType: string) {
+  alert("Sorry, that feature isn't implemented yet. Clicking it tells us " +
+        "you're interested in the feature, increasing the likelihood that " +
+        "it'll be implemented!");
+  if (window.heap) {
+    window.heap.track(
+      "Click on Unimplemented Action",
+      { actionType }
+    );
+  }
+}
 
 interface PaperSummaryProps {
   paperId: string;
@@ -14,7 +31,7 @@ interface PaperSummaryState {
   showFullAbstract: boolean;
 }
 
-export class PaperSummary extends React.Component<
+export class PaperSummary extends React.PureComponent<
   PaperSummaryProps,
   PaperSummaryState
 > {
@@ -30,6 +47,8 @@ export class PaperSummary extends React.Component<
       <ScholarReaderContext.Consumer>
         {({ papers, jumpPaperId, setJumpPaperId }) => {
           const paper = papers[this.props.paperId];
+          const hasMetrics = paper.citationVelocity !== 0 || paper.influentialCitationCount !== 0;
+          const truncatedAbstract = paper.abstract ? truncateText(paper.abstract, 300) : null;
           return (
             <div
               ref={ref => {
@@ -59,12 +78,11 @@ export class PaperSummary extends React.Component<
                 <div className="paper-summary__section">
                   <p className="paper-summary__abstract">
                     {this.state.showFullAbstract ||
-                    paper.abstract.length < TRUNCATED_ABSTRACT_LENGTH ? (
+                    truncatedAbstract === paper.abstract ? (
                       paper.abstract
                     ) : (
                       <>
-                        {paper.abstract.substr(0, TRUNCATED_ABSTRACT_LENGTH) +
-                          "..."}
+                        {truncatedAbstract}
                         <span
                           className="paper-summary__abstract__show-more-label"
                           onClick={() => {
@@ -78,6 +96,58 @@ export class PaperSummary extends React.Component<
                   </p>
                 </div>
               )}
+              <div className="paper-summary__metrics-and-actions">
+                  {hasMetrics ? (
+                    <div className="paper-summary__metrics">
+                      {paper.influentialCitationCount > 0 ? (
+                        <Tooltip
+                          placement="bottom-start"
+                          title={
+                            <>
+                              <strong>{paper.influentialCitationCount} influential
+                              citation{paper.influentialCitationCount !== 1 ? 's' : ''}</strong>
+                            </>
+                          }
+                        >
+                          <div className="paper-summary__metrics__metric">
+                            <InfluentialCitationIcon width="12" height="12" />
+                            {paper.influentialCitationCount}
+                          </div>
+                        </Tooltip>
+                      ): null}
+                      {paper.citationVelocity > 0 ? (
+                        <Tooltip
+                          placement="bottom-start"
+                          title={
+                            <>
+                              <strong>Averaging {paper.citationVelocity} citation{paper.citationVelocity !== 1 ? 's ' : ' '}
+                              per year</strong>
+                            </>
+                          }
+                        >
+                          <div className="paper-summary__metrics__metric">
+                            <ChartIcon width="15" height="15" />
+                            {paper.citationVelocity}
+                          </div>
+                        </Tooltip>
+                      ): null}
+                    </div>
+                  ) : null}
+                  <Button
+                    startIcon={<CiteIcon />}
+                    className="paper-summary__action"
+                    onClick={() => warnOfUnimplementedActionAndTrack("cite")}
+                  >
+                    Cite
+                  </Button>
+                  <Button
+                    startIcon={<SaveIcon />}
+                    className="paper-summary__action"
+                    onClick={() => warnOfUnimplementedActionAndTrack("save")}
+                  >
+                    Save
+                  </Button>
+              </div>
               <FavoriteButton
                 favoritableId={{
                   type: "paper-summary",
