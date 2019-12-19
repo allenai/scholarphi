@@ -176,52 +176,53 @@ def init_database(
     )
 
 
-def init_database_connections(output_schema_name: Optional[str] = None) -> None:
+def init_database_connections(
+    schema_name: Optional[str] = None, create_tables=False
+) -> None:
     """
     Initialize database connections.
     """
 
     # By default, data will be placed in a schema with the timestamp of the time that this
     # connection to the database was established.
-    if output_schema_name is None:
+    if schema_name is None:
         timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
-        output_schema_name = f"schema_{timestamp}"
+        schema_name = f"schema_{timestamp}"
 
     input_database.initialize(init_database(config, "input-db"))
-    output_database.initialize(init_database(config, "output-db", output_schema_name))
+    output_database.initialize(init_database(config, "output-db", schema_name))
 
-    # Schema must be created before tables, because Peewee will attempt to create the tables
-    # within the schema.
-    output_database.execute_sql(
-        "CREATE SCHEMA IF NOT EXISTS %s" % (output_schema_name,)
-    )
+    if create_tables:
+        # Schema must be created before tables, because Peewee will attempt to create the tables
+        # within the schema.
+        output_database.execute_sql("CREATE SCHEMA IF NOT EXISTS %s" % (schema_name,))
 
-    output_database.create_tables(
-        [
-            Paper,
-            Summary,
-            MathMl,
-            MathMlMatch,
-            Symbol,
-            SymbolChild,
-            Citation,
-            CitationPaper,
-            Entity,
-            BoundingBox,
-            EntityBoundingBox,
-            Annotation,
-        ],
-        # Don't create the tables if they're already created.
-        safe=True,
-    )
+        output_database.create_tables(
+            [
+                Paper,
+                Summary,
+                MathMl,
+                MathMlMatch,
+                Symbol,
+                SymbolChild,
+                Citation,
+                CitationPaper,
+                Entity,
+                BoundingBox,
+                EntityBoundingBox,
+                Annotation,
+            ],
+            # Don't create the tables if they're already created.
+            safe=True,
+        )
 
-    # Provide 'api' user with read access to the new schema.
-    output_database.execute_sql(
-        "GRANT ALL ON SCHEMA %s TO %s" % (output_schema_name, "api")
-    )
-    output_database.execute_sql(
-        "GRANT ALL ON ALL TABLES IN SCHEMA %s TO %s" % (output_schema_name, "api")
-    )
-    output_database.execute_sql(
-        "GRANT ALL ON ALL SEQUENCES IN SCHEMA %s TO %s" % (output_schema_name, "api")
-    )
+        # Provide 'api' user with read access to the new schema.
+        output_database.execute_sql(
+            "GRANT ALL ON SCHEMA %s TO %s" % (schema_name, "api")
+        )
+        output_database.execute_sql(
+            "GRANT ALL ON ALL TABLES IN SCHEMA %s TO %s" % (schema_name, "api")
+        )
+        output_database.execute_sql(
+            "GRANT ALL ON ALL SEQUENCES IN SCHEMA %s TO %s" % (schema_name, "api")
+        )

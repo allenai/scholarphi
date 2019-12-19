@@ -131,7 +131,7 @@ def read_arxiv_ids_from_file(path: Path) -> List[ArxivId]:
         return [l.strip() for l in arxiv_ids_file.readlines()]
 
 
-class DatabaseCommand(ArxivBatchCommand[I, R], ABC):
+class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
     """
     A command for a batch job that uploads results to the output database. This command takes
     care of initializing the databases and setting up a new schema in the database for the upload.
@@ -139,17 +139,39 @@ class DatabaseCommand(ArxivBatchCommand[I, R], ABC):
 
     def __init__(self, args: Any) -> None:
         super().__init__(args)
-        init_database_connections(output_schema_name=args.schema)
+        init_database_connections(schema_name=args.schema, create_tables=True)
 
     @staticmethod
     def init_parser(parser: ArgumentParser) -> None:
-        super(DatabaseCommand, DatabaseCommand).init_parser(parser)
+        super(DatabaseUploadCommand, DatabaseUploadCommand).init_parser(parser)
         parser.add_argument(
             "--schema",
             type=str,
             help=(
                 "Name of schema to which data will be output. Defaults to the time at which this"
                 + " command object was created."
+            ),
+        )
+
+
+class DatabaseReadCommand(ArxivBatchCommand[I, R], ABC):
+    """
+    A command for a batch job that reads from a database.
+    """
+
+    def __init__(self, args: Any) -> None:
+        super().__init__(args)
+        init_database_connections(schema_name=args.schema)
+
+    @staticmethod
+    def init_parser(parser: ArgumentParser) -> None:
+        super(DatabaseReadCommand, DatabaseReadCommand).init_parser(parser)
+        parser.add_argument(
+            "--schema",
+            type=str,
+            default="public",
+            help=(
+                "Name of schema to connect to in the database. Defaults to 'public'."
             ),
         )
 

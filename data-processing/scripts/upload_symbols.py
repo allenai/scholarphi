@@ -21,7 +21,7 @@ from models.models import MathMl as MathMlModel
 from models.models import MathMlMatch, Paper
 from models.models import Symbol as SymbolModel
 from models.models import SymbolChild, output_database
-from scripts.command import DatabaseCommand
+from scripts.command import DatabaseUploadCommand
 
 S2Id = str
 Hue = float
@@ -42,7 +42,7 @@ class SymbolData(NamedTuple):
     matches: Matches
 
 
-class UploadSymbols(DatabaseCommand[SymbolData, None]):
+class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
     @staticmethod
     def get_name() -> str:
         return "upload-symbols"

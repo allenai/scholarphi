@@ -161,6 +161,23 @@
       "env": {
         "PYTHONPATH": "."
       }
+    },
+    {
+      "name": "Compute IOU",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/process.py",
+      "console": "integratedTerminal",
+      "args": [
+        "-v",
+        "compute-iou",
+        "--arxiv-ids-file",
+        "annotation_arxiv_ids.txt"
+      ],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "."
+      }
     }
   ]
 }
