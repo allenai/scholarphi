@@ -43,3 +43,5 @@ where it makes sense to use these guides.
 * [Sam Skjonsberg](mailto:sams@allenai.org)
 * [Dan Weld](mailto:danw@allenai.org)
 * [Marti Hearst](mailto:hearst@berkeley.edu)
+* [Zachary Kirby](mailto:zkirby@berkeley.edu)
+* [Vivek Aithal](mailto:vivek_aithal@berkeley.edu)
