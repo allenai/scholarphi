@@ -1,4 +1,5 @@
 import os.path
+from typing import FrozenSet
 
 import cv2
 
@@ -13,7 +14,7 @@ from explanations.bounding_box import (
     subtract_multiple_from_multiple,
     union,
 )
-from explanations.types import Rectangle
+from explanations.types import FloatRectangle as Rectangle
 from tests.util import get_test_path
 
 
@@ -177,18 +178,29 @@ def test_compute_page_iou_for_rectangle_iterables():
     assert iou(rects, other_rects) == float(500) / 1100
 
 
-def test_compute_iou_per_rectangle():
+def fs(*rects: Rectangle) -> FrozenSet[Rectangle]:
+    return frozenset(rects)
+
+
+def test_compute_iou_per_rectangle_set():
     # There's a 10px-wide overlap between rect1 and rect2; the algorithm for IOU should use the
     # union of the areas of the input rects.
-    rects = [Rectangle(0, 0, 20, 20), Rectangle(10, 0, 30, 20)]
+    rects = [
+        fs(Rectangle(0, 0, 20, 20)),
+        fs(Rectangle(10, 0, 30, 20)),
+        fs(Rectangle(40, 0, 10, 10), Rectangle(40, 10, 10, 10)),
+    ]
     other_rects = [Rectangle(10, 0, 20, 20), Rectangle(35, 0, 20, 20)]
     ious = iou_per_rectangle(rects, other_rects)
-    assert ious[Rectangle(0, 0, 20, 20)] == float(10) / 30
-    assert ious[Rectangle(10, 0, 30, 20)] == float(25) / 45
+    assert ious[fs(Rectangle(0, 0, 20, 20))] == float(10) / 30
+    assert ious[fs(Rectangle(10, 0, 30, 20))] == float(25) / 45
+    assert (
+        ious[fs(Rectangle(40, 0, 10, 10), Rectangle(40, 10, 10, 10))] == float(10) / 20
+    )
 
 
 def test_rectangle_precision_recall():
-    expected = [Rectangle(0, 0, 20, 20), Rectangle(10, 0, 30, 20)]
+    expected = [fs(Rectangle(0, 0, 20, 20)), fs(Rectangle(10, 0, 30, 20))]
     actual = [Rectangle(10, 0, 20, 20), Rectangle(35, 0, 20, 20)]
     # The threshold value is set to the level where rectangle 1 in 'expected' does not have a
     # a match in 'actual', and rectangle 2 in 'expected' only has a match if you consider

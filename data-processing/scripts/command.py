@@ -131,7 +131,7 @@ def read_arxiv_ids_from_file(path: Path) -> List[ArxivId]:
         return [l.strip() for l in arxiv_ids_file.readlines()]
 
 
-class UploadCommand(ArxivBatchCommand[I, R], ABC):
+class DatabaseCommand(ArxivBatchCommand[I, R], ABC):
     """
     A command for a batch job that uploads results to the output database. This command takes
     care of initializing the databases and setting up a new schema in the database for the upload.
@@ -143,7 +143,7 @@ class UploadCommand(ArxivBatchCommand[I, R], ABC):
 
     @staticmethod
     def init_parser(parser: ArgumentParser) -> None:
-        super(UploadCommand, UploadCommand).init_parser(parser)
+        super(DatabaseCommand, DatabaseCommand).init_parser(parser)
         parser.add_argument(
             "--schema",
             type=str,

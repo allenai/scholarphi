@@ -7,11 +7,14 @@ from typing import Dict, Iterator, List, Optional
 from explanations import directories
 from explanations.types import (
     ArxivId,
+    CharacterId,
     CompilationResult,
     Equation,
     EquationId,
     FileContents,
+    HueIteration,
     Path,
+    PdfBoundingBox,
     Symbol,
     SymbolId,
     SymbolWithId,
@@ -233,3 +236,70 @@ def save_compilation_results(
 
     with open(os.path.join(results_dir, "stderr.log"), "wb") as stderr_file:
         stderr_file.write(result.stderr)
+
+
+def load_citation_locations(
+    arxiv_id: ArxivId,
+) -> Optional[Dict[HueIteration, List[PdfBoundingBox]]]:
+
+    boxes_by_hue_iteration: Dict[HueIteration, List[PdfBoundingBox]] = {}
+    bounding_boxes_path = os.path.join(
+        directories.hue_locations_for_citations(arxiv_id), "hue_locations.csv"
+    )
+    if not os.path.exists(bounding_boxes_path):
+        logging.warning(
+            "Could not find bounding boxes information for %s. Skipping", arxiv_id,
+        )
+        return None
+    with open(bounding_boxes_path) as bounding_boxes_file:
+        reader = csv.reader(bounding_boxes_file)
+        for row in reader:
+            iteration = row[1]
+            hue = float(row[2])
+            box = PdfBoundingBox(
+                page=int(row[3]),
+                left=float(row[4]),
+                top=float(row[5]),
+                width=float(row[6]),
+                height=float(row[7]),
+            )
+            hue_iteration = HueIteration(hue, iteration)
+            if hue not in boxes_by_hue_iteration:
+                boxes_by_hue_iteration[hue_iteration] = []
+            boxes_by_hue_iteration[hue_iteration].append(box)
+
+    return boxes_by_hue_iteration
+
+
+def load_equation_token_locations(
+    arxiv_id: ArxivId,
+) -> Optional[Dict[CharacterId, List[PdfBoundingBox]]]:
+
+    token_locations: Dict[CharacterId, List[PdfBoundingBox]] = {}
+    token_locations_path = os.path.join(
+        directories.hue_locations_for_equation_tokens(arxiv_id), "hue_locations.csv",
+    )
+    if not os.path.exists(token_locations_path):
+        logging.warning(
+            "Could not find bounding boxes information for %s. Skipping", arxiv_id,
+        )
+        return None
+    with open(token_locations_path) as token_locations_file:
+        reader = csv.reader(token_locations_file)
+        for row in reader:
+            tex_path = row[-3]
+            equation_index = int(row[-2])
+            character_index = int(row[-1])
+            character_id = CharacterId(tex_path, equation_index, character_index)
+            box = PdfBoundingBox(
+                page=int(row[3]),
+                left=float(row[4]),
+                top=float(row[5]),
+                width=float(row[6]),
+                height=float(row[7]),
+            )
+            if character_id not in token_locations:
+                token_locations[character_id] = []
+            token_locations[character_id].append(box)
+
+    return token_locations
