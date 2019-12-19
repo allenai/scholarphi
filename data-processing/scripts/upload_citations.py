@@ -30,7 +30,7 @@ from models.models import (
     Summary,
     output_database,
 )
-from scripts.command import DatabaseCommand
+from scripts.command import DatabaseUploadCommand
 
 CitationKey = str
 CitationKeys = Tuple[CitationKey]
@@ -46,7 +46,7 @@ class CitationData(NamedTuple):
     s2_data: Dict[S2Id, Reference]
 
 
-class UploadCitations(DatabaseCommand[CitationData, None]):
+class UploadCitations(DatabaseUploadCommand[CitationData, None]):
     """
     TODO(andrewhead): Ensure that the LaTeX compiler never produces more than one PDF. If so,
     we need to discover which PDF is the 'main' one that will get posted to arXiv.

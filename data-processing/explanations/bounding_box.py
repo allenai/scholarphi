@@ -466,7 +466,7 @@ def compute_accuracy(
     actual = list(actual)
     ious = iou_per_rectangle(actual, expected)
 
-    count_found = len(list(filter(lambda i: i > minimum_iou, ious.values())))
+    count_found = len(list(filter(lambda i: i >= minimum_iou, ious.values())))
     precision = float(count_found) / len(actual)
     recall = float(count_found) / len(expected)
 

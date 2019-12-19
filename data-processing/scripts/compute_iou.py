@@ -6,13 +6,15 @@ from typing import Dict, FrozenSet, Iterator, List, Tuple
 
 import explanations.directories as directories
 from explanations.bounding_box import compute_accuracy, iou, iou_per_rectangle
+from explanations.directories import get_data_subdirectory_for_arxiv_id
 from explanations.file_utils import (
+    clean_directory,
     load_citation_locations,
     load_equation_token_locations,
 )
 from explanations.types import ArxivId, FloatRectangle, Path
 from models.models import Annotation, Paper
-from scripts.command import DatabaseCommand
+from scripts.command import DatabaseReadCommand
 
 CitationKey = str
 CitationKeys = Tuple[CitationKey]
@@ -40,7 +42,7 @@ PageNumber = int
 EntityType = str
 
 
-class ComputeIou(DatabaseCommand[IouJob, IouResults]):
+class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
     @staticmethod
     def get_name() -> str:
         return "compute-iou"
@@ -56,6 +58,11 @@ class ComputeIou(DatabaseCommand[IouJob, IouResults]):
 
     def load(self) -> Iterator[IouJob]:
         for arxiv_id in self.arxiv_ids:
+
+            output_root = get_data_subdirectory_for_arxiv_id(
+                directories.BOUNDING_BOX_ACCURACIES_DIR, arxiv_id
+            )
+            clean_directory(output_root)
 
             citation_locations = load_citation_locations(arxiv_id)
             token_locations = load_equation_token_locations(arxiv_id)
@@ -108,13 +115,14 @@ class ComputeIou(DatabaseCommand[IouJob, IouResults]):
 
             for key in expected:
                 page_number, entity_type = key
-                if not key in actual:
+                if key not in actual:
                     logging.warning(
                         "No bounding boxes found on page %d of paper %s with type %s. Won't be able to compute accuracy for this page.",
                         page_number,
                         arxiv_id,
                         entity_type,
                     )
+                    continue
                 yield IouJob(
                     arxiv_id, actual[key], expected[key], page_number, entity_type
                 )
@@ -148,11 +156,14 @@ class ComputeIou(DatabaseCommand[IouJob, IouResults]):
             writer = csv.writer(page_iou_file)
             writer.writerow(
                 [
+                    item.arxiv_id,
                     item.entity_type,
                     item.page,
                     result.page_iou,
                     result.precision,
                     result.recall,
+                    len(item.actual),
+                    len(item.expected),
                 ]
             )
 
@@ -162,6 +173,7 @@ class ComputeIou(DatabaseCommand[IouJob, IouResults]):
             for rect_set in item.actual:
                 writer.writerow(
                     [
+                        item.arxiv_id,
                         item.entity_type,
                         item.page,
                         str(rect_set),
