@@ -11,7 +11,15 @@ from explanations.directories import (
     get_data_subdirectory_for_iteration,
     get_iteration_names,
 )
-from explanations.types import ArxivId, Author, Path, PdfBoundingBox, Reference
+from explanations.file_utils import load_citation_locations
+from explanations.types import (
+    ArxivId,
+    Author,
+    HueIteration,
+    Path,
+    PdfBoundingBox,
+    Reference,
+)
 from models.models import (
     BoundingBox,
     Citation,
@@ -22,16 +30,11 @@ from models.models import (
     Summary,
     output_database,
 )
-from scripts.command import UploadCommand
+from scripts.command import DatabaseCommand
 
 CitationKey = str
 CitationKeys = Tuple[CitationKey]
 S2Id = str
-
-
-class HueIteration(NamedTuple):
-    hue: float
-    iteration: str
 
 
 class CitationData(NamedTuple):
@@ -43,7 +46,7 @@ class CitationData(NamedTuple):
     s2_data: Dict[S2Id, Reference]
 
 
-class UploadCitations(UploadCommand[CitationData, None]):
+class UploadCitations(DatabaseCommand[CitationData, None]):
     """
     TODO(andrewhead): Ensure that the LaTeX compiler never produces more than one PDF. If so,
     we need to discover which PDF is the 'main' one that will get posted to arXiv.
@@ -63,32 +66,9 @@ class UploadCitations(UploadCommand[CitationData, None]):
     def load(self) -> Iterator[CitationData]:
         for arxiv_id in self.arxiv_ids:
 
-            boxes_by_hue_iteration: Dict[HueIteration, List[PdfBoundingBox]] = {}
-            bounding_boxes_path = os.path.join(
-                directories.hue_locations_for_citations(arxiv_id), "hue_locations.csv"
-            )
-            if not os.path.exists(bounding_boxes_path):
-                logging.warning(
-                    "Could not find bounding boxes information for %s. Skipping",
-                    arxiv_id,
-                )
+            boxes_by_hue_iteration = load_citation_locations(arxiv_id)
+            if boxes_by_hue_iteration is None:
                 continue
-            with open(bounding_boxes_path) as bounding_boxes_file:
-                reader = csv.reader(bounding_boxes_file)
-                for row in reader:
-                    iteration = row[1]
-                    hue = float(row[2])
-                    box = PdfBoundingBox(
-                        page=int(row[3]),
-                        left=float(row[4]),
-                        top=float(row[5]),
-                        width=float(row[6]),
-                        height=float(row[7]),
-                    )
-                    hue_iteration = HueIteration(hue, iteration)
-                    if hue not in boxes_by_hue_iteration:
-                        boxes_by_hue_iteration[hue_iteration] = []
-                    boxes_by_hue_iteration[hue_iteration].append(box)
 
             citations_by_hue_iteration: Dict[HueIteration, CitationKeys] = {}
             for iteration in get_iteration_names(

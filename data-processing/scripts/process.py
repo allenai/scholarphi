@@ -18,6 +18,7 @@ from scripts.compile_tex import (
     CompileTexSourcesWithColorizedEquations,
     CompileTexSourcesWithColorizedEquationTokens,
 )
+from scripts.compute_iou import ComputeIou
 from scripts.debug_colorize_tex import (
     DebugColorizeCitations,
     DebugColorizeEquations,
@@ -103,7 +104,7 @@ DATABASE_UPLOAD_COMMANDS: List = [  # type: ignore
     UploadSymbols,
 ]
 
-DEBUG_COMMANDS: List = [  # type: ignore
+EVALUATION_COMMANDS: List = [  # type: ignore
     DebugColorizeCitations,
     DebugColorizeEquations,
     DebugColorizeEquationTokens,
@@ -111,6 +112,7 @@ DEBUG_COMMANDS: List = [  # type: ignore
     AnnotatePdfsWithEquationBoxes,
     AnnotatePdfsWithEquationTokenBoxes,
     AnnotateTexWithSymbolMarkers,
+    ComputeIou,
 ]
 
 ALL_COMMANDS = (
@@ -118,7 +120,7 @@ ALL_COMMANDS = (
     + MAIN_PIPELINE_COMMANDS
     + STORE_RESULTS_COMMANDS
     + DATABASE_UPLOAD_COMMANDS
-    + DEBUG_COMMANDS
+    + EVALUATION_COMMANDS
 )
 
 

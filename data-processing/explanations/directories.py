@@ -86,6 +86,7 @@ DEBUGGING_COLORIZING_EQUATIONS_DIR = os.path.join(
 DEBUGGING_COLORIZING_EQUATION_TOKENS_DIR = os.path.join(
     DATA_DIR, "33-debugging-colorizing-equation-tokens"
 )
+BOUNDING_BOX_ACCURACIES_DIR = os.path.join(DATA_DIR, "34-bounding-box-accuracies")
 
 # Directories for utilities
 NODE_DIRECTORY = "node"
@@ -229,3 +230,7 @@ def hue_locations_for_equation_tokens(arxiv_id: str) -> RelativePath:
 
 def symbol_locations(arxiv_id: str) -> RelativePath:
     return get_data_subdirectory_for_arxiv_id(SYMBOL_LOCATIONS_DIR, arxiv_id)
+
+
+def bounding_box_accuracies(arxiv_id: str) -> RelativePath:
+    return get_data_subdirectory_for_arxiv_id(BOUNDING_BOX_ACCURACIES_DIR, arxiv_id)

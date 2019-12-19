@@ -1,13 +1,15 @@
 import logging
-from typing import Dict, Iterable, Iterator, List, Optional, Tuple
+from typing import (Callable, Dict, FrozenSet, Iterable, Iterator, List,
+                    Optional, Tuple)
 
 import cv2
 import numpy as np
 
 from explanations.types import (BoundingBoxInfo, CharacterId,
-                                CharacterLocations, Dimensions, PdfBoundingBox,
-                                Point, RasterBoundingBox, Rectangle, Symbol,
-                                SymbolId)
+                                CharacterLocations, Dimensions)
+from explanations.types import FloatRectangle as Rectangle
+from explanations.types import (PdfBoundingBox, Point, RasterBoundingBox,
+                                Symbol, SymbolId)
 
 
 def extract_bounding_boxes(
@@ -221,7 +223,7 @@ def get_symbol_bounding_box(
 
     # Boxes for a symbol should be on only one page.
     if len({box.page for box in boxes}) > 1:
-        logging.warning(
+        logging.warning(  # pylint: disable=logging-not-lazy
             (
                 "Boxes found on more than one page for symbol %s. "
                 + "Only the boxes for one page will be considered."
@@ -264,7 +266,7 @@ def subtract(rect1: Rectangle, rect2: Rectangle) -> Iterator[Rectangle]:
     rect2_right = rect2.left + rect2.width
     rect2_bottom = rect2.top + rect2.height
 
-    if not (are_intersecting(rect1, rect2)):
+    if not are_intersecting(rect1, rect2):
         yield Rectangle(rect1.left, rect1.top, rect1.width, rect1.height)
         return
 
@@ -302,7 +304,7 @@ def subtract(rect1: Rectangle, rect2: Rectangle) -> Iterator[Rectangle]:
 
 def are_intersecting(rect1: Rectangle, rect2: Rectangle) -> bool:
 
-    between = lambda x, x1, x2: x >= x1 and x <= x2
+    between: Callable[[float, float, float], float] = lambda x, x1, x2: x1 <= x <= x2
 
     horizontal_range_overlap = any(
         [
@@ -411,7 +413,7 @@ def sum_areas(rects: Iterable[Rectangle]) -> float:
     """
     Assumes rectangles do not overlap with each other.
     """
-    total_area = 0
+    total_area = 0.
     for rect in rects:
         total_area += (rect.width * rect.height)
     return total_area
@@ -435,33 +437,37 @@ def iou(rects: Iterable[Rectangle], other_rects: Iterable[Rectangle]) -> float:
 
 
 def iou_per_rectangle(
-    rects: Iterable[Rectangle], other_rects: Iterable[Rectangle]
-) -> Dict[Rectangle, float]:
+    rects: Iterable[FrozenSet[Rectangle]], other_rects: Iterable[Rectangle]
+) -> Dict[FrozenSet[Rectangle], float]:
     """
     Compute the intersection between each rectangle in 'rects' and all rectangles that overlap
     with it in 'other_rects'.
     """
     other_rects = list(other_rects)
-    ious: Dict[Rectangle, float] = {}
+    ious: Dict[FrozenSet[Rectangle], float] = {}
 
-    for rect in rects:
-        overlapping_rects = filter(lambda o: are_intersecting(rect, o), other_rects)
-        rect_iou = iou([rect], overlapping_rects)
-        ious[rect] = rect_iou
+    for rect_set in rects:
+
+        def filter_fn(other_rect: Rectangle, rs: FrozenSet[Rectangle] = rect_set) -> bool:
+            return any([are_intersecting(r, other_rect) for r in rs])
+
+        overlapping_rects = filter(filter_fn, other_rects)
+        rect_iou = iou(rect_set, overlapping_rects)
+        ious[rect_set] = rect_iou
 
     return ious
 
 
 def compute_accuracy(
-    expected: Iterable[Rectangle], actual: Iterable[Rectangle], minimum_iou: float = 0.5
+    actual: Iterable[FrozenSet[Rectangle]], expected: Iterable[Rectangle], minimum_iou: float = 0.5
 ) -> Tuple[float, float]:
 
     expected = list(expected)
     actual = list(actual)
-    ious = iou_per_rectangle(expected, actual)
+    ious = iou_per_rectangle(actual, expected)
 
     count_found = len(list(filter(lambda i: i > minimum_iou, ious.values())))
-    precision = float(count_found) / len(expected)
-    recall = float(count_found) / len(actual)
+    precision = float(count_found) / len(actual)
+    recall = float(count_found) / len(expected)
 
     return (precision, recall)

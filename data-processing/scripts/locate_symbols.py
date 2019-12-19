@@ -1,14 +1,16 @@
 import csv
-import logging
 import os.path
-from typing import Dict, Iterator, List, NamedTuple
+from typing import Iterator, NamedTuple
 
 from explanations import directories
 from explanations.bounding_box import get_symbol_bounding_box
-from explanations.file_utils import clean_directory, load_symbols
+from explanations.file_utils import (
+    clean_directory,
+    load_equation_token_locations,
+    load_symbols,
+)
 from explanations.types import (
     ArxivId,
-    CharacterId,
     CharacterLocations,
     Path,
     PdfBoundingBox,
@@ -45,36 +47,9 @@ class LocateSymbols(ArxivBatchCommand[LocationTask, PdfBoundingBox]):
             output_dir = directories.symbol_locations(arxiv_id)
             clean_directory(output_dir)
 
-            token_locations: Dict[CharacterId, List[PdfBoundingBox]] = {}
-            token_locations_path = os.path.join(
-                directories.hue_locations_for_equation_tokens(arxiv_id),
-                "hue_locations.csv",
-            )
-            if not os.path.exists(token_locations_path):
-                logging.warning(
-                    "Could not find bounding boxes information for %s. Skipping",
-                    arxiv_id,
-                )
+            token_locations = load_equation_token_locations(arxiv_id)
+            if token_locations is None:
                 continue
-            with open(token_locations_path) as token_locations_file:
-                reader = csv.reader(token_locations_file)
-                for row in reader:
-                    tex_path = row[-3]
-                    equation_index = int(row[-2])
-                    character_index = int(row[-1])
-                    character_id = CharacterId(
-                        tex_path, equation_index, character_index
-                    )
-                    box = PdfBoundingBox(
-                        page=int(row[3]),
-                        left=float(row[4]),
-                        top=float(row[5]),
-                        width=float(row[6]),
-                        height=float(row[7]),
-                    )
-                    if character_id not in token_locations:
-                        token_locations[character_id] = []
-                    token_locations[character_id].append(box)
 
             symbols_with_ids = load_symbols(arxiv_id)
             if symbols_with_ids is None:

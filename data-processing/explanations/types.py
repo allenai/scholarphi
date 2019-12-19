@@ -106,6 +106,12 @@ class Citation(Entity):
 
 
 @dataclass(frozen=True)
+class HueIteration:
+    hue: float
+    iteration: str
+
+
+@dataclass(frozen=True)
 class Equation(Entity):
     i: int
     "Index of this equation in the TeX document."
@@ -277,6 +283,14 @@ class Rectangle(NamedTuple):
     top: int
     width: int
     height: int
+
+
+@dataclass(frozen=True)
+class FloatRectangle:
+    left: float
+    top: float
+    width: float
+    height: float
 
 
 class PdfBoundingBox(NamedTuple):
