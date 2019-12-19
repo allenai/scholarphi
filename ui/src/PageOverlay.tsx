@@ -83,14 +83,20 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
 
     return ReactDOM.createPortal(
       <ScholarReaderContext.Consumer>
-        {({ citations, symbols, annotationsShowing, userAnnotationsEnabled, userAnnotations }) => {
-          const localizedCitations = selectors.boxEntityPairsForPage(
-            [...citations],
-            this.props.pageNumber
-          ).filter(c => c.boundingBox.height < MAXIMUM_ANNOTATION_HEIGHT);
+        {({
+          citations,
+          symbols,
+          annotationsShowing,
+          userAnnotationsEnabled,
+          userAnnotations
+        }) => {
+          const localizedCitations = selectors
+            .boxEntityPairsForPage([...citations], this.props.pageNumber)
+            .filter(c => c.boundingBox.height < MAXIMUM_ANNOTATION_HEIGHT);
           const localizedSymbols = symbols.filter(
-            s => s.bounding_box.page === this.props.pageNumber - 1 &&
-            s.bounding_box.height < MAXIMUM_ANNOTATION_HEIGHT
+            s =>
+              s.bounding_box.page === this.props.pageNumber - 1 &&
+              s.bounding_box.height < MAXIMUM_ANNOTATION_HEIGHT
           );
           const localizedUserAnnotations = userAnnotations.filter(
             a => a.boundingBox.page === this.props.pageNumber - 1
@@ -113,7 +119,6 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
                   symbol={s}
                 />
               ))}
-              }
               {userAnnotationsEnabled && (
                 <>
                   <SelectionCanvas
