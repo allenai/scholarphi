@@ -1,5 +1,4 @@
 import React from "react";
-import FavoriteButton from "./FavoriteButton";
 import PaperClipping from "./PaperClipping";
 import { ScholarReaderContext } from "./state";
 import { Symbol } from "./types/api";
@@ -19,6 +18,7 @@ export class SymbolPreview extends React.PureComponent<SymbolPreviewProps> {
               highlightBoxes={[this.props.symbol.bounding_box]}
               onClick={() => setJumpSymbol(this.props.symbol)}
             />
+            {/*
             <FavoriteButton
               opaque
               favoritableId={{
@@ -26,6 +26,7 @@ export class SymbolPreview extends React.PureComponent<SymbolPreviewProps> {
                 entityId: this.props.symbol.id
               }}
             />
+            */}
           </div>
         )}
       </ScholarReaderContext.Consumer>
