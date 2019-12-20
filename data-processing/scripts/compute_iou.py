@@ -5,7 +5,12 @@ from dataclasses import dataclass
 from typing import Dict, FrozenSet, Iterator, List, Tuple
 
 import explanations.directories as directories
-from explanations.bounding_box import compute_accuracy, iou, iou_per_rectangle
+from explanations.bounding_box import (
+    compute_accuracy,
+    iou,
+    iou_per_rectangle,
+    sum_areas,
+)
 from explanations.directories import get_data_subdirectory_for_arxiv_id
 from explanations.file_utils import (
     clean_directory,
@@ -170,13 +175,15 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
         entity_iou_path = os.path.join(bounding_box_accuracies_path, "entity_ious.csv")
         with open(entity_iou_path, "a") as entity_iou_file:
             writer = csv.writer(entity_iou_file)
-            for rect_set in item.actual:
+            for i, rect_set in enumerate(item.actual):
                 writer.writerow(
                     [
                         item.arxiv_id,
                         item.entity_type,
                         item.page,
+                        i,
                         str(rect_set),
+                        sum_areas(rect_set),
                         result.rectangle_ious[rect_set],
                     ]
                 )
