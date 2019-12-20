@@ -5,10 +5,28 @@ import Drawer from "./Drawer";
 import { FavoritableId, favoritesKey } from "./FavoriteButton";
 import FeedbackButton from "./FeedbackButton";
 import PageOverlay from "./PageOverlay";
-import { DrawerState, Pages, PaperId, Papers, ScholarReaderContext, State } from "./state";
+import {
+  DrawerState,
+  Pages,
+  PaperId,
+  Papers,
+  ScholarReaderContext,
+  State
+} from "./state";
 import "./style/index.less";
-import { Annotation, AnnotationData, Citation, MathMl, Paper, Symbol } from "./types/api";
-import { DocumentLoadedEvent, PageRenderedEvent, PDFViewerApplication } from "./types/pdfjs-viewer";
+import {
+  Annotation,
+  AnnotationData,
+  Citation,
+  MathMl,
+  Paper,
+  Symbol
+} from "./types/api";
+import {
+  DocumentLoadedEvent,
+  PageRenderedEvent,
+  PDFViewerApplication
+} from "./types/pdfjs-viewer";
 import { isKeypressEscape } from "./ui-utils";
 
 interface ScholarReaderProps {
@@ -59,7 +77,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       setSelectedCitation: this.setSelectedCitation.bind(this),
       jumpSymbol: null,
       setJumpSymbol: this.setJumpSymbol.bind(this),
-      annotationsShowing: false,
+      annotationsShowing: true,
       setAnnotationsShowing: this.setAnnotationsShowing.bind(this),
       userAnnotationsEnabled: false,
       setUserAnnotationsEnabled: this.setUserAnnotationsEnabled.bind(this),
@@ -76,10 +94,10 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     /**
      * Bind event handlers so that they are always called with 'this' as its context.
      */
-    this.toggleUserAnnotationState = this.toggleUserAnnotationState.bind(this)
-    this.closeDrawerOnEscape = this.closeDrawerOnEscape.bind(this)
-    this.showAnnotationsOnAltDown = this.showAnnotationsOnAltDown.bind(this)
-    this.hideAnnotationsOnAltUp = this.hideAnnotationsOnAltUp.bind(this)
+    this.toggleUserAnnotationState = this.toggleUserAnnotationState.bind(this);
+    this.closeDrawerOnEscape = this.closeDrawerOnEscape.bind(this);
+    this.showAnnotationsOnAltDown = this.showAnnotationsOnAltDown.bind(this);
+    this.hideAnnotationsOnAltUp = this.hideAnnotationsOnAltUp.bind(this);
   }
 
   setCitations(citations: Citation[]) {
@@ -126,7 +144,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
   }
 
   setSelectedCitation(citation: Citation | null) {
-    this.setState({ selectedCitation: citation  });
+    this.setState({ selectedCitation: citation });
   }
 
   setJumpSymbol(symbol: Symbol | null) {
@@ -206,15 +224,19 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
   }
 
   showAnnotationsOnAltDown(event: KeyboardEvent) {
-      if (event.altKey) {
-        this.setAnnotationsShowing(true);
-      }
+    /*
+    if (event.altKey) {
+      this.setAnnotationsShowing(true);
+    }
+    */
   }
 
   hideAnnotationsOnAltUp(event: KeyboardEvent) {
-      if (event.keyCode === 18 || event.key === "Alt") {
-          this.setAnnotationsShowing(false);
-      }
+    /*
+    if (event.keyCode === 18 || event.key === "Alt") {
+        this.setAnnotationsShowing(false);
+    }
+    */
   }
 
   toggleUserAnnotationState(event: KeyboardEvent) {
@@ -228,17 +250,17 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       this.subscribeToPDFViewerStateChanges(application);
     });
     this.loadDataFromApi();
-    window.addEventListener('keypress', this.toggleUserAnnotationState);
-    window.addEventListener('keydown', this.closeDrawerOnEscape);
-    window.addEventListener('keydown', this.showAnnotationsOnAltDown);
-    window.addEventListener('keyup', this.hideAnnotationsOnAltUp);
+    window.addEventListener("keypress", this.toggleUserAnnotationState);
+    window.addEventListener("keydown", this.closeDrawerOnEscape);
+    window.addEventListener("keydown", this.showAnnotationsOnAltDown);
+    window.addEventListener("keyup", this.hideAnnotationsOnAltUp);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('keypress', this.toggleUserAnnotationState);
-    window.removeEventListener('keydown', this.closeDrawerOnEscape);
-    window.removeEventListener('keydown', this.showAnnotationsOnAltDown);
-    window.removeEventListener('keyup', this.hideAnnotationsOnAltUp);
+    window.removeEventListener("keypress", this.toggleUserAnnotationState);
+    window.removeEventListener("keydown", this.closeDrawerOnEscape);
+    window.removeEventListener("keydown", this.showAnnotationsOnAltDown);
+    window.removeEventListener("keyup", this.hideAnnotationsOnAltUp);
   }
 
   subscribeToPDFViewerStateChanges(pdfViewerApplication: PDFViewerApplication) {
@@ -325,8 +347,9 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
   }
 
   render() {
-    const elFeedbackContainer =
-      document.getElementById('scholarReaderGlobalFeedbackButton');
+    const elFeedbackContainer = document.getElementById(
+      "scholarReaderGlobalFeedbackButton"
+    );
     return (
       <ScholarReaderContext.Provider value={this.state}>
         <>
@@ -347,10 +370,12 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
             );
           })}
           <Drawer />
-          {elFeedbackContainer ? createPortal(
-            <FeedbackButton variant="toolbar" />,
-            elFeedbackContainer
-          ) : null}
+          {elFeedbackContainer
+            ? createPortal(
+                <FeedbackButton variant="toolbar" />,
+                elFeedbackContainer
+              )
+            : null}
         </>
       </ScholarReaderContext.Provider>
     );
