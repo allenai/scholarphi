@@ -1,6 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import CitationAnnotation from "./CitationAnnotation";
+import { detectedEntities } from "./detected-boxes";
+import DetectedEntityAnnotation from "./DetectedEntityAnnotation";
 import { Point } from "./Selection";
 import SelectionCanvas from "./SelectionLayer";
 import * as selectors from "./selectors";
@@ -81,6 +83,13 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
       this._element.style.height = "0px";
     }
 
+    const detectedEntitiesForPage = detectedEntities.filter(
+      de =>
+        de.page === this.props.pageNumber - 1 &&
+        this.context.paperId !== undefined &&
+        de.arxivId === this.context.paperId.id
+    );
+
     return ReactDOM.createPortal(
       <ScholarReaderContext.Consumer>
         {({
@@ -130,6 +139,17 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
                       key={`user-annotation-${a.id}`}
                       annotation={a}
                     />
+                  ))}
+                  {detectedEntitiesForPage.map(a => (
+                    <>
+                      {a.rectangles.map((_, i) => (
+                        <DetectedEntityAnnotation
+                          key={`entity-annotation-${a.arxivId}-${a.page}-${a.index}-${i}`}
+                          entity={a}
+                          boxNumber={i}
+                        />
+                      ))}
+                    </>
                   ))}
                 </>
               )}
