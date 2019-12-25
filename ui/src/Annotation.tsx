@@ -41,11 +41,6 @@ export class Annotation extends React.PureComponent<
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
 
-  constructor(props: AnnotationProps) {
-    super(props);
-    this.state = { selected: false };
-  }
-
   onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
     if (uiUtils.isKeypressEscape(e)) {
       this.deselectIfSelected();
@@ -61,6 +56,20 @@ export class Annotation extends React.PureComponent<
 
   select() {
     this.context.setSelectedAnnotationId(this.props.id);
+  }
+
+  shouldHighlight() {
+    if (!this.context.selectedAnnotationId) { return false; }
+    const [typeSelected, idSelected,] = this.context.selectedAnnotationId.split('-');
+    const [typeSelf, idSelf,] = this.props.id.split('-');
+    if (typeSelf !== typeSelected) { return false; }
+    
+    // We are only focusing on symbols for right now;
+    if (typeSelf === 'symbol') {
+      const highlightedIds = this.context.symbolMatchSet[Number(idSelected)];
+      return this.isSelected() || highlightedIds.has(Number(idSelf));
+    }
+    return false;
   }
 
   deselectIfSelected() {
@@ -110,7 +119,8 @@ export class Annotation extends React.PureComponent<
                       selected: this.isSelected(),
                       "source-tex-pipeline":
                         this.props.source === "tex-pipeline",
-                      "source-other": this.props.source === "other"
+                      "source-other": this.props.source === "other",
+                      "annotation-highlight": this.shouldHighlight(),
                     }
                   )}
                   tabIndex={0}

@@ -1,6 +1,7 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import * as api from "./api";
+import * as selectors from "./selectors";
 import Drawer from "./Drawer";
 import { FavoritableId, favoritesKey } from "./FavoriteButton";
 import FeedbackButton from "./FeedbackButton";
@@ -20,7 +21,9 @@ import {
   Citation,
   MathMl,
   Paper,
-  Symbol, UserLibrary
+  UserLibrary,
+  Symbol,
+  SymbolMatchSet,
 } from "./types/api";
 import {
   DocumentLoadedEvent,
@@ -60,6 +63,8 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       setCitations: this.setCitations.bind(this),
       symbols: [],
       setSymbols: this.setSymbols.bind(this),
+      symbolMatchSet: {},
+      setSymbolMatchSet: this.setSymbolMatchSet.bind(this),
       mathMl: [],
       setMathMl: this.setMathMl.bind(this),
       papers: {},
@@ -113,6 +118,10 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
   setSymbols(symbols: Symbol[]) {
     this.setState({ symbols });
+  }
+
+  setSymbolMatchSet(symbolMatchSet: SymbolMatchSet) {
+    this.setState({ symbolMatchSet });
   }
 
   setMathMl(mathMl: MathMl[]) {
@@ -340,6 +349,28 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
         if (symbols.length >= 1) {
           const mathMl = await api.mathMlForArxivId(this.props.paperId.id);
           this.setMathMl(mathMl);
+
+          /**
+           * Build a mapping from symbol to all possible parent matches
+           */
+          const symbolMatchSet: SymbolMatchSet = {};
+          symbols.map(s => {
+            symbolMatchSet[s.id] = new Set(
+              selectors.matchingSymbols(s, symbols, mathMl)
+              .map(m => {
+                // Need to get the top most parent as this is the 
+                // symbol that determines the annotation
+                let curr: Symbol = m;
+                while (curr.parent != null) {
+                  let parent = symbols.find(s => s.id === curr.parent);
+                  if (parent) { curr = parent }
+                  else { break; }
+                }
+                return curr.id;
+              })
+            );
+          })
+          this.setSymbolMatchSet(symbolMatchSet);
         }
 
         const annotations = await api.annnotationsForArxivId(
