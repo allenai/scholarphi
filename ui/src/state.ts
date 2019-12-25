@@ -1,15 +1,7 @@
 import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
 import { FavoritableId } from "./FavoriteButton";
-import {
-  Annotation,
-  AnnotationData,
-  Citation,
-  MathMl,
-  Paper,
-  Symbol,
-  UserLibrary
-} from "./types/api";
+import { Annotation, AnnotationData, Citation, MathMl, Paper, Symbol, SymbolMatchSet, UserLibrary } from "./types/api";
 import { PDFPageView, PDFViewer } from "./types/pdfjs-viewer";
 
 export interface State {
@@ -21,6 +13,8 @@ export interface State {
   setCitations(citations: Citation[]): void;
   symbols: Readonly<Symbol[]>;
   setSymbols(symbols: Symbol[]): void;
+  symbolMatchSet: Readonly<SymbolMatchSet>;
+  setSymbolMatchSet(matchSet: SymbolMatchSet): void;
   mathMl: Readonly<MathMl[]>;
   setMathMl(mathMl: MathMl[]): void;
   papers: Readonly<Papers>;
@@ -100,6 +94,8 @@ const defaultState: State = {
   setCitations: () => {},
   symbols: [],
   setSymbols: () => {},
+  symbolMatchSet: {},
+  setSymbolMatchSet: () => {},
   mathMl: [],
   setMathMl: () => {},
   papers: {},
