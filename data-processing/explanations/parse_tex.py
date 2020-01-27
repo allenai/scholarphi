@@ -437,6 +437,14 @@ class BibitemExtractor:
         for content in list(bibitem.contents)[1:]:
             if isinstance(content, TexNode) and content.string is not None:
                 text += content.string
+            # One common pattern in TeX is to force capitalization for a bibliography entry by
+            # surrounding tokens with curly braces. This gets interpreted (incorrectly)
+            # by TeXSoup as an RArg. Here, the contents of an RArg are extracted as literal
+            # text. A space is appended after the RArg's value because TeXSoup will remove the
+            # spaces between what it interprets as RArgs. As only approximate matching will be
+            # performed on the text, erroneous insertion of spaces shouldn't be an issue.
+            if isinstance(content, RArg):
+                text += (content.value + " ")
             elif isinstance(content, TokenWithPosition):
                 text += str(content)
         return _clean_bibitem_text(text)
