@@ -1,11 +1,7 @@
-from explanations.parse_tex import (
-    BibitemExtractor,
-    CitationExtractor,
-    ColorLinksExtractor,
-    DocumentclassExtractor,
-    EquationExtractor,
-    MacroExtractor,
-)
+from explanations.parse_tex import (BibitemExtractor, CitationExtractor,
+                                    ColorLinksExtractor,
+                                    DocumentclassExtractor, EquationExtractor,
+                                    MacroExtractor)
 from explanations.types import MacroDefinition
 
 
@@ -162,6 +158,15 @@ def test_extract_bibitems():
     assert bibitems[0].text == "token1 token2 token3"
     assert bibitems[1].key == "key2"
     assert bibitems[1].text == "token4 token5"
+
+
+def test_extract_bibitem_tokens_from_curly_braces():
+    tex = "\n".join(["\\bibitem[label]{key1}", "token1 {token2} {token3}",])
+    extractor = BibitemExtractor()
+    bibitems = list(extractor.parse(tex))
+    assert len(bibitems) == 1
+    assert bibitems[0].key == "key1"
+    assert bibitems[0].text == "token1 token2 token3"
 
 
 def test_extract_bibitems_from_environment():
