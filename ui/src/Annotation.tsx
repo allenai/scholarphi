@@ -21,6 +21,7 @@ interface AnnotationProps {
   source?: string;
   className?: string;
   location: BoundingBox;
+  shouldHighlight?: boolean | false;
   /**
    * Correction factor to apply to bounding box coordinates before rendering the annotation.
    * You normally should not need to set this and should be able to trust the defaults.
@@ -56,20 +57,6 @@ export class Annotation extends React.PureComponent<
 
   select() {
     this.context.setSelectedAnnotationId(this.props.id);
-  }
-
-  shouldHighlight() {
-    if (!this.context.selectedAnnotationId) { return false; }
-    const [typeSelected, idSelected,] = this.context.selectedAnnotationId.split('-');
-    const [typeSelf, idSelf,] = this.props.id.split('-');
-    if (typeSelf !== typeSelected) { return false; }
-    
-    // We are only focusing on symbols for right now;
-    if (typeSelf === 'symbol') {
-      const highlightedIds = this.context.symbolMatchSet[Number(idSelected)];
-      return this.isSelected() || highlightedIds.has(Number(idSelf));
-    }
-    return false;
   }
 
   deselectIfSelected() {
@@ -120,7 +107,7 @@ export class Annotation extends React.PureComponent<
                       "source-tex-pipeline":
                         this.props.source === "tex-pipeline",
                       "source-other": this.props.source === "other",
-                      "annotation-highlight": this.shouldHighlight(),
+                      "matching-symbol-annotation": this.props.shouldHighlight,
                     }
                   )}
                   tabIndex={0}
