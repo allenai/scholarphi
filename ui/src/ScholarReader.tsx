@@ -354,7 +354,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
            * Build a mapping from symbol to all possible parent matches
            */
           const symbolMatchSet: SymbolMatchSet = {};
-          symbols.map(s => {
+          symbols.forEach(s => {
             symbolMatchSet[s.id] = new Set(
               selectors.matchingSymbols(s, symbols, mathMl)
               .map(m => {

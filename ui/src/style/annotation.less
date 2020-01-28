@@ -20,21 +20,22 @@
   border-bottom: @underline-width @underline-color dotted;
 }
 
-/**
- * Provide an underline as a hint that the annotation is interactive 
- */
-.scholar-reader-annotation.annotation-highlight {
-  border-bottom: @underline-width+1px @annotation-highlight-color solid;
-}
 
-/**
- * Highlight the area of an annotation on hover
- */
 .scholar-reader-annotation:not(.user-annotation) {
+  /**
+  * Highlight the area of an annotation on hover
+  */
   &:hover,
   &.selected {
     background-color: @highlight-color;
     cursor: pointer;
+  }
+  /**
+  * Highlight all matching symbols
+  */
+  &.matching-symbol-annotation,
+  &.selected {
+    border-bottom: @underline-width+1px @highlight solid;
   }
 }
 
