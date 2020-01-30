@@ -20,7 +20,7 @@ import {
   Citation,
   MathMl,
   Paper,
-  Symbol
+  Symbol, UserLibrary
 } from "./types/api";
 import {
   DocumentLoadedEvent,
@@ -31,6 +31,7 @@ import { isKeypressEscape } from "./ui-utils";
 
 interface ScholarReaderProps {
   paperId?: PaperId;
+  userId?: number
 }
 
 class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
@@ -52,6 +53,11 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
      * are called from outside ScholarReader.
      */
     this.state = {
+      userId: undefined,
+      userLibrary: null,
+      setUserId: this.setUserId.bind(this),
+      setUserLibrary: this.setUserLibrary.bind(this),
+      addToLibrary: this.addToLibrary.bind(this),
       paperId: props.paperId,
       citations: [],
       setCitations: this.setCitations.bind(this),
@@ -98,6 +104,14 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     this.closeDrawerOnEscape = this.closeDrawerOnEscape.bind(this);
     this.showAnnotationsOnAltDown = this.showAnnotationsOnAltDown.bind(this);
     this.hideAnnotationsOnAltUp = this.hideAnnotationsOnAltUp.bind(this);
+  }
+
+  setUserId(userId: number) {
+    this.setState({userId});
+  }
+
+  setUserLibrary(userLibrary: UserLibrary | null) {
+    this.setState({ userLibrary })
   }
 
   setCitations(citations: Citation[]) {
@@ -179,6 +193,20 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       const annotation = { ...annotationData, id };
       this.setUserAnnotations([...this.state.userAnnotations, annotation]);
       this.setSelectedAnnotationId(`user-annotation-${id}`);
+    }
+  }
+
+  async addToLibrary(paperId: string, paperTitle: string) {
+    if (this.props.paperId !== undefined) {
+      await api.addLibraryEntry(
+          paperId,
+          paperTitle
+      );
+      const userLibrary = this.state.userLibrary;
+      if (userLibrary) {
+        const paperIds = userLibrary.paperIds.concat(paperId);
+        this.setUserLibrary({userId: userLibrary.userId, paperIds});
+      }
     }
   }
 
@@ -319,6 +347,12 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
           this.props.paperId.id
         );
         this.setUserAnnotations(annotations);
+
+        const userLibrary = await api.getUserLibraryInfo(this.state.userId);
+        if (userLibrary) {
+          this.setUserId(userLibrary.userId);
+          this.setUserLibrary(userLibrary)
+        }
       }
     }
   }

@@ -65,3 +65,21 @@ export interface AnnotationData {
 export interface Annotation extends AnnotationData {
   id: AnnotationId;
 }
+
+
+export interface UserInfo {
+  user: {
+    id: number
+  }
+  entriesWithPaperIds: [number, string][]
+}
+
+export interface UserLibrary {
+  userId: number,
+  paperIds: string[]
+}
+
+export interface CachedUserLibrary {
+  userLibrary: UserLibrary,
+  expires: number
+}
