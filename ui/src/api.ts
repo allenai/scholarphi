@@ -2,12 +2,12 @@ import axios, { AxiosResponse } from "axios";
 import {
   Annotation,
   AnnotationData,
-  AnnotationId,
+  AnnotationId, CachedUserLibrary,
   Citation,
   MathMl,
   Paper,
   PaperIdWithCounts,
-  Symbol
+  Symbol, UserInfo, UserLibrary
 } from "./types/api";
 
 export async function citationsForArxivId(arxivId: string) {
@@ -76,6 +76,57 @@ export async function putAnnotation(
 
 export async function deleteAnnotation(arxivId: string, id: number) {
   return await axios.delete(`/api/v0/papers/arxiv:${arxivId}/annotation/${id}`);
+}
+
+export async function addLibraryEntry(paperId: string, paperTitle: string) {
+  const s2ApiUrl = `https://www.semanticscholar.org/api/1/library/entries`;
+  const tags: string[] = [];
+  const response = await axios.post(
+      s2ApiUrl,
+      {
+        paperId,
+        paperTitle,
+        tags
+      },
+      {withCredentials: true}
+  );
+  return response.data;
+}
+
+export async function getUserLibraryInfo(userId?: number) {
+  if (localStorage && userId) {
+    const maybeItem = localStorage.getItem(userId.toString());
+    if (maybeItem) {
+      const parsedItem: CachedUserLibrary = JSON.parse(maybeItem);
+      if (parsedItem.expires > Date.now()) {
+        console.debug(`Using cached library entries for:${userId}`);
+        return Promise.resolve(parsedItem.userLibrary);
+      } else {
+        console.debug(`Library entries for ${userId} are cached but have expired.`);
+      }
+    }
+  }
+
+  const s2ApiUrl = `https://www.semanticscholar.org/api/1/user`;
+  const data = await doGet(axios.get<UserInfo>(s2ApiUrl, {withCredentials: true}));
+  if (data) {
+    const userLibrary = Object.assign({}, {
+      userId: data.user.id,
+      paperIds: data.entriesWithPaperIds.map(entry => entry[1])
+    });
+
+    if (localStorage) {
+      localStorage.setItem(
+          data.user.id.toString(),
+          JSON.stringify({
+            // cache for 1 hour
+            expires: Date.now() + 1 * 60 * 60 * 1000,
+            userLibrary: userLibrary
+          })
+      );
+    }
+    return userLibrary;
+  }
 }
 
 /**

@@ -23,6 +23,11 @@ function warnOfUnimplementedActionAndTrack(actionType: string) {
   }
 }
 
+function goToLibrary() {
+  const s2LibraryUrl = `https://www.semanticscholar.org/me/library`;
+  window.open(s2LibraryUrl, '_blank');
+}
+
 interface PaperSummaryProps {
   paperId: string;
 }
@@ -35,8 +40,13 @@ export class PaperSummary extends React.PureComponent<
   PaperSummaryProps,
   PaperSummaryState
 > {
+
+  static contextType = ScholarReaderContext;
+  context!: React.ContextType<typeof ScholarReaderContext>;
+
   constructor(props: PaperSummaryProps) {
     super(props);
+
     this.state = {
       showFullAbstract: false
     };
@@ -45,10 +55,11 @@ export class PaperSummary extends React.PureComponent<
   render() {
     return (
       <ScholarReaderContext.Consumer>
-        {({ papers, jumpPaperId, setJumpPaperId }) => {
+        {({ papers, jumpPaperId, setJumpPaperId, userLibrary, addToLibrary, userId }) => {
           const paper = papers[this.props.paperId];
           const hasMetrics = paper.citationVelocity !== 0 || paper.influentialCitationCount !== 0;
           const truncatedAbstract = paper.abstract ? truncateText(paper.abstract, 300) : null;
+          const inLibrary = userLibrary ? userLibrary.paperIds.includes(this.props.paperId) : false;
           return (
             <div
               ref={ref => {
@@ -140,13 +151,25 @@ export class PaperSummary extends React.PureComponent<
                   >
                     Cite
                   </Button>
-                  <Button
-                    startIcon={<SaveIcon />}
-                    className="paper-summary__action"
-                    onClick={() => warnOfUnimplementedActionAndTrack("save")}
-                  >
-                    Save
-                  </Button>
+                  {inLibrary ?
+                    <Button
+                      startIcon={<SaveIcon />}
+                      className="paper-summary__action"
+                      onClick={() => goToLibrary()}>
+                      In Your Library
+                    </Button> :
+                    <Button
+                        startIcon={<SaveIcon />}
+                        className="paper-summary__action"
+                        onClick={() => {
+                          if (!userId) {
+                            warnOfUnimplementedActionAndTrack('save');
+                          } else {
+                            addToLibrary(this.props.paperId, paper.title);
+                          }
+                        }}>
+                      Save To Library
+                    </Button>}
               </div>
               <FavoriteButton
                 favoritableId={{
