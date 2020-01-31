@@ -11,6 +11,7 @@ import S2Link from "./S2Link";
 import { ScholarReaderContext } from "./state";
 import { truncateText } from "./ui-utils";
 import {userLibraryUrl} from "./s2-url";
+import {UserLibrary} from "./types/api";
 
 function warnOfUnimplementedActionAndTrack(actionType: string) {
   alert("Sorry, that feature isn't implemented yet. Clicking it tells us " +
@@ -72,6 +73,24 @@ export class PaperSummary extends React.PureComponent<
         {label}
       </Button>
     )
+  }
+
+  async saveToLibrary(userLibrary: UserLibrary | null, addToLibrary: Function, paperTitle: string) {
+    if (!userLibrary) {
+      warnOfUnimplementedActionAndTrack('save');
+    } else {
+      try {
+        await addToLibrary(this.props.paperId, paperTitle);
+        trackLibrarySave();
+        this.setState({
+          errorMessage: ''
+        })
+      } catch (error) {
+        this.setState({
+          errorMessage: 'Cannot save to library at this time.'
+        })
+      }
+    }
   }
 
   render() {
@@ -174,23 +193,7 @@ export class PaperSummary extends React.PureComponent<
                     Cite
                   </Button>
                   {inLibrary ? this.renderLibraryButton('In Your Library', () => goToLibrary())
-                      : this.renderLibraryButton('Save To Library', async() => {
-                        if (!userLibrary) {
-                          warnOfUnimplementedActionAndTrack('save');
-                        } else {
-                          try {
-                            await addToLibrary(this.props.paperId, paper.title);
-                            trackLibrarySave();
-                            this.setState({
-                              errorMessage: ''
-                            })
-                          } catch (error) {
-                            this.setState({
-                              errorMessage: 'Cannot save to library at this time.'
-                            })
-                          }
-                        }
-                      })
+                      : this.renderLibraryButton('Save To Library', () => this.saveToLibrary(userLibrary, addToLibrary, paper.title))
                   }
               </div>
               <FavoriteButton
