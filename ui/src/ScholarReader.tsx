@@ -31,7 +31,6 @@ import { isKeypressEscape } from "./ui-utils";
 
 interface ScholarReaderProps {
   paperId?: PaperId;
-  userId?: number
 }
 
 class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
@@ -53,9 +52,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
      * are called from outside ScholarReader.
      */
     this.state = {
-      userId: undefined,
       userLibrary: null,
-      setUserId: this.setUserId.bind(this),
       setUserLibrary: this.setUserLibrary.bind(this),
       addToLibrary: this.addToLibrary.bind(this),
       paperId: props.paperId,
@@ -104,10 +101,6 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     this.closeDrawerOnEscape = this.closeDrawerOnEscape.bind(this);
     this.showAnnotationsOnAltDown = this.showAnnotationsOnAltDown.bind(this);
     this.hideAnnotationsOnAltUp = this.hideAnnotationsOnAltUp.bind(this);
-  }
-
-  setUserId(userId: number) {
-    this.setState({userId});
   }
 
   setUserLibrary(userLibrary: UserLibrary | null) {
@@ -197,15 +190,21 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
   }
 
   async addToLibrary(paperId: string, paperTitle: string) {
-    if (this.props.paperId !== undefined) {
-      await api.addLibraryEntry(
+    if (this.props.paperId) {
+      const response = await api.addLibraryEntry(
           paperId,
           paperTitle
       );
+
+      if (!response) {
+        // Request failed, throw an error
+        throw new Error('Failed to add entry to library.')
+      }
+
       const userLibrary = this.state.userLibrary;
       if (userLibrary) {
         const paperIds = userLibrary.paperIds.concat(paperId);
-        this.setUserLibrary({userId: userLibrary.userId, paperIds});
+        this.setUserLibrary({paperIds});
       }
     }
   }
@@ -348,9 +347,8 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
         );
         this.setUserAnnotations(annotations);
 
-        const userLibrary = await api.getUserLibraryInfo(this.state.userId);
+        const userLibrary = await api.getUserLibraryInfo();
         if (userLibrary) {
-          this.setUserId(userLibrary.userId);
           this.setUserLibrary(userLibrary)
         }
       }

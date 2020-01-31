@@ -10,6 +10,7 @@ import InfluentialCitationIcon from "./icon/InfluentialCitationIcon";
 import S2Link from "./S2Link";
 import { ScholarReaderContext } from "./state";
 import { truncateText } from "./ui-utils";
+import {userLibraryUrl} from "./s2-url";
 
 function warnOfUnimplementedActionAndTrack(actionType: string) {
   alert("Sorry, that feature isn't implemented yet. Clicking it tells us " +
@@ -24,8 +25,16 @@ function warnOfUnimplementedActionAndTrack(actionType: string) {
 }
 
 function goToLibrary() {
-  const s2LibraryUrl = `https://www.semanticscholar.org/me/library`;
-  window.open(s2LibraryUrl, '_blank');
+  window.open(userLibraryUrl, '_blank');
+}
+
+function trackLibrarySave() {
+  if (window.heap) {
+    window.heap.track(
+        "Save to Library",
+        { actionType: 'save' }
+    );
+  }
 }
 
 interface PaperSummaryProps {
@@ -34,6 +43,7 @@ interface PaperSummaryProps {
 
 interface PaperSummaryState {
   showFullAbstract: boolean;
+  errorMessage: string
 }
 
 export class PaperSummary extends React.PureComponent<
@@ -48,14 +58,26 @@ export class PaperSummary extends React.PureComponent<
     super(props);
 
     this.state = {
-      showFullAbstract: false
+      showFullAbstract: false,
+      errorMessage: ''
     };
+  }
+
+  renderLibraryButton(label: string, onClick: () => void) {
+    return (
+      <Button
+          startIcon={<SaveIcon />}
+          className="paper-summary__action"
+          onClick={onClick}>
+        {label}
+      </Button>
+    )
   }
 
   render() {
     return (
       <ScholarReaderContext.Consumer>
-        {({ papers, jumpPaperId, setJumpPaperId, userLibrary, addToLibrary, userId }) => {
+        {({ papers, jumpPaperId, setJumpPaperId, userLibrary, addToLibrary }) => {
           const paper = papers[this.props.paperId];
           const hasMetrics = paper.citationVelocity !== 0 || paper.influentialCitationCount !== 0;
           const truncatedAbstract = paper.abstract ? truncateText(paper.abstract, 300) : null;
@@ -151,25 +173,25 @@ export class PaperSummary extends React.PureComponent<
                   >
                     Cite
                   </Button>
-                  {inLibrary ?
-                    <Button
-                      startIcon={<SaveIcon />}
-                      className="paper-summary__action"
-                      onClick={() => goToLibrary()}>
-                      In Your Library
-                    </Button> :
-                    <Button
-                        startIcon={<SaveIcon />}
-                        className="paper-summary__action"
-                        onClick={() => {
-                          if (!userId) {
-                            warnOfUnimplementedActionAndTrack('save');
-                          } else {
-                            addToLibrary(this.props.paperId, paper.title);
+                  {inLibrary ? this.renderLibraryButton('In Your Library', () => goToLibrary())
+                      : this.renderLibraryButton('Save To Library', async() => {
+                        if (!userLibrary) {
+                          warnOfUnimplementedActionAndTrack('save');
+                        } else {
+                          try {
+                            await addToLibrary(this.props.paperId, paper.title);
+                            trackLibrarySave();
+                            this.setState({
+                              errorMessage: ''
+                            })
+                          } catch (error) {
+                            this.setState({
+                              errorMessage: 'Cannot save to library at this time.'
+                            })
                           }
-                        }}>
-                      Save To Library
-                    </Button>}
+                        }
+                      })
+                  }
               </div>
               <FavoriteButton
                 favoritableId={{
@@ -177,6 +199,9 @@ export class PaperSummary extends React.PureComponent<
                   entityId: this.props.paperId
                 }}
               />
+              <div className="paper-summary__library-error">
+                {this.state.errorMessage && this.state.errorMessage}
+              </div>
             </div>
           );
         }}

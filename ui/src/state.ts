@@ -29,7 +29,6 @@ export interface State {
   /*
    * USER DATA
    */
-  userId?: number,
   userLibrary: UserLibrary | null;
 
   /*
@@ -69,7 +68,6 @@ export interface State {
   deleteUserAnnotation(id: number): void;
   setUserAnnotations(annotations: Annotation[]): void;
   setUserLibrary(userLibrary: UserLibrary | null): void;
-  setUserId(userId: number): void;
   addToLibrary(paperId: string, paperTitle: string): void;
 }
 
@@ -95,9 +93,7 @@ export interface PaperId {
 
 const defaultState: State = {
   paperId: undefined,
-  userId: undefined,
   userLibrary: null,
-  setUserId: () => {},
   setUserLibrary: () => {},
   addToLibrary: () => {},
   citations: [],
