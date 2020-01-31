@@ -2,13 +2,16 @@ import axios, { AxiosResponse } from "axios";
 import {
   Annotation,
   AnnotationData,
-  AnnotationId, CachedUserLibrary,
+  AnnotationId,
   Citation,
   MathMl,
   Paper,
   PaperIdWithCounts,
-  Symbol, UserInfo, UserLibrary
+  Symbol,
+  UserInfo,
+  UserLibrary
 } from "./types/api";
+import {addLibraryEntryUrl, userInfoUrl} from "./s2-url";
 
 export async function citationsForArxivId(arxivId: string) {
   const data = await doGet(
@@ -79,10 +82,9 @@ export async function deleteAnnotation(arxivId: string, id: number) {
 }
 
 export async function addLibraryEntry(paperId: string, paperTitle: string) {
-  const s2ApiUrl = `https://www.semanticscholar.org/api/1/library/entries`;
   const tags: string[] = [];
   const response = await axios.post(
-      s2ApiUrl,
+      addLibraryEntryUrl,
       {
         paperId,
         paperTitle,
@@ -93,38 +95,12 @@ export async function addLibraryEntry(paperId: string, paperTitle: string) {
   return response.data;
 }
 
-export async function getUserLibraryInfo(userId?: number) {
-  if (localStorage && userId) {
-    const maybeItem = localStorage.getItem(userId.toString());
-    if (maybeItem) {
-      const parsedItem: CachedUserLibrary = JSON.parse(maybeItem);
-      if (parsedItem.expires > Date.now()) {
-        console.debug(`Using cached library entries for:${userId}`);
-        return Promise.resolve(parsedItem.userLibrary);
-      } else {
-        console.debug(`Library entries for ${userId} are cached but have expired.`);
-      }
-    }
-  }
-
-  const s2ApiUrl = `https://www.semanticscholar.org/api/1/user`;
-  const data = await doGet(axios.get<UserInfo>(s2ApiUrl, {withCredentials: true}));
+export async function getUserLibraryInfo() {
+  const data = await doGet(axios.get<UserInfo>(userInfoUrl, {withCredentials: true}));
   if (data) {
-    const userLibrary = Object.assign({}, {
-      userId: data.user.id,
+    const userLibrary: UserLibrary = {
       paperIds: data.entriesWithPaperIds.map(entry => entry[1])
-    });
-
-    if (localStorage) {
-      localStorage.setItem(
-          data.user.id.toString(),
-          JSON.stringify({
-            // cache for 1 hour
-            expires: Date.now() + 1 * 60 * 60 * 1000,
-            userLibrary: userLibrary
-          })
-      );
-    }
+    };
     return userLibrary;
   }
 }

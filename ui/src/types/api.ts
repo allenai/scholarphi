@@ -75,11 +75,5 @@ export interface UserInfo {
 }
 
 export interface UserLibrary {
-  userId: number,
   paperIds: string[]
-}
-
-export interface CachedUserLibrary {
-  userLibrary: UserLibrary,
-  expires: number
 }
