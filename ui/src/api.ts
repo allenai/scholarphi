@@ -7,8 +7,11 @@ import {
   MathMl,
   Paper,
   PaperIdWithCounts,
-  Symbol
+  Symbol,
+  UserInfo,
+  UserLibrary
 } from "./types/api";
+import {addLibraryEntryUrl, userInfoUrl} from "./s2-url";
 
 export async function citationsForArxivId(arxivId: string) {
   const data = await doGet(
@@ -76,6 +79,30 @@ export async function putAnnotation(
 
 export async function deleteAnnotation(arxivId: string, id: number) {
   return await axios.delete(`/api/v0/papers/arxiv:${arxivId}/annotation/${id}`);
+}
+
+export async function addLibraryEntry(paperId: string, paperTitle: string) {
+  const tags: string[] = [];
+  const response = await axios.post(
+      addLibraryEntryUrl,
+      {
+        paperId,
+        paperTitle,
+        tags
+      },
+      {withCredentials: true}
+  );
+  return response.data;
+}
+
+export async function getUserLibraryInfo() {
+  const data = await doGet(axios.get<UserInfo>(userInfoUrl, {withCredentials: true}));
+  if (data) {
+    const userLibrary: UserLibrary = {
+      paperIds: data.entriesWithPaperIds.map(entry => entry[1])
+    };
+    return userLibrary;
+  }
 }
 
 /**

@@ -1,7 +1,15 @@
 import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
 import { FavoritableId } from "./FavoriteButton";
-import { Annotation, AnnotationData, Citation, MathMl, Paper, Symbol } from "./types/api";
+import {
+  Annotation,
+  AnnotationData,
+  Citation,
+  MathMl,
+  Paper,
+  Symbol,
+  UserLibrary
+} from "./types/api";
 import { PDFPageView, PDFViewer } from "./types/pdfjs-viewer";
 
 export interface State {
@@ -17,6 +25,11 @@ export interface State {
   setMathMl(mathMl: MathMl[]): void;
   papers: Readonly<Papers>;
   setPapers(papers: Papers): void;
+
+  /*
+   * USER DATA
+   */
+  userLibrary: UserLibrary | null;
 
   /*
    * PDF VIEWER STATE
@@ -54,6 +67,8 @@ export interface State {
   updateUserAnnotation(id: number, annotation: Annotation): void;
   deleteUserAnnotation(id: number): void;
   setUserAnnotations(annotations: Annotation[]): void;
+  setUserLibrary(userLibrary: UserLibrary | null): void;
+  addToLibrary(paperId: string, paperTitle: string): void;
 }
 
 export type Papers = { [s2Id: string]: Paper };
@@ -78,6 +93,9 @@ export interface PaperId {
 
 const defaultState: State = {
   paperId: undefined,
+  userLibrary: null,
+  setUserLibrary: () => {},
+  addToLibrary: () => {},
   citations: [],
   setCitations: () => {},
   symbols: [],

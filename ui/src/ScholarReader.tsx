@@ -20,7 +20,7 @@ import {
   Citation,
   MathMl,
   Paper,
-  Symbol
+  Symbol, UserLibrary
 } from "./types/api";
 import {
   DocumentLoadedEvent,
@@ -52,6 +52,9 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
      * are called from outside ScholarReader.
      */
     this.state = {
+      userLibrary: null,
+      setUserLibrary: this.setUserLibrary.bind(this),
+      addToLibrary: this.addToLibrary.bind(this),
       paperId: props.paperId,
       citations: [],
       setCitations: this.setCitations.bind(this),
@@ -98,6 +101,10 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     this.closeDrawerOnEscape = this.closeDrawerOnEscape.bind(this);
     this.showAnnotationsOnAltDown = this.showAnnotationsOnAltDown.bind(this);
     this.hideAnnotationsOnAltUp = this.hideAnnotationsOnAltUp.bind(this);
+  }
+
+  setUserLibrary(userLibrary: UserLibrary | null) {
+    this.setState({ userLibrary })
   }
 
   setCitations(citations: Citation[]) {
@@ -179,6 +186,26 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       const annotation = { ...annotationData, id };
       this.setUserAnnotations([...this.state.userAnnotations, annotation]);
       this.setSelectedAnnotationId(`user-annotation-${id}`);
+    }
+  }
+
+  async addToLibrary(paperId: string, paperTitle: string) {
+    if (this.props.paperId) {
+      const response = await api.addLibraryEntry(
+          paperId,
+          paperTitle
+      );
+
+      if (!response) {
+        // Request failed, throw an error
+        throw new Error('Failed to add entry to library.')
+      }
+
+      const userLibrary = this.state.userLibrary;
+      if (userLibrary) {
+        const paperIds = userLibrary.paperIds.concat(paperId);
+        this.setUserLibrary({paperIds});
+      }
     }
   }
 
@@ -319,6 +346,11 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
           this.props.paperId.id
         );
         this.setUserAnnotations(annotations);
+
+        const userLibrary = await api.getUserLibraryInfo();
+        if (userLibrary) {
+          this.setUserLibrary(userLibrary)
+        }
       }
     }
   }
