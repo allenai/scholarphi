@@ -225,7 +225,9 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                         citation.id,
                     )
 
-            entity = Entity.create(type="citation", entity_id=citation.id)
+            entity = Entity.create(
+                type="citation", source="tex-pipeline", entity_id=citation.id
+            )
 
             for box in bounding_boxes:
                 bounding_box = BoundingBox.create(
