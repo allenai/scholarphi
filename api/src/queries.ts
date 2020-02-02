@@ -18,6 +18,7 @@ interface BoundingBox {
 
 interface Citation {
   id: number;
+  source: string;
   papers: string[];
   bounding_boxes: BoundingBox[];
 }
@@ -26,6 +27,7 @@ type CitationsById = { [id: string]: Citation };
 
 interface Symbol {
   id: number;
+  source: string;
   mathml: string;
   bounding_box: BoundingBox;
   /**
@@ -126,6 +128,7 @@ export class Connection {
       .select(
         "citation.id AS citation_id",
         "citationpaper.paper_id AS cited_paper_id",
+        "entity.source AS source",
         "page",
         "left",
         "top",
@@ -151,6 +154,7 @@ export class Connection {
       if (!citations.hasOwnProperty(key)) {
         citations[key] = {
           id: key,
+          source: row.source,
           bounding_boxes: [],
           papers: []
         };
@@ -174,6 +178,7 @@ export class Connection {
       .select(
         "symbol.id AS symbol_id",
         "mathml",
+        "entity.source AS source",
         this._knex.raw("array_agg(children.child_id) children_ids"),
         "parents.parent_id AS parent_id",
         "page",
@@ -210,6 +215,7 @@ export class Connection {
       .groupBy(
         "symbol_id",
         "mathml",
+        "entity.source",
         "parents.parent_id",
         "page",
         "left",
@@ -228,6 +234,7 @@ export class Connection {
       };
       const symbol: Symbol = {
         id: row.symbol_id,
+        source: row.source,
         mathml: row.mathml,
         parent: row.parent_id,
         children: row.children_ids,
