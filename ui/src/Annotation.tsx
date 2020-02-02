@@ -12,6 +12,13 @@ interface AnnotationProps {
    * A unique ID that distinguishes this annotation from all other annotations.
    */
   id: string;
+  /**
+   * The data source that detected the annotated entity. This property should
+   * be used for development purposes only. Production features and styles should not rely on this
+   * property. It is provided to help developers visualize and compare the results of
+   * different methods for detecting entities.
+   */
+  source?: string;
   className?: string;
   location: BoundingBox;
   /**
@@ -100,7 +107,10 @@ export class Annotation extends React.PureComponent<
                     "scholar-reader-annotation",
                     this.props.className,
                     {
-                      selected: this.isSelected()
+                      selected: this.isSelected(),
+                      "source-tex-pipeline":
+                        this.props.source === "tex-pipeline",
+                      "source-other": this.props.source === "other"
                     }
                   )}
                   tabIndex={0}
