@@ -6,16 +6,8 @@ from typing import Dict, Iterator, List, NamedTuple
 import explanations.directories as directories
 from explanations.file_utils import load_symbols
 from explanations.s2_data import get_s2_id
-from explanations.types import (
-    ArxivId,
-    Match,
-    Matches,
-    MathML,
-    Path,
-    PdfBoundingBox,
-    SymbolId,
-    SymbolWithId,
-)
+from explanations.types import (ArxivId, Match, Matches, MathML, Path,
+                                PdfBoundingBox, SymbolId, SymbolWithId)
 from models.models import BoundingBox, Entity, EntityBoundingBox
 from models.models import MathMl as MathMlModel
 from models.models import MathMlMatch, Paper
@@ -188,7 +180,7 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
 
             box = boxes.get(symbol_id)
             if box is not None:
-                entity = Entity(type="symbol", entity_id=symbol_model.id)
+                entity = Entity(type="symbol", source="tex-pipeline", entity_id=symbol_model.id)
                 entities.append(entity)
                 bounding_box = BoundingBox(
                     page=box.page,
