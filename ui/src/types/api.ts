@@ -33,12 +33,14 @@ export interface Paper {
 
 export interface Citation {
   id: number;
+  source: string;
   papers: string[];
   bounding_boxes: BoundingBox[];
 }
 
 export interface Symbol {
   id: number;
+  source: string;
   mathml: string;
   bounding_box: BoundingBox;
   parent: number | null;
@@ -66,14 +68,13 @@ export interface Annotation extends AnnotationData {
   id: AnnotationId;
 }
 
-
 export interface UserInfo {
   user: {
-    id: number
-  }
-  entriesWithPaperIds: [number, string][]
+    id: number;
+  };
+  entriesWithPaperIds: [number, string][];
 }
 
 export interface UserLibrary {
-  paperIds: string[]
+  paperIds: string[];
 }

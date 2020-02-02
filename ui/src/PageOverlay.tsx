@@ -101,11 +101,16 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
         }) => {
           const localizedCitations = selectors
             .boxEntityPairsForPage([...citations], this.props.pageNumber)
-            .filter(c => c.boundingBox.height < MAXIMUM_ANNOTATION_HEIGHT);
+            .filter(
+              c =>
+                c.boundingBox.height < MAXIMUM_ANNOTATION_HEIGHT ||
+                c.citation.source === "other"
+            );
           const localizedSymbols = symbols.filter(
             s =>
               s.bounding_box.page === this.props.pageNumber - 1 &&
-              s.bounding_box.height < MAXIMUM_ANNOTATION_HEIGHT
+              (s.source === "other" ||
+                s.bounding_box.height < MAXIMUM_ANNOTATION_HEIGHT)
           );
           const localizedUserAnnotations = userAnnotations.filter(
             a => a.boundingBox.page === this.props.pageNumber - 1

@@ -10,13 +10,16 @@ interface SymbolAnnotationProps {
   showHint?: boolean;
 }
 
-export class SymbolAnnotation extends React.PureComponent<SymbolAnnotationProps> {
+export class SymbolAnnotation extends React.PureComponent<
+  SymbolAnnotationProps
+> {
   render() {
     return (
       <div hidden={this.props.symbol.parent !== null}>
         <Annotation
           id={`symbol-${this.props.symbol.id}-annotation`}
-          className={classNames({'annotation-hint': this.props.showHint})}
+          className={classNames({ "annotation-hint": this.props.showHint })}
+          source={this.props.symbol.source}
           location={this.props.location}
           tooltipContent={<SymbolTooltipBody symbol={this.props.symbol} />}
         />

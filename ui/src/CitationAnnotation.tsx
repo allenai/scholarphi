@@ -18,12 +18,14 @@ export class CitationAnnotation extends React.PureComponent<
     return (
       <Annotation
         id={`citation-${this.props.citation.id}-annotation`}
-        className={classNames({'annotation-hint': this.props.showHint})}
+        className={classNames({ "annotation-hint": this.props.showHint })}
+        source={this.props.citation.source}
         location={this.props.location}
         tooltipContent={
           <CitationTooltipBody
             citation={this.props.citation}
-            paperIds={this.props.citation.papers} />
+            paperIds={this.props.citation.papers}
+          />
         }
       />
     );
