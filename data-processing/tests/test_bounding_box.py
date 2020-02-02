@@ -73,34 +73,34 @@ def test_find_boxes_within_masks():
 
 
 def test_subtract_rectangle_inside_another():
-    outer = Rectangle(0, 0, 20, 20)
-    inner = Rectangle(5, 5, 10, 10)
+    outer = Rectangle(0, 20, 20, 20)
+    inner = Rectangle(5, 15, 10, 10)
     diff_rects = list(subtract(outer, inner))
     assert len(diff_rects) == 4
-    assert Rectangle(0, 0, 20, 5) in diff_rects
-    assert Rectangle(0, 5, 5, 10) in diff_rects
-    assert Rectangle(15, 5, 5, 10) in diff_rects
-    assert Rectangle(0, 15, 20, 5) in diff_rects
+    assert Rectangle(0, 20, 20, 5) in diff_rects
+    assert Rectangle(0, 15, 5, 10) in diff_rects
+    assert Rectangle(15, 15, 5, 10) in diff_rects
+    assert Rectangle(0, 5, 20, 5) in diff_rects
 
 
 def test_subtract_outer_rectangle_from_inner_rectangle():
-    outer = Rectangle(0, 0, 20, 20)
-    inner = Rectangle(5, 5, 10, 10)
+    outer = Rectangle(0, 20, 20, 20)
+    inner = Rectangle(5, 15, 10, 10)
     assert len(list(subtract(inner, outer))) == 0
 
 
 def test_subtract_rectangle_with_shared_boundaries():
-    rect1 = Rectangle(0, 0, 20, 20)
+    rect1 = Rectangle(0, 20, 20, 20)
     rect2 = Rectangle(10, 10, 10, 10)
     diff_rects = list(subtract(rect1, rect2))
     assert len(diff_rects) == 2
-    assert Rectangle(0, 0, 20, 10) in diff_rects
+    assert Rectangle(0, 20, 20, 10) in diff_rects
     assert Rectangle(0, 10, 10, 10) in diff_rects
 
 
 def test_subtract_nonintersecting_rectangle():
-    rect1 = Rectangle(0, 0, 20, 20)
-    rect2 = Rectangle(30, 0, 20, 20)
+    rect1 = Rectangle(0, 20, 20, 20)
+    rect2 = Rectangle(30, 20, 20, 20)
     diff_rects = list(subtract(rect1, rect2))
     assert len(diff_rects) == 1
     assert diff_rects == [rect1]
@@ -108,71 +108,71 @@ def test_subtract_nonintersecting_rectangle():
 
 def test_another_subtract():
     rect1 = Rectangle(20, 10, 10, 10)
-    rect2 = Rectangle(15, 5, 20, 20)
+    rect2 = Rectangle(15, 15, 20, 20)
     diff_rects = list(subtract(rect1, rect2))
     assert len(diff_rects) == 0
 
 
 def test_subtract_rectangle_from_itself():
-    rect1 = Rectangle(0, 0, 20, 20)
-    rect2 = Rectangle(0, 0, 20, 20)
+    rect1 = Rectangle(0, 20, 20, 20)
+    rect2 = Rectangle(0, 20, 20, 20)
     assert len(list(subtract(rect1, rect2))) == 0
 
 
 def test_subtract_rectangle_iterable_from_rectangle():
-    rect = Rectangle(10, 10, 20, 20)
-    other_rects = [Rectangle(0, 0, 20, 20), Rectangle(15, 5, 20, 20)]
+    rect = Rectangle(10, 15, 20, 20)
+    other_rects = [Rectangle(0, 25, 20, 20), Rectangle(15, 20, 20, 20)]
     diff_rects = list(subtract_multiple(rect, other_rects))
     assert len(diff_rects) == 2
-    assert Rectangle(10, 20, 5, 5) in diff_rects
-    assert Rectangle(10, 25, 20, 5) in diff_rects
+    assert Rectangle(10, 5, 5, 5) in diff_rects
+    assert Rectangle(10, 0, 20, 5) in diff_rects
 
 
 def test_subtract_rectangle_iterable_from_rectangle_iterable():
-    rects = [Rectangle(0, 0, 20, 20), Rectangle(20, 0, 20, 20)]
-    other_rects = [Rectangle(10, 0, 20, 20), Rectangle(35, 0, 20, 20)]
+    rects = [Rectangle(0, 20, 20, 20), Rectangle(20, 20, 20, 20)]
+    other_rects = [Rectangle(10, 20, 20, 20), Rectangle(35, 20, 20, 20)]
     diff_rects = list(subtract_multiple_from_multiple(rects, other_rects))
-    assert Rectangle(0, 0, 10, 20) in diff_rects
-    assert Rectangle(30, 0, 5, 20) in diff_rects
+    assert Rectangle(0, 20, 10, 20) in diff_rects
+    assert Rectangle(30, 20, 5, 20) in diff_rects
 
 
 def test_union_rectangles():
-    rects = [Rectangle(0, 0, 20, 20), Rectangle(10, 10, 20, 20)]
+    rects = [Rectangle(0, 30, 20, 20), Rectangle(10, 20, 20, 20)]
     union_rects = list(union(rects))
     assert len(union_rects) == 3
-    assert Rectangle(0, 0, 20, 20) in union_rects
-    assert Rectangle(20, 10, 10, 10) in union_rects
-    assert Rectangle(10, 20, 20, 10) in union_rects
+    assert Rectangle(0, 30, 20, 20) in union_rects
+    assert Rectangle(20, 20, 10, 10) in union_rects
+    assert Rectangle(10, 10, 20, 10) in union_rects
 
 
 def test_another_union():
     rects = [
-        Rectangle(0, 0, 20, 20),
-        Rectangle(20, 0, 20, 20),
-        Rectangle(10, 0, 20, 20),
-        Rectangle(35, 0, 20, 20),
+        Rectangle(0, 20, 20, 20),
+        Rectangle(20, 20, 20, 20),
+        Rectangle(10, 20, 20, 20),
+        Rectangle(35, 20, 20, 20),
     ]
     union_rects = list(union(rects))
     assert len(union_rects) == 3
-    assert Rectangle(0, 0, 20, 20) in union_rects
-    assert Rectangle(20, 0, 20, 20) in union_rects
-    assert Rectangle(40, 0, 15, 20) in union_rects
+    assert Rectangle(0, 20, 20, 20) in union_rects
+    assert Rectangle(20, 20, 20, 20) in union_rects
+    assert Rectangle(40, 20, 15, 20) in union_rects
 
 
 def test_intersect_rectangle_iterables():
-    rects = [Rectangle(0, 0, 20, 20), Rectangle(20, 0, 20, 20)]
-    other_rects = [Rectangle(10, 0, 20, 20), Rectangle(35, 0, 20, 20)]
+    rects = [Rectangle(0, 20, 20, 20), Rectangle(20, 20, 20, 20)]
+    other_rects = [Rectangle(10, 20, 20, 20), Rectangle(35, 20, 20, 20)]
     intersection_rects = list(intersect(rects, other_rects))
-    assert Rectangle(10, 0, 10, 20) in intersection_rects
-    assert Rectangle(20, 0, 10, 20) in intersection_rects
-    assert Rectangle(35, 0, 5, 20) in intersection_rects
+    assert Rectangle(10, 20, 10, 20) in intersection_rects
+    assert Rectangle(20, 20, 10, 20) in intersection_rects
+    assert Rectangle(35, 20, 5, 20) in intersection_rects
 
 
 def test_compute_page_iou_for_rectangle_iterables():
     # There's a 10px-wide overlap between rect1 and rect2; the algorithm for IOU should use the
     # union of the areas of the input rects.
-    rects = [Rectangle(0, 0, 20, 20), Rectangle(10, 0, 30, 20)]
-    other_rects = [Rectangle(10, 0, 20, 20), Rectangle(35, 0, 20, 20)]
+    rects = [Rectangle(0, 20, 20, 20), Rectangle(10, 20, 30, 20)]
+    other_rects = [Rectangle(10, 20, 20, 20), Rectangle(35, 20, 20, 20)]
     # Intersection area = 10 x 20 + 10 x 20 + 5 x 20 = 500
     # Union area = 55 x 20 => 1100
     assert iou(rects, other_rects) == float(500) / 1100
@@ -186,22 +186,22 @@ def test_compute_iou_per_rectangle_set():
     # There's a 10px-wide overlap between rect1 and rect2; the algorithm for IOU should use the
     # union of the areas of the input rects.
     rects = [
-        fs(Rectangle(0, 0, 20, 20)),
-        fs(Rectangle(10, 0, 30, 20)),
-        fs(Rectangle(40, 0, 10, 10), Rectangle(40, 10, 10, 10)),
+        fs(Rectangle(0, 20, 20, 20)),
+        fs(Rectangle(10, 20, 30, 20)),
+        fs(Rectangle(40, 20, 10, 10), Rectangle(40, 10, 10, 10)),
     ]
-    other_rects = [Rectangle(10, 0, 20, 20), Rectangle(35, 0, 20, 20)]
+    other_rects = [Rectangle(10, 20, 20, 20), Rectangle(35, 20, 20, 20)]
     ious = iou_per_rectangle(rects, other_rects)
-    assert ious[fs(Rectangle(0, 0, 20, 20))] == float(10) / 30
-    assert ious[fs(Rectangle(10, 0, 30, 20))] == float(25) / 45
+    assert ious[fs(Rectangle(0, 20, 20, 20))] == float(10) / 30
+    assert ious[fs(Rectangle(10, 20, 30, 20))] == float(25) / 45
     assert (
-        ious[fs(Rectangle(40, 0, 10, 10), Rectangle(40, 10, 10, 10))] == float(10) / 20
+        ious[fs(Rectangle(40, 20, 10, 10), Rectangle(40, 10, 10, 10))] == float(10) / 20
     )
 
 
 def test_rectangle_precision_recall():
-    expected = [fs(Rectangle(0, 0, 20, 20)), fs(Rectangle(10, 0, 30, 20))]
-    actual = [Rectangle(10, 0, 20, 20), Rectangle(35, 0, 20, 20)]
+    expected = [fs(Rectangle(0, 20, 20, 20)), fs(Rectangle(10, 20, 30, 20))]
+    actual = [Rectangle(10, 20, 20, 20), Rectangle(35, 20, 20, 20)]
     # The threshold value is set to the level where rectangle 1 in 'expected' does not have a
     # a match in 'actual', and rectangle 2 in 'expected' only has a match if you consider
     # its overlap with *all* rectangles in 'actual'.

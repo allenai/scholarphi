@@ -135,7 +135,7 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
     def process(self, job: IouJob) -> Iterator[IouResults]:
         all_actual_rects = [r for rect_set in job.actual for r in rect_set]
         page_iou = iou(all_actual_rects, job.expected)
-        precision, recall = compute_accuracy(job.actual, job.expected)
+        precision, recall = compute_accuracy(job.actual, job.expected, minimum_iou=0.35)
         rectangle_ious = iou_per_rectangle(job.actual, job.expected)
         logging.debug(
             "Computed accuracy for paper %s page %d entity type %s: Precision: %f, Recall: %f, Page IOU: %f",

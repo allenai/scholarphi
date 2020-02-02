@@ -113,7 +113,12 @@ class SymbolChild(OutputModel):
 
 
 class Entity(OutputModel):
-    type = TextField(choices=(("citation", None), ("symbol", None)))
+    type = TextField(choices=(("citation", None), ("symbol", None)), index=True)
+    source = TextField(
+        choices=(("tex-pipeline", None), ("other", None)),
+        index=True,
+        default="tex-pipeline",
+    )
     entity_id = IntegerField(index=True)
 
 
@@ -177,7 +182,7 @@ def init_database(
 
 
 def init_database_connections(
-    schema_name: Optional[str] = None, create_tables=False
+    schema_name: Optional[str] = None, create_tables: bool = False
 ) -> None:
     """
     Initialize database connections.
