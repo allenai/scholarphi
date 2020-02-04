@@ -47,7 +47,7 @@ export interface Symbol {
   children: number[];
 }
 
-export interface SymbolMatchSet {
+export interface symbolMatches {
   [id: number]: Set<number>;
 }
 

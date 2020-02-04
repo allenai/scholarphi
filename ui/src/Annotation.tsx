@@ -21,7 +21,7 @@ interface AnnotationProps {
   source?: string;
   className?: string;
   location: BoundingBox;
-  shouldHighlight?: boolean | false;
+  shouldHighlight?: boolean;
   /**
    * Correction factor to apply to bounding box coordinates before rendering the annotation.
    * You normally should not need to set this and should be able to trust the defaults.
@@ -39,6 +39,9 @@ export class Annotation extends React.PureComponent<
   AnnotationProps,
   AnnotationState
 > {
+  static defaultProps = {
+    shouldHighlight: false,
+  }
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
 

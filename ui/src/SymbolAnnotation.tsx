@@ -17,10 +17,10 @@ export class SymbolAnnotation extends React.PureComponent<SymbolAnnotationProps>
 
   shouldHighlight() {
     if (!this.context.selectedAnnotationId) { return false; }
-    const [typeSelected, idSelected,] = this.context.selectedAnnotationId.split('-');
+    const [typeSelected, idSelected] = this.context.selectedAnnotationId.split('-');
     if (typeSelected !== 'symbol') { return false; }
     
-    const matchingSymbolIds = this.context.symbolMatchSet[Number(idSelected)];
+    const matchingSymbolIds = this.context.symbolMatches[Number(idSelected)];
     return matchingSymbolIds.has(this.props.symbol.id);
   }
 

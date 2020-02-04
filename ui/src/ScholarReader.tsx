@@ -23,7 +23,7 @@ import {
   Paper,
   UserLibrary,
   Symbol,
-  SymbolMatchSet,
+  symbolMatches,
 } from "./types/api";
 import {
   DocumentLoadedEvent,
@@ -63,8 +63,8 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       setCitations: this.setCitations.bind(this),
       symbols: [],
       setSymbols: this.setSymbols.bind(this),
-      symbolMatchSet: {},
-      setSymbolMatchSet: this.setSymbolMatchSet.bind(this),
+      symbolMatches: {},
+      setSymbolMatches: this.setSymbolMatches.bind(this),
       mathMl: [],
       setMathMl: this.setMathMl.bind(this),
       papers: {},
@@ -120,8 +120,8 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     this.setState({ symbols });
   }
 
-  setSymbolMatchSet(symbolMatchSet: SymbolMatchSet) {
-    this.setState({ symbolMatchSet });
+  setSymbolMatches(symbolMatches: symbolMatches) {
+    this.setState({ symbolMatches });
   }
 
   setMathMl(mathMl: MathMl[]) {
@@ -351,16 +351,18 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
           this.setMathMl(mathMl);
 
           /**
-           * Build a mapping from symbol to all possible parent matches
+           * Build a mapping from symbol to all possible parent matches.
+           * Step 1: Find all matches (using matchingSymbols) for said symbol
+           * Step 2: Find the 'top' most parent of every matching symbol since 
+           *         this is the symbol that is clickable
+           * Step 3: Add top parent id of every matching symbol to symbolMatches
            */
-          const symbolMatchSet: SymbolMatchSet = {};
-          symbols.forEach(s => {
-            symbolMatchSet[s.id] = new Set(
-              selectors.matchingSymbols(s, symbols, mathMl)
-              .map(m => {
-                // Need to get the top most parent as this is the 
-                // symbol that determines the annotation
-                let curr: Symbol = m;
+          const symbolMatches: symbolMatches = {};
+          symbols.forEach(sym => {
+            symbolMatches[sym.id] = new Set(
+              selectors.matchingSymbols(sym, symbols, mathMl)
+              .map(symMatch => {
+                let curr: Symbol = symMatch;
                 while (curr.parent != null) {
                   let parent = symbols.find(s => s.id === curr.parent);
                   if (parent) { curr = parent }
@@ -370,7 +372,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
               })
             );
           })
-          this.setSymbolMatchSet(symbolMatchSet);
+          this.setSymbolMatches(symbolMatches);
         }
 
         const annotations = await api.annnotationsForArxivId(
