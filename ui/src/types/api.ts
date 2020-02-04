@@ -47,6 +47,10 @@ export interface Symbol {
   children: number[];
 }
 
+export interface symbolMatches {
+  [id: number]: Set<number>;
+}
+
 export interface MathMl {
   mathMl: string;
   matches: MathMlMatch[];

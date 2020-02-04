@@ -1,6 +1,7 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import * as api from "./api";
+import * as selectors from "./selectors";
 import Drawer from "./Drawer";
 import { FavoritableId, favoritesKey } from "./FavoriteButton";
 import FeedbackButton from "./FeedbackButton";
@@ -20,7 +21,9 @@ import {
   Citation,
   MathMl,
   Paper,
-  Symbol, UserLibrary
+  UserLibrary,
+  Symbol,
+  symbolMatches,
 } from "./types/api";
 import {
   DocumentLoadedEvent,
@@ -60,6 +63,8 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       setCitations: this.setCitations.bind(this),
       symbols: [],
       setSymbols: this.setSymbols.bind(this),
+      symbolMatches: {},
+      setSymbolMatches: this.setSymbolMatches.bind(this),
       mathMl: [],
       setMathMl: this.setMathMl.bind(this),
       papers: {},
@@ -113,6 +118,10 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
   setSymbols(symbols: Symbol[]) {
     this.setState({ symbols });
+  }
+
+  setSymbolMatches(symbolMatches: symbolMatches) {
+    this.setState({ symbolMatches });
   }
 
   setMathMl(mathMl: MathMl[]) {
@@ -340,6 +349,30 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
         if (symbols.length >= 1) {
           const mathMl = await api.mathMlForArxivId(this.props.paperId.id);
           this.setMathMl(mathMl);
+
+          /**
+           * Build a mapping from symbol to all possible parent matches.
+           * Step 1: Find all matches (using matchingSymbols) for said symbol
+           * Step 2: Find the 'top' most parent of every matching symbol since 
+           *         this is the symbol that is clickable
+           * Step 3: Add top parent id of every matching symbol to symbolMatches
+           */
+          const symbolMatches: symbolMatches = {};
+          symbols.forEach(sym => {
+            symbolMatches[sym.id] = new Set(
+              selectors.matchingSymbols(sym, symbols, mathMl)
+              .map(symMatch => {
+                let curr: Symbol = symMatch;
+                while (curr.parent != null) {
+                  let parent = symbols.find(s => s.id === curr.parent);
+                  if (parent) { curr = parent }
+                  else { break; }
+                }
+                return curr.id;
+              })
+            );
+          })
+          this.setSymbolMatches(symbolMatches);
         }
 
         const annotations = await api.annnotationsForArxivId(

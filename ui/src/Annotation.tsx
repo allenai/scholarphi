@@ -21,6 +21,7 @@ interface AnnotationProps {
   source?: string;
   className?: string;
   location: BoundingBox;
+  shouldHighlight?: boolean;
   /**
    * Correction factor to apply to bounding box coordinates before rendering the annotation.
    * You normally should not need to set this and should be able to trust the defaults.
@@ -38,13 +39,11 @@ export class Annotation extends React.PureComponent<
   AnnotationProps,
   AnnotationState
 > {
+  static defaultProps = {
+    shouldHighlight: false,
+  }
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
-
-  constructor(props: AnnotationProps) {
-    super(props);
-    this.state = { selected: false };
-  }
 
   onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
     if (uiUtils.isKeypressEscape(e)) {
@@ -110,7 +109,8 @@ export class Annotation extends React.PureComponent<
                       selected: this.isSelected(),
                       "source-tex-pipeline":
                         this.props.source === "tex-pipeline",
-                      "source-other": this.props.source === "other"
+                      "source-other": this.props.source === "other",
+                      "matching-symbol-annotation": this.props.shouldHighlight,
                     }
                   )}
                   tabIndex={0}
