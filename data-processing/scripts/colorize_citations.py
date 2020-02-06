@@ -2,6 +2,7 @@ import csv
 import json
 import logging
 import os.path
+from argparse import ArgumentParser
 from typing import Iterator, List, NamedTuple
 
 from explanations import directories
@@ -14,7 +15,7 @@ from explanations.directories import (
 from explanations.file_utils import clean_directory, find_files, read_file_tolerant
 from explanations.types import ArxivId, FileContents, Path, RelativePath
 from explanations.unpack import unpack
-from scripts.command import ArxivBatchCommand
+from scripts.command import ArxivBatchCommand, add_one_entity_at_a_time_arg
 
 
 class ColorizationTask(NamedTuple):
@@ -30,6 +31,11 @@ class ColorizationResult(NamedTuple):
 
 
 class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult]):
+    @staticmethod
+    def init_parser(parser: ArgumentParser) -> None:
+        super(ColorizeCitations, ColorizeCitations).init_parser(parser)
+        add_one_entity_at_a_time_arg(parser)
+
     @staticmethod
     def get_name() -> str:
         return "colorize-citations"
@@ -58,7 +64,10 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
                     yield ColorizationTask(arxiv_id, tex_path, file_contents)
 
     def process(self, item: ColorizationTask) -> Iterator[ColorizationResult]:
-        for i, batch in enumerate(colorize_citations(item.file_contents.contents)):
+        batch_size = 1 if self.args.one_entity_at_a_time else None
+        for i, batch in enumerate(
+            colorize_citations(item.file_contents.contents, batch_size=batch_size)
+        ):
             yield ColorizationResult(i, batch.tex, batch.entities)
 
     def save(self, item: ColorizationTask, result: ColorizationResult) -> None:

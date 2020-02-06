@@ -17,7 +17,7 @@ def get_cv2_images(pdf_path: AbsolutePath) -> List[Optional[np.ndarray]]:
     """
     Get CV2 images for PDF, as a list with one image for each page.
     """
-    page_images = []
+    page_images: List[Optional[np.ndarray]] = []
 
     with open(pdf_path, "rb") as pdf_file:
         logging.debug("Reading PDF %s", pdf_path)
@@ -68,6 +68,22 @@ def get_cv2_images(pdf_path: AbsolutePath) -> List[Optional[np.ndarray]]:
             page_images.append(cv2_image)
 
     return page_images
+
+
+def contains_black_pixels(img: np.ndarray) -> bool:
+
+    # Black pixels will have value and saturation near 0. Still consider pixels with
+    # a value above 0 because of aliasing in images, where black letters in an image
+    # may appear as a group of grey pixels.
+    SATURATION_THRESHOLD = 20  # out of 255
+    VALUE_THRESHOLD = 150  # out of 255
+
+    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    return np.any(
+        np.logical_and(
+            img_hsv[:, :, 1] < SATURATION_THRESHOLD, img_hsv[:, :, 2] < VALUE_THRESHOLD,
+        )
+    )
 
 
 def annotate_pdf(

@@ -3,27 +3,17 @@ import logging
 import os
 import re
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Iterator, List, NamedTuple, Optional, Set, cast
+from typing import (Any, Callable, Dict, Iterator, List, NamedTuple, Optional,
+                    Set, cast)
 
 import numpy as np
 
-from explanations.parse_tex import (
-    BeginDocumentExtractor,
-    CitationExtractor,
-    ColorLinksExtractor,
-    DocumentclassExtractor,
-    EquationExtractor,
-)
-from explanations.types import (
-    CharacterRange,
-    Citation,
-    Entity,
-    Equation,
-    EquationId,
-    FileContents,
-    TexFileName,
-    TokenWithOrigin,
-)
+from explanations.parse_tex import (BeginDocumentExtractor, CitationExtractor,
+                                    ColorLinksExtractor,
+                                    DocumentclassExtractor, EquationExtractor)
+from explanations.types import (CharacterRange, Citation, Entity, Equation,
+                                EquationId, FileContents, TexFileName,
+                                TokenWithOrigin)
 
 """
 All TeX coloring operations follow the same process.
@@ -376,7 +366,7 @@ def colorize_equation_tokens(
             # token more than once. It could work to color multiple times, though right now it will
             # break colorization as a token's position will be broken for the second coloring.
             equations_filtered = filter(
-                lambda e: e.depth == 0, equations_by_file[tex_filename]
+                lambda e: e.depth == 0, equations_by_file.get(tex_filename, [])
             )
 
             equations_reverse_order = sorted(

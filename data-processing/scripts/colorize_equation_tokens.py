@@ -1,6 +1,7 @@
 import csv
 import logging
 import os.path
+from argparse import ArgumentParser
 from typing import Dict, Iterator, List, NamedTuple
 
 from explanations import directories
@@ -12,7 +13,7 @@ from explanations.directories import (
 from explanations.file_utils import clean_directory, load_tokens, read_file_tolerant
 from explanations.types import ArxivId, FileContents, Path, TokenWithOrigin
 from explanations.unpack import unpack
-from scripts.command import ArxivBatchCommand
+from scripts.command import ArxivBatchCommand, add_one_entity_at_a_time_arg
 
 
 class TexAndTokens(NamedTuple):
@@ -27,6 +28,11 @@ class ColorizationResult(NamedTuple):
 
 
 class ColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, ColorizationResult]):
+    @staticmethod
+    def init_parser(parser: ArgumentParser) -> None:
+        super(ColorizeEquationTokens, ColorizeEquationTokens).init_parser(parser)
+        add_one_entity_at_a_time_arg(parser)
+
     @staticmethod
     def get_name() -> str:
         return "colorize-equation-tokens"
@@ -72,10 +78,16 @@ class ColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, ColorizationResult]
             yield TexAndTokens(arxiv_id, contents_by_file, tokens)
 
     def process(self, item: TexAndTokens) -> Iterator[ColorizationResult]:
-        for i, result_batch in enumerate(
-            colorize_equation_tokens(item.tex_contents, item.tokens)
-        ):
-            yield ColorizationResult(i, result_batch)
+
+        token_batches: List[List[TokenWithOrigin]] = [item.tokens]
+        if self.args.one_entity_at_a_time:
+            token_batches = [[token] for token in item.tokens]
+
+        i = 0
+        for tokens in token_batches:
+            for result_batch in colorize_equation_tokens(item.tex_contents, tokens):
+                yield ColorizationResult(i, result_batch)
+                i += 1
 
     def save(self, item: TexAndTokens, result: ColorizationResult) -> None:
         iteration = result.iteration
