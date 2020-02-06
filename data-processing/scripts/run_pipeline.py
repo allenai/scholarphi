@@ -8,6 +8,7 @@ from datetime import datetime
 from explanations import directories
 from scripts.command import (
     add_arxiv_id_filter_args,
+    add_one_entity_at_a_time_arg,
     create_args,
     load_arxiv_ids_using_args,
     read_arxiv_ids_from_file,
@@ -74,6 +75,7 @@ if __name__ == "__main__":
         default=DEFAULT_S3_ARXIV_SOURCES_BUCKET,
         help="If '--source' is 's3', arXiv sources will be downloaded from this S3 bucket.",
     )
+    add_one_entity_at_a_time_arg(parser)
     parser.add_argument(
         "--skip-store-results",
         action="store_true",
@@ -180,6 +182,7 @@ if __name__ == "__main__":
         command_args.v = args.v
         command_args.source = args.source
         command_args.log_names = [log_filename]
+        command_args.one_entity_at_a_time = args.one_entity_at_a_time
         command_args.schema = args.database_schema
         if CommandClass == FetchArxivSources:
             command_args.s3_bucket = args.s3_arxiv_sources_bucket

@@ -2,6 +2,7 @@ import csv
 import logging
 import os.path
 from abc import ABC, abstractmethod
+from argparse import ArgumentParser
 from typing import (Any, Callable, Dict, Iterator, List, NamedTuple, Optional,
                     cast)
 
@@ -16,6 +17,7 @@ from explanations.directories import (get_data_subdirectory_for_arxiv_id,
                                       get_data_subdirectory_for_iteration,
                                       get_iteration_names)
 from explanations.file_utils import clean_directory
+from explanations.image_processing import contains_black_pixels
 from explanations.types import (ArxivId, BoundingBoxInfo, Dimensions,
                                 EquationId, Path, RasterBoundingBox, Rectangle,
                                 RelativePath)
@@ -60,6 +62,22 @@ class LocateHuesCommand(ArxivBatchCommand[SearchTask, HueLocation], ABC):
     At the time of writing this comment, this script assumed that each hue will only be used to
     color a single entity, across all PDFs for an arXiv paper.
     """
+
+    @staticmethod
+    def init_parser(parser: ArgumentParser) -> None:
+        super(LocateHuesCommand, LocateHuesCommand).init_parser(parser)
+        parser.add_argument(
+            "--skip-visual-validation",
+            action="store_true",
+            help=(
+                "Whether to skip visual validation. When visual validation is enabled, the "
+                + "paper diff will be checked for black pixels before hues are located. Black "
+                + "pixels indicate that the layout of the page changed based on changes made to "
+                + "the TeX. If visual validation fails for a diff for a paper, that diff will "
+                + "not be processed. Set this flag to skip visual validation and therefore "
+                + "process all diffs of all papers regardless of evidence of layout shift."
+            ),
+        )
 
     @staticmethod
     @abstractmethod
@@ -121,7 +139,9 @@ class LocateHuesCommand(ArxivBatchCommand[SearchTask, HueLocation], ABC):
 
                     # PDF reads with PyPDF2 are costly, so do them all at once.
                     pdf_page_dimensions: Dict[int, Dimensions] = {}
-                    absolute_pdf_path = os.path.join(directories.compilation_results(arxiv_id), relative_pdf_path)
+                    absolute_pdf_path = os.path.join(
+                        directories.compilation_results(arxiv_id), relative_pdf_path
+                    )
                     with open(absolute_pdf_path, "rb") as pdf_file:
                         pdf = PdfFileReader(pdf_file)
                         for page_number in range(pdf.getNumPages()):
@@ -135,13 +155,31 @@ class LocateHuesCommand(ArxivBatchCommand[SearchTask, HueLocation], ABC):
                     )
                     page_images = {}
 
+                    colorization_error_detected = False
                     for img_name in os.listdir(diff_images_pdf_path):
                         img_path = os.path.join(diff_images_pdf_path, img_name)
                         page_image = cv2.imread(img_path)
+
+                        if not self.args.skip_visual_validation:
+                            if contains_black_pixels(page_image):
+                                logging.warning(
+                                    "Black pixels found in image diff %s", img_path
+                                )
+                                colorization_error_detected = True
+
                         page_number = int(
                             os.path.splitext(img_name)[0].replace("page-", "")
                         )
                         page_images[page_number] = page_image
+
+                    if colorization_error_detected:
+                        logging.warning(  # pylint: disable=logging-not-lazy
+                            "Colorization error detected. Skipping hue location for "
+                            + "iteration %s for arXiv paper %s",
+                            iteration,
+                            arxiv_id,
+                        )
+                        break
 
                     for search_region in search_regions:
                         yield SearchTask(
@@ -162,7 +200,11 @@ class LocateHuesCommand(ArxivBatchCommand[SearchTask, HueLocation], ABC):
                 else:
                     masks = []
             box_infos = extract_bounding_boxes(
-                image, item.pdf_page_dimensions[page_number], page_number, item.search.hue, masks
+                image,
+                item.pdf_page_dimensions[page_number],
+                page_number,
+                item.search.hue,
+                masks,
             )
             for box_info in box_infos:
                 yield HueLocation(item.search.hue, box_info)
