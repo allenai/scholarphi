@@ -13,11 +13,12 @@ RUN apt-get install -y texlive-full
 RUN apt-get install -y build-essential
 # Old version (e.g., 5.22) needed to support TeX::AutoTeX
 # Perl installation will take a very long time.
+# Skip running tests for Perl 5.22.5, as version 5.22.4 has a couple minor test failures.
 RUN apt-get install -y curl
-RUN cpan App::perlbrew \
-  && perlbrew init \
-  && perlbrew install perl-5.22.4 \
-  && perlbrew install-cpanm
+RUN cpan App::perlbrew
+RUN perlbrew init
+RUN perlbrew --notest install perl-5.22.4
+RUN perlbrew install-cpanm
 
 # Install Postgres
 RUN apt-get install -y postgresql
