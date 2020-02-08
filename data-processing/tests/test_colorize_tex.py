@@ -54,22 +54,31 @@ def test_add_color_macros_to_latex():
 
 
 def test_color_citations():
-    tex = "word.~\\cite{source1,source2}"
-    colorized, citations = next(colorize_citations(tex, insert_color_macros=False))
-    assert colorized.startswith("word.~")
-    print(colorized)
-    matches = re.findall(COLOR_PATTERN, colorized)
-    assert matches[0] == "\\cite{source1,source2}"
-    assert len(citations) == 1
-    assert citations[0].data["keys"] == ["source1", "source2"]
-
-
-def test_disable_hyperref_colors():
-    tex = "\n".join(
-        ["\\usepackage[colorlinks=true,citecolor=blue]{hyperref}", "\\cite{source}"]
+    tex = "\n".join(["\\documentclass{article}", "word.~\\cite{source1,source2}"])
+    bibitem_keys = ["source2"]
+    colorized, citations = next(colorize_citations(tex, bibitem_keys))
+    assert re.search(
+        r"\\scholarregistercitecolor{source2}{[0-9.]+}{[0-9.]+}{[0-9.]+}", colorized
     )
-    colorized, _ = next(colorize_citations(tex))
-    assert "colorlinks=false" in colorized
+    assert len(citations) == 1
+    assert citations[0].key == "source2"
+
+
+def test_no_disable_hyperref_colors():
+    """
+    In previous versions of the pipeline, we disabled the hyperref colors so that they won't
+    interfere with the citation colors. We've since found another workaround. In the current
+    pipeline, colorlinks shouldn't be disabled, and the citation color should be preserved.
+    """
+    tex = "\n".join(
+        [
+            "\\documentclass{article}",
+            "\\usepackage[colorlinks=true,citecolor=blue]{hyperref}",
+            "\\cite{source}",
+        ]
+    )
+    colorized, _ = next(colorize_citations(tex, ["source"]))
+    assert "\\usepackage[colorlinks=true,citecolor=blue]{hyperref}" in colorized
 
 
 def test_color_equations():

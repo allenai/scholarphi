@@ -3,20 +3,38 @@ import logging
 import os
 import re
 from dataclasses import dataclass
-from typing import (Any, Callable, Dict, Iterator, List, NamedTuple, Optional,
-                    Set, cast)
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterator,
+    List,
+    NamedTuple,
+    Optional,
+    Set,
+    Tuple,
+    cast,
+)
 
 import numpy as np
 
-from explanations.parse_tex import (BeginDocumentExtractor, CitationExtractor,
-                                    ColorLinksExtractor,
-                                    DocumentclassExtractor, EquationExtractor)
-from explanations.types import (CharacterRange, Citation, Entity, Equation,
-                                EquationId, FileContents, TexFileName,
-                                TokenWithOrigin)
+from explanations.parse_tex import (
+    BeginDocumentExtractor,
+    DocumentclassExtractor,
+    EquationExtractor,
+)
+from explanations.types import (
+    CharacterRange,
+    Entity,
+    Equation,
+    EquationId,
+    FileContents,
+    TexFileName,
+    TokenWithOrigin,
+)
 
 """
-All TeX coloring operations follow the same process.
+Most TeX coloring operations follow the same process.
 
 First, detect character positions of entities that need to be colorized. This is done an Extractor
 listens to a stream of tokens from a TeX scanner.
@@ -35,7 +53,7 @@ Entities will be colorized, each with a different hue. Once the colorizer runs o
 returns the currently colorized TeX and list of colorized entities, then resets the TeX and
 starts over from where it stopped, cylcing through the same hues again.
 
-If you want a better sense of the colorization process, see the 'colorize_citations' method, which
+If you want a better sense of the colorization process, see the 'colorize_equations' method, which
 has more explanatory comments than the other colorization methods.
 """
 
@@ -57,7 +75,7 @@ LATEX_COLOR_MACROS = "\n".join(
 )
 
 
-def add_color_macros(tex: str) -> str:
+def add_color_macros(tex: str, after_macros: Optional[str] = None) -> str:
     documentclass_extractor = DocumentclassExtractor()
     documentclass = documentclass_extractor.parse(tex)
     if documentclass is not None:
@@ -68,10 +86,13 @@ def add_color_macros(tex: str) -> str:
                 tex[: begin_document.start]
                 + "\n"
                 + LATEX_COLOR_MACROS
+                + ("\n" + after_macros if after_macros else "")
                 + "\n"
                 + tex[begin_document.start :]
             )
-    return TEX_COLOR_MACROS + "\n\n" + tex
+    return (
+        TEX_COLOR_MACROS + ("\n" + after_macros if after_macros else "") + "\n\n" + tex
+    )
 
 
 # TODO(andrewhead): determine number of hues based on the number of hues that OpenCV is capable
@@ -108,6 +129,17 @@ def insert_color_in_tex(
     )
 
 
+def _get_tex_color(hue: float) -> Tuple[float, float, float]:
+    """
+    Convert a hue value to RGB for a fully-saturated color with a range of [0:1,0:1,0:1].
+    """
+    red, green, blue = colorsys.hsv_to_rgb(hue, 1, 255)
+    red_scaled = red / 255.0
+    blue_scaled = blue / 255.0
+    green_scaled = green / 255.0
+    return red_scaled, blue_scaled, green_scaled
+
+
 def _get_color_start_tex(hue: float) -> str:
     """
     Coloring macros were chosen carefully to satisfy a few needs:
@@ -125,17 +157,34 @@ def _get_color_start_tex(hue: float) -> str:
     characters be faded and thus have different R, G, and B values no matter what the color. However,
     those same pixels will still have the same hue, just at a higher value or lower saturation.
     """
-    red, green, blue = colorsys.hsv_to_rgb(hue, 1, 255)
-    red_scaled = red / 255.0
-    blue_scaled = blue / 255.0
-    green_scaled = green / 255.0
+    red, green, blue = _get_tex_color(hue)
     return r"\scholarsetcolor[rgb]{{{red},{green},{blue}}}".format(
-        red=red_scaled, green=green_scaled, blue=blue_scaled
+        red=red, green=green, blue=blue
     )
 
 
 def _get_color_end_tex() -> str:
     return r"\scholarrevertcolor{}"
+
+
+def _get_color_citation_tex(bibitem_key: str, hue: float) -> str:
+    """
+    Citations are colorized in a different way than other entities. The challenge with using the
+    standard approach is that there's no way to introduce colorization commands in a way that will
+    color different entries in the same citation differently. (e.g., assigning different colors to
+    the two sources in (Weld et al. 2015; Lo et al. 2013)). To get around this problem, we
+    instead instrument the citation implementations of LaTeX and hyperref macros.
+
+    The instrumentation of the LaTeX and hyperref macros will be performed by done importing some
+    TeX code from the '03-load-color-commands.tex' file. Once that TeX has been imported, all a file
+    has to do to colorize a citation with a specific key is to call the
+    'scholarregistercitecolor' command from within the TeX, as shown below.
+    """
+
+    red, green, blue = _get_tex_color(hue)
+    return r"\scholarregistercitecolor{{{key}}}{{{red}}}{{{green}}}{{{blue}}}".format(
+        key=bibitem_key, red=red, green=green, blue=blue
+    )
 
 
 @dataclass(frozen=True)
@@ -161,39 +210,17 @@ class ColorizationBatch(NamedTuple):
     entities: List[ColorizedEntity]
 
 
-def colorize_citations(
-    tex: str,
-    insert_color_macros: bool = True,
-    batch_size: Optional[int] = None,
-    preset_hue: Optional[float] = None,
-) -> Iterator[ColorizationBatch]:
-    """
-    'batch_size' is the maximum number of citations to process at a time. It defaults to the number
-    of hues available for coloring. You cannot specify more than the number of hues.
-    """
-
-    def get_entity_metadata(entity: Entity) -> Dict[str, Any]:
-        citation = cast(Citation, entity)
-        return {"keys": citation.keys}
-
-    batches = colorize_entities(
-        tex,
-        CitationExtractor(),
-        get_entity_metadata,
-        insert_color_macros,
-        batch_size,
-        preset_hue,
-    )
-    for batch in batches:
-        yield batch
-
-
 def colorize_equations(
     tex: str,
     insert_color_macros: bool = True,
     batch_size: Optional[int] = None,
     preset_hue: Optional[float] = None,
 ) -> Iterator[ColorizationBatch]:
+    """
+    'batch_size' is the maximum number of equations to process at a time. It defaults to the number
+    of hues available for coloring. You cannot specify more than the number of hues.
+    """
+
     def get_entity_metadata(entity: Entity) -> Dict[str, Any]:
         equation = cast(Equation, entity)
         return {
@@ -243,7 +270,6 @@ def colorize_entities(
 
     if insert_color_macros:
         tex = add_color_macros(tex)
-    tex = _disable_hyperref_coloring(tex)
 
     entities = list(entity_extractor.parse(tex))
 
@@ -500,19 +526,54 @@ def _get_token_color_positions(
     return CharacterRange(start, end)
 
 
-def _disable_hyperref_coloring(tex: str) -> str:
+@dataclass(frozen=True)
+class ColorizedCitation:
+    key: str
+    hue: float
+
+
+class CitationColorizationBatch(NamedTuple):
+    tex: str
+    citations: List[ColorizedCitation]
+
+
+def colorize_citations(
+    tex: str,
+    bibitem_keys: List[str],
+    batch_size: Optional[int] = None,
+    preset_hue: Optional[float] = None,
+) -> Iterator[CitationColorizationBatch]:
     """
-    Coloring from the hyperref package will overwrite the coloring of citations. Disable coloring
-    from the hyperref package.
+    To save time, this function only attempts to add colorization commands to the main document file,
+    as determined by the presence of the "documentclass" macro. This function will do nothing when
+    applied to plain TeX (i.e. non-LaTeX) files.
     """
-    colorlinks_extractor = ColorLinksExtractor()
-    colorlinks_elements = list(colorlinks_extractor.parse(tex))
 
-    colorlinks_reverse_order = sorted(
-        colorlinks_elements, key=lambda c: c.value_start, reverse=True,
-    )
+    documentclass_extractor = DocumentclassExtractor()
+    documentclass = documentclass_extractor.parse(tex)
+    if not documentclass:
+        return
 
-    for colorlinks in colorlinks_reverse_order:
-        tex = tex[: colorlinks.value_start] + "false" + tex[colorlinks.value_end :]
+    batch_size = min(batch_size, NUM_HUES) if batch_size is not None else NUM_HUES
+    batch_index = 0
 
-    return tex
+    while True:
+        batch = bibitem_keys[batch_index * batch_size : (batch_index + 1) * batch_size]
+        if len(batch) == 0:
+            return
+
+        citation_color_commands_tex = ""
+        colorized_citations = []
+        hue_generator = generate_hues()
+        for key in batch:
+            if preset_hue is not None:
+                hue = preset_hue
+            else:
+                hue = next(hue_generator)
+
+            citation_color_commands_tex += _get_color_citation_tex(key, hue) + "\n"
+            colorized_citations.append(ColorizedCitation(key, hue))
+
+        colorized_tex = add_color_macros(tex, after_macros=citation_color_commands_tex)
+        yield CitationColorizationBatch(colorized_tex, colorized_citations)
+        batch_index += 1
