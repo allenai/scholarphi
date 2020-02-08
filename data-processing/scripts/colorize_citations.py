@@ -58,6 +58,12 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
 
             bibitem_keys: List[str] = []
             bibitems_path = os.path.join(directories.bibitems(arxiv_id), "bibitems.csv")
+            if not os.path.exists(bibitems_path):
+                logging.warning(
+                    "No bibitems were found for paper %s. Skipping", arxiv_id
+                )
+                continue
+
             with open(bibitems_path, encoding="utf-8") as bibitems_file:
                 reader = csv.reader(bibitems_file)
                 bibitem_keys = [row[0] for row in reader]
