@@ -11,7 +11,7 @@
 \def\dvipsdrivername{dvips.def}
 
 \scholarifdefined{current@color}{%
-% scholarset color: Set color for everything in the document after this command.
+% scholarsetcolor: Set color for everything in the document after this command.
 % Color will apply even after the current group is finished.
 \def\scholarsetcolor[#1]#2{%
 {\csname color@#1\endcsname\current@color{#2}%
@@ -23,7 +23,7 @@
 \fi\fi%
 }%
 }%
-% Command for reverting a color set in an 'scholarsetcolor' command.
+% scholarrevertcolor: Revert a color set in a 'scholarsetcolor' command.
 \def\scholarrevertcolor{%
 \ifx\Gin@driver\pdftexdrivername%
 \pdfcolorstack0 pop%
@@ -32,8 +32,37 @@
 \else\message{Coloring not implemented for driver \Gin@driver}%
 \fi\fi%
 }%
-\message{Defined S2 LaTeX coloring commands.}
+\message{Defined S2 LaTeX coloring commands.}%
 }%
+
+% scholarregistercitecolor: Register a color for a citation key. Everywhere a
+% source is cited using this key, the citation body will appear in this color.
+% Takes four arguments: citation key, red, green, blue.
+\def\scholarregistercitecolor#1#2#3#4{%
+\expandafter\def\csname scholarcolor@#1\endcsname{#2,#3,#4}%
+\definecolor{scholarcolor@#1}{rgb}{#2,#3,#4}
+}
+
+% Define rules for coloring citations.
+% First, instrument default LaTeX citation formatting command to insert a color
+% command when its formatting a known citation.
+\let\scholar@inner@cite@ofmt\@cite@ofmt
+\def\@cite@ofmt#1{%
+\scholarifdefinedelse{scholarcolor@\@citeb}{%
+\textcolor{scholarcolor@\@citeb}{\scholar@inner@cite@ofmt{#1}}%
+}{%
+\scholar@inner@cite@ofmt{#1}%
+}}
+
+% Second, instrument hyperref citation coloring commands to use the colors
+% specified by 'scholarregistercitecolor' instead of defaults.
+\let\scholar@inner@citecolor\@citecolor
+\def\@citecolor{%
+\scholarifdefinedelse{scholarcolor@\@citeb}{%
+scholarcolor@\@citeb%
+}{%
+\scholar@inner@citecolor%
+}}
 
 % Revert '@' to just be a normal character.
 \catcode`@ = 12

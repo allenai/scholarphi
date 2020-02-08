@@ -6,7 +6,7 @@ from argparse import ArgumentParser
 from typing import Iterator, List, NamedTuple
 
 from explanations import directories
-from explanations.colorize_tex import ColorizedEntity, colorize_citations
+from explanations.colorize_tex import ColorizedCitation, colorize_citations
 from explanations.directories import (
     get_data_subdirectory_for_arxiv_id,
     get_data_subdirectory_for_iteration,
@@ -22,12 +22,13 @@ class ColorizationTask(NamedTuple):
     arxiv_id: ArxivId
     tex_path: RelativePath
     file_contents: FileContents
+    bibitem_keys: List[str]
 
 
 class ColorizationResult(NamedTuple):
     iteration: int
     tex: str
-    colorized_citations: List[ColorizedEntity]
+    colorized_citations: List[ColorizedCitation]
 
 
 class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult]):
@@ -55,20 +56,30 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
             )
             clean_directory(output_root)
 
+            bibitem_keys: List[str] = []
+            bibitems_path = os.path.join(directories.bibitems(arxiv_id), "bibitems.csv")
+            with open(bibitems_path, encoding="utf-8") as bibitems_file:
+                reader = csv.reader(bibitems_file)
+                bibitem_keys = [row[0] for row in reader]
+
             original_sources_path = directories.sources(arxiv_id)
             for tex_path in find_files(original_sources_path, [".tex"], relative=True):
                 file_contents = read_file_tolerant(
                     os.path.join(original_sources_path, tex_path)
                 )
                 if file_contents is not None:
-                    yield ColorizationTask(arxiv_id, tex_path, file_contents)
+                    yield ColorizationTask(
+                        arxiv_id, tex_path, file_contents, bibitem_keys
+                    )
 
     def process(self, item: ColorizationTask) -> Iterator[ColorizationResult]:
         batch_size = 1 if self.args.one_entity_at_a_time else None
         for i, batch in enumerate(
-            colorize_citations(item.file_contents.contents, batch_size=batch_size)
+            colorize_citations(
+                item.file_contents.contents, item.bibitem_keys, batch_size=batch_size
+            )
         ):
-            yield ColorizationResult(i, batch.tex, batch.entities)
+            yield ColorizationResult(i, batch.tex, batch.citations)
 
     def save(self, item: ColorizationTask, result: ColorizationResult) -> None:
         iteration = result.iteration
@@ -109,7 +120,7 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
                                 item.tex_path,
                                 iteration_id,
                                 colorized_citation.hue,
-                                json.dumps(colorized_citation.data["keys"]),
+                                json.dumps([colorized_citation.key]),
                             ]
                         )
                     except Exception:  # pylint: disable=broad-except

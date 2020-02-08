@@ -1,7 +1,9 @@
-from explanations.parse_tex import (BibitemExtractor, CitationExtractor,
-                                    ColorLinksExtractor,
-                                    DocumentclassExtractor, EquationExtractor,
-                                    MacroExtractor)
+from explanations.parse_tex import (
+    BibitemExtractor,
+    DocumentclassExtractor,
+    EquationExtractor,
+    MacroExtractor,
+)
 from explanations.types import MacroDefinition
 
 
@@ -102,41 +104,11 @@ def test_ignore_escaped_dollar_sign():
     assert len(equations) == 0
 
 
-def test_extract_citation():
-    extractor = CitationExtractor()
-    citations = list(extractor.parse("text\\cite{key1,key2}"))
-    assert len(citations) == 1
-
-    citation = citations[0]
-    assert citation.keys == ["key1", "key2"]
-    assert citation.start == 4
-    assert citation.end == 20
-
-
-def test_extract_citation_from_cite_star():
-    extractor = CitationExtractor()
-    citations = list(extractor.parse("text\\cite*{key}"))
-    assert len(citations) == 1
-    assert citations[0].keys == ["key"]
-
-
 def test_extract_documentclass_after_comment_ending_with_whitespace():
     extractor = DocumentclassExtractor()
     tex = "\n\n%\\documentclass{IEEEtran}    \n\\documentclass{article}"
     documentclass = extractor.parse(tex)
     assert documentclass is not None
-
-
-def test_extract_colorlinks():
-    extractor = ColorLinksExtractor()
-    tex = "\\usepackage[arg1,colorlinks=true,arg2]{hyperref}"
-    colorlinks_elements = list(extractor.parse(tex))
-    assert len(colorlinks_elements) == 1
-
-    colorlinks = colorlinks_elements[0]
-    assert colorlinks.value == "true"
-    assert colorlinks.value_start == 28
-    assert colorlinks.value_end == 32
 
 
 def test_extract_bibitems():

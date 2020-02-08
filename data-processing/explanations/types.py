@@ -101,11 +101,6 @@ class Entity(CharacterRange):
 
 
 @dataclass(frozen=True)
-class Citation(Entity):
-    keys: List[str]
-
-
-@dataclass(frozen=True)
 class HueIteration:
     hue: float
     iteration: str
@@ -149,12 +144,6 @@ class BeginDocument(Entity):
 @dataclass(frozen=True)
 class Documentclass(Entity):
     pass
-
-
-class ColorLinks(NamedTuple):
-    value: str
-    value_start: int
-    value_end: int
 
 
 @dataclass(frozen=True)

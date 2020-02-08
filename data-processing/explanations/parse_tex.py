@@ -5,136 +5,23 @@ from typing import Dict, Iterator, List, Optional, Set, Union
 
 from TexSoup import RArg, TexNode, TexSoup, TokenWithPosition
 
-from explanations.scan_tex import (EndOfInput, Match, Pattern, TexScanner,
-                                   has_balanced_braces, scan_tex)
-from explanations.types import (BeginDocument, Bibitem, Citation, ColorLinks,
-                                Documentclass, Equation, LengthAssignment,
-                                Macro, MacroDefinition)
-
-"""
-All citation commands from the biblatex package.
-The citation extractor takes advantage of the fact that almost all of these citation commands
-have the same format (see the regular expression in the citation extractor).
-
-Some of these commands are defined in more than one package. If so, we only list it under
-the first package comment subheading below.
-
-If you commands to this list, make sure to escape special characters (e.g., "*") as needed
-so these commands can be added to a regular expression.
-
-References:
-* biblatex manual. Section 3.8: Citation Commands,
-  https://ctan.math.illinois.edu/macros/latex/contrib/biblatex/doc/biblatex.pdf
-* natbib manual. Sections 2.3-6.
-  http://texdoc.net/texmf-dist/doc/latex/natbib/natbib.pdf
-* cite manual. http://ctan.mirrors.hoobly.com/macros/latex/contrib/cite/cite.pdf
-
-TODO(andrewhead): Provide support for the 'multicite' family of commands.
-TODO(andrewhead): Provide support for the 'volcite' family of commands.
-TODO(andrewhead): Provide support for low-level commands ('citename', 'citelist', 'citefield')
-TODO(andrewhead): Provide support for 'mcite' family of commands.
-TODO(andrewhead): Provide support for 'citetext' family of commands.
-"""
-CITATION_COMMAND_NAMES = [
-    # LaTeX built-in commands
-    "cite",
-    # biblatex
-    "Cite",
-    "parencite",
-    "Parencite",
-    "footcite",
-    "footcitetext",
-    "textcite",
-    "Textcite",
-    "smartcite",
-    "Smartcite",
-    r"cite\*",
-    r"parencite\*",
-    "supercite",
-    "autocite",
-    "Autocite",
-    r"autocite\*",
-    r"Autocite\*",
-    "citeauthor",
-    r"citeauthor\*",
-    "Citeauthor",
-    r"Citeauthor\*",
-    "citetitle",
-    r"citetitle\*",
-    "citeyear",
-    r"citeyear\*",
-    "citedate",
-    r"citedate\*",
-    "citeurl",
-    "fullcite",
-    "footfullcite",
-    "notecite",
-    "Notecite",
-    "pnotecite",
-    "Pnotecite",
-    "fnotecite",
-    # natbib
-    "citet",
-    "Citet",
-    r"citet\*",
-    r"Citet\*",
-    "citep",
-    "Citep",
-    r"citep\*",
-    r"Citep\*",
-    "citealt",
-    "Citealt",
-    r"citealt\*",
-    r"Citealt\*",
-    "citealp",
-    "Citealp",
-    r"citealp\*",
-    r"Citealp\*",
-    "citenum",
-    "citeyearpar",
-    "citefullauthor",
-    "Citefullauthor",
-    "citetalias",
-    "citepalias",
-    # 'cite' package
-    "citen",
-    "citeonline",
-]
-
-
-class CitationExtractor:
-    def __init__(self) -> None:
-        self.PATTERNS: List[Pattern] = [
-            Pattern("citation", self._get_command_regex(CITATION_COMMAND_NAMES))
-        ]
-
-    def parse(self, tex: str) -> Iterator[Citation]:
-        scanner = scan_tex(tex, self.PATTERNS)
-        for match in scanner:
-            keys = self._extract_keys(match.text)
-            yield Citation(match.start, match.end, keys)
-
-    def _get_command_regex(self, commands: List[str]) -> str:
-        """
-        A citation command typically has this structure:
-
-        \\command[prenote][postnote]{keys}[punctuation]
-
-        where prenote, postnote, and punctuation are all optional.
-        Reference: https://ctan.math.illinois.edu/macros/latex/contrib/biblatex/doc/biblatex.pdf
-        """
-        command_names = r"(?:" + "|".join([r"\\" + c for c in commands]) + ")"
-        return command_names + r"(?:\[[^\]]*\]){0,2}{[^}]*?}(?:\[[^\]]*\])?"
-
-    def _extract_keys(self, command_tex: str) -> List[str]:
-        keys_regex = r".*(?:\[[^\]]*\]){0,2}{([^}]*?)}(?:\[[^\]]*\])?$"
-        keys_match = re.match(keys_regex, command_tex)
-        if keys_match is None or keys_match.group(1) is None:
-            logging.warning(
-                "Unexpectedly, no keys were found in citation %s.", command_tex
-            )
-            return []
-        return keys_match.group(1).split(",")
+from explanations.scan_tex import (
+    EndOfInput,
+    Match,
+    Pattern,
+    TexScanner,
+    has_balanced_braces,
+    scan_tex,
+)
+from explanations.types import (
+    BeginDocument,
+    Bibitem,
+    Documentclass,
+    Equation,
+    LengthAssignment,
+    Macro,
+    MacroDefinition,
+)
 
 
 @dataclass(frozen=True)
@@ -204,10 +91,16 @@ def make_math_environment_patterns() -> List[Pattern]:
             patterns.append(Pattern(name + "_start", spec.start))
             patterns.append(Pattern(name + "_end", spec.end))
         elif isinstance(spec, NamedEnv):
-            patterns.append(Pattern(name + "_start", begin(spec.name, spec.arg_pattern)))
+            patterns.append(
+                Pattern(name + "_start", begin(spec.name, spec.arg_pattern))
+            )
             patterns.append(Pattern(name + "_end", end(spec.name)))
             if spec.star:
-                patterns.append(Pattern(name + "s_start", begin(spec.name + r"\*", spec.arg_pattern)))
+                patterns.append(
+                    Pattern(
+                        name + "s_start", begin(spec.name + r"\*", spec.arg_pattern)
+                    )
+                )
                 patterns.append(Pattern(name + "s_end", end(spec.name + r"\*")))
     return patterns
 
@@ -272,7 +165,6 @@ class EquationExtractor:
         return any([m.pattern.name == start_pattern_name for m in self._stack])
 
 
-
 """
 Valid units of measure in TeX and related engines.
 """
@@ -312,10 +204,15 @@ class EquationLengthAssignmentExtractor:
     Extracts length assignments of the form "\\[parameter]=[#][unit of measurement]",
     for example "\\arraycolsep=2pt"
     """
+
     def parse(self, tex: str) -> Iterator[LengthAssignment]:
-        parameter_names_pattern = r"(?:" + "|".join([r"\\" + p for p in ARRAY_PARAMETERS]) + ")"
+        parameter_names_pattern = (
+            r"(?:" + "|".join([r"\\" + p for p in ARRAY_PARAMETERS]) + ")"
+        )
         unit_pattern = r"(?:" + "|".join(LENGTH_UNITS) + ")"
-        assignment_pattern = parameter_names_pattern + r"\s*=\s*[0-9\.]+\s*" + unit_pattern
+        assignment_pattern = (
+            parameter_names_pattern + r"\s*=\s*[0-9\.]+\s*" + unit_pattern
+        )
         pattern = Pattern("length_assignment", assignment_pattern)
         scanner = scan_tex(tex, [pattern])
         for match in scanner:
@@ -377,37 +274,6 @@ class DocumentclassExtractor:
         return None
 
 
-class ColorLinksExtractor:
-    def parse(self, tex: str) -> Iterator[ColorLinks]:
-        usepackage_pattern = Pattern(
-            "usepackage", r"\\usepackage(?:\[[^\]]*?\])?{[^}]*?}"
-        )
-        scanner = scan_tex(tex, [usepackage_pattern])
-        for match in scanner:
-            for colorlinks in self._extract_colorlinks(match):
-                yield colorlinks
-
-    def _extract_colorlinks(self, match: Match) -> Iterator[ColorLinks]:
-        optional_args_regex = r"\\usepackage(?:\[([^\]]*?)\])?"
-        optional_args_match = re.search(optional_args_regex, match.text)
-        if optional_args_match is not None and optional_args_match.group(1) is not None:
-            optional_args = optional_args_match.group(1)
-            for colorlinks_match in re.finditer(
-                "(?:(?<=^)|(?<=,))\\s*colorlinks\\s*=\\s*(true)\\s*(?=,|$)",
-                optional_args,
-            ):
-                if colorlinks_match.group(1) is not None:
-                    yield ColorLinks(
-                        "true",
-                        match.start
-                        + optional_args_match.start(1)
-                        + colorlinks_match.start(1),
-                        match.start
-                        + optional_args_match.start(1)
-                        + colorlinks_match.end(1),
-                    )
-
-
 class BibitemExtractor:
     def __init__(self) -> None:
         self.current_bibitem_label: Optional[str] = None
@@ -444,7 +310,7 @@ class BibitemExtractor:
             # spaces between what it interprets as RArgs. As only approximate matching will be
             # performed on the text, erroneous insertion of spaces shouldn't be an issue.
             if isinstance(content, RArg):
-                text += (content.value + " ")
+                text += content.value + " "
             elif isinstance(content, TokenWithPosition):
                 text += str(content)
         return _clean_bibitem_text(text)
@@ -486,14 +352,13 @@ class MacroExtractor:
 
             # Parse each of the expected tokens in the parameter string.
             tokens = re.split(r"(#\d+)", macro_definition.parameter_string)
-            if tokens[0] == '':
+            if tokens[0] == "":
                 del tokens[0]
-            if len(tokens) >= 1 and tokens[len(tokens) - 1] == '':
+            if len(tokens) >= 1 and tokens[len(tokens) - 1] == "":
                 del tokens[len(tokens) - 1]
             for i, token in enumerate(tokens):
                 if re.match(r"#\d+", token):
-                    if ((i == len(tokens) - 1) or
-                        (re.match(r"#\d+", tokens[i + 1]))):
+                    if (i == len(tokens) - 1) or (re.match(r"#\d+", tokens[i + 1])):
                         token_end = self._scan_undelimited_parameter()
                     else:
                         token_end = self._scan_delimited_parameter(tokens[i + 1], tex)
@@ -501,7 +366,7 @@ class MacroExtractor:
                     token_end = self._scan_delimiter(token)
 
             # The macros text is the text of the name and all parameters.
-            yield Macro(macro_start, token_end, tex[macro_start: token_end])
+            yield Macro(macro_start, token_end, tex[macro_start:token_end])
 
     def _scan_undelimited_parameter(self) -> int:
         patterns = [self.LEFT_BRACE, Pattern("nonspace_character", r"\S")]
@@ -532,7 +397,7 @@ class MacroExtractor:
 
         while True:
             step = self.scanner.next([delimiter_pattern])
-            text_before_delimiter = tex[scan_start: step.match.start]
+            text_before_delimiter = tex[scan_start : step.match.start]
             if has_balanced_braces(text_before_delimiter):
                 return step.match.start
 
