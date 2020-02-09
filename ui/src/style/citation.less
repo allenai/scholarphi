@@ -1,3 +1,8 @@
+.citation {
+  padding-top: @padding / 2;
+  padding-bottom: @padding / 2;
+}
+
 /**
  * Title style
  */
@@ -5,7 +10,19 @@
   font-weight: bolder;
 }
 
+/**
+ * Abstract style
+ */
 .citation__abstract {
   display: block;
   margin: @medium / 2 0 0;
+}
+
+/**
+ * Link to sidebar
+ */
+.citation__abstract__sidebar-link {
+  text-decoration: underline;
+  color: @s2-link-default;
+  cursor: pointer;
 }
