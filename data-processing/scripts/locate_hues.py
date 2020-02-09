@@ -287,6 +287,10 @@ class LocateCitationHues(LocateHuesCommand):
     def get_description() -> str:
         return "Find bounding boxes of citations by hue."
 
+    @staticmethod
+    def get_entity_type() -> str:
+        return "citations"
+
     def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
         return common_read_hues(
             hues_path=os.path.join(
@@ -317,6 +321,10 @@ class LocateEquationHues(LocateHuesCommand):
     @staticmethod
     def get_description() -> str:
         return "Find bounding boxes of equations by hue."
+
+    @staticmethod
+    def get_entity_type() -> str:
+        return "symbols"
 
     def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
         return common_read_hues(
@@ -366,6 +374,10 @@ class LocateEquationTokenHues(LocateHuesCommand):
             + LocateEquationHues.get_name()
             + "'"
         )
+
+    @staticmethod
+    def get_entity_type() -> str:
+        return "symbols"
 
     def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
 

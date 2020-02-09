@@ -54,6 +54,10 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, Match]):
     def get_description() -> str:
         return "Find S2 IDs for bibitems."
 
+    @staticmethod
+    def get_entity_type() -> str:
+        return "citations"
+
     def get_arxiv_ids_dir(self) -> Path:
         return directories.BIBITEMS_DIR
 

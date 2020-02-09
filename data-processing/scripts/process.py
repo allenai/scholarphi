@@ -20,7 +20,6 @@ from scripts.compile_tex import (
 )
 from scripts.compute_iou import ComputeIou
 from scripts.debug_colorize_tex import (
-    DebugColorizeCitations,
     DebugColorizeEquations,
     DebugColorizeEquationTokens,
 )
@@ -36,6 +35,7 @@ from scripts.fetch_arxiv_sources import FetchArxivSources
 from scripts.fetch_new_arxiv_ids import FetchNewArxivIds
 from scripts.fetch_s2_data import FetchS2Metadata
 from scripts.find_symbol_matches import FindSymbolMatches
+from scripts.locate_citations import LocateCitations
 from scripts.locate_hues import (
     LocateCitationHues,
     LocateEquationHues,
@@ -88,6 +88,7 @@ MAIN_PIPELINE_COMMANDS: List = [  # type: ignore
     DiffImagesWithColorizedEquations,
     DiffImagesWithColorizedEquationTokens,
     LocateCitationHues,
+    LocateCitations,
     LocateEquationHues,
     LocateEquationTokenHues,
     LocateSymbols,
@@ -105,7 +106,6 @@ DATABASE_UPLOAD_COMMANDS: List = [  # type: ignore
 ]
 
 EVALUATION_COMMANDS: List = [  # type: ignore
-    DebugColorizeCitations,
     DebugColorizeEquations,
     DebugColorizeEquationTokens,
     AnnotatePdfsWithCitationBoxes,

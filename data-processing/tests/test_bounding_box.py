@@ -4,6 +4,7 @@ from typing import FrozenSet
 import cv2
 
 from explanations.bounding_box import (
+    cluster_boxes,
     compute_accuracy,
     find_boxes_with_color,
     intersect,
@@ -14,7 +15,10 @@ from explanations.bounding_box import (
     subtract_multiple_from_multiple,
     union,
 )
+from explanations.types import BoundingBoxInfo
 from explanations.types import FloatRectangle as Rectangle
+from explanations.types import PdfBoundingBox, RasterBoundingBox
+from explanations.types import Rectangle as IntRectangle
 from tests.util import get_test_path
 
 
@@ -53,8 +57,8 @@ def test_find_boxes_within_masks():
         (40 / 360.0),
         masks=(
             (
-                Rectangle(left=5, top=10, width=10, height=10),
-                Rectangle(left=25, top=10, width=10, height=10),
+                IntRectangle(left=5, top=10, width=10, height=10),
+                IntRectangle(left=25, top=10, width=10, height=10),
             )
         ),
     )
@@ -70,6 +74,29 @@ def test_find_boxes_within_masks():
     assert boxes[1].top == 10
     assert boxes[1].width == 10
     assert boxes[1].height == 10
+
+
+def box(left: float, top: float, width: float, height: float, page: int):
+    return PdfBoundingBox(left, top, width, height, page)
+
+
+def test_cluster_boxes():
+
+    cluster1_boxes = [
+        box(0, 0, 10, 10, page=1),
+        box(20, 0, 10, 10, page=1),  # boxes need not overlap horizontally
+        box(0, 5, 10, 2, page=1),
+        box(0, 14, 10, 1, page=1),
+    ]
+    cluster2_boxes = [box(0, 25, 10, 10, page=1)]  # too far below cluster 1
+    cluster3_boxes = [box(0, 0, 10, 10, page=2)]  # on a new page
+
+    all_boxes = cluster1_boxes + cluster2_boxes + cluster3_boxes
+    clusters = list(cluster_boxes(all_boxes))
+    assert len(clusters) == 3
+    assert clusters[0] == set(cluster1_boxes)
+    assert clusters[1] == set(cluster2_boxes)
+    assert clusters[2] == set(cluster3_boxes)
 
 
 def test_subtract_rectangle_inside_another():

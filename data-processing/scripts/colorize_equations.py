@@ -43,6 +43,10 @@ class ColorizeEquations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
     def get_description() -> str:
         return "Instrument TeX to colorize equations."
 
+    @staticmethod
+    def get_entity_type() -> str:
+        return "symbols"
+
     def get_arxiv_ids_dir(self) -> Path:
         return directories.SOURCES_DIR
 

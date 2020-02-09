@@ -64,29 +64,30 @@ HUE_LOCATIONS_FOR_EQUATIONS_DIR = os.path.join(
 HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR = os.path.join(
     DATA_DIR, "25-hue-locations-for-equation-tokens"
 )
-SYMBOL_LOCATIONS_DIR = os.path.join(DATA_DIR, "26-symbol-locations")
+CITATION_LOCATIONS_DIR = os.path.join(DATA_DIR, "26-citation-locations")
+SYMBOL_LOCATIONS_DIR = os.path.join(DATA_DIR, "27-symbol-locations")
 ANNOTATED_PDFS_WITH_CITATION_BOXES_DIR = os.path.join(
-    DATA_DIR, "27-annotated-pdfs-with-citation-boxes"
+    DATA_DIR, "28-annotated-pdfs-with-citation-boxes"
 )
 ANNOTATED_PDFS_WITH_EQUATION_BOXES_DIR = os.path.join(
-    DATA_DIR, "28-annotated-pdfs-with-equation-boxes"
+    DATA_DIR, "29-annotated-pdfs-with-equation-boxes"
 )
 ANNOTATED_PDFS_WITH_EQUATION_TOKEN_BOXES_DIR = os.path.join(
-    DATA_DIR, "29-annotated-pdfs-with-equation-token-boxes"
+    DATA_DIR, "30-annotated-pdfs-with-equation-token-boxes"
 )
 SOURCES_WITH_ANNOTATED_SYMBOLS_DIR = os.path.join(
-    DATA_DIR, "30-sources-with-annotated-symbols"
+    DATA_DIR, "31-sources-with-annotated-symbols"
 )
 DEBUGGING_COLORIZING_CITATIONS_DIR = os.path.join(
-    DATA_DIR, "31-debugging-colorizing-citations"
+    DATA_DIR, "32-debugging-colorizing-citations"
 )
 DEBUGGING_COLORIZING_EQUATIONS_DIR = os.path.join(
-    DATA_DIR, "32-debugging-colorizing-equations"
+    DATA_DIR, "33-debugging-colorizing-equations"
 )
 DEBUGGING_COLORIZING_EQUATION_TOKENS_DIR = os.path.join(
-    DATA_DIR, "33-debugging-colorizing-equation-tokens"
+    DATA_DIR, "34-debugging-colorizing-equation-tokens"
 )
-BOUNDING_BOX_ACCURACIES_DIR = os.path.join(DATA_DIR, "34-bounding-box-accuracies")
+BOUNDING_BOX_ACCURACIES_DIR = os.path.join(DATA_DIR, "35-bounding-box-accuracies")
 
 # Directories for utilities
 NODE_DIRECTORY = "node"
@@ -226,6 +227,10 @@ def hue_locations_for_equation_tokens(arxiv_id: str) -> RelativePath:
     return get_data_subdirectory_for_arxiv_id(
         HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR, arxiv_id
     )
+
+
+def citation_locations(arxiv_id: str) -> RelativePath:
+    return get_data_subdirectory_for_arxiv_id(CITATION_LOCATIONS_DIR, arxiv_id)
 
 
 def symbol_locations(arxiv_id: str) -> RelativePath:

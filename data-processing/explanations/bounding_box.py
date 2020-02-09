@@ -1,15 +1,14 @@
 import logging
 from typing import (Callable, Dict, FrozenSet, Iterable, Iterator, List,
-                    Optional, Tuple)
+                    Optional, Set, Tuple)
 
 import cv2
 import numpy as np
 
 from explanations.types import (BoundingBoxInfo, CharacterId,
-                                CharacterLocations, Dimensions)
-from explanations.types import FloatRectangle as Rectangle
-from explanations.types import (PdfBoundingBox, Point, RasterBoundingBox,
-                                Symbol, SymbolId)
+                                CharacterLocations, Dimensions, FloatRectangle,
+                                PdfBoundingBox, Point, RasterBoundingBox,
+                                Rectangle, Symbol, SymbolId)
 
 
 def extract_bounding_boxes(
@@ -193,12 +192,12 @@ def _to_pdf_coordinates(
     top = bounding_box.top
     right = bounding_box.left + bounding_box.width
     bottom = bounding_box.top + bounding_box.height
-    pdf_left = left * (pdf_page_width / image_width)
-    pdf_right = right * (pdf_page_width / image_width)
+    pdf_left = left * (pdf_page_width / float(image_width))
+    pdf_right = right * (pdf_page_width / float(image_width))
     # Set PDF coordinates relative to the document bottom. Because image coordinates are relative
     # to the image's top, flip the y-coordinates.
-    pdf_top = pdf_page_height - (top * (pdf_page_height / image_height))
-    pdf_bottom = pdf_page_height - (bottom * (pdf_page_height / image_height))
+    pdf_top = pdf_page_height - (top * (pdf_page_height / float(image_height)))
+    pdf_bottom = pdf_page_height - (bottom * (pdf_page_height / float(image_height)))
     return PdfBoundingBox(
         left=pdf_left,
         top=pdf_top,
@@ -242,8 +241,46 @@ def get_symbol_bounding_box(
     return PdfBoundingBox(left, top, right - left, top - bottom, page)
 
 
+def _is_box_in_cluster(
+    box: PdfBoundingBox, cluster: Set[PdfBoundingBox], vsplit: int
+) -> bool:
+    if len(cluster) == 0:
+        return True
 
-def subtract(rect1: Rectangle, rect2: Rectangle) -> Iterator[Rectangle]:
+    cluster_top = min([b.top for b in cluster])
+    cluster_bottom = max([b.top + b.height for b in cluster])
+    cluster_page = next(iter(cluster)).page
+
+    box_bottom = box.top + box.height
+    return box.page == cluster_page and (
+        (cluster_top - vsplit) <= box.top <= (cluster_bottom + vsplit)
+        or (cluster_top - vsplit) <= box_bottom <= (cluster_bottom + vsplit)
+    )
+
+
+def cluster_boxes(
+    boxes: Iterable[PdfBoundingBox], vertical_split: int = 5
+) -> Iterator[Set[PdfBoundingBox]]:
+    """
+    Cluster boxes into sets of boxes that are separated by 'vertical_split' pixels. This method
+    was designed to help in grouping together bounding boxes that refer to the same entity, but
+    which have been split from each other by a line break. Sets of boxes will be returned
+    in order from top to bottom in the document.
+    """
+    boxes_sorted = sorted(boxes, key=lambda b: (b.page, b.top))
+
+    cluster: Set[PdfBoundingBox] = set()
+    for box in boxes_sorted:
+        if _is_box_in_cluster(box, cluster, vertical_split):
+            cluster.add(box)
+        else:
+            yield cluster
+            cluster = set([box])
+
+    yield cluster
+
+
+def subtract(rect1: FloatRectangle, rect2: FloatRectangle) -> Iterator[FloatRectangle]:
     """
     Get a collection of rectangles that make up the difference between 'rect1' and 'rect2'.
     The returned rectangles will have the dimensions of rectangles called "split[1..4]" below.
@@ -267,14 +304,14 @@ def subtract(rect1: Rectangle, rect2: Rectangle) -> Iterator[Rectangle]:
     rect2_bottom = rect2.top - rect2.height
 
     if not are_intersecting(rect1, rect2):
-        yield Rectangle(rect1.left, rect1.top, rect1.width, rect1.height)
+        yield FloatRectangle(rect1.left, rect1.top, rect1.width, rect1.height)
         return
 
     # Create 'split 1'
     if rect2.top <= rect1.top and rect2.top >= rect1_bottom:
         height = rect1.top - rect2.top
         if height > 0:
-            yield Rectangle(rect1.left, rect1.top, rect1.width, height)
+            yield FloatRectangle(rect1.left, rect1.top, rect1.width, height)
 
     # Create 'split 2'
     if rect2.left >= rect1.left and rect2.left <= rect1_right:
@@ -283,7 +320,7 @@ def subtract(rect1: Rectangle, rect2: Rectangle) -> Iterator[Rectangle]:
         width = rect2.left - rect1.left
         height = diff_top - diff_bottom
         if width > 0 and height > 0:
-            yield Rectangle(rect1.left, diff_top, width, height)
+            yield FloatRectangle(rect1.left, diff_top, width, height)
 
     # Create 'split 3'
     if rect2_right <= rect1_right and rect2_right >= rect1.left:
@@ -292,17 +329,16 @@ def subtract(rect1: Rectangle, rect2: Rectangle) -> Iterator[Rectangle]:
         width = rect1_right - rect2_right
         height = diff_top - diff_bottom
         if width > 0 and height > 0:
-            yield Rectangle(rect2_right, diff_top, width, height)
+            yield FloatRectangle(rect2_right, diff_top, width, height)
 
     # Create 'split 4'
     if rect2_bottom >= rect1_bottom and rect2_bottom <= rect1.top:
         height = rect2_bottom - rect1_bottom
         if height > 0:
-            yield Rectangle(rect1.left, rect2_bottom, rect1.width, height)
+            yield FloatRectangle(rect1.left, rect2_bottom, rect1.width, height)
 
 
-
-def are_intersecting(rect1: Rectangle, rect2: Rectangle) -> bool:
+def are_intersecting(rect1: FloatRectangle, rect2: FloatRectangle) -> bool:
 
     between: Callable[[float, float, float], float] = lambda x, x1, x2: x1 <= x <= x2
 
@@ -326,10 +362,9 @@ def are_intersecting(rect1: Rectangle, rect2: Rectangle) -> bool:
     return horizontal_range_overlap and vertical_range_overlap
 
 
-
 def subtract_from_multiple(
-    rects: Iterable[Rectangle], other: Rectangle
-) -> Iterator[Rectangle]:
+    rects: Iterable[FloatRectangle], other: FloatRectangle
+) -> Iterator[FloatRectangle]:
     """
     Assumes all rectangles in 'rects' are mutually exclusive.
     """
@@ -339,8 +374,8 @@ def subtract_from_multiple(
 
 
 def subtract_multiple(
-    rect: Rectangle, other_rects: Iterable[Rectangle]
-) -> Iterator[Rectangle]:
+    rect: FloatRectangle, other_rects: Iterable[FloatRectangle]
+) -> Iterator[FloatRectangle]:
 
     difference = [rect]
     for other_rect in other_rects:
@@ -351,8 +386,8 @@ def subtract_multiple(
 
 
 def subtract_multiple_from_multiple(
-    rects: Iterable[Rectangle], other_rects: Iterable[Rectangle]
-) -> Iterator[Rectangle]:
+    rects: Iterable[FloatRectangle], other_rects: Iterable[FloatRectangle]
+) -> Iterator[FloatRectangle]:
 
     rects_unioned = union(rects)
     for rect in rects_unioned:
@@ -360,7 +395,7 @@ def subtract_multiple_from_multiple(
             yield diff_rect
 
 
-def union(rects: Iterable[Rectangle]) -> Iterator[Rectangle]:
+def union(rects: Iterable[FloatRectangle]) -> Iterator[FloatRectangle]:
     """
     In case the exact rectangles returned are important to you, the union is computed by taking the
     difference of rectangles later in the iterable from rectangles that were earlier in the
@@ -387,8 +422,8 @@ def union(rects: Iterable[Rectangle]) -> Iterator[Rectangle]:
 
 
 def intersect(
-    rects: Iterable[Rectangle], other_rects: Iterable[Rectangle]
-) -> Iterator[Rectangle]:
+    rects: Iterable[FloatRectangle], other_rects: Iterable[FloatRectangle]
+) -> Iterator[FloatRectangle]:
     """
     In case the exact rectangles returned are important to you, the intersection is computed by
     first computing the union of all rectangles, then subtracting the difference between 'rects'
@@ -398,9 +433,11 @@ def intersect(
     rects = list(rects)
     other_rects = list(other_rects)
     diff1 = list(subtract_multiple_from_multiple(rects, other_rects))
-    diff2 = list(subtract_multiple_from_multiple(  # pylint: disable=arguments-out-of-order
-        other_rects, rects
-    ))
+    diff2 = list(
+        subtract_multiple_from_multiple(  # pylint: disable=arguments-out-of-order
+            other_rects, rects
+        )
+    )
     union_rects = union(rects + other_rects)
 
     union_minus_diff1 = subtract_multiple_from_multiple(union_rects, diff1)
@@ -409,17 +446,19 @@ def intersect(
         yield rect
 
 
-def sum_areas(rects: Iterable[Rectangle]) -> float:
+def sum_areas(rects: Iterable[FloatRectangle]) -> float:
     """
     Assumes rectangles do not overlap with each other.
     """
-    total_area = 0.
+    total_area = 0.0
     for rect in rects:
-        total_area += (rect.width * rect.height)
+        total_area += rect.width * rect.height
     return total_area
 
 
-def iou(rects: Iterable[Rectangle], other_rects: Iterable[Rectangle]) -> float:
+def iou(
+    rects: Iterable[FloatRectangle], other_rects: Iterable[FloatRectangle]
+) -> float:
     """
     Compute the intersection-over-union between two sets of rectangles. Rectangles within
     each iterable *can* overlap with each other.
@@ -437,30 +476,39 @@ def iou(rects: Iterable[Rectangle], other_rects: Iterable[Rectangle]) -> float:
 
 
 def iou_per_rectangle(
-    rects: Iterable[FrozenSet[Rectangle]], other_rects: Iterable[Rectangle]
-) -> Dict[FrozenSet[Rectangle], float]:
+    rects: Iterable[FrozenSet[FloatRectangle]], other_rects: Iterable[FloatRectangle]
+) -> Dict[FrozenSet[FloatRectangle], float]:
     """
     Compute the intersection between each rectangle in 'rects' and all rectangles that overlap
     with it in 'other_rects'.
     """
     other_rects = list(other_rects)
-    ious: Dict[FrozenSet[Rectangle], float] = {}
+    ious: Dict[FrozenSet[FloatRectangle], float] = {}
 
     for rect_set in rects:
 
-        def filter_fn(other_rect: Rectangle, rs: FrozenSet[Rectangle] = rect_set) -> bool:
+        def filter_fn(
+            other_rect: FloatRectangle, rs: FrozenSet[FloatRectangle] = rect_set
+        ) -> bool:
             return any([are_intersecting(r, other_rect) for r in rs])
 
         overlapping_rects = filter(filter_fn, other_rects)
         rect_iou = iou(rect_set, overlapping_rects)
-        logging.debug("Detection summary: %s, %s, %f", rect_set, list(filter(filter_fn, other_rects)), rect_iou)
+        logging.debug(
+            "Detection summary: %s, %s, %f",
+            rect_set,
+            list(filter(filter_fn, other_rects)),
+            rect_iou,
+        )
         ious[rect_set] = rect_iou
 
     return ious
 
 
 def compute_accuracy(
-    actual: Iterable[FrozenSet[Rectangle]], expected: Iterable[Rectangle], minimum_iou: float = 0.5
+    actual: Iterable[FrozenSet[FloatRectangle]],
+    expected: Iterable[FloatRectangle],
+    minimum_iou: float = 0.5,
 ) -> Tuple[float, float]:
 
     expected = list(expected)

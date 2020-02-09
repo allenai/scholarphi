@@ -106,6 +106,10 @@ class CompileTexSourcesWithColorizedCitations(CompileTexCommand):
     def get_description() -> str:
         return "Compile TeX sources with colorized citations."
 
+    @staticmethod
+    def get_entity_type() -> str:
+        return "citations"
+
     def get_sources_base_dir(self) -> str:
         return directories.SOURCES_WITH_COLORIZED_CITATIONS_DIR
 
@@ -127,6 +131,10 @@ class CompileTexSourcesWithColorizedEquations(CompileTexCommand):
     def get_description() -> str:
         return "Compile TeX sources with colorized equations."
 
+    @staticmethod
+    def get_entity_type() -> str:
+        return "symbols"
+
     def get_sources_base_dir(self) -> str:
         return directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR
 
@@ -147,6 +155,10 @@ class CompileTexSourcesWithColorizedEquationTokens(CompileTexCommand):
     @staticmethod
     def get_description() -> str:
         return "Compile TeX sources with colorized equation tokens."
+
+    @staticmethod
+    def get_entity_type() -> str:
+        return "symbols"
 
     def get_sources_base_dir(self) -> str:
         return directories.SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR

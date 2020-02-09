@@ -34,6 +34,15 @@ class Command(ABC, Generic[I, R]):
         """
 
     @staticmethod
+    def get_entity_type() -> str:
+        """
+        (Optionally) Specify what type of entities this command is used to process. Can be
+        'all', 'citations', or 'symbols'. Defaults to 'all'. Filters which steps of the pipeline
+        are run when the '--entity' argument is set.
+        """
+        return "all"
+
+    @staticmethod
     def init_parser(parser: ArgumentParser) -> None:
         """
         (Optionally) override this method to add provide command line arguments for this command.
