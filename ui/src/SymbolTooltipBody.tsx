@@ -53,8 +53,8 @@ export class SymbolTooltipBody extends React.PureComponent<
                     </div>
                     <div className="tooltip-body__section">
                       <PaperClipping
-                        pageNumber={exactMatchSymbol.bounding_box.page + 1}
-                        highlightBoxes={[exactMatchSymbol.bounding_box]}
+                        pageNumber={exactMatchSymbol.bounding_boxes[0].page + 1}
+                        highlightBoxes={exactMatchSymbol.bounding_boxes}
                       />
                     </div>
                   </>
@@ -71,8 +71,8 @@ export class SymbolTooltipBody extends React.PureComponent<
                     </div>
                     <div className="tooltip-body__section">
                       <PaperClipping
-                        pageNumber={nearMatchSymbol.bounding_box.page + 1}
-                        highlightBoxes={[nearMatchSymbol.bounding_box]}
+                        pageNumber={nearMatchSymbol.bounding_boxes[0].page + 1}
+                        highlightBoxes={nearMatchSymbol.bounding_boxes}
                       />
                     </div>
                   </>

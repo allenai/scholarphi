@@ -1,35 +1,15 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import * as api from "./api";
-import * as selectors from "./selectors";
 import Drawer from "./Drawer";
 import { FavoritableId, favoritesKey } from "./FavoriteButton";
 import FeedbackButton from "./FeedbackButton";
 import PageOverlay from "./PageOverlay";
-import {
-  DrawerState,
-  Pages,
-  PaperId,
-  Papers,
-  ScholarReaderContext,
-  State
-} from "./state";
+import * as selectors from "./selectors";
+import { DrawerState, Pages, PaperId, Papers, ScholarReaderContext, State } from "./state";
 import "./style/index.less";
-import {
-  Annotation,
-  AnnotationData,
-  Citation,
-  MathMl,
-  Paper,
-  UserLibrary,
-  Symbol,
-  symbolMatches,
-} from "./types/api";
-import {
-  DocumentLoadedEvent,
-  PageRenderedEvent,
-  PDFViewerApplication
-} from "./types/pdfjs-viewer";
+import { Annotation, AnnotationData, Citation, MathMl, Paper, Symbol, SymbolMatches, UserLibrary } from "./types/api";
+import { DocumentLoadedEvent, PageRenderedEvent, PDFViewerApplication } from "./types/pdfjs-viewer";
 import { isKeypressEscape } from "./ui-utils";
 
 interface ScholarReaderProps {
@@ -97,7 +77,9 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       deleteUserAnnotation: this.deleteUserAnnotation.bind(this),
       setUserAnnotations: this.setUserAnnotations.bind(this),
       selectedAnnotationId: null,
-      setSelectedAnnotationId: this.setSelectedAnnotationId.bind(this)
+      setSelectedAnnotationId: this.setSelectedAnnotationId.bind(this),
+      selectedAnnotationSpanId: null,
+      setSelectedAnnotationSpanId: this.setSelectedAnnotationSpanId.bind(this)
     };
     /**
      * Bind event handlers so that they are always called with 'this' as its context.
@@ -109,7 +91,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
   }
 
   setUserLibrary(userLibrary: UserLibrary | null) {
-    this.setState({ userLibrary })
+    this.setState({ userLibrary });
   }
 
   setCitations(citations: Citation[]) {
@@ -120,7 +102,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     this.setState({ symbols });
   }
 
-  setSymbolMatches(symbolMatches: symbolMatches) {
+  setSymbolMatches(symbolMatches: SymbolMatches) {
     this.setState({ symbolMatches });
   }
 
@@ -178,6 +160,10 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     this.setState({ selectedAnnotationId: id });
   }
 
+  setSelectedAnnotationSpanId(id: number | null) {
+    this.setState({ selectedAnnotationSpanId: id });
+  }
+
   setUserAnnotationsEnabled(enabled: boolean) {
     this.setState({ userAnnotationsEnabled: enabled });
   }
@@ -192,7 +178,12 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
         this.props.paperId.id,
         annotationData
       );
-      const annotation = { ...annotationData, id };
+      const { type, page, left, top, width, height } = annotationData;
+      const annotation = {
+        id,
+        type,
+        boundingBox: { id, page, left, top, width, height }
+      };
       this.setUserAnnotations([...this.state.userAnnotations, annotation]);
       this.setSelectedAnnotationId(`user-annotation-${id}`);
     }
@@ -200,20 +191,17 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
   async addToLibrary(paperId: string, paperTitle: string) {
     if (this.props.paperId) {
-      const response = await api.addLibraryEntry(
-          paperId,
-          paperTitle
-      );
+      const response = await api.addLibraryEntry(paperId, paperTitle);
 
       if (!response) {
         // Request failed, throw an error
-        throw new Error('Failed to add entry to library.')
+        throw new Error("Failed to add entry to library.");
       }
 
       const userLibrary = this.state.userLibrary;
       if (userLibrary) {
         const paperIds = userLibrary.paperIds.concat(paperId);
-        this.setUserLibrary({paperIds});
+        this.setUserLibrary({ paperIds });
       }
     }
   }
@@ -221,7 +209,8 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
   async updateUserAnnotation(id: number, annotation: Annotation) {
     if (this.props.paperId !== undefined) {
       const { type, boundingBox } = annotation;
-      const annotationData = { type, boundingBox };
+      const { page, left, top, width, height } = boundingBox;
+      const annotationData = { type, page, left, top, width, height };
       const updatedAnnotation = await api.putAnnotation(
         this.props.paperId.id,
         id,
@@ -334,7 +323,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
         const citations = await api.citationsForArxivId(this.props.paperId.id);
         this.setCitations(citations);
 
-        const s2Ids = citations.map(c => c.papers).flat();
+        const s2Ids = citations.map(c => c.paper);
         if (s2Ids.length >= 1) {
           const papers = (await api.papers(s2Ids)).reduce((papers, paper) => {
             papers[paper.s2Id] = paper;
@@ -353,25 +342,27 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
           /**
            * Build a mapping from symbol to all possible parent matches.
            * Step 1: Find all matches (using matchingSymbols) for said symbol
-           * Step 2: Find the 'top' most parent of every matching symbol since 
+           * Step 2: Find the 'top' most parent of every matching symbol since
            *         this is the symbol that is clickable
            * Step 3: Add top parent id of every matching symbol to symbolMatches
            */
-          const symbolMatches: symbolMatches = {};
+          const symbolMatches: SymbolMatches = {};
           symbols.forEach(sym => {
             symbolMatches[sym.id] = new Set(
-              selectors.matchingSymbols(sym, symbols, mathMl)
-              .map(symMatch => {
+              selectors.matchingSymbols(sym, symbols, mathMl).map(symMatch => {
                 let curr: Symbol = symMatch;
                 while (curr.parent != null) {
-                  let parent = symbols.find(s => s.id === curr.parent);
-                  if (parent) { curr = parent }
-                  else { break; }
+                  const parent = symbols.find(s => s.id === curr.parent);
+                  if (parent) {
+                    curr = parent;
+                  } else {
+                    break;
+                  }
                 }
                 return curr.id;
               })
             );
-          })
+          });
           this.setSymbolMatches(symbolMatches);
         }
 
@@ -382,7 +373,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
         const userLibrary = await api.getUserLibraryInfo();
         if (userLibrary) {
-          this.setUserLibrary(userLibrary)
+          this.setUserLibrary(userLibrary);
         }
       }
     }
@@ -398,7 +389,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     const SCROLL_OFFSET_Y = +100;
 
     if (this.state.pdfViewer !== null) {
-      const box = symbol.bounding_box;
+      const box = symbol.bounding_boxes[0];
       this.state.pdfViewer.scrollPageIntoView({
         pageNumber: box.page + 1,
         destArray: [

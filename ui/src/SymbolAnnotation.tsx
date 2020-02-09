@@ -1,25 +1,33 @@
 import classNames from "classnames";
 import React from "react";
 import Annotation from "./Annotation";
-import SymbolTooltipBody from "./SymbolTooltipBody";
 import { ScholarReaderContext } from "./state";
+import SymbolTooltipBody from "./SymbolTooltipBody";
 import { BoundingBox, Symbol } from "./types/api";
 
 interface SymbolAnnotationProps {
-  location: BoundingBox;
+  boundingBoxes: BoundingBox[];
   symbol: Symbol;
   showHint?: boolean;
 }
 
-export class SymbolAnnotation extends React.PureComponent<SymbolAnnotationProps> {
+export class SymbolAnnotation extends React.PureComponent<
+  SymbolAnnotationProps
+> {
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
 
   shouldHighlight() {
-    if (!this.context.selectedAnnotationId) { return false; }
-    const [typeSelected, idSelected] = this.context.selectedAnnotationId.split('-');
-    if (typeSelected !== 'symbol') { return false; }
-    
+    if (!this.context.selectedAnnotationId) {
+      return false;
+    }
+    const [typeSelected, idSelected] = this.context.selectedAnnotationId.split(
+      "-"
+    );
+    if (typeSelected !== "symbol") {
+      return false;
+    }
+
     const matchingSymbolIds = this.context.symbolMatches[Number(idSelected)];
     return matchingSymbolIds.has(this.props.symbol.id);
   }
@@ -31,7 +39,7 @@ export class SymbolAnnotation extends React.PureComponent<SymbolAnnotationProps>
           id={`symbol-${this.props.symbol.id}-annotation`}
           className={classNames({ "annotation-hint": this.props.showHint })}
           source={this.props.symbol.source}
-          location={this.props.location}
+          boundingBoxes={this.props.boundingBoxes}
           tooltipContent={<SymbolTooltipBody symbol={this.props.symbol} />}
           shouldHighlight={this.shouldHighlight()}
         />

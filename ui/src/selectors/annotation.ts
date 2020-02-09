@@ -3,7 +3,7 @@ import { PDFPageView } from "../types/pdfjs-viewer";
 
 /**
  * Expects 'box' to represent location in PDF coordinates; converts to viewport coordinates.
- *  XXX(andrewhead): A slight scale correction was needed to make the bounding boxes appear in
+ * XXX(andrewhead): A slight scale correction was needed to make the bounding boxes appear in
  * just the right place on a test PDF. Maybe this reflects some round-off error in bounding box
  * location detection in the data processing scripts; this needs further investigation. For
  * annotations added by users directly in this application, the scale correction should be set

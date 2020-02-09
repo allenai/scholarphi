@@ -1,11 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import CitationAnnotation from "./CitationAnnotation";
-import { detectedEntities } from "./detected-boxes";
-import DetectedEntityAnnotation from "./DetectedEntityAnnotation";
 import { Point } from "./Selection";
 import SelectionCanvas from "./SelectionLayer";
-import * as selectors from "./selectors";
 import { ScholarReaderContext } from "./state";
 import SymbolAnnotation from "./SymbolAnnotation";
 import { AnnotationData } from "./types/api";
@@ -16,11 +13,6 @@ interface PageProps {
   pageNumber: number;
   view: PDFPageView;
 }
-
-/**
- * Maximum height for an annotation before it is filtered out as an outlier.
- */
-const MAXIMUM_ANNOTATION_HEIGHT = 30;
 
 /**
  * This component is an overlay, mounted on top PDF pages, which are *not* under the control of
@@ -83,13 +75,6 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
       this._element.style.height = "0px";
     }
 
-    const detectedEntitiesForPage = detectedEntities.filter(
-      de =>
-        de.page === this.props.pageNumber - 1 &&
-        this.context.paperId !== undefined &&
-        de.arxivId === this.context.paperId.id
-    );
-
     return ReactDOM.createPortal(
       <ScholarReaderContext.Consumer>
         {({
@@ -99,18 +84,11 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
           userAnnotationsEnabled,
           userAnnotations
         }) => {
-          const localizedCitations = selectors
-            .boxEntityPairsForPage([...citations], this.props.pageNumber)
-            .filter(
-              c =>
-                c.boundingBox.height < MAXIMUM_ANNOTATION_HEIGHT ||
-                c.citation.source === "other"
-            );
+          const localizedCitations = citations.filter(
+            c => c.bounding_boxes[0].page === this.props.pageNumber - 1
+          );
           const localizedSymbols = symbols.filter(
-            s =>
-              s.bounding_box.page === this.props.pageNumber - 1 &&
-              (s.source === "other" ||
-                s.bounding_box.height < MAXIMUM_ANNOTATION_HEIGHT)
+            s => s.bounding_boxes[0].page === this.props.pageNumber - 1
           );
           const localizedUserAnnotations = userAnnotations.filter(
             a => a.boundingBox.page === this.props.pageNumber - 1
@@ -119,17 +97,17 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
             <>
               {localizedCitations.map(c => (
                 <CitationAnnotation
-                  key={c.citation.id}
+                  key={c.id}
                   showHint={annotationsShowing}
-                  location={c.boundingBox}
-                  citation={c.citation}
+                  boundingBoxes={c.bounding_boxes}
+                  citation={c}
                 />
               ))}
               {localizedSymbols.map(s => (
                 <SymbolAnnotation
                   key={s.id}
                   showHint={annotationsShowing}
-                  location={s.bounding_box}
+                  boundingBoxes={s.bounding_boxes}
                   symbol={s}
                 />
               ))}
@@ -144,17 +122,6 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
                       key={`user-annotation-${a.id}`}
                       annotation={a}
                     />
-                  ))}
-                  {detectedEntitiesForPage.map(a => (
-                    <>
-                      {a.rectangles.map((_, i) => (
-                        <DetectedEntityAnnotation
-                          key={`entity-annotation-${a.arxivId}-${a.page}-${a.index}-${i}`}
-                          entity={a}
-                          boxNumber={i}
-                        />
-                      ))}
-                    </>
                   ))}
                 </>
               )}
@@ -193,7 +160,11 @@ function selectionToAnnotation(
 
   return {
     type: type || "citation",
-    boundingBox: { page, left, top, width, height }
+    page,
+    left,
+    top,
+    width,
+    height
   };
 }
 

@@ -1,4 +1,5 @@
 export interface BoundingBox {
+  id: number;
   page: number;
   left: number;
   top: number;
@@ -34,7 +35,7 @@ export interface Paper {
 export interface Citation {
   id: number;
   source: string;
-  papers: string[];
+  paper: string;
   bounding_boxes: BoundingBox[];
 }
 
@@ -42,12 +43,12 @@ export interface Symbol {
   id: number;
   source: string;
   mathml: string;
-  bounding_box: BoundingBox;
+  bounding_boxes: BoundingBox[];
   parent: number | null;
   children: number[];
 }
 
-export interface symbolMatches {
+export interface SymbolMatches {
   [id: number]: Set<number>;
 }
 
@@ -65,11 +66,17 @@ export type AnnotationId = number;
 
 export interface AnnotationData {
   type: "citation" | "symbol";
-  boundingBox: BoundingBox;
+  page: number;
+  left: number;
+  top: number;
+  width: number;
+  height: number;
 }
 
-export interface Annotation extends AnnotationData {
+export interface Annotation {
   id: AnnotationId;
+  type: "citation" | "symbol";
+  boundingBox: BoundingBox;
 }
 
 export interface UserInfo {

@@ -79,10 +79,12 @@ export function symbolMathMls(symbols: Symbol[]) {
 function sortSymbolsByPosition(symbols: Symbol[]) {
   const sortedSymbols = [...symbols];
   sortedSymbols.sort((s1, s2) => {
-    if (s1.bounding_box.page !== s2.bounding_box.page) {
-      return s1.bounding_box.page - s2.bounding_box.page;
+    const s1Box = s1.bounding_boxes[0];
+    const s2Box = s2.bounding_boxes[0];
+    if (s1Box.page !== s2Box.page) {
+      return s1Box.page - s2Box.page;
     }
-    return s2.bounding_box.top - s1.bounding_box.top;
+    return s2Box.top - s1Box.top;
   });
   return sortedSymbols;
 }

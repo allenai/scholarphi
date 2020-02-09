@@ -7,9 +7,13 @@ import { boundingBoxString } from "./annotation";
  * it references.
  */
 export function citationKey(citation: Citation, boundingBox: BoundingBox) {
-  return `${citation.papers.join("-")} ${boundingBoxString(boundingBox)}`;
+  return `${citation.paper} ${boundingBoxString(boundingBox)}`;
 }
 
-export function countOfCitationsWithSummaries(papers: Papers, paperIds: string[]) {
-  return paperIds.map(id => papers[id]).filter(paper => paper !== undefined).length;
+export function countOfCitationsWithSummaries(
+  papers: Papers,
+  paperIds: string[]
+) {
+  return paperIds.map(id => papers[id]).filter(paper => paper !== undefined)
+    .length;
 }
