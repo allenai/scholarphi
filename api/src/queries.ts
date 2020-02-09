@@ -3,6 +3,7 @@ import * as _ from "lodash";
 import * as nconf from "nconf";
 
 interface BoundingBox {
+  id: number;
   /**
    * Page indexes start at 0.
    */
@@ -19,7 +20,7 @@ interface BoundingBox {
 interface Citation {
   id: number;
   source: string;
-  papers: string[];
+  paper: string;
   bounding_boxes: BoundingBox[];
 }
 
@@ -29,7 +30,7 @@ interface Symbol {
   id: number;
   source: string;
   mathml: string;
-  bounding_box: BoundingBox;
+  bounding_boxes: BoundingBox[];
   /**
    * The ID of the parent symbol of this symbol. Null if it does not have a parent.
    */
@@ -53,8 +54,10 @@ interface MathMl {
   matches: MathMlMatch[];
 }
 
-interface Annotation extends AnnotationData {
+interface Annotation {
   id: number;
+  type: "citation" | "symbol";
+  boundingBox: BoundingBox;
 }
 
 /**
@@ -63,7 +66,11 @@ interface Annotation extends AnnotationData {
  */
 export interface AnnotationData {
   type: "citation" | "symbol";
-  boundingBox: BoundingBox;
+  page: number;
+  left: number;
+  top: number;
+  width: number;
+  height: number;
 }
 
 interface PaperWithEntityCounts {
@@ -129,6 +136,7 @@ export class Connection {
         "citation.id AS citation_id",
         "citationpaper.paper_id AS cited_paper_id",
         "entity.source AS source",
+        "boundingbox.id AS bounding_box_id",
         "page",
         "left",
         "top",
@@ -156,18 +164,17 @@ export class Connection {
           id: key,
           source: row.source,
           bounding_boxes: [],
-          papers: []
+          paper: row.cited_paper_id
         };
       }
-      const s2Id = row["cited_paper_id"];
       const bounding_box: BoundingBox = {
+        id: row.bounding_box_id,
         page: row.page,
         left: row.left,
         top: row.top,
         width: row.width,
         height: row.height
       };
-      add_paper(citations[key], s2Id);
       add_bounding_box(citations[key], bounding_box);
     }
     return Object.values(citations);
@@ -181,6 +188,7 @@ export class Connection {
         "entity.source AS source",
         this._knex.raw("array_agg(children.child_id) children_ids"),
         "parents.parent_id AS parent_id",
+        "boundingbox.id AS bounding_box_id",
         "page",
         "left",
         "top",
@@ -217,6 +225,7 @@ export class Connection {
         "mathml",
         "entity.source",
         "parents.parent_id",
+        "boundingbox.id",
         "page",
         "left",
         "top",
@@ -226,6 +235,7 @@ export class Connection {
 
     const symbols = rows.map(row => {
       const boundingBox: BoundingBox = {
+        id: row.bounding_box_id,
         page: row.page,
         left: row.left,
         top: row.top,
@@ -238,7 +248,7 @@ export class Connection {
         mathml: row.mathml,
         parent: row.parent_id,
         children: row.children_ids,
-        bounding_box: boundingBox
+        bounding_boxes: [boundingBox]
       };
       return symbol;
     });
@@ -303,6 +313,7 @@ export class Connection {
       id: row.annotation_id,
       type: row.type,
       boundingBox: {
+        id: row.annotation_id,
         page: row.page,
         left: row.left,
         top: row.top,
@@ -318,7 +329,7 @@ export class Connection {
     annotationData: AnnotationData
   ) {
     const { type } = annotationData;
-    const { page, left, top, width, height } = annotationData.boundingBox;
+    const { page, left, top, width, height } = annotationData;
     const result = await this._knex.raw(
       'INSERT INTO annotation (page, "left", top, width, height, paper_id, "type") ' +
         "SELECT ?, ?, ?, ?, ?, s2_id, ? " +
@@ -333,9 +344,9 @@ export class Connection {
     arxivId: string,
     id: number,
     annotationData: AnnotationData
-  ) {
+  ): Promise<Annotation> {
     const { type } = annotationData;
-    const { page, left, top, width, height } = annotationData.boundingBox;
+    const { page, left, top, width, height } = annotationData;
 
     await this._knex("annotation")
       .update({
@@ -356,8 +367,18 @@ export class Connection {
       )
       .returning("id");
 
-    const annotation = { ...annotationData, id };
-    return annotation;
+    return {
+      id,
+      type: annotationData.type,
+      boundingBox: {
+        id,
+        page: annotationData.page,
+        left: annotationData.left,
+        top: annotationData.top,
+        width: annotationData.width,
+        height: annotationData.height
+      }
+    };
   }
 
   async deleteAnnotation(arxivId: string, id: number) {
@@ -373,12 +394,6 @@ export class Connection {
   }
 
   private _knex: Knex;
-}
-
-function add_paper(citation: Citation, s2Id: string) {
-  if (citation.papers.indexOf(s2Id) === -1) {
-    citation.papers.push(s2Id);
-  }
 }
 
 function add_bounding_box(citation: Citation, box: BoundingBox) {
