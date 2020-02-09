@@ -14,19 +14,10 @@ export class SymbolPreview extends React.PureComponent<SymbolPreviewProps> {
         {({ setJumpSymbol }) => (
           <div className="symbol-preview favorite-container">
             <PaperClipping
-              pageNumber={this.props.symbol.bounding_box.page + 1}
-              highlightBoxes={[this.props.symbol.bounding_box]}
+              pageNumber={this.props.symbol.bounding_boxes[0].page + 1}
+              highlightBoxes={[this.props.symbol.bounding_boxes[0]]}
               onClick={() => setJumpSymbol(this.props.symbol)}
             />
-            {/*
-            <FavoriteButton
-              opaque
-              favoritableId={{
-                type: "symbol-view",
-                entityId: this.props.symbol.id
-              }}
-            />
-            */}
           </div>
         )}
       </ScholarReaderContext.Consumer>

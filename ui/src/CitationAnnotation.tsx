@@ -5,7 +5,7 @@ import CitationTooltipBody from "./CitationTooltipBody";
 import { BoundingBox, Citation } from "./types/api";
 
 interface CitationAnnotationProps {
-  location: BoundingBox;
+  boundingBoxes: BoundingBox[];
   citation: Citation;
   showHint?: boolean;
 }
@@ -20,11 +20,11 @@ export class CitationAnnotation extends React.PureComponent<
         id={`citation-${this.props.citation.id}-annotation`}
         className={classNames({ "annotation-hint": this.props.showHint })}
         source={this.props.citation.source}
-        location={this.props.location}
+        boundingBoxes={this.props.boundingBoxes}
         tooltipContent={
           <CitationTooltipBody
             citation={this.props.citation}
-            paperIds={this.props.citation.papers}
+            paperId={this.props.citation.paper}
           />
         }
       />

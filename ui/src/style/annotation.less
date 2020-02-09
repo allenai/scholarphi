@@ -1,14 +1,14 @@
 /**
  * Position annotations absolutely on each page
  */
-.scholar-reader-annotation {
+.scholar-reader-annotation-span {
   position: absolute;
 }
 
 /**
  * Enlarge the hitbox of an annotation
  */
-.scholar-reader-annotation:not(.user-annotation) {
+.scholar-reader-annotation-span:not(.user-annotation) {
   margin: -@highlight-hitbox-padding * 2/3 -@highlight-hitbox-padding;
   padding: @highlight-hitbox-padding * 2/3 @highlight-hitbox-padding;
 }
@@ -16,25 +16,26 @@
 /**
  * Provide an underline as a hint that the annotation is interactive 
  */
-.scholar-reader-annotation.annotation-hint {
+.scholar-reader-annotation-span.annotation-hint {
   border-bottom: @underline-width @underline-color dotted;
 }
 
-
-.scholar-reader-annotation:not(.user-annotation) {
+.scholar-reader-annotation-span:not(.user-annotation) {
   /**
-  * Highlight the area of an annotation on hover
-  */
+   * Highlight the area of an annotation on hover
+   */
   &:hover,
-  &.selected {
+  &.selected,
+  &.annotation-selected {
     background-color: @highlight-color;
     cursor: pointer;
   }
   /**
-  * Highlight all matching symbols
-  */
+   * Highlight all matching symbols
+   */
   &.matching-symbol-annotation,
-  &.selected {
+  &.selected,
+  &.annotation-selected {
     border-bottom: @underline-width+1px @highlight-annotation-color solid;
   }
 }
@@ -42,6 +43,6 @@
 /**
  * Highlight entities that were using experimental techniques
  */
-.scholar-reader-annotation.source-other {
+.scholar-reader-annotation-span.source-other {
   background-color: rgba(255, 255, 0, 0.3);
 }
