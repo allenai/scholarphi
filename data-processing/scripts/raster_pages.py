@@ -123,6 +123,10 @@ class RasterPagesWithColorizedCitations(RasterPagesCommand):
     def get_description() -> str:
         return "Raster images of pages from papers with colorized citations."
 
+    @staticmethod
+    def get_entity_type() -> str:
+        return "citations"
+
     def get_papers_base_dir(self) -> AbsolutePath:
         return directories.COMPILED_SOURCES_WITH_COLORIZED_CITATIONS_DIR
 
@@ -144,6 +148,10 @@ class RasterPagesWithColorizedEquations(RasterPagesCommand):
     def get_description() -> str:
         return "Raster images of pages from papers with colorized equations."
 
+    @staticmethod
+    def get_entity_type() -> str:
+        return "symbols"
+
     def get_papers_base_dir(self) -> AbsolutePath:
         return directories.COMPILED_SOURCES_WITH_COLORIZED_EQUATIONS_DIR
 
@@ -164,6 +172,10 @@ class RasterPagesWithColorizedEquationTokens(RasterPagesCommand):
     @staticmethod
     def get_description() -> str:
         return "Raster images of pages from papers with colorized equation tokens."
+
+    @staticmethod
+    def get_entity_type() -> str:
+        return "symbols"
 
     def get_papers_base_dir(self) -> AbsolutePath:
         return directories.COMPILED_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR

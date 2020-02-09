@@ -125,6 +125,10 @@ class DiffImagesWithColorizedCitations(DiffImagesCommand):
         return "Diff images of pages with colorized citations with uncolorized images."
 
     @staticmethod
+    def get_entity_type() -> str:
+        return "citations"
+
+    @staticmethod
     def get_raster_base_dir() -> str:
         return directories.PAPER_WITH_COLORIZED_CITATIONS_IMAGES_DIR
 
@@ -143,6 +147,10 @@ class DiffImagesWithColorizedEquations(DiffImagesCommand):
         return "Diff images of pages with colorized equations with uncolorized images."
 
     @staticmethod
+    def get_entity_type() -> str:
+        return "symbols"
+
+    @staticmethod
     def get_raster_base_dir() -> str:
         return directories.PAPER_WITH_COLORIZED_EQUATIONS_IMAGES_DIR
 
@@ -159,6 +167,10 @@ class DiffImagesWithColorizedEquationTokens(DiffImagesCommand):
     @staticmethod
     def get_description() -> str:
         return "Diff images of pages with colorized equation tokens with uncolorized images."
+
+    @staticmethod
+    def get_entity_type() -> str:
+        return "symbols"
 
     @staticmethod
     def get_raster_base_dir() -> str:

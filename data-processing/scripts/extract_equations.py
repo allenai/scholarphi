@@ -41,6 +41,10 @@ class ExtractEquations(ArxivBatchCommand[EquationData, None]):
             + "equations will still correspond to the right character locations in the original TeX."
         )
 
+    @staticmethod
+    def get_entity_type() -> str:
+        return "symbols"
+
     def get_arxiv_ids_dir(self) -> Path:
         return directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR
 

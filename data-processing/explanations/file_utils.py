@@ -238,7 +238,7 @@ def save_compilation_results(
         stderr_file.write(result.stderr)
 
 
-def load_citation_locations(
+def load_citation_hue_locations(
     arxiv_id: ArxivId,
 ) -> Optional[Dict[HueIteration, List[PdfBoundingBox]]]:
 
@@ -264,7 +264,7 @@ def load_citation_locations(
                 height=float(row[7]),
             )
             hue_iteration = HueIteration(hue, iteration)
-            if hue not in boxes_by_hue_iteration:
+            if hue_iteration not in boxes_by_hue_iteration:
                 boxes_by_hue_iteration[hue_iteration] = []
             boxes_by_hue_iteration[hue_iteration].append(box)
 

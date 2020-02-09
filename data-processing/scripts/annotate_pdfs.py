@@ -9,8 +9,14 @@ from explanations.compile import get_compiled_pdfs
 from explanations.directories import get_data_subdirectory_for_arxiv_id
 from explanations.file_utils import clean_directory
 from explanations.image_processing import annotate_pdf
-from explanations.types import (AbsolutePath, ArxivId, Path, PdfBoundingBox,
-                                PdfBoundingBoxAndHue, RelativePath)
+from explanations.types import (
+    AbsolutePath,
+    ArxivId,
+    Path,
+    PdfBoundingBox,
+    PdfBoundingBoxAndHue,
+    RelativePath,
+)
 from scripts.command import ArxivBatchCommand
 
 
@@ -127,6 +133,10 @@ class AnnotatePdfsWithCitationBoxes(AnnotatePdfsCommand):
     def get_output_base_dir() -> str:
         return directories.ANNOTATED_PDFS_WITH_CITATION_BOXES_DIR
 
+    @staticmethod
+    def get_entity_type() -> str:
+        return "citations"
+
     def load_bounding_boxes(
         self, arxiv_id: ArxivId
     ) -> Dict[str, List[PdfBoundingBoxAndHue]]:
@@ -148,6 +158,10 @@ class AnnotatePdfsWithEquationBoxes(AnnotatePdfsCommand):
     def get_output_base_dir() -> str:
         return directories.ANNOTATED_PDFS_WITH_EQUATION_BOXES_DIR
 
+    @staticmethod
+    def get_entity_type() -> str:
+        return "symbols"
+
     def load_bounding_boxes(
         self, arxiv_id: ArxivId
     ) -> Dict[str, List[PdfBoundingBoxAndHue]]:
@@ -168,6 +182,10 @@ class AnnotatePdfsWithEquationTokenBoxes(AnnotatePdfsCommand):
     @staticmethod
     def get_output_base_dir() -> str:
         return directories.ANNOTATED_PDFS_WITH_EQUATION_TOKEN_BOXES_DIR
+
+    @staticmethod
+    def get_entity_type() -> str:
+        return "symbols"
 
     def load_bounding_boxes(
         self, arxiv_id: ArxivId

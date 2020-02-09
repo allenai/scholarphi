@@ -14,7 +14,7 @@ from explanations.bounding_box import (
 from explanations.directories import get_data_subdirectory_for_arxiv_id
 from explanations.file_utils import (
     clean_directory,
-    load_citation_locations,
+    load_citation_hue_locations,
     load_equation_token_locations,
 )
 from explanations.types import ArxivId, FloatRectangle, Path
@@ -69,7 +69,7 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
             )
             clean_directory(output_root)
 
-            citation_locations = load_citation_locations(arxiv_id)
+            citation_locations = load_citation_hue_locations(arxiv_id)
             token_locations = load_equation_token_locations(arxiv_id)
             actual: Dict[
                 Tuple[PageNumber, EntityType], List[FrozenSet[FloatRectangle]]

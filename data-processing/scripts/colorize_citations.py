@@ -45,6 +45,10 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
     def get_description() -> str:
         return "Instrument TeX to colorize citations."
 
+    @staticmethod
+    def get_entity_type() -> str:
+        return "citations"
+
     def get_arxiv_ids_dir(self) -> Path:
         return directories.SOURCES_DIR
 
@@ -126,7 +130,7 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
                                 item.tex_path,
                                 iteration_id,
                                 colorized_citation.hue,
-                                json.dumps([colorized_citation.key]),
+                                colorized_citation.key,
                             ]
                         )
                     except Exception:  # pylint: disable=broad-except

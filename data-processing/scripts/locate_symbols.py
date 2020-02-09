@@ -37,6 +37,10 @@ class LocateSymbols(ArxivBatchCommand[LocationTask, PdfBoundingBox]):
             + "Requires 'locate-equation-token-hues' to have been run."
         )
 
+    @staticmethod
+    def get_entity_type() -> str:
+        return "symbols"
+
     def get_arxiv_ids_dir(self) -> Path:
         return directories.HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR
 

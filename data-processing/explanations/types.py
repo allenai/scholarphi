@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict, List, NamedTuple, Optional
+from typing import Any, Dict, List, NamedTuple, Optional, Set
 
 """
 FILE PROCESSING
@@ -258,12 +258,14 @@ class Point(NamedTuple):
     y: int
 
 
-class Dimensions(NamedTuple):
+@dataclass(frozen=True)
+class Dimensions:
     width: int
     height: int
 
 
-class Rectangle(NamedTuple):
+@dataclass(frozen=True)
+class Rectangle:
     """
     Rectangle within an image. Left and top refer to positions of pixels.
     """
@@ -282,15 +284,12 @@ class FloatRectangle:
     height: float
 
 
-class PdfBoundingBox(NamedTuple):
+@dataclass(frozen=True)
+class PdfBoundingBox(FloatRectangle):
     """
     Bounding box in PDF coordinates.
     """
 
-    left: float
-    top: float
-    width: float
-    height: float
     page: int
 
 
@@ -299,21 +298,25 @@ class PdfBoundingBoxAndHue(NamedTuple):
     box: PdfBoundingBox
 
 
-class RasterBoundingBox(NamedTuple):
+@dataclass(frozen=True)
+class RasterBoundingBox(Rectangle):
     """
     Bounding box of pixel locations in an image.
     """
 
-    left: int
-    top: int
-    width: int
-    height: int
     page: int
 
 
-class BoundingBoxInfo(NamedTuple):
+@dataclass(frozen=True)
+class BoundingBoxInfo:
     pdf_box: PdfBoundingBox
     raster_box: RasterBoundingBox
 
 
 CharacterLocations = Dict[CharacterId, List[PdfBoundingBox]]
+
+
+@dataclass(frozen=True)
+class CitationLocation:
+    location_index: int
+    boxes: Set[PdfBoundingBox]

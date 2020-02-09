@@ -101,6 +101,18 @@
       }
     },
     {
+      "name": "Locate Citations",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/process.py",
+      "console": "integratedTerminal",
+      "args": ["locate-citations", "--arxiv-ids", "1811.12889"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "."
+      }
+    },
+    {
       "name": "Locate Symbols",
       "type": "python",
       "request": "launch",

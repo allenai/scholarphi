@@ -8,19 +8,31 @@ from dataclasses import dataclass
 from typing import Any, Iterator, List
 
 from explanations import directories
-from explanations.colorize_tex import (ColorizedEntity, colorize_citations,
-                                       colorize_equation_tokens,
-                                       colorize_equations)
-from explanations.compile import (compile_tex, get_errors,
-                                  is_driver_unimplemented)
-from explanations.directories import (escape_slashes,
-                                      get_data_subdirectory_for_arxiv_id,
-                                      get_data_subdirectory_for_iteration)
-from explanations.file_utils import (clean_directory, find_files, load_tokens,
-                                     read_file_tolerant,
-                                     save_compilation_results)
-from explanations.types import (ArxivId, CompilationResult, FileContents, Path,
-                                RelativePath)
+from explanations.colorize_tex import (
+    ColorizedEntity,
+    colorize_equation_tokens,
+    colorize_equations,
+)
+from explanations.compile import compile_tex, get_errors, is_driver_unimplemented
+from explanations.directories import (
+    escape_slashes,
+    get_data_subdirectory_for_arxiv_id,
+    get_data_subdirectory_for_iteration,
+)
+from explanations.file_utils import (
+    clean_directory,
+    find_files,
+    load_tokens,
+    read_file_tolerant,
+    save_compilation_results,
+)
+from explanations.types import (
+    ArxivId,
+    CompilationResult,
+    FileContents,
+    Path,
+    RelativePath,
+)
 from explanations.unpack import unpack
 from scripts.command import ArxivBatchCommand
 
@@ -231,29 +243,6 @@ class DebugColorizeCommand(ArxivBatchCommand[ColorizationTask, Compilation], ABC
             writer.writerow(data)
 
 
-class DebugColorizeCitations(DebugColorizeCommand):
-    @staticmethod
-    def get_name() -> str:
-        return "debug-colorize-citations"
-
-    @staticmethod
-    def get_description() -> str:
-        return "Collect compilation errors from colorizing each citation."
-
-    def get_output_base_dir(self) -> RelativePath:
-        return directories.DEBUGGING_COLORIZING_CITATIONS_DIR
-
-    def colorize(self, task: ColorizationTask) -> Iterator[ColorizationResult]:
-        file_contents = task.file_contents
-        batches = colorize_citations(file_contents.contents, batch_size=1)
-        for batch in batches:
-            colorized_tex = batch.tex
-            colorized_contents = FileContents(
-                file_contents.path, colorized_tex, file_contents.encoding
-            )
-            yield ColorizationResult(colorized_contents, batch.entities[0])
-
-
 class DebugColorizeEquations(DebugColorizeCommand):
     @staticmethod
     def get_name() -> str:
@@ -262,6 +251,10 @@ class DebugColorizeEquations(DebugColorizeCommand):
     @staticmethod
     def get_description() -> str:
         return "Collect compilation errors from colorizing each equation."
+
+    @staticmethod
+    def get_entity_type() -> str:
+        return "symbols"
 
     def get_output_base_dir(self) -> RelativePath:
         return directories.DEBUGGING_COLORIZING_EQUATIONS_DIR
@@ -285,6 +278,10 @@ class DebugColorizeEquationTokens(DebugColorizeCommand):
     @staticmethod
     def get_description() -> str:
         return "Attempt to colorize tokens individually and save a list of errors."
+
+    @staticmethod
+    def get_entity_type() -> str:
+        return "symbols"
 
     def get_output_base_dir(self) -> RelativePath:
         return directories.DEBUGGING_COLORIZING_EQUATION_TOKENS_DIR

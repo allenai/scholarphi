@@ -45,6 +45,16 @@ if __name__ == "__main__":
     )
     command_names = [c.get_name() for c in MAIN_PIPELINE_COMMANDS]
     parser.add_argument(
+        "--entities",
+        help=(
+            "What type of entities to process. Commands that do not process the specified entities "
+            + "will be skipped. Defaults to 'all'. You can specify multiple entity types."
+        ),
+        choices=["all", "citations", "symbols"],
+        nargs="+",
+        default="all",
+    )
+    parser.add_argument(
         "--start",
         help="Command to start running the pipeline at.",
         choices=command_names,
@@ -160,6 +170,10 @@ if __name__ == "__main__":
             else:
                 continue
         if start_reached:
+            if "all" not in args.entities:
+                entity_type = CommandClass.get_entity_type()
+                if entity_type != "all" and entity_type not in args.entities:
+                    continue
             filtered_commands.append(CommandClass)
             if args.end is not None and command_name == args.end:
                 break

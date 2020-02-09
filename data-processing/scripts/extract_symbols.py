@@ -36,6 +36,10 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
         )
 
     @staticmethod
+    def get_entity_type() -> str:
+        return "symbols"
+
+    @staticmethod
     def init_parser(parser: ArgumentParser) -> None:
         super(ExtractSymbols, ExtractSymbols).init_parser(parser)
         parser.add_argument(
