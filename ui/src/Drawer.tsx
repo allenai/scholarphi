@@ -15,8 +15,7 @@ export class Drawer extends React.PureComponent {
   // Some unfortunate trickery to get around the pitfalls of the click away listener
   shouldClose = (path: Array<HTMLDivElement>) => {
     path.forEach( (element: HTMLDivElement) => {
-      console.log(element.className);
-      if (element.className === 'scholar-reader-overlay' || element.className === 'MuiTooltip-tooltip') {
+      if (element.className === 'scholar-reader-overlay' || element.className === 'MuiButton-label') {
         return false;
       }
     })
