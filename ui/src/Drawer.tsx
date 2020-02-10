@@ -1,3 +1,4 @@
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import MuiDrawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
@@ -11,6 +12,17 @@ import { ScholarReaderContext } from "./state";
 const PDF_VIEWER_DRAWER_OPEN_CLASS = "drawer-open";
 
 export class Drawer extends React.PureComponent {
+  // Some unfortunate trickery to get around the pitfalls of the click away listener
+  shouldClose = (path: Array<HTMLDivElement>) => {
+    path.forEach( (element: HTMLDivElement) => {
+      console.log(element.className);
+      if (element.className === 'scholar-reader-overlay' || element.className === 'MuiTooltip-tooltip') {
+        return false;
+      }
+    })
+    return true;
+  }
+
   componentWillUnmount() {
     const { pdfViewer } = this.context;
     if (pdfViewer !== undefined && pdfViewer !== null) {
@@ -55,28 +67,34 @@ export class Drawer extends React.PureComponent {
           }
 
           return (
-            <MuiDrawer
-              className="drawer"
-              variant="persistent"
-              anchor="right"
-              open={drawerState !== "closed"}
-            >
-              <div className="drawer__header">
-                <div>
-                  <IconButton onClick={() => setDrawerState("closed")}>
-                    <ChevronRightIcon />
-                  </IconButton>
+            <ClickAwayListener onClickAway={({ path }) => {
+              if (this.shouldClose(path)) {
+                setDrawerState('closed');
+              }
+            }}>
+              <MuiDrawer
+                className="drawer"
+                variant="persistent"
+                anchor="right"
+                open={drawerState !== "closed"}
+              >
+                <div className="drawer__header">
+                  <div>
+                    <IconButton onClick={() => setDrawerState("closed")}>
+                      <ChevronRightIcon />
+                    </IconButton>
+                  </div>
+                  <FeedbackButton extraContext={ extraContext } />
                 </div>
-                <FeedbackButton extraContext={ extraContext } />
-              </div>
-              <div className="drawer__content">
-                <Favorites />
-                {drawerState === "show-symbols" && (
-                  <SearchResults pageSize={4} />
-                )}
-                {drawerState === "show-citations" && <PaperList />}
-              </div>
-            </MuiDrawer>
+                <div className="drawer__content">
+                  <Favorites />
+                  {drawerState === "show-symbols" && (
+                    <SearchResults pageSize={4} />
+                  )}
+                  {drawerState === "show-citations" && <PaperList />}
+                </div>
+              </MuiDrawer>
+            </ClickAwayListener>
           );
         }}
       </ScholarReaderContext.Consumer>
