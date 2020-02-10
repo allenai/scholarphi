@@ -15,10 +15,22 @@ export class Drawer extends React.PureComponent {
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
 
+  addChildClass(pdfViewerContainer: HTMLElement) {
+    Array.from(pdfViewerContainer.children).forEach(page => {
+      page.classList.add(PDF_VIEWER_DRAWER_OPEN_CLASS)
+    })
+  } 
+
+  removeChildClass(pdfViewerContainer: HTMLElement) {
+    Array.from(pdfViewerContainer.children).forEach(page => {
+      page.classList.remove(PDF_VIEWER_DRAWER_OPEN_CLASS)
+    })
+  }
+
   componentWillUnmount() {
     const { pdfViewer } = this.context;
-    if (pdfViewer != null) {
-      pdfViewer.container.classList.remove(PDF_VIEWER_DRAWER_OPEN_CLASS);
+    if (pdfViewer !== undefined && pdfViewer !== null) {
+      this.removeChildClass(pdfViewer.viewer);
     }
   }
 
@@ -74,9 +86,9 @@ export class Drawer extends React.PureComponent {
     const drawerState = this.drawerState();
     if (pdfViewer != null) {
       if (drawerState !== "closed") {
-        pdfViewer.container.classList.add(PDF_VIEWER_DRAWER_OPEN_CLASS);
+        this.addChildClass(pdfViewer.viewer);
       } else {
-        pdfViewer.container.classList.remove(PDF_VIEWER_DRAWER_OPEN_CLASS);
+        this.removeChildClass(pdfViewer.viewer);
       }
     }
 

@@ -2,11 +2,11 @@
  * Move view of PDF page inward when the drawer is open.
  * TODO(andrewhead): Find a way to animate drawer even when left sidebar is open.
  */
-#viewerContainer {
+.page {
   transition-property: "padding-right";
 
   &.drawer-open {
-    padding-right: @drawer-paper-clipping-width + @margin * 2;
+    padding-right: @drawer-paper-clipping-width + @margin * 4;
   }
 }
 
