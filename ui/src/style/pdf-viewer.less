@@ -7,6 +7,9 @@
 
   &.drawer-open {
     padding-right: @drawer-paper-clipping-width + @margin * 4;
+    // A very unfortunate side effect of using padding is that it 
+    // will distort the border image if the user shrinks the page too much.
+    border-image: none;
   }
 }
 
