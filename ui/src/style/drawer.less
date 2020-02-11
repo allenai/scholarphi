@@ -14,9 +14,6 @@
 }
 
 .drawer__header {
-  display: grid;
-  grid-template-columns: auto min-content;
-  grid-gap: @medium;
   padding: @medium;
 }
 
@@ -25,4 +22,10 @@
  */
 .drawer__content {
   padding: 0 @padding;
+}
+
+.drawer__close_icon {
+  position: fixed;
+  border-radius: 100px;
+  z-index: @drawer-close-button-index;
 }
