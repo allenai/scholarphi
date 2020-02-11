@@ -66,10 +66,8 @@ export class Drawer extends React.PureComponent {
           }
 
           return (
-            <ClickAwayListener onClickAway={({ path }) => {
-              if (this.shouldClose(path)) {
-                setDrawerState('closed');
-              }
+            <ClickAwayListener onClickAway={() => {
+              setDrawerState('closed');
             }}>
               <MuiDrawer
                 className="drawer"
@@ -78,7 +76,7 @@ export class Drawer extends React.PureComponent {
                 open={drawerState !== "closed"}
               >
                 <div className="drawer__header">
-                  <div>
+                  <div className="drawer__close_icon MuiButton-contained">
                     <IconButton onClick={() => setDrawerState("closed")}>
                       <ChevronRightIcon />
                     </IconButton>

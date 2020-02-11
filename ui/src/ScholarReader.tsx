@@ -130,7 +130,14 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
   }
 
   setDrawerState(state: DrawerState) {
-    this.setState({ drawerState: state });
+    if (state === 'show-symbols') {
+      // There are a few edge cases where a close and show-symbol event 
+      // happen at the same time, thus we need to ensure the show-symbol is always 
+      // run last.
+      setTimeout(() => this.setState({ drawerState: state }), 0);
+    } else {
+      this.setState({ drawerState: state });
+    }
   }
 
   setJumpPaperId(s2Id: string) {
