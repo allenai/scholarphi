@@ -12,16 +12,6 @@ import { ScholarReaderContext } from "./state";
 const PDF_VIEWER_DRAWER_OPEN_CLASS = "drawer-open";
 
 export class Drawer extends React.PureComponent {
-  // Some unfortunate trickery to get around the pitfalls of the click away listener
-  shouldClose = (path: Array<HTMLDivElement>) => {
-    path.forEach( (element: HTMLDivElement) => {
-      if (element.className === 'scholar-reader-overlay' || element.className === 'MuiButton-label') {
-        return false;
-      }
-    })
-    return true;
-  }
-
   componentWillUnmount() {
     const { pdfViewer } = this.context;
     if (pdfViewer !== undefined && pdfViewer !== null) {
