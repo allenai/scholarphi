@@ -17,3 +17,19 @@
 #2%
 \fi%
 }
+
+% Define names of color drivers
+% Once the color package is imported in the '02x' macro files, you can check to
+% see which driver is being used and tailor macros by driver by checking the
+% value of '\Gin@driver{}', like so:
+%
+% \ifx\Gin@driver\pdftexdrivername
+% <do something for pdftex driver>
+% \else\ifx\Gin@driver\dvipsdrivername
+% <do something for dvips driver>
+% \fi
+% \else
+% ...
+% \fi
+\def\pdftexdrivername{pdftex.def}
+\def\dvipsdrivername{dvips.def}

@@ -3,7 +3,37 @@
 % it can check to see whether the color commands were already loaded. If so, we 
 % we don't want to load them a second time.
 
+% Make sure the color commands are initialized. Only run these initializations 
+% if the color commands haven't already been defined.
 \scholarifundefined{color}{%
-\message{color command not loaded. Importing color package.}%
+\message{%
+'color' command not already loaded, but it's required for colorization of
+entities. Importing 'color' package.}%
+% This import of 'color' often isn't really needed, because AutoTeX add 
+% statements to the TeX for many papers to import 'hyperref', which
+% requires 'color'. That said, we don't know if AutoTeX will always succeed at 
+% importing hyperref, so we import 'color' just to make sure.
 \usepackage{color}%
+% If the 'dvips' driver is used to compile this TeX file, there's a risk to 
+% importing the 'color' package: some color drivers redefine the default 'black'
+% color to a slightly lighter black that what would have otherwise been used if 
+% the 'color' package wasn't imported. This code attempts to revert the default 
+% black to what it would have been had these macros not been defined. See the
+% message below for more details.
+\makeatletter%
+% XXX(andrewhead): For some reason, at this point of TeX processing, \Gin@driver is not
+% available as a macro. The workaround used here is to expand the Gin@driver 
+% control sequence into a new macro, and check the value of that macro.
+\edef\scholardrivername{\csname Gin@driver\endcsname}%
+\ifx\scholardrivername\dvipsdrivername%
+\message{%
+This TeX file is getting compiled using the 'dvips' driver. Because the color 
+package wasn't imported before, the default color is being set to black, defined 
+as "rgb (0,0,0)", to be consistent with the default color if the 'color' package 
+had never been imported. See https://tex.stackexchange.com/a/210088/198728 for a 
+description of this issue and of the fix used here.
+}%
+\definecolor{black}{rgb}{0,0,0}\color{black}%
+\fi%
+\makeatother%
 }
