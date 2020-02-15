@@ -1,9 +1,6 @@
-from explanations.parse_tex import (
-    BibitemExtractor,
-    DocumentclassExtractor,
-    EquationExtractor,
-    MacroExtractor,
-)
+from explanations.parse_tex import (BeginDocumentExtractor, BibitemExtractor,
+                                    DocumentclassExtractor, EquationExtractor,
+                                    MacroExtractor)
 from explanations.types import MacroDefinition
 
 
@@ -102,6 +99,14 @@ def test_ignore_escaped_dollar_sign():
     extractor = EquationExtractor()
     equations = list(extractor.parse("\\$\\$"))
     assert len(equations) == 0
+
+
+def test_extract_begindocument():
+    extractor = BeginDocumentExtractor()
+    tex = "\\RequirePackage[hyperindex]{hyperref}\n\\begin{document}"
+    begindocument = extractor.parse(tex)
+    assert begindocument.start == 38
+    assert begindocument.end == 54
 
 
 def test_extract_documentclass_after_comment_ending_with_whitespace():
