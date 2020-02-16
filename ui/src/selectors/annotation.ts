@@ -15,27 +15,12 @@ export function divDimensionStyles(
   scaleCorrection?: number
 ) {
   scaleCorrection = scaleCorrection || 1;
-  const viewport = pageView.pdfPage.getViewport({
-    scale: pageView.viewport.scale * scaleCorrection
-  });
 
-  const pdfCoordinates = [
-    box.left,
-    box.top,
-    box.left + box.width,
-    box.top + box.height
-  ];
-  const viewportBox = viewport.convertToViewportRectangle(pdfCoordinates);
-
-  /**
-   * Based on how pdf-react transforms PDF coordinates to viewport coordinates here:
-   * https://github.com/wojtekmaj/react-pdf/blob/73f505eca1bf1ae243a2b7068fce1e86b98b408a/src/Page/AnnotationLayer.jsx#L104
-   */
   return {
-    left: viewportBox[0],
-    top: viewportBox[1],
-    width: viewportBox[2] - viewportBox[0],
-    height: viewportBox[1] - viewportBox[3]
+    left: box.left * pageView.viewport.width * scaleCorrection,
+    top: box.top * pageView.viewport.height * scaleCorrection,
+    width: box.width * pageView.viewport.width * scaleCorrection,
+    height: box.height * pageView.viewport.height * scaleCorrection
   };
 }
 
