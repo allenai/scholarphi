@@ -7,11 +7,13 @@ import re
 import subprocess
 from typing import Iterator, List
 
-from explanations.types import CompilationResult
+from explanations.types import CompilationResult, OutputFile
 
 COMPILE_CONFIG = "config.ini"
 PDF_MESSAGE_PREFIX = b"Generated PDF: "
 PDF_MESSAGE_SUFFIX = b"<end of PDF name>"
+POSTSCRIPT_MESSAGE_PREFIX = b"Generated PostScript: "
+POSTSCRIPT_MESSAGE_SUFFIX = b"<end of PostScript name>"
 
 
 def _get_generated_pdfs(stdout: bytes) -> List[str]:
@@ -19,6 +21,18 @@ def _get_generated_pdfs(stdout: bytes) -> List[str]:
         PDF_MESSAGE_PREFIX + b"(.*)" + PDF_MESSAGE_SUFFIX, stdout, flags=re.MULTILINE
     )
     return [pdf_name_bytes.decode("utf-8") for pdf_name_bytes in pdfs]
+
+
+def _get_generated_postscript_filenames(stdout: bytes) -> List[str]:
+    postscript_filenames = re.findall(
+        POSTSCRIPT_MESSAGE_PREFIX + b"(.*)" + POSTSCRIPT_MESSAGE_SUFFIX,
+        stdout,
+        flags=re.MULTILINE,
+    )
+    return [
+        postscript_name_bytes.decode("utf-8")
+        for postscript_name_bytes in postscript_filenames
+    ]
 
 
 def _set_sources_dir_permissions(sources_dir: str) -> None:
@@ -64,33 +78,36 @@ def compile_tex(sources_dir: str) -> CompilationResult:
         check=False,
     )
 
-    pdfs = None
+    output_files: List[OutputFile] = []
     success = False
     if result.returncode == 0:
-        pdfs = _get_generated_pdfs(result.stdout)
+        for pdf_filename in _get_generated_pdfs(result.stdout):
+            output_files.append(OutputFile("pdf", pdf_filename))
+        for postscript_filename in _get_generated_postscript_filenames(result.stdout):
+            output_files.append(OutputFile("ps", postscript_filename))
         success = True
 
-    return CompilationResult(success, pdfs, result.stdout, result.stderr)
+    return CompilationResult(success, output_files, result.stdout, result.stderr)
 
 
-def get_compiled_pdfs(compiled_tex_dir: str) -> List[str]:
+def get_output_files(compiled_tex_dir: str) -> List[OutputFile]:
     """
-    Get a list of paths to compiled PDFs in a directory of compiled TeX.
-    Returned paths are relative to the working directory of compilation. In most cases, this will
-    either be relative to <data-directory>/<arxiv-id>, or to <data-directory>/<arxiv-id>/<iteration>/
+    Get a list of output files for a directory of compiled TeX.
     """
     compilation_results_dir = os.path.join(compiled_tex_dir, "compilation_results")
     result_path = os.path.join(compilation_results_dir, "result")
     with open(result_path) as result_file:
         result = result_file.read().strip()
         if result == "True":
-            pdf_paths = []
-            pdf_names_path = os.path.join(compilation_results_dir, "pdf_names.csv")
-            with open(pdf_names_path) as pdf_names_file:
-                reader = csv.reader(pdf_names_file)
+            output_files = []
+            output_files_path = os.path.join(
+                compilation_results_dir, "output_files.csv"
+            )
+            with open(output_files_path) as output_files_file:
+                reader = csv.reader(output_files_file)
                 for row in reader:
-                    pdf_paths.append(row[1])
-            return pdf_paths
+                    output_files.append(OutputFile(row[1], row[2]))
+            return output_files
 
     return []
 

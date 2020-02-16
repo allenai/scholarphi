@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 
 from explanations import directories
-from explanations.compile import get_compiled_pdfs
+from explanations.compile import get_output_files
 from explanations.directories import (
     get_data_subdirectory_for_arxiv_id,
     get_data_subdirectory_for_iteration,
@@ -57,9 +57,9 @@ class DiffImagesCommand(ArxivBatchCommand[PageRasterPair, np.ndarray], ABC):
             )
             clean_directory(output_dir)
 
-            # Get PDF names from results of compiling the uncolorized TeX sources.
-            pdf_paths = get_compiled_pdfs(directories.compilation_results(arxiv_id))
-            if len(pdf_paths) == 0:
+            # Get oiutput file names from results of compiling the uncolorized TeX sources.
+            output_files = get_output_files(directories.compilation_results(arxiv_id))
+            if len(output_files) == 0:
                 continue
 
             for iteration in get_iteration_names(self.get_raster_base_dir(), arxiv_id):
@@ -69,16 +69,15 @@ class DiffImagesCommand(ArxivBatchCommand[PageRasterPair, np.ndarray], ABC):
                     self.get_raster_base_dir(), arxiv_id, iteration
                 )
 
-                for relative_pdf_path in pdf_paths:
-                    original_pdf_images_path = os.path.join(
-                        original_images_dir, relative_pdf_path
+                for output_file in output_files:
+                    relative_file_path = output_file.path
+                    original_images_path = os.path.join(
+                        original_images_dir, relative_file_path
                     )
-                    for img_name in os.listdir(original_pdf_images_path):
-                        original_img_path = os.path.join(
-                            original_pdf_images_path, img_name
-                        )
+                    for img_name in os.listdir(original_images_path):
+                        original_img_path = os.path.join(original_images_path, img_name)
                         modified_img_path = os.path.join(
-                            modified_images_dir, relative_pdf_path, img_name
+                            modified_images_dir, relative_file_path, img_name
                         )
                         if not os.path.exists(modified_img_path):
                             logging.warning(
@@ -92,7 +91,7 @@ class DiffImagesCommand(ArxivBatchCommand[PageRasterPair, np.ndarray], ABC):
                         yield PageRasterPair(
                             arxiv_id,
                             iteration,
-                            relative_pdf_path,
+                            relative_file_path,
                             img_name,
                             original_img,
                             modified_img,

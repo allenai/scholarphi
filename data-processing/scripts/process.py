@@ -2,11 +2,6 @@ import argparse
 import logging
 from typing import List
 
-from scripts.annotate_pdfs import (
-    AnnotatePdfsWithCitationBoxes,
-    AnnotatePdfsWithEquationBoxes,
-    AnnotatePdfsWithEquationTokenBoxes,
-)
 from scripts.annotate_symbols import AnnotateTexWithSymbolMarkers
 from scripts.colorize_citations import ColorizeCitations
 from scripts.colorize_equation_tokens import ColorizeEquationTokens
@@ -108,9 +103,6 @@ DATABASE_UPLOAD_COMMANDS: List = [  # type: ignore
 EVALUATION_COMMANDS: List = [  # type: ignore
     DebugColorizeEquations,
     DebugColorizeEquationTokens,
-    AnnotatePdfsWithCitationBoxes,
-    AnnotatePdfsWithEquationBoxes,
-    AnnotatePdfsWithEquationTokenBoxes,
     AnnotateTexWithSymbolMarkers,
     ComputeIou,
 ]
