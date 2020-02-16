@@ -156,8 +156,8 @@ class LocateHuesCommand(ArxivBatchCommand[SearchTask, HueLocation], ABC):
                                 )
                                 colorization_error_detected = True
 
-                        page_number = int(
-                            os.path.splitext(img_name)[0].replace("page-", "")
+                        page_number = (
+                            int(os.path.splitext(img_name)[0].replace("page-", "")) - 1
                         )
                         page_images[page_number] = page_image
 
