@@ -6,17 +6,10 @@ from typing import Dict, Iterator, List, NamedTuple
 import explanations.directories as directories
 from explanations.file_utils import load_symbols
 from explanations.s2_data import get_s2_id
-from explanations.types import (
-    ArxivId,
-    Match,
-    Matches,
-    MathML,
-    Path,
-    PdfBoundingBox,
-    SymbolId,
-    SymbolWithId,
-)
-from models.models import BoundingBox, Entity, EntityBoundingBox
+from explanations.types import (ArxivId, BoundingBox, Match, Matches, MathML,
+                                Path, SymbolId, SymbolWithId)
+from models.models import BoundingBox as BoundingBoxModel
+from models.models import Entity, EntityBoundingBox
 from models.models import MathMl as MathMlModel
 from models.models import MathMlMatch, Paper
 from models.models import Symbol as SymbolModel
@@ -38,7 +31,7 @@ class SymbolData(NamedTuple):
     arxiv_id: ArxivId
     s2_id: S2Id
     symbols_with_ids: List[SymbolWithId]
-    boxes: Dict[SymbolId, PdfBoundingBox]
+    boxes: Dict[SymbolId, BoundingBox]
     matches: Matches
 
 
@@ -69,7 +62,7 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
             if symbols_with_ids is None:
                 continue
 
-            boxes: Dict[SymbolId, PdfBoundingBox] = {}
+            boxes: Dict[SymbolId, BoundingBox] = {}
             boxes_path = os.path.join(
                 directories.symbol_locations(arxiv_id), "symbol_locations.csv"
             )
@@ -87,7 +80,7 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
                         equation_index=int(row[1]),
                         symbol_index=int(row[2]),
                     )
-                    box = PdfBoundingBox(
+                    box = BoundingBox(
                         page=int(row[3]),
                         left=float(row[4]),
                         top=float(row[5]),
@@ -211,7 +204,7 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
                 entity_bounding_boxes.append(entity_bounding_box)
 
         with output_database.atomic():
-            BoundingBox.bulk_create(bounding_boxes, 100)
+            BoundingBoxModel.bulk_create(bounding_boxes, 100)
         with output_database.atomic():
             Entity.bulk_create(entities, 300)
         with output_database.atomic():

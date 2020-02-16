@@ -13,24 +13,34 @@ RelativePath = str
 
 @dataclass(frozen=True)
 class FileContents:
-    """
-    Relative or absolute; depends on the path passed in for file reading.
-    """
 
     path: Path
-    """
-    Contents of the file.
-    """
+    " Relative or absolute; depends on the path passed in for file reading. "
+
     contents: str
-    """
-    Character encoding of the file.
-    """
+    " Contents of the file. "
+
     encoding: str
+    " Character encoding of the file. "
 
 
-class CompilationResult(NamedTuple):
+@dataclass(frozen=True)
+class OutputFile:
+    output_type: str
+    " Type of file output by running TeX (e.g., 'ps', 'pdf')"
+
+    path: RelativePath
+    """
+    Path to file relative to the compilation directory. In most cases, this will
+    either be relative to <data-directory>/<arxiv-id>, or to
+    <data-directory>/<arxiv-id>/<iteration>/.
+    """
+
+
+@dataclass(frozen=True)
+class CompilationResult:
     success: bool
-    compiled_pdfs: Optional[List[str]]
+    output_files: List[OutputFile]
     stdout: bytes
     stderr: bytes
 
@@ -70,10 +80,9 @@ CITATIONS
 
 class Bibitem(NamedTuple):
     key: Optional[str]
-    """
-    Plaintext extracted for bibitem.
-    """
+
     text: str
+    " Plaintext extracted for bibitem. "
 
 
 """
@@ -208,11 +217,11 @@ MathML = str
 class Symbol(NamedTuple):
     characters: List[CharacterIndex]
     mathml: MathML
+    children: List[Any]
     """
     List of child symbols. Should be of type 'Symbol'. 'children' is a bit of misnomer. These is
     actually a list of all other symbols for which this is the closest ancestor.
     """
-    children: List[Any]
 
 
 class SymbolWithId(NamedTuple):
@@ -259,12 +268,6 @@ class Point(NamedTuple):
 
 
 @dataclass(frozen=True)
-class Dimensions:
-    width: int
-    height: int
-
-
-@dataclass(frozen=True)
 class Rectangle:
     """
     Rectangle within an image. Left and top refer to positions of pixels.
@@ -285,38 +288,31 @@ class FloatRectangle:
 
 
 @dataclass(frozen=True)
-class PdfBoundingBox(FloatRectangle):
+class BoundingBox(FloatRectangle):
     """
-    Bounding box in PDF coordinates.
+    Bounding box for an entity. Left, top, width, and height are all expressed on a range of
+    0..1, where 0 is all the way to the top/left, and 1 is all the way to the bottom/right.
+    Bounding boxes are expressed with these ratio dimensions instead of absolute dimensions
+    as it's much easier, and accurate enough. To get absolute dimensions in PDF coordinates
+    would require us to add to our pipeline a way of detecting the PDF dimensions of all
+    files output by the TeX compiler (i.e. for both PDFs and PostScript), which requires
+    dependence on external tools like GhostScript. Ratio dimensions can be detected in the
+    exact same way for all output files, as long as we can raster them to PNGs.
     """
 
     page: int
 
 
-class PdfBoundingBoxAndHue(NamedTuple):
+@dataclass(frozen=True)
+class BoundingBoxAndHue:
     hue: float
-    box: PdfBoundingBox
+    box: BoundingBox
 
 
-@dataclass(frozen=True)
-class RasterBoundingBox(Rectangle):
-    """
-    Bounding box of pixel locations in an image.
-    """
-
-    page: int
-
-
-@dataclass(frozen=True)
-class BoundingBoxInfo:
-    pdf_box: PdfBoundingBox
-    raster_box: RasterBoundingBox
-
-
-CharacterLocations = Dict[CharacterId, List[PdfBoundingBox]]
+CharacterLocations = Dict[CharacterId, List[BoundingBox]]
 
 
 @dataclass(frozen=True)
 class CitationLocation:
     location_index: int
-    boxes: Set[PdfBoundingBox]
+    boxes: Set[BoundingBox]

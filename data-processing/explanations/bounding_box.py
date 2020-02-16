@@ -1,42 +1,68 @@
 import logging
-from typing import (Callable, Dict, FrozenSet, Iterable, Iterator, List,
-                    Optional, Set, Tuple)
+from typing import (
+    Callable,
+    Dict,
+    FrozenSet,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Set,
+    Tuple,
+)
 
 import cv2
 import numpy as np
 
-from explanations.types import (BoundingBoxInfo, CharacterId,
-                                CharacterLocations, Dimensions, FloatRectangle,
-                                PdfBoundingBox, Point, RasterBoundingBox,
-                                Rectangle, Symbol, SymbolId)
+from explanations.types import (
+    BoundingBox,
+    CharacterId,
+    CharacterLocations,
+    FloatRectangle,
+    Point,
+    Rectangle,
+    Symbol,
+    SymbolId,
+)
 
 
 def extract_bounding_boxes(
     diff_image: np.ndarray,
-    pdf_page_dimensions: Dimensions,
     page_number: int,
     hue: float,
-    masks: Optional[Iterable[Rectangle]] = None,
-) -> List[BoundingBoxInfo]:
+    masks: Optional[Iterable[FloatRectangle]] = None,
+) -> List[BoundingBox]:
     """
     See 'PixelMerger' for description of how bounding boxes are extracted.
+    Masks are assumed to be non-intersecting. Masks should be expressed as ratios relative to the
+    page's width and height instead of pixel values---left, top, width, and height all have values
+    in the range 0..1).
     """
     image_height, image_width, _ = diff_image.shape
-    page_width = pdf_page_dimensions.width
-    page_height = pdf_page_dimensions.height
+    pixel_masks = None
+    if masks is not None:
+        pixel_masks = [
+            Rectangle(
+                left=round(m.left * image_width),
+                top=round(m.top * image_height),
+                width=round(m.width * image_width),
+                height=round(m.height * image_height),
+            )
+            for m in masks
+        ]
 
-    pixel_boxes = list(find_boxes_with_color(diff_image, hue, masks=masks))
-    box_infos = []
+    pixel_boxes = list(find_boxes_with_color(diff_image, hue, masks=pixel_masks))
+    boxes = []
     for box in pixel_boxes:
-        pdf_bounding_box = _to_pdf_coordinates(
-            box, image_width, image_height, page_width, page_height, page_number
+        left_ratio = float(box.left) / image_width
+        top_ratio = float(box.top) / image_height
+        width_ratio = float(box.width) / image_width
+        height_ratio = float(box.height) / image_height
+        boxes.append(
+            BoundingBox(left_ratio, top_ratio, width_ratio, height_ratio, page_number)
         )
-        raster_bounding_box = RasterBoundingBox(
-            box.left, box.top, box.width, box.height, page_number
-        )
-        box_infos.append(BoundingBoxInfo(pdf_bounding_box, raster_bounding_box))
 
-    return box_infos
+    return boxes
 
 
 def find_boxes_with_color(
@@ -50,27 +76,25 @@ def find_boxes_with_color(
     - 'hue': is a floating point number between 0 and 1
     - 'tolerance': is the amount of difference from 'hue' (from 0-to-1) still considered that hue.
     - 'masks': a set of masks to apply to the image, one at a time. Bounding boxes are extracted
-        from within each of those boxes. Masks are assumed to be non-intersecting.
+        from within each of those boxes. Masks should be in pixel coordinates.
     """
 
+    height, width, _ = image.shape
     if masks is None:
-        height, width, _ = image.shape
         masks = (Rectangle(left=0, top=0, width=width, height=height),)
 
-    CV2_MAXIMMUM_HUE = 180
+    CV2_MAXIMUM_HUE = 180
     SATURATION_THRESHOLD = 50  # out of 255
 
-    cv2_hue = hue * CV2_MAXIMMUM_HUE
-    cv2_tolerance = tolerance * CV2_MAXIMMUM_HUE
+    cv2_hue = hue * CV2_MAXIMUM_HUE
+    cv2_tolerance = tolerance * CV2_MAXIMUM_HUE
     img_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
     saturated_pixels = img_hsv[:, :, 1] > SATURATION_THRESHOLD
 
     hues = img_hsv[:, :, 0]
     distance_to_hue = np.abs(hues.astype(np.int16) - cv2_hue)
-    abs_distance_to_hue = np.minimum(
-        distance_to_hue, CV2_MAXIMMUM_HUE - distance_to_hue
-    )
+    abs_distance_to_hue = np.minimum(distance_to_hue, CV2_MAXIMUM_HUE - distance_to_hue)
 
     boxes = []
     for mask in masks:
@@ -187,7 +211,10 @@ def _to_pdf_coordinates(
     pdf_page_width: float,
     pdf_page_height: float,
     page: int,
-) -> PdfBoundingBox:
+) -> BoundingBox:
+    """
+    Convert a "bounding_box" in pixel coordinates in a raster image to PDF coordinates.
+    """
     left = bounding_box.left
     top = bounding_box.top
     right = bounding_box.left + bounding_box.width
@@ -198,7 +225,7 @@ def _to_pdf_coordinates(
     # to the image's top, flip the y-coordinates.
     pdf_top = pdf_page_height - (top * (pdf_page_height / float(image_height)))
     pdf_bottom = pdf_page_height - (bottom * (pdf_page_height / float(image_height)))
-    return PdfBoundingBox(
+    return BoundingBox(
         left=pdf_left,
         top=pdf_top,
         width=pdf_right - pdf_left,
@@ -209,7 +236,7 @@ def _to_pdf_coordinates(
 
 def get_symbol_bounding_box(
     symbol: Symbol, symbol_id: SymbolId, character_boxes: CharacterLocations
-) -> Optional[PdfBoundingBox]:
+) -> Optional[BoundingBox]:
     boxes = []
     for character_index in symbol.characters:
         character_id = CharacterId(
@@ -235,14 +262,14 @@ def get_symbol_bounding_box(
 
     left = min([box.left for box in boxes_on_page])
     right = max([box.left + box.width for box in boxes_on_page])
-    top = max([box.top for box in boxes_on_page])
-    bottom = min([box.top - box.height for box in boxes_on_page])
+    top = min([box.top for box in boxes_on_page])
+    bottom = max([box.top + box.height for box in boxes_on_page])
 
-    return PdfBoundingBox(left, top, right - left, top - bottom, page)
+    return BoundingBox(left, top, right - left, bottom - top, page)
 
 
 def _is_box_in_cluster(
-    box: PdfBoundingBox, cluster: Set[PdfBoundingBox], vsplit: int
+    box: BoundingBox, cluster: Set[BoundingBox], vsplit: float
 ) -> bool:
     if len(cluster) == 0:
         return True
@@ -259,17 +286,17 @@ def _is_box_in_cluster(
 
 
 def cluster_boxes(
-    boxes: Iterable[PdfBoundingBox], vertical_split: int = 5
-) -> Iterator[Set[PdfBoundingBox]]:
+    boxes: Iterable[BoundingBox], vertical_split: float = 0.02
+) -> Iterator[Set[BoundingBox]]:
     """
-    Cluster boxes into sets of boxes that are separated by 'vertical_split' pixels. This method
-    was designed to help in grouping together bounding boxes that refer to the same entity, but
-    which have been split from each other by a line break. Sets of boxes will be returned
-    in order from top to bottom in the document.
+    Cluster boxes into sets of boxes that are separated by 'vertical_split' * the height of the
+    document page. This method was designed to help in grouping together bounding boxes that refer
+    to the same entity, but which have been split from each other by a line break. Sets of boxes
+    will be returned in order from top to bottom in the document.
     """
     boxes_sorted = sorted(boxes, key=lambda b: (b.page, b.top))
 
-    cluster: Set[PdfBoundingBox] = set()
+    cluster: Set[BoundingBox] = set()
     for box in boxes_sorted:
         if _is_box_in_cluster(box, cluster, vertical_split):
             cluster.add(box)
