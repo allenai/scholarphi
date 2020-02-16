@@ -2,7 +2,7 @@ import csv
 import logging
 import os.path
 from dataclasses import dataclass
-from typing import Dict, Iterator, List, Set
+from typing import Dict, Iterator, List
 
 from explanations import directories
 from explanations.bounding_box import cluster_boxes
@@ -13,10 +13,10 @@ from explanations.directories import (
 from explanations.file_utils import clean_directory, load_citation_hue_locations
 from explanations.types import (
     ArxivId,
+    BoundingBox,
     CitationLocation,
     HueIteration,
     Path,
-    PdfBoundingBox,
 )
 from scripts.command import ArxivBatchCommand
 
@@ -24,7 +24,7 @@ from scripts.command import ArxivBatchCommand
 @dataclass(frozen=True)
 class LocationTask:
     arxiv_id: ArxivId
-    boxes: List[PdfBoundingBox]
+    boxes: List[BoundingBox]
     citation_key: str
 
 
@@ -55,7 +55,7 @@ class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
             if boxes_by_hue_iteration is None:
                 continue
 
-            boxes_by_citation_key: Dict[str, List[PdfBoundingBox]] = {}
+            boxes_by_citation_key: Dict[str, List[BoundingBox]] = {}
             for iteration in get_iteration_names(
                 directories.SOURCES_WITH_COLORIZED_CITATIONS_DIR, arxiv_id
             ):
@@ -93,6 +93,12 @@ class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
 
     def process(self, item: LocationTask) -> Iterator[CitationLocation]:
         for i, cluster in enumerate(cluster_boxes(item.boxes)):
+            logging.debug(
+                "Found cluster of %d box(es) for citations of key %s for paper %s",
+                len(cluster),
+                item.citation_key,
+                item.arxiv_id,
+            )
             yield CitationLocation(i, cluster)
 
     def save(self, item: LocationTask, result: CitationLocation) -> None:

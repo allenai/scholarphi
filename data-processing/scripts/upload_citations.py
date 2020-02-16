@@ -9,13 +9,13 @@ import explanations.directories as directories
 from explanations.types import (
     ArxivId,
     Author,
+    BoundingBox,
     CitationLocation,
     Path,
-    PdfBoundingBox,
     Reference,
 )
+from models.models import BoundingBox as BoundingBoxModel
 from models.models import (
-    BoundingBox,
     Citation,
     CitationPaper,
     Entity,
@@ -76,7 +76,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                 for row in reader:
                     key = row[0]
                     location_index = int(row[1])
-                    box = PdfBoundingBox(
+                    box = BoundingBox(
                         page=int(row[2]),
                         left=float(row[3]),
                         top=float(row[4]),
@@ -206,7 +206,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                 )
 
                 for box in location.boxes:
-                    bounding_box = BoundingBox.create(
+                    bounding_box = BoundingBoxModel.create(
                         page=box.page,
                         left=box.left,
                         top=box.top,

@@ -7,6 +7,7 @@ from typing import Dict, Iterator, List, Optional
 from explanations import directories
 from explanations.types import (
     ArxivId,
+    BoundingBox,
     CharacterId,
     CompilationResult,
     Equation,
@@ -14,7 +15,6 @@ from explanations.types import (
     FileContents,
     HueIteration,
     Path,
-    PdfBoundingBox,
     Symbol,
     SymbolId,
     SymbolWithId,
@@ -204,32 +204,37 @@ def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
     ]
 
 
-def save_compilation_results(
-    path: Path, result: CompilationResult, verbose: bool = True
-) -> None:
+def save_compilation_results(path: Path, result: CompilationResult) -> None:
     results_dir = os.path.join(path, "compilation_results")
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)
 
-    if verbose:
-        if result.success:
-            logging.debug(
-                "Successfully compiled TeX. Generated PDFs %s",
-                str(result.compiled_pdfs),
+    if result.success:
+        logging.debug(
+            "Successfully compiled TeX. Generated files: %s", str(result.output_files),
+        )
+        if len(result.output_files) > 1:
+            logging.warning(  # pylint: disable=logging-not-lazy
+                (
+                    "More than one output file was produced by compiling TeX in %s. The pipeline "
+                    + "does not know which one of these is the main output file, so entity "
+                    + "localization for this paper may not work. See logs in %s."
+                ),
+                path,
+                results_dir,
             )
-        else:
-            logging.warning(
-                "Could not compile TeX in %s. See logs in %s.", path, results_dir
-            )
+    else:
+        logging.warning(
+            "Could not compile TeX in %s. See logs in %s.", path, results_dir
+        )
 
     with open(os.path.join(results_dir, "result"), "w") as success_file:
         success_file.write(str(result.success))
 
-    if result.compiled_pdfs is not None:
-        with open(os.path.join(results_dir, "pdf_names.csv"), "w") as pdf_names_file:
-            writer = csv.writer(pdf_names_file, quoting=csv.QUOTE_ALL)
-            for i, pdf in enumerate(result.compiled_pdfs):
-                writer.writerow([i, pdf])
+    with open(os.path.join(results_dir, "output_files.csv"), "w") as output_files_file:
+        writer = csv.writer(output_files_file, quoting=csv.QUOTE_ALL)
+        for i, output_file in enumerate(result.output_files):
+            writer.writerow([i, output_file.output_type, output_file.path])
 
     with open(os.path.join(results_dir, "stdout.log"), "wb") as stdout_file:
         stdout_file.write(result.stdout)
@@ -240,9 +245,9 @@ def save_compilation_results(
 
 def load_citation_hue_locations(
     arxiv_id: ArxivId,
-) -> Optional[Dict[HueIteration, List[PdfBoundingBox]]]:
+) -> Optional[Dict[HueIteration, List[BoundingBox]]]:
 
-    boxes_by_hue_iteration: Dict[HueIteration, List[PdfBoundingBox]] = {}
+    boxes_by_hue_iteration: Dict[HueIteration, List[BoundingBox]] = {}
     bounding_boxes_path = os.path.join(
         directories.hue_locations_for_citations(arxiv_id), "hue_locations.csv"
     )
@@ -256,7 +261,7 @@ def load_citation_hue_locations(
         for row in reader:
             iteration = row[1]
             hue = float(row[2])
-            box = PdfBoundingBox(
+            box = BoundingBox(
                 page=int(row[3]),
                 left=float(row[4]),
                 top=float(row[5]),
@@ -273,9 +278,9 @@ def load_citation_hue_locations(
 
 def load_equation_token_locations(
     arxiv_id: ArxivId,
-) -> Optional[Dict[CharacterId, List[PdfBoundingBox]]]:
+) -> Optional[Dict[CharacterId, List[BoundingBox]]]:
 
-    token_locations: Dict[CharacterId, List[PdfBoundingBox]] = {}
+    token_locations: Dict[CharacterId, List[BoundingBox]] = {}
     token_locations_path = os.path.join(
         directories.hue_locations_for_equation_tokens(arxiv_id), "hue_locations.csv",
     )
@@ -291,7 +296,7 @@ def load_equation_token_locations(
             equation_index = int(row[-2])
             character_index = int(row[-1])
             character_id = CharacterId(tex_path, equation_index, character_index)
-            box = PdfBoundingBox(
+            box = BoundingBox(
                 page=int(row[3]),
                 left=float(row[4]),
                 top=float(row[5]),

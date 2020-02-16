@@ -15,9 +15,8 @@ from explanations.bounding_box import (
     subtract_multiple_from_multiple,
     union,
 )
-from explanations.types import BoundingBoxInfo
+from explanations.types import BoundingBox
 from explanations.types import FloatRectangle as Rectangle
-from explanations.types import PdfBoundingBox, RasterBoundingBox
 from explanations.types import Rectangle as IntRectangle
 from tests.util import get_test_path
 
@@ -77,19 +76,19 @@ def test_find_boxes_within_masks():
 
 
 def box(left: float, top: float, width: float, height: float, page: int):
-    return PdfBoundingBox(left, top, width, height, page)
+    return BoundingBox(left, top, width, height, page)
 
 
 def test_cluster_boxes():
 
     cluster1_boxes = [
-        box(0, 0, 10, 10, page=1),
-        box(20, 0, 10, 10, page=1),  # boxes need not overlap horizontally
-        box(0, 5, 10, 2, page=1),
-        box(0, 14, 10, 1, page=1),
+        box(0, 0, 0.01, 0.01, page=1),
+        box(0.02, 0, 0.01, 0.01, page=1),  # boxes need not overlap horizontally
+        box(0, 0.005, 0.01, 0.02, page=1),
+        box(0, 0.014, 0.01, 0.01, page=1),
     ]
-    cluster2_boxes = [box(0, 25, 10, 10, page=1)]  # too far below cluster 1
-    cluster3_boxes = [box(0, 0, 10, 10, page=2)]  # on a new page
+    cluster2_boxes = [box(0, 0.05, 0.01, 0.01, page=1)]  # too far below cluster 1
+    cluster3_boxes = [box(0, 0, 0.01, 0.01, page=2)]  # on a new page
 
     all_boxes = cluster1_boxes + cluster2_boxes + cluster3_boxes
     clusters = list(cluster_boxes(all_boxes))

@@ -11,9 +11,9 @@ from explanations.file_utils import (
 )
 from explanations.types import (
     ArxivId,
+    BoundingBox,
     CharacterLocations,
     Path,
-    PdfBoundingBox,
     SymbolWithId,
 )
 from scripts.command import ArxivBatchCommand
@@ -25,7 +25,7 @@ class LocationTask(NamedTuple):
     symbol_with_id: SymbolWithId
 
 
-class LocateSymbols(ArxivBatchCommand[LocationTask, PdfBoundingBox]):
+class LocateSymbols(ArxivBatchCommand[LocationTask, BoundingBox]):
     @staticmethod
     def get_name() -> str:
         return "locate-symbols"
@@ -66,14 +66,14 @@ class LocateSymbols(ArxivBatchCommand[LocationTask, PdfBoundingBox]):
                     symbol_with_id=symbol_with_id,
                 )
 
-    def process(self, item: LocationTask) -> Iterator[PdfBoundingBox]:
+    def process(self, item: LocationTask) -> Iterator[BoundingBox]:
         symbol = item.symbol_with_id.symbol
         symbol_id = item.symbol_with_id.symbol_id
         box = get_symbol_bounding_box(symbol, symbol_id, item.character_locations)
         if box is not None:
             yield box
 
-    def save(self, item: LocationTask, result: PdfBoundingBox) -> None:
+    def save(self, item: LocationTask, result: BoundingBox) -> None:
         output_dir = directories.symbol_locations(item.arxiv_id)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)

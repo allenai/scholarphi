@@ -1,24 +1,35 @@
+import ast
+import configparser
 import logging
 import os.path
+import subprocess
 from abc import ABC, abstractmethod
-from typing import Iterator, List, NamedTuple
-
-import cv2
-import numpy as np
+from typing import Dict, Iterator, NamedTuple
 
 from explanations import directories
-from explanations.compile import get_compiled_pdfs
+from explanations.compile import get_output_files
 from explanations.directories import get_arxiv_id_iteration_path, get_iteration_names
 from explanations.file_utils import clean_directory
-from explanations.image_processing import get_cv2_images
 from explanations.types import AbsolutePath, ArxivId, Path, RelativePath
 from scripts.command import ArxivBatchCommand
+
+"""
+Load commands for rastering TeX outputs.
+"""
+RASTER_CONFIG = "config.ini"
+config = configparser.ConfigParser()
+config.read(RASTER_CONFIG)
+
+raster_commands: Dict[str, str] = {}
+if "rasterers" in config:
+    raster_commands = {k: v for (k, v) in config["rasterers"].items()}
 
 
 class RasterTask(NamedTuple):
     compiled_tex_path: RelativePath  # relative to directory for arXiv ID
-    relative_pdf_path: RelativePath  # relative to iteration path
-    absolute_pdf_path: AbsolutePath
+    output_file_type: str
+    relative_output_file_path: RelativePath  # relative to iteration path
+    absolute_output_file_path: AbsolutePath
 
 
 class RasterPagesCommand(ArxivBatchCommand[RasterTask, None], ABC):
@@ -65,10 +76,13 @@ class RasterPagesCommand(ArxivBatchCommand[RasterTask, None], ABC):
 
             for paper_dir in self.get_paper_dirs(arxiv_id):
                 paper_abs_path = os.path.join(self.get_papers_base_dir(), paper_dir)
-                pdf_paths = get_compiled_pdfs(paper_abs_path)
-                for path in pdf_paths:
+                output_files = get_output_files(paper_abs_path)
+                for output_file in output_files:
                     yield RasterTask(
-                        paper_dir, path, os.path.join(paper_abs_path, path)
+                        paper_dir,
+                        output_file.output_type,
+                        output_file.path,
+                        os.path.join(paper_abs_path, output_file.path),
                     )
 
     def process(self, _: RasterTask) -> Iterator[None]:
@@ -78,21 +92,48 @@ class RasterPagesCommand(ArxivBatchCommand[RasterTask, None], ABC):
         output_dir = os.path.join(
             self.get_output_base_dir(),
             item.compiled_tex_path,
-            directories.escape_slashes(item.relative_pdf_path),
+            directories.escape_slashes(item.relative_output_file_path),
         )
-        images = get_cv2_images(item.absolute_pdf_path)
-        self._save_images_to_directory(images, output_dir)
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
 
-    def _save_images_to_directory(
-        self, images: List[np.ndarray], dest_dir: str
-    ) -> None:
-        if not os.path.exists(dest_dir):
-            os.makedirs(dest_dir)
-        for page_index, image in enumerate(images):
-            image_path = os.path.join(dest_dir, "page-%d.png" % (page_index,))
-            if image is not None:
-                cv2.imwrite(image_path, image)
-                logging.debug("Rastered page to %s", image_path)
+        try:
+            raster_command = raster_commands[item.output_file_type]
+        except KeyError:
+            logging.warning(  # pylint: disable=logging-not-lazy
+                (
+                    "Could not find a rastering command for file %s in directory %s "
+                    + "of type %s. This file will not be rastered."
+                ),
+                item.relative_output_file_path,
+                item.compiled_tex_path,
+                item.output_file_type,
+            )
+            return
+
+        args = ast.literal_eval(raster_command)
+        args_resolved = [
+            arg.format(output_dir=output_dir, file=item.absolute_output_file_path)
+            for arg in args
+        ]
+
+        result = subprocess.run(
+            args_resolved, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False,
+        )
+        if result.returncode == 0:
+            logging.debug(
+                "Successfully rastered pages for file %s using command %s",
+                item.absolute_output_file_path,
+                args_resolved,
+            )
+        else:
+            logging.error(
+                "Error rastering file %s using command %s: (Stdout: %s), (Stderr: %s)",
+                item.absolute_output_file_path,
+                args_resolved,
+                result.stdout,
+                result.stderr,
+            )
 
 
 class RasterPages(RasterPagesCommand):

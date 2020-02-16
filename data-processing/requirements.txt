@@ -4,13 +4,11 @@ lxml
 numpy
 opencv-python==3.4.8.29
 peewee
-PyPDF2
 psycopg2-binary
 pysbd
 reportlab
 requests
 TexSoup
-Wand
 
 # Development dependencies
 black
