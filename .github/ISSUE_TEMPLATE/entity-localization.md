@@ -25,7 +25,7 @@ Entity Localization Bug: Citation. (Weld et al. 2010) not detected in arXiv pape
 
 Assign this issue two labels, one for each of:
 1. The entity type (`citation` or `symbols`)
-2. The localization issue type (`missing-entity` or `erroneous-entity`)
+2. The localization issue type (`missing-entity-detection` or `bad-entity-detection`)
 
 **Describe the bug**
 
