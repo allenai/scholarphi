@@ -371,10 +371,10 @@ class LocateEquationTokenHues(LocateHuesCommand):
 
                 box = BoundingBox(
                     page=int(row[3]),
-                    left=float(row[8]),
-                    top=float(row[9]),
-                    width=float(row[10]),
-                    height=float(row[11]),
+                    left=float(row[4]),
+                    top=float(row[5]),
+                    width=float(row[6]),
+                    height=float(row[7]),
                 )
                 bounding_boxes[equation_id][file_path].append(box)
 
