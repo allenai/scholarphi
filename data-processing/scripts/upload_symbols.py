@@ -189,7 +189,7 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
                     type="symbol", source="tex-pipeline", entity_id=symbol_model.id
                 )
                 entities.append(entity)
-                bounding_box = BoundingBox(
+                bounding_box = BoundingBoxModel(
                     page=box.page,
                     left=box.left,
                     top=box.top,
