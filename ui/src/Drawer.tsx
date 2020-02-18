@@ -16,46 +16,11 @@ export class Drawer extends React.PureComponent {
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
 
-  getNeedMoveLeft() {
-    const symbol = this.context.selectedSymbol;
-    let l = 0;
-    let t = 0;
-    if (symbol) {
-      const bb = symbol.bounding_boxes[0];
-      const { left, top } = selectors.divDimensionStyles(
-        this.context.pages[bb.page + 1].view,
-        bb,
-      );
-      l = left;
-      t = top;
-    }
-    
-    if (this.context.selectedAnnotationId) {
-      let [,id] = this.context.selectedAnnotationId.split('-');
-      if (id === `${this.context.selectedSymbol?.id}`) {
-        console.log('we gone scroll');
-        return [l, t];
-      } else if (id === `${this.context.selectedCitation?.id}`) {
-        return [10, 20];
-      }
-    }
-
-    // 
-    return [10, 20];
-  }
-
   addChildClass(pdfViewerContainer: HTMLElement) {
     // Creating padding for scroll
     Array.from(pdfViewerContainer.children).forEach(page => {
       page.classList.add(PDF_VIEWER_DRAWER_OPEN_CLASS)  
     })
-
-    // Scroll the Annotation into View
-    // const [l, t] = this.getNeedMoveLeft();
-    // pdfViewerContainer.parentElement?.scroll(
-    //   l, t
-    // );
-    console.log(pdfViewerContainer.parentElement?.clientWidth);
   } 
 
   removeChildClass(pdfViewerContainer: HTMLElement) {

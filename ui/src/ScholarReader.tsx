@@ -404,10 +404,30 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
           undefined,
           { name: "XYZ" },
           box.left + SCROLL_OFFSET_X,
-          box.top + SCROLL_OFFSET_Y
+          box.top + SCROLL_OFFSET_Y,
+          null,
         ]
       });
     }
+  }
+
+  scrollSymbolIntoView() {
+    setTimeout(() => {
+      const { selectedSymbol, pdfViewer, pages } = this.state;
+      if (pdfViewer && selectedSymbol) {
+        const symBounds = selectedSymbol.bounding_boxes[0];
+        const { left } = selectors.divDimensionStyles(
+          pages[symBounds.page + 1].view, symBounds
+        );
+        let viewPortWidth = pages[symBounds.page + 1].view.viewport.width;
+        viewPortWidth = (viewPortWidth - viewPortWidth/3);
+        console.log(viewPortWidth, left);
+        // Obscures the last 1/3 of the viewport 
+        if (left > viewPortWidth) {
+          pdfViewer.container.scrollLeft += viewPortWidth;
+        }
+      } 
+    }, 10);
   }
 
   render() {
