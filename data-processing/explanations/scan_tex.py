@@ -53,7 +53,10 @@ def scan_tex(
     while True:
         try:
             step = scanner.next(patterns, include_unmatched)
-        except EndOfInput:
+        except EndOfInput as e:
+            if e.skipped is not None:
+                for skipped in e.skipped:
+                    yield skipped
             return
         if step.skipped is not None:
             for skipped in step.skipped:
@@ -75,7 +78,9 @@ class ScanStep:
 
 
 class EndOfInput(Exception):
-    pass
+    def __init__(self, skipped: Optional[List[Match]]):
+        super().__init__()
+        self.skipped = skipped
 
 
 class TexScanner:
@@ -116,7 +121,16 @@ class TexScanner:
         while match is None:
             re_match = regex.search(self.tex, self.i)
             if re_match is None:
-                raise EndOfInput
+                if include_unmatched and len(self.tex) > self.i:
+                    skipped.append(
+                        Match(
+                            pattern=Pattern("UNKNOWN", "INVALID"),
+                            start=self.i,
+                            end=len(self.tex),
+                            text=self.tex[self.i : len(self.tex)],
+                        )
+                    )
+                raise EndOfInput(skipped)
 
             group_dict = re_match.groupdict()
             pattern_names = [
@@ -124,9 +138,7 @@ class TexScanner:
             ]
             if len(pattern_names) != 1:
                 logging.warning("TeX scanner produced an invalid match: %s", re_match)
-                raise ValueError(
-                    "TeX scanner produced an invlalid match: %s" % re_match
-                )
+                raise ValueError("TeX scanner produced an invalid match: %s" % re_match)
 
             pattern_name = pattern_names[0]
             pattern = patterns_by_name[pattern_name]

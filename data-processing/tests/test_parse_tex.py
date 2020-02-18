@@ -1,7 +1,41 @@
-from explanations.parse_tex import (BeginDocumentExtractor, BibitemExtractor,
-                                    DocumentclassExtractor, EquationExtractor,
-                                    MacroExtractor)
+from explanations.parse_tex import (
+    BeginDocumentExtractor,
+    BibitemExtractor,
+    DocumentclassExtractor,
+    EquationExtractor,
+    MacroExtractor,
+    SentenceExtractor,
+)
 from explanations.types import MacroDefinition
+
+
+def test_extract_sentences():
+    extractor = SentenceExtractor()
+    sentences = list(
+        extractor.parse(
+            "This is the first \\macro[arg]{sentence}. This is the second sentence."
+        )
+    )
+    assert len(sentences) == 2
+
+    sentence1 = sentences[0]
+    assert sentence1.start == 0
+    assert sentence1.end == 40
+    assert sentences[0].text == "This is the first argsentence."
+
+    sentence2 = sentences[1]
+    assert sentence2.start == 41
+    assert sentence2.end == 69
+    assert sentences[1].text == "This is the second sentence."
+
+
+def test_ignore_periods_in_equations():
+    extractor = SentenceExtractor()
+    sentences = list(
+        extractor.parse("This sentence has an $ equation. In $ the middle.")
+    )
+    assert len(sentences) == 1
+    assert sentences[0].text == "This sentence has an [[math]] the middle."
 
 
 def test_extract_equation_from_dollar_sign():

@@ -3,8 +3,7 @@ import logging
 import os.path
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
-from typing import (Any, Callable, Dict, Iterator, List, NamedTuple, Optional,
-                    cast)
+from typing import Any, Callable, Dict, Iterator, List, NamedTuple, Optional, cast
 
 import cv2
 import numpy as np
@@ -13,14 +12,23 @@ from PyPDF2 import PdfFileReader
 from explanations import directories
 from explanations.bounding_box import extract_bounding_boxes
 from explanations.compile import get_compiled_pdfs
-from explanations.directories import (get_data_subdirectory_for_arxiv_id,
-                                      get_data_subdirectory_for_iteration,
-                                      get_iteration_names)
+from explanations.directories import (
+    get_data_subdirectory_for_arxiv_id,
+    get_data_subdirectory_for_iteration,
+    get_iteration_names,
+)
 from explanations.file_utils import clean_directory
 from explanations.image_processing import contains_black_pixels
-from explanations.types import (ArxivId, BoundingBoxInfo, Dimensions,
-                                EquationId, Path, RasterBoundingBox, Rectangle,
-                                RelativePath)
+from explanations.types import (
+    ArxivId,
+    BoundingBoxInfo,
+    Dimensions,
+    EquationId,
+    Path,
+    RasterBoundingBox,
+    Rectangle,
+    RelativePath,
+)
 from scripts.command import ArxivBatchCommand
 
 PageNumber = int

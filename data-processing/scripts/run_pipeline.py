@@ -6,24 +6,15 @@ from argparse import ArgumentParser
 from datetime import datetime
 
 from explanations import directories
-from scripts.command import (
-    add_arxiv_id_filter_args,
-    add_one_entity_at_a_time_arg,
-    create_args,
-    load_arxiv_ids_using_args,
-    read_arxiv_ids_from_file,
-)
-from scripts.fetch_arxiv_sources import (
-    DEFAULT_S3_ARXIV_SOURCES_BUCKET,
-    FetchArxivSources,
-)
+from scripts.command import (add_arxiv_id_filter_args,
+                             add_one_entity_at_a_time_arg, create_args,
+                             load_arxiv_ids_using_args,
+                             read_arxiv_ids_from_file)
+from scripts.fetch_arxiv_sources import (DEFAULT_S3_ARXIV_SOURCES_BUCKET,
+                                         FetchArxivSources)
 from scripts.fetch_new_arxiv_ids import FetchNewArxivIds
-from scripts.process import (
-    DATABASE_UPLOAD_COMMANDS,
-    MAIN_PIPELINE_COMMANDS,
-    STORE_RESULTS_COMMANDS,
-    run_command,
-)
+from scripts.process import (DATABASE_UPLOAD_COMMANDS, MAIN_PIPELINE_COMMANDS,
+                             STORE_RESULTS_COMMANDS, run_command)
 from scripts.store_pipeline_log import StorePipelineLog
 from scripts.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
 

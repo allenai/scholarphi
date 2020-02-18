@@ -6,15 +6,11 @@ from typing import Iterator
 
 from explanations import directories
 from explanations.compile import compile_tex
-from explanations.directories import get_arxiv_id_iteration_path, get_iteration_names
+from explanations.directories import (get_arxiv_id_iteration_path,
+                                      get_iteration_names)
 from explanations.file_utils import clean_directory, save_compilation_results
-from explanations.types import (
-    AbsolutePath,
-    ArxivId,
-    CompilationResult,
-    Path,
-    RelativePath,
-)
+from explanations.types import (AbsolutePath, ArxivId, CompilationResult, Path,
+                                RelativePath)
 from scripts.command import ArxivBatchCommand
 
 CompilationPath = AbsolutePath

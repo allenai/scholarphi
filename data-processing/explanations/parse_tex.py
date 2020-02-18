@@ -3,6 +3,7 @@ import re
 from dataclasses import dataclass
 from typing import Dict, Iterator, List, Optional, Set, Union
 
+import pysbd
 from TexSoup import RArg, TexNode, TexSoup, TokenWithPosition
 
 from explanations.scan_tex import (
@@ -17,11 +18,15 @@ from explanations.types import (
     BeginDocument,
     Bibitem,
     Documentclass,
+    Entity,
     Equation,
     LengthAssignment,
     Macro,
     MacroDefinition,
 )
+
+LEFT_BRACE = Pattern("left_brace", r"\{")
+RIGHT_BRACE = Pattern("right_brace", r"\}")
 
 
 @dataclass(frozen=True)
@@ -219,6 +224,152 @@ class EquationLengthAssignmentExtractor:
             yield LengthAssignment(match.start, match.end)
 
 
+@dataclass(frozen=True)
+class Sentence(Entity):
+    text: str
+
+
+@dataclass(frozen=True)
+class PlaintextSegment:
+    text: str
+
+    transformed: bool
+    " Whether the TeX was transformed at all to make this plaintext. "
+
+    tex_start: int
+    " Offset of first character in the TeX that corresponds to this plaintext. "
+
+    tex_end: int
+    " Offset after the last character in the TeX that corresponds to this plaintext. "
+
+
+class PlaintextExtractor:
+    """
+    Extracts plaintext from TeX. It's definitely not perfect: this extracted text will include
+    text extracted from many command arguments, because we knew sometimes it would be wanted, and
+    other times it wouldn't. Without more sophisticated macro processing, it's not possible to
+    tell which arguments would be rendered as text and which wouldn't.
+    
+    For the anticipated use case of sentence boundary detection, this spurious argument test is
+    often okay and won't often influence the detected boundaries. However, for other natural
+    language processing tasks, this plaintext extractor may need to be further refined.
+    """
+
+    def __init__(self) -> None:
+
+        # Patterns of text that should be replaced with other plaintext.
+        self.REPLACE_PATTERNS = {
+            Pattern("backslash_newline", r"\\\\"): "\n",
+            Pattern("space_macro", r"\\[ ,]"): " ",
+            Pattern("tilde", r"~"): " ",
+            # See why we use this strange character for equations in the 'parse' method.
+            Pattern("math", r"█+"): "[[math]]",
+        }
+
+        # Patterns of text the extractor should skip.
+        self.SKIP_PATTERNS = [
+            # Many patterns below were written with reference to the LaTeX tokenizer in Python's
+            # 'doctools' sources at:
+            # http://svn.python.org/projects/doctools/converter/converter/tokenizer.py
+            Pattern("macro", r"\\[a-zA-Z]+\*?[ \t]*"),
+            RIGHT_BRACE,
+            LEFT_BRACE,
+            Pattern("left_bracket", r"\["),
+            Pattern("right_bracket", r"\]"),
+            # The following macros are a backslash followed by an ASCII symbol. This pattern was
+            # written with reference to the command list at:
+            # http://www.public.asu.edu/~rjansen/latexdoc/ltx-2.html
+            # Pattern("symbol_macro", r"\\[@=><+'`-]"),
+        ]
+
+    def parse(self, tex: str) -> Iterator[PlaintextSegment]:
+        """
+        Extract plaintext segments from the TeX. Some TeX will be replaced (e.g., "\\\\" with "\n",
+        equations with "[[math]]"). Other TeX will be skipped (e.g., macros, braces, and brackets).
+        The 'text' property of the returned segments can be appended to form a string of plaintext.
+        """
+        # All math equations will be replaced in plaintext with the text "[[math]]". However,
+        # returned segments also need to be labeled with their character positions from the
+        # original TeX. In a first step, equations are detected using EquationExtractor, and then
+        # replaced with a Unicode character (█) so that they can be easily detected in a second
+        # step, while preserving the equations' character offsets in the TeX.
+        tex_without_math = tex
+        equation_extractor = EquationExtractor()
+        for equation in equation_extractor.parse(tex):
+            tex_without_math = (
+                tex_without_math[: equation.start]
+                + "█" * (equation.end - equation.start)
+                + tex_without_math[equation.end :]
+            )
+
+        patterns = list(self.REPLACE_PATTERNS.keys()) + self.SKIP_PATTERNS
+        scanner = scan_tex(tex_without_math, patterns, include_unmatched=True)
+
+        # Iterate over all TeX. If a token is supposed to be replaced, replace it and yield the
+        # span with the replaced text. If it's supposed to be ignored, discard it. Otherwise, yield
+        # a new span with the TeX as plaintext.
+        for match in scanner:
+            if match.pattern in self.SKIP_PATTERNS:
+                continue
+
+            transformed = False
+            text = match.text
+            if match.pattern in self.REPLACE_PATTERNS:
+                transformed = True
+                text = self.REPLACE_PATTERNS[match.pattern]
+
+            yield PlaintextSegment(
+                text=text,
+                transformed=transformed,
+                tex_start=match.start,
+                tex_end=match.end,
+            )
+
+
+class SentenceExtractor:
+    """
+    Extract plaintext sentences from TeX, with offsets of the characters they correspond to in
+    the input TeX strings. The extracted sentences might include some junk TeX, having the same
+    limitations as the plaintext produced by PlaintextExtractor.
+    """
+
+    def parse(self, tex: str) -> Iterator[Sentence]:
+        # Extract plaintext segments from TeX
+        plaintext_extractor = PlaintextExtractor()
+        plaintext_segments = plaintext_extractor.parse(tex)
+
+        # Build a map from character offsets in the plaintext to TeX offsets. This will let us
+        # map from the character offsets of the sentences returned from the sentence boundary
+        # detector back to positions in the original TeX.
+        plaintext_to_tex_offset_map = {}
+        plaintext = ""
+        last_segment = None
+        for segment in plaintext_segments:
+            for i in range(len(segment.text)):
+                tex_offset = (
+                    (segment.tex_start + i)
+                    if not segment.transformed
+                    else segment.tex_start
+                )
+                plaintext_to_tex_offset_map[len(plaintext) + i] = tex_offset
+
+            # While building the map, also create a contiguous plaintext string
+            plaintext += segment.text
+            last_segment = segment
+
+        if last_segment is not None:
+            plaintext_to_tex_offset_map[len(plaintext)] = last_segment.tex_end
+
+        # Segment the plaintext. Return offsets for each setence relative to the TeX input
+        segmenter = pysbd.Segmenter(language="en", clean=False, char_span=True)
+        for sentence in segmenter.segment(plaintext):
+            yield Sentence(
+                text=sentence.sent,
+                start=plaintext_to_tex_offset_map[sentence.start],
+                end=plaintext_to_tex_offset_map[sentence.end],
+            )
+
+
 class BeginDocumentExtractor:
     def parse(self, tex: str) -> Optional[BeginDocument]:
         pattern = Pattern("begin_document", r"\\begin{document}")
@@ -322,11 +473,9 @@ def _clean_bibitem_text(text: str) -> str:
 
 class MacroExtractor:
     """
+    Extracts all instances of a macro defined by 'macro_definition'.
     This extractor follows the argument-parsing logic described on p203-4 of the TeXBook.
     """
-
-    LEFT_BRACE = Pattern("left_brace", r"\{")
-    RIGHT_BRACE = Pattern("right_brace", r"\}")
 
     def parse(self, tex: str, macro_definition: MacroDefinition) -> Iterator[Macro]:
         parser = self._parse(tex, macro_definition)
@@ -369,7 +518,7 @@ class MacroExtractor:
             yield Macro(macro_start, token_end, tex[macro_start:token_end])
 
     def _scan_undelimited_parameter(self) -> int:
-        patterns = [self.LEFT_BRACE, Pattern("nonspace_character", r"\S")]
+        patterns = [LEFT_BRACE, Pattern("nonspace_character", r"\S")]
         step = self.scanner.next(patterns)
 
         # If a non-space character, match just the first character.
@@ -378,7 +527,7 @@ class MacroExtractor:
 
         # If the first match is a left-brace, parse until the braces are balanced.
         brace_depth = 1
-        brace_patterns = [self.LEFT_BRACE, self.RIGHT_BRACE]
+        brace_patterns = [LEFT_BRACE, RIGHT_BRACE]
         while True:
             step = self.scanner.next(brace_patterns)
             if step.match.pattern.name == "left_brace":
