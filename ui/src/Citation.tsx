@@ -24,7 +24,7 @@ export class Citation extends React.PureComponent<CitationProperties> {
               )}
               {paper.abstract !== null ? (
                 <div className="citation__abstract">
-                  {truncateText(paper.abstract, 400)}
+                  {truncateText(paper.abstract, 1000)}
                   <span
                     className="citation__abstract__sidebar-link"
                     onClick={() => {
