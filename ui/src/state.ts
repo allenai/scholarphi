@@ -47,8 +47,6 @@ export interface State {
    */
   favorites: { [favoritableKey: string]: boolean };
   toggleFavorite(favoritableId: FavoritableId): void;
-  drawerState: DrawerState;
-  setDrawerState(state: DrawerState): void;
   jumpPaperId: string | null;
   setJumpPaperId(s2Id: string | null): void;
   selectedSymbol: Symbol | null;
@@ -78,7 +76,6 @@ export interface State {
 
 export type Papers = { [s2Id: string]: Paper };
 export type Pages = { [pageNumber: number]: PageModel };
-export type DrawerState = "show-citations" | "show-symbols" | "closed";
 
 interface PageModel {
   /**
@@ -117,8 +114,6 @@ const defaultState: State = {
   pdfViewer: null,
   favorites: {},
   toggleFavorite: () => {},
-  drawerState: "closed",
-  setDrawerState: () => {},
   jumpPaperId: null,
   setJumpPaperId: () => {},
   selectedSymbol: null,
