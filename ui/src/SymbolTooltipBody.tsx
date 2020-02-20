@@ -20,7 +20,6 @@ export class SymbolTooltipBody extends React.PureComponent<
           {({
             symbols,
             mathMl,
-            setDrawerState,
             setSelectedSymbol,
             setSelectedAnnotationId,
             setJumpSymbol
@@ -101,7 +100,6 @@ export class SymbolTooltipBody extends React.PureComponent<
                       className="tooltip-body__action-button"
                       onClick={() => {
                         setSelectedSymbol(this.props.symbol);
-                        setDrawerState("show-symbols");
                       }}
                     >
                       View {matches.length} other References

@@ -11,7 +11,7 @@ export class Citation extends React.PureComponent<CitationProperties> {
   render() {
     return (
       <ScholarReaderContext.Consumer>
-        {({ papers, setDrawerState, setJumpPaperId, setSelectedCitation }) => {
+        {({ papers, setJumpPaperId, setSelectedCitation }) => {
           const paper = papers[this.props.citation.paper];
           return (
             <div className="citation">
@@ -29,7 +29,6 @@ export class Citation extends React.PureComponent<CitationProperties> {
                     className="citation__abstract__sidebar-link"
                     onClick={() => {
                       setSelectedCitation(this.props.citation);
-                      setDrawerState("show-citations");
                       setJumpPaperId(this.props.citation.paper);
                     }}
                   >

@@ -12,11 +12,36 @@ import { ScholarReaderContext } from "./state";
 const PDF_VIEWER_DRAWER_OPEN_CLASS = "drawer-open";
 
 export class Drawer extends React.PureComponent {
+  static contextType = ScholarReaderContext;
+  context!: React.ContextType<typeof ScholarReaderContext>;
+
   componentWillUnmount() {
     const { pdfViewer } = this.context;
-    if (pdfViewer !== undefined && pdfViewer !== null) {
+    if (pdfViewer != null) {
       pdfViewer.container.classList.remove(PDF_VIEWER_DRAWER_OPEN_CLASS);
     }
+  }
+
+  closeDrawer = () => {
+    switch(this.drawerState()) {
+      case 'show-symbols': {
+        this.context.setSelectedSymbol(null);
+        break;
+      }
+      case 'show-citations': {
+        this.context.setSelectedCitation(null);
+        break;
+      }
+    }
+  }
+
+  drawerState = () => {
+    if (this.context.selectedSymbol != null) {
+      return 'show-symbols';
+    } else if (this.context.selectedCitation != null) {
+      return 'show-citations';
+    }
+    return 'closed';
   }
 
   render() {
@@ -25,8 +50,9 @@ export class Drawer extends React.PureComponent {
      * notify the PDF viewer by adding a class, as the PDF viewer has no knowledge of the state
      * of this React application.
      */
-    const { pdfViewer, drawerState } = this.context;
-    if (pdfViewer !== undefined && pdfViewer !== null) {
+    const { pdfViewer } = this.context;
+    const drawerState = this.drawerState();
+    if (pdfViewer != null) {
       if (drawerState !== "closed") {
         pdfViewer.container.classList.add(PDF_VIEWER_DRAWER_OPEN_CLASS);
       } else {
@@ -36,7 +62,7 @@ export class Drawer extends React.PureComponent {
 
     return (
       <ScholarReaderContext.Consumer>
-        {({ drawerState, setDrawerState, selectedSymbol, selectedCitation }) => {
+        {({ selectedSymbol, selectedCitation }) => {
           let extraContext;
           switch (drawerState) {
             case "show-citations": {
@@ -54,11 +80,9 @@ export class Drawer extends React.PureComponent {
               break;
             }
           }
-
+          console.log(selectedSymbol);
           return (
-            <ClickAwayListener onClickAway={() => {
-              setDrawerState("closed");
-            }}>
+            <ClickAwayListener onClickAway={() => setTimeout(this.closeDrawer, 0)}>
               <MuiDrawer
                 className="drawer"
                 variant="persistent"
@@ -67,7 +91,7 @@ export class Drawer extends React.PureComponent {
               >
                 <div className="drawer__header">
                   <div className="drawer__close_icon">
-                    <IconButton className="MuiButton-contained" onClick={() => setDrawerState("closed")}>
+                    <IconButton className="MuiButton-contained" onClick={this.closeDrawer}>
                       <ChevronRightIcon />
                     </IconButton>
                   </div>
