@@ -82,7 +82,7 @@ export class Drawer extends React.PureComponent {
           }
           console.log(selectedSymbol);
           return (
-            <ClickAwayListener onClickAway={() => setTimeout(this.closeDrawer, 0)}>
+            <ClickAwayListener onClickAway={this.closeDrawer}>
               <MuiDrawer
                 className="drawer"
                 variant="persistent"

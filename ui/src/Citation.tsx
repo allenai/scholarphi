@@ -27,9 +27,10 @@ export class Citation extends React.PureComponent<CitationProperties> {
                   {truncateText(paper.abstract, 400)}
                   <span
                     className="citation__abstract__sidebar-link"
-                    onClick={() => {
+                    onClick={(e) => {
                       setSelectedCitation(this.props.citation);
                       setJumpPaperId(this.props.citation.paper);
+                      e.preventDefault(); // Needed to prevent the clickaway on the drawer from triggering
                     }}
                   >
                     (see more)

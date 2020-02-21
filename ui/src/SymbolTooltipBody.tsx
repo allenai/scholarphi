@@ -98,8 +98,9 @@ export class SymbolTooltipBody extends React.PureComponent<
                       variant="outlined"
                       color="primary"
                       className="tooltip-body__action-button"
-                      onClick={() => {
+                      onClick={(e) => {
                         setSelectedSymbol(this.props.symbol);
+                        e.preventDefault(); // Needed to prevent the clickaway on the drawer from triggering
                       }}
                     >
                       View {matches.length} other References
