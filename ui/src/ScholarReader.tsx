@@ -420,11 +420,14 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
           pages[symBounds.page + 1].view, symBounds
         );
         let viewPortWidth = pages[symBounds.page + 1].view.viewport.width;
-        viewPortWidth = (viewPortWidth - viewPortWidth/3);
-        console.log(viewPortWidth, left);
+        
+        console.log("VIEWPORT")
+        console.log(`show if ${left} > ${viewPortWidth - viewPortWidth/3} given vp is ${viewPortWidth} and it's already scrolled ${pdfViewer.container.scrollLeft} and with a window width of ${window.innerWidth}`);
+
+        viewPortWidth = (viewPortWidth - viewPortWidth/4);
         // Obscures the last 1/3 of the viewport 
         if (left > viewPortWidth) {
-          pdfViewer.container.scrollLeft += viewPortWidth;
+          //pdfViewer.container.scrollLeft += viewPortWidth;
         }
       } 
     }, 10);
