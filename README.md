@@ -45,3 +45,13 @@ where it makes sense to use these guides.
 * [Marti Hearst](mailto:hearst@berkeley.edu)
 * [Zachary Kirby](mailto:zkirby@berkeley.edu)
 * [Vivek Aithal](mailto:vivek_aithal@berkeley.edu)
+
+## License
+
+This project is licensed under the Apache License 2.0.  It
+is aggregate software that calls
+[GhostScript](https://ghostscript.com/), which is
+distributed under the Affero GNU Public License (AGPL). The
+GhostScript binaries and source code are available upon
+request. You can learn more about the GhostScript AGPL
+License [here](https://ghostscript.com/license).
