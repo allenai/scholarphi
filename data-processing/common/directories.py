@@ -8,86 +8,106 @@ LOGS_DIR = "logs"
 # Main directories for processing papers
 DATA_DIR = "data"
 
-ARXIV_IDS_DIR = os.path.join(DATA_DIR, "00-arxiv-ids")
-SOURCE_ARCHIVES_DIR = os.path.join(DATA_DIR, "01-sources-archives")
-S2_METADATA_DIR = os.path.join(DATA_DIR, "02-s2-metadata")
-SOURCES_DIR = os.path.join(DATA_DIR, "03-sources")
-BIBITEMS_DIR = os.path.join(DATA_DIR, "04-bibitems")
-BIBITEM_RESOLUTIONS_DIR = os.path.join(DATA_DIR, "05-bibitem-resolutions")
-EQUATIONS_DIR = os.path.join(DATA_DIR, "06-equations")
-SYMBOLS_DIR = os.path.join(DATA_DIR, "07-symbols")
-SYMBOL_MATCHES_DIR = os.path.join(DATA_DIR, "08-symbol-matches")
-SOURCES_WITH_COLORIZED_CITATIONS_DIR = os.path.join(
-    DATA_DIR, "09-sources-with-colorized-citations"
+data_directory_index = 0
+
+
+def register_data_directory(directory_name: str) -> RelativePath:
+    global data_directory_index  # pylint: disable=global-statement
+    data_directory_index += 1
+    return os.path.join(DATA_DIR, f"{data_directory_index:02d}-{directory_name}")
+
+
+ARXIV_IDS_DIR = register_data_directory("arxiv-ids")
+SOURCE_ARCHIVES_DIR = register_data_directory("sources-archives")
+S2_METADATA_DIR = register_data_directory("s2-metadata")
+SOURCES_DIR = register_data_directory("sources")
+BIBITEMS_DIR = register_data_directory("bibitems")
+BIBITEM_RESOLUTIONS_DIR = register_data_directory("bibitem-resolutions")
+EQUATIONS_DIR = register_data_directory("equations")
+SYMBOLS_DIR = register_data_directory("symbols")
+SYMBOL_MATCHES_DIR = register_data_directory("symbol-matches")
+SOURCES_WITH_COLORIZED_CITATIONS_DIR = register_data_directory(
+    "sources-with-colorized-citations"
 )
-SOURCES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
-    DATA_DIR, "10-sources-with-colorized-equations"
+SOURCES_WITH_COLORIZED_SENTENCES_DIR = register_data_directory(
+    "sources-with-colorized-sentences"
 )
-SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
-    DATA_DIR, "11-sources-with-colorized-equation-tokens"
+SOURCES_WITH_COLORIZED_EQUATIONS_DIR = register_data_directory(
+    "sources-with-colorized-equations"
 )
-COMPILED_SOURCES_DIR = os.path.join(DATA_DIR, "12-compiled-sources")
-COMPILED_SOURCES_WITH_COLORIZED_CITATIONS_DIR = os.path.join(
-    DATA_DIR, "13-compiled-sources-with-colorized-citations"
+SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR = register_data_directory(
+    "sources-with-colorized-equation-tokens"
 )
-COMPILED_SOURCES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
-    DATA_DIR, "14-compiled-sources-with-colorized-equations"
+COMPILED_SOURCES_DIR = register_data_directory("compiled-sources")
+COMPILED_SOURCES_WITH_COLORIZED_CITATIONS_DIR = register_data_directory(
+    "compiled-sources-with-colorized-citations"
 )
-COMPILED_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
-    DATA_DIR, "15-compiled-sources-with-colorized-equation-tokens"
+COMPILED_SOURCES_WITH_COLORIZED_SENTENCES_DIR = register_data_directory(
+    "compiled-sources-with-colorized-sentences"
 )
-PAPER_IMAGES_DIR = os.path.join(DATA_DIR, "16-paper-images")
-PAPER_WITH_COLORIZED_CITATIONS_IMAGES_DIR = os.path.join(
-    DATA_DIR, "17-paper-with-colorized-citations-images"
+COMPILED_SOURCES_WITH_COLORIZED_EQUATIONS_DIR = register_data_directory(
+    "compiled-sources-with-colorized-equations"
 )
-PAPER_WITH_COLORIZED_EQUATIONS_IMAGES_DIR = os.path.join(
-    DATA_DIR, "18-paper-with-colorized-equations-images"
+COMPILED_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR = register_data_directory(
+    "compiled-sources-with-colorized-equation-tokens"
 )
-PAPER_WITH_COLORIZED_EQUATION_TOKENS_IMAGES_DIR = os.path.join(
-    DATA_DIR, "19-paper-with-colorized-equation-tokens-images"
+PAPER_IMAGES_DIR = register_data_directory("paper-images")
+PAPER_WITH_COLORIZED_CITATIONS_IMAGES_DIR = register_data_directory(
+    "paper-with-colorized-citations-images"
 )
-DIFF_IMAGES_WITH_COLORIZED_CITATIONS_DIR = os.path.join(
-    DATA_DIR, "20-diff-images-with-colorized-citations"
+PAPER_WITH_COLORIZED_SENTENCES_IMAGES_DIR = register_data_directory(
+    "paper-with-colorized-sentences-images"
 )
-DIFF_IMAGES_WITH_COLORIZED_EQUATIONS_DIR = os.path.join(
-    DATA_DIR, "21-diff-images-with-colorized-equations"
+PAPER_WITH_COLORIZED_EQUATIONS_IMAGES_DIR = register_data_directory(
+    "paper-with-colorized-equations-images"
 )
-DIFF_IMAGES_WITH_COLORIZED_EQUATION_TOKENS_DIR = os.path.join(
-    DATA_DIR, "22-diff-images-with-colorized-equation-tokens"
+PAPER_WITH_COLORIZED_EQUATION_TOKENS_IMAGES_DIR = register_data_directory(
+    "paper-with-colorized-equation-tokens-images"
 )
-HUE_LOCATIONS_FOR_CITATIONS_DIR = os.path.join(
-    DATA_DIR, "23-hue-locations-for-citations"
+DIFF_IMAGES_WITH_COLORIZED_CITATIONS_DIR = register_data_directory(
+    "diff-images-with-colorized-citations"
 )
-HUE_LOCATIONS_FOR_EQUATIONS_DIR = os.path.join(
-    DATA_DIR, "24-hue-locations-for-equations"
+DIFF_IMAGES_WITH_COLORIZED_EQUATIONS_DIR = register_data_directory(
+    "diff-images-with-colorized-equations"
 )
-HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR = os.path.join(
-    DATA_DIR, "25-hue-locations-for-equation-tokens"
+DIFF_IMAGES_WITH_COLORIZED_SENTENCES_DIR = register_data_directory(
+    "diff-images-with-colorized-sentences"
 )
-CITATION_LOCATIONS_DIR = os.path.join(DATA_DIR, "26-citation-locations")
-SYMBOL_LOCATIONS_DIR = os.path.join(DATA_DIR, "27-symbol-locations")
-ANNOTATED_PDFS_WITH_CITATION_BOXES_DIR = os.path.join(
-    DATA_DIR, "28-annotated-pdfs-with-citation-boxes"
+DIFF_IMAGES_WITH_COLORIZED_EQUATION_TOKENS_DIR = register_data_directory(
+    "diff-images-with-colorized-equation-tokens"
 )
-ANNOTATED_PDFS_WITH_EQUATION_BOXES_DIR = os.path.join(
-    DATA_DIR, "29-annotated-pdfs-with-equation-boxes"
+HUE_LOCATIONS_FOR_CITATIONS_DIR = register_data_directory("hue-locations-for-citations")
+HUE_LOCATIONS_FOR_SENTENCES_DIR = register_data_directory(
+    "diff-images-with-colorized-sentences"
 )
-ANNOTATED_PDFS_WITH_EQUATION_TOKEN_BOXES_DIR = os.path.join(
-    DATA_DIR, "30-annotated-pdfs-with-equation-token-boxes"
+HUE_LOCATIONS_FOR_EQUATIONS_DIR = register_data_directory("hue-locations-for-equations")
+HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR = register_data_directory(
+    "hue-locations-for-equation-tokens"
 )
-SOURCES_WITH_ANNOTATED_SYMBOLS_DIR = os.path.join(
-    DATA_DIR, "31-sources-with-annotated-symbols"
+CITATION_LOCATIONS_DIR = register_data_directory("citation-locations")
+SYMBOL_LOCATIONS_DIR = register_data_directory("symbol-locations")
+ANNOTATED_PDFS_WITH_CITATION_BOXES_DIR = register_data_directory(
+    "annotated-pdfs-with-citation-boxes"
 )
-DEBUGGING_COLORIZING_CITATIONS_DIR = os.path.join(
-    DATA_DIR, "32-debugging-colorizing-citations"
+ANNOTATED_PDFS_WITH_EQUATION_BOXES_DIR = register_data_directory(
+    "annotated-pdfs-with-equation-boxes"
 )
-DEBUGGING_COLORIZING_EQUATIONS_DIR = os.path.join(
-    DATA_DIR, "33-debugging-colorizing-equations"
+ANNOTATED_PDFS_WITH_EQUATION_TOKEN_BOXES_DIR = register_data_directory(
+    "annotated-pdfs-with-equation-token-boxes"
 )
-DEBUGGING_COLORIZING_EQUATION_TOKENS_DIR = os.path.join(
-    DATA_DIR, "34-debugging-colorizing-equation-tokens"
+SOURCES_WITH_ANNOTATED_SYMBOLS_DIR = register_data_directory(
+    "sources-with-annotated-symbols"
 )
-BOUNDING_BOX_ACCURACIES_DIR = os.path.join(DATA_DIR, "35-bounding-box-accuracies")
+DEBUGGING_COLORIZING_CITATIONS_DIR = register_data_directory(
+    "debugging-colorizing-citations"
+)
+DEBUGGING_COLORIZING_EQUATIONS_DIR = register_data_directory(
+    "debugging-colorizing-equations"
+)
+DEBUGGING_COLORIZING_EQUATION_TOKENS_DIR = register_data_directory(
+    "debugging-colorizing-equation-tokens"
+)
+BOUNDING_BOX_ACCURACIES_DIR = register_data_directory("bounding-box-accuracies")
 
 # Directories for utilities
 NODE_DIRECTORY = "node"
@@ -195,6 +215,12 @@ def sources_with_colorized_citations_root(arxiv_id: str) -> RelativePath:
     )
 
 
+def sources_with_colorized_sentences(arxiv_id: str) -> RelativePath:
+    return get_data_subdirectory_for_arxiv_id(
+        SOURCES_WITH_COLORIZED_SENTENCES_DIR, arxiv_id
+    )
+
+
 def sources_with_colorized_equations(arxiv_id: str) -> RelativePath:
     return get_data_subdirectory_for_arxiv_id(
         SOURCES_WITH_COLORIZED_EQUATIONS_DIR, arxiv_id
@@ -217,6 +243,10 @@ def paper_images(arxiv_id: str) -> RelativePath:
 
 def hue_locations_for_citations(arxiv_id: str) -> RelativePath:
     return get_data_subdirectory_for_arxiv_id(HUE_LOCATIONS_FOR_CITATIONS_DIR, arxiv_id)
+
+
+def hue_locations_for_sentences(arxiv_id: str) -> RelativePath:
+    return get_data_subdirectory_for_arxiv_id(HUE_LOCATIONS_FOR_SENTENCES_DIR, arxiv_id)
 
 
 def hue_locations_for_equations(arxiv_id: str) -> RelativePath:
