@@ -2,12 +2,12 @@ import { BoundingBox } from "../types/api";
 import { PDFPageView } from "../types/pdfjs-viewer";
 
 /**
- * Expects 'box' to represent location in PDF coordinates; converts to viewport coordinates.
- * XXX(andrewhead): A slight scale correction was needed to make the bounding boxes appear in
- * just the right place on a test PDF. Maybe this reflects some round-off error in bounding box
- * location detection in the data processing scripts; this needs further investigation. For
- * annotations added by users directly in this application, the scale correction should be set
- * to 1 for the annotation to appear in precisely the right place.
+ * Get the 'left', 'top', 'width', and 'height' CSS parameters for a paper annotation from a
+ * bounding box for that annotation. The bounding box is expected to be expressed in
+ * ratio coordinates (see the docstring for the BoundingBox type). The values returned will be
+ * absolute pixel positions. The caller can optionally specify a scaling favor (scaleCorrection).
+ * You shouldn't need to use it, though in past versions of this interface it was necessary to
+ * correct subtle issues in the positioning of annotations.
  */
 export function divDimensionStyles(
   pageView: PDFPageView,

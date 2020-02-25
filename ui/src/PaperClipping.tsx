@@ -1,4 +1,3 @@
-// import { PDFPageView } from "pdfjs-dist/lib/web/pdf_page_view";
 import React from "react";
 import { ScholarReaderContext } from "./state";
 import { BoundingBox } from "./types/api";
@@ -15,7 +14,7 @@ export class PaperClipping extends React.PureComponent<PaperClippingProps, {}> {
 
   /**
    * The internals of this method deal with three coordinate systems:
-   * 1. PDF coordinates: clip bounds provided as a parameter.
+   * 1. Ratio coordinates: See documentation for BoundingBox type.
    * 2. Canvas coordinates: width and height of canvas where the PDF preview is drawn.
    * 3. DOM coordinates: viewport of the container holding the canvas.
    */
@@ -44,32 +43,16 @@ export class PaperClipping extends React.PureComponent<PaperClippingProps, {}> {
     for (let i = 0; i < this.props.highlightBoxes.length; i++) {
       const box = this.props.highlightBoxes[i];
       /*
-       * Convert PDF coordinates returned by the API to canvas coordinates. For the viewport
-       * operations below, pdf.js expects, and returns rectangles in the format:
-       *
-       * [x1, y1, x2, y2]
-       *
-       * We choose to fill this rectangle such that the elements are:
-       *
-       * [left, top, right, bottom]
-       *
-       * Note that when converted to viewport coordinates for the canvas, 'top' and 'bottom' will
-       * measure the distance *down* from the top of the canvas. This is consisten with canvas
+       * Convert coordinates returned by the API to canvas coordinates. Note that y-coordinates for the
+       * canvas will measure the distance down from the top of the canvas. This is consistent with canvas
        * y-coordinates (https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_shapes).
        */
-      const boxPdfRectangle = [
-        box.left,
-        box.top - box.height,
-        box.left + box.width,
-        box.top
+      const [left, top, width, height] = [
+        box.left * canvas.width,
+        box.top * canvas.height,
+        box.width * canvas.width,
+        box.height * canvas.height
       ];
-
-      const canvasRect = clippingViewport.convertToViewportRectangle(
-        boxPdfRectangle
-      );
-      const [left, bottom, right, top] = canvasRect;
-      const width = right - left;
-      const height = bottom - top;
       /*
        * TODO(andrewhead): Set fill color or style using a theme. Can also add a 'div' to make
        * it a controlled component.
