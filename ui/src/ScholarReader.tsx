@@ -6,10 +6,30 @@ import { FavoritableId, favoritesKey } from "./FavoriteButton";
 import FeedbackButton from "./FeedbackButton";
 import PageOverlay from "./PageOverlay";
 import * as selectors from "./selectors";
-import { DrawerState, Pages, PaperId, Papers, ScholarReaderContext, State } from "./state";
+import {
+  DrawerState,
+  Pages,
+  PaperId,
+  Papers,
+  ScholarReaderContext,
+  State
+} from "./state";
 import "./style/index.less";
-import { Annotation, AnnotationData, Citation, MathMl, Paper, Symbol, SymbolMatches, UserLibrary } from "./types/api";
-import { DocumentLoadedEvent, PageRenderedEvent, PDFViewerApplication } from "./types/pdfjs-viewer";
+import {
+  Annotation,
+  AnnotationData,
+  Citation,
+  MathMl,
+  Paper,
+  Symbol,
+  SymbolMatches,
+  UserLibrary
+} from "./types/api";
+import {
+  DocumentLoadedEvent,
+  PageRenderedEvent,
+  PDFViewerApplication
+} from "./types/pdfjs-viewer";
 import { isKeypressEscape } from "./ui-utils";
 
 interface ScholarReaderProps {
