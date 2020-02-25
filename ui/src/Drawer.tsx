@@ -10,7 +10,7 @@ import SearchResults from "./SearchResults";
 import { ScholarReaderContext } from "./state";
 
 const PDF_VIEWER_DRAWER_OPEN_CLASS = "drawer-open";
-
+const BLACK_LISTED_CLASS_NAMES = ["tooltip-body__action-button", "MuiButton-label"]
 export class Drawer extends React.PureComponent {
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
@@ -19,6 +19,26 @@ export class Drawer extends React.PureComponent {
     const { pdfViewer } = this.context;
     if (pdfViewer != null) {
       pdfViewer.container.classList.remove(PDF_VIEWER_DRAWER_OPEN_CLASS);
+    }
+  }
+
+  /**
+   * XXX(zkirby): This is an unfortunate byproduct of the clickaway listener
+   * listening to *all* clicks outside of the drawer. Any developer wishing to 
+   * add a button that opens the drawer will need to add the class name of that element
+   * to the black listed class names list. 
+   */
+  clickAwayClose = (e: React.MouseEvent<Document, MouseEvent>) => {
+    const elementTarget = e.target as Element;
+    let shouldClose = true;
+    BLACK_LISTED_CLASS_NAMES.forEach(cls => {
+      if (elementTarget.classList.contains(cls)) {
+        shouldClose = false;
+      }
+    })
+    
+    if (shouldClose) {
+      this.closeDrawer();
     }
   }
 
@@ -80,9 +100,8 @@ export class Drawer extends React.PureComponent {
               break;
             }
           }
-          console.log(selectedSymbol);
           return (
-            <ClickAwayListener onClickAway={this.closeDrawer}>
+            <ClickAwayListener onClickAway={this.clickAwayClose}>
               <MuiDrawer
                 className="drawer"
                 variant="persistent"
