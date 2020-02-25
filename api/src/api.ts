@@ -122,13 +122,11 @@ export const plugin = {
      *   "http://localhost:3000/api/v0/papers/arxiv:1508.07252/annotations",
      *   json={
      *     "type": "symbol",
-     *     "boundingBox": {
-     *       "page": 0,
-     *       "left": 10,
-     *       "top": 20,
-     *       "width": 100,
-     *       "height": 20
-     *     }
+     *     "page": 0,
+     *     "left": 10,
+     *     "top": 20,
+     *     "width": 100,
+     *     "height": 20
      *   }
      * )
      */
@@ -157,13 +155,11 @@ export const plugin = {
      *   "http://localhost:3000/api/v0/papers/arxiv:1508.07252/annotation/2",
      *   json={
      *     "type": "symbol",
-     *     "boundingBox": {
-     *       "page": 0,
-     *       "left": 10,
-     *       "top": 20,
-     *       "width": 100,
-     *       "height": 20
-     *     }
+     *     "page": 0,
+     *     "left": 10,
+     *     "top": 20,
+     *     "width": 100,
+     *     "height": 20
      *   }
      * )
      */
