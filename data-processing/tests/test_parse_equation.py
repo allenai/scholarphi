@@ -1,7 +1,7 @@
 import os
 import re
 
-from explanations.parse_equation import Character, get_characters, get_symbols
+from common.parse_equation import Character, get_characters, get_symbols
 from tests.util import get_test_path
 
 

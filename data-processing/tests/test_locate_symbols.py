@@ -1,5 +1,5 @@
-from explanations.bounding_box import get_symbol_bounding_box
-from explanations.types import BoundingBox, CharacterId, Symbol, SymbolId
+from common.bounding_box import get_symbol_bounding_box
+from common.types import BoundingBox, CharacterId, Symbol, SymbolId
 
 
 def character_id(character_index: int) -> CharacterId:

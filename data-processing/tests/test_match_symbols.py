@@ -1,4 +1,4 @@
-from explanations.match_symbols import Match, get_mathml_matches
+from common.match_symbols import Match, get_mathml_matches
 
 DEFAULT_TEX_PATH = "tex-path"
 DEFAULT_EQUATION_INDEX = 0

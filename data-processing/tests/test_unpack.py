@@ -1,6 +1,6 @@
 import os
 
-from explanations.unpack import _is_path_forbidden
+from common.unpack import _is_path_forbidden
 
 ROOT_PATH = os.path.abspath(os.sep)
 DEST_DIR = os.path.join(ROOT_PATH, "path", "to", "dest", "dir")
