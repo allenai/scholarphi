@@ -4,17 +4,12 @@ import os.path
 from argparse import ArgumentParser
 from typing import Iterator, List, NamedTuple
 
+from command.command import ArxivBatchCommand, add_one_entity_at_a_time_arg
 from common import directories
 from common.colorize_tex import ColorizedCitation, colorize_citations
-from common.directories import (
-    get_data_subdirectory_for_arxiv_id,
-    get_data_subdirectory_for_iteration,
-    get_iteration_id,
-)
 from common.file_utils import clean_directory, find_files, read_file_tolerant
-from common.types import ArxivId, FileContents, Path, RelativePath
+from common.types import ArxivId, FileContents, RelativePath
 from common.unpack import unpack
-from command.command import ArxivBatchCommand, add_one_entity_at_a_time_arg
 
 
 class ColorizationTask(NamedTuple):
@@ -48,19 +43,21 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
     def get_entity_type() -> str:
         return "citations"
 
-    def get_arxiv_ids_dir(self) -> Path:
-        return directories.SOURCES_DIR
+    def get_arxiv_ids_dirkey(self) -> str:
+        return "sources"
 
     def load(self) -> Iterator[ColorizationTask]:
         for arxiv_id in self.arxiv_ids:
 
-            output_root = get_data_subdirectory_for_arxiv_id(
-                directories.SOURCES_WITH_COLORIZED_CITATIONS_DIR, arxiv_id
+            output_root = directories.arxiv_subdir(
+                "sources-with-colorized-citations", arxiv_id
             )
             clean_directory(output_root)
 
             bibitem_keys: List[str] = []
-            bibitems_path = os.path.join(directories.bibitems(arxiv_id), "bibitems.csv")
+            bibitems_path = os.path.join(
+                directories.arxiv_subdir("bibitems", arxiv_id), "bibitems.csv"
+            )
             if not os.path.exists(bibitems_path):
                 logging.warning(
                     "No bibitems were found for paper %s. Skipping", arxiv_id
@@ -71,7 +68,7 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
                 reader = csv.reader(bibitems_file)
                 bibitem_keys = [row[0] for row in reader]
 
-            original_sources_path = directories.sources(arxiv_id)
+            original_sources_path = directories.arxiv_subdir("sources", arxiv_id)
             for tex_path in find_files(original_sources_path, [".tex"], relative=True):
                 file_contents = read_file_tolerant(
                     os.path.join(original_sources_path, tex_path)
@@ -95,11 +92,9 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
         colorized_tex = result.tex
         colorized_citations = result.colorized_citations
 
-        iteration_id = get_iteration_id(item.tex_path, iteration)
-        output_sources_path = get_data_subdirectory_for_iteration(
-            directories.SOURCES_WITH_COLORIZED_CITATIONS_DIR,
-            item.arxiv_id,
-            iteration_id,
+        iteration_id = directories.tex_iteration(item.tex_path, str(iteration))
+        output_sources_path = directories.iteration(
+            "sources-with-colorized-citations", item.arxiv_id, iteration_id,
         )
         logging.debug("Outputting to %s", output_sources_path)
 

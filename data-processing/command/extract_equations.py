@@ -3,12 +3,11 @@ import os.path
 from dataclasses import dataclass
 from typing import Iterator, List
 
-from common.directories import get_data_subdirectory_for_iteration, get_iteration_names
+from command.command import ArxivBatchCommand
+from common import directories
 from common.file_utils import clean_directory
 from common.sanitize_equation import sanitize_equation
-from common.types import ArxivId, Path
-from common import directories
-from command.command import ArxivBatchCommand
+from common.types import ArxivId
 
 
 @dataclass(frozen=True)
@@ -42,22 +41,19 @@ class ExtractEquations(ArxivBatchCommand[EquationData, None]):
     def get_entity_type() -> str:
         return "symbols"
 
-    def get_arxiv_ids_dir(self) -> Path:
-        return directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR
+    def get_arxiv_ids_dirkey(self) -> str:
+        return "sources-with-colorized-equations"
 
     def load(self) -> Iterator[EquationData]:
 
         for arxiv_id in self.arxiv_ids:
-            clean_directory(directories.equations(arxiv_id))
+            clean_directory(directories.arxiv_subdir("equations", arxiv_id))
 
-            colorized_equations_base_dir = (
-                directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR
-            )
-            for iteration in get_iteration_names(
-                colorized_equations_base_dir, arxiv_id
+            for iteration in directories.iteration_names(
+                "sources-with-colorized-equations", arxiv_id
             ):
-                colorized_sources_dir = get_data_subdirectory_for_iteration(
-                    colorized_equations_base_dir, arxiv_id, iteration
+                colorized_sources_dir = directories.iteration(
+                    "sources-with-colorized-equations", arxiv_id, iteration
                 )
                 equation_hues_path = os.path.join(
                     colorized_sources_dir, "equation_hues.csv"
@@ -74,7 +70,7 @@ class ExtractEquations(ArxivBatchCommand[EquationData, None]):
         yield None
 
     def save(self, item: EquationData, _: None) -> None:
-        results_dir = directories.equations(item.arxiv_id)
+        results_dir = directories.arxiv_subdir("equations", item.arxiv_id)
         if not os.path.exists(results_dir):
             os.makedirs(results_dir)
         results_path = os.path.join(results_dir, "equations.csv")

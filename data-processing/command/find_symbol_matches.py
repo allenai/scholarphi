@@ -1,15 +1,17 @@
 import csv
 import os.path
-from typing import Iterable, Iterator, NamedTuple
+from dataclasses import dataclass
+from typing import Iterable, Iterator
 
+from command.command import ArxivBatchCommand
+from common import directories
 from common.file_utils import clean_directory, load_symbols
 from common.match_symbols import get_mathml_matches
-from common.types import ArxivId, Matches, MathML, Path
-from common import directories
-from command.command import ArxivBatchCommand
+from common.types import ArxivId, Matches, MathML
 
 
-class MathMLForPaper(NamedTuple):
+@dataclass(frozen=True)
+class MathMLForPaper:
     arxiv_id: ArxivId
     mathml_equations: Iterable[MathML]
 
@@ -27,14 +29,14 @@ class FindSymbolMatches(ArxivBatchCommand[MathMLForPaper, Matches]):
     def get_entity_type() -> str:
         return "symbols"
 
-    def get_arxiv_ids_dir(self) -> Path:
-        return directories.SYMBOLS_DIR
+    def get_arxiv_ids_dirkey(self) -> str:
+        return "symbols"
 
     def load(self) -> Iterator[MathMLForPaper]:
 
         for arxiv_id in self.arxiv_ids:
 
-            output_dir = directories.symbol_matches(arxiv_id)
+            output_dir = directories.arxiv_subdir("symbol-matches", arxiv_id)
             clean_directory(output_dir)
 
             symbols_with_ids = load_symbols(arxiv_id)
@@ -50,7 +52,7 @@ class FindSymbolMatches(ArxivBatchCommand[MathMLForPaper, Matches]):
         yield matches
 
     def save(self, item: MathMLForPaper, result: Matches) -> None:
-        output_dir = directories.symbol_matches(item.arxiv_id)
+        output_dir = directories.arxiv_subdir("symbol-matches", item.arxiv_id)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 

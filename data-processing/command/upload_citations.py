@@ -5,8 +5,9 @@ from typing import Dict, Iterator, NamedTuple
 
 from peewee import IntegrityError
 
-import common.directories as directories
-from common.types import ArxivId, Author, BoundingBox, CitationLocation, Path, Reference
+from command.command import DatabaseUploadCommand
+from common import directories
+from common.types import ArxivId, Author, BoundingBox, CitationLocation, Reference
 from models.models import BoundingBox as BoundingBoxModel
 from models.models import (
     Citation,
@@ -17,7 +18,6 @@ from models.models import (
     Summary,
     output_database,
 )
-from command.command import DatabaseUploadCommand
 
 CitationKey = str
 LocationIndex = int
@@ -45,8 +45,8 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
     def get_entity_type() -> str:
         return "citations"
 
-    def get_arxiv_ids_dir(self) -> Path:
-        return directories.SOURCES_DIR
+    def get_arxiv_ids_dirkey(self) -> str:
+        return "sources"
 
     def load(self) -> Iterator[CitationData]:
         for arxiv_id in self.arxiv_ids:
@@ -55,7 +55,8 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                 CitationKey, Dict[LocationIndex, CitationLocation]
             ] = {}
             citation_locations_path = os.path.join(
-                directories.citation_locations(arxiv_id), "citation_locations.csv"
+                directories.arxiv_subdir("citation-locations", arxiv_id),
+                "citation_locations.csv",
             )
             if not os.path.exists(citation_locations_path):
                 logging.warning(
@@ -86,7 +87,8 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
 
             key_s2_ids: Dict[CitationKey, S2Id] = {}
             key_resolutions_path = os.path.join(
-                directories.bibitem_resolutions(arxiv_id), "resolutions.csv"
+                directories.arxiv_subdir("bibitem-resolutions", arxiv_id),
+                "resolutions.csv",
             )
             if not os.path.exists(key_resolutions_path):
                 logging.warning(
@@ -100,7 +102,9 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                     s2_id = row[1]
                     key_s2_ids[key] = s2_id
 
-            s2_id_path = os.path.join(directories.s2_metadata(arxiv_id), "s2_id")
+            s2_id_path = os.path.join(
+                directories.arxiv_subdir("s2-metadata", arxiv_id), "s2_id"
+            )
             if not os.path.exists(s2_id_path):
                 logging.warning("Could not find S2 ID file for %s. Skipping", arxiv_id)
                 continue
@@ -109,7 +113,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
 
             s2_data: Dict[S2Id, Reference] = {}
             s2_metadata_path = os.path.join(
-                directories.s2_metadata(arxiv_id), "references.csv"
+                directories.arxiv_subdir("s2-metadata", arxiv_id), "references.csv"
             )
             if not os.path.exists(s2_metadata_path):
                 logging.warning(

@@ -4,12 +4,11 @@ import os.path
 from dataclasses import dataclass
 from typing import Dict, Iterator, List
 
-from common.bounding_box import cluster_boxes
-from common.directories import get_data_subdirectory_for_iteration, get_iteration_names
-from common.file_utils import clean_directory, load_citation_hue_locations
-from common.types import ArxivId, BoundingBox, CitationLocation, HueIteration, Path
-from common import directories
 from command.command import ArxivBatchCommand
+from common import directories
+from common.bounding_box import cluster_boxes
+from common.file_utils import clean_directory, load_citation_hue_locations
+from common.types import ArxivId, BoundingBox, CitationLocation, HueIteration
 
 
 @dataclass(frozen=True)
@@ -32,14 +31,14 @@ class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
     def get_entity_type() -> str:
         return "citations"
 
-    def get_arxiv_ids_dir(self) -> Path:
-        return directories.HUE_LOCATIONS_FOR_CITATIONS_DIR
+    def get_arxiv_ids_dirkey(self) -> str:
+        return "hue-locations-for-citations"
 
     def load(self) -> Iterator[LocationTask]:
 
         for arxiv_id in self.arxiv_ids:
 
-            output_dir = directories.citation_locations(arxiv_id)
+            output_dir = directories.arxiv_subdir("citation-locations", arxiv_id)
             clean_directory(output_dir)
 
             boxes_by_hue_iteration = load_citation_hue_locations(arxiv_id)
@@ -47,14 +46,12 @@ class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
                 continue
 
             boxes_by_citation_key: Dict[str, List[BoundingBox]] = {}
-            for iteration in get_iteration_names(
-                directories.SOURCES_WITH_COLORIZED_CITATIONS_DIR, arxiv_id
+            for iteration in directories.iteration_names(
+                "sources-with-colorized-citations", arxiv_id
             ):
                 citation_hues_path = os.path.join(
-                    get_data_subdirectory_for_iteration(
-                        directories.SOURCES_WITH_COLORIZED_CITATIONS_DIR,
-                        arxiv_id,
-                        iteration,
+                    directories.iteration(
+                        "sources-with-colorized-citations", arxiv_id, iteration,
                     ),
                     "citation_hues.csv",
                 )
@@ -93,7 +90,7 @@ class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
             yield CitationLocation(i, cluster)
 
     def save(self, item: LocationTask, result: CitationLocation) -> None:
-        output_dir = directories.citation_locations(item.arxiv_id)
+        output_dir = directories.arxiv_subdir("citation-locations", item.arxiv_id)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 

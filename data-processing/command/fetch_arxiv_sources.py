@@ -2,9 +2,9 @@ import time
 from argparse import ArgumentParser
 from typing import Iterator, Optional
 
-from common.fetch_arxiv import fetch_from_arxiv, fetch_from_s3
-from common.types import ArxivId, Path
 from command.command import ArxivBatchCommand
+from common.fetch_arxiv import fetch_from_arxiv, fetch_from_s3
+from common.types import ArxivId
 
 DEFAULT_S3_ARXIV_SOURCES_BUCKET = "s2-arxiv-sources"
 
@@ -40,7 +40,7 @@ class FetchArxivSources(ArxivBatchCommand[ArxivId, None]):
             help="If '--source' is 's3', this is the S3 bucket sources will be downloaded from.",
         )
 
-    def get_arxiv_ids_dir(self) -> Optional[Path]:
+    def get_arxiv_ids_dirkey(self) -> Optional[str]:
         return None
 
     def load(self) -> Iterator[ArxivId]:

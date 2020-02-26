@@ -6,12 +6,11 @@ import subprocess
 from argparse import ArgumentParser
 from typing import Iterator, List, NamedTuple, Optional
 
-from common.directories import NODE_DIRECTORY
+from command.command import ArxivBatchCommand
+from common import directories
 from common.file_utils import clean_directory
 from common.parse_equation import KATEX_ERROR_COLOR, get_characters, get_symbols
-from common.types import ArxivId, Character, Path, Symbol
-from common import directories
-from command.command import ArxivBatchCommand
+from common.types import ArxivId, Character, Symbol
 
 
 class SymbolData(NamedTuple):
@@ -63,19 +62,19 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
             default=KATEX_ERROR_COLOR,
         )
 
-    def get_arxiv_ids_dir(self) -> Path:
-        return directories.EQUATIONS_DIR
+    def get_arxiv_ids_dirkey(self) -> str:
+        return "equations"
 
     def load(self) -> Iterator[ArxivId]:
         for arxiv_id in self.arxiv_ids:
-            clean_directory(directories.symbols(arxiv_id))
+            clean_directory(directories.arxiv_subdir("symbols", arxiv_id))
             yield arxiv_id
 
     def process(self, item: ArxivId) -> Iterator[SymbolData]:
         equations_abs_path = os.path.abspath(
-            os.path.join(directories.equations(item), "equations.csv")
+            os.path.join(directories.arxiv_subdir("equations", item), "equations.csv")
         )
-        node_directory_abs_path = os.path.abspath(NODE_DIRECTORY)
+        node_directory_abs_path = os.path.abspath(directories.NODE_DIRECTORY)
         equations_relative_path = os.path.relpath(
             equations_abs_path, node_directory_abs_path
         )
@@ -104,7 +103,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
         logging.debug("Running command with arguments: %s", command_args)
         result = subprocess.run(
             command_args,
-            cwd=NODE_DIRECTORY,
+            cwd=directories.NODE_DIRECTORY,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             encoding="utf-8",
@@ -123,7 +122,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
             )
 
     def save(self, item: ArxivId, result: SymbolData) -> None:
-        tokens_dir = directories.symbols(item)
+        tokens_dir = directories.arxiv_subdir("symbols", item)
         if not os.path.exists(tokens_dir):
             os.makedirs(tokens_dir)
 

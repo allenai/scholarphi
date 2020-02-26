@@ -9,17 +9,17 @@ from typing import List
 
 import requests
 
-from common.types import ArxivId
 from common import directories
+from common.types import ArxivId
 from models.models import Metadata
 
 USER_AGENT = "Andrew Head, for academic research on dissemination of scientific insight <head.andrewm@gmail.com>"
 
 
 def save_source_archive(arxiv_id: ArxivId, content: bytes) -> None:
-    if not os.path.exists(directories.SOURCE_ARCHIVES_DIR):
-        os.makedirs(directories.SOURCE_ARCHIVES_DIR)
-    archive_path = directories.source_archives(arxiv_id)
+    archive_path = directories.arxiv_subdir("sources-archives", arxiv_id)
+    if not os.path.exists(os.path.dirname(archive_path)):
+        os.makedirs(os.path.dirname(archive_path))
     with open(archive_path, "wb") as archive:
         archive.write(content)
 
@@ -81,7 +81,7 @@ def fetch_from_s3(arxiv_id: ArxivId, bucket: str) -> None:
             "Moving files downloaded to %s for arXiv ID %s to %s",
             download_dir_path,
             arxiv_id,
-            directories.source_archives(arxiv_id),
+            directories.arxiv_subdir("sources-archives", arxiv_id),
         )
         downloaded_files = os.listdir(download_dir_path)
         if len(downloaded_files) == 0:
@@ -99,9 +99,10 @@ def fetch_from_s3(arxiv_id: ArxivId, bucket: str) -> None:
                 arxiv_id,
             )
         downloaded_file_path = os.path.join(download_dir_path, downloaded_files[0])
-        if not os.path.exists(directories.SOURCE_ARCHIVES_DIR):
-            os.makedirs(directories.SOURCE_ARCHIVES_DIR)
-        shutil.move(downloaded_file_path, directories.source_archives(arxiv_id))
+        save_path = directories.arxiv_subdir("sources-archives", arxiv_id)
+        if not os.path.exists(os.path.dirname(save_path)):
+            os.makedirs(os.path.dirname(save_path))
+        shutil.move(downloaded_file_path, save_path)
 
 
 def fetch_new_arxiv_ids(days: int = 1) -> List[ArxivId]:

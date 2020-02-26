@@ -8,9 +8,9 @@ from dataclasses import dataclass
 from tempfile import TemporaryDirectory
 from typing import Iterator, List
 
-from common.types import ArxivId
-from common import directories
 from command.command import ArxivBatchCommand
+from common import directories
+from common.types import ArxivId
 
 DEFAULT_S3_LOGS_BUCKET = "s2-reader-pipeline-logs"
 
@@ -19,10 +19,10 @@ DEFAULT_S3_LOGS_BUCKET = "s2-reader-pipeline-logs"
 class ResultSpec:
     " Description of a result file to upload to the server. "
 
-    data_dir: str
+    dirkey: str
     """
-    Base data directory to search for result file. Should be one of the directory constants from
-    the 'directories' module.
+    Key for a data directory to search in which to search for result files. Should be one of the
+    directory keys registered in the 'directories' module.
     """
 
     glob: str
@@ -52,8 +52,8 @@ class StoreResults(ArxivBatchCommand[ArxivId, None]):
         )
 
     @staticmethod
-    def get_arxiv_ids_dir() -> str:
-        return directories.SOURCE_ARCHIVES_DIR
+    def get_arxiv_ids_dirkey() -> str:
+        return "sources-archives"
 
     @staticmethod
     def init_parser(parser: ArgumentParser) -> None:
@@ -119,7 +119,9 @@ class StoreResults(ArxivBatchCommand[ArxivId, None]):
         with TemporaryDirectory() as staging_dir_path:
             for spec in RESULT_SPECS:
                 glob_pattern = os.path.join(
-                    spec.data_dir, directories.escape_slashes(item), spec.glob
+                    directories.dirpath(spec.dirkey),
+                    directories.escape_slashes(item),
+                    spec.glob,
                 )
                 paths = glob.glob(glob_pattern)
                 if len(paths) == 0:
@@ -163,104 +165,88 @@ class StoreResults(ArxivBatchCommand[ArxivId, None]):
 
 
 RESULT_SPECS: List[ResultSpec] = [
-    ResultSpec(directories.BIBITEMS_DIR, "bibitems.csv", "bibitems"),
+    ResultSpec("bibitems", "bibitems.csv", "bibitems"),
+    ResultSpec("bibitem-resolutions", "resolutions.csv", "bibitem-resolutions"),
+    ResultSpec("equations", "equations.csv", "equations"),
+    ResultSpec("symbols", "parse_results.csv", "symbol-parse-results"),
+    ResultSpec("symbols", "symbols.csv", "symbols"),
+    ResultSpec("symbols", "symbol_children.csv", "symbol-children"),
+    ResultSpec("symbols", "symbol_tokens.csv", "symbol-tokens"),
+    ResultSpec("symbols", "tokens.csv", "tokens"),
     ResultSpec(
-        directories.BIBITEM_RESOLUTIONS_DIR, "resolutions.csv", "bibitem-resolutions"
-    ),
-    ResultSpec(directories.EQUATIONS_DIR, "equations.csv", "equations"),
-    ResultSpec(directories.SYMBOLS_DIR, "parse_results.csv", "symbol-parse-results"),
-    ResultSpec(directories.SYMBOLS_DIR, "symbols.csv", "symbols"),
-    ResultSpec(directories.SYMBOLS_DIR, "symbol_children.csv", "symbol-children"),
-    ResultSpec(directories.SYMBOLS_DIR, "symbol_tokens.csv", "symbol-tokens"),
-    ResultSpec(directories.SYMBOLS_DIR, "tokens.csv", "tokens"),
-    ResultSpec(
-        directories.SOURCES_WITH_COLORIZED_CITATIONS_DIR,
-        "**/citation_hues.csv",
-        "citation-hues",
+        "sources-with-colorized-citations", "**/citation_hues.csv", "citation-hues",
     ),
     ResultSpec(
-        directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR,
-        "**/equation_hues.csv",
-        "equation-hues",
+        "sources-with-colorized-equations", "**/equation_hues.csv", "equation-hues",
     ),
     ResultSpec(
-        directories.SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR,
-        "**/token_hues.csv",
-        "token-hues",
+        "sources-with-colorized-equation-tokens", "**/token_hues.csv", "token-hues",
     ),
     ResultSpec(
-        directories.COMPILED_SOURCES_DIR,
+        "compiled-sources",
         "compilation_results/result",
         "compilation-result-uninstrumented",
     ),
     ResultSpec(
-        directories.COMPILED_SOURCES_DIR,
+        "compiled-sources",
         "compilation_results/pdf_names.csv",
         "compilation-pdf-names-uninstrumented",
     ),
     ResultSpec(
-        directories.COMPILED_SOURCES_DIR,
-        "auto_gen_ps.log",
-        "compilation-autotex-log-uninstrumented",
+        "compiled-sources", "auto_gen_ps.log", "compilation-autotex-log-uninstrumented",
     ),
     ResultSpec(
-        directories.COMPILED_SOURCES_WITH_COLORIZED_CITATIONS_DIR,
+        "compiled-sources-with-colorized-citations",
         "**/compilation_results/result",
         "compilation-result-colorized-citations",
     ),
     ResultSpec(
-        directories.COMPILED_SOURCES_WITH_COLORIZED_CITATIONS_DIR,
+        "compiled-sources-with-colorized-citations",
         "**/compilation_results/pdf_names.csv",
         "compilation-pdf-names-colorized-citations",
     ),
     ResultSpec(
-        directories.COMPILED_SOURCES_WITH_COLORIZED_CITATIONS_DIR,
+        "compiled-sources-with-colorized-citations",
         "**/auto_gen_ps.log",
         "compilation-autotex-log-colorized-citations",
     ),
     ResultSpec(
-        directories.COMPILED_SOURCES_WITH_COLORIZED_EQUATIONS_DIR,
+        "compiled-sources-with-colorized-equations",
         "**/compilation_results/result",
         "compilation-result-colorized-equations",
     ),
     ResultSpec(
-        directories.COMPILED_SOURCES_WITH_COLORIZED_EQUATIONS_DIR,
+        "compiled-sources-with-colorized-equations",
         "**/compilation_results/pdf_names.csv",
         "compilation-pdf-names-colorized-equations",
     ),
     ResultSpec(
-        directories.COMPILED_SOURCES_WITH_COLORIZED_EQUATIONS_DIR,
+        "compiled-sources-with-colorized-equations",
         "**/auto_gen_ps.log",
         "compilation-autotex-log-colorized-equations",
     ),
     ResultSpec(
-        directories.COMPILED_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR,
+        "compiled-sources-with-colorized-equation-tokens",
         "**/compilation_results/result",
         "compilation-result-colorized-tokens",
     ),
     ResultSpec(
-        directories.COMPILED_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR,
+        "compiled-sources-with-colorized-equation-tokens",
         "**/compilation_results/pdf_names.csv",
         "compilation-pdf-names-colorized-tokens",
     ),
     ResultSpec(
-        directories.COMPILED_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR,
+        "compiled-sources-with-colorized-equation-tokens",
         "**/auto_gen_ps.log",
         "compilation-autotex-log-colorized-tokens",
     ),
     ResultSpec(
-        directories.HUE_LOCATIONS_FOR_CITATIONS_DIR,
-        "hue_locations.csv",
-        "citation-locations",
+        "hue-locations-for-citations", "hue_locations.csv", "citation-locations",
     ),
     ResultSpec(
-        directories.HUE_LOCATIONS_FOR_EQUATIONS_DIR,
-        "hue_locations.csv",
-        "equation-locations",
+        "hue-locations-for-equations", "hue_locations.csv", "equation-locations",
     ),
     ResultSpec(
-        directories.HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR,
-        "hue_locations.csv",
-        "token-locations",
+        "hue-locations-for-equation-tokens", "hue_locations.csv", "token-locations",
     ),
 ]

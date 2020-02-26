@@ -4,11 +4,10 @@ import os.path
 from typing import Iterator, NamedTuple
 
 import common.directories as directories
-from common.directories import sources
+from command.command import ArxivBatchCommand
 from common.file_utils import clean_directory, find_files, read_file_tolerant
 from common.parse_tex import BibitemExtractor
-from common.types import ArxivId, Bibitem, FileContents, Path
-from command.command import ArxivBatchCommand
+from common.types import ArxivId, Bibitem, FileContents
 
 
 class ExtractionTask(NamedTuple):
@@ -29,13 +28,13 @@ class ExtractBibitems(ArxivBatchCommand[ExtractionTask, Bibitem]):
     def get_entity_type() -> str:
         return "citations"
 
-    def get_arxiv_ids_dir(self) -> Path:
-        return directories.SOURCES_DIR
+    def get_arxiv_ids_dirkey(self) -> str:
+        return "sources"
 
     def load(self) -> Iterator[ExtractionTask]:
         for arxiv_id in self.arxiv_ids:
-            sources_dir = sources(arxiv_id)
-            clean_directory(directories.bibitems(arxiv_id))
+            sources_dir = directories.arxiv_subdir("sources", arxiv_id)
+            clean_directory(directories.arxiv_subdir("bibitems", arxiv_id))
             for path in find_files(sources_dir, [".tex", ".bbl"]):
                 file_contents = read_file_tolerant(path)
                 if file_contents is None:
@@ -51,7 +50,7 @@ class ExtractBibitems(ArxivBatchCommand[ExtractionTask, Bibitem]):
         logging.debug(
             "Extracted bibitem %s from file %s", result, item.file_contents.path
         )
-        results_dir = directories.bibitems(item.arxiv_id)
+        results_dir = directories.arxiv_subdir("bibitems", item.arxiv_id)
         if not os.path.exists(results_dir):
             os.makedirs(results_dir)
         results_path = os.path.join(results_dir, "bibitems.csv")

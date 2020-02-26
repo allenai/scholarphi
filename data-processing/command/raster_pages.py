@@ -6,12 +6,11 @@ import subprocess
 from abc import ABC, abstractmethod
 from typing import Dict, Iterator, NamedTuple
 
-from common.compile import get_output_files
-from common.directories import get_arxiv_id_iteration_path, get_iteration_names
-from common.file_utils import clean_directory
-from common.types import AbsolutePath, ArxivId, Path, RelativePath
-from common import directories
 from command.command import ArxivBatchCommand
+from common import directories
+from common.compile import get_output_files
+from common.file_utils import clean_directory
+from common.types import AbsolutePath, ArxivId, RelativePath
 
 """
 Load commands for rastering TeX outputs.
@@ -43,9 +42,9 @@ class RasterPagesCommand(ArxivBatchCommand[RasterTask, None], ABC):
     """
 
     @abstractmethod
-    def get_papers_base_dir(self) -> AbsolutePath:
+    def get_papers_base_dirkey(self) -> str:
         """
-        Path to data directory containing all compiled TeX papers.
+        Key for the data directory containing all compiled TeX papers.
         """
 
     @abstractmethod
@@ -56,26 +55,28 @@ class RasterPagesCommand(ArxivBatchCommand[RasterTask, None], ABC):
         """
 
     @abstractmethod
-    def get_output_base_dir(self) -> AbsolutePath:
+    def get_output_base_dirkey(self) -> str:
         """
-        Path to the data directory where images of the paper should be output.
+        Key for the data directory where images of the paper should be output.
         """
 
-    def get_arxiv_ids_dir(self) -> Path:
-        return self.get_papers_base_dir()
+    def get_arxiv_ids_dirkey(self) -> str:
+        return self.get_papers_base_dirkey()
 
     def load(self) -> Iterator[RasterTask]:
 
         for arxiv_id in self.arxiv_ids:
 
             # Clean all past output for this arXiv ID.
-            output_dir_for_arxiv_id = directories.get_data_subdirectory_for_arxiv_id(
-                self.get_output_base_dir(), arxiv_id
+            output_dir_for_arxiv_id = directories.arxiv_subdir(
+                self.get_output_base_dirkey(), arxiv_id
             )
             clean_directory(output_dir_for_arxiv_id)
 
             for paper_dir in self.get_paper_dirs(arxiv_id):
-                paper_abs_path = os.path.join(self.get_papers_base_dir(), paper_dir)
+                paper_abs_path = os.path.join(
+                    directories.dirpath(self.get_papers_base_dirkey()), paper_dir
+                )
                 output_files = get_output_files(paper_abs_path)
                 for output_file in output_files:
                     yield RasterTask(
@@ -90,7 +91,7 @@ class RasterPagesCommand(ArxivBatchCommand[RasterTask, None], ABC):
 
     def save(self, item: RasterTask, _: None) -> None:
         output_dir = os.path.join(
-            self.get_output_base_dir(),
+            directories.dirpath(self.get_output_base_dirkey()),
             item.compiled_tex_path,
             directories.escape_slashes(item.relative_output_file_path),
         )
@@ -145,14 +146,14 @@ class RasterPages(RasterPagesCommand):
     def get_description() -> str:
         return "Raster images of pages from the un-colorized papers."
 
-    def get_papers_base_dir(self) -> AbsolutePath:
-        return directories.COMPILED_SOURCES_DIR
+    def get_papers_base_dirkey(self) -> str:
+        return "compiled-sources"
 
     def get_paper_dirs(self, arxiv_id: ArxivId) -> Iterator[RelativePath]:
         return iter([directories.escape_slashes(arxiv_id)])
 
-    def get_output_base_dir(self) -> AbsolutePath:
-        return directories.PAPER_IMAGES_DIR
+    def get_output_base_dirkey(self) -> str:
+        return "paper-images"
 
 
 class RasterPagesWithColorizedCitations(RasterPagesCommand):
@@ -168,16 +169,17 @@ class RasterPagesWithColorizedCitations(RasterPagesCommand):
     def get_entity_type() -> str:
         return "citations"
 
-    def get_papers_base_dir(self) -> AbsolutePath:
-        return directories.COMPILED_SOURCES_WITH_COLORIZED_CITATIONS_DIR
+    def get_papers_base_dirkey(self) -> AbsolutePath:
+        return "compiled-sources-with-colorized-citations"
 
     def get_paper_dirs(self, arxiv_id: ArxivId) -> Iterator[RelativePath]:
-        papers_base_dir = self.get_papers_base_dir()
-        for iteration in get_iteration_names(papers_base_dir, arxiv_id):
-            yield get_arxiv_id_iteration_path(arxiv_id, iteration)
+        for iteration in directories.iteration_names(
+            self.get_papers_base_dirkey(), arxiv_id
+        ):
+            yield directories.relpath_arxiv_id_iteration(arxiv_id, iteration)
 
-    def get_output_base_dir(self) -> AbsolutePath:
-        return directories.PAPER_WITH_COLORIZED_CITATIONS_IMAGES_DIR
+    def get_output_base_dirkey(self) -> AbsolutePath:
+        return "paper-with-colorized-citations-images"
 
 
 class RasterPagesWithColorizedEquations(RasterPagesCommand):
@@ -193,16 +195,17 @@ class RasterPagesWithColorizedEquations(RasterPagesCommand):
     def get_entity_type() -> str:
         return "symbols"
 
-    def get_papers_base_dir(self) -> AbsolutePath:
-        return directories.COMPILED_SOURCES_WITH_COLORIZED_EQUATIONS_DIR
+    def get_papers_base_dirkey(self) -> str:
+        return "compiled-sources-with-colorized-equations"
 
     def get_paper_dirs(self, arxiv_id: ArxivId) -> Iterator[RelativePath]:
-        papers_base_dir = self.get_papers_base_dir()
-        for iteration in get_iteration_names(papers_base_dir, arxiv_id):
-            yield get_arxiv_id_iteration_path(arxiv_id, iteration)
+        for iteration in directories.iteration_names(
+            self.get_papers_base_dirkey(), arxiv_id
+        ):
+            yield directories.relpath_arxiv_id_iteration(arxiv_id, iteration)
 
-    def get_output_base_dir(self) -> AbsolutePath:
-        return directories.PAPER_WITH_COLORIZED_EQUATIONS_IMAGES_DIR
+    def get_output_base_dirkey(self) -> str:
+        return "paper-with-colorized-equations-images"
 
 
 class RasterPagesWithColorizedEquationTokens(RasterPagesCommand):
@@ -218,13 +221,14 @@ class RasterPagesWithColorizedEquationTokens(RasterPagesCommand):
     def get_entity_type() -> str:
         return "symbols"
 
-    def get_papers_base_dir(self) -> AbsolutePath:
-        return directories.COMPILED_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR
+    def get_papers_base_dirkey(self) -> str:
+        return "compiled-sources-with-colorized-equation-tokens"
 
     def get_paper_dirs(self, arxiv_id: ArxivId) -> Iterator[RelativePath]:
-        papers_base_dir = self.get_papers_base_dir()
-        for iteration in get_iteration_names(papers_base_dir, arxiv_id):
-            yield get_arxiv_id_iteration_path(arxiv_id, iteration)
+        for iteration in directories.iteration_names(
+            self.get_papers_base_dirkey(), arxiv_id
+        ):
+            yield directories.relpath_arxiv_id_iteration(arxiv_id, iteration)
 
-    def get_output_base_dir(self) -> AbsolutePath:
-        return directories.PAPER_WITH_COLORIZED_EQUATION_TOKENS_IMAGES_DIR
+    def get_output_base_dirkey(self) -> str:
+        return "paper-with-colorized-equation-tokens-images"

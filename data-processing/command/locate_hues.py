@@ -9,20 +9,15 @@ from typing import Any, Callable, Dict, Iterator, List, NamedTuple, Optional, ca
 import cv2
 import numpy as np
 
+from command.command import ArxivBatchCommand
+from common import directories
 from common.bounding_box import extract_bounding_boxes
 from common.compile import get_output_files
-from common.directories import (
-    get_data_subdirectory_for_arxiv_id,
-    get_data_subdirectory_for_iteration,
-    get_iteration_names,
-)
 from common.file_utils import clean_directory
 from common.image_processing import contains_black_pixels
 from common.types import ArxivId, BoundingBox, EquationId
 from common.types import FloatRectangle as Rectangle
 from common.types import Path, RelativePath
-from common import directories
-from command.command import ArxivBatchCommand
 
 PageNumber = int
 Hue = float
@@ -79,16 +74,16 @@ class LocateHuesCommand(ArxivBatchCommand[SearchTask, HueLocation], ABC):
 
     @staticmethod
     @abstractmethod
-    def get_diff_images_base_dir() -> str:
+    def get_diff_images_base_dirkey() -> str:
         """
-        Path to data directory containing diffs of colorized pages with uncolorized pages for all papers.
+        Key for the data directory containing diffs of colorized pages with uncolorized pages for all papers.
         """
 
     @staticmethod
     @abstractmethod
-    def get_output_base_dir() -> str:
+    def get_output_base_dirkey() -> str:
         """
-        Path to the data directory where hue bounding boxes should be output.
+        Key for the data directory where hue bounding boxes should be output.
         """
 
     @abstractmethod
@@ -97,25 +92,27 @@ class LocateHuesCommand(ArxivBatchCommand[SearchTask, HueLocation], ABC):
         Load a list of hues for which you need bounding box locations.
         """
 
-    def get_arxiv_ids_dir(self) -> Path:
-        return self.get_diff_images_base_dir()
+    def get_arxiv_ids_dirkey(self) -> str:
+        return self.get_diff_images_base_dirkey()
 
     def load(self) -> Iterator[SearchTask]:
         for arxiv_id in self.arxiv_ids:
-            output_dir = get_data_subdirectory_for_arxiv_id(
-                self.get_output_base_dir(), arxiv_id
+            output_dir = directories.arxiv_subdir(
+                self.get_output_base_dirkey(), arxiv_id
             )
             clean_directory(output_dir)
 
             # Get output file names from results of compiling the uncolorized TeX sources.
-            output_files = get_output_files(directories.compilation_results(arxiv_id))
+            output_files = get_output_files(
+                directories.arxiv_subdir("compiled-sources", arxiv_id)
+            )
 
-            for iteration in get_iteration_names(
-                self.get_diff_images_base_dir(), arxiv_id
+            for iteration in directories.iteration_names(
+                self.get_diff_images_base_dirkey(), arxiv_id
             ):
 
-                diff_images_dir = get_data_subdirectory_for_iteration(
-                    self.get_diff_images_base_dir(), arxiv_id, iteration
+                diff_images_dir = directories.iteration(
+                    self.get_diff_images_base_dirkey(), arxiv_id, iteration
                 )
 
                 hue_searches = self.load_hues(arxiv_id, iteration)
@@ -196,8 +193,8 @@ class LocateHuesCommand(ArxivBatchCommand[SearchTask, HueLocation], ABC):
         return []
 
     def save(self, item: SearchTask, result: HueLocation) -> None:
-        output_dir = get_data_subdirectory_for_arxiv_id(
-            self.get_output_base_dir(), item.arxiv_id
+        output_dir = directories.arxiv_subdir(
+            self.get_output_base_dirkey(), item.arxiv_id
         )
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
@@ -267,10 +264,8 @@ class LocateCitationHues(LocateHuesCommand):
     def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
         return common_read_hues(
             hues_path=os.path.join(
-                get_data_subdirectory_for_iteration(
-                    directories.SOURCES_WITH_COLORIZED_CITATIONS_DIR,
-                    arxiv_id,
-                    iteration,
+                directories.iteration(
+                    "sources-with-colorized-citations", arxiv_id, iteration,
                 ),
                 "citation_hues.csv",
             ),
@@ -278,12 +273,12 @@ class LocateCitationHues(LocateHuesCommand):
         )
 
     @staticmethod
-    def get_diff_images_base_dir() -> str:
-        return directories.DIFF_IMAGES_WITH_COLORIZED_CITATIONS_DIR
+    def get_diff_images_base_dirkey() -> str:
+        return "diff-images-with-colorized-citations"
 
     @staticmethod
-    def get_output_base_dir() -> str:
-        return directories.HUE_LOCATIONS_FOR_CITATIONS_DIR
+    def get_output_base_dirkey() -> str:
+        return "hue-locations-for-citations"
 
 
 class LocateEquationHues(LocateHuesCommand):
@@ -302,10 +297,8 @@ class LocateEquationHues(LocateHuesCommand):
     def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
         return common_read_hues(
             hues_path=os.path.join(
-                get_data_subdirectory_for_iteration(
-                    directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR,
-                    arxiv_id,
-                    iteration,
+                directories.iteration(
+                    "sources-with-colorized-equations", arxiv_id, iteration,
                 ),
                 "equation_hues.csv",
             ),
@@ -314,12 +307,12 @@ class LocateEquationHues(LocateHuesCommand):
         )
 
     @staticmethod
-    def get_diff_images_base_dir() -> str:
-        return directories.DIFF_IMAGES_WITH_COLORIZED_EQUATIONS_DIR
+    def get_diff_images_base_dirkey() -> str:
+        return "diff-images-with-colorized-equations"
 
     @staticmethod
-    def get_output_base_dir() -> str:
-        return directories.HUE_LOCATIONS_FOR_EQUATIONS_DIR
+    def get_output_base_dirkey() -> str:
+        return "hue-locations-for-equations"
 
     def format_region_id(self, region_id: Optional[Any]) -> List[str]:
         return cast(List[str], region_id)
@@ -355,7 +348,8 @@ class LocateEquationTokenHues(LocateHuesCommand):
     def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
 
         equation_boxes_path = os.path.join(
-            directories.hue_locations_for_equations(arxiv_id), "hue_locations.csv"
+            directories.arxiv_subdir("hue-locations-for-equations", arxiv_id),
+            "hue_locations.csv",
         )
         bounding_boxes: Dict[EquationId, BoundingBoxesByFile] = {}
         with open(equation_boxes_path) as hue_boxes_file:
@@ -380,10 +374,8 @@ class LocateEquationTokenHues(LocateHuesCommand):
 
         token_hues_by_equation: Dict[EquationId, Dict[int, Hue]] = {}
         token_hues_path = os.path.join(
-            get_data_subdirectory_for_iteration(
-                directories.SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR,
-                arxiv_id,
-                iteration,
+            directories.iteration(
+                "sources-with-colorized-equation-tokens", arxiv_id, iteration,
             ),
             "token_hues.csv",
         )
@@ -437,9 +429,9 @@ class LocateEquationTokenHues(LocateHuesCommand):
         ]
 
     @staticmethod
-    def get_diff_images_base_dir() -> str:
-        return directories.DIFF_IMAGES_WITH_COLORIZED_EQUATION_TOKENS_DIR
+    def get_diff_images_base_dirkey() -> str:
+        return "diff-images-with-colorized-equation-tokens"
 
     @staticmethod
-    def get_output_base_dir() -> str:
-        return directories.HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR
+    def get_output_base_dirkey() -> str:
+        return "hue-locations-for-equation-tokens"

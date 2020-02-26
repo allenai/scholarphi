@@ -4,12 +4,11 @@ import shutil
 from abc import ABC, abstractmethod
 from typing import Iterator
 
+from command.command import ArxivBatchCommand
+from common import directories
 from common.compile import compile_tex
-from common.directories import get_arxiv_id_iteration_path, get_iteration_names
 from common.file_utils import clean_directory, save_compilation_results
 from common.types import AbsolutePath, ArxivId, CompilationResult, Path, RelativePath
-from common import directories
-from command.command import ArxivBatchCommand
 
 CompilationPath = AbsolutePath
 
@@ -20,48 +19,52 @@ class CompileTexCommand(ArxivBatchCommand[CompilationPath, CompilationResult], A
     """
 
     @abstractmethod
-    def get_sources_base_dir(self) -> AbsolutePath:
+    def get_sources_base_dirkey(self) -> str:
         """
-        Path to the data directory containing all papers' TeX sources.
+        Key for a data directory containing all papers' TeX sources.
         """
 
-    @abstractmethod
-    def get_source_dirs(self, arxiv_id: ArxivId) -> Iterator[CompilationPath]:
+    def get_source_dirs(self, arxiv_id: ArxivId) -> Iterator[RelativePath]:
         """
         Get all directories that should be compiled for an arXiv ID. Paths should
-        be relative to the sources base dir.
+        be relative to the sources base dir. This method can be overridden.
         """
+        for iteration in directories.iteration_names(
+            self.get_sources_base_dirkey(), arxiv_id
+        ):
+            yield directories.relpath_arxiv_id_iteration(arxiv_id, iteration)
 
     @abstractmethod
-    def get_output_base_dir(self) -> AbsolutePath:
+    def get_output_base_dirkey(self) -> str:
         """
-        Path to the data directory that will contain all compiled TeX sources.
+        Key for a data directory that will contain all compiled TeX sources.
         """
 
-    def get_arxiv_ids_dir(self) -> Path:
-        return self.get_sources_base_dir()
+    def get_arxiv_ids_dirkey(self) -> Path:
+        return self.get_sources_base_dirkey()
 
     def load(self) -> Iterator[CompilationPath]:
 
-        sources_base_dir = self.get_sources_base_dir()
+        sources_base_dir = directories.dirpath(self.get_sources_base_dirkey())
+        output_base_dir = directories.dirpath(self.get_output_base_dirkey())
         for arxiv_id in self.arxiv_ids:
 
             # Clean all past output for this arXiv ID.
-            output_dir_for_arxiv_id = directories.get_data_subdirectory_for_arxiv_id(
-                self.get_output_base_dir(), arxiv_id
+            output_dir_for_arxiv_id = directories.arxiv_subdir(
+                self.get_output_base_dirkey(), arxiv_id
             )
             clean_directory(output_dir_for_arxiv_id)
 
             for source_dir in self.get_source_dirs(arxiv_id):
-                source_dir_absolute = os.path.join(sources_base_dir, source_dir)
-                output_dir = os.path.join(self.get_output_base_dir(), source_dir)
+                qualified_source_dir = os.path.join(sources_base_dir, source_dir)
+                output_dir = os.path.join(output_base_dir, source_dir)
                 if os.path.exists(output_dir):
                     logging.warning(
                         "Compilation directory already exists in %s. Deleting.",
                         output_dir,
                     )
                     shutil.rmtree(output_dir)
-                shutil.copytree(source_dir_absolute, output_dir)
+                shutil.copytree(qualified_source_dir, output_dir)
                 yield output_dir
 
     def process(self, item: CompilationPath) -> Iterator[CompilationResult]:
@@ -81,14 +84,14 @@ class CompileTexSources(CompileTexCommand):
     def get_description() -> str:
         return "Compile original TeX sources."
 
-    def get_sources_base_dir(self) -> AbsolutePath:
-        return directories.SOURCES_DIR
+    def get_sources_base_dirkey(self) -> str:
+        return "sources"
 
     def get_source_dirs(self, arxiv_id: ArxivId) -> Iterator[RelativePath]:
         return iter([directories.escape_slashes(arxiv_id)])
 
-    def get_output_base_dir(self) -> AbsolutePath:
-        return directories.COMPILED_SOURCES_DIR
+    def get_output_base_dirkey(self) -> str:
+        return "compiled-sources"
 
 
 class CompileTexSourcesWithColorizedCitations(CompileTexCommand):
@@ -104,16 +107,11 @@ class CompileTexSourcesWithColorizedCitations(CompileTexCommand):
     def get_entity_type() -> str:
         return "citations"
 
-    def get_sources_base_dir(self) -> str:
-        return directories.SOURCES_WITH_COLORIZED_CITATIONS_DIR
+    def get_sources_base_dirkey(self) -> str:
+        return "sources-with-colorized-citations"
 
-    def get_source_dirs(self, arxiv_id: ArxivId) -> Iterator[RelativePath]:
-        sources_base_dir = self.get_sources_base_dir()
-        for iteration in get_iteration_names(sources_base_dir, arxiv_id):
-            yield get_arxiv_id_iteration_path(arxiv_id, iteration)
-
-    def get_output_base_dir(self) -> AbsolutePath:
-        return directories.COMPILED_SOURCES_WITH_COLORIZED_CITATIONS_DIR
+    def get_output_base_dirkey(self) -> str:
+        return "compiled-sources-with-colorized-citations"
 
 
 class CompileTexSourcesWithColorizedEquations(CompileTexCommand):
@@ -129,16 +127,11 @@ class CompileTexSourcesWithColorizedEquations(CompileTexCommand):
     def get_entity_type() -> str:
         return "symbols"
 
-    def get_sources_base_dir(self) -> str:
-        return directories.SOURCES_WITH_COLORIZED_EQUATIONS_DIR
+    def get_sources_base_dirkey(self) -> str:
+        return "sources-with-colorized-equations"
 
-    def get_source_dirs(self, arxiv_id: ArxivId) -> Iterator[RelativePath]:
-        sources_base_dir = self.get_sources_base_dir()
-        for iteration in get_iteration_names(sources_base_dir, arxiv_id):
-            yield get_arxiv_id_iteration_path(arxiv_id, iteration)
-
-    def get_output_base_dir(self) -> AbsolutePath:
-        return directories.COMPILED_SOURCES_WITH_COLORIZED_EQUATIONS_DIR
+    def get_output_base_dirkey(self) -> str:
+        return "compiled-sources-with-colorized-equations"
 
 
 class CompileTexSourcesWithColorizedEquationTokens(CompileTexCommand):
@@ -154,13 +147,8 @@ class CompileTexSourcesWithColorizedEquationTokens(CompileTexCommand):
     def get_entity_type() -> str:
         return "symbols"
 
-    def get_sources_base_dir(self) -> str:
-        return directories.SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR
+    def get_sources_base_dirkey(self) -> str:
+        return "sources-with-colorized-equation-tokens"
 
-    def get_source_dirs(self, arxiv_id: ArxivId) -> Iterator[RelativePath]:
-        sources_base_dir = self.get_sources_base_dir()
-        for iteration in get_iteration_names(sources_base_dir, arxiv_id):
-            yield get_arxiv_id_iteration_path(arxiv_id, iteration)
-
-    def get_output_base_dir(self) -> AbsolutePath:
-        return directories.COMPILED_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR
+    def get_output_base_dirkey(self) -> str:
+        return "compiled-sources-with-colorized-equation-tokens"

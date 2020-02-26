@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from typing import Any, Generic, Iterator, List, Optional, TypeVar
 
-from common.directories import get_arxiv_ids
+from common import directories
 from common.types import ArxivId, Path
 from models.models import init_database_connections
 
@@ -86,22 +86,22 @@ class ArxivBatchCommand(Command[I, R], ABC):
     def _load_arxiv_ids(self, args: Any) -> List[ArxivId]:
         arxiv_ids = load_arxiv_ids_using_args(args)
         if arxiv_ids is None:
-            input_path = self.get_arxiv_ids_dir()
-            if input_path is None:
+            input_dirkey = self.get_arxiv_ids_dirkey()
+            if input_dirkey is None:
                 raise SystemExit(
                     "Error: This command has no arXiv IDs to process. You must provide arXiv IDs "
                     + "with the '--arxiv-ids' or '--arxiv-ids-file' arguments, or the "
                     + "'get_arxiv_ids_dir' method must be specified for this command."
                 )
-            arxiv_ids = list(get_arxiv_ids(input_path))
+            arxiv_ids = list(directories.get_arxiv_ids(input_dirkey))
 
         return arxiv_ids
 
     @abstractmethod
-    def get_arxiv_ids_dir(self) -> Optional[Path]:
+    def get_arxiv_ids_dirkey(self) -> Optional[str]:
         """
-        Path to data directory containing folders where each is the name of an arXiv ID to process.
-        By defining this value, you provide an easy way for your command to load a list of arXiv
+        Directory key for the input directory where each folder is an arXiv ID to process. By
+        defining this value, you provide an easy way for your command to load a list of arXiv
         IDs to process based on the output of a previous job. Return 'None' if you want to require
         a user to specify the arXiv IDs on the command line.
         """

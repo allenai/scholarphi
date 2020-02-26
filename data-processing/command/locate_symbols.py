@@ -2,6 +2,7 @@ import csv
 import os.path
 from typing import Iterator, NamedTuple
 
+from command.command import ArxivBatchCommand
 from common import directories
 from common.bounding_box import get_symbol_bounding_box
 from common.file_utils import (
@@ -9,8 +10,7 @@ from common.file_utils import (
     load_equation_token_locations,
     load_symbols,
 )
-from common.types import ArxivId, BoundingBox, CharacterLocations, Path, SymbolWithId
-from command.command import ArxivBatchCommand
+from common.types import ArxivId, BoundingBox, CharacterLocations, SymbolWithId
 
 
 class LocationTask(NamedTuple):
@@ -35,14 +35,14 @@ class LocateSymbols(ArxivBatchCommand[LocationTask, BoundingBox]):
     def get_entity_type() -> str:
         return "symbols"
 
-    def get_arxiv_ids_dir(self) -> Path:
-        return directories.HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR
+    def get_arxiv_ids_dirkey(self) -> str:
+        return "hue-locations-for-equation-tokens"
 
     def load(self) -> Iterator[LocationTask]:
 
         for arxiv_id in self.arxiv_ids:
 
-            output_dir = directories.symbol_locations(arxiv_id)
+            output_dir = directories.arxiv_subdir("symbol-locations", arxiv_id)
             clean_directory(output_dir)
 
             token_locations = load_equation_token_locations(arxiv_id)
@@ -68,7 +68,7 @@ class LocateSymbols(ArxivBatchCommand[LocationTask, BoundingBox]):
             yield box
 
     def save(self, item: LocationTask, result: BoundingBox) -> None:
-        output_dir = directories.symbol_locations(item.arxiv_id)
+        output_dir = directories.arxiv_subdir("symbol-locations", item.arxiv_id)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 

@@ -5,8 +5,8 @@ from dataclasses import dataclass
 from typing import Dict, FrozenSet, Iterator, List, Tuple
 
 import common.directories as directories
+from command.command import DatabaseReadCommand
 from common.bounding_box import compute_accuracy, iou, iou_per_rectangle, sum_areas
-from common.directories import get_data_subdirectory_for_arxiv_id
 from common.file_utils import (
     clean_directory,
     load_citation_hue_locations,
@@ -14,7 +14,6 @@ from common.file_utils import (
 )
 from common.types import ArxivId, FloatRectangle, Path
 from models.models import Annotation, Paper
-from command.command import DatabaseReadCommand
 
 CitationKey = str
 CitationKeys = Tuple[CitationKey]
@@ -53,15 +52,13 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
             "Compute intersection-over-union for bounding boxes extracted from papers."
         )
 
-    def get_arxiv_ids_dir(self) -> Path:
-        return directories.SOURCES_DIR
+    def get_arxiv_ids_dirkey(self) -> str:
+        return "sources"
 
     def load(self) -> Iterator[IouJob]:
         for arxiv_id in self.arxiv_ids:
 
-            output_root = get_data_subdirectory_for_arxiv_id(
-                directories.BOUNDING_BOX_ACCURACIES_DIR, arxiv_id
-            )
+            output_root = directories.arxiv_subdir("bounding-box-accuracies", arxiv_id)
             clean_directory(output_root)
 
             citation_locations = load_citation_hue_locations(arxiv_id)
@@ -147,7 +144,9 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
 
         arxiv_id = item.arxiv_id
 
-        bounding_box_accuracies_path = directories.bounding_box_accuracies(arxiv_id)
+        bounding_box_accuracies_path = directories.arxiv_subdir(
+            "bounding-box-accuracies", arxiv_id
+        )
         if not os.path.exists(bounding_box_accuracies_path):
             os.makedirs(bounding_box_accuracies_path)
 
