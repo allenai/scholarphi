@@ -17,15 +17,15 @@ from command.fetch_arxiv_sources import (
     FetchArxivSources,
 )
 from command.fetch_new_arxiv_ids import FetchNewArxivIds
-from command.process import (
+from command.store_pipeline_log import StorePipelineLog
+from command.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
+from common import directories
+from scripts.process import (
     DATABASE_UPLOAD_COMMANDS,
     MAIN_PIPELINE_COMMANDS,
     STORE_RESULTS_COMMANDS,
     run_command,
 )
-from command.store_pipeline_log import StorePipelineLog
-from command.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
-from common import directories
 
 if __name__ == "__main__":
 

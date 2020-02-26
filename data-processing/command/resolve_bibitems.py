@@ -4,10 +4,10 @@ import os.path
 import re
 from typing import Iterator, List, NamedTuple, Set
 
-from common.file_utils import clean_directory
-from common.types import ArxivId, Author, Bibitem, Path, Reference
-from common import directories
 from command.command import ArxivBatchCommand
+from common import directories
+from common.file_utils import clean_directory
+from common.types import ArxivId, Author, Bibitem, Reference
 
 
 class MatchTask(NamedTuple):
@@ -58,14 +58,14 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, Match]):
     def get_entity_type() -> str:
         return "citations"
 
-    def get_arxiv_ids_dir(self) -> Path:
-        return directories.BIBITEMS_DIR
+    def get_arxiv_ids_dirkey(self) -> str:
+        return "bibitems"
 
     def load(self) -> Iterator[MatchTask]:
         for arxiv_id in self.arxiv_ids:
-            clean_directory(directories.bibitem_resolutions(arxiv_id))
-            bibitems_dir = directories.bibitems(arxiv_id)
-            metadata_dir = directories.s2_metadata(arxiv_id)
+            clean_directory(directories.arxiv_subdir("bibitem-resolutions", arxiv_id))
+            bibitems_dir = directories.arxiv_subdir("bibitems", arxiv_id)
+            metadata_dir = directories.arxiv_subdir("s2-metadata", arxiv_id)
 
             references = []
 
@@ -138,7 +138,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, Match]):
                 )
 
     def save(self, item: MatchTask, result: Match) -> None:
-        resolutions_dir = directories.bibitem_resolutions(item.arxiv_id)
+        resolutions_dir = directories.arxiv_subdir("bibitem-resolutions", item.arxiv_id)
         if not os.path.exists(resolutions_dir):
             os.makedirs(resolutions_dir)
 

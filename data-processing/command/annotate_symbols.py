@@ -6,7 +6,6 @@ from typing import Dict, Iterator, List, NamedTuple
 from command.command import ArxivBatchCommand
 from common import directories
 from common.annotate_tex import AnnotatedFile, annotate_symbols_and_equations
-from common.directories import get_data_subdirectory_for_arxiv_id
 from common.file_utils import (
     clean_directory,
     load_symbols,
@@ -48,18 +47,18 @@ class AnnotateTexWithSymbolMarkers(ArxivBatchCommand[TexAndSymbols, AnnotationRe
     def get_entity_type() -> str:
         return "symbols"
 
-    def get_arxiv_ids_dir(self) -> Path:
-        return directories.SOURCES_DIR
+    def get_arxiv_ids_dirkey(self) -> str:
+        return "sources"
 
     def load(self) -> Iterator[TexAndSymbols]:
         for arxiv_id in self.arxiv_ids:
 
-            output_root = get_data_subdirectory_for_arxiv_id(
-                directories.SOURCES_WITH_ANNOTATED_SYMBOLS_DIR, arxiv_id
+            output_root = directories.arxiv_subdir(
+                "sources-with-annotated-symbols", arxiv_id
             )
             clean_directory(output_root)
 
-            symbols_dir = directories.symbols(arxiv_id)
+            symbols_dir = directories.arxiv_subdir("symbols", arxiv_id)
             tokens_path = os.path.join(symbols_dir, "tokens.csv")
             if not os.path.exists(tokens_path):
                 logging.info(
@@ -90,7 +89,7 @@ class AnnotateTexWithSymbolMarkers(ArxivBatchCommand[TexAndSymbols, AnnotationRe
             contents_by_file = {}
             for tex_path in tex_paths:
                 absolute_tex_path = os.path.join(
-                    directories.sources(arxiv_id), tex_path
+                    directories.arxiv_subdir("sources", arxiv_id), tex_path
                 )
                 file_contents = read_file_tolerant(absolute_tex_path)
                 if file_contents is not None:
@@ -105,8 +104,8 @@ class AnnotateTexWithSymbolMarkers(ArxivBatchCommand[TexAndSymbols, AnnotationRe
         yield annotated_files
 
     def save(self, item: TexAndSymbols, result: AnnotationResult) -> None:
-        output_sources_path = get_data_subdirectory_for_arxiv_id(
-            directories.SOURCES_WITH_ANNOTATED_SYMBOLS_DIR, item.arxiv_id
+        output_sources_path = directories.arxiv_subdir(
+            "sources-with-annotated-symbols", item.arxiv_id
         )
         logging.debug("Outputting to %s", output_sources_path)
 

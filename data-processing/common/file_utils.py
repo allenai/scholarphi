@@ -4,22 +4,11 @@ import os
 import shutil
 from typing import Dict, Iterator, List, Optional
 
-from common.types import (
-    ArxivId,
-    BoundingBox,
-    CharacterId,
-    CompilationResult,
-    Equation,
-    EquationId,
-    FileContents,
-    HueIteration,
-    Path,
-    Symbol,
-    SymbolId,
-    SymbolWithId,
-    TokenWithOrigin,
-)
 from common import directories
+from common.types import (ArxivId, BoundingBox, CharacterId, CompilationResult,
+                          Equation, EquationId, FileContents, HueIteration,
+                          Path, Symbol, SymbolId, SymbolWithId,
+                          TokenWithOrigin)
 
 Contents = str
 Encoding = str
@@ -88,7 +77,7 @@ def _get_symbol_id(row: List[str]) -> SymbolId:
 
 
 def load_equations(arxiv_id: ArxivId) -> Optional[Dict[EquationId, Equation]]:
-    equations_path = os.path.join(directories.equations(arxiv_id), "equations.csv")
+    equations_path = os.path.join(directories.arxiv_subdir("equations", arxiv_id), "equations.csv")
     if not os.path.exists(equations_path):
         logging.warning("No equation data found for paper %s. Skipping.", arxiv_id)
         return None
@@ -120,7 +109,7 @@ def load_tokens(arxiv_id: ArxivId) -> Optional[List[TokenWithOrigin]]:
     if equations is None:
         return None
 
-    tokens_path = os.path.join(directories.symbols(arxiv_id), "tokens.csv")
+    tokens_path = os.path.join(directories.arxiv_subdir("symbols", arxiv_id), "tokens.csv")
     if not os.path.exists(tokens_path):
         logging.warning(
             "No equation token data found for paper %s. Skipping.", arxiv_id
@@ -156,7 +145,7 @@ def load_tokens(arxiv_id: ArxivId) -> Optional[List[TokenWithOrigin]]:
 
 def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
 
-    data_dir = directories.symbols(arxiv_id)
+    data_dir = directories.arxiv_subdir("symbols", arxiv_id)
     symbols_path = os.path.join(data_dir, "symbols.csv")
     symbol_tokens_path = os.path.join(data_dir, "symbol_tokens.csv")
     symbol_children_path = os.path.join(data_dir, "symbol_children.csv")
@@ -249,7 +238,7 @@ def load_citation_hue_locations(
 
     boxes_by_hue_iteration: Dict[HueIteration, List[BoundingBox]] = {}
     bounding_boxes_path = os.path.join(
-        directories.hue_locations_for_citations(arxiv_id), "hue_locations.csv"
+        directories.arxiv_subdir("hue-locations-for-citations", arxiv_id), "hue_locations.csv"
     )
     if not os.path.exists(bounding_boxes_path):
         logging.warning(
@@ -282,7 +271,7 @@ def load_equation_token_locations(
 
     token_locations: Dict[CharacterId, List[BoundingBox]] = {}
     token_locations_path = os.path.join(
-        directories.hue_locations_for_equation_tokens(arxiv_id), "hue_locations.csv",
+        directories.arxiv_subdir("hue-locations-for-equation-tokens", arxiv_id), "hue_locations.csv",
     )
     if not os.path.exists(token_locations_path):
         logging.warning(

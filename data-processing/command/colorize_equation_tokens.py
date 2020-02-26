@@ -4,16 +4,12 @@ import os.path
 from argparse import ArgumentParser
 from typing import Dict, Iterator, List, NamedTuple
 
+from command.command import ArxivBatchCommand, add_one_entity_at_a_time_arg
+from common import directories
 from common.colorize_tex import TokenColorizationBatch, colorize_equation_tokens
-from common.directories import (
-    get_data_subdirectory_for_arxiv_id,
-    get_data_subdirectory_for_iteration,
-)
 from common.file_utils import clean_directory, load_tokens, read_file_tolerant
 from common.types import ArxivId, FileContents, Path, TokenWithOrigin
 from common.unpack import unpack
-from common import directories
-from command.command import ArxivBatchCommand, add_one_entity_at_a_time_arg
 
 
 class TexAndTokens(NamedTuple):
@@ -45,18 +41,20 @@ class ColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, ColorizationResult]
     def get_entity_type() -> str:
         return "symbols"
 
-    def get_arxiv_ids_dir(self) -> Path:
-        return directories.SOURCES_DIR
+    def get_arxiv_ids_dirkey(self) -> str:
+        return "sources"
 
     def load(self) -> Iterator[TexAndTokens]:
         for arxiv_id in self.arxiv_ids:
 
-            output_root = get_data_subdirectory_for_arxiv_id(
-                directories.SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR, arxiv_id
+            output_root = directories.arxiv_subdir(
+                "sources-with-colorized-equation-tokens", arxiv_id
             )
             clean_directory(output_root)
 
-            tokens_path = os.path.join(directories.symbols(arxiv_id), "tokens.csv")
+            tokens_path = os.path.join(
+                directories.arxiv_subdir("symbols", arxiv_id), "tokens.csv"
+            )
             if not os.path.exists(tokens_path):
                 logging.info(
                     "No equation token data found for paper %s. Skipping.", arxiv_id
@@ -73,7 +71,7 @@ class ColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, ColorizationResult]
             contents_by_file = {}
             for tex_path in tex_paths:
                 absolute_tex_path = os.path.join(
-                    directories.sources(arxiv_id), tex_path
+                    directories.arxiv_subdir("sources", arxiv_id), tex_path
                 )
                 file_contents = read_file_tolerant(absolute_tex_path)
                 if file_contents is not None:
@@ -96,10 +94,8 @@ class ColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, ColorizationResult]
     def save(self, item: TexAndTokens, result: ColorizationResult) -> None:
         iteration = result.iteration
         iteration_id = f"all-files-{iteration}"
-        output_sources_path = get_data_subdirectory_for_iteration(
-            directories.SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR,
-            item.arxiv_id,
-            iteration_id,
+        output_sources_path = directories.iteration(
+            "sources-with-colorized-equation-tokens", item.arxiv_id, iteration_id,
         )
         logging.debug("Outputting to %s", output_sources_path)
 

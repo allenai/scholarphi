@@ -1,25 +1,22 @@
 import logging
 import os.path
 from abc import ABC, abstractmethod
-from typing import Iterator, NamedTuple
+from dataclasses import dataclass
+from typing import Iterator
 
 import cv2
 import numpy as np
 
+from command.command import ArxivBatchCommand
+from common import directories
 from common.compile import get_output_files
-from common.directories import (
-    get_data_subdirectory_for_arxiv_id,
-    get_data_subdirectory_for_iteration,
-    get_iteration_names,
-)
 from common.file_utils import clean_directory
 from common.image_processing import diff_images
-from common.types import ArxivId, Path
-from common import directories
-from command.command import ArxivBatchCommand
+from common.types import ArxivId
 
 
-class PageRasterPair(NamedTuple):
+@dataclass(frozen=True)
+class PageRasterPair:
     arxiv_id: ArxivId
     iteration: str
     relative_path: str
@@ -35,38 +32,42 @@ class DiffImagesCommand(ArxivBatchCommand[PageRasterPair, np.ndarray], ABC):
 
     @staticmethod
     @abstractmethod
-    def get_raster_base_dir() -> str:
+    def get_raster_base_dirkey() -> str:
         """
-        Path to data directory containing modified renderings for all papers.
+        Key for the data directory containing modified renderings for all papers.
         """
 
     @staticmethod
     @abstractmethod
-    def get_output_base_dir() -> str:
+    def get_output_base_dirkey() -> str:
         """
-        Path to the data directory where diff images should be output.
+        Key for the data directory where diff images should be output.
         """
 
-    def get_arxiv_ids_dir(self) -> Path:
-        return directories.PAPER_IMAGES_DIR
+    def get_arxiv_ids_dirkey(self) -> str:
+        return "paper-images"
 
     def load(self) -> Iterator[PageRasterPair]:
         for arxiv_id in self.arxiv_ids:
-            output_dir = get_data_subdirectory_for_arxiv_id(
-                self.get_output_base_dir(), arxiv_id
+            output_dir = directories.arxiv_subdir(
+                self.get_output_base_dirkey(), arxiv_id
             )
             clean_directory(output_dir)
 
-            # Get oiutput file names from results of compiling the uncolorized TeX sources.
-            output_files = get_output_files(directories.compilation_results(arxiv_id))
+            # Get output file names from results of compiling the uncolorized TeX sources.
+            output_files = get_output_files(
+                directories.arxiv_subdir("compiled-sources", arxiv_id)
+            )
             if len(output_files) == 0:
                 continue
 
-            for iteration in get_iteration_names(self.get_raster_base_dir(), arxiv_id):
+            for iteration in directories.iteration_names(
+                self.get_raster_base_dirkey(), arxiv_id
+            ):
 
-                original_images_dir = directories.paper_images(arxiv_id)
-                modified_images_dir = get_data_subdirectory_for_iteration(
-                    self.get_raster_base_dir(), arxiv_id, iteration
+                original_images_dir = directories.arxiv_subdir("paper-images", arxiv_id)
+                modified_images_dir = directories.iteration(
+                    self.get_raster_base_dirkey(), arxiv_id, iteration
                 )
 
                 for output_file in output_files:
@@ -103,8 +104,8 @@ class DiffImagesCommand(ArxivBatchCommand[PageRasterPair, np.ndarray], ABC):
         yield diff_images(item.modified, item.original)
 
     def save(self, item: PageRasterPair, result: np.ndarray) -> None:
-        output_dir = get_data_subdirectory_for_iteration(
-            self.get_output_base_dir(), item.arxiv_id, item.iteration
+        output_dir = directories.iteration(
+            self.get_output_base_dirkey(), item.arxiv_id, item.iteration
         )
         image_path = os.path.join(output_dir, item.relative_path, item.image_name)
         image_dir = os.path.dirname(image_path)
@@ -128,12 +129,12 @@ class DiffImagesWithColorizedCitations(DiffImagesCommand):
         return "citations"
 
     @staticmethod
-    def get_raster_base_dir() -> str:
-        return directories.PAPER_WITH_COLORIZED_CITATIONS_IMAGES_DIR
+    def get_raster_base_dirkey() -> str:
+        return "paper-with-colorized-citations-images"
 
     @staticmethod
-    def get_output_base_dir() -> str:
-        return directories.DIFF_IMAGES_WITH_COLORIZED_CITATIONS_DIR
+    def get_output_base_dirkey() -> str:
+        return "diff-images-with-colorized-citations"
 
 
 class DiffImagesWithColorizedEquations(DiffImagesCommand):
@@ -150,12 +151,12 @@ class DiffImagesWithColorizedEquations(DiffImagesCommand):
         return "symbols"
 
     @staticmethod
-    def get_raster_base_dir() -> str:
-        return directories.PAPER_WITH_COLORIZED_EQUATIONS_IMAGES_DIR
+    def get_raster_base_dirkey() -> str:
+        return "paper-with-colorized-equations-images"
 
     @staticmethod
-    def get_output_base_dir() -> str:
-        return directories.DIFF_IMAGES_WITH_COLORIZED_EQUATIONS_DIR
+    def get_output_base_dirkey() -> str:
+        return "diff-images-with-colorized-equations"
 
 
 class DiffImagesWithColorizedEquationTokens(DiffImagesCommand):
@@ -172,9 +173,9 @@ class DiffImagesWithColorizedEquationTokens(DiffImagesCommand):
         return "symbols"
 
     @staticmethod
-    def get_raster_base_dir() -> str:
-        return directories.PAPER_WITH_COLORIZED_EQUATION_TOKENS_IMAGES_DIR
+    def get_raster_base_dirkey() -> str:
+        return "paper-with-colorized-equation-tokens-images"
 
     @staticmethod
-    def get_output_base_dir() -> str:
-        return directories.DIFF_IMAGES_WITH_COLORIZED_EQUATION_TOKENS_DIR
+    def get_output_base_dirkey() -> str:
+        return "diff-images-with-colorized-equation-tokens"

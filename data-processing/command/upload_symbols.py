@@ -3,7 +3,8 @@ import logging
 import os.path
 from typing import Dict, Iterator, List, NamedTuple
 
-import common.directories as directories
+from command.command import DatabaseUploadCommand
+from common import directories
 from common.file_utils import load_symbols
 from common.s2_data import get_s2_id
 from common.types import (
@@ -12,7 +13,6 @@ from common.types import (
     Match,
     Matches,
     MathML,
-    Path,
     SymbolId,
     SymbolWithId,
 )
@@ -22,7 +22,6 @@ from models.models import MathMl as MathMlModel
 from models.models import MathMlMatch, Paper
 from models.models import Symbol as SymbolModel
 from models.models import SymbolChild, output_database
-from command.command import DatabaseUploadCommand
 
 S2Id = str
 Hue = float
@@ -56,8 +55,8 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
     def get_entity_type() -> str:
         return "symbols"
 
-    def get_arxiv_ids_dir(self) -> Path:
-        return directories.SOURCES_DIR
+    def get_arxiv_ids_dirkey(self) -> str:
+        return "sources"
 
     def load(self) -> Iterator[SymbolData]:
         for arxiv_id in self.arxiv_ids:
@@ -72,7 +71,8 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
 
             boxes: Dict[SymbolId, BoundingBox] = {}
             boxes_path = os.path.join(
-                directories.symbol_locations(arxiv_id), "symbol_locations.csv"
+                directories.arxiv_subdir("symbol-locations", arxiv_id),
+                "symbol_locations.csv",
             )
             if not os.path.exists(boxes_path):
                 logging.warning(
@@ -99,7 +99,7 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
 
             matches: Matches = {}
             matches_path = os.path.join(
-                directories.symbol_matches(arxiv_id), "matches.csv"
+                directories.arxiv_subdir("symbol-matches", arxiv_id), "matches.csv"
             )
             if not os.path.exists(matches_path):
                 logging.warning(

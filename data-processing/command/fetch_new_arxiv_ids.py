@@ -3,11 +3,11 @@ import os
 from argparse import ArgumentParser
 from typing import Any, Iterator
 
+from command.command import Command
+from common import directories
 from common.fetch_arxiv import fetch_new_arxiv_ids
 from common.types import ArxivId
-from common import directories
 from models.models import init_database_connections
-from command.command import Command
 
 
 class FetchNewArxivIds(Command[ArxivId, ArxivId]):
@@ -57,9 +57,9 @@ class FetchNewArxivIds(Command[ArxivId, ArxivId]):
         yield item
 
     def save(self, item: ArxivId, _: ArxivId) -> None:
-        if not os.path.exists(directories.ARXIV_IDS_DIR):
-            os.makedirs(directories.ARXIV_IDS_DIR)
-        with open(directories.arxiv_ids(item), "w") as arxiv_ids_stamp:
+        if not os.path.exists(directories.dirpath("arxiv-ids")):
+            os.makedirs(directories.dirpath("arxiv-ids"))
+        with open(directories.arxiv_subdir("arxiv-ids", item), "w") as arxiv_ids_stamp:
             arxiv_ids_stamp.write("")
 
         if self.args.output_file is not None:

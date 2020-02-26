@@ -7,6 +7,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any, Iterator, List
 
+from command.command import ArxivBatchCommand
 from common import directories
 from common.colorize_tex import (
     ColorizedEntity,
@@ -14,11 +15,6 @@ from common.colorize_tex import (
     colorize_equations,
 )
 from common.compile import compile_tex, get_errors, is_driver_unimplemented
-from common.directories import (
-    escape_slashes,
-    get_data_subdirectory_for_arxiv_id,
-    get_data_subdirectory_for_iteration,
-)
 from common.file_utils import (
     clean_directory,
     find_files,
@@ -28,7 +24,6 @@ from common.file_utils import (
 )
 from common.types import ArxivId, CompilationResult, FileContents, Path, RelativePath
 from common.unpack import unpack
-from command.command import ArxivBatchCommand
 
 
 @dataclass(frozen=True)
@@ -60,13 +55,13 @@ def write_file(
 
 
 class DebugColorizeCommand(ArxivBatchCommand[ColorizationTask, Compilation], ABC):
-    def get_arxiv_ids_dir(self) -> Path:
-        return directories.SOURCES_DIR
+    def get_arxiv_ids_dirkey(self) -> str:
+        return "sources"
 
     @abstractmethod
-    def get_output_base_dir(self) -> RelativePath:
+    def get_output_base_dirkey(self) -> str:
         """
-        Path to the data directory where debugging results for all papers should be output.
+        Key for data directory where debugging results for all papers should be output.
         """
 
     @abstractmethod
@@ -78,14 +73,16 @@ class DebugColorizeCommand(ArxivBatchCommand[ColorizationTask, Compilation], ABC
     def load(self) -> Iterator[ColorizationTask]:
         for arxiv_id in self.arxiv_ids:
 
-            arxiv_id_output_root = get_data_subdirectory_for_arxiv_id(
-                self.get_output_base_dir(), arxiv_id
+            arxiv_id_output_root = directories.arxiv_subdir(
+                self.get_output_base_dirkey(), arxiv_id
             )
             clean_directory(arxiv_id_output_root)
 
             # Make sure that we have evidence that the paper can compile at all before attempting
             # to compile many variants of that file.
-            past_compilation_dir = directories.compilation_results(arxiv_id)
+            past_compilation_dir = directories.arxiv_subdir(
+                "compiled-sources", arxiv_id
+            )
             if not os.path.exists(past_compilation_dir):
                 logging.info(
                     "Skipping paper %s. No existing compilation results.", arxiv_id
@@ -102,7 +99,7 @@ class DebugColorizeCommand(ArxivBatchCommand[ColorizationTask, Compilation], ABC
                     )
                     continue
 
-            original_sources_path = directories.sources(arxiv_id)
+            original_sources_path = directories.arxiv_subdir("sources", arxiv_id)
             for tex_path in find_files(original_sources_path, [".tex"], relative=True):
                 file_contents = read_file_tolerant(
                     os.path.join(original_sources_path, tex_path)
@@ -114,10 +111,10 @@ class DebugColorizeCommand(ArxivBatchCommand[ColorizationTask, Compilation], ABC
 
         colorization_results = self.colorize(item)
         for iteration, colorized in enumerate(colorization_results):
-            iteration_id = f"file-{escape_slashes(item.tex_path)}-iteration-{iteration}"
+            iteration_id = directories.tex_iteration(item.tex_path, str(iteration))
 
-            output_sources_path = get_data_subdirectory_for_iteration(
-                self.get_output_base_dir(), item.arxiv_id, iteration_id,
+            output_sources_path = directories.iteration(
+                self.get_output_base_dirkey(), item.arxiv_id, iteration_id,
             )
 
             # Write the colorized files into a new directory.
@@ -204,8 +201,8 @@ class DebugColorizeCommand(ArxivBatchCommand[ColorizationTask, Compilation], ABC
         errors: List[bytes],
     ) -> None:
 
-        arxiv_id_output_root = get_data_subdirectory_for_arxiv_id(
-            self.get_output_base_dir(), arxiv_id
+        arxiv_id_output_root = directories.arxiv_subdir(
+            self.get_output_base_dirkey(), arxiv_id
         )
         errors_path = os.path.join(arxiv_id_output_root, "compilation_results.csv")
 
@@ -250,8 +247,8 @@ class DebugColorizeEquations(DebugColorizeCommand):
     def get_entity_type() -> str:
         return "symbols"
 
-    def get_output_base_dir(self) -> RelativePath:
-        return directories.DEBUGGING_COLORIZING_EQUATIONS_DIR
+    def get_output_base_dirkey(self) -> str:
+        return "debugging-colorizing-equations"
 
     def colorize(self, task: ColorizationTask) -> Iterator[ColorizationResult]:
         file_contents = task.file_contents
@@ -277,8 +274,8 @@ class DebugColorizeEquationTokens(DebugColorizeCommand):
     def get_entity_type() -> str:
         return "symbols"
 
-    def get_output_base_dir(self) -> RelativePath:
-        return directories.DEBUGGING_COLORIZING_EQUATION_TOKENS_DIR
+    def get_output_base_dirkey(self) -> str:
+        return "debugging-colorizing-equation-tokens"
 
     def colorize(self, task: ColorizationTask) -> Iterator[ColorizationResult]:
 
@@ -286,7 +283,9 @@ class DebugColorizeEquationTokens(DebugColorizeCommand):
         file_contents = task.file_contents
         tex_path = task.tex_path
 
-        tokens_path = os.path.join(directories.symbols(arxiv_id), "tokens.csv")
+        tokens_path = os.path.join(
+            directories.arxiv_subdir("symbols", arxiv_id), "tokens.csv"
+        )
         if not os.path.exists(tokens_path):
             logging.info(
                 "No equation token data found for paper %s. Skipping.", arxiv_id

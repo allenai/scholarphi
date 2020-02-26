@@ -49,7 +49,7 @@ def _unpack(archive_path: str, dest_dir: str) -> None:
 
 
 def unpack(arxiv_id: str, unpack_path: str) -> Optional[str]:
-    archive_path = directories.source_archives(arxiv_id)
+    archive_path = directories.arxiv_subdir("sources-archives", arxiv_id)
     if not os.path.exists(archive_path):
         logging.warning("No source archive found for %s", arxiv_id)
         return None

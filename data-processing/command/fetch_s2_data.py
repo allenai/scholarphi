@@ -8,7 +8,7 @@ import requests
 
 from command.command import ArxivBatchCommand
 from common import directories
-from common.types import ArxivId, Author, Path, Reference, S2Metadata
+from common.types import ArxivId, Author, Reference, S2Metadata
 
 """ Time to wait between consecutive requests to S2 API. """
 FETCH_DELAY = 3  # seconds
@@ -23,8 +23,8 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
     def get_description() -> str:
         return "Fetch S2 metadata for papers. Includes reference information."
 
-    def get_arxiv_ids_dir(self) -> Path:
-        return directories.SOURCE_ARCHIVES_DIR
+    def get_arxiv_ids_dirkey(self) -> str:
+        return "sources-archives"
 
     def load(self) -> Iterator[ArxivId]:
         for arxiv_id in self.arxiv_ids:
@@ -61,7 +61,7 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
 
     def save(self, item: ArxivId, result: S2Metadata) -> None:
 
-        s2_metadata_dir = directories.s2_metadata(item)
+        s2_metadata_dir = directories.arxiv_subdir("s2-metadata", item)
         if not os.path.exists(s2_metadata_dir):
             os.makedirs(s2_metadata_dir)
 

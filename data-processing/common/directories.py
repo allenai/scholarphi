@@ -1,129 +1,99 @@
+import logging
 import os
-from typing import Iterator, List
+from typing import Dict, Iterator, List, Optional
 
-from common.types import AbsolutePath, RelativePath
-
-LOGS_DIR = "logs"
-
-# Main directories for processing papers
-DATA_DIR = "data"
-
-data_directory_index = 0
-
-
-def register_data_directory(directory_name: str) -> RelativePath:
-    global data_directory_index  # pylint: disable=global-statement
-    data_directory_index += 1
-    return os.path.join(DATA_DIR, f"{data_directory_index:02d}-{directory_name}")
-
-
-ARXIV_IDS_DIR = register_data_directory("arxiv-ids")
-SOURCE_ARCHIVES_DIR = register_data_directory("sources-archives")
-S2_METADATA_DIR = register_data_directory("s2-metadata")
-SOURCES_DIR = register_data_directory("sources")
-BIBITEMS_DIR = register_data_directory("bibitems")
-BIBITEM_RESOLUTIONS_DIR = register_data_directory("bibitem-resolutions")
-EQUATIONS_DIR = register_data_directory("equations")
-SYMBOLS_DIR = register_data_directory("symbols")
-SYMBOL_MATCHES_DIR = register_data_directory("symbol-matches")
-SOURCES_WITH_COLORIZED_CITATIONS_DIR = register_data_directory(
-    "sources-with-colorized-citations"
-)
-SOURCES_WITH_COLORIZED_SENTENCES_DIR = register_data_directory(
-    "sources-with-colorized-sentences"
-)
-SOURCES_WITH_COLORIZED_EQUATIONS_DIR = register_data_directory(
-    "sources-with-colorized-equations"
-)
-SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR = register_data_directory(
-    "sources-with-colorized-equation-tokens"
-)
-COMPILED_SOURCES_DIR = register_data_directory("compiled-sources")
-COMPILED_SOURCES_WITH_COLORIZED_CITATIONS_DIR = register_data_directory(
-    "compiled-sources-with-colorized-citations"
-)
-COMPILED_SOURCES_WITH_COLORIZED_SENTENCES_DIR = register_data_directory(
-    "compiled-sources-with-colorized-sentences"
-)
-COMPILED_SOURCES_WITH_COLORIZED_EQUATIONS_DIR = register_data_directory(
-    "compiled-sources-with-colorized-equations"
-)
-COMPILED_SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR = register_data_directory(
-    "compiled-sources-with-colorized-equation-tokens"
-)
-PAPER_IMAGES_DIR = register_data_directory("paper-images")
-PAPER_WITH_COLORIZED_CITATIONS_IMAGES_DIR = register_data_directory(
-    "paper-with-colorized-citations-images"
-)
-PAPER_WITH_COLORIZED_SENTENCES_IMAGES_DIR = register_data_directory(
-    "paper-with-colorized-sentences-images"
-)
-PAPER_WITH_COLORIZED_EQUATIONS_IMAGES_DIR = register_data_directory(
-    "paper-with-colorized-equations-images"
-)
-PAPER_WITH_COLORIZED_EQUATION_TOKENS_IMAGES_DIR = register_data_directory(
-    "paper-with-colorized-equation-tokens-images"
-)
-DIFF_IMAGES_WITH_COLORIZED_CITATIONS_DIR = register_data_directory(
-    "diff-images-with-colorized-citations"
-)
-DIFF_IMAGES_WITH_COLORIZED_EQUATIONS_DIR = register_data_directory(
-    "diff-images-with-colorized-equations"
-)
-DIFF_IMAGES_WITH_COLORIZED_SENTENCES_DIR = register_data_directory(
-    "diff-images-with-colorized-sentences"
-)
-DIFF_IMAGES_WITH_COLORIZED_EQUATION_TOKENS_DIR = register_data_directory(
-    "diff-images-with-colorized-equation-tokens"
-)
-HUE_LOCATIONS_FOR_CITATIONS_DIR = register_data_directory("hue-locations-for-citations")
-HUE_LOCATIONS_FOR_SENTENCES_DIR = register_data_directory(
-    "diff-images-with-colorized-sentences"
-)
-HUE_LOCATIONS_FOR_EQUATIONS_DIR = register_data_directory("hue-locations-for-equations")
-HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR = register_data_directory(
-    "hue-locations-for-equation-tokens"
-)
-CITATION_LOCATIONS_DIR = register_data_directory("citation-locations")
-SYMBOL_LOCATIONS_DIR = register_data_directory("symbol-locations")
-ANNOTATED_PDFS_WITH_CITATION_BOXES_DIR = register_data_directory(
-    "annotated-pdfs-with-citation-boxes"
-)
-ANNOTATED_PDFS_WITH_EQUATION_BOXES_DIR = register_data_directory(
-    "annotated-pdfs-with-equation-boxes"
-)
-ANNOTATED_PDFS_WITH_EQUATION_TOKEN_BOXES_DIR = register_data_directory(
-    "annotated-pdfs-with-equation-token-boxes"
-)
-SOURCES_WITH_ANNOTATED_SYMBOLS_DIR = register_data_directory(
-    "sources-with-annotated-symbols"
-)
-DEBUGGING_COLORIZING_CITATIONS_DIR = register_data_directory(
-    "debugging-colorizing-citations"
-)
-DEBUGGING_COLORIZING_EQUATIONS_DIR = register_data_directory(
-    "debugging-colorizing-equations"
-)
-DEBUGGING_COLORIZING_EQUATION_TOKENS_DIR = register_data_directory(
-    "debugging-colorizing-equation-tokens"
-)
-BOUNDING_BOX_ACCURACIES_DIR = register_data_directory("bounding-box-accuracies")
+from common.types import RelativePath
 
 # Directories for utilities
 NODE_DIRECTORY = "node"
+LOGS_DIR = "logs"
+
+# Main directories for output from processing papers
+DATA_DIR = "data"
+
+# Counter used to assign a unique, ordered, numeric prefix to each data directory
+_directory_index = 0
+
+# List of mappings from directory short names to paths
+_directory_paths: Dict[str, RelativePath] = {}
 
 
+def register(dirkey: str, suffix: Optional[str] = None) -> RelativePath:
+    """
+    Register a directory that will be referred to by a specific key. Registration involves:
+    * Creating a new index for the directory
+    * Creating the directory if it doesn't yet exist
+
+    The directory's name will be [##-suffix] if 'suffix' is specified, or [##-dirkey] if it is
+    not. ## is the order in which this directory was registered, and should roughly correspond
+    to lower numbers referring to earlier processing steps, and higher numbers referring
+    to later processing steps. Numbers start at 01.
+
+    You can refer to this directory by the name you provide to this function in all
+    subsequent calls to 'directories' helper functions.
+    """
+
+    suffix = suffix if suffix is not None else dirkey
+
+    global _directory_index  # pylint: disable=global-statement
+    _directory_index += 1
+
+    relative_path = os.path.join(DATA_DIR, f"{_directory_index:02d}-{suffix}")
+    if not os.path.exists(relative_path):
+        os.makedirs(relative_path)
+
+    _directory_paths[dirkey] = relative_path
+
+    return relative_path
+
+
+# Register directories in an order that roughly corresponds to the order they will be run in.
+register("arxiv-ids")
+register("sources-archives")
+register("s2-metadata")
+register("sources")
+register("compiled-sources")
+register("paper-images")
+
+register("bibitems")
+register("bibitem-resolutions")
+register("sources-with-colorized-citations")
+register("compiled-sources-with-colorized-citations")
+register("paper-with-colorized-citations-images")
+register("diff-images-with-colorized-citations")
+register("hue-locations-for-citations")
+register("citation-locations")
+
+register("equations")
+register("symbols")
+register("symbol-matches")
+register("sources-with-colorized-equations")
+register("sources-with-colorized-equation-tokens")
+register("compiled-sources-with-colorized-equations")
+register("compiled-sources-with-colorized-equation-tokens")
+register("paper-with-colorized-equations-images")
+register("paper-with-colorized-equation-tokens-images")
+register("diff-images-with-colorized-equations")
+register("diff-images-with-colorized-equation-tokens")
+register("hue-locations-for-equations")
+register("hue-locations-for-equation-tokens")
+register("symbol-locations")
+
+register("sources-with-colorized-sentences")
+register("compiled-sources-with-colorized-sentences")
+register("paper-with-colorized-sentences-images")
+register("diff-images-with-colorized-sentences")
+
+register("sources-with-annotated-symbols")
+register("debugging-colorizing-citations")
+register("debugging-colorizing-equations")
+register("debugging-colorizing-equation-tokens")
+
+register("bounding-box-accuracies")
+
+
+# Helpers for converting paths with arXiv IDs to valid path names
 SLASH_SUBSTITUTE = "__"
-
-
-def get_arxiv_ids(data_directory: str) -> Iterator[str]:
-    """
-    Most data directories will include (and only include) subdirectories, with one for each arXiv
-    paper. These subdirectories will have as their name a normalized arXiv ID (see below). Call
-    this function to get the arXiv IDs for which there are subdirectories in a data directory.
-    """
-    for filename in os.listdir(data_directory):
-        yield unescape_slashes(filename)
 
 
 def escape_slashes(s: str) -> str:
@@ -138,134 +108,45 @@ def unescape_slashes(s: str) -> str:
     return s.replace(SLASH_SUBSTITUTE, "/")
 
 
-def get_data_subdirectory_for_arxiv_id(data_dir: str, arxiv_id: str) -> str:
-    return os.path.join(data_dir, escape_slashes(arxiv_id))
+# Helpers for getting data subdirectories
+def dirpath(dirkey: str) -> RelativePath:
+    """
+    Get the path to a directory using the key you registered it with.
+    """
+    return _directory_paths[dirkey]
 
 
-def get_data_subdirectory_for_iteration(
-    data_dir: str, arxiv_id: str, iteration_name: str
-) -> str:
-    return os.path.join(
-        get_data_subdirectory_for_arxiv_id(data_dir, arxiv_id), iteration_name
-    )
+def get_arxiv_ids(dirkey: str) -> Iterator[str]:
+    """
+    Most data directories will include (and only include) subdirectories, with one for each arXiv
+    paper. These subdirectories will have as their name a normalized arXiv ID (see below). Call
+    this function to get the arXiv IDs for which there are subdirectories in a data directory.
+    """
+    relative_path = dirpath(dirkey)
+    for filename in os.listdir(relative_path):
+        yield unescape_slashes(filename)
 
 
-def get_iteration_names(data_dir: AbsolutePath, arxiv_id: str) -> List[str]:
-    arxiv_subdirectory = get_data_subdirectory_for_arxiv_id(data_dir, arxiv_id)
+def arxiv_subdir(dirkey: str, arxiv_id: str) -> str:
+    relative_path = dirpath(dirkey)
+    return os.path.join(relative_path, escape_slashes(arxiv_id))
+
+
+def iteration(dirkey: str, arxiv_id: str, iteration_name: str) -> str:
+    return os.path.join(arxiv_subdir(dirkey, arxiv_id), iteration_name)
+
+
+def iteration_names(dirkey: str, arxiv_id: str) -> List[str]:
+    arxiv_subdirectory = arxiv_subdir(dirkey, arxiv_id)
     if not os.path.exists(arxiv_subdirectory):
         return []
     return os.listdir(arxiv_subdirectory)
 
 
-def get_arxiv_id_iteration_path(arxiv_id: str, iteration: str) -> RelativePath:
-    return os.path.join(escape_slashes(arxiv_id), iteration)
+def relpath_arxiv_id_iteration(arxiv_id: str, iteration_name: str) -> RelativePath:
+    return os.path.join(escape_slashes(arxiv_id), iteration_name)
 
 
-def get_iteration_id(tex_path: str, iteration: int) -> RelativePath:
+def tex_iteration(tex_path: RelativePath, iteration_name: str) -> RelativePath:
     escaped_tex_path = escape_slashes(tex_path)
-    return f"{escaped_tex_path}-iteration-{iteration}"
-
-
-def arxiv_ids(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(ARXIV_IDS_DIR, arxiv_id)
-
-
-def source_archives(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(SOURCE_ARCHIVES_DIR, arxiv_id)
-
-
-def s2_metadata(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(S2_METADATA_DIR, arxiv_id)
-
-
-def sources(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(SOURCES_DIR, arxiv_id)
-
-
-def equations(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(EQUATIONS_DIR, arxiv_id)
-
-
-def symbols(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(SYMBOLS_DIR, arxiv_id)
-
-
-def symbol_matches(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(SYMBOL_MATCHES_DIR, arxiv_id)
-
-
-def bibitems(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(BIBITEMS_DIR, arxiv_id)
-
-
-def bibitem_resolutions(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(BIBITEM_RESOLUTIONS_DIR, arxiv_id)
-
-
-def sources_with_colorized_citations(
-    arxiv_id: str, tex_path: str, iteration: int
-) -> RelativePath:
-    iteration_id = get_iteration_id(tex_path, iteration)
-    return os.path.join(sources_with_colorized_citations_root(arxiv_id), iteration_id)
-
-
-def sources_with_colorized_citations_root(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(
-        SOURCES_WITH_COLORIZED_CITATIONS_DIR, arxiv_id
-    )
-
-
-def sources_with_colorized_sentences(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(
-        SOURCES_WITH_COLORIZED_SENTENCES_DIR, arxiv_id
-    )
-
-
-def sources_with_colorized_equations(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(
-        SOURCES_WITH_COLORIZED_EQUATIONS_DIR, arxiv_id
-    )
-
-
-def sources_with_colorized_equation_tokens(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(
-        SOURCES_WITH_COLORIZED_EQUATION_TOKENS_DIR, arxiv_id
-    )
-
-
-def compilation_results(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(COMPILED_SOURCES_DIR, arxiv_id)
-
-
-def paper_images(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(PAPER_IMAGES_DIR, arxiv_id)
-
-
-def hue_locations_for_citations(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(HUE_LOCATIONS_FOR_CITATIONS_DIR, arxiv_id)
-
-
-def hue_locations_for_sentences(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(HUE_LOCATIONS_FOR_SENTENCES_DIR, arxiv_id)
-
-
-def hue_locations_for_equations(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(HUE_LOCATIONS_FOR_EQUATIONS_DIR, arxiv_id)
-
-
-def hue_locations_for_equation_tokens(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(
-        HUE_LOCATIONS_FOR_EQUATION_TOKENS_DIR, arxiv_id
-    )
-
-
-def citation_locations(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(CITATION_LOCATIONS_DIR, arxiv_id)
-
-
-def symbol_locations(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(SYMBOL_LOCATIONS_DIR, arxiv_id)
-
-
-def bounding_box_accuracies(arxiv_id: str) -> RelativePath:
-    return get_data_subdirectory_for_arxiv_id(BOUNDING_BOX_ACCURACIES_DIR, arxiv_id)
+    return f"{escaped_tex_path}-iteration-{iteration_name}"
