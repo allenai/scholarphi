@@ -38,6 +38,9 @@ RUN apt-get install -y nodejs
 # Let ImageMagick to read and write PDFs
 RUN sed -i '/pattern="PDF"/s/rights="none"/rights="read | write"/' /etc/ImageMagick-6/policy.xml
 
+# Install GhostScript
+RUN apt-get install -y ghostscript
+
 # Install pip requireements
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
