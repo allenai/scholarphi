@@ -1,6 +1,6 @@
 import re
 
-from explanations.colorize_tex import (
+from common.colorize_tex import (
     COLOR_MACROS,
     COLOR_MACROS_BASE_MACROS,
     COLOR_MACROS_LATEX_IMPORTS,
@@ -10,7 +10,7 @@ from explanations.colorize_tex import (
     colorize_equation_tokens,
     colorize_equations,
 )
-from explanations.types import Equation, FileContents, TokenWithOrigin
+from common.types import Equation, FileContents, TokenWithOrigin
 
 COLOR_PATTERN = (
     r"\\scholarsetcolor\[rgb\]{[0-9.]+,[0-9.]+,[0-9.]+}"

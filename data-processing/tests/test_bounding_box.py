@@ -3,7 +3,7 @@ from typing import FrozenSet
 
 import cv2
 
-from explanations.bounding_box import (
+from common.bounding_box import (
     cluster_boxes,
     compute_accuracy,
     find_boxes_with_color,
@@ -15,9 +15,9 @@ from explanations.bounding_box import (
     subtract_multiple_from_multiple,
     union,
 )
-from explanations.types import BoundingBox
-from explanations.types import FloatRectangle as Rectangle
-from explanations.types import Rectangle as IntRectangle
+from common.types import BoundingBox
+from common.types import FloatRectangle as Rectangle
+from common.types import Rectangle as IntRectangle
 from tests.util import get_test_path
 
 

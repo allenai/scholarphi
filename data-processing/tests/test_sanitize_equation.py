@@ -1,4 +1,4 @@
-from explanations.sanitize_equation import sanitize_equation
+from common.sanitize_equation import sanitize_equation
 
 
 def test_replace_label_with_space():

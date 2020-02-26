@@ -1,4 +1,4 @@
-from explanations.parse_tex import (
+from common.parse_tex import (
     BeginDocumentExtractor,
     BibitemExtractor,
     DocumentclassExtractor,
@@ -6,7 +6,7 @@ from explanations.parse_tex import (
     MacroExtractor,
     SentenceExtractor,
 )
-from explanations.types import MacroDefinition
+from common.types import MacroDefinition
 
 
 def test_extract_sentences():

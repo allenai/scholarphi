@@ -2,53 +2,53 @@ import argparse
 import logging
 from typing import List
 
-from scripts.annotate_symbols import AnnotateTexWithSymbolMarkers
-from scripts.colorize_citations import ColorizeCitations
-from scripts.colorize_equation_tokens import ColorizeEquationTokens
-from scripts.colorize_equations import ColorizeEquations
-from scripts.command import Command
-from scripts.compile_tex import (
+from command.annotate_symbols import AnnotateTexWithSymbolMarkers
+from command.colorize_citations import ColorizeCitations
+from command.colorize_equation_tokens import ColorizeEquationTokens
+from command.colorize_equations import ColorizeEquations
+from command.command import Command
+from command.compile_tex import (
     CompileTexSources,
     CompileTexSourcesWithColorizedCitations,
     CompileTexSourcesWithColorizedEquations,
     CompileTexSourcesWithColorizedEquationTokens,
 )
-from scripts.compute_iou import ComputeIou
-from scripts.debug_colorize_tex import (
+from command.compute_iou import ComputeIou
+from command.debug_colorize_tex import (
     DebugColorizeEquations,
     DebugColorizeEquationTokens,
 )
-from scripts.diff_images import (
+from command.diff_images import (
     DiffImagesWithColorizedCitations,
     DiffImagesWithColorizedEquations,
     DiffImagesWithColorizedEquationTokens,
 )
-from scripts.extract_bibitems import ExtractBibitems
-from scripts.extract_equations import ExtractEquations
-from scripts.extract_symbols import ExtractSymbols
-from scripts.fetch_arxiv_sources import FetchArxivSources
-from scripts.fetch_new_arxiv_ids import FetchNewArxivIds
-from scripts.fetch_s2_data import FetchS2Metadata
-from scripts.find_symbol_matches import FindSymbolMatches
-from scripts.locate_citations import LocateCitations
-from scripts.locate_hues import (
+from command.extract_bibitems import ExtractBibitems
+from command.extract_equations import ExtractEquations
+from command.extract_symbols import ExtractSymbols
+from command.fetch_arxiv_sources import FetchArxivSources
+from command.fetch_new_arxiv_ids import FetchNewArxivIds
+from command.fetch_s2_data import FetchS2Metadata
+from command.find_symbol_matches import FindSymbolMatches
+from command.locate_citations import LocateCitations
+from command.locate_hues import (
     LocateCitationHues,
     LocateEquationHues,
     LocateEquationTokenHues,
 )
-from scripts.locate_symbols import LocateSymbols
-from scripts.raster_pages import (
+from command.locate_symbols import LocateSymbols
+from command.raster_pages import (
     RasterPages,
     RasterPagesWithColorizedCitations,
     RasterPagesWithColorizedEquations,
     RasterPagesWithColorizedEquationTokens,
 )
-from scripts.resolve_bibitems import ResolveBibitems
-from scripts.store_pipeline_log import StorePipelineLog
-from scripts.store_results import StoreResults
-from scripts.unpack_sources import UnpackSources
-from scripts.upload_citations import UploadCitations
-from scripts.upload_symbols import UploadSymbols
+from command.resolve_bibitems import ResolveBibitems
+from command.store_pipeline_log import StorePipelineLog
+from command.store_results import StoreResults
+from command.unpack_sources import UnpackSources
+from command.upload_citations import UploadCitations
+from command.upload_symbols import UploadSymbols
 
 PREPARATION_COMMANDS: List = [  # type: ignore
     FetchNewArxivIds,
