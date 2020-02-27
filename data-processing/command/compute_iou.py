@@ -12,8 +12,8 @@ from common.file_utils import (
     load_citation_hue_locations,
     load_equation_token_locations,
 )
+from common.models import Annotation, Paper
 from common.types import ArxivId, FloatRectangle, Path
-from models.models import Annotation, Paper
 
 CitationKey = str
 CitationKeys = Tuple[CitationKey]

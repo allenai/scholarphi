@@ -10,8 +10,8 @@ from typing import List
 import requests
 
 from common import directories
+from common.models import Metadata
 from common.types import ArxivId
-from models.models import Metadata
 
 USER_AGENT = "Andrew Head, for academic research on dissemination of scientific insight <head.andrewm@gmail.com>"
 
