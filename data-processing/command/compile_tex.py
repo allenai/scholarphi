@@ -2,7 +2,7 @@ import logging
 import os.path
 import shutil
 from abc import ABC, abstractmethod
-from typing import Iterator
+from typing import Iterator, Type
 
 from command.command import ArxivBatchCommand
 from common import directories
@@ -94,61 +94,37 @@ class CompileTexSources(CompileTexCommand):
         return "compiled-sources"
 
 
-class CompileTexSourcesWithColorizedCitations(CompileTexCommand):
-    @staticmethod
-    def get_name() -> str:
-        return "compile-tex-with-colorized-citations"
+def make_compile_tex_command(
+    entity_name: str, entity_type: str
+) -> Type[CompileTexCommand]:
+    class C(CompileTexCommand):
+        @staticmethod
+        def get_name() -> str:
+            return f"compile-tex-with-colorized-{entity_name}"
 
-    @staticmethod
-    def get_description() -> str:
-        return "Compile TeX sources with colorized citations."
+        @staticmethod
+        def get_description() -> str:
+            return f"Compile TeX sources with colorized {entity_name}."
 
-    @staticmethod
-    def get_entity_type() -> str:
-        return "citations"
+        @staticmethod
+        def get_entity_type() -> str:
+            return entity_type
 
-    def get_sources_base_dirkey(self) -> str:
-        return "sources-with-colorized-citations"
+        def get_sources_base_dirkey(self) -> str:
+            return f"sources-with-colorized-{entity_name}"
 
-    def get_output_base_dirkey(self) -> str:
-        return "compiled-sources-with-colorized-citations"
+        def get_output_base_dirkey(self) -> str:
+            return f"compiled-sources-with-colorized-{entity_name}"
 
-
-class CompileTexSourcesWithColorizedEquations(CompileTexCommand):
-    @staticmethod
-    def get_name() -> str:
-        return "compile-tex-with-colorized-equations"
-
-    @staticmethod
-    def get_description() -> str:
-        return "Compile TeX sources with colorized equations."
-
-    @staticmethod
-    def get_entity_type() -> str:
-        return "symbols"
-
-    def get_sources_base_dirkey(self) -> str:
-        return "sources-with-colorized-equations"
-
-    def get_output_base_dirkey(self) -> str:
-        return "compiled-sources-with-colorized-equations"
+    return C
 
 
-class CompileTexSourcesWithColorizedEquationTokens(CompileTexCommand):
-    @staticmethod
-    def get_name() -> str:
-        return "compile-tex-with-colorized-equation-tokens"
-
-    @staticmethod
-    def get_description() -> str:
-        return "Compile TeX sources with colorized equation tokens."
-
-    @staticmethod
-    def get_entity_type() -> str:
-        return "symbols"
-
-    def get_sources_base_dirkey(self) -> str:
-        return "sources-with-colorized-equation-tokens"
-
-    def get_output_base_dirkey(self) -> str:
-        return "compiled-sources-with-colorized-equation-tokens"
+CompileTexSourcesWithColorizedCitations = make_compile_tex_command(
+    "citations", "citations"
+)
+CompileTexSourcesWithColorizedEquations = make_compile_tex_command(
+    "equations", "symbols"
+)
+CompileTexSourcesWithColorizedEquations = make_compile_tex_command(
+    "equation-tokens", "symbols"
+)
