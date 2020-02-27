@@ -2,7 +2,7 @@ import logging
 import os.path
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Iterator
+from typing import Iterator, Type
 
 import cv2
 import numpy as np
@@ -115,67 +115,35 @@ class DiffImagesCommand(ArxivBatchCommand[PageRasterPair, np.ndarray], ABC):
         logging.debug("Diffed images and stored result at %s", image_path)
 
 
-class DiffImagesWithColorizedCitations(DiffImagesCommand):
-    @staticmethod
-    def get_name() -> str:
-        return "diff-images-with-colorized-citations"
+def make_diff_images_command(
+    entity_name: str, entity_type: str
+) -> Type[DiffImagesCommand]:
+    class C(DiffImagesCommand):
+        @staticmethod
+        def get_name() -> str:
+            return f"diff-images-with-colorized-{entity_name}"
 
-    @staticmethod
-    def get_description() -> str:
-        return "Diff images of pages with colorized citations with uncolorized images."
+        @staticmethod
+        def get_description() -> str:
+            return f"Diff images of pages with colorized {entity_name} with uncolorized images."
 
-    @staticmethod
-    def get_entity_type() -> str:
-        return "citations"
+        @staticmethod
+        def get_entity_type() -> str:
+            return entity_type
 
-    @staticmethod
-    def get_raster_base_dirkey() -> str:
-        return "paper-with-colorized-citations-images"
+        @staticmethod
+        def get_raster_base_dirkey() -> str:
+            return f"paper-with-colorized-{entity_name}-images"
 
-    @staticmethod
-    def get_output_base_dirkey() -> str:
-        return "diff-images-with-colorized-citations"
+        @staticmethod
+        def get_output_base_dirkey() -> str:
+            return f"diff-images-with-colorized-{entity_name}"
 
-
-class DiffImagesWithColorizedEquations(DiffImagesCommand):
-    @staticmethod
-    def get_name() -> str:
-        return "diff-images-with-colorized-equations"
-
-    @staticmethod
-    def get_description() -> str:
-        return "Diff images of pages with colorized equations with uncolorized images."
-
-    @staticmethod
-    def get_entity_type() -> str:
-        return "symbols"
-
-    @staticmethod
-    def get_raster_base_dirkey() -> str:
-        return "paper-with-colorized-equations-images"
-
-    @staticmethod
-    def get_output_base_dirkey() -> str:
-        return "diff-images-with-colorized-equations"
+    return C
 
 
-class DiffImagesWithColorizedEquationTokens(DiffImagesCommand):
-    @staticmethod
-    def get_name() -> str:
-        return "diff-images-with-colorized-equation-tokens"
-
-    @staticmethod
-    def get_description() -> str:
-        return "Diff images of pages with colorized equation tokens with uncolorized images."
-
-    @staticmethod
-    def get_entity_type() -> str:
-        return "symbols"
-
-    @staticmethod
-    def get_raster_base_dirkey() -> str:
-        return "paper-with-colorized-equation-tokens-images"
-
-    @staticmethod
-    def get_output_base_dirkey() -> str:
-        return "diff-images-with-colorized-equation-tokens"
+DiffImagesWithColorizedCitations = make_diff_images_command("citations", "citations")
+DiffImagesWithColorizedEquations = make_diff_images_command("equations", "symbols")
+DiffImagesWithColorizedEquationTokens = make_diff_images_command(
+    "equation-tokens", "symbols"
+)

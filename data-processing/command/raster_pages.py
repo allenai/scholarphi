@@ -4,7 +4,7 @@ import logging
 import os.path
 import subprocess
 from abc import ABC, abstractmethod
-from typing import Dict, Iterator, NamedTuple
+from typing import Dict, Iterator, NamedTuple, Type
 
 from command.command import ArxivBatchCommand
 from common import directories
@@ -156,79 +156,39 @@ class RasterPages(RasterPagesCommand):
         return "paper-images"
 
 
-class RasterPagesWithColorizedCitations(RasterPagesCommand):
-    @staticmethod
-    def get_name() -> str:
-        return "raster-pages-with-colorized-citations"
+def make_raster_pages_command(
+    entity_name: str, entity_type: str
+) -> Type[RasterPagesCommand]:
+    class C(RasterPagesCommand):
+        @staticmethod
+        def get_name() -> str:
+            return f"raster-pages-with-colorized-{entity_name}"
 
-    @staticmethod
-    def get_description() -> str:
-        return "Raster images of pages from papers with colorized citations."
+        @staticmethod
+        def get_description() -> str:
+            return f"Raster images of pages from papers with colorized {entity_name}."
 
-    @staticmethod
-    def get_entity_type() -> str:
-        return "citations"
+        @staticmethod
+        def get_entity_type() -> str:
+            return entity_type
 
-    def get_papers_base_dirkey(self) -> AbsolutePath:
-        return "compiled-sources-with-colorized-citations"
+        def get_papers_base_dirkey(self) -> str:
+            return f"compiled-sources-with-colorized-{entity_name}"
 
-    def get_paper_dirs(self, arxiv_id: ArxivId) -> Iterator[RelativePath]:
-        for iteration in directories.iteration_names(
-            self.get_papers_base_dirkey(), arxiv_id
-        ):
-            yield directories.relpath_arxiv_id_iteration(arxiv_id, iteration)
+        def get_paper_dirs(self, arxiv_id: ArxivId) -> Iterator[RelativePath]:
+            for iteration in directories.iteration_names(
+                self.get_papers_base_dirkey(), arxiv_id
+            ):
+                yield directories.relpath_arxiv_id_iteration(arxiv_id, iteration)
 
-    def get_output_base_dirkey(self) -> AbsolutePath:
-        return "paper-with-colorized-citations-images"
+        def get_output_base_dirkey(self) -> str:
+            return f"paper-with-colorized-{entity_name}-images"
 
-
-class RasterPagesWithColorizedEquations(RasterPagesCommand):
-    @staticmethod
-    def get_name() -> str:
-        return "raster-pages-with-colorized-equations"
-
-    @staticmethod
-    def get_description() -> str:
-        return "Raster images of pages from papers with colorized equations."
-
-    @staticmethod
-    def get_entity_type() -> str:
-        return "symbols"
-
-    def get_papers_base_dirkey(self) -> str:
-        return "compiled-sources-with-colorized-equations"
-
-    def get_paper_dirs(self, arxiv_id: ArxivId) -> Iterator[RelativePath]:
-        for iteration in directories.iteration_names(
-            self.get_papers_base_dirkey(), arxiv_id
-        ):
-            yield directories.relpath_arxiv_id_iteration(arxiv_id, iteration)
-
-    def get_output_base_dirkey(self) -> str:
-        return "paper-with-colorized-equations-images"
+    return C
 
 
-class RasterPagesWithColorizedEquationTokens(RasterPagesCommand):
-    @staticmethod
-    def get_name() -> str:
-        return "raster-pages-with-colorized-equation-tokens"
-
-    @staticmethod
-    def get_description() -> str:
-        return "Raster images of pages from papers with colorized equation tokens."
-
-    @staticmethod
-    def get_entity_type() -> str:
-        return "symbols"
-
-    def get_papers_base_dirkey(self) -> str:
-        return "compiled-sources-with-colorized-equation-tokens"
-
-    def get_paper_dirs(self, arxiv_id: ArxivId) -> Iterator[RelativePath]:
-        for iteration in directories.iteration_names(
-            self.get_papers_base_dirkey(), arxiv_id
-        ):
-            yield directories.relpath_arxiv_id_iteration(arxiv_id, iteration)
-
-    def get_output_base_dirkey(self) -> str:
-        return "paper-with-colorized-equation-tokens-images"
+RasterPagesWithColorizedCitations = make_raster_pages_command("citations", "citations")
+RasterPagesWithColorizedEquations = make_raster_pages_command("equations", "symbols")
+RasterPagesWithColorizedEquationTokens = make_raster_pages_command(
+    "equation-tokens", "symbols"
+)
