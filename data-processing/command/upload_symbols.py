@@ -6,22 +6,15 @@ from typing import Dict, Iterator, List, NamedTuple
 from command.command import DatabaseUploadCommand
 from common import directories
 from common.file_utils import load_symbols
+from common.models import BoundingBox as BoundingBoxModel
+from common.models import Entity, EntityBoundingBox
+from common.models import MathMl as MathMlModel
+from common.models import MathMlMatch, Paper
+from common.models import Symbol as SymbolModel
+from common.models import SymbolChild, output_database
 from common.s2_data import get_s2_id
-from common.types import (
-    ArxivId,
-    BoundingBox,
-    Match,
-    Matches,
-    MathML,
-    SymbolId,
-    SymbolWithId,
-)
-from models.models import BoundingBox as BoundingBoxModel
-from models.models import Entity, EntityBoundingBox
-from models.models import MathMl as MathMlModel
-from models.models import MathMlMatch, Paper
-from models.models import Symbol as SymbolModel
-from models.models import SymbolChild, output_database
+from common.types import (ArxivId, BoundingBox, Match, Matches, MathML,
+                          SymbolId, SymbolWithId)
 
 S2Id = str
 Hue = float

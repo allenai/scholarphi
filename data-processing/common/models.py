@@ -113,7 +113,7 @@ class SymbolChild(OutputModel):
 
 
 class Entity(OutputModel):
-    type = TextField(choices=(("citation", None), ("symbol", None)), index=True)
+    type = TextField(index=True)
     source = TextField(
         choices=(("tex-pipeline", None), ("other", None)),
         index=True,

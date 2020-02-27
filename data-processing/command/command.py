@@ -4,8 +4,8 @@ from argparse import ArgumentParser
 from typing import Any, Generic, Iterator, List, Optional, TypeVar
 
 from common import directories
+from common.models import init_database_connections
 from common.types import ArxivId, Path
-from models.models import init_database_connections
 
 I = TypeVar("I")
 R = TypeVar("R")

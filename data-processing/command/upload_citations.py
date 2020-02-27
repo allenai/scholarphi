@@ -7,9 +7,8 @@ from peewee import IntegrityError
 
 from command.command import DatabaseUploadCommand
 from common import directories
-from common.types import ArxivId, Author, BoundingBox, CitationLocation, Reference
-from models.models import BoundingBox as BoundingBoxModel
-from models.models import (
+from common.models import BoundingBox as BoundingBoxModel
+from common.models import (
     Citation,
     CitationPaper,
     Entity,
@@ -18,6 +17,7 @@ from models.models import (
     Summary,
     output_database,
 )
+from common.types import ArxivId, Author, BoundingBox, CitationLocation, Reference
 
 CitationKey = str
 LocationIndex = int

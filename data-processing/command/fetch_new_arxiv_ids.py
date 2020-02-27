@@ -6,8 +6,8 @@ from typing import Any, Iterator
 from command.command import Command
 from common import directories
 from common.fetch_arxiv import fetch_new_arxiv_ids
+from common.models import init_database_connections
 from common.types import ArxivId
-from models.models import init_database_connections
 
 
 class FetchNewArxivIds(Command[ArxivId, ArxivId]):
