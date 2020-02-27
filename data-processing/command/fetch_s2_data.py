@@ -1,4 +1,4 @@
-import csv
+import dataclasses
 import logging
 import os.path
 import time
@@ -7,8 +7,8 @@ from typing import Iterator
 import requests
 
 from command.command import ArxivBatchCommand
-from common import directories
-from common.types import ArxivId, Author, Reference, S2Metadata
+from common import directories, file_utils
+from common.types import ArxivId, Author, Reference, S2Metadata, SerializableReference
 
 """ Time to wait between consecutive requests to S2 API. """
 FETCH_DELAY = 3  # seconds
@@ -66,21 +66,17 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
             os.makedirs(s2_metadata_dir)
 
         references_path = os.path.join(s2_metadata_dir, "references.csv")
-        with open(references_path, "w", encoding="utf-8") as references_file:
-            writer = csv.writer(references_file, quoting=csv.QUOTE_ALL)
-            for reference in result.references:
-                authors_string = ", ".join([a.name for a in reference.authors])
-                writer.writerow(
-                    [
-                        reference.s2Id,
-                        reference.arxivId,
-                        reference.doi,
-                        reference.title,
-                        authors_string,
-                        reference.venue,
-                        reference.year,
-                    ]
-                )
+        for r in result.references:
+            serializable = SerializableReference(
+                s2Id=r.s2Id,
+                arxivId=r.arxivId,
+                doi=r.doi,
+                title=r.title,
+                authors=str([dataclasses.asdict(a) for a in r.authors]),
+                venue=r.venue,
+                year=r.year,
+            )
+            file_utils.append_to_csv(references_path, serializable)
 
         s2_id_path = os.path.join(s2_metadata_dir, "s2_id")
         with open(s2_id_path, "w") as s2_id_file:

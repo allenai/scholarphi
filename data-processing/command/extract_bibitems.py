@@ -1,11 +1,10 @@
-import csv
 import logging
 import os.path
 from typing import Iterator, NamedTuple
 
 import common.directories as directories
 from command.command import ArxivBatchCommand
-from common.file_utils import clean_directory, find_files, read_file_tolerant
+from common import file_utils
 from common.parse_tex import BibitemExtractor
 from common.types import ArxivId, Bibitem, FileContents
 
@@ -34,9 +33,9 @@ class ExtractBibitems(ArxivBatchCommand[ExtractionTask, Bibitem]):
     def load(self) -> Iterator[ExtractionTask]:
         for arxiv_id in self.arxiv_ids:
             sources_dir = directories.arxiv_subdir("sources", arxiv_id)
-            clean_directory(directories.arxiv_subdir("bibitems", arxiv_id))
-            for path in find_files(sources_dir, [".tex", ".bbl"]):
-                file_contents = read_file_tolerant(path)
+            file_utils.clean_directory(directories.arxiv_subdir("bibitems", arxiv_id))
+            for path in file_utils.find_files(sources_dir, [".tex", ".bbl"]):
+                file_contents = file_utils.read_file_tolerant(path)
                 if file_contents is None:
                     continue
                 yield ExtractionTask(arxiv_id, file_contents)
@@ -54,12 +53,4 @@ class ExtractBibitems(ArxivBatchCommand[ExtractionTask, Bibitem]):
         if not os.path.exists(results_dir):
             os.makedirs(results_dir)
         results_path = os.path.join(results_dir, "bibitems.csv")
-        with open(results_path, "a", encoding="utf-8") as results_file:
-            writer = csv.writer(results_file, quoting=csv.QUOTE_ALL)
-            try:
-                writer.writerow([result.key, result.text])
-            except Exception:  # pylint: disable=broad-except
-                logging.warning(
-                    "Couldn't write row for bibitem for arXiv %s: can't be converted to utf-8",
-                    item.arxiv_id,
-                )
+        file_utils.append_to_csv(results_path, result)

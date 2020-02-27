@@ -125,6 +125,6 @@ CompileTexSourcesWithColorizedCitations = make_compile_tex_command(
 CompileTexSourcesWithColorizedEquations = make_compile_tex_command(
     "equations", "symbols"
 )
-CompileTexSourcesWithColorizedEquations = make_compile_tex_command(
+CompileTexSourcesWithColorizedEquationTokens = make_compile_tex_command(
     "equation-tokens", "symbols"
 )

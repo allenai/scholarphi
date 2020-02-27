@@ -53,12 +53,14 @@ S2Id = str
 S2AuthorId = str
 
 
-class Author(NamedTuple):
+@dataclass(frozen=True)
+class Author:
     id: Optional[S2AuthorId]
     name: str
 
 
-class Reference(NamedTuple):
+@dataclass(frozen=True)
+class Reference:
     s2Id: S2Id
     arxivId: Optional[ArxivId]
     doi: Optional[str]
@@ -68,7 +70,20 @@ class Reference(NamedTuple):
     year: Optional[int]
 
 
-class S2Metadata(NamedTuple):
+@dataclass(frozen=True)
+class SerializableReference:
+    s2Id: S2Id
+    arxivId: Optional[ArxivId]
+    doi: Optional[str]
+    title: str
+    authors: str
+    " Should be a literal string representing a Python list that can be read with ast.literal_eval "
+    venue: Optional[str]
+    year: Optional[int]
+
+
+@dataclass(frozen=True)
+class S2Metadata:
     s2id: S2Id
     references: List[Reference]
 
@@ -78,7 +93,8 @@ CITATIONS
 """
 
 
-class Bibitem(NamedTuple):
+@dataclass(frozen=True)
+class Bibitem:
     key: Optional[str]
 
     text: str

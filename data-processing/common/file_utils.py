@@ -1,14 +1,26 @@
 import csv
+import dataclasses
 import logging
 import os
 import shutil
-from typing import Dict, Iterator, List, Optional
+from typing import Dict, Iterator, List, Optional, Type, TypeVar
 
 from common import directories
-from common.types import (ArxivId, BoundingBox, CharacterId, CompilationResult,
-                          Equation, EquationId, FileContents, HueIteration,
-                          Path, Symbol, SymbolId, SymbolWithId,
-                          TokenWithOrigin)
+from common.types import (
+    ArxivId,
+    BoundingBox,
+    CharacterId,
+    CompilationResult,
+    Equation,
+    EquationId,
+    FileContents,
+    HueIteration,
+    Path,
+    Symbol,
+    SymbolId,
+    SymbolWithId,
+    TokenWithOrigin,
+)
 
 Contents = str
 Encoding = str
@@ -29,6 +41,74 @@ def read_file_tolerant(path: str) -> Optional[FileContents]:
 
     logging.error("Could not find an appropriate encoding for file %s", path)
     return None
+
+
+Dataclass = TypeVar("Dataclass")
+
+
+def append_to_csv(csv_path: Path, data_obj: Dataclass, encoding: str = "utf-8") -> None:
+    """
+    Append a data object to a CSV file. This function makes the following assumptions:
+    * 'obj' is a dataclass. This code will check dynamically to make sure the object is a
+      dataclass before writing it to file, and will do nothing if it is not.
+    * 'obj''s dataclass is flat---that is, it consists of only primitive data types.
+    * each 'obj' passed to this function for the same csv_path must be of the same dataclass type.
+      It would not make sense to write objects with different sets of fields to the same CSV file.
+      This function does not check to make sure that all the objects you pass
+      in have the same format.
+    """
+
+    if not dataclasses.is_dataclass(data_obj):
+        logging.error(  # pylint: disable=logging-not-lazy
+            (
+                "Object of type %s is not a dataclass. The code calling this append_to_csv function"
+                + "must be rewritten to only attempt to write objects that are of a dataclass type"
+            ),
+            type(data_obj),
+        )
+
+    # Check to see whether the file is empty
+    try:
+        file_empty = os.stat(csv_path).st_size == 0
+    except FileNotFoundError:
+        file_empty = True
+
+    with open(csv_path, "a", encoding=encoding) as csv_file:
+        data_dict = dataclasses.asdict(data_obj)
+        writer = csv.DictWriter(
+            # QUOTE_NONNUMERIC is used in both the writer and the reader to ensure that numbers
+            # (e.g., indexes, hues, positions) are decoded as numbers.
+            csv_file,
+            fieldnames=data_dict.keys(),
+            quoting=csv.QUOTE_NONNUMERIC,
+        )
+
+        # Only write the header the first time a record is added to the file
+        try:
+            if file_empty:
+                writer.writeheader()
+            writer.writerow(data_dict)
+        except Exception as exception:  # pylint: disable=broad-except
+            logging.warning(
+                "Couldn't write row containing data %s to CSV file. Reason: %s.",
+                data_obj,
+                exception,
+            )
+
+
+def load_from_csv(
+    csv_path: Path, D: Type[Dataclass], encoding: str = "utf-8",
+) -> Iterator[Dataclass]:
+    """
+    Load data from CSV file at 'csv_path', returning an iterator over objects of type 'D'.
+    This method assumes that the CSV file was written by 'append_to_csv'. Key to this assumption is
+    that each row of the CSV file has all of the data needed to populate an object of type 'D'. The
+    headers in the CSV file must exactly match the property names of 'D'.
+    """
+    with open(csv_path, encoding=encoding, newline="") as csv_file:
+        reader = csv.DictReader(csv_file, quoting=csv.QUOTE_NONNUMERIC)
+        for row in reader:
+            yield D(**row)  # type: ignore
 
 
 def clean_directory(directory: str) -> None:
@@ -77,7 +157,9 @@ def _get_symbol_id(row: List[str]) -> SymbolId:
 
 
 def load_equations(arxiv_id: ArxivId) -> Optional[Dict[EquationId, Equation]]:
-    equations_path = os.path.join(directories.arxiv_subdir("equations", arxiv_id), "equations.csv")
+    equations_path = os.path.join(
+        directories.arxiv_subdir("equations", arxiv_id), "equations.csv"
+    )
     if not os.path.exists(equations_path):
         logging.warning("No equation data found for paper %s. Skipping.", arxiv_id)
         return None
@@ -109,7 +191,9 @@ def load_tokens(arxiv_id: ArxivId) -> Optional[List[TokenWithOrigin]]:
     if equations is None:
         return None
 
-    tokens_path = os.path.join(directories.arxiv_subdir("symbols", arxiv_id), "tokens.csv")
+    tokens_path = os.path.join(
+        directories.arxiv_subdir("symbols", arxiv_id), "tokens.csv"
+    )
     if not os.path.exists(tokens_path):
         logging.warning(
             "No equation token data found for paper %s. Skipping.", arxiv_id
@@ -238,7 +322,8 @@ def load_citation_hue_locations(
 
     boxes_by_hue_iteration: Dict[HueIteration, List[BoundingBox]] = {}
     bounding_boxes_path = os.path.join(
-        directories.arxiv_subdir("hue-locations-for-citations", arxiv_id), "hue_locations.csv"
+        directories.arxiv_subdir("hue-locations-for-citations", arxiv_id),
+        "hue_locations.csv",
     )
     if not os.path.exists(bounding_boxes_path):
         logging.warning(
@@ -271,7 +356,8 @@ def load_equation_token_locations(
 
     token_locations: Dict[CharacterId, List[BoundingBox]] = {}
     token_locations_path = os.path.join(
-        directories.arxiv_subdir("hue-locations-for-equation-tokens", arxiv_id), "hue_locations.csv",
+        directories.arxiv_subdir("hue-locations-for-equation-tokens", arxiv_id),
+        "hue_locations.csv",
     )
     if not os.path.exists(token_locations_path):
         logging.warning(
