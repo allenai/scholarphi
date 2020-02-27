@@ -1,24 +1,27 @@
-import csv
 import logging
 import os.path
 import re
-from typing import Iterator, List, NamedTuple, Set
+from dataclasses import dataclass
+from typing import Iterator, List, Optional, Set
 
 from command.command import ArxivBatchCommand
-from common import directories
-from common.file_utils import clean_directory
-from common.types import ArxivId, Author, Bibitem, Reference
+from common import directories, file_utils
+from common.types import ArxivId, Bibitem, SerializableReference
 
 
-class MatchTask(NamedTuple):
+@dataclass(frozen=True)
+class MatchTask:
     arxiv_id: ArxivId
     bibitems: List[Bibitem]
-    references: List[Reference]
+    references: List[SerializableReference]
 
 
-class Match(NamedTuple):
-    bibitem: Bibitem
-    reference: Reference
+@dataclass(frozen=True)
+class BibitemMatch:
+    key: Optional[str]
+    bibitem_text: str
+    s2_id: str
+    s2_title: str
 
 
 """
@@ -45,7 +48,7 @@ def ngram_sim(s1: str, s2: str) -> float:
     return len(s1_grams.intersection(s2_grams)) / min(len(s1_grams), len(s2_grams))
 
 
-class ResolveBibitems(ArxivBatchCommand[MatchTask, Match]):
+class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
     @staticmethod
     def get_name() -> str:
         return "resolve-bibitems"
@@ -63,11 +66,11 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, Match]):
 
     def load(self) -> Iterator[MatchTask]:
         for arxiv_id in self.arxiv_ids:
-            clean_directory(directories.arxiv_subdir("bibitem-resolutions", arxiv_id))
+            file_utils.clean_directory(
+                directories.arxiv_subdir("bibitem-resolutions", arxiv_id)
+            )
             bibitems_dir = directories.arxiv_subdir("bibitems", arxiv_id)
             metadata_dir = directories.arxiv_subdir("s2-metadata", arxiv_id)
-
-            references = []
 
             references_path = os.path.join(metadata_dir, "references.csv")
             if not os.path.exists(references_path):
@@ -77,25 +80,9 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, Match]):
                     arxiv_id,
                 )
                 return
-            with open(references_path, encoding="utf-8") as references_file:
-                reader = csv.reader(references_file)
-                for row in reader:
-                    references.append(
-                        Reference(
-                            s2Id=row[0],
-                            arxivId=row[1],
-                            doi=row[2],
-                            title=row[3],
-                            authors=[
-                                Author(id=None, name=name)
-                                for name in row[4].split(", ")
-                            ],
-                            venue=row[5],
-                            year=int(row[6]) if row[6].isspace() else None,
-                        )
-                    )
-
-            bibitems = []
+            references = list(
+                file_utils.load_from_csv(references_path, SerializableReference)
+            )
 
             bibitems_path = os.path.join(bibitems_dir, "bibitems.csv")
             if not os.path.exists(bibitems_path):
@@ -105,14 +92,11 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, Match]):
                     arxiv_id,
                 )
                 return
-            with open(bibitems_path, encoding="utf-8") as bibitems_file:
-                reader = csv.reader(bibitems_file)
-                for row in reader:
-                    bibitems.append(Bibitem(key=row[0], text=row[1]))
+            bibitems = list(file_utils.load_from_csv(bibitems_path, Bibitem))
 
             yield MatchTask(arxiv_id, bibitems, references)
 
-    def process(self, item: MatchTask) -> Iterator[Match]:
+    def process(self, item: MatchTask) -> Iterator[BibitemMatch]:
         for bibitem in item.bibitems:
             max_similarity = 0.0
             most_similar_reference = None
@@ -129,7 +113,12 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, Match]):
                     most_similar_reference = reference
 
             if most_similar_reference is not None:
-                yield Match(bibitem, most_similar_reference)
+                yield BibitemMatch(
+                    bibitem.key,
+                    bibitem.text,
+                    most_similar_reference.s2Id,
+                    most_similar_reference.title,
+                )
             else:
                 logging.warning(
                     "Could not find a sufficiently similar reference for bibitem %s of paper %s",
@@ -137,19 +126,10 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, Match]):
                     item.arxiv_id,
                 )
 
-    def save(self, item: MatchTask, result: Match) -> None:
+    def save(self, item: MatchTask, result: BibitemMatch) -> None:
         resolutions_dir = directories.arxiv_subdir("bibitem-resolutions", item.arxiv_id)
         if not os.path.exists(resolutions_dir):
             os.makedirs(resolutions_dir)
 
         resolutions_path = os.path.join(resolutions_dir, "resolutions.csv")
-        with open(resolutions_path, "a", encoding="utf-8") as resolutions_file:
-            writer = csv.writer(resolutions_file, quoting=csv.QUOTE_ALL)
-            writer.writerow(
-                [
-                    result.bibitem.key,
-                    result.reference.s2Id,
-                    result.reference.title,
-                    result.bibitem.text,
-                ]
-            )
+        file_utils.append_to_csv(resolutions_path, result)
