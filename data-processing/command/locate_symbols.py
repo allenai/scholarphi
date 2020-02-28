@@ -1,16 +1,16 @@
-import csv
 import os.path
 from typing import Iterator, NamedTuple
 
 from command.command import ArxivBatchCommand
-from common import directories
+from common import directories, file_utils
 from common.bounding_box import get_symbol_bounding_box
-from common.file_utils import (
-    clean_directory,
-    load_equation_token_locations,
-    load_symbols,
+from common.types import (
+    ArxivId,
+    BoundingBox,
+    CharacterLocations,
+    SymbolLocation,
+    SymbolWithId,
 )
-from common.types import ArxivId, BoundingBox, CharacterLocations, SymbolWithId
 
 
 class LocationTask(NamedTuple):
@@ -43,13 +43,13 @@ class LocateSymbols(ArxivBatchCommand[LocationTask, BoundingBox]):
         for arxiv_id in self.arxiv_ids:
 
             output_dir = directories.arxiv_subdir("symbol-locations", arxiv_id)
-            clean_directory(output_dir)
+            file_utils.clean_directory(output_dir)
 
-            token_locations = load_equation_token_locations(arxiv_id)
+            token_locations = file_utils.load_equation_token_locations(arxiv_id)
             if token_locations is None:
                 continue
 
-            symbols_with_ids = load_symbols(arxiv_id)
+            symbols_with_ids = file_utils.load_symbols(arxiv_id)
             if symbols_with_ids is None:
                 continue
 
@@ -74,17 +74,16 @@ class LocateSymbols(ArxivBatchCommand[LocationTask, BoundingBox]):
 
         locations_path = os.path.join(output_dir, "symbol_locations.csv")
         symbol_id = item.symbol_with_id.symbol_id
-        with open(locations_path, "a") as locations_file:
-            writer = csv.writer(locations_file, quoting=csv.QUOTE_ALL)
-            writer.writerow(
-                [
-                    symbol_id.tex_path,
-                    symbol_id.equation_index,
-                    symbol_id.symbol_index,
-                    result.page,
-                    result.left,
-                    result.top,
-                    result.width,
-                    result.height,
-                ]
-            )
+        file_utils.append_to_csv(
+            locations_path,
+            SymbolLocation(
+                tex_path=symbol_id.tex_path,
+                equation_index=symbol_id.equation_index,
+                symbol_index=symbol_id.symbol_index,
+                page=result.page,
+                left=result.left,
+                top=result.top,
+                width=result.width,
+                height=result.height,
+            ),
+        )

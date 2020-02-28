@@ -4,14 +4,8 @@ import os.path
 from typing import Dict, Iterator, List, NamedTuple
 
 from command.command import ArxivBatchCommand
-from common import directories
+from common import directories, file_utils
 from common.annotate_tex import AnnotatedFile, annotate_symbols_and_equations
-from common.file_utils import (
-    clean_directory,
-    load_symbols,
-    load_tokens,
-    read_file_tolerant,
-)
 from common.types import (
     ArxivId,
     Character,
@@ -56,7 +50,7 @@ class AnnotateTexWithSymbolMarkers(ArxivBatchCommand[TexAndSymbols, AnnotationRe
             output_root = directories.arxiv_subdir(
                 "sources-with-annotated-symbols", arxiv_id
             )
-            clean_directory(output_root)
+            file_utils.clean_directory(output_root)
 
             symbols_dir = directories.arxiv_subdir("symbols", arxiv_id)
             tokens_path = os.path.join(symbols_dir, "tokens.csv")
@@ -66,12 +60,12 @@ class AnnotateTexWithSymbolMarkers(ArxivBatchCommand[TexAndSymbols, AnnotationRe
                 )
                 continue
 
-            symbols_with_ids = load_symbols(arxiv_id)
+            symbols_with_ids = file_utils.load_symbols(arxiv_id)
             if symbols_with_ids is None:
                 continue
             symbols = {swi.symbol_id: swi.symbol for swi in symbols_with_ids}
 
-            tokens = load_tokens(arxiv_id)
+            tokens = file_utils.load_tokens(arxiv_id)
             if tokens is None:
                 continue
             tex_paths = set({t.tex_path for t in tokens})
@@ -91,7 +85,7 @@ class AnnotateTexWithSymbolMarkers(ArxivBatchCommand[TexAndSymbols, AnnotationRe
                 absolute_tex_path = os.path.join(
                     directories.arxiv_subdir("sources", arxiv_id), tex_path
                 )
-                file_contents = read_file_tolerant(absolute_tex_path)
+                file_contents = file_utils.read_file_tolerant(absolute_tex_path)
                 if file_contents is not None:
                     contents_by_file[tex_path] = file_contents
 

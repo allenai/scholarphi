@@ -2,11 +2,11 @@ import logging
 import os.path
 import re
 from dataclasses import dataclass
-from typing import Iterator, List, Optional, Set
+from typing import Iterator, List, Set
 
 from command.command import ArxivBatchCommand
 from common import directories, file_utils
-from common.types import ArxivId, Bibitem, SerializableReference
+from common.types import ArxivId, Bibitem, BibitemMatch, SerializableReference
 
 
 @dataclass(frozen=True)
@@ -14,14 +14,6 @@ class MatchTask:
     arxiv_id: ArxivId
     bibitems: List[Bibitem]
     references: List[SerializableReference]
-
-
-@dataclass(frozen=True)
-class BibitemMatch:
-    key: Optional[str]
-    bibitem_text: str
-    s2_id: str
-    s2_title: str
 
 
 """
@@ -116,7 +108,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
                 yield BibitemMatch(
                     bibitem.key,
                     bibitem.text,
-                    most_similar_reference.s2Id,
+                    most_similar_reference.s2_id,
                     most_similar_reference.title,
                 )
             else:

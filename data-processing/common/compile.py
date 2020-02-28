@@ -7,6 +7,7 @@ import re
 import subprocess
 from typing import Iterator, List
 
+from common import file_utils
 from common.types import CompilationResult, OutputFile
 
 COMPILE_CONFIG = "config.ini"
@@ -99,14 +100,10 @@ def get_output_files(compiled_tex_dir: str) -> List[OutputFile]:
     with open(result_path) as result_file:
         result = result_file.read().strip()
         if result == "True":
-            output_files = []
             output_files_path = os.path.join(
                 compilation_results_dir, "output_files.csv"
             )
-            with open(output_files_path) as output_files_file:
-                reader = csv.reader(output_files_file)
-                for row in reader:
-                    output_files.append(OutputFile(row[1], row[2]))
+            output_files = list(file_utils.load_from_csv(output_files_path, OutputFile))
             return output_files
 
     return []

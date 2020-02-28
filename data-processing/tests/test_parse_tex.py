@@ -4,9 +4,9 @@ from common.parse_tex import (
     DocumentclassExtractor,
     EquationExtractor,
     MacroExtractor,
-    SentenceExtractor,
 )
 from common.types import MacroDefinition
+from entities.sentences.detect import SentenceExtractor
 
 
 def test_extract_sentences():

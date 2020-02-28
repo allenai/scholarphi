@@ -1,3 +1,8 @@
+"""
+Utilities for reading and writing to files. Functions should be placed in here if they need to be
+used by multiple scripts or modules.
+"""
+
 import csv
 import dataclasses
 import logging
@@ -12,10 +17,17 @@ from common.types import (
     CharacterId,
     CompilationResult,
     Equation,
+    EquationColorizationRecord,
     EquationId,
+    EquationTokenHueLocationInfo,
     FileContents,
     HueIteration,
+    HueLocationInfo,
     Path,
+    SerializableCharacter,
+    SerializableChild,
+    SerializableSymbol,
+    SerializableToken,
     Symbol,
     SymbolId,
     SymbolWithId,
@@ -80,7 +92,7 @@ def append_to_csv(csv_path: Path, data_obj: Dataclass, encoding: str = "utf-8") 
             # (e.g., indexes, hues, positions) are decoded as numbers.
             csv_file,
             fieldnames=data_dict.keys(),
-            quoting=csv.QUOTE_NONNUMERIC,
+            quoting=csv.QUOTE_MINIMAL,
         )
 
         # Only write the header the first time a record is added to the file
@@ -103,12 +115,19 @@ def load_from_csv(
     Load data from CSV file at 'csv_path', returning an iterator over objects of type 'D'.
     This method assumes that the CSV file was written by 'append_to_csv'. Key to this assumption is
     that each row of the CSV file has all of the data needed to populate an object of type 'D'. The
-    headers in the CSV file must exactly match the property names of 'D'.
+    headers in the CSV file must exactly match the property names of 'D'. There can, however,
+    be extra columns in the CSV file that don't correspond to the dataclass.
     """
     with open(csv_path, encoding=encoding, newline="") as csv_file:
-        reader = csv.DictReader(csv_file, quoting=csv.QUOTE_NONNUMERIC)
+        reader = csv.DictReader(csv_file, quoting=csv.QUOTE_MINIMAL)
         for row in reader:
-            yield D(**row)  # type: ignore
+            data = {}
+            # Transfer data from the row into a dictionary of arguments. By only including the
+            # fields for D, we skip over columns that can't be used to initialize D. At the
+            # same time, cast each column to the intended data type.
+            for field in dataclasses.fields(D):
+                data[field.name] = field.type(row[field.name])
+            yield D(**data)  # type: ignore
 
 
 def clean_directory(directory: str) -> None:
@@ -147,15 +166,6 @@ def find_files(
                 yield path
 
 
-def _get_symbol_id(row: List[str]) -> SymbolId:
-    """
-    Get symbol ID for a row in a symbols data file.
-    """
-    return SymbolId(
-        tex_path=row[0], equation_index=int(row[1]), symbol_index=int(row[3])
-    )
-
-
 def load_equations(arxiv_id: ArxivId) -> Optional[Dict[EquationId, Equation]]:
     equations_path = os.path.join(
         directories.arxiv_subdir("equations", arxiv_id), "equations.csv"
@@ -165,24 +175,9 @@ def load_equations(arxiv_id: ArxivId) -> Optional[Dict[EquationId, Equation]]:
         return None
 
     equations: Dict[EquationId, Equation] = {}
-    with open(equations_path, encoding="utf-8") as equations_file:
-        reader = csv.reader(equations_file)
-        for row in reader:
-            tex_path = row[0]
-            equation_index = int(row[1])
-            equation = Equation(
-                int(row[9]),
-                int(row[10]),
-                int(row[1]),
-                row[4],
-                int(row[5]),
-                int(row[6]),
-                row[7],
-                int(row[8]),
-            )
-            equation_id = EquationId(tex_path, equation_index)
-            equations[equation_id] = equation
-
+    for equation in load_from_csv(equations_path, EquationColorizationRecord):
+        equation_id = EquationId(tex_path=equation.tex_path, equation_index=equation.i)
+        equations[equation_id] = equation
     return equations
 
 
@@ -202,27 +197,23 @@ def load_tokens(arxiv_id: ArxivId) -> Optional[List[TokenWithOrigin]]:
 
     # Load token location information
     tokens = []
-    with open(tokens_path, encoding="utf-8") as tokens_file:
-        reader = csv.reader(tokens_file)
-        for row in reader:
-            tex_path = row[0]
-            equation_index = int(row[1])
-            equation_id = EquationId(tex_path, equation_index)
-            if equation_id not in equations:
-                logging.warning(
-                    "Couldn't find equation with ID %s for token", equation_id
-                )
-                continue
-            tokens.append(
-                TokenWithOrigin(
-                    tex_path=tex_path,
-                    equation=equations[equation_id],
-                    token_index=int(row[3]),
-                    start=int(row[4]),
-                    end=int(row[5]),
-                    text=row[6],
-                )
+    for token in load_from_csv(tokens_path, SerializableToken):
+        tex_path = token.tex_path
+        equation_index = token.equation_index
+        equation_id = EquationId(tex_path, equation_index)
+        if equation_id not in equations:
+            logging.warning("Couldn't find equation with ID %s for token", equation_id)
+            continue
+        tokens.append(
+            TokenWithOrigin(
+                tex_path=token.tex_path,
+                equation=equations[equation_id],
+                token_index=token.token_index,
+                start=token.start,
+                end=token.end,
+                text=token.text,
             )
+        )
 
     return tokens
 
@@ -248,29 +239,24 @@ def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
     if file_not_found:
         return None
 
+    loaded_symbols = load_from_csv(symbols_path, SerializableSymbol)
+    loaded_symbol_tokens = load_from_csv(symbol_tokens_path, SerializableCharacter)
+    loaded_symbol_children = load_from_csv(symbol_children_path, SerializableChild)
+
     symbols_by_id: Dict[SymbolId, Symbol] = {}
+    for s in loaded_symbols:
+        symbol_id = SymbolId(s.tex_path, s.equation_index, s.symbol_index)
+        symbols_by_id[symbol_id] = Symbol(characters=[], mathml=s.mathml, children=[])
 
-    with open(symbols_path, encoding="utf-8") as symbols_file:
-        reader = csv.reader(symbols_file)
-        for row in reader:
-            symbol_id = _get_symbol_id(row)
-            mathml = row[4]
-            symbols_by_id[symbol_id] = Symbol(characters=[], mathml=mathml, children=[])
+    for t in loaded_symbol_tokens:
+        symbol_id = SymbolId(t.tex_path, t.equation_index, t.symbol_index)
+        symbols_by_id[symbol_id].characters.append(t.character_index)
 
-    with open(symbol_tokens_path, encoding="utf-8") as symbol_tokens_file:
-        reader = csv.reader(symbol_tokens_file)
-        for row in reader:
-            symbol_id = _get_symbol_id(row)
-            character_index = int(row[4])
-            symbols_by_id[symbol_id].characters.append(character_index)
-
-    with open(symbol_children_path, encoding="utf-8") as symbol_children_file:
-        reader = csv.reader(symbol_children_file)
-        for row in reader:
-            symbol = symbols_by_id[_get_symbol_id(row)]
-            child_symbol_id = SymbolId(row[0], int(row[1]), int(row[4]))
-            child_symbol = symbols_by_id[child_symbol_id]
-            symbol.children.append(child_symbol)
+    for c in loaded_symbol_children:
+        parent_id = SymbolId(c.tex_path, c.equation_index, c.symbol_index)
+        child_id = SymbolId(c.tex_path, c.equation_index, c.child_index)
+        child_symbol = symbols_by_id[child_id]
+        symbols_by_id[parent_id].children.append(child_symbol)
 
     return [
         SymbolWithId(symbol_id, symbol) for symbol_id, symbol in symbols_by_id.items()
@@ -304,10 +290,9 @@ def save_compilation_results(path: Path, result: CompilationResult) -> None:
     with open(os.path.join(results_dir, "result"), "w") as success_file:
         success_file.write(str(result.success))
 
-    with open(os.path.join(results_dir, "output_files.csv"), "w") as output_files_file:
-        writer = csv.writer(output_files_file, quoting=csv.QUOTE_ALL)
-        for i, output_file in enumerate(result.output_files):
-            writer.writerow([i, output_file.output_type, output_file.path])
+    output_files_path = os.path.join(results_dir, "output_files.csv")
+    for output_file in result.output_files:
+        append_to_csv(output_files_path, output_file)
 
     with open(os.path.join(results_dir, "stdout.log"), "wb") as stdout_file:
         stdout_file.write(result.stdout)
@@ -330,22 +315,19 @@ def load_citation_hue_locations(
             "Could not find bounding boxes information for %s. Skipping", arxiv_id,
         )
         return None
-    with open(bounding_boxes_path) as bounding_boxes_file:
-        reader = csv.reader(bounding_boxes_file)
-        for row in reader:
-            iteration = row[1]
-            hue = float(row[2])
-            box = BoundingBox(
-                page=int(row[3]),
-                left=float(row[4]),
-                top=float(row[5]),
-                width=float(row[6]),
-                height=float(row[7]),
-            )
-            hue_iteration = HueIteration(hue, iteration)
-            if hue_iteration not in boxes_by_hue_iteration:
-                boxes_by_hue_iteration[hue_iteration] = []
-            boxes_by_hue_iteration[hue_iteration].append(box)
+
+    for hue_info in load_from_csv(bounding_boxes_path, HueLocationInfo):
+        box = BoundingBox(
+            page=hue_info.page,
+            left=hue_info.left,
+            top=hue_info.top,
+            width=hue_info.width,
+            height=hue_info.height,
+        )
+        hue_iteration = HueIteration(hue_info.hue, hue_info.iteration)
+        if hue_iteration not in boxes_by_hue_iteration:
+            boxes_by_hue_iteration[hue_iteration] = []
+        boxes_by_hue_iteration[hue_iteration].append(box)
 
     return boxes_by_hue_iteration
 
@@ -364,22 +346,20 @@ def load_equation_token_locations(
             "Could not find bounding boxes information for %s. Skipping", arxiv_id,
         )
         return None
-    with open(token_locations_path) as token_locations_file:
-        reader = csv.reader(token_locations_file)
-        for row in reader:
-            tex_path = row[-3]
-            equation_index = int(row[-2])
-            character_index = int(row[-1])
-            character_id = CharacterId(tex_path, equation_index, character_index)
-            box = BoundingBox(
-                page=int(row[3]),
-                left=float(row[4]),
-                top=float(row[5]),
-                width=float(row[6]),
-                height=float(row[7]),
-            )
-            if character_id not in token_locations:
-                token_locations[character_id] = []
-            token_locations[character_id].append(box)
+
+    for record in load_from_csv(token_locations_path, EquationTokenHueLocationInfo):
+        character_id = CharacterId(
+            record.tex_path, record.equation_index, record.character_index
+        )
+        box = BoundingBox(
+            page=int(record.page),
+            left=record.left,
+            top=record.top,
+            width=record.width,
+            height=record.height,
+        )
+        if character_id not in token_locations:
+            token_locations[character_id] = []
+        token_locations[character_id].append(box)
 
     return token_locations

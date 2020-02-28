@@ -1,22 +1,16 @@
-import csv
+import dataclasses
 import os.path
-from dataclasses import dataclass
-from typing import Iterator, List
+from typing import Iterator
 
 from command.command import ArxivBatchCommand
-from common import directories
-from common.file_utils import clean_directory
+from common import directories, file_utils
 from common.sanitize_equation import sanitize_equation
-from common.types import ArxivId
+from common.types import EquationColorizationRecord
 
 
-@dataclass(frozen=True)
-class EquationData:
-    arxiv_id: ArxivId
-    csv_row: List[str]
-
-
-class ExtractEquations(ArxivBatchCommand[EquationData, None]):
+class ExtractEquations(
+    ArxivBatchCommand[EquationColorizationRecord, EquationColorizationRecord]
+):
     """
     This script assumes that the script for colorizing equations in TeX has already been run.
     The output from that step includes the TeX extracted for all equations. This script
@@ -44,11 +38,12 @@ class ExtractEquations(ArxivBatchCommand[EquationData, None]):
     def get_arxiv_ids_dirkey(self) -> str:
         return "sources-with-colorized-equations"
 
-    def load(self) -> Iterator[EquationData]:
+    def load(self) -> Iterator[EquationColorizationRecord]:
 
         for arxiv_id in self.arxiv_ids:
-            clean_directory(directories.arxiv_subdir("equations", arxiv_id))
+            file_utils.clean_directory(directories.arxiv_subdir("equations", arxiv_id))
 
+            # Load equations found during all colorization iterations
             for iteration in directories.iteration_names(
                 "sources-with-colorized-equations", arxiv_id
             ):
@@ -58,22 +53,22 @@ class ExtractEquations(ArxivBatchCommand[EquationData, None]):
                 equation_hues_path = os.path.join(
                     colorized_sources_dir, "equation_hues.csv"
                 )
-                with open(equation_hues_path, encoding="utf-8") as equation_hues_file:
-                    reader = csv.reader(equation_hues_file)
-                    for row in reader:
-                        equation = row[7]
-                        sanitized = sanitize_equation(equation)
-                        updated_row = row + [sanitized]
-                        yield EquationData(arxiv_id=arxiv_id, csv_row=updated_row)
+                for record in file_utils.load_from_csv(
+                    equation_hues_path, EquationColorizationRecord
+                ):
+                    yield record
 
-    def process(self, _: EquationData) -> Iterator[None]:
-        yield None
+    def process(
+        self, item: EquationColorizationRecord
+    ) -> Iterator[EquationColorizationRecord]:
+        # Sanitize equation to an equivalent equation that can be processed by KaTeX
+        yield dataclasses.replace(item, content_tex=sanitize_equation(item.content_tex))
 
-    def save(self, item: EquationData, _: None) -> None:
-        results_dir = directories.arxiv_subdir("equations", item.arxiv_id)
+    def save(
+        self, _: EquationColorizationRecord, result: EquationColorizationRecord
+    ) -> None:
+        results_dir = directories.arxiv_subdir("equations", result.arxiv_id)
         if not os.path.exists(results_dir):
             os.makedirs(results_dir)
         results_path = os.path.join(results_dir, "equations.csv")
-        with open(results_path, "a", encoding="utf-8") as results_file:
-            writer = csv.writer(results_file, quoting=csv.QUOTE_ALL)
-            writer.writerow(item.csv_row)
+        file_utils.append_to_csv(results_path, result)

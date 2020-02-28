@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict, List, NamedTuple, Optional, Set
+from typing import Any, Dict, List, NamedTuple, Optional
 
 """
 FILE PROCESSING
@@ -61,30 +61,30 @@ class Author:
 
 @dataclass(frozen=True)
 class Reference:
-    s2Id: S2Id
-    arxivId: Optional[ArxivId]
-    doi: Optional[str]
+    s2_id: S2Id
+    arxivId: ArxivId
+    doi: str
     title: str
     authors: List[Author]
-    venue: Optional[str]
-    year: Optional[int]
+    venue: str
+    year: int
 
 
 @dataclass(frozen=True)
 class SerializableReference:
-    s2Id: S2Id
-    arxivId: Optional[ArxivId]
-    doi: Optional[str]
+    s2_id: S2Id
+    arxivId: ArxivId
+    doi: str
     title: str
     authors: str
     " Should be a literal string representing a Python list that can be read with ast.literal_eval "
-    venue: Optional[str]
-    year: Optional[int]
+    venue: str
+    year: int
 
 
 @dataclass(frozen=True)
 class S2Metadata:
-    s2id: S2Id
+    s2_id: S2Id
     references: List[Reference]
 
 
@@ -95,10 +95,18 @@ CITATIONS
 
 @dataclass(frozen=True)
 class Bibitem:
-    key: Optional[str]
+    key: str
 
     text: str
     " Plaintext extracted for bibitem. "
+
+
+@dataclass(frozen=True)
+class BibitemMatch:
+    key: str
+    bibitem_text: str
+    s2_id: str
+    s2_title: str
 
 
 """
@@ -200,7 +208,8 @@ class CharacterId(NamedTuple):
     character_index: CharacterIndex
 
 
-class SymbolId(NamedTuple):
+@dataclass(frozen=True)
+class SymbolId:
     tex_path: str
     equation_index: EquationIndex
     symbol_index: SymbolIndex
@@ -251,18 +260,90 @@ class EquationId:
     equation_index: int
 
 
+" Serializable data classes for symbols, for storing results to file"
+
+
+@dataclass(frozen=True)
+class SerializableToken:
+    tex_path: str
+    equation: str
+    equation_index: int
+    token_index: int
+    start: int
+    end: int
+    text: str
+
+
+@dataclass(frozen=True)
+class SerializableSymbol(SymbolId):
+    equation: str
+    mathml: str
+
+
+@dataclass(frozen=True)
+class SerializableCharacter(SymbolId):
+    equation: str
+    character_index: int
+
+
+@dataclass(frozen=True)
+class SerializableChild(SymbolId):
+    equation: str
+    child_index: int
+
+
+"""
+COLORIZATION RECORDS
+"""
+
+
+@dataclass(frozen=True)
+class ColorizedTokenWithOrigin:
+    tex_path: str
+    equation_index: int
+    token_index: int
+    start: int
+    end: int
+    text: str
+    hue: float
+
+
+@dataclass(frozen=True)
+class ColorizationRecord:
+    hue: float
+    tex_path: str
+    iteration: str
+
+
+@dataclass(frozen=True)
+class CitationColorizationRecord(ColorizationRecord):
+    key: str
+
+
+@dataclass(frozen=True)  # pylint: disable=too-many-instance-attributes
+class EquationColorizationRecord(Equation, ColorizationRecord):
+    arxiv_id: ArxivId
+
+
+@dataclass(frozen=True)
+class EquationTokenColorizationRecord(ColorizationRecord, ColorizedTokenWithOrigin):
+    pass
+
+
 """
 SEARCH
 """
 
 
-class Match(NamedTuple):
+@dataclass(frozen=True)
+class Match:
     """
     A MathML equation that matches a queried MathML equation. Rank is relative to the set of
     MathML equations it was chosen from. Rank starts at 1.
     """
 
-    mathml: MathML
+    queried_mathml: MathML
+    matching_mathml: MathML
     rank: int
 
 
@@ -325,10 +406,35 @@ class BoundingBoxAndHue:
     box: BoundingBox
 
 
+@dataclass(frozen=True)
+class HueLocationInfo(BoundingBox):
+    relative_file_path: str
+    iteration: str
+    hue: float
+
+
+@dataclass(frozen=True)
+class EquationHueLocationInfo(HueLocationInfo):
+    tex_path: str
+    equation_index: int
+
+
+@dataclass(frozen=True)
+class EquationTokenHueLocationInfo(HueLocationInfo):
+    tex_path: str
+    equation_index: int
+    character_index: int
+
+
 CharacterLocations = Dict[CharacterId, List[BoundingBox]]
 
 
 @dataclass(frozen=True)
-class CitationLocation:
-    location_index: int
-    boxes: Set[BoundingBox]
+class CitationLocation(BoundingBox):
+    key: str
+    cluster_index: int
+
+
+@dataclass(frozen=True)
+class SymbolLocation(SymbolId, BoundingBox):
+    pass

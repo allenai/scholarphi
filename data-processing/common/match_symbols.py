@@ -23,7 +23,8 @@ def _get_matches(mathml: MathML) -> List[Match]:
 
     # Search nodes in breadth-first order. That lets us rank descendants based on their
     # distance from the root.
-    root = BeautifulSoup(mathml, "lxml")
+    soup = BeautifulSoup(mathml, "lxml")
+    root = soup.html.body.next if soup.html and soup.html.body else soup
     nodes = [root]
     matches: List[Match] = []
 
@@ -31,7 +32,7 @@ def _get_matches(mathml: MathML) -> List[Match]:
         node = nodes.pop(0)
 
         if hasattr(node, "name") and node.name in SYMBOL_TAGS:
-            matches.append(Match(str(node), len(matches) + 1))
+            matches.append(Match(str(root), str(node), len(matches) + 1))
 
         if hasattr(node, "children"):
             for child in node.children:

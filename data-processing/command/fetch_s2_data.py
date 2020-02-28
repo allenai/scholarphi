@@ -43,7 +43,7 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
                 for author_data in reference_data["authors"]:
                     authors.append(Author(author_data["authorId"], author_data["name"]))
                 reference = Reference(
-                    s2Id=reference_data["paperId"],
+                    s2_id=reference_data["paperId"],
                     arxivId=reference_data["arxivId"],
                     doi=reference_data["doi"],
                     title=reference_data["title"],
@@ -53,7 +53,7 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
                 )
                 references.append(reference)
 
-            s2_metadata = S2Metadata(s2id=data["paperId"], references=references)
+            s2_metadata = S2Metadata(s2_id=data["paperId"], references=references)
             logging.debug("Fetched S2 metadata for arXiv paper %s", item)
             yield s2_metadata
 
@@ -68,7 +68,7 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
         references_path = os.path.join(s2_metadata_dir, "references.csv")
         for r in result.references:
             serializable = SerializableReference(
-                s2Id=r.s2Id,
+                s2_id=r.s2_id,
                 arxivId=r.arxivId,
                 doi=r.doi,
                 title=r.title,
@@ -80,4 +80,4 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
 
         s2_id_path = os.path.join(s2_metadata_dir, "s2_id")
         with open(s2_id_path, "w") as s2_id_file:
-            s2_id_file.write(result.s2id)
+            s2_id_file.write(result.s2_id)

@@ -1,14 +1,18 @@
-import csv
 import logging
 import os.path
 from argparse import ArgumentParser
 from typing import Dict, Iterator, List, NamedTuple
 
 from command.command import ArxivBatchCommand, add_one_entity_at_a_time_arg
-from common import directories
+from common import directories, file_utils
 from common.colorize_tex import TokenColorizationBatch, colorize_equation_tokens
-from common.file_utils import clean_directory, load_tokens, read_file_tolerant
-from common.types import ArxivId, FileContents, Path, TokenWithOrigin
+from common.types import (
+    ArxivId,
+    EquationTokenColorizationRecord,
+    FileContents,
+    Path,
+    TokenWithOrigin,
+)
 from common.unpack import unpack
 
 
@@ -50,7 +54,7 @@ class ColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, ColorizationResult]
             output_root = directories.arxiv_subdir(
                 "sources-with-colorized-equation-tokens", arxiv_id
             )
-            clean_directory(output_root)
+            file_utils.clean_directory(output_root)
 
             tokens_path = os.path.join(
                 directories.arxiv_subdir("symbols", arxiv_id), "tokens.csv"
@@ -62,7 +66,7 @@ class ColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, ColorizationResult]
                 continue
 
             # Load token location information
-            tokens = load_tokens(arxiv_id)
+            tokens = file_utils.load_tokens(arxiv_id)
             if tokens is None:
                 continue
             tex_paths = set({token.tex_path for token in tokens})
@@ -73,7 +77,7 @@ class ColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, ColorizationResult]
                 absolute_tex_path = os.path.join(
                     directories.arxiv_subdir("sources", arxiv_id), tex_path
                 )
-                file_contents = read_file_tolerant(absolute_tex_path)
+                file_contents = file_utils.read_file_tolerant(absolute_tex_path)
                 if file_contents is not None:
                     contents_by_file[tex_path] = file_contents
 
@@ -114,17 +118,17 @@ class ColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, ColorizationResult]
                     tex_file.write(colorized_tex.contents)
 
             hues_path = os.path.join(output_sources_path, "token_hues.csv")
-            with open(hues_path, "a", encoding="utf-8") as hues_file:
-                writer = csv.writer(hues_file, quoting=csv.QUOTE_ALL)
-                for colorized_token in result.result.colorized_tokens:
-                    writer.writerow(
-                        [
-                            colorized_token.tex_path,
-                            colorized_token.equation_index,
-                            colorized_token.token_index,
-                            colorized_token.hue,
-                            colorized_token.start,
-                            colorized_token.end,
-                            colorized_token.text,
-                        ]
-                    )
+            for colorized_token in result.result.colorized_tokens:
+                file_utils.append_to_csv(
+                    hues_path,
+                    EquationTokenColorizationRecord(
+                        hue=colorized_token.hue,
+                        tex_path=colorized_token.tex_path,
+                        iteration=str(iteration),
+                        equation_index=colorized_token.equation_index,
+                        token_index=colorized_token.token_index,
+                        start=colorized_token.start,
+                        end=colorized_token.end,
+                        text=colorized_token.text,
+                    ),
+                )

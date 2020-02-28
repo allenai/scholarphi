@@ -1,11 +1,9 @@
-import csv
 import logging
 import os.path
 from typing import Dict, Iterator, List, NamedTuple
 
 from command.command import DatabaseUploadCommand
-from common import directories
-from common.file_utils import load_symbols
+from common import directories, file_utils
 from common.models import BoundingBox as BoundingBoxModel
 from common.models import Entity, EntityBoundingBox
 from common.models import MathMl as MathMlModel
@@ -13,8 +11,16 @@ from common.models import MathMlMatch, Paper
 from common.models import Symbol as SymbolModel
 from common.models import SymbolChild, output_database
 from common.s2_data import get_s2_id
-from common.types import (ArxivId, BoundingBox, Match, Matches, MathML,
-                          SymbolId, SymbolWithId)
+from common.types import (
+    ArxivId,
+    BoundingBox,
+    Match,
+    Matches,
+    MathML,
+    SymbolId,
+    SymbolLocation,
+    SymbolWithId,
+)
 
 S2Id = str
 Hue = float
@@ -58,7 +64,7 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
             if s2_id is None:
                 continue
 
-            symbols_with_ids = load_symbols(arxiv_id)
+            symbols_with_ids = file_utils.load_symbols(arxiv_id)
             if symbols_with_ids is None:
                 continue
 
@@ -73,22 +79,20 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
                     arxiv_id,
                 )
                 continue
-            with open(boxes_path) as boxes_file:
-                reader = csv.reader(boxes_file)
-                for row in reader:
-                    symbol_id = SymbolId(
-                        tex_path=row[0],
-                        equation_index=int(row[1]),
-                        symbol_index=int(row[2]),
-                    )
-                    box = BoundingBox(
-                        page=int(row[3]),
-                        left=float(row[4]),
-                        top=float(row[5]),
-                        width=float(row[6]),
-                        height=float(row[7]),
-                    )
-                    boxes[symbol_id] = box
+            for location in file_utils.load_from_csv(boxes_path, SymbolLocation):
+                symbol_id = SymbolId(
+                    tex_path=location.tex_path,
+                    equation_index=location.equation_index,
+                    symbol_index=location.symbol_index,
+                )
+                box = BoundingBox(
+                    page=int(location.page),
+                    left=location.left,
+                    top=location.top,
+                    width=location.width,
+                    height=location.height,
+                )
+                boxes[symbol_id] = box
 
             matches: Matches = {}
             matches_path = os.path.join(
@@ -100,15 +104,10 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
                     arxiv_id,
                 )
                 continue
-            with open(matches_path, encoding="utf-8") as matches_file:
-                reader = csv.reader(matches_file)
-                for row in reader:
-                    mathml = row[0]
-                    match_mathml = row[1]
-                    rank = int(row[2])
-                    if mathml not in matches:
-                        matches[mathml] = []
-                    matches[mathml].append(Match(match_mathml, rank))
+            for match in file_utils.load_from_csv(matches_path, Match):
+                if match.queried_mathml not in matches:
+                    matches[match.queried_mathml] = []
+                matches[match.queried_mathml].append(match)
 
             yield SymbolData(arxiv_id, s2_id, symbols_with_ids, boxes, matches)
 
@@ -133,7 +132,7 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
         mathml_equations = {swi.symbol.mathml for swi in symbols_with_ids}
         for mathml, mathml_matches in matches.items():
             mathml_equations.update(
-                {mathml}.union({match.mathml for match in mathml_matches})
+                {mathml}.union({match.matching_mathml for match in mathml_matches})
             )
         for mathml in mathml_equations:
             if mathml not in mathml_cache:
@@ -151,7 +150,7 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
                     MathMlMatch(
                         paper=paper,
                         mathml=mathml_cache[mathml],
-                        match=mathml_cache[match.mathml],
+                        match=mathml_cache[match.matching_mathml],
                         rank=match.rank,
                     )
                 )

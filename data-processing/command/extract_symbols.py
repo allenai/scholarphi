@@ -1,25 +1,44 @@
-import csv
 import json
 import logging
 import os.path
 import subprocess
 from argparse import ArgumentParser
-from typing import Iterator, List, NamedTuple, Optional
+from dataclasses import dataclass
+from typing import Iterator, List, Optional
 
 from command.command import ArxivBatchCommand
-from common import directories
-from common.file_utils import clean_directory
+from common import directories, file_utils
 from common.parse_equation import KATEX_ERROR_COLOR, get_characters, get_symbols
-from common.types import ArxivId, Character, Symbol
+from common.types import (
+    ArxivId,
+    Character,
+    SerializableCharacter,
+    SerializableChild,
+    SerializableSymbol,
+    SerializableToken,
+    Symbol,
+)
 
 
-class SymbolData(NamedTuple):
+@dataclass(frozen=True)  # pylint: disable=too-many-instance-attributes
+class SymbolData:
+    arxiv_id: ArxivId
     success: bool
-    i: int
-    path: str
+    equation_index: int
+    tex_path: str
     equation: str
     characters: Optional[List[Character]]
     symbols: Optional[List[Symbol]]
+    errorMessage: str
+
+
+@dataclass(frozen=True)
+class ParseResult:
+    arxiv_id: ArxivId
+    success: bool
+    equation_index: int
+    tex_path: str
+    equation: str
     errorMessage: str
 
 
@@ -67,7 +86,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
 
     def load(self) -> Iterator[ArxivId]:
         for arxiv_id in self.arxiv_ids:
-            clean_directory(directories.arxiv_subdir("symbols", arxiv_id))
+            file_utils.clean_directory(directories.arxiv_subdir("symbols", arxiv_id))
             yield arxiv_id
 
     def process(self, item: ArxivId) -> Iterator[SymbolData]:
@@ -111,7 +130,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
         )
 
         if result.returncode == 0:
-            for symbol_data in _get_symbol_data(result.stdout):
+            for symbol_data in _get_symbol_data(item, result.stdout):
                 yield symbol_data
         else:
             logging.error(
@@ -137,108 +156,82 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                 tokens_dir,
             )
 
-        with open(
-            os.path.join(tokens_dir, "parse_results.csv"), "a", encoding="utf-8"
-        ) as results_file:
-            writer = csv.writer(results_file, quoting=csv.QUOTE_ALL)
-            try:
-                writer.writerow(
-                    [
-                        item,
-                        result.path,
-                        result.i,
-                        result.equation,
-                        result.success,
-                        result.errorMessage,
-                    ]
-                )
-            except Exception:  # pylint: disable=broad-except
-                logging.warning(
-                    "Couldn't write parse results for arXiv %s: can't be converted to utf-8",
-                    item,
-                )
+        parse_results_path = os.path.join(tokens_dir, "parse_results.csv")
+        file_utils.append_to_csv(
+            parse_results_path,
+            ParseResult(
+                arxiv_id=result.arxiv_id,
+                success=result.success,
+                equation_index=result.equation_index,
+                tex_path=result.tex_path,
+                equation=result.equation,
+                errorMessage=result.errorMessage,
+            ),
+        )
 
+        # Save string representations of every character extracted from the equation
         if result.characters is not None and len(result.characters) > 0:
-            with open(
-                os.path.join(tokens_dir, "tokens.csv"), "a", encoding="utf-8"
-            ) as tokens_file:
-                writer = csv.writer(tokens_file, quoting=csv.QUOTE_ALL)
-                for token in result.characters:
-                    try:
-                        writer.writerow(
-                            [
-                                result.path,
-                                result.i,
-                                result.equation,
-                                token.i,
-                                token.start,
-                                token.end,
-                                token.text,
-                            ]
-                        )
-                    except Exception:  # pylint: disable=broad-except
-                        logging.warning(
-                            "Couldn't write row for token for arXiv %s: can't be converted to utf-8",
-                            item,
-                        )
+            tokens_path = os.path.join(tokens_dir, "tokens.csv")
+            for token in result.characters:
+                file_utils.append_to_csv(
+                    tokens_path,
+                    SerializableToken(
+                        tex_path=result.tex_path,
+                        equation=result.equation,
+                        equation_index=result.equation_index,
+                        token_index=token.i,
+                        start=token.start,
+                        end=token.end,
+                        text=token.text,
+                    ),
+                )
 
         if result.symbols is not None and len(result.symbols) > 0:
-            with open(
-                os.path.join(tokens_dir, "symbols.csv"), "a", encoding="utf-8"
-            ) as symbols_file, open(
-                os.path.join(tokens_dir, "symbol_children.csv"), "a", encoding="utf-8"
-            ) as symbol_children_file, open(
-                os.path.join(tokens_dir, "symbol_tokens.csv"), "a", encoding="utf-8"
-            ) as symbol_tokens_file:
+            symbols_path = os.path.join(tokens_dir, "symbols.csv")
+            symbol_tokens_path = os.path.join(tokens_dir, "symbol_tokens.csv")
+            symbol_children_path = os.path.join(tokens_dir, "symbol_children.csv")
 
-                symbols_writer = csv.writer(symbols_file, quoting=csv.QUOTE_ALL)
-                symbol_tokens_writer = csv.writer(
-                    symbol_tokens_file, quoting=csv.QUOTE_ALL
+            for symbol_index, symbol in enumerate(result.symbols):
+                # Save data for the symbol
+                file_utils.append_to_csv(
+                    symbols_path,
+                    SerializableSymbol(
+                        tex_path=result.tex_path,
+                        equation_index=result.equation_index,
+                        equation=result.equation,
+                        symbol_index=symbol_index,
+                        mathml=symbol.mathml,
+                    ),
                 )
-                symbol_children_writer = csv.writer(
-                    symbol_children_file, quoting=csv.QUOTE_ALL
-                )
 
-                for symbol_index, symbol in enumerate(result.symbols):
-                    try:
-                        symbols_writer.writerow(
-                            [
-                                result.path,
-                                result.i,
-                                result.equation,
-                                symbol_index,
-                                symbol.mathml,
-                            ]
-                        )
-                    except Exception:  # pylint: disable=broad-except
-                        logging.warning(
-                            "Couldn't write row for symbol for arXiv %s: can't be converted to utf-8",
-                            item,
-                        )
-                        continue
-                    for character in symbol.characters:
-                        symbol_tokens_writer.writerow(
-                            [
-                                result.path,
-                                result.i,
-                                result.equation,
-                                symbol_index,
-                                character,
-                            ]
-                        )
-                    for child in symbol.children:
-                        symbol_children_writer.writerow(
-                            [
-                                result.path,
-                                result.i,
-                                result.equation,
-                                symbol_index,
-                                result.symbols.index(child),
-                            ]
-                        )
+                # Save the symbol's relationship to all its component characters
+                for character in symbol.characters:
+                    file_utils.append_to_csv(
+                        symbol_tokens_path,
+                        SerializableCharacter(
+                            tex_path=result.tex_path,
+                            equation_index=result.equation_index,
+                            equation=result.equation,
+                            symbol_index=symbol_index,
+                            character_index=character,
+                        ),
+                    )
+
+                # Save the symbol's relationship to its children
+                for child in symbol.children:
+                    file_utils.append_to_csv(
+                        symbol_children_path,
+                        SerializableChild(
+                            tex_path=result.tex_path,
+                            equation_index=result.equation_index,
+                            equation=result.equation,
+                            symbol_index=symbol_index,
+                            child_index=result.symbols.index(child),
+                        ),
+                    )
 
 
-def _get_symbol_data(stdout: str) -> Iterator[SymbolData]:
+def _get_symbol_data(arxiv_id: ArxivId, stdout: str) -> Iterator[SymbolData]:
     for result in stdout.strip().splitlines():
         data = json.loads(result)
         characters = None
@@ -250,9 +243,10 @@ def _get_symbol_data(stdout: str) -> Iterator[SymbolData]:
             symbols = get_symbols(mathml)
 
         yield SymbolData(
+            arxiv_id=arxiv_id,
             success=data["success"],
-            i=data["i"],
-            path=data["path"],
+            equation_index=data["i"],
+            tex_path=data["tex_path"],
             equation=data["equation"],
             characters=characters,
             symbols=symbols,
