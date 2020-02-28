@@ -57,7 +57,7 @@ class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
                     directories.iteration(
                         "sources-with-colorized-citations", arxiv_id, iteration,
                     ),
-                    "citation_hues.csv",
+                    "entity_hues.csv",
                 )
                 if not os.path.exists(citation_hues_path):
                     logging.warning(

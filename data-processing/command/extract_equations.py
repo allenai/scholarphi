@@ -51,7 +51,7 @@ class ExtractEquations(
                     "sources-with-colorized-equations", arxiv_id, iteration
                 )
                 equation_hues_path = os.path.join(
-                    colorized_sources_dir, "equation_hues.csv"
+                    colorized_sources_dir, "entity_hues.csv"
                 )
                 for record in file_utils.load_from_csv(
                     equation_hues_path, EquationColorizationRecord

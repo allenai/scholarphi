@@ -116,7 +116,7 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
             with open(tex_path, "w", encoding=item.file_contents.encoding) as tex_file:
                 tex_file.write(colorized_tex)
 
-            hues_path = os.path.join(output_sources_path, "citation_hues.csv")
+            hues_path = os.path.join(output_sources_path, "entity_hues.csv")
 
             # TODO(andrewhead): It might be better to save this CSV data with the same
             # encoding as the file the TeX was read from, for the citations, for the

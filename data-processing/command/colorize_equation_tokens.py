@@ -5,14 +5,10 @@ from typing import Dict, Iterator, List, NamedTuple
 
 from command.command import ArxivBatchCommand, add_one_entity_at_a_time_arg
 from common import directories, file_utils
-from common.colorize_tex import TokenColorizationBatch, colorize_equation_tokens
-from common.types import (
-    ArxivId,
-    EquationTokenColorizationRecord,
-    FileContents,
-    Path,
-    TokenWithOrigin,
-)
+from common.colorize_tex import (TokenColorizationBatch,
+                                 colorize_equation_tokens)
+from common.types import (ArxivId, EquationTokenColorizationRecord,
+                          FileContents, Path, TokenWithOrigin)
 from common.unpack import unpack
 
 
@@ -117,7 +113,7 @@ class ColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, ColorizationResult]
                 ) as tex_file:
                     tex_file.write(colorized_tex.contents)
 
-            hues_path = os.path.join(output_sources_path, "token_hues.csv")
+            hues_path = os.path.join(output_sources_path, "entity_hues.csv")
             for colorized_token in result.result.colorized_tokens:
                 file_utils.append_to_csv(
                     hues_path,
