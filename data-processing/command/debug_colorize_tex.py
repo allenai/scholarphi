@@ -1,27 +1,18 @@
-import csv
-import json
 import logging
 import os.path
 import shutil
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Iterator, List
+from typing import Iterator, List
 
 from command.command import ArxivBatchCommand
-from common import directories
+from common import directories, file_utils
 from common.colorize_tex import (
     ColorizedEntity,
     colorize_equation_tokens,
     colorize_equations,
 )
 from common.compile import compile_tex, get_errors, is_driver_unimplemented
-from common.file_utils import (
-    clean_directory,
-    find_files,
-    load_tokens,
-    read_file_tolerant,
-    save_compilation_results,
-)
 from common.types import ArxivId, CompilationResult, FileContents, Path, RelativePath
 from common.unpack import unpack
 
@@ -44,6 +35,18 @@ class Compilation:
     project_path: RelativePath
     entity: ColorizedEntity
     result: CompilationResult
+
+
+@dataclass(frozen=True)
+class CompilationInfo:  # pylint: disable=too-many-instance-attributes
+    outcome: str
+    source_path: str
+    tex_path: str
+    identifiers: List[str]
+    tex: str
+    context: str
+    data: List[str]
+    errors: List[str]
 
 
 def write_file(
@@ -76,7 +79,7 @@ class DebugColorizeCommand(ArxivBatchCommand[ColorizationTask, Compilation], ABC
             arxiv_id_output_root = directories.arxiv_subdir(
                 self.get_output_base_dirkey(), arxiv_id
             )
-            clean_directory(arxiv_id_output_root)
+            file_utils.clean_directory(arxiv_id_output_root)
 
             # Make sure that we have evidence that the paper can compile at all before attempting
             # to compile many variants of that file.
@@ -100,8 +103,10 @@ class DebugColorizeCommand(ArxivBatchCommand[ColorizationTask, Compilation], ABC
                     continue
 
             original_sources_path = directories.arxiv_subdir("sources", arxiv_id)
-            for tex_path in find_files(original_sources_path, [".tex"], relative=True):
-                file_contents = read_file_tolerant(
+            for tex_path in file_utils.find_files(
+                original_sources_path, [".tex"], relative=True
+            ):
+                file_contents = file_utils.read_file_tolerant(
                     os.path.join(original_sources_path, tex_path)
                 )
                 if file_contents is not None:
@@ -170,7 +175,7 @@ class DebugColorizeCommand(ArxivBatchCommand[ColorizationTask, Compilation], ABC
                 "The directory and compilation results for this colorization attempt "
                 + "will be saved for inspection."
             )
-            save_compilation_results(result.project_path, result.result)
+            file_utils.save_compilation_results(result.project_path, result.result)
 
         stdout = result.result.stdout
         missing_driver = is_driver_unimplemented(stdout)
@@ -220,18 +225,19 @@ class DebugColorizeCommand(ArxivBatchCommand[ColorizationTask, Compilation], ABC
                 stamp_file.write("")
 
         # Write the compilation result to the log.
-        with open(errors_path, "a", encoding="utf-8") as errors_file:
-            writer = csv.writer(errors_file)
-            data: List[Any] = [
-                "SUCCESS" if success else "FAILURE",
-                source_path,
-                tex_path,
-            ]
-            data.extend(entity.identifier.values())
-            data.extend([tex, context])
-            data.extend(entity.data.values())
-            data.append(json.dumps([e.decode("utf-8") for e in errors]))
-            writer.writerow(data)
+        file_utils.append_to_csv(
+            errors_path,
+            CompilationInfo(
+                outcome="SUCCESS" if success else "FAILURE",
+                source_path=source_path,
+                tex_path=tex_path,
+                identifiers=[str(i) for i in entity.identifier.values()],
+                tex=tex,
+                context=context,
+                data=[str(d) for d in entity.data.values()],
+                errors=[e.decode("utf-8") for e in errors],
+            ),
+        )
 
 
 class DebugColorizeEquations(DebugColorizeCommand):
@@ -293,7 +299,7 @@ class DebugColorizeEquationTokens(DebugColorizeCommand):
             return
 
         # Load token location information
-        tokens = load_tokens(arxiv_id)
+        tokens = file_utils.load_tokens(arxiv_id)
         if tokens is None:
             return
 

@@ -1,4 +1,3 @@
-import logging
 import os
 from typing import Dict, Iterator, List, Optional
 
@@ -78,11 +77,6 @@ register("diff-images-with-colorized-equation-tokens")
 register("hue-locations-for-equations")
 register("hue-locations-for-equation-tokens")
 register("symbol-locations")
-
-register("sources-with-colorized-sentences")
-register("compiled-sources-with-colorized-sentences")
-register("paper-with-colorized-sentences-images")
-register("diff-images-with-colorized-sentences")
 
 register("sources-with-annotated-symbols")
 register("debugging-colorizing-citations")

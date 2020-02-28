@@ -1,24 +1,25 @@
-import csv
 import logging
 import os.path
 from argparse import ArgumentParser
-from typing import Iterator, List, NamedTuple
+from dataclasses import dataclass
+from typing import Iterator, List
 
 from command.command import ArxivBatchCommand, add_one_entity_at_a_time_arg
-from common import directories
+from common import directories, file_utils
 from common.colorize_tex import ColorizedEntity, colorize_equations
-from common.file_utils import clean_directory, find_files, read_file_tolerant
-from common.types import ArxivId, FileContents, RelativePath
+from common.types import ArxivId, EquationColorizationRecord, FileContents, RelativePath
 from common.unpack import unpack
 
 
-class ColorizationTask(NamedTuple):
+@dataclass(frozen=True)
+class ColorizationTask:
     arxiv_id: ArxivId
     tex_path: RelativePath
     file_contents: FileContents
 
 
-class ColorizationResult(NamedTuple):
+@dataclass(frozen=True)
+class ColorizationResult:
     iteration: int
     tex: str
     colorized_equations: List[ColorizedEntity]
@@ -51,11 +52,13 @@ class ColorizeEquations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
             output_root = directories.arxiv_subdir(
                 "sources-with-colorized-equations", arxiv_id
             )
-            clean_directory(output_root)
+            file_utils.clean_directory(output_root)
 
             original_sources_path = directories.arxiv_subdir("sources", arxiv_id)
-            for tex_path in find_files(original_sources_path, [".tex"], relative=True):
-                file_contents = read_file_tolerant(
+            for tex_path in file_utils.find_files(
+                original_sources_path, [".tex"], relative=True
+            ):
+                file_contents = file_utils.read_file_tolerant(
                     os.path.join(original_sources_path, tex_path)
                 )
                 if file_contents is not None:
@@ -91,27 +94,19 @@ class ColorizeEquations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
                 tex_file.write(colorized_tex)
 
             hues_path = os.path.join(output_sources_path, "equation_hues.csv")
-            with open(hues_path, "a", encoding="utf-8") as hues_file:
-                writer = csv.writer(hues_file, quoting=csv.QUOTE_ALL)
-                for colorized_equation in colorized_equations:
-                    try:
-                        writer.writerow(
-                            [
-                                item.tex_path,
-                                colorized_equation.identifier["index"],
-                                iteration_id,
-                                colorized_equation.hue,
-                                colorized_equation.tex,
-                                colorized_equation.data["content_start"],
-                                colorized_equation.data["content_end"],
-                                colorized_equation.data["content_tex"],
-                                colorized_equation.data["depth"],
-                                colorized_equation.data["start"],
-                                colorized_equation.data["end"],
-                            ]
-                        )
-                    except Exception:  # pylint: disable=broad-except
-                        logging.warning(
-                            "Couldn't write row for equation for arXiv %s: can't be converted to utf-8",
-                            item.arxiv_id,
-                        )
+            for c in colorized_equations:
+                record = EquationColorizationRecord(
+                    arxiv_id=item.arxiv_id,
+                    tex_path=item.tex_path,
+                    i=c.identifier["index"],
+                    iteration=iteration_id,
+                    hue=c.hue,
+                    tex=c.tex,
+                    content_start=c.data["content_start"],
+                    content_end=c.data["content_end"],
+                    content_tex=c.data["content_tex"],
+                    depth=c.data["depth"],
+                    start=c.data["start"],
+                    end=c.data["end"],
+                )
+                file_utils.append_to_csv(hues_path, record)

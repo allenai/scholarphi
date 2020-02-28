@@ -1,19 +1,13 @@
-import csv
 import logging
 import os.path
 from dataclasses import dataclass
 from typing import Dict, FrozenSet, Iterator, List, Tuple
 
-import common.directories as directories
 from command.command import DatabaseReadCommand
+from common import directories, file_utils
 from common.bounding_box import compute_accuracy, iou, iou_per_rectangle, sum_areas
-from common.file_utils import (
-    clean_directory,
-    load_citation_hue_locations,
-    load_equation_token_locations,
-)
 from common.models import Annotation, Paper
-from common.types import ArxivId, FloatRectangle, Path
+from common.types import ArxivId, FloatRectangle
 
 CitationKey = str
 CitationKeys = Tuple[CitationKey]
@@ -35,6 +29,29 @@ class IouResults:
     precision: float
     recall: float
     rectangle_ious: Dict[FrozenSet[FloatRectangle], float]
+
+
+@dataclass(frozen=True)
+class IouAccuracySummary:
+    arxiv_id: str
+    entity_type: str
+    page: int
+    page_iou: float
+    precision: float
+    recall: float
+    num_actual: int
+    num_expected: int
+
+
+@dataclass(frozen=True)
+class EntityMatchInfo:
+    arxiv_id: str
+    entity_type: str
+    page: int
+    i: int
+    rect_set: str
+    sum_areas: float
+    rectangle_ious: str
 
 
 PageNumber = int
@@ -59,10 +76,10 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
         for arxiv_id in self.arxiv_ids:
 
             output_root = directories.arxiv_subdir("bounding-box-accuracies", arxiv_id)
-            clean_directory(output_root)
+            file_utils.clean_directory(output_root)
 
-            citation_locations = load_citation_hue_locations(arxiv_id)
-            token_locations = load_equation_token_locations(arxiv_id)
+            citation_locations = file_utils.load_citation_hue_locations(arxiv_id)
+            token_locations = file_utils.load_equation_token_locations(arxiv_id)
             actual: Dict[
                 Tuple[PageNumber, EntityType], List[FrozenSet[FloatRectangle]]
             ] = {}
@@ -151,33 +168,31 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
             os.makedirs(bounding_box_accuracies_path)
 
         page_iou_path = os.path.join(bounding_box_accuracies_path, "page_accuracy.csv")
-        with open(page_iou_path, "a") as page_iou_file:
-            writer = csv.writer(page_iou_file)
-            writer.writerow(
-                [
-                    item.arxiv_id,
-                    item.entity_type,
-                    item.page,
-                    result.page_iou,
-                    result.precision,
-                    result.recall,
-                    len(item.actual),
-                    len(item.expected),
-                ]
-            )
+        file_utils.append_to_csv(
+            page_iou_path,
+            IouAccuracySummary(
+                arxiv_id=item.arxiv_id,
+                entity_type=item.entity_type,
+                page=item.page,
+                page_iou=result.page_iou,
+                precision=result.precision,
+                recall=result.recall,
+                num_actual=len(item.actual),
+                num_expected=len(item.expected),
+            ),
+        )
 
         entity_iou_path = os.path.join(bounding_box_accuracies_path, "entity_ious.csv")
-        with open(entity_iou_path, "a") as entity_iou_file:
-            writer = csv.writer(entity_iou_file)
-            for i, rect_set in enumerate(item.actual):
-                writer.writerow(
-                    [
-                        item.arxiv_id,
-                        item.entity_type,
-                        item.page,
-                        i,
-                        str(rect_set),
-                        sum_areas(rect_set),
-                        result.rectangle_ious[rect_set],
-                    ]
-                )
+        for i, rect_set in enumerate(item.actual):
+            file_utils.append_to_csv(
+                entity_iou_path,
+                EntityMatchInfo(
+                    arxiv_id=item.arxiv_id,
+                    entity_type=item.entity_type,
+                    page=item.page,
+                    i=i,
+                    rect_set=str(rect_set),
+                    sum_areas=sum_areas(rect_set),
+                    rectangle_ious=str(result.rectangle_ious[rect_set]),
+                ),
+            )

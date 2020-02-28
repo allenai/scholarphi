@@ -1,11 +1,9 @@
-import csv
 import os.path
 from dataclasses import dataclass
 from typing import Iterable, Iterator
 
 from command.command import ArxivBatchCommand
-from common import directories
-from common.file_utils import clean_directory, load_symbols
+from common import directories, file_utils
 from common.match_symbols import get_mathml_matches
 from common.types import ArxivId, Matches, MathML
 
@@ -37,9 +35,9 @@ class FindSymbolMatches(ArxivBatchCommand[MathMLForPaper, Matches]):
         for arxiv_id in self.arxiv_ids:
 
             output_dir = directories.arxiv_subdir("symbol-matches", arxiv_id)
-            clean_directory(output_dir)
+            file_utils.clean_directory(output_dir)
 
-            symbols_with_ids = load_symbols(arxiv_id)
+            symbols_with_ids = file_utils.load_symbols(arxiv_id)
             if symbols_with_ids is None:
                 continue
 
@@ -57,8 +55,6 @@ class FindSymbolMatches(ArxivBatchCommand[MathMLForPaper, Matches]):
             os.makedirs(output_dir)
 
         matches_path = os.path.join(output_dir, "matches.csv")
-        with open(matches_path, "a", encoding="utf-8") as matches_file:
-            writer = csv.writer(matches_file, quoting=csv.QUOTE_ALL)
-            for mathml, matches in result.items():
-                for match in matches:
-                    writer.writerow([mathml, match.mathml, match.rank])
+        for matches in result.values():
+            for match in matches:
+                file_utils.append_to_csv(matches_path, match)

@@ -1,14 +1,18 @@
-import csv
 import logging
 import os.path
 from dataclasses import dataclass
 from typing import Dict, Iterator, List
 
 from command.command import ArxivBatchCommand
-from common import directories
+from common import directories, file_utils
 from common.bounding_box import cluster_boxes
-from common.file_utils import clean_directory, load_citation_hue_locations
-from common.types import ArxivId, BoundingBox, CitationLocation, HueIteration
+from common.types import (
+    ArxivId,
+    BoundingBox,
+    CitationColorizationRecord,
+    CitationLocation,
+    HueIteration,
+)
 
 
 @dataclass(frozen=True)
@@ -39,9 +43,9 @@ class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
         for arxiv_id in self.arxiv_ids:
 
             output_dir = directories.arxiv_subdir("citation-locations", arxiv_id)
-            clean_directory(output_dir)
+            file_utils.clean_directory(output_dir)
 
-            boxes_by_hue_iteration = load_citation_hue_locations(arxiv_id)
+            boxes_by_hue_iteration = file_utils.load_citation_hue_locations(arxiv_id)
             if boxes_by_hue_iteration is None:
                 continue
 
@@ -62,17 +66,15 @@ class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
                         iteration,
                     )
                     continue
-                with open(citation_hues_path) as citation_hues_file:
-                    reader = csv.reader(citation_hues_file)
-                    for row in reader:
-                        key = str(row[3])
-                        hue = float(row[2])
-                        if key not in boxes_by_citation_key:
-                            boxes_by_citation_key[key] = []
-                        hue_iteration = HueIteration(hue, iteration)
-                        boxes_by_citation_key[key].extend(
-                            boxes_by_hue_iteration.get(hue_iteration, [])
-                        )
+                for record in file_utils.load_from_csv(
+                    citation_hues_path, CitationColorizationRecord
+                ):
+                    if record.key not in boxes_by_citation_key:
+                        boxes_by_citation_key[record.key] = []
+                    hue_iteration = HueIteration(record.hue, iteration)
+                    boxes_by_citation_key[record.key].extend(
+                        boxes_by_hue_iteration.get(hue_iteration, [])
+                    )
 
             for key, boxes in boxes_by_citation_key.items():
                 yield LocationTask(
@@ -87,7 +89,16 @@ class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
                 item.citation_key,
                 item.arxiv_id,
             )
-            yield CitationLocation(i, cluster)
+            for box in cluster:
+                yield CitationLocation(
+                    key=item.citation_key,
+                    cluster_index=i,
+                    page=box.page,
+                    left=box.left,
+                    top=box.top,
+                    width=box.width,
+                    height=box.height,
+                )
 
     def save(self, item: LocationTask, result: CitationLocation) -> None:
         output_dir = directories.arxiv_subdir("citation-locations", item.arxiv_id)
@@ -95,17 +106,4 @@ class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
             os.makedirs(output_dir)
 
         locations_path = os.path.join(output_dir, "citation_locations.csv")
-        with open(locations_path, "a", encoding="utf-8") as locations_file:
-            writer = csv.writer(locations_file, quoting=csv.QUOTE_ALL)
-            for box in result.boxes:
-                writer.writerow(
-                    [
-                        item.citation_key,
-                        result.location_index,
-                        box.page,
-                        box.left,
-                        box.top,
-                        box.width,
-                        box.height,
-                    ]
-                )
+        file_utils.append_to_csv(locations_path, result)

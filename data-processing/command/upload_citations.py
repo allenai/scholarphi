@@ -1,12 +1,14 @@
-import csv
+import ast
+import dataclasses
 import logging
 import os.path
-from typing import Dict, Iterator, NamedTuple
+from dataclasses import dataclass
+from typing import Dict, Iterator, Set
 
 from peewee import IntegrityError
 
 from command.command import DatabaseUploadCommand
-from common import directories
+from common import directories, file_utils
 from common.models import BoundingBox as BoundingBoxModel
 from common.models import (
     Citation,
@@ -17,19 +19,20 @@ from common.models import (
     Summary,
     output_database,
 )
-from common.types import ArxivId, Author, BoundingBox, CitationLocation, Reference
+from common.types import ArxivId, BibitemMatch, CitationLocation, SerializableReference
 
 CitationKey = str
 LocationIndex = int
 S2Id = str
 
 
-class CitationData(NamedTuple):
+@dataclass(frozen=True)
+class CitationData:
     arxiv_id: ArxivId
     s2_id: S2Id
-    citation_locations: Dict[CitationKey, Dict[LocationIndex, CitationLocation]]
+    citation_locations: Dict[CitationKey, Dict[LocationIndex, Set[CitationLocation]]]
     key_s2_ids: Dict[CitationKey, S2Id]
-    s2_data: Dict[S2Id, Reference]
+    s2_data: Dict[S2Id, SerializableReference]
 
 
 class UploadCitations(DatabaseUploadCommand[CitationData, None]):
@@ -51,8 +54,9 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
     def load(self) -> Iterator[CitationData]:
         for arxiv_id in self.arxiv_ids:
 
+            # Load citation locations
             citation_locations: Dict[
-                CitationKey, Dict[LocationIndex, CitationLocation]
+                CitationKey, Dict[LocationIndex, Set[CitationLocation]]
             ] = {}
             citation_locations_path = os.path.join(
                 directories.arxiv_subdir("citation-locations", arxiv_id),
@@ -63,28 +67,17 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                     "Could not find citation locations for %s. Skipping", arxiv_id
                 )
                 continue
-            with open(
-                citation_locations_path, encoding="utf-8"
-            ) as citation_locations_file:
-                reader = csv.reader(citation_locations_file)
-                for row in reader:
-                    key = row[0]
-                    location_index = int(row[1])
-                    box = BoundingBox(
-                        page=int(row[2]),
-                        left=float(row[3]),
-                        top=float(row[4]),
-                        width=float(row[5]),
-                        height=float(row[6]),
-                    )
-                    if not key in citation_locations:
-                        citation_locations[key] = {}
-                    if not location_index in citation_locations[key]:
-                        citation_locations[key][location_index] = CitationLocation(
-                            location_index, set()
-                        )
-                    citation_locations[key][location_index].boxes.add(box)
 
+            for location in file_utils.load_from_csv(
+                citation_locations_path, CitationLocation
+            ):
+                if not location.key in citation_locations:
+                    citation_locations[location.key] = {}
+                if not location.cluster_index in citation_locations[location.key]:
+                    citation_locations[location.key][location.cluster_index] = set()
+                citation_locations[location.key][location.cluster_index].add(location)
+
+            # Load metadata for bibitems
             key_s2_ids: Dict[CitationKey, S2Id] = {}
             key_resolutions_path = os.path.join(
                 directories.arxiv_subdir("bibitem-resolutions", arxiv_id),
@@ -95,12 +88,11 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                     "Could not find citation resolutions for %s. Skipping", arxiv_id
                 )
                 continue
-            with open(key_resolutions_path, encoding="utf-8") as key_resolutions_file:
-                reader = csv.reader(key_resolutions_file)
-                for row in reader:
-                    key = row[0]
-                    s2_id = row[1]
-                    key_s2_ids[key] = s2_id
+            for resolution in file_utils.load_from_csv(
+                key_resolutions_path, BibitemMatch
+            ):
+                if resolution.key is not None:
+                    key_s2_ids[resolution.key] = resolution.s2_id
 
             s2_id_path = os.path.join(
                 directories.arxiv_subdir("s2-metadata", arxiv_id), "s2_id"
@@ -111,7 +103,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
             with open(s2_id_path) as s2_id_file:
                 s2_id = s2_id_file.read()
 
-            s2_data: Dict[S2Id, Reference] = {}
+            s2_data: Dict[S2Id, SerializableReference] = {}
             s2_metadata_path = os.path.join(
                 directories.arxiv_subdir("s2-metadata", arxiv_id), "references.csv"
             )
@@ -121,18 +113,15 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                     arxiv_id,
                 )
                 continue
-            with open(s2_metadata_path, encoding="utf-8") as s2_metadata_file:
-                reader = csv.reader(s2_metadata_file)
-                for row in reader:
-                    s2_data[row[0]] = Reference(
-                        s2Id=row[0],
-                        arxivId=row[1] if row[1] is not "" else None,
-                        doi=row[2] if row[2] is not "" else None,
-                        title=row[3],
-                        authors=[Author(id=None, name=nm) for nm in row[4].split(",")],
-                        venue=row[5],
-                        year=int(row[6]) if row[6] is not "" else None,
-                    )
+            for metadata in file_utils.load_from_csv(
+                s2_metadata_path, SerializableReference
+            ):
+                # Convert authors field to comma-delimited list of authors
+                author_string = ",".join(
+                    [a["name"] for a in ast.literal_eval(metadata.authors)]
+                )
+                metadata = dataclasses.replace(metadata, authors=author_string)
+                s2_data[metadata.s2_id] = metadata
 
             yield CitationData(
                 arxiv_id, s2_id, citation_locations, key_s2_ids, s2_data,
@@ -165,7 +154,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                         cited_paper = Paper.get(Paper.s2_id == s2_id)
                     except Paper.DoesNotExist:
                         cited_paper = Paper.create(
-                            s2_id=s2_id, arxiv_id=paper_data.arxivId
+                            s2_id=s2_id, arxiv_id=paper_data.arxivId or None
                         )
 
                     try:
@@ -174,15 +163,13 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                         Summary.create(
                             paper=cited_paper,
                             title=paper_data.title,
-                            authors=",".join(
-                                [author.name for author in paper_data.authors]
-                            ),
-                            doi=paper_data.doi,
-                            venue=paper_data.venue,
+                            authors=paper_data.authors,
+                            doi=paper_data.doi or None,
+                            venue=paper_data.venue or None,
                             year=paper_data.year,
                         )
 
-            for location in locations.values():
+            for location_set in locations.values():
                 citation = Citation.create(paper=paper)
                 try:
                     with output_database.atomic():
@@ -202,13 +189,13 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                     type="citation", source="tex-pipeline", entity_id=citation.id
                 )
 
-                for box in location.boxes:
+                for location in location_set:
                     bounding_box = BoundingBoxModel.create(
-                        page=box.page,
-                        left=box.left,
-                        top=box.top,
-                        width=box.width,
-                        height=box.height,
+                        page=location.page,
+                        left=location.left,
+                        top=location.top,
+                        width=location.width,
+                        height=location.height,
                     )
 
                     EntityBoundingBox.create(bounding_box=bounding_box, entity=entity)

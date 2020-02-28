@@ -8,9 +8,8 @@ import cv2
 import numpy as np
 
 from command.command import ArxivBatchCommand
-from common import directories
+from common import directories, file_utils
 from common.compile import get_output_files
-from common.file_utils import clean_directory
 from common.image_processing import diff_images
 from common.types import ArxivId
 
@@ -52,7 +51,7 @@ class DiffImagesCommand(ArxivBatchCommand[PageRasterPair, np.ndarray], ABC):
             output_dir = directories.arxiv_subdir(
                 self.get_output_base_dirkey(), arxiv_id
             )
-            clean_directory(output_dir)
+            file_utils.clean_directory(output_dir)
 
             # Get output file names from results of compiling the uncolorized TeX sources.
             output_files = get_output_files(

@@ -25,6 +25,7 @@ from common.parse_tex import (
 )
 from common.types import (
     CharacterRange,
+    ColorizedTokenWithOrigin,
     Entity,
     Equation,
     EquationId,
@@ -334,16 +335,6 @@ def colorize_entities(
     # When finished coloring, yield any colorized entities that haven't yet bee yielded.
     if len(colorized_entities) > 0:
         yield ColorizationBatch(colorized_tex, colorized_entities)
-
-
-class ColorizedTokenWithOrigin(NamedTuple):
-    tex_path: str
-    equation_index: int
-    token_index: int
-    start: int
-    end: int
-    text: str
-    hue: float
 
 
 class TokenColorizationBatch(NamedTuple):

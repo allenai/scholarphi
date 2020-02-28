@@ -1,25 +1,32 @@
-import csv
 import logging
 import os.path
 from argparse import ArgumentParser
-from typing import Iterator, List, NamedTuple
+from dataclasses import dataclass
+from typing import Iterator, List
 
 from command.command import ArxivBatchCommand, add_one_entity_at_a_time_arg
-from common import directories
+from common import directories, file_utils
 from common.colorize_tex import ColorizedCitation, colorize_citations
-from common.file_utils import clean_directory, find_files, read_file_tolerant
-from common.types import ArxivId, FileContents, RelativePath
+from common.types import (
+    ArxivId,
+    Bibitem,
+    CitationColorizationRecord,
+    FileContents,
+    RelativePath,
+)
 from common.unpack import unpack
 
 
-class ColorizationTask(NamedTuple):
+@dataclass(frozen=True)
+class ColorizationTask:
     arxiv_id: ArxivId
     tex_path: RelativePath
     file_contents: FileContents
     bibitem_keys: List[str]
 
 
-class ColorizationResult(NamedTuple):
+@dataclass(frozen=True)
+class ColorizationResult:
     iteration: int
     tex: str
     colorized_citations: List[ColorizedCitation]
@@ -52,9 +59,8 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
             output_root = directories.arxiv_subdir(
                 "sources-with-colorized-citations", arxiv_id
             )
-            clean_directory(output_root)
+            file_utils.clean_directory(output_root)
 
-            bibitem_keys: List[str] = []
             bibitems_path = os.path.join(
                 directories.arxiv_subdir("bibitems", arxiv_id), "bibitems.csv"
             )
@@ -64,13 +70,14 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
                 )
                 continue
 
-            with open(bibitems_path, encoding="utf-8") as bibitems_file:
-                reader = csv.reader(bibitems_file)
-                bibitem_keys = [row[0] for row in reader]
+            bibitems = file_utils.load_from_csv(bibitems_path, Bibitem)
+            bibitem_keys = [b.key for b in bibitems if b.key is not None]
 
             original_sources_path = directories.arxiv_subdir("sources", arxiv_id)
-            for tex_path in find_files(original_sources_path, [".tex"], relative=True):
-                file_contents = read_file_tolerant(
+            for tex_path in file_utils.find_files(
+                original_sources_path, [".tex"], relative=True
+            ):
+                file_contents = file_utils.read_file_tolerant(
                     os.path.join(original_sources_path, tex_path)
                 )
                 if file_contents is not None:
@@ -110,25 +117,14 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
                 tex_file.write(colorized_tex)
 
             hues_path = os.path.join(output_sources_path, "citation_hues.csv")
-            with open(hues_path, "a", encoding="utf-8") as hues_file:
-                writer = csv.writer(hues_file, quoting=csv.QUOTE_ALL)
-                for colorized_citation in colorized_citations:
-                    # TODO(andrewhead): It might be better to save this CSV data with the same
-                    # encoding as the file the TeX was read from, for the citations, for the
-                    # equations, and for the symbols. There might be some gotchas for character
-                    # positions not lining up between the ones we save using Unicode here and the
-                    # positions in the intended encoding in the original files.
-                    try:
-                        writer.writerow(
-                            [
-                                item.tex_path,
-                                iteration_id,
-                                colorized_citation.hue,
-                                colorized_citation.key,
-                            ]
-                        )
-                    except Exception:  # pylint: disable=broad-except
-                        logging.warning(
-                            "Couldn't write row for citation for arXiv %s: can't be converted to utf-8",
-                            item.arxiv_id,
-                        )
+
+            # TODO(andrewhead): It might be better to save this CSV data with the same
+            # encoding as the file the TeX was read from, for the citations, for the
+            # equations, and for the symbols. There might be some gotchas for character
+            # positions not lining up between the ones we save using Unicode here and the
+            # positions in the intended encoding in the original files.
+            for c in colorized_citations:
+                record = CitationColorizationRecord(
+                    hue=c.hue, key=c.key, tex_path=item.tex_path, iteration=iteration_id
+                )
+                file_utils.append_to_csv(hues_path, record)

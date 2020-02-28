@@ -5,9 +5,8 @@ from abc import ABC, abstractmethod
 from typing import Iterator, Type
 
 from command.command import ArxivBatchCommand
-from common import directories
+from common import directories, file_utils
 from common.compile import compile_tex
-from common.file_utils import clean_directory, save_compilation_results
 from common.types import AbsolutePath, ArxivId, CompilationResult, Path, RelativePath
 
 CompilationPath = AbsolutePath
@@ -53,7 +52,7 @@ class CompileTexCommand(ArxivBatchCommand[CompilationPath, CompilationResult], A
             output_dir_for_arxiv_id = directories.arxiv_subdir(
                 self.get_output_base_dirkey(), arxiv_id
             )
-            clean_directory(output_dir_for_arxiv_id)
+            file_utils.clean_directory(output_dir_for_arxiv_id)
 
             for source_dir in self.get_source_dirs(arxiv_id):
                 qualified_source_dir = os.path.join(sources_base_dir, source_dir)
@@ -72,7 +71,7 @@ class CompileTexCommand(ArxivBatchCommand[CompilationPath, CompilationResult], A
         yield result
 
     def save(self, item: CompilationPath, result: CompilationResult) -> None:
-        save_compilation_results(item, result)
+        file_utils.save_compilation_results(item, result)
 
 
 class CompileTexSources(CompileTexCommand):

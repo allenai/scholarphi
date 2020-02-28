@@ -7,9 +7,8 @@ from abc import ABC, abstractmethod
 from typing import Dict, Iterator, NamedTuple, Type
 
 from command.command import ArxivBatchCommand
-from common import directories
+from common import directories, file_utils
 from common.compile import get_output_files
-from common.file_utils import clean_directory
 from common.types import AbsolutePath, ArxivId, RelativePath
 
 """
@@ -71,7 +70,7 @@ class RasterPagesCommand(ArxivBatchCommand[RasterTask, None], ABC):
             output_dir_for_arxiv_id = directories.arxiv_subdir(
                 self.get_output_base_dirkey(), arxiv_id
             )
-            clean_directory(output_dir_for_arxiv_id)
+            file_utils.clean_directory(output_dir_for_arxiv_id)
 
             for paper_dir in self.get_paper_dirs(arxiv_id):
                 paper_abs_path = os.path.join(
