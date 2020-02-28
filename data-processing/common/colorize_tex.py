@@ -258,7 +258,7 @@ def colorize_equations(
 def colorize_entities(
     tex: str,
     entity_extractor: Any,
-    get_entity_metadata: Callable[[Entity], Dict[str, Any]],
+    get_entity_metadata: Callable[[Entity], Dict[str, Any]] = lambda e: {},
     insert_color_macros: bool = True,
     batch_size: Optional[int] = None,
     preset_hue: Optional[float] = None,
