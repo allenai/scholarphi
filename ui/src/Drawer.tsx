@@ -10,7 +10,7 @@ import SearchResults from "./SearchResults";
 import { ScholarReaderContext } from "./state";
 
 const PDF_VIEWER_DRAWER_OPEN_CLASS = "drawer-open";
-const BLACK_LISTED_CLASS_NAMES = ["tooltip-body__action-button", "MuiButton-label"]
+const BLACK_LISTED_CLASS_NAME = "MuiTooltip-tooltip";
 export class Drawer extends React.PureComponent {
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
@@ -29,17 +29,15 @@ export class Drawer extends React.PureComponent {
    * to the black listed class names list. 
    */
   clickAwayClose = (e: React.MouseEvent<Document, MouseEvent>) => {
-    const elementTarget = e.target as Element;
-    let shouldClose = true;
-    BLACK_LISTED_CLASS_NAMES.forEach(cls => {
-      if (elementTarget.classList.contains(cls)) {
-        shouldClose = false;
+    let elementTarget = e.target as (Element | null);
+    while (elementTarget != null) {
+      if (elementTarget.classList.contains(BLACK_LISTED_CLASS_NAME)) {
+        return;
       }
-    })
-    
-    if (shouldClose) {
-      this.closeDrawer();
+      elementTarget = elementTarget.parentElement;
     }
+
+    this.closeDrawer();
   }
 
   closeDrawer = () => {
