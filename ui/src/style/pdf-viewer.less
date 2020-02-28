@@ -14,5 +14,12 @@
  * Hide default annotations to avoid clutter and confusion
  */
 .annotationLayer {
+  display: inline;
+}
+
+/**
+  * Hide default annotation specifically for citations to avoid unnecessary jumps
+  */
+a[href^="#cite"] {
   display: none;
 }
