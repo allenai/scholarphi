@@ -3,7 +3,7 @@ import os.path
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from dataclasses import dataclass
-from typing import Dict, Iterator, List, NamedTuple, Optional, cast
+from typing import Dict, Iterator, List, NamedTuple, Optional, Type, cast
 
 import cv2
 import numpy as np
@@ -230,53 +230,64 @@ class LocateHuesCommand(ArxivBatchCommand[SearchTask, HueLocation], ABC):
         file_utils.append_to_csv(output_path, hue_location_info)
 
 
-class LocateCitationHues(LocateHuesCommand):
-    @staticmethod
-    def get_name() -> str:
-        return "locate-citation-hues"
+def make_locate_hues_command(
+    entity_name: str, entity_type: str
+) -> Type[LocateHuesCommand]:
+    class C(LocateHuesCommand):
+        @staticmethod
+        def get_name() -> str:
+            return f"locate-hues-for-{entity_name}"
 
-    @staticmethod
-    def get_description() -> str:
-        return "Find bounding boxes of citations by hue."
+        @staticmethod
+        def get_description() -> str:
+            return f"Find bounding boxes of {entity_name} by hue."
 
-    @staticmethod
-    def get_entity_type() -> str:
-        return "citations"
+        @staticmethod
+        def get_entity_type() -> str:
+            return entity_type
 
-    def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
-        hues_path = os.path.join(
-            directories.iteration(
-                "sources-with-colorized-citations", arxiv_id, iteration,
-            ),
-            "citation_hues.csv",
-        )
-        if not os.path.exists(hues_path):
-            logging.warning("Could not find any hues at %s", hues_path)
-            return []
-
-        searches = []
-        for record in file_utils.load_from_csv(hues_path, ColorizationRecord):
-            searches.append(
-                HueSearchRegion(
-                    hue=record.hue, record=record, relative_file_path=None, masks=None
-                )
+        def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
+            hues_path = os.path.join(
+                directories.iteration(
+                    f"sources-with-colorized-{entity_name}", arxiv_id, iteration,
+                ),
+                "entity_hues.csv",
             )
+            if not os.path.exists(hues_path):
+                logging.warning("Could not find any hues at %s", hues_path)
+                return []
 
-        return searches
+            searches = []
+            for record in file_utils.load_from_csv(hues_path, ColorizationRecord):
+                searches.append(
+                    HueSearchRegion(
+                        hue=record.hue,
+                        record=record,
+                        relative_file_path=None,
+                        masks=None,
+                    )
+                )
 
-    @staticmethod
-    def get_diff_images_base_dirkey() -> str:
-        return "diff-images-with-colorized-citations"
+            return searches
 
-    @staticmethod
-    def get_output_base_dirkey() -> str:
-        return "hue-locations-for-citations"
+        @staticmethod
+        def get_diff_images_base_dirkey() -> str:
+            return f"diff-images-with-colorized-{entity_name}"
+
+        @staticmethod
+        def get_output_base_dirkey() -> str:
+            return f"hue-locations-for-{entity_name}"
+
+    return C
+
+
+LocateCitationHues = make_locate_hues_command("citations", "citations")
 
 
 class LocateEquationHues(LocateHuesCommand):
     @staticmethod
     def get_name() -> str:
-        return "locate-equation-hues"
+        return "locate-hues-for-equations"
 
     @staticmethod
     def get_description() -> str:
@@ -291,7 +302,7 @@ class LocateEquationHues(LocateHuesCommand):
             directories.iteration(
                 "sources-with-colorized-equations", arxiv_id, iteration,
             ),
-            "equation_hues.csv",
+            "entity_hues.csv",
         )
         if not os.path.exists(hues_path):
             logging.warning("Could not find any hues at %s", hues_path)
@@ -350,7 +361,7 @@ BoundingBoxesByFile = Dict[Path, List[BoundingBox]]
 class LocateEquationTokenHues(LocateHuesCommand):
     @staticmethod
     def get_name() -> str:
-        return "locate-equation-token-hues"
+        return "locate-hues-for-equation-tokens"
 
     @staticmethod
     def get_description() -> str:
@@ -403,7 +414,7 @@ class LocateEquationTokenHues(LocateHuesCommand):
             directories.iteration(
                 "sources-with-colorized-equation-tokens", arxiv_id, iteration,
             ),
-            "token_hues.csv",
+            "entity_hues.csv",
         )
         for record in file_utils.load_from_csv(
             token_hues_path, EquationTokenColorizationRecord

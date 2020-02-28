@@ -174,13 +174,13 @@ RESULT_SPECS: List[ResultSpec] = [
     ResultSpec("symbols", "symbol_tokens.csv", "symbol-tokens"),
     ResultSpec("symbols", "tokens.csv", "tokens"),
     ResultSpec(
-        "sources-with-colorized-citations", "**/citation_hues.csv", "citation-hues",
+        "sources-with-colorized-citations", "**/entity_hues.csv", "citation-hues",
     ),
     ResultSpec(
-        "sources-with-colorized-equations", "**/equation_hues.csv", "equation-hues",
+        "sources-with-colorized-equations", "**/entity_hues.csv", "equation-hues",
     ),
     ResultSpec(
-        "sources-with-colorized-equation-tokens", "**/token_hues.csv", "token-hues",
+        "sources-with-colorized-equation-tokens", "**/entity_hues.csv", "token-hues",
     ),
     ResultSpec(
         "compiled-sources",

@@ -7,7 +7,8 @@ from typing import Iterator, List
 from command.command import ArxivBatchCommand, add_one_entity_at_a_time_arg
 from common import directories, file_utils
 from common.colorize_tex import ColorizedEntity, colorize_equations
-from common.types import ArxivId, EquationColorizationRecord, FileContents, RelativePath
+from common.types import (ArxivId, EquationColorizationRecord, FileContents,
+                          RelativePath)
 from common.unpack import unpack
 
 
@@ -93,7 +94,7 @@ class ColorizeEquations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
             with open(tex_path, "w", encoding=item.file_contents.encoding) as tex_file:
                 tex_file.write(colorized_tex)
 
-            hues_path = os.path.join(output_sources_path, "equation_hues.csv")
+            hues_path = os.path.join(output_sources_path, "entity_hues.csv")
             for c in colorized_equations:
                 record = EquationColorizationRecord(
                     arxiv_id=item.arxiv_id,
