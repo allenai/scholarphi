@@ -3,8 +3,8 @@ import os.path
 from abc import abstractmethod
 from typing import Iterator, Type
 
-from command.command import DatabaseUploadCommand
 from common import directories, file_utils
+from common.commands.base import DatabaseUploadCommand
 from common.types import (
     ColorizationRecord,
     EntityInfo,

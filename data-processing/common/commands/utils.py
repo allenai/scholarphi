@@ -1,13 +1,13 @@
 from typing import List, Optional, Type
 
-from command.colorize_tex import make_colorize_tex_command
-from command.command import Command
-from command.compile_tex import make_compile_tex_command
-from command.detect_entities import make_detect_entities_command
-from command.diff_images import make_diff_images_command
-from command.locate_hues import make_locate_hues_command
-from command.raster_pages import make_raster_pages_command
 from common.colorize_tex import ColorPositionsFunc, ColorWhenFunc
+from common.commands.base import Command
+from common.commands.colorize_tex import make_colorize_tex_command
+from common.commands.compile_tex import make_compile_tex_command
+from common.commands.detect_entities import make_detect_entities_command
+from common.commands.diff_images import make_diff_images_command
+from common.commands.locate_hues import make_locate_hues_command
+from common.commands.raster_pages import make_raster_pages_command
 from common.parse_tex import EntityExtractor
 from common.types import SerializableEntity
 

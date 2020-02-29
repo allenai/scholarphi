@@ -3,9 +3,9 @@ import os.path
 from dataclasses import dataclass
 from typing import Dict, Iterator, List
 
-from command.command import ArxivBatchCommand
 from common import directories, file_utils
 from common.bounding_box import cluster_boxes
+from common.commands.base import ArxivBatchCommand
 from common.types import (
     ArxivId,
     BoundingBox,

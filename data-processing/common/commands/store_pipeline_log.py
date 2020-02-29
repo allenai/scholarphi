@@ -3,9 +3,9 @@ import subprocess
 from argparse import ArgumentParser
 from typing import Iterator
 
-from command.command import Command
-from command.store_results import DEFAULT_S3_LOGS_BUCKET
 from common import directories
+from common.commands.base import Command
+from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET
 
 
 class StorePipelineLog(Command[None, None]):  # pylint: disable=unsubscriptable-object

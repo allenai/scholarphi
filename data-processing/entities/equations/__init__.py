@@ -1,6 +1,6 @@
 from typing import cast
 
-from command.utils import create_entity_localization_command_sequence
+from common.commands.utils import create_entity_localization_command_sequence
 from common.parse_tex import EquationExtractor
 from common.types import CharacterRange, Equation, SerializableEntity
 

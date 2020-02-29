@@ -8,8 +8,8 @@ from dataclasses import dataclass
 from tempfile import TemporaryDirectory
 from typing import Iterator, List
 
-from command.command import ArxivBatchCommand
 from common import directories
+from common.commands.base import ArxivBatchCommand
 from common.types import ArxivId
 
 DEFAULT_S3_LOGS_BUCKET = "s2-reader-pipeline-logs"

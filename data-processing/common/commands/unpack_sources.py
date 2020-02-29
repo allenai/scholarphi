@@ -1,7 +1,7 @@
 from typing import Iterator
 
-from command.command import ArxivBatchCommand
 from common import directories
+from common.commands.base import ArxivBatchCommand
 from common.types import ArxivId
 from common.unpack import unpack
 

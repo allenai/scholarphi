@@ -2,41 +2,32 @@ import argparse
 import logging
 from typing import List
 
-from command.annotate_symbols import AnnotateTexWithSymbolMarkers
-from command.colorize_citations import ColorizeCitations
-from command.colorize_equation_tokens import ColorizeEquationTokens
-from command.command import Command
-from command.compile_tex import (
+from common.commands.annotate_symbols import AnnotateTexWithSymbolMarkers
+from common.commands.base import Command
+from common.commands.colorize_equation_tokens import ColorizeEquationTokens
+from common.commands.compile_tex import (
     CompileTexSources,
-    CompileTexSourcesWithColorizedCitations,
     CompileTexSourcesWithColorizedEquationTokens,
 )
-from command.compute_iou import ComputeIou
-from command.debug_colorize_tex import DebugColorizeEquationTokens
-from command.diff_images import (
-    DiffImagesWithColorizedCitations,
-    DiffImagesWithColorizedEquationTokens,
-)
-from command.extract_bibitems import ExtractBibitems
-from command.extract_symbols import ExtractSymbols
-from command.fetch_arxiv_sources import FetchArxivSources
-from command.fetch_new_arxiv_ids import FetchNewArxivIds
-from command.fetch_s2_data import FetchS2Metadata
-from command.find_symbol_matches import FindSymbolMatches
-from command.locate_citations import LocateCitations
-from command.locate_hues import LocateCitationHues, LocateEquationTokenHues
-from command.locate_symbols import LocateSymbols
-from command.raster_pages import (
+from common.commands.compute_iou import ComputeIou
+from common.commands.debug_colorize_tex import DebugColorizeEquationTokens
+from common.commands.diff_images import DiffImagesWithColorizedEquationTokens
+from common.commands.extract_symbols import ExtractSymbols
+from common.commands.fetch_arxiv_sources import FetchArxivSources
+from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
+from common.commands.fetch_s2_data import FetchS2Metadata
+from common.commands.find_symbol_matches import FindSymbolMatches
+from common.commands.locate_hues import LocateEquationTokenHues
+from common.commands.locate_symbols import LocateSymbols
+from common.commands.raster_pages import (
     RasterPages,
-    RasterPagesWithColorizedCitations,
     RasterPagesWithColorizedEquationTokens,
 )
-from command.resolve_bibitems import ResolveBibitems
-from command.store_pipeline_log import StorePipelineLog
-from command.store_results import StoreResults
-from command.unpack_sources import UnpackSources
-from command.upload_citations import UploadCitations
-from command.upload_symbols import UploadSymbols
+from common.commands.store_pipeline_log import StorePipelineLog
+from common.commands.store_results import StoreResults
+from common.commands.unpack_sources import UnpackSources
+from common.commands.upload_symbols import UploadSymbols
+from entities.citations import commands as citation_commands
 from entities.equations import commands as equation_commands
 
 PREPARATION_COMMANDS: List = [  # type: ignore
@@ -54,16 +45,7 @@ MAIN_PIPELINE_COMMANDS: List = [  # type: ignore
     UnpackSources,
     CompileTexSources,
     RasterPages,
-    ExtractBibitems,
-    ResolveBibitems,
-    # Citations
-    ColorizeCitations,
-    CompileTexSourcesWithColorizedCitations,
-    RasterPagesWithColorizedCitations,
-    DiffImagesWithColorizedCitations,
-    LocateCitationHues,
-    LocateCitations,
-] + equation_commands + [
+] + citation_commands + equation_commands + [
     # Symbols
     ExtractSymbols,
     FindSymbolMatches,
@@ -82,7 +64,6 @@ STORE_RESULTS_COMMANDS: List = [  # type: ignore
 ]
 
 DATABASE_UPLOAD_COMMANDS: List = [  # type: ignore
-    UploadCitations,
     UploadSymbols,
 ]
 

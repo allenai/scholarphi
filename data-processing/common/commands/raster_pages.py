@@ -6,8 +6,8 @@ import subprocess
 from abc import ABC, abstractmethod
 from typing import Dict, Iterator, NamedTuple, Type
 
-from command.command import ArxivBatchCommand
 from common import directories, file_utils
+from common.commands.base import ArxivBatchCommand
 from common.compile import get_output_files
 from common.types import AbsolutePath, ArxivId, RelativePath
 
@@ -186,7 +186,6 @@ def make_raster_pages_command(
     return C
 
 
-RasterPagesWithColorizedCitations = make_raster_pages_command("citations", "citations")
 RasterPagesWithColorizedEquationTokens = make_raster_pages_command(
     "equation-tokens", "symbols"
 )

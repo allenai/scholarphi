@@ -4,9 +4,9 @@ from argparse import ArgumentParser
 from dataclasses import dataclass
 from typing import Iterator, List
 
-from command.command import ArxivBatchCommand, add_one_entity_at_a_time_arg
 from common import directories, file_utils
 from common.colorize_tex import ColorizedCitation, colorize_citations
+from common.commands.base import ArxivBatchCommand, add_one_entity_at_a_time_arg
 from common.types import (
     ArxivId,
     Bibitem,

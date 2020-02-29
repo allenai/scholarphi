@@ -6,8 +6,8 @@ from typing import Iterator
 
 import requests
 
-from command.command import ArxivBatchCommand
 from common import directories, file_utils
+from common.commands.base import ArxivBatchCommand
 from common.types import ArxivId, Author, Reference, S2Metadata, SerializableReference
 
 """ Time to wait between consecutive requests to S2 API. """

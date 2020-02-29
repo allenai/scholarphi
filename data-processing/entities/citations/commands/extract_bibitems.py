@@ -3,8 +3,8 @@ import os.path
 from typing import Iterator, NamedTuple
 
 import common.directories as directories
-from command.command import ArxivBatchCommand
 from common import file_utils
+from common.commands.base import ArxivBatchCommand
 from common.parse_tex import BibitemExtractor
 from common.types import ArxivId, Bibitem, FileContents
 

@@ -5,9 +5,9 @@ from argparse import ArgumentParser
 from dataclasses import dataclass
 from typing import Iterator, List, Optional, Tuple, Type
 
-from command.command import ArxivBatchCommand, add_one_entity_at_a_time_arg
 from common import directories, file_utils
 from common.colorize_tex import ColorPositionsFunc, ColorWhenFunc, colorize_entities
+from common.commands.base import ArxivBatchCommand, add_one_entity_at_a_time_arg
 from common.types import (
     ArxivId,
     CharacterRange,
