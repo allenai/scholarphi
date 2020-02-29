@@ -15,6 +15,7 @@ from common.commands.unpack_sources import UnpackSources
 from entities.citations import citations_pipeline
 from entities.common import EntityPipeline
 from entities.equations import equations_pipeline
+from entities.sentences import sentences_pipeline
 from entities.symbols import symbols_pipeline
 
 PAPER_DISCOVERY_COMMANDS: CommandList = [FetchNewArxivIds]
@@ -34,9 +35,21 @@ TEX_PREPARATION_COMMANDS: CommandList = [
 ENTITY_COMMANDS: CommandList = []
 " Commands for processing entities. "
 
+
+entity_pipelines = [
+    citations_pipeline,
+    sentences_pipeline,
+    equations_pipeline,
+    symbols_pipeline,
+]
+"""
+List of pipelines for processing entities. If you have written code to process a new type of
+entity, you must add the pipeline for that entity to this list, for it to be included in the main
+paper-processing pipeline.
+"""
+
 # Order commands for processing entities based on dependencies between entities. For example,
 # equations will need to be processed before symbols.
-entity_pipelines = [citations_pipeline, equations_pipeline, symbols_pipeline]
 pipelines_ordered: List[EntityPipeline] = []
 entity_names_added: List[str] = []
 

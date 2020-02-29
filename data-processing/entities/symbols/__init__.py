@@ -1,3 +1,4 @@
+from common import directories
 from common.commands.base import CommandList
 from common.commands.compile_tex import make_compile_tex_command
 from common.commands.diff_images import make_diff_images_command
@@ -10,6 +11,16 @@ from .commands.extract_symbols import ExtractSymbols
 from .commands.find_symbol_matches import FindSymbolMatches
 from .commands.locate_symbols import LocateSymbols
 from .commands.upload_symbols import UploadSymbols
+
+directories.register("symbols")
+directories.register("symbol-matches")
+directories.register("sources-with-colorized-equation-tokens")
+directories.register("compiled-sources-with-colorized-equation-tokens")
+directories.register("paper-with-colorized-equation-tokens-images")
+directories.register("diff-images-with-colorized-equation-tokens")
+directories.register("hue-locations-for-equation-tokens")
+directories.register("symbol-locations")
+
 
 commands = [
     ExtractSymbols,
