@@ -116,8 +116,3 @@ def make_compile_tex_command(
             return f"compiled-sources-with-colorized-{entity_name}"
 
     return C
-
-
-CompileTexSourcesWithColorizedEquationTokens = make_compile_tex_command(
-    "equation-tokens", "symbols"
-)

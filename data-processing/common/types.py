@@ -439,13 +439,6 @@ class HueLocationInfo(BoundingBox, ColorizationRecord):
     relative_file_path: str
 
 
-@dataclass(frozen=True)
-class EquationTokenHueLocationInfo(HueLocationInfo):
-    tex_path: str
-    equation_index: int
-    character_index: int
-
-
 CharacterLocations = Dict[CharacterId, List[BoundingBox]]
 
 

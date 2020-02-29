@@ -21,13 +21,15 @@ from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
 from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
 from scripts.process import (
-    DATABASE_UPLOAD_COMMANDS,
-    MAIN_PIPELINE_COMMANDS,
+    ENTITY_COMMANDS,
     STORE_RESULTS_COMMANDS,
+    TEX_PREPARATION_COMMANDS,
     run_command,
 )
 
 if __name__ == "__main__":
+
+    PIPELINE_COMMANDS = TEX_PREPARATION_COMMANDS + ENTITY_COMMANDS
 
     parser = ArgumentParser(
         description="Run pipeline to extract entities from arXiv papers."
@@ -43,7 +45,7 @@ if __name__ == "__main__":
             + "in the file name to distinguish it from other logs created at the same time."
         ),
     )
-    command_names = [c.get_name() for c in MAIN_PIPELINE_COMMANDS]
+    command_names = [c.get_name() for c in PIPELINE_COMMANDS]
     parser.add_argument(
         "--entities",
         help=(
@@ -150,12 +152,7 @@ if __name__ == "__main__":
     if args.start is None:
         reached_start_command = True
 
-    command_classes = MAIN_PIPELINE_COMMANDS
-    if args.upload_to_database:
-        logging.debug(
-            "Registering commands to be run for uploading results to the database."
-        )
-        command_classes += DATABASE_UPLOAD_COMMANDS
+    command_classes = PIPELINE_COMMANDS
     if not args.skip_store_results:
         command_classes += STORE_RESULTS_COMMANDS
 

@@ -3,7 +3,7 @@ import os.path
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from dataclasses import dataclass
-from typing import Dict, Iterator, List, NamedTuple, Optional, Type, cast
+from typing import Dict, Iterator, List, Optional, Type
 
 import cv2
 import numpy as np
@@ -13,14 +13,7 @@ from common.bounding_box import extract_bounding_boxes
 from common.commands.base import ArxivBatchCommand
 from common.compile import get_output_files
 from common.image_processing import contains_black_pixels
-from common.types import (
-    ArxivId,
-    BoundingBox,
-    ColorizationRecord,
-    EquationId,
-    EquationTokenColorizationRecord,
-    EquationTokenHueLocationInfo,
-)
+from common.types import ArxivId, BoundingBox, ColorizationRecord
 from common.types import FloatRectangle as Rectangle
 from common.types import HueLocationInfo, Path, RelativePath
 
@@ -189,29 +182,7 @@ class LocateHuesCommand(ArxivBatchCommand[SearchTask, HueLocation], ABC):
             for box in boxes:
                 yield HueLocation(item.search.hue, box)
 
-    def get_hue_location_info(
-        self, item: SearchTask, result: HueLocation
-    ) -> HueLocationInfo:
-        """
-        Create a object that can be logged, with the results of searching for a hue.
-        Override this method in your command if you want to log unique data for a
-        your specific type of entity.
-        """
-        return HueLocationInfo(
-            tex_path=item.search.record.tex_path,
-            iteration=item.iteration,
-            hue=result.hue,
-            entity_id=item.search.record.entity_id,
-            page=result.box.page,
-            left=result.box.left,
-            top=result.box.top,
-            width=result.box.width,
-            height=result.box.height,
-            relative_file_path=item.relative_file_path,
-        )
-
     def save(self, item: SearchTask, result: HueLocation) -> None:
-
         logging.debug(
             "Found bounding box for %s, iteration %s, hue %f",
             item.relative_file_path,
@@ -226,8 +197,18 @@ class LocateHuesCommand(ArxivBatchCommand[SearchTask, HueLocation], ABC):
             os.makedirs(output_dir)
         output_path = os.path.join(output_dir, "hue_locations.csv")
 
-        hue_location_info = self.get_hue_location_info(item, result)
-        file_utils.append_to_csv(output_path, hue_location_info)
+        file_utils.append_to_csv(output_path, HueLocationInfo(
+            tex_path=item.search.record.tex_path,
+            iteration=item.iteration,
+            hue=result.hue,
+            entity_id=item.search.record.entity_id,
+            page=result.box.page,
+            left=result.box.left,
+            top=result.box.top,
+            width=result.box.width,
+            height=result.box.height,
+            relative_file_path=item.relative_file_path,
+        ))
 
 
 def make_locate_hues_command(
@@ -279,139 +260,3 @@ def make_locate_hues_command(
             return f"hue-locations-for-{entity_name}"
 
     return C
-
-
-class TokenId(NamedTuple):
-    tex_path: str
-    equation_index: int
-    token_index: int
-
-
-BoundingBoxesByFile = Dict[Path, List[BoundingBox]]
-
-
-class LocateEquationTokenHues(LocateHuesCommand):
-    @staticmethod
-    def get_name() -> str:
-        return "locate-hues-for-equation-tokens"
-
-    @staticmethod
-    def get_description() -> str:
-        return (
-            "Find bounding boxes of token equations using hues. Before running this command,"
-            + "bounding boxes must be detected for all equations.'"
-        )
-
-    @staticmethod
-    def get_entity_type() -> str:
-        return "symbols"
-
-    def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
-
-        equation_boxes_path = os.path.join(
-            directories.arxiv_subdir("hue-locations-for-equations", arxiv_id),
-            "hue_locations.csv",
-        )
-        bounding_boxes: Dict[EquationId, BoundingBoxesByFile] = {}
-
-        for location_info in file_utils.load_from_csv(
-            equation_boxes_path, HueLocationInfo
-        ):
-            equation_id = EquationId(
-                tex_path=location_info.tex_path,
-                equation_index=int(location_info.entity_id),
-            )
-            if equation_id not in bounding_boxes:
-                bounding_boxes[equation_id] = {}
-
-            file_path = location_info.relative_file_path
-            if file_path not in bounding_boxes[equation_id]:
-                bounding_boxes[equation_id][file_path] = []
-
-            box = BoundingBox(
-                page=location_info.page,
-                left=location_info.left,
-                top=location_info.top,
-                width=location_info.width,
-                height=location_info.height,
-            )
-            bounding_boxes[equation_id][file_path].append(box)
-
-        token_records_by_equation: Dict[
-            EquationId, Dict[int, EquationTokenColorizationRecord]
-        ] = {}
-        token_hues_path = os.path.join(
-            directories.iteration(
-                "sources-with-colorized-equation-tokens", arxiv_id, iteration,
-            ),
-            "entity_hues.csv",
-        )
-        for record in file_utils.load_from_csv(
-            token_hues_path, EquationTokenColorizationRecord
-        ):
-            equation_id = EquationId(
-                tex_path=record.tex_path, equation_index=record.equation_index
-            )
-            token_index = int(record.token_index)
-
-            if equation_id not in token_records_by_equation:
-                token_records_by_equation[equation_id] = {}
-            token_records_by_equation[equation_id][token_index] = record
-
-        hue_searches = []
-        for equation_id, boxes_by_file in bounding_boxes.items():
-            for file_path, boxes in boxes_by_file.items():
-                masks_by_page: MasksForPages = {}
-                for box in boxes:
-                    if box.page not in masks_by_page:
-                        masks_by_page[box.page] = []
-                    masks_by_page[box.page].append(
-                        Rectangle(box.left, box.top, box.width, box.height)
-                    )
-
-                if equation_id in token_records_by_equation:
-                    for token_index, record in token_records_by_equation[
-                        equation_id
-                    ].items():
-                        hue_searches.append(
-                            HueSearchRegion(
-                                hue=record.hue,
-                                record=record,
-                                relative_file_path=file_path,
-                                masks=masks_by_page,
-                            )
-                        )
-
-        return hue_searches
-
-    def get_hue_location_info(
-        self, item: SearchTask, result: HueLocation
-    ) -> EquationTokenHueLocationInfo:
-        """
-        Create a object that can be logged, with the results of searching for a hue.
-        Override this method in your command if you want to log unique data for a
-        your specific type of entity.
-        """
-        token_record = cast(EquationTokenColorizationRecord, item.search.record)
-        return EquationTokenHueLocationInfo(
-            relative_file_path=item.relative_file_path,
-            entity_id=str(item.search.record.entity_id),
-            iteration=item.iteration,
-            hue=result.hue,
-            page=result.box.page,
-            left=result.box.left,
-            top=result.box.top,
-            width=result.box.width,
-            height=result.box.height,
-            tex_path=token_record.tex_path,
-            equation_index=token_record.equation_index,
-            character_index=token_record.token_index,
-        )
-
-    @staticmethod
-    def get_diff_images_base_dirkey() -> str:
-        return "diff-images-with-colorized-equation-tokens"
-
-    @staticmethod
-    def get_output_base_dirkey() -> str:
-        return "hue-locations-for-equation-tokens"

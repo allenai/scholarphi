@@ -139,8 +139,3 @@ def make_diff_images_command(
             return f"diff-images-with-colorized-{entity_name}"
 
     return C
-
-
-DiffImagesWithColorizedEquationTokens = make_diff_images_command(
-    "equation-tokens", "symbols"
-)
