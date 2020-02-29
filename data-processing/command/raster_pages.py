@@ -187,7 +187,6 @@ def make_raster_pages_command(
 
 
 RasterPagesWithColorizedCitations = make_raster_pages_command("citations", "citations")
-RasterPagesWithColorizedEquations = make_raster_pages_command("equations", "symbols")
 RasterPagesWithColorizedEquationTokens = make_raster_pages_command(
     "equation-tokens", "symbols"
 )

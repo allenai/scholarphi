@@ -5,20 +5,16 @@ from typing import List
 from command.annotate_symbols import AnnotateTexWithSymbolMarkers
 from command.colorize_citations import ColorizeCitations
 from command.colorize_equation_tokens import ColorizeEquationTokens
-from command.colorize_tex import ColorizeEquations
 from command.command import Command
 from command.compile_tex import (
     CompileTexSources,
     CompileTexSourcesWithColorizedCitations,
-    CompileTexSourcesWithColorizedEquations,
     CompileTexSourcesWithColorizedEquationTokens,
 )
 from command.compute_iou import ComputeIou
 from command.debug_colorize_tex import DebugColorizeEquationTokens
-from command.detect_entities import DetectEquations
 from command.diff_images import (
     DiffImagesWithColorizedCitations,
-    DiffImagesWithColorizedEquations,
     DiffImagesWithColorizedEquationTokens,
 )
 from command.extract_bibitems import ExtractBibitems
@@ -28,16 +24,11 @@ from command.fetch_new_arxiv_ids import FetchNewArxivIds
 from command.fetch_s2_data import FetchS2Metadata
 from command.find_symbol_matches import FindSymbolMatches
 from command.locate_citations import LocateCitations
-from command.locate_hues import (
-    LocateCitationHues,
-    LocateEquationHues,
-    LocateEquationTokenHues,
-)
+from command.locate_hues import LocateCitationHues, LocateEquationTokenHues
 from command.locate_symbols import LocateSymbols
 from command.raster_pages import (
     RasterPages,
     RasterPagesWithColorizedCitations,
-    RasterPagesWithColorizedEquations,
     RasterPagesWithColorizedEquationTokens,
 )
 from command.resolve_bibitems import ResolveBibitems
@@ -46,6 +37,7 @@ from command.store_results import StoreResults
 from command.unpack_sources import UnpackSources
 from command.upload_citations import UploadCitations
 from command.upload_symbols import UploadSymbols
+from entities.equations import commands as equation_commands
 
 PREPARATION_COMMANDS: List = [  # type: ignore
     FetchNewArxivIds,
@@ -71,13 +63,7 @@ MAIN_PIPELINE_COMMANDS: List = [  # type: ignore
     DiffImagesWithColorizedCitations,
     LocateCitationHues,
     LocateCitations,
-    # Equations
-    DetectEquations,
-    ColorizeEquations,
-    CompileTexSourcesWithColorizedEquations,
-    RasterPagesWithColorizedEquations,
-    DiffImagesWithColorizedEquations,
-    LocateEquationHues,
+] + equation_commands + [
     # Symbols
     ExtractSymbols,
     FindSymbolMatches,

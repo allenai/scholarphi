@@ -3,7 +3,7 @@ import os.path
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from dataclasses import dataclass
-from typing import Iterator, List, Optional, Tuple, Type, cast
+from typing import Iterator, List, Optional, Tuple, Type
 
 from command.command import ArxivBatchCommand, add_one_entity_at_a_time_arg
 from common import directories, file_utils
@@ -12,7 +12,6 @@ from common.types import (
     ArxivId,
     CharacterRange,
     ColorizationRecord,
-    Equation,
     FileContents,
     Hue,
     RelativePath,
@@ -162,7 +161,7 @@ class ColorizeTexCommand(ArxivBatchCommand[ColorizationTask, ColorizationResult]
 def make_colorize_tex_command(
     entity_name: str,
     entity_type: str,
-    detected_entity_type: Optional[Type[SerializableEntity]] = None,
+    DetectedEntityType: Optional[Type[SerializableEntity]] = None,
     when: Optional[ColorWhenFunc] = None,
     get_color_positions: Optional[ColorPositionsFunc] = None,
 ) -> Type[ColorizeTexCommand]:
@@ -181,9 +180,9 @@ def make_colorize_tex_command(
 
         @staticmethod
         def get_detected_entity_type() -> Type[SerializableEntity]:
-            if detected_entity_type is None:
+            if DetectedEntityType is None:
                 return super(C, C).get_detected_entity_type()
-            return detected_entity_type
+            return DetectedEntityType
 
         @staticmethod
         def when(entity: SerializableEntity) -> bool:
@@ -207,22 +206,3 @@ def make_colorize_tex_command(
             return f"sources-with-colorized-{entity_name}"
 
     return C
-
-
-def colorize_equation_when(entity: SerializableEntity) -> bool:
-    equation = cast(Equation, entity)
-    return equation.depth == 0
-
-
-def get_equation_color_positions(entity: SerializableEntity) -> CharacterRange:
-    equation = cast(Equation, entity)
-    return CharacterRange(equation.content_start, equation.content_end)
-
-
-ColorizeEquations = make_colorize_tex_command(
-    entity_name="equations",
-    entity_type="symbols",
-    detected_entity_type=Equation,
-    when=colorize_equation_when,
-    get_color_positions=get_equation_color_positions,
-)

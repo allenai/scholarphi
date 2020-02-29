@@ -282,7 +282,6 @@ def make_locate_hues_command(
 
 
 LocateCitationHues = make_locate_hues_command("citations", "citations")
-LocateEquationHues = make_locate_hues_command("equations", "symbols")
 
 
 class TokenId(NamedTuple):
@@ -303,9 +302,7 @@ class LocateEquationTokenHues(LocateHuesCommand):
     def get_description() -> str:
         return (
             "Find bounding boxes of token equations using hues. Before running this command,"
-            + "bounding boxes must be found for equations using '"
-            + LocateEquationHues.get_name()
-            + "'"
+            + "bounding boxes must be detected for all equations.'"
         )
 
     @staticmethod
@@ -401,6 +398,7 @@ class LocateEquationTokenHues(LocateHuesCommand):
         token_record = cast(EquationTokenColorizationRecord, item.search.record)
         return EquationTokenHueLocationInfo(
             relative_file_path=item.relative_file_path,
+            entity_id=str(item.search.record.entity_id),
             iteration=item.iteration,
             hue=result.hue,
             page=result.box.page,
