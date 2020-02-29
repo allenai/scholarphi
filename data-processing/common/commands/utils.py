@@ -14,7 +14,6 @@ from common.types import SerializableEntity
 
 def create_entity_localization_command_sequence(
     entity_name: str,
-    entity_type: str,
     EntityExtractorType: Type[EntityExtractor],
     DetectedEntityType: Optional[Type[SerializableEntity]] = None,
     colorize_entity_when: Optional[ColorWhenFunc] = None,
@@ -33,16 +32,15 @@ def create_entity_localization_command_sequence(
     you use this convenience methods instead of creating new commands yourself.
     """
     return [
-        make_detect_entities_command(entity_name, entity_type, EntityExtractorType),
+        make_detect_entities_command(entity_name, EntityExtractorType),
         make_colorize_tex_command(
             entity_name=entity_name,
-            entity_type=entity_type,
             DetectedEntityType=DetectedEntityType,
             when=colorize_entity_when,
             get_color_positions=get_color_positions,
         ),
-        make_compile_tex_command(entity_name, entity_type),
-        make_raster_pages_command(entity_name, entity_type),
-        make_diff_images_command(entity_name, entity_type),
-        make_locate_hues_command(entity_name, entity_type),
+        make_compile_tex_command(entity_name),
+        make_raster_pages_command(entity_name),
+        make_diff_images_command(entity_name),
+        make_locate_hues_command(entity_name),
     ]

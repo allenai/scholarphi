@@ -245,10 +245,6 @@ class DebugColorizeEquationTokens(DebugColorizeCommand):
     def get_description() -> str:
         return "Attempt to colorize tokens individually and save a list of errors."
 
-    @staticmethod
-    def get_entity_type() -> str:
-        return "symbols"
-
     def get_output_base_dirkey(self) -> str:
         return "debugging-colorizing-equation-tokens"
 

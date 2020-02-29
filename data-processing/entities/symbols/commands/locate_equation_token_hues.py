@@ -40,10 +40,6 @@ class LocateEquationTokenHues(LocateHuesCommand):
             + "bounding boxes must be detected for all equations.'"
         )
 
-    @staticmethod
-    def get_entity_type() -> str:
-        return "symbols"
-
     def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
 
         equation_boxes_path = os.path.join(

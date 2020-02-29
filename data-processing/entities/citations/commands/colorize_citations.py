@@ -46,10 +46,6 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
     def get_description() -> str:
         return "Instrument TeX to colorize citations."
 
-    @staticmethod
-    def get_entity_type() -> str:
-        return "citations"
-
     def get_arxiv_ids_dirkey(self) -> str:
         return "sources"
 

@@ -93,9 +93,7 @@ class CompileTexSources(CompileTexCommand):
         return "compiled-sources"
 
 
-def make_compile_tex_command(
-    entity_name: str, entity_type: str
-) -> Type[CompileTexCommand]:
+def make_compile_tex_command(entity_name: str) -> Type[CompileTexCommand]:
     class C(CompileTexCommand):
         @staticmethod
         def get_name() -> str:
@@ -104,10 +102,6 @@ def make_compile_tex_command(
         @staticmethod
         def get_description() -> str:
             return f"Compile TeX sources with colorized {entity_name}."
-
-        @staticmethod
-        def get_entity_type() -> str:
-            return entity_type
 
         def get_sources_base_dirkey(self) -> str:
             return f"sources-with-colorized-{entity_name}"

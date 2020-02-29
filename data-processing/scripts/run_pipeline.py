@@ -4,9 +4,11 @@ import sys
 import uuid
 from argparse import ArgumentParser
 from datetime import datetime
+from typing import Any, Dict, List
 
 from common import directories
 from common.commands.base import (
+    DatabaseUploadCommand,
     add_arxiv_id_filter_args,
     add_one_entity_at_a_time_arg,
     create_args,
@@ -24,12 +26,15 @@ from scripts.process import (
     ENTITY_COMMANDS,
     STORE_RESULTS_COMMANDS,
     TEX_PREPARATION_COMMANDS,
+    commands_by_entity,
+    entity_pipelines,
     run_command,
 )
 
 if __name__ == "__main__":
 
     PIPELINE_COMMANDS = TEX_PREPARATION_COMMANDS + ENTITY_COMMANDS
+    ENTITY_NAMES = [p.entity_name for p in entity_pipelines]
 
     parser = ArgumentParser(
         description="Run pipeline to extract entities from arXiv papers."
@@ -50,11 +55,11 @@ if __name__ == "__main__":
         "--entities",
         help=(
             "What type of entities to process. Commands that do not process the specified entities "
-            + "will be skipped. Defaults to 'all'. You can specify multiple entity types."
+            + "will be skipped. Defaults to all entities. You can specify multiple entity types."
         ),
-        choices=["all", "citations", "symbols"],
+        choices=ENTITY_NAMES,
         nargs="+",
-        default="all",
+        default=ENTITY_NAMES,
     )
     parser.add_argument(
         "--start",
@@ -167,9 +172,18 @@ if __name__ == "__main__":
             else:
                 continue
         if start_reached:
-            if "all" not in args.entities:
-                entity_type = CommandClass.get_entity_type()
-                if entity_type != "all" and entity_type not in args.entities:
+            # Skip over irrelevant entity-processing commands
+            if CommandClass in ENTITY_COMMANDS:
+                skip_command = True
+                for entity_type in args.entities:
+                    if CommandClass in commands_by_entity[entity_type]:
+                        skip_command = False
+                        break
+                if skip_command:
+                    continue
+            # Optionally skip over database upload commands
+            if issubclass(CommandClass, DatabaseUploadCommand):
+                if not args.upload_to_database:
                     continue
             filtered_commands.append(CommandClass)
             if args.end is not None and command_name == args.end:

@@ -41,10 +41,6 @@ class ColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, ColorizationResult]
     def get_description() -> str:
         return "Instrument TeX to colorize tokens in equations."
 
-    @staticmethod
-    def get_entity_type() -> str:
-        return "symbols"
-
     def get_arxiv_ids_dirkey(self) -> str:
         return "sources"
 

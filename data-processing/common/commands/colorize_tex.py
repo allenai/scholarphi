@@ -160,7 +160,6 @@ class ColorizeTexCommand(ArxivBatchCommand[ColorizationTask, ColorizationResult]
 
 def make_colorize_tex_command(
     entity_name: str,
-    entity_type: str,
     DetectedEntityType: Optional[Type[SerializableEntity]] = None,
     when: Optional[ColorWhenFunc] = None,
     get_color_positions: Optional[ColorPositionsFunc] = None,
@@ -173,10 +172,6 @@ def make_colorize_tex_command(
         @staticmethod
         def get_description() -> str:
             return f"Instrument TeX to colorize {entity_name}."
-
-        @staticmethod
-        def get_entity_type() -> str:
-            return entity_type
 
         @staticmethod
         def get_detected_entity_type() -> Type[SerializableEntity]:

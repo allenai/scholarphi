@@ -155,9 +155,7 @@ class RasterPages(RasterPagesCommand):
         return "paper-images"
 
 
-def make_raster_pages_command(
-    entity_name: str, entity_type: str
-) -> Type[RasterPagesCommand]:
+def make_raster_pages_command(entity_name: str) -> Type[RasterPagesCommand]:
     class C(RasterPagesCommand):
         @staticmethod
         def get_name() -> str:
@@ -166,10 +164,6 @@ def make_raster_pages_command(
         @staticmethod
         def get_description() -> str:
             return f"Raster images of pages from papers with colorized {entity_name}."
-
-        @staticmethod
-        def get_entity_type() -> str:
-            return entity_type
 
         def get_papers_base_dirkey(self) -> str:
             return f"compiled-sources-with-colorized-{entity_name}"

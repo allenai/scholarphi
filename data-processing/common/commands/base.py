@@ -1,7 +1,7 @@
 import os
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
-from typing import Any, Generic, Iterator, List, Optional, TypeVar
+from typing import Any, Generic, Iterator, List, Optional, Type, TypeVar
 
 from common import directories
 from common.models import init_database_connections
@@ -34,15 +34,6 @@ class Command(ABC, Generic[I, R]):
         """
 
     @staticmethod
-    def get_entity_type() -> str:
-        """
-        (Optionally) Specify what type of entities this command is used to process. Can be
-        'all', 'citations', or 'symbols'. Defaults to 'all'. Filters which steps of the pipeline
-        are run when the '--entity' argument is set.
-        """
-        return "all"
-
-    @staticmethod
     def init_parser(parser: ArgumentParser) -> None:
         """
         (Optionally) override this method to add provide command line arguments for this command.
@@ -65,6 +56,9 @@ class Command(ABC, Generic[I, R]):
         """
         Save results.
         """
+
+
+CommandList = List[Type[Command[Any, Any]]]  # pylint: disable=unsubscriptable-object
 
 
 class ArxivBatchCommand(Command[I, R], ABC):

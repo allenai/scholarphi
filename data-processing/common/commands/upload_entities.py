@@ -81,7 +81,7 @@ class UploadEntitiesCommand(DatabaseUploadCommand[PaperProcessingSummary, None])
 
 
 def make_upload_entities_command(
-    entity_name: str, entity_type: str, upload_func: EntityUploadCallable,
+    entity_name: str, upload_func: EntityUploadCallable,
 ) -> Type[UploadEntitiesCommand]:
     """
     'upload_func' takes an entire batch of all entities processed for a paper at once. The designer
@@ -96,10 +96,6 @@ def make_upload_entities_command(
         @staticmethod
         def get_description() -> str:
             return f"Upload {entity_name} and their locationsto the database."
-
-        @staticmethod
-        def get_entity_type() -> str:
-            return entity_type
 
         def get_arxiv_ids_dirkey(self) -> str:
             return self.get_hue_locations_dirkey()
