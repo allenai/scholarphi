@@ -142,7 +142,6 @@ def make_diff_images_command(
 
 
 DiffImagesWithColorizedCitations = make_diff_images_command("citations", "citations")
-DiffImagesWithColorizedEquations = make_diff_images_command("equations", "symbols")
 DiffImagesWithColorizedEquationTokens = make_diff_images_command(
     "equation-tokens", "symbols"
 )

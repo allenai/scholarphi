@@ -121,9 +121,6 @@ def make_compile_tex_command(
 CompileTexSourcesWithColorizedCitations = make_compile_tex_command(
     "citations", "citations"
 )
-CompileTexSourcesWithColorizedEquations = make_compile_tex_command(
-    "equations", "symbols"
-)
 CompileTexSourcesWithColorizedEquationTokens = make_compile_tex_command(
     "equation-tokens", "symbols"
 )

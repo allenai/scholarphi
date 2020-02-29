@@ -97,8 +97,3 @@ def make_detect_entities_command(
             return ExtractorType
 
     return C
-
-
-DetectEquations = make_detect_entities_command(
-    "equations", "symbols", EquationExtractor
-)
