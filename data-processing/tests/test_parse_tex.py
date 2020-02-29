@@ -6,14 +6,15 @@ from common.parse_tex import (
     MacroExtractor,
 )
 from common.types import MacroDefinition
-from entities.sentences.detect import SentenceExtractor
+from entities.sentences.extractor import SentenceExtractor
 
 
 def test_extract_sentences():
     extractor = SentenceExtractor()
     sentences = list(
         extractor.parse(
-            "This is the first \\macro[arg]{sentence}. This is the second sentence."
+            "main.tex",
+            "This is the first \\macro[arg]{sentence}. This is the second sentence.",
         )
     )
     assert len(sentences) == 2
@@ -32,7 +33,7 @@ def test_extract_sentences():
 def test_ignore_periods_in_equations():
     extractor = SentenceExtractor()
     sentences = list(
-        extractor.parse("This sentence has an $ equation. In $ the middle.")
+        extractor.parse("main.tex", "This sentence has an $ equation. In $ the middle.")
     )
     assert len(sentences) == 1
     assert sentences[0].text == "This sentence has an [[math]] the middle."
@@ -40,7 +41,7 @@ def test_ignore_periods_in_equations():
 
 def test_extract_equation_from_dollar_sign():
     extractor = EquationExtractor()
-    equations = list(extractor.parse("$x + y$"))
+    equations = list(extractor.parse("main.tex", "$x + y$"))
     assert len(equations) == 1
 
     equation = equations[0]
@@ -53,7 +54,7 @@ def test_extract_equation_from_dollar_sign():
 
 def test_extract_equation_from_equation_environment():
     extractor = EquationExtractor()
-    equations = list(extractor.parse("\\begin{equation}x\\end{equation}"))
+    equations = list(extractor.parse("main.tex", "\\begin{equation}x\\end{equation}"))
     assert len(equations) == 1
 
     equation = equations[0]
@@ -66,7 +67,7 @@ def test_extract_equation_from_equation_environment():
 
 def test_extract_equation_from_star_environment():
     extractor = EquationExtractor()
-    equations = list(extractor.parse("\\begin{equation*}x\\end{equation*}"))
+    equations = list(extractor.parse("main.tex", "\\begin{equation*}x\\end{equation*}"))
     assert len(equations) == 1
 
     equation = equations[0]
@@ -76,7 +77,7 @@ def test_extract_equation_from_star_environment():
 
 def test_extract_equation_environment_with_argument():
     extractor = EquationExtractor()
-    equations = list(extractor.parse("\\begin{array}{c}x\\end{array}"))
+    equations = list(extractor.parse("main.tex", "\\begin{array}{c}x\\end{array}"))
     assert len(equations) == 1
 
     equation = equations[0]
@@ -85,7 +86,7 @@ def test_extract_equation_environment_with_argument():
 
 def test_extract_equation_from_double_dollar_signs():
     extractor = EquationExtractor()
-    equations = list(extractor.parse("$$x$$"))
+    equations = list(extractor.parse("main.tex", "$$x$$"))
     assert len(equations) == 1
 
     equation = equations[0]
@@ -95,13 +96,13 @@ def test_extract_equation_from_double_dollar_signs():
 
 def test_dont_extract_equation_from_command_argument_brackets():
     extractor = EquationExtractor()
-    equations = list(extractor.parse("\\documentclass[11pt]{article}"))
+    equations = list(extractor.parse("main.tex", "\\documentclass[11pt]{article}"))
     assert len(equations) == 0
 
 
 def test_extract_equation_from_brackets():
     extractor = EquationExtractor()
-    equations = list(extractor.parse("\\[x + y\\]"))
+    equations = list(extractor.parse("main.tex", "\\[x + y\\]"))
     assert len(equations) == 1
 
     equation = equations[0]
@@ -112,7 +113,9 @@ def test_extract_equation_from_brackets():
 
 def test_extract_nested_equations():
     extractor = EquationExtractor()
-    equations = list(extractor.parse("$x + \\hbox{\\begin{equation}y\\end{equation}}$"))
+    equations = list(
+        extractor.parse("main.tex", "$x + \\hbox{\\begin{equation}y\\end{equation}}$")
+    )
     assert len(equations) == 2
     outer = next(filter(lambda e: e.start == 0, equations))
     assert outer.end == 44
@@ -122,7 +125,7 @@ def test_extract_nested_equations():
 
 def test_handle_unclosed_environments():
     extractor = EquationExtractor()
-    equations = list(extractor.parse("$x + \\hbox{\\begin{equation}y}$"))
+    equations = list(extractor.parse("main.tex", "$x + \\hbox{\\begin{equation}y}$"))
     assert len(equations) == 1
     equation = equations[0]
     assert equation.start == 0
@@ -131,7 +134,7 @@ def test_handle_unclosed_environments():
 
 def test_ignore_escaped_dollar_sign():
     extractor = EquationExtractor()
-    equations = list(extractor.parse("\\$\\$"))
+    equations = list(extractor.parse("main.tex", "\\$\\$"))
     assert len(equations) == 0
 
 
@@ -146,6 +149,15 @@ def test_extract_begindocument():
 def test_extract_documentclass_after_comment_ending_with_whitespace():
     extractor = DocumentclassExtractor()
     tex = "\n\n%\\documentclass{IEEEtran}    \n\\documentclass{article}"
+    documentclass = extractor.parse(tex)
+    assert documentclass is not None
+
+
+def test_documentclass_after_macro():
+    # In some TeX files, the documentclass isn't declared until after some initial macros.
+    # We still want to detect the documentclass in these documents.
+    extractor = DocumentclassExtractor()
+    tex = "\def\year{2020}\n\documentclass{article}"
     documentclass = extractor.parse(tex)
     assert documentclass is not None
 

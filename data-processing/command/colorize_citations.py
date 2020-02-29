@@ -10,7 +10,7 @@ from common.colorize_tex import ColorizedCitation, colorize_citations
 from common.types import (
     ArxivId,
     Bibitem,
-    CitationColorizationRecord,
+    ColorizationRecord,
     FileContents,
     RelativePath,
 )
@@ -124,7 +124,10 @@ class ColorizeCitations(ArxivBatchCommand[ColorizationTask, ColorizationResult])
             # positions not lining up between the ones we save using Unicode here and the
             # positions in the intended encoding in the original files.
             for c in colorized_citations:
-                record = CitationColorizationRecord(
-                    hue=c.hue, key=c.key, tex_path=item.tex_path, iteration=iteration_id
+                record = ColorizationRecord(
+                    hue=c.hue,
+                    entity_id=c.key,
+                    tex_path=item.tex_path,
+                    iteration=iteration_id,
                 )
                 file_utils.append_to_csv(hues_path, record)

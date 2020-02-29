@@ -19,7 +19,7 @@ program
   )
   .action((csvPath, cmdObj) => {
     csv.parseFile(csvPath, { headers: true }).on("data", row => {
-      const { tex_path, i, content_tex: equation } = row;
+      const { tex_path, i, katex_compatible_tex: equation } = row;
       const baseResult = { i, tex_path, equation };
       let result: EquationParseResult;
       if (row.length < 12) {

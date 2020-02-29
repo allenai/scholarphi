@@ -11,25 +11,22 @@ from typing import (
     List,
     NamedTuple,
     Optional,
+    Sequence,
     Set,
     Tuple,
-    cast,
 )
 
 import numpy as np
 
-from common.parse_tex import (
-    BeginDocumentExtractor,
-    DocumentclassExtractor,
-    EquationExtractor,
-)
+from common.parse_tex import BeginDocumentExtractor, DocumentclassExtractor
 from common.types import (
     CharacterRange,
     ColorizedTokenWithOrigin,
-    Entity,
     Equation,
     EquationId,
     FileContents,
+    Hue,
+    SerializableEntity,
     TexFileName,
     TokenWithOrigin,
 )
@@ -208,82 +205,39 @@ class ColorizedEntity:
 
 class ColorizationBatch(NamedTuple):
     tex: str
-    entities: List[ColorizedEntity]
+    entity_hues: List[Tuple[Hue, SerializableEntity]]
 
 
-def colorize_equations(
-    tex: str,
-    insert_color_macros: bool = True,
-    batch_size: Optional[int] = None,
-    preset_hue: Optional[float] = None,
-) -> Iterator[ColorizationBatch]:
-    """
-    'batch_size' is the maximum number of equations to process at a time. It defaults to the number
-    of hues available for coloring. You cannot specify more than the number of hues.
-    """
-
-    def get_entity_metadata(entity: Entity) -> Dict[str, Any]:
-        equation = cast(Equation, entity)
-        return {
-            "content_start": equation.content_start,
-            "content_end": equation.content_end,
-            "content_tex": equation.content_tex,
-            "depth": equation.depth,
-            "start": entity.start,
-            "end": entity.end,
-        }
-
-    def when(entity: Entity) -> bool:
-        equation = cast(Equation, entity)
-        return equation.depth == 0
-
-    def get_color_positions(entity: Entity) -> CharacterRange:
-        equation = cast(Equation, entity)
-        return CharacterRange(equation.content_start, equation.content_end)
-
-    batches = colorize_entities(
-        tex,
-        EquationExtractor(),
-        get_entity_metadata,
-        insert_color_macros,
-        batch_size,
-        preset_hue,
-        when,
-        get_color_positions,
-    )
-    for batch in batches:
-        yield batch
+ColorWhenFunc = Callable[[SerializableEntity], bool]
+ColorPositionsFunc = Callable[[SerializableEntity], CharacterRange]
 
 
 def colorize_entities(
     tex: str,
-    entity_extractor: Any,
-    get_entity_metadata: Callable[[Entity], Dict[str, Any]] = lambda e: {},
+    entities: Sequence[SerializableEntity],
     insert_color_macros: bool = True,
     batch_size: Optional[int] = None,
     preset_hue: Optional[float] = None,
-    when: Optional[Callable[[Entity], bool]] = None,
-    get_color_positions: Optional[Callable[[Entity], CharacterRange]] = None,
+    when: Optional[ColorWhenFunc] = None,
+    get_color_positions: Optional[ColorPositionsFunc] = None,
 ) -> Iterator[ColorizationBatch]:
+    """
+    This function assumes that entities do not overlap. It is up to the caller to appropriately
+    filter entities to those that do not overlap with each other.
+    """
 
     batch_size = min(batch_size, NUM_HUES) if batch_size is not None else NUM_HUES
-    CONTEXT_SIZE = 100
-
-    if insert_color_macros:
-        tex = add_color_macros(tex)
-
-    entities = list(entity_extractor.parse(tex))
 
     # Order entities from last-to-first so we can add color commands without messing with the offsets of
     # entities that haven't yet been colored.
     entities_reverse_order = sorted(entities, key=lambda e: e.start, reverse=True)
 
     hue_generator = generate_hues()
-    colorized_entities: List[ColorizedEntity] = []
+    entity_hues: List[Tuple[Hue, SerializableEntity]] = []
 
     colorized_tex = tex
     item_index = 0
-    for e, ei in zip(entities_reverse_order, range(len(entities) - 1, -1, -1)):
+    for e in entities_reverse_order:
 
         # Decide whether or not to color this entity
         if when is not None and not when(e):
@@ -295,16 +249,8 @@ def colorize_entities(
         else:
             hue = next(hue_generator)
 
-        entity_tex = tex[e.start : e.end]
-        content_tex = tex[max(0, e.start - CONTEXT_SIZE) : e.end + CONTEXT_SIZE]
-
         # Save a reference to this colorized entity to return to the caller
-        colorized_entities.insert(
-            0,
-            ColorizedEntity(
-                hue, {"index": ei}, entity_tex, content_tex, get_entity_metadata(e),
-            ),
-        )
+        entity_hues.insert(0, (hue, e))
 
         # Determine what range of characters to color
         color_character_range = CharacterRange(e.start, e.end)
@@ -319,12 +265,19 @@ def colorize_entities(
         # When the hues run out, notify caller that a batch has been finished.
         # Provide the caller with the colorized tex and list of colors.
         if item_index == batch_size:
-            yield ColorizationBatch(colorized_tex, colorized_entities)
+            # Only insert color macros after all entities have been wrapped in color commands.
+            # The color macros will likely go at the very beginning of the file, and therefore
+            # if they are added before the color commands, they are likely to disrupt the character
+            # positions at which we expect to find the entities.
+            if insert_color_macros:
+                colorized_tex = add_color_macros(colorized_tex)
+
+            yield ColorizationBatch(colorized_tex, entity_hues)
 
             # Then reset the TeX so it is not colorized so we can start coloring with the
             # same hues without collisions. And clear the list of colors assigned.
             colorized_tex = tex
-            colorized_entities = []
+            entity_hues = []
 
             # Reset the hue generator.
             hue_generator = generate_hues()
@@ -333,8 +286,10 @@ def colorize_entities(
             item_index = 0
 
     # When finished coloring, yield any colorized entities that haven't yet bee yielded.
-    if len(colorized_entities) > 0:
-        yield ColorizationBatch(colorized_tex, colorized_entities)
+    if len(entity_hues) > 0:
+        if insert_color_macros:
+            colorized_tex = add_color_macros(colorized_tex)
+        yield ColorizationBatch(colorized_tex, entity_hues)
 
 
 class TokenColorizationBatch(NamedTuple):

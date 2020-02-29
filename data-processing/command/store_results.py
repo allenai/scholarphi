@@ -167,7 +167,7 @@ class StoreResults(ArxivBatchCommand[ArxivId, None]):
 RESULT_SPECS: List[ResultSpec] = [
     ResultSpec("bibitems", "bibitems.csv", "bibitems"),
     ResultSpec("bibitem-resolutions", "resolutions.csv", "bibitem-resolutions"),
-    ResultSpec("equations", "equations.csv", "equations"),
+    ResultSpec("detected-equations", "equations.csv", "detected-equations"),
     ResultSpec("symbols", "parse_results.csv", "symbol-parse-results"),
     ResultSpec("symbols", "symbols.csv", "symbols"),
     ResultSpec("symbols", "symbol_children.csv", "symbol-children"),

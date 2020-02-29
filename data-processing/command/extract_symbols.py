@@ -82,7 +82,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
         )
 
     def get_arxiv_ids_dirkey(self) -> str:
-        return "equations"
+        return "detected-equations"
 
     def load(self) -> Iterator[ArxivId]:
         for arxiv_id in self.arxiv_ids:
@@ -91,7 +91,9 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
 
     def process(self, item: ArxivId) -> Iterator[SymbolData]:
         equations_abs_path = os.path.abspath(
-            os.path.join(directories.arxiv_subdir("equations", item), "equations.csv")
+            os.path.join(
+                directories.arxiv_subdir("detected-equations", item), "equations.csv"
+            )
         )
         node_directory_abs_path = os.path.abspath(directories.NODE_DIRECTORY)
         equations_relative_path = os.path.relpath(

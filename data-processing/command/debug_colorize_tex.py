@@ -7,13 +7,10 @@ from typing import Iterator, List
 
 from command.command import ArxivBatchCommand
 from common import directories, file_utils
-from common.colorize_tex import (
-    ColorizedEntity,
-    colorize_equation_tokens,
-    colorize_equations,
-)
+from common.colorize_tex import ColorizedEntity, colorize_equation_tokens
 from common.compile import compile_tex, get_errors, is_driver_unimplemented
-from common.types import ArxivId, CompilationResult, FileContents, Path, RelativePath
+from common.types import (ArxivId, CompilationResult, FileContents, Path,
+                          RelativePath)
 from common.unpack import unpack
 
 
@@ -238,33 +235,6 @@ class DebugColorizeCommand(ArxivBatchCommand[ColorizationTask, Compilation], ABC
                 errors=[e.decode("utf-8") for e in errors],
             ),
         )
-
-
-class DebugColorizeEquations(DebugColorizeCommand):
-    @staticmethod
-    def get_name() -> str:
-        return "debug-colorize-equations"
-
-    @staticmethod
-    def get_description() -> str:
-        return "Collect compilation errors from colorizing each equation."
-
-    @staticmethod
-    def get_entity_type() -> str:
-        return "symbols"
-
-    def get_output_base_dirkey(self) -> str:
-        return "debugging-colorizing-equations"
-
-    def colorize(self, task: ColorizationTask) -> Iterator[ColorizationResult]:
-        file_contents = task.file_contents
-        batches = colorize_equations(file_contents.contents, batch_size=1)
-        for batch in batches:
-            colorized_tex = batch.tex
-            colorized_contents = FileContents(
-                file_contents.path, colorized_tex, file_contents.encoding
-            )
-            yield ColorizationResult(colorized_contents, batch.entities[0])
 
 
 class DebugColorizeEquationTokens(DebugColorizeCommand):
