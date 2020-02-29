@@ -44,10 +44,6 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
     def get_description() -> str:
         return "Upload citation information to the database."
 
-    @staticmethod
-    def get_entity_type() -> str:
-        return "citations"
-
     def get_arxiv_ids_dirkey(self) -> str:
         return "sources"
 

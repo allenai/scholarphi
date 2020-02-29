@@ -197,23 +197,24 @@ class LocateHuesCommand(ArxivBatchCommand[SearchTask, HueLocation], ABC):
             os.makedirs(output_dir)
         output_path = os.path.join(output_dir, "hue_locations.csv")
 
-        file_utils.append_to_csv(output_path, HueLocationInfo(
-            tex_path=item.search.record.tex_path,
-            iteration=item.iteration,
-            hue=result.hue,
-            entity_id=item.search.record.entity_id,
-            page=result.box.page,
-            left=result.box.left,
-            top=result.box.top,
-            width=result.box.width,
-            height=result.box.height,
-            relative_file_path=item.relative_file_path,
-        ))
+        file_utils.append_to_csv(
+            output_path,
+            HueLocationInfo(
+                tex_path=item.search.record.tex_path,
+                iteration=item.iteration,
+                hue=result.hue,
+                entity_id=item.search.record.entity_id,
+                page=result.box.page,
+                left=result.box.left,
+                top=result.box.top,
+                width=result.box.width,
+                height=result.box.height,
+                relative_file_path=item.relative_file_path,
+            ),
+        )
 
 
-def make_locate_hues_command(
-    entity_name: str, entity_type: str
-) -> Type[LocateHuesCommand]:
+def make_locate_hues_command(entity_name: str) -> Type[LocateHuesCommand]:
     class C(LocateHuesCommand):
         @staticmethod
         def get_name() -> str:
@@ -222,10 +223,6 @@ def make_locate_hues_command(
         @staticmethod
         def get_description() -> str:
             return f"Find bounding boxes of {entity_name} by hue."
-
-        @staticmethod
-        def get_entity_type() -> str:
-            return entity_type
 
         def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
             hues_path = os.path.join(

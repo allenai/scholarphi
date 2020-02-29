@@ -23,10 +23,6 @@ class FindSymbolMatches(ArxivBatchCommand[MathMLForPaper, Matches]):
     def get_description() -> str:
         return "Find matches between a symbol and all other symbols in each paper."
 
-    @staticmethod
-    def get_entity_type() -> str:
-        return "symbols"
-
     def get_arxiv_ids_dirkey(self) -> str:
         return "symbols"
 

@@ -50,10 +50,6 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
     def get_description() -> str:
         return "Upload symbols to the database."
 
-    @staticmethod
-    def get_entity_type() -> str:
-        return "symbols"
-
     def get_arxiv_ids_dirkey(self) -> str:
         return "sources"
 

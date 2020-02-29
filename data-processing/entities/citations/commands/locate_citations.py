@@ -31,10 +31,6 @@ class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
     def get_description() -> str:
         return "Find locations of citations. Requires 'locate-citation-hues' to have been run."
 
-    @staticmethod
-    def get_entity_type() -> str:
-        return "citations"
-
     def get_arxiv_ids_dirkey(self) -> str:
         return "hue-locations-for-citations"
 

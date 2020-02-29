@@ -114,9 +114,7 @@ class DiffImagesCommand(ArxivBatchCommand[PageRasterPair, np.ndarray], ABC):
         logging.debug("Diffed images and stored result at %s", image_path)
 
 
-def make_diff_images_command(
-    entity_name: str, entity_type: str
-) -> Type[DiffImagesCommand]:
+def make_diff_images_command(entity_name: str) -> Type[DiffImagesCommand]:
     class C(DiffImagesCommand):
         @staticmethod
         def get_name() -> str:
@@ -125,10 +123,6 @@ def make_diff_images_command(
         @staticmethod
         def get_description() -> str:
             return f"Diff images of pages with colorized {entity_name} with uncolorized images."
-
-        @staticmethod
-        def get_entity_type() -> str:
-            return entity_type
 
         @staticmethod
         def get_raster_base_dirkey() -> str:

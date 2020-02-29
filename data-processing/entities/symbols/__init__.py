@@ -1,7 +1,9 @@
+from common.commands.base import CommandList
 from common.commands.compile_tex import make_compile_tex_command
 from common.commands.diff_images import make_diff_images_command
 from common.commands.locate_hues import make_locate_hues_command
 from common.commands.raster_pages import make_raster_pages_command
+from entities.common import EntityPipeline
 
 from .commands.colorize_equation_tokens import ColorizeEquationTokens
 from .commands.extract_symbols import ExtractSymbols
@@ -13,10 +15,12 @@ commands = [
     ExtractSymbols,
     FindSymbolMatches,
     ColorizeEquationTokens,
-    make_compile_tex_command("equation-tokens", "symbols"),
-    make_raster_pages_command("equation-tokens", "symbols"),
-    make_diff_images_command("equation-tokens", "symbols"),
-    make_locate_hues_command("equation-tokens", "symbols"),
+    make_compile_tex_command("equation-tokens"),
+    make_raster_pages_command("equation-tokens"),
+    make_diff_images_command("equation-tokens"),
+    make_locate_hues_command("equation-tokens"),
     LocateSymbols,
     UploadSymbols,
 ]
+
+symbols_pipeline = EntityPipeline("symbols", commands, depends_on=["equations"])

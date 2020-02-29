@@ -75,7 +75,7 @@ class DetectEntitiesCommand(ArxivBatchCommand[DetectionTask, SerializableEntity]
 
 
 def make_detect_entities_command(
-    entity_name: str, entity_type: str, ExtractorType: Type[EntityExtractor]
+    entity_name: str, ExtractorType: Type[EntityExtractor]
 ) -> Type[DetectEntitiesCommand]:
     class C(DetectEntitiesCommand):
         @staticmethod
@@ -85,10 +85,6 @@ def make_detect_entities_command(
         @staticmethod
         def get_description() -> str:
             return f"Detect locations of {entity_name} in TeX."
-
-        @staticmethod
-        def get_entity_type() -> str:
-            return entity_type
 
         def get_output_base_dirkey(self) -> str:
             return f"detected-{entity_name}"

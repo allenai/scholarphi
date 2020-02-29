@@ -37,10 +37,6 @@ class AnnotateTexWithSymbolMarkers(ArxivBatchCommand[TexAndSymbols, AnnotationRe
     def get_description() -> str:
         return "Annotate TeX with markers for all equations and symbols."
 
-    @staticmethod
-    def get_entity_type() -> str:
-        return "symbols"
-
     def get_arxiv_ids_dirkey(self) -> str:
         return "sources"
 
