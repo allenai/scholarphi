@@ -331,8 +331,6 @@ def colorize_equation_tokens(
 
         for tex_filename, tex_file_contents in file_contents.items():
             colorized_tex = tex_file_contents.contents
-            if insert_color_macros:
-                colorized_tex = add_color_macros(colorized_tex)
 
             # Filter equations to those that are not nested in other equations, to avoid coloring a
             # token more than once. It could work to color multiple times, though right now it will
@@ -357,6 +355,12 @@ def colorize_equation_tokens(
                     )
                     colorized_tokens.extend(colorized_tokens_for_equation)
 
+            # Only insert color macros after all entities have been wrapped in color commands.
+            # The color macros will likely go at the very beginning of the file, and therefore
+            # if they are added before the color commands, they are likely to disrupt the character
+            # positions at which we expect to find the entities.
+            if insert_color_macros:
+                colorized_tex = add_color_macros(colorized_tex)
             colorized_files[tex_filename] = FileContents(
                 tex_file_contents.path, colorized_tex, tex_file_contents.encoding
             )

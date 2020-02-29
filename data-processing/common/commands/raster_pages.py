@@ -184,8 +184,3 @@ def make_raster_pages_command(
             return f"paper-with-colorized-{entity_name}-images"
 
     return C
-
-
-RasterPagesWithColorizedEquationTokens = make_raster_pages_command(
-    "equation-tokens", "symbols"
-)

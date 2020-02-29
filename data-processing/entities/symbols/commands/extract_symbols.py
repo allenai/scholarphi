@@ -92,7 +92,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
     def process(self, item: ArxivId) -> Iterator[SymbolData]:
         equations_abs_path = os.path.abspath(
             os.path.join(
-                directories.arxiv_subdir("detected-equations", item), "equations.csv"
+                directories.arxiv_subdir("detected-equations", item), "entities.csv"
             )
         )
         node_directory_abs_path = os.path.abspath(directories.NODE_DIRECTORY)
@@ -192,6 +192,11 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
             symbols_path = os.path.join(tokens_dir, "symbols.csv")
             symbol_tokens_path = os.path.join(tokens_dir, "symbol_tokens.csv")
             symbol_children_path = os.path.join(tokens_dir, "symbol_children.csv")
+
+            # The list of symbol children might be empty, e.g., for a paper with only
+            # very simple symbols. Make sure there's at least an empty file, as later stages expect
+            # to be able to read the list of symbol children at this path.
+            open(symbol_children_path, "a").close()
 
             for symbol_index, symbol in enumerate(result.symbols):
                 # Save data for the symbol

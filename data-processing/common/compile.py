@@ -1,5 +1,4 @@
 import configparser
-import csv
 import logging
 import os
 import os.path

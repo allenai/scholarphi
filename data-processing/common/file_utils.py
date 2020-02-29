@@ -18,7 +18,6 @@ from common.types import (
     CompilationResult,
     Equation,
     EquationId,
-    EquationTokenHueLocationInfo,
     FileContents,
     HueIteration,
     HueLocationInfo,
@@ -232,7 +231,7 @@ def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
         logging.info("Symbol tokens data missing for paper %s. Skipping.", arxiv_id)
         file_not_found = True
     if not os.path.exists(symbol_children_path):
-        logging.info("Symbol children data missing for paper %s. Skipping.", arxiv_id)
+        logging.info("No symbol children data found for paper %s.", arxiv_id)
         file_not_found = True
 
     if file_not_found:
@@ -346,10 +345,9 @@ def load_equation_token_locations(
         )
         return None
 
-    for record in load_from_csv(token_locations_path, EquationTokenHueLocationInfo):
-        character_id = CharacterId(
-            record.tex_path, record.equation_index, record.character_index
-        )
+    for record in load_from_csv(token_locations_path, HueLocationInfo):
+        equation_index, character_index = [int(t) for t in record.entity_id.split("-")]
+        character_id = CharacterId(record.tex_path, equation_index, character_index)
         box = BoundingBox(
             page=int(record.page),
             left=record.left,
