@@ -9,8 +9,8 @@ from common.bounding_box import cluster_boxes
 from common.types import (
     ArxivId,
     BoundingBox,
-    CitationColorizationRecord,
     CitationLocation,
+    ColorizationRecord,
     HueIteration,
 )
 
@@ -67,12 +67,13 @@ class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
                     )
                     continue
                 for record in file_utils.load_from_csv(
-                    citation_hues_path, CitationColorizationRecord
+                    citation_hues_path, ColorizationRecord
                 ):
-                    if record.key not in boxes_by_citation_key:
-                        boxes_by_citation_key[record.key] = []
+                    key = record.entity_id
+                    if key not in boxes_by_citation_key:
+                        boxes_by_citation_key[key] = []
                     hue_iteration = HueIteration(record.hue, iteration)
-                    boxes_by_citation_key[record.key].extend(
+                    boxes_by_citation_key[key].extend(
                         boxes_by_hue_iteration.get(hue_iteration, [])
                     )
 

@@ -6,21 +6,46 @@ from typing import Dict, Iterator, List, Optional, Set, Union
 
 from TexSoup import RArg, TexNode, TexSoup, TokenWithPosition
 
-from common.scan_tex import (EndOfInput, Match, Pattern, TexScanner,
-                             has_balanced_braces, scan_tex)
-from common.types import (BeginDocument, Bibitem, Documentclass, Entity,
-                          Equation, LengthAssignment, Macro, MacroDefinition)
+from common.scan_tex import (
+    EndOfInput,
+    Match,
+    Pattern,
+    TexScanner,
+    has_balanced_braces,
+    scan_tex,
+)
+from common.types import (
+    BeginDocument,
+    Bibitem,
+    Documentclass,
+    Equation,
+    LengthAssignment,
+    Macro,
+    MacroDefinition,
+    SerializableEntity,
+)
+
+DEFAULT_CONTEXT_SIZE = 20
+"""
+Default number of characters to include in the context to either side of an entity in that
+entity's 'context_tex' attribute.
+"""
 
 
 class EntityExtractor(ABC):
     """
-    Abstract class for a class that extracts entities from TeX.
+    Interface for a class that extracts entities from TeX. Implement this interface when you
+    intend to detect and colorize a new type of entity. This interface enforces the need to return
+    'SerializableEntity's, which are embellished with unique identifiers that will be used in
+    later stages of the pipeline, and the entity's TeX for debugging purposes.
     """
 
     @abstractmethod
-    def parse(self, tex: str) -> Iterator[Entity]:
+    def parse(self, tex_path: str, tex: str) -> Iterator[SerializableEntity]:
         """
-        Parse the 'tex', returning an iterator over the entities found.
+        Parse the 'tex', returning an iterator over the entities found. Entity extractors should
+        not need to use the 'tex_path' for anything except for setting the 'tex_path' attribute
+        on extracted entities.
         """
 
 
@@ -109,7 +134,7 @@ def make_math_environment_patterns() -> List[Pattern]:
     return patterns
 
 
-class EquationExtractor:
+class EquationExtractor(EntityExtractor):
     """
     TODO(andrewhead): Cases that this doesn't yet handle:
     * Nested dollar signs: "$x + \\hbox{$y$}$"
@@ -118,10 +143,11 @@ class EquationExtractor:
     def __init__(self) -> None:
         self.PATTERNS = make_math_environment_patterns()
 
-    def parse(self, tex: str) -> Iterator[Equation]:
+    def parse(self, tex_path: str, tex: str) -> Iterator[Equation]:
 
         self._stack: List[Match] = []  # pylint: disable=attribute-defined-outside-init
         self._tex = tex  # pylint: disable=attribute-defined-outside-init
+        self._tex_path = tex_path  # pylint: disable=attribute-defined-outside-init
         self._equation_index = 0  # pylint: disable=attribute-defined-outside-init
 
         scanner = scan_tex(tex, self.PATTERNS)
@@ -141,18 +167,28 @@ class EquationExtractor:
                 self._stack.pop()
             start_match = self._stack.pop()
 
+            start = start_match.start
+            end = match.end
             depth = len(self._stack)
             equation_tex = self._tex[start_match.start : match.end]
             content_tex = self._tex[start_match.end : match.start]
+            context_tex = self._tex[
+                start - DEFAULT_CONTEXT_SIZE : end + DEFAULT_CONTEXT_SIZE
+            ]
+
             yield Equation(
-                start_match.start,
-                match.end,
-                self._equation_index,
-                equation_tex,
-                start_match.end,
-                match.start,
-                content_tex,
-                depth,
+                tex_path=self._tex_path,
+                id_=str(self._equation_index),
+                tex=equation_tex,
+                context_tex=context_tex,
+                start=start_match.start,
+                end=match.end,
+                i=self._equation_index,
+                content_start=start_match.end,
+                content_end=match.start,
+                content_tex=content_tex,
+                katex_compatible_tex=sanitize_equation(content_tex),
+                depth=depth,
             )
             self._equation_index += 1
 
@@ -223,6 +259,52 @@ class EquationLengthAssignmentExtractor:
             yield LengthAssignment(match.start, match.end)
 
 
+def sanitize_equation(tex: str) -> str:
+    tex = _replace_unwanted_commands_with_spaces(tex)
+    return tex
+
+
+def _replace_unwanted_commands_with_spaces(tex: str) -> str:
+    """
+    KaTeX isn't programmed to support the entire vocabulary of LaTeX equation markup (though it
+    does support a lot, see https://katex.org/docs/support_table.html).
+
+    For those commands that we don't need to have parsed (e.g., 'label'), this function will
+    strip those commands out, so that they cause KaTeX to crash or have unexpected behavior.
+    'label', for example, if not removed, will have its argument parsed as an equation, and
+    will be identified as consisting of many symbols.
+    """
+    UNWANTED_MACROS = [
+        MacroDefinition("ref", "#1"),
+        MacroDefinition("label", "#1"),
+        MacroDefinition("nonumber", ""),
+    ]
+    macro_extractor = MacroExtractor()
+    for macro_definition in UNWANTED_MACROS:
+        for macro in macro_extractor.parse(tex, macro_definition):
+            tex = _replace_substring_with_space(tex, macro.start, macro.end)
+
+    length_assignment_extractor = EquationLengthAssignmentExtractor()
+    length_assignments = length_assignment_extractor.parse(tex)
+    for assignment in length_assignments:
+        tex = _replace_substring_with_space(tex, assignment.start, assignment.end)
+
+    UNWANTED_PATTERNS = [
+        Pattern("ampersand", "&"),
+        Pattern("split_start", begin_environment_regex("split")),
+        Pattern("split_end", end_environment_regex("split")),
+    ]
+    unwanted_matches = scan_tex(tex, UNWANTED_PATTERNS)
+    for match in unwanted_matches:
+        tex = _replace_substring_with_space(tex, match.start, match.end)
+
+    return tex
+
+
+def _replace_substring_with_space(s: str, start: int, end: int) -> str:
+    return s[:start] + (" " * (end - start)) + s[end:]
+
+
 @dataclass(frozen=True)
 class PlaintextSegment:
     text: str
@@ -243,7 +325,7 @@ class PlaintextExtractor:
     text extracted from many command arguments, because we knew sometimes it would be wanted, and
     other times it wouldn't. Without more sophisticated macro processing, it's not possible to
     tell which arguments would be rendered as text and which wouldn't.
-    
+
     For the anticipated use case of sentence boundary detection, this spurious argument test is
     often okay and won't often influence the detected boundaries. However, for other natural
     language processing tasks, this plaintext extractor may need to be further refined.
@@ -276,7 +358,7 @@ class PlaintextExtractor:
             # Pattern("symbol_macro", r"\\[@=><+'`-]"),
         ]
 
-    def parse(self, tex: str) -> Iterator[PlaintextSegment]:
+    def parse(self, tex_path: str, tex: str) -> Iterator[PlaintextSegment]:
         """
         Extract plaintext segments from the TeX. Some TeX will be replaced (e.g., "\\\\" with "\n",
         equations with "[[math]]"). Other TeX will be skipped (e.g., macros, braces, and brackets).
@@ -289,7 +371,7 @@ class PlaintextExtractor:
         # step, while preserving the equations' character offsets in the TeX.
         tex_without_math = tex
         equation_extractor = EquationExtractor()
-        for equation in equation_extractor.parse(tex):
+        for equation in equation_extractor.parse(tex_path, tex):
             tex_without_math = (
                 tex_without_math[: equation.start]
                 + "█" * (equation.end - equation.start)
@@ -332,6 +414,12 @@ class BeginDocumentExtractor:
 
 
 class DocumentclassExtractor:
+    """
+    Detected calls to the documentclass command, wherever it appears in a TeX file. See past
+    implementations of this class if you want a version of this extractor that enforced the
+    requirement that the documentclass was the first command in the TeX.
+    """
+
     def parse(self, tex: str) -> Optional[Documentclass]:
         patterns = [
             Pattern("documentclass", r"\\documentclass"),
@@ -346,19 +434,19 @@ class DocumentclassExtractor:
         scanner = scan_tex(tex, patterns, include_unmatched=True)
         for match in scanner:
 
-            # Once we hit a token that's not the document class or argument, return the document
-            # class if the required argument has been found; otherwise, abort.
-            if match.pattern.name == "UNKNOWN":
-                if match_stage == "awaiting-optional-arg":
-                    return Documentclass(start, match.start)
-                elif not match.text.isspace():
-                    break
-
-            elif match_stage == "start":
+            if match_stage == "start":
                 if match.pattern.name != "documentclass":
-                    return None
+                    continue
                 start = match.start
                 match_stage = "awaiting-required-arg"
+
+            # Once we hit a token that's not the document class or argument, return the document
+            # class if the required argument has been found; otherwise, abort.
+            elif match.pattern.name == "UNKNOWN":
+                if match_stage == "awaiting-optional-arg":
+                    return Documentclass(start, match.start)
+                if not match.text.isspace():
+                    break
 
             elif match_stage == "awaiting-required-arg":
                 if match.pattern.name == "required_arg":
@@ -391,6 +479,11 @@ class BibitemExtractor:
                 continue
             key = self._extract_key(bibitem_soup)
             tokens = self._extract_text(bibitem_soup)
+            if key is None:
+                logging.warning(
+                    "Detected bibitem with null key %s. Skipping.", str(bibitem_soup)
+                )
+                continue
             yield Bibitem(key, tokens)
 
     def _extract_key(self, bibitem: TexSoup) -> Optional[str]:

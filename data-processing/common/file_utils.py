@@ -17,7 +17,6 @@ from common.types import (
     CharacterId,
     CompilationResult,
     Equation,
-    EquationColorizationRecord,
     EquationId,
     EquationTokenHueLocationInfo,
     FileContents,
@@ -168,16 +167,16 @@ def find_files(
 
 def load_equations(arxiv_id: ArxivId) -> Optional[Dict[EquationId, Equation]]:
     equations_path = os.path.join(
-        directories.arxiv_subdir("equations", arxiv_id), "equations.csv"
+        directories.arxiv_subdir("detected-equations", arxiv_id), "entities.csv"
     )
     if not os.path.exists(equations_path):
         logging.warning("No equation data found for paper %s. Skipping.", arxiv_id)
         return None
 
     equations: Dict[EquationId, Equation] = {}
-    for equation in load_from_csv(equations_path, EquationColorizationRecord):
-        equation_id = EquationId(tex_path=equation.tex_path, equation_index=equation.i)
-        equations[equation_id] = equation
+    for e in load_from_csv(equations_path, Equation):
+        equation_id = EquationId(tex_path=e.tex_path, equation_index=int(e.i))
+        equations[equation_id] = e
     return equations
 
 

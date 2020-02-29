@@ -3,12 +3,12 @@ from typing import Iterator
 
 import pysbd
 
-from common.parse_tex import EntityExtractor, PlaintextExtractor
-from common.types import Entity
+from common.parse_tex import DEFAULT_CONTEXT_SIZE, EntityExtractor, PlaintextExtractor
+from common.types import SerializableEntity
 
 
 @dataclass(frozen=True)
-class Sentence(Entity):
+class Sentence(SerializableEntity):
     text: str
 
 
@@ -19,10 +19,10 @@ class SentenceExtractor(EntityExtractor):
     limitations as the plaintext produced by PlaintextExtractor.
     """
 
-    def parse(self, tex: str) -> Iterator[Sentence]:
+    def parse(self, tex_path: str, tex: str) -> Iterator[Sentence]:
         # Extract plaintext segments from TeX
         plaintext_extractor = PlaintextExtractor()
-        plaintext_segments = plaintext_extractor.parse(tex)
+        plaintext_segments = plaintext_extractor.parse(tex_path, tex)
 
         # Build a map from character offsets in the plaintext to TeX offsets. This will let us
         # map from the character offsets of the sentences returned from the sentence boundary
@@ -48,9 +48,19 @@ class SentenceExtractor(EntityExtractor):
 
         # Segment the plaintext. Return offsets for each setence relative to the TeX input
         segmenter = pysbd.Segmenter(language="en", clean=False, char_span=True)
-        for sentence in segmenter.segment(plaintext):
+        for i, sentence in enumerate(segmenter.segment(plaintext)):
+
+            start = plaintext_to_tex_offset_map[sentence.start]
+            end = plaintext_to_tex_offset_map[sentence.end]
+            tex = tex[start:end]
+            context_tex = tex[start - DEFAULT_CONTEXT_SIZE : end + DEFAULT_CONTEXT_SIZE]
+
             yield Sentence(
                 text=sentence.sent,
-                start=plaintext_to_tex_offset_map[sentence.start],
-                end=plaintext_to_tex_offset_map[sentence.end],
+                start=start,
+                end=end,
+                id_=str(i),
+                tex_path=tex_path,
+                tex=tex,
+                context_tex=context_tex,
             )

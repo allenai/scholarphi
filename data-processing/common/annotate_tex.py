@@ -66,7 +66,7 @@ def annotate_symbols_and_equations_for_file(
 
     # Extract all equations
     equation_extractor = EquationExtractor()
-    equations = list(equation_extractor.parse(tex))
+    equations = list(equation_extractor.parse(tex_path, tex))
 
     # Group symbols by equation ID
     symbols_by_equation_id = _group_by_equation(symbols)

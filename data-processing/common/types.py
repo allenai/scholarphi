@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict, List, NamedTuple, Optional
+from typing import Any, Callable, Dict, List, NamedTuple, Optional
 
 """
 FILE PROCESSING
@@ -134,27 +134,61 @@ class Entity(CharacterRange):
 
 
 @dataclass(frozen=True)
+class SerializableEntity(Entity):
+    """
+    If they are to be saved and loaded to the file system, entities should have additional
+    information that can uniquely identify them (tex_path, id_), and a raw representation of
+    their contents (tex, content_tex). The unique identifier will be key in later stages of
+    the pipeline for linking information about the entity with its hue from colorization and the
+    bounding boxes detected for the entitiy.
+    """
+
+    tex_path: str
+    """
+    The path to the TeX file this entity was found in. Should be a short path, relative to the 
+    directory of sources this TeX file is in, not relative to the data directory, and not
+    relative to the source code directory for this project.
+    """
+
+    id_: str
+    """
+    An ID which, when combined with the TeX path and arXiv ID for this entity, can uniquely
+    identify the entity. In many cases, this will simply be a stringified index of which entity
+    in the TeX file this is (e.g., 0, 1, 2, ...).
+    """
+
+    tex: str
+    " The TeX for the detected entity. "
+
+    context_tex: str
+    """
+    Context around the position where this entity was extracted from. It's recommended that
+    at least 20 characters to the left and right are included.
+    """
+
+
+@dataclass(frozen=True)
 class HueIteration:
     hue: float
     iteration: str
 
 
 @dataclass(frozen=True)
-class Equation(Entity):
+class Equation(SerializableEntity):
     i: int
-    "Index of this equation in the TeX document."
-
-    tex: str
-    "TeX for the full equation environment (e.g., '$x + y$')."
+    " Index of this equation in the TeX document. "
 
     content_start: int
-    "Index of character where the contents (i.e. 'content_tex') of the equation starts."
+    " Index of character where the contents (i.e. 'content_tex') of the equation starts. "
 
     content_end: int
-    "Index of character where the contents of the equation ends."
+    " Index of character where the contents of the equation ends. "
 
     content_tex: str
-    "TeX for the equation contents, inside the environment (e.g., 'x + y')."
+    " TeX for the equation contents, inside the environment (e.g., 'x + y'). "
+
+    katex_compatible_tex: str
+    " A santized version of the equation content meant for KaTeX parsing. "
 
     depth: int
     """
@@ -296,6 +330,8 @@ class SerializableChild(SymbolId):
 COLORIZATION RECORDS
 """
 
+Hue = float
+
 
 @dataclass(frozen=True)
 class ColorizedTokenWithOrigin:
@@ -305,24 +341,16 @@ class ColorizedTokenWithOrigin:
     start: int
     end: int
     text: str
-    hue: float
+    hue: Hue
 
 
 @dataclass(frozen=True)
 class ColorizationRecord:
-    hue: float
     tex_path: str
     iteration: str
-
-
-@dataclass(frozen=True)
-class CitationColorizationRecord(ColorizationRecord):
-    key: str
-
-
-@dataclass(frozen=True)  # pylint: disable=too-many-instance-attributes
-class EquationColorizationRecord(Equation, ColorizationRecord):
-    arxiv_id: ArxivId
+    hue: float
+    entity_id: str
+    " Should match the ID on a 'SerializableEntity'"
 
 
 @dataclass(frozen=True)
@@ -407,16 +435,8 @@ class BoundingBoxAndHue:
 
 
 @dataclass(frozen=True)
-class HueLocationInfo(BoundingBox):
+class HueLocationInfo(BoundingBox, ColorizationRecord):
     relative_file_path: str
-    iteration: str
-    hue: float
-
-
-@dataclass(frozen=True)
-class EquationHueLocationInfo(HueLocationInfo):
-    tex_path: str
-    equation_index: int
 
 
 @dataclass(frozen=True)
@@ -438,3 +458,24 @@ class CitationLocation(BoundingBox):
 @dataclass(frozen=True)
 class SymbolLocation(SymbolId, BoundingBox):
     pass
+
+
+"""
+DATABASE UPLOADS
+"""
+
+
+@dataclass(frozen=True)
+class EntityInfo:
+    colorization_record: ColorizationRecord
+    hue_location_infos: List[HueLocationInfo]
+
+
+@dataclass(frozen=True)
+class PaperProcessingSummary:
+    arxiv_id: ArxivId
+    s2_id: S2Id
+    entity_infos: List[EntityInfo]
+
+
+EntityUploadCallable = Callable[[PaperProcessingSummary], None]

@@ -5,7 +5,7 @@ from typing import List
 from command.annotate_symbols import AnnotateTexWithSymbolMarkers
 from command.colorize_citations import ColorizeCitations
 from command.colorize_equation_tokens import ColorizeEquationTokens
-from command.colorize_equations import ColorizeEquations
+from command.colorize_tex import ColorizeEquations
 from command.command import Command
 from command.compile_tex import (
     CompileTexSources,
@@ -14,17 +14,14 @@ from command.compile_tex import (
     CompileTexSourcesWithColorizedEquationTokens,
 )
 from command.compute_iou import ComputeIou
-from command.debug_colorize_tex import (
-    DebugColorizeEquations,
-    DebugColorizeEquationTokens,
-)
+from command.debug_colorize_tex import DebugColorizeEquationTokens
+from command.detect_entities import DetectEquations
 from command.diff_images import (
     DiffImagesWithColorizedCitations,
     DiffImagesWithColorizedEquations,
     DiffImagesWithColorizedEquationTokens,
 )
 from command.extract_bibitems import ExtractBibitems
-from command.extract_equations import ExtractEquations
 from command.extract_symbols import ExtractSymbols
 from command.fetch_arxiv_sources import FetchArxivSources
 from command.fetch_new_arxiv_ids import FetchNewArxivIds
@@ -63,28 +60,31 @@ MAIN_PIPELINE_COMMANDS: List = [  # type: ignore
     FetchArxivSources,
     FetchS2Metadata,
     UnpackSources,
+    CompileTexSources,
+    RasterPages,
     ExtractBibitems,
     ResolveBibitems,
+    # Citations
     ColorizeCitations,
+    CompileTexSourcesWithColorizedCitations,
+    RasterPagesWithColorizedCitations,
+    DiffImagesWithColorizedCitations,
+    LocateCitationHues,
+    LocateCitations,
+    # Equations
+    DetectEquations,
     ColorizeEquations,
-    ExtractEquations,
+    CompileTexSourcesWithColorizedEquations,
+    RasterPagesWithColorizedEquations,
+    DiffImagesWithColorizedEquations,
+    LocateEquationHues,
+    # Symbols
     ExtractSymbols,
     FindSymbolMatches,
     ColorizeEquationTokens,
-    CompileTexSources,
-    CompileTexSourcesWithColorizedCitations,
-    CompileTexSourcesWithColorizedEquations,
     CompileTexSourcesWithColorizedEquationTokens,
-    RasterPages,
-    RasterPagesWithColorizedCitations,
-    RasterPagesWithColorizedEquations,
     RasterPagesWithColorizedEquationTokens,
-    DiffImagesWithColorizedCitations,
-    DiffImagesWithColorizedEquations,
     DiffImagesWithColorizedEquationTokens,
-    LocateCitationHues,
-    LocateCitations,
-    LocateEquationHues,
     LocateEquationTokenHues,
     LocateSymbols,
 ]
@@ -101,7 +101,6 @@ DATABASE_UPLOAD_COMMANDS: List = [  # type: ignore
 ]
 
 EVALUATION_COMMANDS: List = [  # type: ignore
-    DebugColorizeEquations,
     DebugColorizeEquationTokens,
     AnnotateTexWithSymbolMarkers,
     ComputeIou,
