@@ -2,8 +2,8 @@ import logging
 import os.path
 from typing import Dict, Iterator, List, NamedTuple
 
-from command.command import DatabaseUploadCommand
 from common import directories, file_utils
+from common.commands.base import DatabaseUploadCommand
 from common.models import BoundingBox as BoundingBoxModel
 from common.models import Entity, EntityBoundingBox
 from common.models import MathMl as MathMlModel

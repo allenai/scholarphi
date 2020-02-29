@@ -3,9 +3,9 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Iterator, Type
 
-from command.command import ArxivBatchCommand
 from common import directories, file_utils
-from common.parse_tex import EntityExtractor, EquationExtractor
+from common.commands.base import ArxivBatchCommand
+from common.parse_tex import EntityExtractor
 from common.types import ArxivId, FileContents, RelativePath, SerializableEntity
 
 

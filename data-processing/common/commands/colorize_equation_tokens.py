@@ -3,10 +3,11 @@ import os.path
 from argparse import ArgumentParser
 from typing import Dict, Iterator, List, NamedTuple
 
-from command.command import ArxivBatchCommand, add_one_entity_at_a_time_arg
 from common import directories, file_utils
 from common.colorize_tex import (TokenColorizationBatch,
                                  colorize_equation_tokens)
+from common.commands.base import (ArxivBatchCommand,
+                                  add_one_entity_at_a_time_arg)
 from common.types import (ArxivId, EquationTokenColorizationRecord,
                           FileContents, Path, TokenWithOrigin)
 from common.unpack import unpack

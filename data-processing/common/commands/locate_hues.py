@@ -8,9 +8,9 @@ from typing import Dict, Iterator, List, NamedTuple, Optional, Type, cast
 import cv2
 import numpy as np
 
-from command.command import ArxivBatchCommand
 from common import directories, file_utils
 from common.bounding_box import extract_bounding_boxes
+from common.commands.base import ArxivBatchCommand
 from common.compile import get_output_files
 from common.image_processing import contains_black_pixels
 from common.types import (
@@ -279,9 +279,6 @@ def make_locate_hues_command(
             return f"hue-locations-for-{entity_name}"
 
     return C
-
-
-LocateCitationHues = make_locate_hues_command("citations", "citations")
 
 
 class TokenId(NamedTuple):

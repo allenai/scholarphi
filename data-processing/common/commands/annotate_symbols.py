@@ -3,9 +3,9 @@ import logging
 import os.path
 from typing import Dict, Iterator, List, NamedTuple
 
-from command.command import ArxivBatchCommand
 from common import directories, file_utils
 from common.annotate_tex import AnnotatedFile, annotate_symbols_and_equations
+from common.commands.base import ArxivBatchCommand
 from common.types import (
     ArxivId,
     Character,

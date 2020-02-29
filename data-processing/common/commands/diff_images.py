@@ -7,8 +7,8 @@ from typing import Iterator, Type
 import cv2
 import numpy as np
 
-from command.command import ArxivBatchCommand
 from common import directories, file_utils
+from common.commands.base import ArxivBatchCommand
 from common.compile import get_output_files
 from common.image_processing import diff_images
 from common.types import ArxivId
@@ -141,7 +141,6 @@ def make_diff_images_command(
     return C
 
 
-DiffImagesWithColorizedCitations = make_diff_images_command("citations", "citations")
 DiffImagesWithColorizedEquationTokens = make_diff_images_command(
     "equation-tokens", "symbols"
 )

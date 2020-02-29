@@ -2,8 +2,8 @@ import os.path
 from dataclasses import dataclass
 from typing import Iterable, Iterator
 
-from command.command import ArxivBatchCommand
 from common import directories, file_utils
+from common.commands.base import ArxivBatchCommand
 from common.match_symbols import get_mathml_matches
 from common.types import ArxivId, Matches, MathML
 

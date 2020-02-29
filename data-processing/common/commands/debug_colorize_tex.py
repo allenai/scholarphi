@@ -5,12 +5,11 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Iterator, List
 
-from command.command import ArxivBatchCommand
 from common import directories, file_utils
 from common.colorize_tex import ColorizedEntity, colorize_equation_tokens
+from common.commands.base import ArxivBatchCommand
 from common.compile import compile_tex, get_errors, is_driver_unimplemented
-from common.types import (ArxivId, CompilationResult, FileContents, Path,
-                          RelativePath)
+from common.types import ArxivId, CompilationResult, FileContents, Path, RelativePath
 from common.unpack import unpack
 
 

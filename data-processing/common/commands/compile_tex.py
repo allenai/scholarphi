@@ -4,8 +4,8 @@ import shutil
 from abc import ABC, abstractmethod
 from typing import Iterator, Type
 
-from command.command import ArxivBatchCommand
 from common import directories, file_utils
+from common.commands.base import ArxivBatchCommand
 from common.compile import compile_tex
 from common.types import AbsolutePath, ArxivId, CompilationResult, Path, RelativePath
 
@@ -118,9 +118,6 @@ def make_compile_tex_command(
     return C
 
 
-CompileTexSourcesWithColorizedCitations = make_compile_tex_command(
-    "citations", "citations"
-)
 CompileTexSourcesWithColorizedEquationTokens = make_compile_tex_command(
     "equation-tokens", "symbols"
 )

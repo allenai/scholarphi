@@ -1,9 +1,9 @@
 import os.path
 from typing import Iterator, NamedTuple
 
-from command.command import ArxivBatchCommand
 from common import directories, file_utils
 from common.bounding_box import get_symbol_bounding_box
+from common.commands.base import ArxivBatchCommand
 from common.types import (
     ArxivId,
     BoundingBox,

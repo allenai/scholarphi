@@ -2,7 +2,7 @@ import time
 from argparse import ArgumentParser
 from typing import Iterator, Optional
 
-from command.command import ArxivBatchCommand
+from common.commands.base import ArxivBatchCommand
 from common.fetch_arxiv import fetch_from_arxiv, fetch_from_s3
 from common.types import ArxivId
 

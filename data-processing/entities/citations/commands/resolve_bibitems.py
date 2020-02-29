@@ -4,8 +4,8 @@ import re
 from dataclasses import dataclass
 from typing import Iterator, List, Set
 
-from command.command import ArxivBatchCommand
 from common import directories, file_utils
+from common.commands.base import ArxivBatchCommand
 from common.types import ArxivId, Bibitem, BibitemMatch, SerializableReference
 
 

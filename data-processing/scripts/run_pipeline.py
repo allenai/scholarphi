@@ -5,21 +5,21 @@ import uuid
 from argparse import ArgumentParser
 from datetime import datetime
 
-from command.command import (
+from common import directories
+from common.commands.base import (
     add_arxiv_id_filter_args,
     add_one_entity_at_a_time_arg,
     create_args,
     load_arxiv_ids_using_args,
     read_arxiv_ids_from_file,
 )
-from command.fetch_arxiv_sources import (
+from common.commands.fetch_arxiv_sources import (
     DEFAULT_S3_ARXIV_SOURCES_BUCKET,
     FetchArxivSources,
 )
-from command.fetch_new_arxiv_ids import FetchNewArxivIds
-from command.store_pipeline_log import StorePipelineLog
-from command.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
-from common import directories
+from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
+from common.commands.store_pipeline_log import StorePipelineLog
+from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
 from scripts.process import (
     DATABASE_UPLOAD_COMMANDS,
     MAIN_PIPELINE_COMMANDS,

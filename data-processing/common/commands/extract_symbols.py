@@ -6,8 +6,8 @@ from argparse import ArgumentParser
 from dataclasses import dataclass
 from typing import Iterator, List, Optional
 
-from command.command import ArxivBatchCommand
 from common import directories, file_utils
+from common.commands.base import ArxivBatchCommand
 from common.parse_equation import KATEX_ERROR_COLOR, get_characters, get_symbols
 from common.types import (
     ArxivId,
