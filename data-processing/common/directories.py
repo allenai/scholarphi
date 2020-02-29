@@ -53,37 +53,6 @@ register("s2-metadata")
 register("sources")
 register("compiled-sources")
 register("paper-images")
-
-register("bibitems")
-register("bibitem-resolutions")
-register("sources-with-colorized-citations")
-register("compiled-sources-with-colorized-citations")
-register("paper-with-colorized-citations-images")
-register("diff-images-with-colorized-citations")
-register("hue-locations-for-citations")
-register("citation-locations")
-
-register("detected-equations")
-register("sources-with-colorized-equations")
-register("compiled-sources-with-colorized-equations")
-register("paper-with-colorized-equations-images")
-register("diff-images-with-colorized-equations")
-register("hue-locations-for-equations")
-
-register("symbols")
-register("symbol-matches")
-register("sources-with-colorized-equation-tokens")
-register("compiled-sources-with-colorized-equation-tokens")
-register("paper-with-colorized-equation-tokens-images")
-register("diff-images-with-colorized-equation-tokens")
-register("hue-locations-for-equation-tokens")
-register("symbol-locations")
-
-register("sources-with-annotated-symbols")
-register("debugging-colorizing-citations")
-register("debugging-colorizing-equations")
-register("debugging-colorizing-equation-tokens")
-
 register("bounding-box-accuracies")
 
 

@@ -1,5 +1,6 @@
 from typing import List, Optional, Type
 
+from common import directories
 from common.colorize_tex import ColorPositionsFunc, ColorWhenFunc
 from common.commands.base import Command
 from common.commands.colorize_tex import make_colorize_tex_command
@@ -31,6 +32,15 @@ def create_entity_localization_command_sequence(
     If you are trying to find the locations of a new type of entity, it is highly recommended that
     you use this convenience methods instead of creating new commands yourself.
     """
+
+    # Register directories for output from intermediate pipeline stages.
+    directories.register(f"detected-{entity_name}")
+    directories.register(f"sources-with-colorized-{entity_name}")
+    directories.register(f"compiled-sources-with-colorized-{entity_name}")
+    directories.register(f"paper-with-colorized-{entity_name}-images")
+    directories.register(f"diff-images-with-colorized-{entity_name}")
+    directories.register(f"hue-locations-for-{entity_name}")
+
     return [
         make_detect_entities_command(entity_name, EntityExtractorType),
         make_colorize_tex_command(
