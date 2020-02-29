@@ -4,7 +4,6 @@ import sys
 import uuid
 from argparse import ArgumentParser
 from datetime import datetime
-from typing import Any, Dict, List
 
 from common import directories
 from common.commands.base import (
