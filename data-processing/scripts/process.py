@@ -75,11 +75,11 @@ for pipeline in entity_pipelines:
             break
 
     for entity_name in required_by:
-        for command in pipeline.commands:
+        for c in pipeline.commands:
             if entity_name not in commands_by_entity:
                 commands_by_entity[entity_name] = []
-            if command not in commands_by_entity[entity_name]:
-                commands_by_entity[entity_name].append(command)
+            if c not in commands_by_entity[entity_name]:
+                commands_by_entity[entity_name].append(c)
 
 
 STORE_RESULTS_COMMANDS: CommandList = [
