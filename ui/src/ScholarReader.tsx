@@ -8,8 +8,21 @@ import PageOverlay from "./PageOverlay";
 import * as selectors from "./selectors";
 import { Pages, PaperId, Papers, ScholarReaderContext, State } from "./state";
 import "./style/index.less";
-import { Annotation, AnnotationData, Citation, MathMl, Paper, Symbol, SymbolMatches, UserLibrary } from "./types/api";
-import { DocumentLoadedEvent, PageRenderedEvent, PDFViewerApplication } from "./types/pdfjs-viewer";
+import {
+  Annotation,
+  AnnotationData,
+  Citation,
+  MathMl,
+  Paper,
+  Symbol,
+  SymbolMatches,
+  UserLibrary
+} from "./types/api";
+import {
+  DocumentLoadedEvent,
+  PageRenderedEvent,
+  PDFViewerApplication
+} from "./types/pdfjs-viewer";
 import { isKeypressEscape } from "./ui-utils";
 
 interface ScholarReaderProps {

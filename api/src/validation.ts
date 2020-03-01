@@ -34,14 +34,12 @@ export const annotation = Joi.object({
   type: Joi.string()
     .allow("citation", "symbol")
     .required(),
-  boundingBox: Joi.object({
-    page: Joi.number()
-      .integer()
-      .min(0)
-      .required(),
-    left: Joi.number().required(),
-    top: Joi.number().required(),
-    width: Joi.number().required(),
-    height: Joi.number().required()
-  }).required()
+  page: Joi.number()
+    .integer()
+    .min(0)
+    .required(),
+  left: Joi.number().required(),
+  top: Joi.number().required(),
+  width: Joi.number().required(),
+  height: Joi.number().required()
 });

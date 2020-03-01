@@ -2,12 +2,12 @@ import { BoundingBox } from "../types/api";
 import { PDFPageView } from "../types/pdfjs-viewer";
 
 /**
- * Expects 'box' to represent location in PDF coordinates; converts to viewport coordinates.
- * XXX(andrewhead): A slight scale correction was needed to make the bounding boxes appear in
- * just the right place on a test PDF. Maybe this reflects some round-off error in bounding box
- * location detection in the data processing scripts; this needs further investigation. For
- * annotations added by users directly in this application, the scale correction should be set
- * to 1 for the annotation to appear in precisely the right place.
+ * Get the 'left', 'top', 'width', and 'height' CSS parameters for a paper annotation from a
+ * bounding box for that annotation. The bounding box is expected to be expressed in
+ * ratio coordinates (see the docstring for the BoundingBox type). The values returned will be
+ * absolute pixel positions. The caller can optionally specify a scaling favor (scaleCorrection).
+ * You shouldn't need to use it, though in past versions of this interface it was necessary to
+ * correct subtle issues in the positioning of annotations.
  */
 export function divDimensionStyles(
   pageView: PDFPageView,
@@ -15,27 +15,12 @@ export function divDimensionStyles(
   scaleCorrection?: number
 ) {
   scaleCorrection = scaleCorrection || 1;
-  const viewport = pageView.pdfPage.getViewport({
-    scale: pageView.viewport.scale * scaleCorrection
-  });
 
-  const pdfCoordinates = [
-    box.left,
-    box.top,
-    box.left + box.width,
-    box.top + box.height
-  ];
-  const viewportBox = viewport.convertToViewportRectangle(pdfCoordinates);
-
-  /**
-   * Based on how pdf-react transforms PDF coordinates to viewport coordinates here:
-   * https://github.com/wojtekmaj/react-pdf/blob/73f505eca1bf1ae243a2b7068fce1e86b98b408a/src/Page/AnnotationLayer.jsx#L104
-   */
   return {
-    left: viewportBox[0],
-    top: viewportBox[1],
-    width: viewportBox[2] - viewportBox[0],
-    height: viewportBox[1] - viewportBox[3]
+    left: box.left * pageView.viewport.width * scaleCorrection,
+    top: box.top * pageView.viewport.height * scaleCorrection,
+    width: box.width * pageView.viewport.width * scaleCorrection,
+    height: box.height * pageView.viewport.height * scaleCorrection
   };
 }
 

@@ -1,5 +1,5 @@
-from explanations.annotate_tex import annotate_symbols_and_equations_for_file
-from explanations.types import Character, CharacterId, Symbol, SymbolId
+from common.annotate_tex import annotate_symbols_and_equations_for_file
+from common.types import Character, CharacterId, Symbol, SymbolId
 
 TEX_PATH = "tex-path"
 ARBITRARY_MATHML = "<mathml>"

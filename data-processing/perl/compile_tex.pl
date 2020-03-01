@@ -39,6 +39,12 @@ if ($compiler->process()) {
   foreach (@pdfs) {
     print "Generated PDF: $_<end of PDF name>\n";
   }
+  # Print out the names of all generated PostScript files
+  while (my ($filename, $fileobj) = each %{$compiler->{process}->{fileset}->{cache}}) {
+    if ($fileobj->{flags}->{main_postscript}) {
+      print "Generated PostScript: $filename<end of PostScript name>\n";
+    }
+  }
   exit 0;
 } else {
   print "Failed to compile the TeX. For more details, see " +

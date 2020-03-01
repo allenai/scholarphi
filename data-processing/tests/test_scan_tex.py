@@ -1,4 +1,4 @@
-from explanations.scan_tex import Pattern, scan_tex
+from common.scan_tex import Pattern, scan_tex
 
 
 def test_find_pattern():
