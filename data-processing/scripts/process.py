@@ -12,11 +12,15 @@ from common.commands.raster_pages import RasterPages
 from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import StoreResults
 from common.commands.unpack_sources import UnpackSources
-from entities.citations import citations_pipeline
-from entities.common import EntityPipeline
-from entities.equations import equations_pipeline
-from entities.sentences import sentences_pipeline
-from entities.symbols import symbols_pipeline
+
+# Force the importing of modules for entity processing. This forces a call from each of the entity
+# modules to register pipelines for processing each entity. If these aren't imported,
+# 'entity_pipelines' will be empty and all of the commands for processing entities will be missing.
+from entities import citations  # pylint: disable=unused-import
+from entities import equations  # pylint: disable=unused-import
+from entities import sentences  # pylint: disable=unused-import
+from entities import symbols  # pylint: disable=unused-import
+from scripts.pipelines import EntityPipeline, entity_pipelines
 
 PAPER_DISCOVERY_COMMANDS: CommandList = [FetchNewArxivIds]
 " Commands for discovering which arXiv papers to process. "
@@ -35,18 +39,6 @@ TEX_PREPARATION_COMMANDS: CommandList = [
 ENTITY_COMMANDS: CommandList = []
 " Commands for processing entities. "
 
-
-entity_pipelines = [
-    citations_pipeline,
-    sentences_pipeline,
-    equations_pipeline,
-    symbols_pipeline,
-]
-"""
-List of pipelines for processing entities. If you have written code to process a new type of
-entity, you must add the pipeline for that entity to this list, for it to be included in the main
-paper-processing pipeline.
-"""
 
 # Order commands for processing entities based on dependencies between entities. For example,
 # equations will need to be processed before symbols.

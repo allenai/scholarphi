@@ -16,6 +16,8 @@ from peewee import (
     TextField,
 )
 
+from scripts.pipelines import entity_pipelines
+
 DATABASE_CONFIG = "config.ini"
 
 
@@ -202,21 +204,27 @@ def init_database_connections(
         # within the schema.
         output_database.execute_sql("CREATE SCHEMA IF NOT EXISTS %s" % (schema_name,))
 
+        # Assemble the list of database models from a set of defaults, and from the set of models
+        # defined for specific entity pipelines.
+        models_to_create = [
+            Paper,
+            Summary,
+            MathMl,
+            MathMlMatch,
+            Symbol,
+            SymbolChild,
+            Citation,
+            CitationPaper,
+            Entity,
+            BoundingBox,
+            EntityBoundingBox,
+            Annotation,
+        ]
+        for pipeline in entity_pipelines:
+            models_to_create.extend(pipeline.database_models)
+
         output_database.create_tables(
-            [
-                Paper,
-                Summary,
-                MathMl,
-                MathMlMatch,
-                Symbol,
-                SymbolChild,
-                Citation,
-                CitationPaper,
-                Entity,
-                BoundingBox,
-                EntityBoundingBox,
-                Annotation,
-            ],
+            models_to_create,
             # Don't create the tables if they're already created.
             safe=True,
         )

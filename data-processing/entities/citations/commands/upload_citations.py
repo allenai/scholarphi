@@ -8,7 +8,7 @@ from typing import Dict, Iterator, Set
 from peewee import IntegrityError
 
 from common import directories, file_utils
-from common.commands.base import DatabaseUploadCommand
+from common.commands.database import DatabaseUploadCommand
 from common.models import BoundingBox as BoundingBoxModel
 from common.models import (
     Citation,

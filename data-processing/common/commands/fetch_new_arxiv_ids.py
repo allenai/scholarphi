@@ -10,7 +10,9 @@ from common.models import init_database_connections
 from common.types import ArxivId
 
 
-class FetchNewArxivIds(Command[ArxivId, ArxivId]):
+class FetchNewArxivIds(
+    Command[ArxivId, ArxivId]
+):  # pylint: disable=unsubscriptable-object
     def __init__(self, args: Any) -> None:
         super().__init__(args)
         init_database_connections()
