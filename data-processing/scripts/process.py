@@ -1,125 +1,107 @@
 import argparse
 import logging
-from typing import List
+from typing import Dict, List
 
-from scripts.annotate_pdfs import (
-    AnnotatePdfsWithCitationBoxes,
-    AnnotatePdfsWithEquationBoxes,
-    AnnotatePdfsWithEquationTokenBoxes,
-)
-from scripts.annotate_symbols import AnnotateTexWithSymbolMarkers
-from scripts.colorize_citations import ColorizeCitations
-from scripts.colorize_equation_tokens import ColorizeEquationTokens
-from scripts.colorize_equations import ColorizeEquations
-from scripts.command import Command
-from scripts.compile_tex import (
-    CompileTexSources,
-    CompileTexSourcesWithColorizedCitations,
-    CompileTexSourcesWithColorizedEquations,
-    CompileTexSourcesWithColorizedEquationTokens,
-)
-from scripts.compute_iou import ComputeIou
-from scripts.debug_colorize_tex import (
-    DebugColorizeEquations,
-    DebugColorizeEquationTokens,
-)
-from scripts.diff_images import (
-    DiffImagesWithColorizedCitations,
-    DiffImagesWithColorizedEquations,
-    DiffImagesWithColorizedEquationTokens,
-)
-from scripts.extract_bibitems import ExtractBibitems
-from scripts.extract_equations import ExtractEquations
-from scripts.extract_symbols import ExtractSymbols
-from scripts.fetch_arxiv_sources import FetchArxivSources
-from scripts.fetch_new_arxiv_ids import FetchNewArxivIds
-from scripts.fetch_s2_data import FetchS2Metadata
-from scripts.find_symbol_matches import FindSymbolMatches
-from scripts.locate_citations import LocateCitations
-from scripts.locate_hues import (
-    LocateCitationHues,
-    LocateEquationHues,
-    LocateEquationTokenHues,
-)
-from scripts.locate_symbols import LocateSymbols
-from scripts.raster_pages import (
-    RasterPages,
-    RasterPagesWithColorizedCitations,
-    RasterPagesWithColorizedEquations,
-    RasterPagesWithColorizedEquationTokens,
-)
-from scripts.resolve_bibitems import ResolveBibitems
-from scripts.store_pipeline_log import StorePipelineLog
-from scripts.store_results import StoreResults
-from scripts.unpack_sources import UnpackSources
-from scripts.upload_citations import UploadCitations
-from scripts.upload_symbols import UploadSymbols
+from common.commands.base import Command, CommandList
+from common.commands.compile_tex import CompileTexSources
+from common.commands.compute_iou import ComputeIou
+from common.commands.fetch_arxiv_sources import FetchArxivSources
+from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
+from common.commands.fetch_s2_data import FetchS2Metadata
+from common.commands.raster_pages import RasterPages
+from common.commands.store_pipeline_log import StorePipelineLog
+from common.commands.store_results import StoreResults
+from common.commands.unpack_sources import UnpackSources
 
-PREPARATION_COMMANDS: List = [  # type: ignore
-    FetchNewArxivIds,
-]
+# Force the importing of modules for entity processing. This forces a call from each of the entity
+# modules to register pipelines for processing each entity. If these aren't imported,
+# 'entity_pipelines' will be empty and all of the commands for processing entities will be missing.
+from entities import citations  # pylint: disable=unused-import
+from entities import equations  # pylint: disable=unused-import
+from entities import sentences  # pylint: disable=unused-import
+from entities import symbols  # pylint: disable=unused-import
+from scripts.pipelines import EntityPipeline, entity_pipelines
 
-"""
-All of the main pipeline commands are batch commands that can be run on a set of arXiv IDs. The
-sequence here is the recommended sequence of running the commands if you are batch processing all
-entities in a set of papers.
-"""
-MAIN_PIPELINE_COMMANDS: List = [  # type: ignore
+PAPER_DISCOVERY_COMMANDS: CommandList = [FetchNewArxivIds]
+" Commands for discovering which arXiv papers to process. "
+
+
+TEX_PREPARATION_COMMANDS: CommandList = [
     FetchArxivSources,
     FetchS2Metadata,
     UnpackSources,
-    ExtractBibitems,
-    ResolveBibitems,
-    ColorizeCitations,
-    ColorizeEquations,
-    ExtractEquations,
-    ExtractSymbols,
-    FindSymbolMatches,
-    ColorizeEquationTokens,
     CompileTexSources,
-    CompileTexSourcesWithColorizedCitations,
-    CompileTexSourcesWithColorizedEquations,
-    CompileTexSourcesWithColorizedEquationTokens,
     RasterPages,
-    RasterPagesWithColorizedCitations,
-    RasterPagesWithColorizedEquations,
-    RasterPagesWithColorizedEquationTokens,
-    DiffImagesWithColorizedCitations,
-    DiffImagesWithColorizedEquations,
-    DiffImagesWithColorizedEquationTokens,
-    LocateCitationHues,
-    LocateCitations,
-    LocateEquationHues,
-    LocateEquationTokenHues,
-    LocateSymbols,
 ]
+" Commands for fetching arXiv sources and preparing for entity processing. "
 
-STORE_RESULTS_COMMANDS: List = [  # type: ignore
+
+ENTITY_COMMANDS: CommandList = []
+" Commands for processing entities. "
+
+
+# Order commands for processing entities based on dependencies between entities. For example,
+# equations will need to be processed before symbols.
+pipelines_ordered: List[EntityPipeline] = []
+entity_names_added: List[str] = []
+
+# Fixpoint algorithm to order dependencies.
+# Loop over the set of entity pipelines. Add a pipeline only when all its dependencies have
+# already been added. In later loops, pipelines are added that depend on other entities having been
+# added. Stop when all pipelines have been added.
+while True:
+    for pipeline in entity_pipelines:
+        already_added = pipeline in pipelines_ordered
+        dependencies_added = all([e in entity_names_added for e in pipeline.depends_on])
+        if not already_added and dependencies_added:
+            pipelines_ordered.append(pipeline)
+            entity_names_added.append(pipeline.entity_name)
+    if len(pipelines_ordered) == len(entity_pipelines):
+        break
+
+for pipeline in pipelines_ordered:
+    ENTITY_COMMANDS.extend(pipeline.commands)
+
+
+commands_by_entity: Dict[str, CommandList] = {}
+" Map from each entity type to the commands that need to run for to process that entity. "
+
+# Fixpoint algorithm to determine which commands are needed to process each type of entity.
+# For each entity type, loop over the list of pipelines until a list has been developed of all
+# pipelines that depend on this entity type being processed.
+for pipeline in entity_pipelines:
+    required_by = set([pipeline.entity_name])
+    while True:
+        required_by_snapshot = set(required_by)
+        for other in entity_pipelines:
+            if any(r in other.depends_on for r in required_by):
+                required_by.add(other.entity_name)
+        if required_by == required_by_snapshot:
+            break
+
+    for entity_name in required_by:
+        for c in pipeline.commands:
+            if entity_name not in commands_by_entity:
+                commands_by_entity[entity_name] = []
+            if c not in commands_by_entity[entity_name]:
+                commands_by_entity[entity_name].append(c)
+
+
+STORE_RESULTS_COMMANDS: CommandList = [
     StoreResults,
     # Store pipeline logs after results, so that we can include the result storage in the pipeline logs.
     StorePipelineLog,
 ]
 
-DATABASE_UPLOAD_COMMANDS: List = [  # type: ignore
-    UploadCitations,
-    UploadSymbols,
-]
-
-EVALUATION_COMMANDS: List = [  # type: ignore
-    DebugColorizeEquations,
-    DebugColorizeEquationTokens,
-    AnnotatePdfsWithCitationBoxes,
-    AnnotatePdfsWithEquationBoxes,
-    AnnotatePdfsWithEquationTokenBoxes,
-    AnnotateTexWithSymbolMarkers,
+EVALUATION_COMMANDS: CommandList = [
     ComputeIou,
 ]
 
 ALL_COMMANDS = (
-    PREPARATION_COMMANDS
-    + MAIN_PIPELINE_COMMANDS
+    PAPER_DISCOVERY_COMMANDS
+    + TEX_PREPARATION_COMMANDS
+    + ENTITY_COMMANDS
     + STORE_RESULTS_COMMANDS
-    + DATABASE_UPLOAD_COMMANDS
     + EVALUATION_COMMANDS
 )
 

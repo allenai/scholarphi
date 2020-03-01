@@ -1,5 +1,5 @@
-from explanations.bounding_box import get_symbol_bounding_box
-from explanations.types import CharacterId, PdfBoundingBox, Symbol, SymbolId
+from common.bounding_box import get_symbol_bounding_box
+from common.types import BoundingBox, CharacterId, Symbol, SymbolId
 
 
 def character_id(character_index: int) -> CharacterId:
@@ -23,23 +23,26 @@ def test_get_none_if_no_matching_characters():
 
 def test_get_character_bounding_box():
     s = symbol(characters=[0])
-    character_locations = {character_id(0): [PdfBoundingBox(0, 10, 10, 10, 0)]}
+    character_locations = {character_id(0): [BoundingBox(0.01, 0.01, 0.01, 0.01, 0)]}
     box = get_symbol_bounding_box(s, symbol_id(), character_locations)
-    assert box == PdfBoundingBox(0, 10, 10, 10, 0)
+    assert box == BoundingBox(0.01, 0.01, 0.01, 0.01, 0)
 
 
 def test_merge_bounding_boxes():
     s = symbol(characters=[0, 1])
     character_locations = {
         character_id(0): [
-            PdfBoundingBox(0, 10, 10, 10, 0),
-            # Expand the bounding box downward 10 pixels
-            PdfBoundingBox(0, 20, 10, 10, 0),
+            BoundingBox(0.01, 0.01, 0.01, 0.01, 0),
+            # Expand the bounding box downward .01 of the page
+            BoundingBox(0.01, 0.02, 0.01, 0.01, 0),
         ],
         # Expand the bounding box rightward 10 pixels
-        character_id(1): [PdfBoundingBox(10, 10, 10, 10, 0)],
+        character_id(1): [BoundingBox(0.02, 0.01, 0.01, 0.01, 0)],
         # Ignore this bounding box for an irrelevant character
-        character_id(2): [PdfBoundingBox(20, 10, 10, 10, 0)],
+        character_id(2): [BoundingBox(0.03, 0.01, 0.01, 0.01, 0)],
     }
     box = get_symbol_bounding_box(s, symbol_id(), character_locations)
-    assert box == PdfBoundingBox(0, 20, 20, 20, 0)
+    assert box.left == 0.01
+    assert box.top == 0.01
+    assert abs(box.width - 0.02) < 0.0001
+    assert abs(box.height - 0.02) < 0.0001

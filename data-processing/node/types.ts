@@ -8,7 +8,7 @@ export interface Token {
 export interface EquationParseResult {
   success: boolean;
   i: number;
-  path: string;
+  tex_path: string;
   equation: string;
   mathMl: string | null;
   errorMessage: string | null;

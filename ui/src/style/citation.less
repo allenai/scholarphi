@@ -22,7 +22,15 @@
  * Link to sidebar
  */
 .citation__abstract__sidebar-link {
-  text-decoration: underline;
-  color: @s2-link-default;
-  cursor: pointer;
+  &,
+  &:hover,
+  &:visited:hover {
+    color: @s2-link-default;
+    text-decoration: none;
+  }
+
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
 }

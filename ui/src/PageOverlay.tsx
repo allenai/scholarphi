@@ -143,14 +143,14 @@ function selectionToAnnotation(
   type?: "citation" | "symbol"
 ): AnnotationData {
   const viewport = pageView.viewport;
-  const [anchorPdfX, anchorPdfY] = viewport.convertToPdfPoint(
-    anchor.x,
-    anchor.y
-  );
-  const [activePdfX, activePdfY] = viewport.convertToPdfPoint(
-    active.x,
-    active.y
-  );
+  const [anchorPdfX, anchorPdfY] = [
+    anchor.x / viewport.width,
+    anchor.y / viewport.height
+  ];
+  const [activePdfX, activePdfY] = [
+    active.x / viewport.width,
+    active.y / viewport.height
+  ];
 
   const page = pageView.pdfPage.pageNumber - 1;
   const left = Math.min(anchorPdfX, activePdfX);

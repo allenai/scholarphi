@@ -1,4 +1,4 @@
-from explanations.compile import get_errors, is_driver_unimplemented
+from common.compile import get_errors, is_driver_unimplemented
 
 
 def test_is_not_missing_driver():

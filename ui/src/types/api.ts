@@ -1,3 +1,23 @@
+/**
+ * Matches the schema of the data in the 'boundingbox' table in the database. At the time of
+ * the writing of this comment, 'left', 'top', 'width', and 'height' were expressed in ratios
+ * to the page width and height, rather than absolute coordinates
+ *
+ * For example, a bounding box is expressed as
+ * {
+ *   left: .1,
+ *   right: .1,
+ *   width: .2,
+ *   height: .05
+ * }
+ *
+ * if its absolute position is (50px, 100px), its width is (100px), and its
+ * height is (50px) on a page with dimensions (W = 500px, H = 1000px).
+ *
+ * This representation of coordinates was chosen due to constraints in the design of the data
+ * processing pipeline. More specifically, it's easier to extract ratio coordinates than absolute
+ * coordinates when processing PDFs and PostScript files with Python.
+ */
 export interface BoundingBox {
   id: number;
   page: number;

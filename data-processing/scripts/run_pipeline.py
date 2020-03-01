@@ -5,20 +5,35 @@ import uuid
 from argparse import ArgumentParser
 from datetime import datetime
 
-from explanations import directories
-from scripts.command import (add_arxiv_id_filter_args,
-                             add_one_entity_at_a_time_arg, create_args,
-                             load_arxiv_ids_using_args,
-                             read_arxiv_ids_from_file)
-from scripts.fetch_arxiv_sources import (DEFAULT_S3_ARXIV_SOURCES_BUCKET,
-                                         FetchArxivSources)
-from scripts.fetch_new_arxiv_ids import FetchNewArxivIds
-from scripts.process import (DATABASE_UPLOAD_COMMANDS, MAIN_PIPELINE_COMMANDS,
-                             STORE_RESULTS_COMMANDS, run_command)
-from scripts.store_pipeline_log import StorePipelineLog
-from scripts.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
+from common import directories
+from common.commands.base import (
+    add_arxiv_id_filter_args,
+    add_one_entity_at_a_time_arg,
+    create_args,
+    load_arxiv_ids_using_args,
+    read_arxiv_ids_from_file,
+)
+from common.commands.database import DatabaseUploadCommand
+from common.commands.fetch_arxiv_sources import (
+    DEFAULT_S3_ARXIV_SOURCES_BUCKET,
+    FetchArxivSources,
+)
+from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
+from common.commands.store_pipeline_log import StorePipelineLog
+from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
+from scripts.pipelines import entity_pipelines
+from scripts.process import (
+    ENTITY_COMMANDS,
+    STORE_RESULTS_COMMANDS,
+    TEX_PREPARATION_COMMANDS,
+    commands_by_entity,
+    run_command,
+)
 
 if __name__ == "__main__":
+
+    PIPELINE_COMMANDS = TEX_PREPARATION_COMMANDS + ENTITY_COMMANDS
+    ENTITY_NAMES = [p.entity_name for p in entity_pipelines]
 
     parser = ArgumentParser(
         description="Run pipeline to extract entities from arXiv papers."
@@ -34,16 +49,16 @@ if __name__ == "__main__":
             + "in the file name to distinguish it from other logs created at the same time."
         ),
     )
-    command_names = [c.get_name() for c in MAIN_PIPELINE_COMMANDS]
+    command_names = [c.get_name() for c in PIPELINE_COMMANDS]
     parser.add_argument(
         "--entities",
         help=(
             "What type of entities to process. Commands that do not process the specified entities "
-            + "will be skipped. Defaults to 'all'. You can specify multiple entity types."
+            + "will be skipped. Defaults to all entities. You can specify multiple entity types."
         ),
-        choices=["all", "citations", "symbols"],
+        choices=ENTITY_NAMES,
         nargs="+",
-        default="all",
+        default=ENTITY_NAMES,
     )
     parser.add_argument(
         "--start",
@@ -141,12 +156,7 @@ if __name__ == "__main__":
     if args.start is None:
         reached_start_command = True
 
-    command_classes = MAIN_PIPELINE_COMMANDS
-    if args.upload_to_database:
-        logging.debug(
-            "Registering commands to be run for uploading results to the database."
-        )
-        command_classes += DATABASE_UPLOAD_COMMANDS
+    command_classes = PIPELINE_COMMANDS
     if not args.skip_store_results:
         command_classes += STORE_RESULTS_COMMANDS
 
@@ -161,9 +171,18 @@ if __name__ == "__main__":
             else:
                 continue
         if start_reached:
-            if "all" not in args.entities:
-                entity_type = CommandClass.get_entity_type()
-                if entity_type != "all" and entity_type not in args.entities:
+            # Skip over irrelevant entity-processing commands
+            if CommandClass in ENTITY_COMMANDS:
+                skip_command = True
+                for entity_type in args.entities:
+                    if CommandClass in commands_by_entity[entity_type]:
+                        skip_command = False
+                        break
+                if skip_command:
+                    continue
+            # Optionally skip over database upload commands
+            if issubclass(CommandClass, DatabaseUploadCommand):
+                if not args.upload_to_database:
                     continue
             filtered_commands.append(CommandClass)
             if args.end is not None and command_name == args.end:
