@@ -104,7 +104,14 @@ def iteration_names(dirkey: str, arxiv_id: str) -> List[str]:
     arxiv_subdirectory = arxiv_subdir(dirkey, arxiv_id)
     if not os.path.exists(arxiv_subdirectory):
         return []
-    return os.listdir(arxiv_subdirectory)
+    # Only consider subdirectories when finding which iterations are in this directory, as some
+    # commands output data files alongside the iteration directories to provide summaries of
+    # results that cross iterations.
+    return [
+        file_
+        for file_ in os.listdir(arxiv_subdirectory)
+        if os.path.isdir(os.path.join(arxiv_subdirectory, file_))
+    ]
 
 
 def relpath_arxiv_id_iteration(arxiv_id: str, iteration_name: str) -> RelativePath:
