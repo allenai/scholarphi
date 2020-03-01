@@ -459,16 +459,16 @@ DATABASE UPLOADS
 
 
 @dataclass(frozen=True)
-class EntityInfo:
-    colorization_record: ColorizationRecord
-    hue_location_infos: List[HueLocationInfo]
+class EntityAndLocation:
+    entity: SerializableEntity
+    locations: List[HueLocationInfo]
 
 
 @dataclass(frozen=True)
-class PaperProcessingSummary:
+class PaperProcessingResult:
     arxiv_id: ArxivId
     s2_id: S2Id
-    entity_infos: List[EntityInfo]
+    localized_entities: List[EntityAndLocation]
 
 
-EntityUploadCallable = Callable[[PaperProcessingSummary], None]
+EntityUploadCallable = Callable[[PaperProcessingResult], None]

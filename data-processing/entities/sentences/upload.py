@@ -1,7 +1,18 @@
+from typing import Dict, List, cast
+
 from peewee import ForeignKeyField, TextField
 
-from common.models import OutputModel, Paper
-from common.types import PaperProcessingSummary
+from common.models import (
+    BoundingBox,
+    Entity,
+    EntityBoundingBox,
+    OutputModel,
+    Paper,
+    output_database,
+)
+from common.types import HueLocationInfo, PaperProcessingResult
+
+from .extractor import Sentence as SentenceEntity
 
 
 class Sentence(OutputModel):
@@ -9,11 +20,13 @@ class Sentence(OutputModel):
     text = TextField()
 
 
-def upload_sentences(processing_summary: PaperProcessingSummary) -> None:
+SentenceId = str
+
+
+def upload_sentences(processing_summary: PaperProcessingResult) -> None:
 
     arxiv_id = processing_summary.arxiv_id
     s2_id = processing_summary.s2_id
-    entity_infos = processing_summary.entity_infos
 
     # Create entry for the paper if it does not yet exist
     try:
@@ -21,77 +34,48 @@ def upload_sentences(processing_summary: PaperProcessingSummary) -> None:
     except Paper.DoesNotExist:
         paper = Paper.create(s2_id=s2_id, arxiv_id=arxiv_id)
 
-    for sentence in entity_infos:
-        index = sentence.colorization_record
+    locations_by_sentence_id: Dict[SentenceId, List[HueLocationInfo]] = {}
+    sentence_models: Dict[SentenceId, Sentence] = {}
 
-    # I'M STUCK HERE. I DON'T KNOW HOW TO EXPRESS A UNIQUE ID FOR SENTENCES, OR
-    # HOW TO ACCESS UNIQUE DATA FOR THEM. MIGHT NEED TO DEFINE AN EXTRACTOR...
+    for entity_and_location in processing_summary.localized_entities:
+        sentence = cast(SentenceEntity, entity_and_location.entity)  # type: ignore
+        sentence_model = Sentence(paper=paper, text=sentence.text)
 
-    # Create all symbols in bulk. This lets us resolve their IDs before we start referring to
-    # them from other tables. It also lets us refer to their models in the parent-child table.
-    # symbol_models: Dict[SymbolId, SymbolModel] = {}
-    # symbol_models_by_symbol_object_id: Dict[int, SymbolModel] = {}
+        locations_by_sentence_id[sentence.id_] = entity_and_location.locations
+        sentence_models[sentence.id_] = sentence_model
 
-    # for symbol_with_id in symbols_with_ids:
-    #     symbol = symbol_with_id.symbol
-    #     symbol_id = symbol_with_id.symbol_id
-    #     mathml_model = mathml_cache[symbol.mathml]
-    #     symbol_model = SymbolModel(paper=paper, mathml=mathml_model)
-    #     symbol_models[symbol_id] = symbol_model
-    #     symbol_models_by_symbol_object_id[id(symbol)] = symbol_model
+    with output_database.atomic():
+        Sentence.bulk_create(sentence_models.values(), 100)
 
-    # with output_database.atomic():
-    #     SymbolModel.bulk_create(symbol_models.values(), 300)
+    entities = []
+    entity_bounding_boxes = []
+    bounding_boxes = []
 
-    # # Upload bounding boxes for symbols. 'bulk_create' must have already been called on the
-    # # the symbol models to make sure their model IDs can be used here.
-    # entities = []
-    # entity_bounding_boxes = []
-    # bounding_boxes = []
-    # for symbol_with_id in symbols_with_ids:
+    for sentence_id, sentence_model in sentence_models.items():
 
-    #     symbol_id = symbol_with_id.symbol_id
-    #     symbol_model = symbol_models[symbol_id]
+        entity = Entity(
+            type="sentence", source="tex-pipeline", entity_id=sentence_model.id
+        )
+        entities.append(entity)
 
-    #     box = boxes.get(symbol_id)
-    #     if box is not None:
-    #         entity = Entity(
-    #             type="symbol", source="tex-pipeline", entity_id=symbol_model.id
-    #         )
-    #         entities.append(entity)
-    #         bounding_box = BoundingBoxModel(
-    #             page=box.page,
-    #             left=box.left,
-    #             top=box.top,
-    #             width=box.width,
-    #             height=box.height,
-    #         )
-    #         bounding_boxes.append(bounding_box)
+        for location in locations_by_sentence_id[sentence_id]:
+            bounding_box = BoundingBox(
+                page=location.page,
+                left=location.left,
+                top=location.top,
+                width=location.width,
+                height=location.height,
+            )
+            bounding_boxes.append(bounding_box)
 
-    #         entity_bounding_box = EntityBoundingBox(
-    #             bounding_box=bounding_box, entity=entity
-    #         )
-    #         entity_bounding_boxes.append(entity_bounding_box)
+            entity_bounding_box = EntityBoundingBox(
+                bounding_box=bounding_box, entity=entity
+            )
+            entity_bounding_boxes.append(entity_bounding_box)
 
-    # with output_database.atomic():
-    #     BoundingBoxModel.bulk_create(bounding_boxes, 100)
-    # with output_database.atomic():
-    #     Entity.bulk_create(entities, 300)
-    # with output_database.atomic():
-    #     EntityBoundingBox.bulk_create(entity_bounding_boxes, 300)
-
-    # # Upload parent-child relationships between symbols.
-    # symbol_child_models = []
-    # for symbol_with_id in symbols_with_ids:
-
-    #     symbol = symbol_with_id.symbol
-    #     symbol_id = symbol_with_id.symbol_id
-    #     symbol_model = symbol_models[symbol_id]
-
-    #     for child in symbol.children:
-    #         child_model = symbol_models_by_symbol_object_id[id(child)]
-    #         symbol_child_models.append(
-    #             SymbolChild(parent=symbol_model, child=child_model)
-    #         )
-    # with output_database.atomic():
-    #     SymbolChild.bulk_create(symbol_child_models, 300)
+    with output_database.atomic():
+        BoundingBox.bulk_create(bounding_boxes, 100)
+    with output_database.atomic():
+        Entity.bulk_create(entities, 300)
+    with output_database.atomic():
+        EntityBoundingBox.bulk_create(entity_bounding_boxes, 300)

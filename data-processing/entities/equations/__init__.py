@@ -1,10 +1,10 @@
 from typing import cast
 
 from common.commands.base import CommandList
-from common.commands.utils import create_entity_localization_command_sequence
 from common.parse_tex import EquationExtractor
 from common.types import CharacterRange, Equation, SerializableEntity
-from entities.common import EntityPipeline
+from entities.common import create_entity_localization_command_sequence
+from scripts.pipelines import EntityPipeline, register_entity_pipeline
 
 
 def colorize_equation_when(entity: SerializableEntity) -> bool:
@@ -26,3 +26,4 @@ commands = create_entity_localization_command_sequence(
 )
 
 equations_pipeline = EntityPipeline("equations", commands)
+register_entity_pipeline(equations_pipeline)

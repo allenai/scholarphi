@@ -1,24 +1,24 @@
 import logging
 import os.path
 from abc import abstractmethod
-from typing import Iterator, Type
+from typing import Iterator, Optional, Type
 
 from common import directories, file_utils
-from common.commands.base import DatabaseUploadCommand
+from common.commands.database import DatabaseUploadCommand
 from common.types import (
-    ColorizationRecord,
-    EntityInfo,
+    EntityAndLocation,
     EntityUploadCallable,
     HueLocationInfo,
-    PaperProcessingSummary,
+    PaperProcessingResult,
+    SerializableEntity,
 )
 
 
-class UploadEntitiesCommand(DatabaseUploadCommand[PaperProcessingSummary, None]):
+class UploadEntitiesCommand(DatabaseUploadCommand[PaperProcessingResult, None]):
     @abstractmethod
-    def get_colorized_sources_dirkey(self) -> str:
+    def get_detected_entities_dirkey(self) -> str:
         """
-        Key for the data directory containing colorized sources.
+        Key for the data directory containing a list of detected entities.
         """
 
     @abstractmethod
@@ -27,7 +27,16 @@ class UploadEntitiesCommand(DatabaseUploadCommand[PaperProcessingSummary, None])
         Key for the data directory containing hue locations for entities.
         """
 
-    def load(self) -> Iterator[PaperProcessingSummary]:
+    @staticmethod
+    def get_detected_entity_type() -> Type[SerializableEntity]:
+        """
+        Override this method if you need access to entity data that are present on a subclass of
+        'SerializableEntity'. For example, if you need to access the text for an extracted text when
+        you're uploading that sentence, this function should return the 'Sentence' type.
+        """
+        return SerializableEntity
+
+    def load(self) -> Iterator[PaperProcessingResult]:
         for arxiv_id in self.arxiv_ids:
 
             # Load the S2 ID for this paper
@@ -40,16 +49,16 @@ class UploadEntitiesCommand(DatabaseUploadCommand[PaperProcessingSummary, None])
             with open(s2_id_path) as s2_id_file:
                 s2_id = s2_id_file.read()
 
-            # Load the source colorization records
-            entity_hues_path = os.path.join(
-                directories.arxiv_subdir(self.get_colorized_sources_dirkey(), arxiv_id),
-                "entity_hues.csv",
+            # Load in all extracted entities.
+            entities_path = os.path.join(
+                directories.arxiv_subdir(self.get_detected_entities_dirkey(), arxiv_id),
+                "entities.csv",
             )
-            colorization_records = list(
-                file_utils.load_from_csv(entity_hues_path, ColorizationRecord)
+            entities = list(
+                file_utils.load_from_csv(entities_path, self.get_detected_entity_type())
             )
 
-            # Load the entity locations
+            # Load in locations of all detected hues.
             hue_locations_path = os.path.join(
                 directories.arxiv_subdir(self.get_hue_locations_dirkey(), arxiv_id),
                 "hue_locations.csv",
@@ -58,30 +67,29 @@ class UploadEntitiesCommand(DatabaseUploadCommand[PaperProcessingSummary, None])
                 file_utils.load_from_csv(hue_locations_path, HueLocationInfo)
             )
 
-            # Group each colorization record with boxes found for that colorization cycle.
-            entity_infos = []
-            for colorization_record in colorization_records:
-                matching_hue_location_infos = []
-                for hue_location_info in hue_location_infos:
-                    if (
-                        colorization_record.hue == hue_location_info.hue
-                        and colorization_record.iteration == hue_location_info.iteration
-                    ):
-                        matching_hue_location_infos.append(hue_location_info)
-                entity_infos.append(
-                    EntityInfo(colorization_record, matching_hue_location_infos)
-                )
+            # Group each entity with its location. Pass the entity information, and the detected
+            # locations for the entity, to the upload function.
+            localized_enitites = []
+            for entity in entities:
+                matching_locations = []
+                for h in hue_location_infos:
+                    if h.entity_id == entity.id_:
+                        matching_locations.append(h)
 
-            yield PaperProcessingSummary(
-                arxiv_id=arxiv_id, s2_id=s2_id, entity_infos=entity_infos,
+                localized_enitites.append(EntityAndLocation(entity, matching_locations))
+
+            yield PaperProcessingResult(
+                arxiv_id=arxiv_id, s2_id=s2_id, localized_entities=localized_enitites,
             )
 
-    def process(self, _: PaperProcessingSummary) -> Iterator[None]:
+    def process(self, _: PaperProcessingResult) -> Iterator[None]:
         yield None
 
 
 def make_upload_entities_command(
-    entity_name: str, upload_func: EntityUploadCallable,
+    entity_name: str,
+    upload_func: EntityUploadCallable,
+    DetectedEntityType: Optional[Type[SerializableEntity]] = None,
 ) -> Type[UploadEntitiesCommand]:
     """
     'upload_func' takes an entire batch of all entities processed for a paper at once. The designer
@@ -95,20 +103,24 @@ def make_upload_entities_command(
 
         @staticmethod
         def get_description() -> str:
-            return f"Upload {entity_name} and their locationsto the database."
+            return f"Upload {entity_name} and their locations to the database."
 
         def get_arxiv_ids_dirkey(self) -> str:
             return self.get_hue_locations_dirkey()
 
-        @abstractmethod
-        def get_colorized_sources_dirkey(self) -> str:
-            return f"sources-with-colorized-{entity_name}"
+        @staticmethod
+        def get_detected_entity_type() -> Type[SerializableEntity]:
+            if DetectedEntityType is None:
+                return super(C, C).get_detected_entity_type()
+            return DetectedEntityType
 
-        @abstractmethod
+        def get_detected_entities_dirkey(self) -> str:
+            return f"detected-{entity_name}"
+
         def get_hue_locations_dirkey(self) -> str:
             return f"hue-locations-for-{entity_name}"
 
-        def save(self, item: PaperProcessingSummary, _: None) -> None:
+        def save(self, item: PaperProcessingResult, _: None) -> None:
             upload_func(item)
 
     return C

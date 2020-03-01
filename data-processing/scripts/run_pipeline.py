@@ -7,13 +7,13 @@ from datetime import datetime
 
 from common import directories
 from common.commands.base import (
-    DatabaseUploadCommand,
     add_arxiv_id_filter_args,
     add_one_entity_at_a_time_arg,
     create_args,
     load_arxiv_ids_using_args,
     read_arxiv_ids_from_file,
 )
+from common.commands.database import DatabaseUploadCommand
 from common.commands.fetch_arxiv_sources import (
     DEFAULT_S3_ARXIV_SOURCES_BUCKET,
     FetchArxivSources,
@@ -21,12 +21,12 @@ from common.commands.fetch_arxiv_sources import (
 from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
 from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
+from scripts.pipelines import entity_pipelines
 from scripts.process import (
     ENTITY_COMMANDS,
     STORE_RESULTS_COMMANDS,
     TEX_PREPARATION_COMMANDS,
     commands_by_entity,
-    entity_pipelines,
     run_command,
 )
 

@@ -5,7 +5,7 @@ from typing import Dict, FrozenSet, Iterator, List, Tuple
 
 from common import directories, file_utils
 from common.bounding_box import compute_accuracy, iou, iou_per_rectangle, sum_areas
-from common.commands.base import DatabaseReadCommand
+from common.commands.database import DatabaseReadCommand
 from common.models import Annotation, Paper
 from common.types import ArxivId, FloatRectangle
 
