@@ -23,10 +23,11 @@ export class Drawer extends React.PureComponent {
   }
 
   /**
-   * XXX(zkirby): This is an unfortunate byproduct of the clickaway listener
-   * listening to *all* clicks outside of the drawer. Any developer wishing to 
-   * add a button that opens the drawer will need to add the class name of that element
-   * to the black listed class names list. 
+   * XXX(zkirby): Since the clickaway listener listens to *all* clicks outside of the 
+   * drawer, if we do not have the code below it will close after a button is clicked that 
+   * is meant to open the drawer. The code below simple gets the element that the click that is intending 
+   * to close the drawer originated from and traverses the class list and class list of all 
+   * parent elements looking for if this click happened from within a tooltip. 
    */
   clickAwayClose = (e: React.MouseEvent<Document, MouseEvent>) => {
     let elementTarget = e.target as (Element | null);
