@@ -12,7 +12,6 @@ from common.commands.raster_pages import RasterPages
 from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import StoreResults
 from common.commands.unpack_sources import UnpackSources
-
 # Force the importing of modules for entity processing. This forces a call from each of the entity
 # modules to register pipelines for processing each entity. If these aren't imported,
 # 'entity_pipelines' will be empty and all of the commands for processing entities will be missing.
@@ -45,15 +44,18 @@ ENTITY_COMMANDS: CommandList = []
 pipelines_ordered: List[EntityPipeline] = []
 entity_names_added: List[str] = []
 
-# Fixpoint algorithm to order dependencies.
-# Loop over the set of entity pipelines. Add a pipeline only when all its dependencies have
-# already been added. In later loops, pipelines are added that depend on other entities having been
-# added. Stop when all pipelines have been added.
+# Fixpoint algorithm to order entity pipelines.
+# Repeatedly Loop over the set of entity pipelines. Add a pipeline only when all its
+# dependencies (from 'depends_on' and 'optional_depends_on') have already been added.
 while True:
     for pipeline in entity_pipelines:
         already_added = pipeline in pipelines_ordered
-        dependencies_added = all([e in entity_names_added for e in pipeline.depends_on])
-        if not already_added and dependencies_added:
+        deps_added = all([e in entity_names_added for e in pipeline.depends_on])
+        optional_deps_added = all(
+            [e in entity_names_added for e in pipeline.optional_depends_on]
+        )
+        predecessors_added = deps_added and optional_deps_added
+        if not already_added and predecessors_added:
             pipelines_ordered.append(pipeline)
             entity_names_added.append(pipeline.entity_name)
     if len(pipelines_ordered) == len(entity_pipelines):
@@ -68,7 +70,9 @@ commands_by_entity: Dict[str, CommandList] = {}
 
 # Fixpoint algorithm to determine which commands are needed to process each type of entity.
 # For each entity type, loop over the list of pipelines until a list has been developed of all
-# pipelines that depend on this entity type being processed.
+# pipelines that depend on this entity type being processed. Do not consider the
+# dependencies listed in 'optional_depends_on', as these are optional, and only used to make
+# sure that commands are run in the right order.
 for pipeline in entity_pipelines:
     required_by = set([pipeline.entity_name])
     while True:

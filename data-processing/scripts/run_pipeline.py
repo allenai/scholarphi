@@ -54,7 +54,9 @@ if __name__ == "__main__":
         "--entities",
         help=(
             "What type of entities to process. Commands that do not process the specified entities "
-            + "will be skipped. Defaults to all entities. You can specify multiple entity types."
+            + "will be skipped. Defaults to all entities. You can specify multiple entity types. "
+            + "If specifying multiple entity types, use the format '--entities <type1> <type2> "
+            + "without an equal sign after '--entities'."
         ),
         choices=ENTITY_NAMES,
         nargs="+",

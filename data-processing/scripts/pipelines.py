@@ -20,6 +20,13 @@ class EntityPipeline:
     depends_on: List[str] = dataclasses.field(default_factory=list)
     " List of other entity pipelines this must be processed before this one. "
 
+    optional_depends_on: List[str] = dataclasses.field(default_factory=list)
+    """
+    List of other entity pipelines that, if processed, should be processed before this one,
+    but which are not required by this pipeline. An example is the sentences pipeline,
+    which can (but doesn't need to) be used by the symbols pipeline.
+    """
+
     database_models: List[Type[Any]] = dataclasses.field(default_factory=list)
     """
     List of database models that have been defined uniquely for the output from this entity
