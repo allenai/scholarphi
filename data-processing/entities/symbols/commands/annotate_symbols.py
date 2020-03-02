@@ -48,8 +48,8 @@ class AnnotateTexWithSymbolMarkers(ArxivBatchCommand[TexAndSymbols, AnnotationRe
             )
             file_utils.clean_directory(output_root)
 
-            symbols_dir = directories.arxiv_subdir("symbols", arxiv_id)
-            tokens_path = os.path.join(symbols_dir, "tokens.csv")
+            symbols_dir = directories.arxiv_subdir("detected-symbols", arxiv_id)
+            tokens_path = os.path.join(symbols_dir, "entities.csv")
             if not os.path.exists(tokens_path):
                 logging.info(
                     "No equation token data found for paper %s. Skipping.", arxiv_id
@@ -69,7 +69,7 @@ class AnnotateTexWithSymbolMarkers(ArxivBatchCommand[TexAndSymbols, AnnotationRe
             characters: Dict[CharacterId, Character] = {}
             for token in tokens:
                 character_id = CharacterId(
-                    token.tex_path, token.equation.i, token.token_index
+                    token.tex_path, token.equation_index, token.token_index
                 )
                 characters[character_id] = Character(
                     token.text, token.token_index, token.start, token.end
