@@ -86,7 +86,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
     def load(self) -> Iterator[ArxivId]:
         for arxiv_id in self.arxiv_ids:
             file_utils.clean_directory(
-                directories.arxiv_subdir("detected-symbols", arxiv_id)
+                directories.arxiv_subdir("detected-equation-tokens", arxiv_id)
             )
             yield arxiv_id
 
@@ -144,7 +144,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
             )
 
     def save(self, item: ArxivId, result: SymbolData) -> None:
-        tokens_dir = directories.arxiv_subdir("detected-symbols", item)
+        tokens_dir = directories.arxiv_subdir("detected-equation-tokens", item)
         if not os.path.exists(tokens_dir):
             os.makedirs(tokens_dir)
 

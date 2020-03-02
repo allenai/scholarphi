@@ -80,40 +80,6 @@ class CitationPaper(OutputModel):
         primary_key = CompositeKey("citation", "paper")
 
 
-class MathMl(OutputModel):
-    mathml = TextField(unique=True, index=True)
-
-
-class MathMlMatch(OutputModel):
-    """
-    A search result for a MathML equation for a paper.
-    """
-
-    paper = ForeignKeyField(Paper, on_delete="CASCADE")
-    mathml = ForeignKeyField(MathMl, on_delete="CASCADE")
-    match = ForeignKeyField(MathMl, on_delete="CASCADE")
-    rank = IntegerField(index=True)
-
-
-class Symbol(OutputModel):
-    paper = ForeignKeyField(Paper, on_delete="CASCADE")
-    mathml = ForeignKeyField(MathMl, on_delete="CASCADE")
-
-
-class SymbolChild(OutputModel):
-    """
-    Some symbols are parents of other symbols. This has implications for interaction (i.e.
-    a user may want to double click a child symbol to select the parent.) Any symbol will have
-    a maximum of one parent.
-    """
-
-    parent = ForeignKeyField(Symbol, on_delete="CASCADE")
-    child = ForeignKeyField(Symbol, on_delete="CASCADE")
-
-    class Meta:
-        primary_key = CompositeKey("parent", "child")
-
-
 class Entity(OutputModel):
     type = TextField(index=True)
     source = TextField(
@@ -209,10 +175,6 @@ def init_database_connections(
         models_to_create = [
             Paper,
             Summary,
-            MathMl,
-            MathMlMatch,
-            Symbol,
-            SymbolChild,
             Citation,
             CitationPaper,
             Entity,
