@@ -2,35 +2,20 @@ import * as Knex from "knex";
 import * as _ from "lodash";
 import * as nconf from "nconf";
 
-interface BoundingBox {
-  id: number;
-  /**
-   * Page indexes start at 0.
-   */
-  page: number;
-  left: number;
-  /**
-   * 'Top' is the y-position of the top of the bounding box, measured from the bottom of the page.
-   */
-  top: number;
-  width: number;
-  height: number;
-}
-
-interface Citation {
+interface Entity {
   id: number;
   source: string;
-  paper: string;
   bounding_boxes: BoundingBox[];
+}
+
+interface Citation extends Entity {
+  paper: string;
 }
 
 type CitationsById = { [id: string]: Citation };
 
-interface Symbol {
-  id: number;
-  source: string;
+interface Symbol extends Entity {
   mathml: string;
-  bounding_boxes: BoundingBox[];
   /**
    * The ID of the parent symbol of this symbol. Null if it does not have a parent.
    */
@@ -39,6 +24,11 @@ interface Symbol {
    * IDs of child symbols.
    */
   children: number[];
+  /**
+   * The ID of the sentence this symbol belongs to. Null if a sentence could not be found for
+   * this symbol.
+   */
+  sentence: number | null;
 }
 
 interface MathMlMatch {
@@ -52,6 +42,27 @@ interface MathMl {
    * Matches are ordered by rank, from highest to lowest.
    */
   matches: MathMlMatch[];
+}
+
+interface Sentence extends Entity {
+  text: string;
+}
+
+type SentencesById = { [id: string]: Sentence };
+
+interface BoundingBox {
+  id: number;
+  /**
+   * Page indexes start at 0.
+   */
+  page: number;
+  left: number;
+  /**
+   * 'Top' is the y-position of the top of the bounding box, measured from the bottom of the page.
+   */
+  top: number;
+  width: number;
+  height: number;
 }
 
 interface Annotation {
@@ -186,14 +197,15 @@ export class Connection {
         "symbol.id AS symbol_id",
         "mathml",
         "entity.source AS source",
-        this._knex.raw("array_agg(children.child_id) children_ids"),
-        "parents.parent_id AS parent_id",
         "boundingbox.id AS bounding_box_id",
         "page",
         "left",
         "top",
         "width",
-        "height"
+        "height",
+        "symbolsentence.sentence_id AS sentence_id",
+        this._knex.raw("array_agg(children.child_id) children_ids"),
+        "parents.parent_id AS parent_id"
       )
       .where({ arxiv_id: arxivId })
       // Get symbols.
@@ -207,6 +219,8 @@ export class Connection {
       .join("boundingbox", {
         "entityboundingbox.bounding_box_id": "boundingbox.id"
       })
+      // Get the ID of the sentence this symbol belongs to.
+      .join("symbolsentence", { "symbol.id": "symbolsentence.symbol_id" })
       // Get the symbol's parent.
       .leftOuterJoin("symbolchild AS parents", function() {
         this.on({ "symbol.id": "parents.child_id" }).orOnNull(
@@ -221,16 +235,17 @@ export class Connection {
       })
       // Aggregate a list of children by aggregating by all other fields.
       .groupBy(
-        "symbol_id",
+        "symbol.id",
         "mathml",
         "entity.source",
-        "parents.parent_id",
         "boundingbox.id",
         "page",
         "left",
         "top",
         "width",
-        "height"
+        "height",
+        "symbolsentence.sentence_id",
+        "parents.parent_id"
       );
 
     const symbols = rows.map(row => {
@@ -246,9 +261,10 @@ export class Connection {
         id: row.symbol_id,
         source: row.source,
         mathml: row.mathml,
+        sentence: row.sentence_id,
+        bounding_boxes: [boundingBox],
         parent: row.parent_id,
-        children: row.children_ids,
-        bounding_boxes: [boundingBox]
+        children: row.children_ids
       };
       return symbol;
     });
@@ -292,6 +308,54 @@ export class Connection {
     }
 
     return allMathMl;
+  }
+
+  async getSentencesForArxivId(arxivId: string) {
+    const rows = await this._knex("paper")
+      .select(
+        "sentence.id AS sentence_id",
+        "text",
+        "entity.source AS source",
+        "boundingbox.id AS bounding_box_id",
+        "page",
+        "left",
+        "top",
+        "width",
+        "height"
+      )
+      .where({ arxiv_id: arxivId })
+      // Get sentences.
+      .join("sentence", { "paper.s2_id": "sentence.paper_id" })
+      // Get bounding box for each sentence.
+      .join("entity", { "sentence.id": "entity.entity_id" })
+      .where({ "entity.type": "sentence" })
+      .join("entityboundingbox", { "entity.id": "entityboundingbox.entity_id" })
+      .join("boundingbox", {
+        "entityboundingbox.bounding_box_id": "boundingbox.id"
+      });
+
+    const sentences: SentencesById = {};
+    for (const row of rows) {
+      const key = Number(row["sentence_id"]);
+      if (!sentences.hasOwnProperty(key)) {
+        sentences[key] = {
+          id: key,
+          source: row.source,
+          bounding_boxes: [],
+          text: row.text
+        };
+      }
+      const bounding_box: BoundingBox = {
+        id: row.bounding_box_id,
+        page: row.page,
+        left: row.left,
+        top: row.top,
+        width: row.width,
+        height: row.height
+      };
+      add_bounding_box(sentences[key], bounding_box);
+    }
+    return Object.values(sentences);
   }
 
   async getAnnotationsForArxivId(arxivId: string) {
@@ -396,9 +460,9 @@ export class Connection {
   private _knex: Knex;
 }
 
-function add_bounding_box(citation: Citation, box: BoundingBox) {
-  if (!citation.bounding_boxes.some(b => _.isEqual(b, box))) {
-    citation.bounding_boxes.push(box);
+function add_bounding_box(entity: Entity, box: BoundingBox) {
+  if (!entity.bounding_boxes.some(b => _.isEqual(b, box))) {
+    entity.bounding_boxes.push(box);
   }
 }
 

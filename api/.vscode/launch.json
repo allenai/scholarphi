@@ -9,7 +9,14 @@
       "request": "launch",
       "name": "Run Server",
       "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
-      "args": ["${workspaceFolder}/src/index.ts"],
+      "args": [
+        "${workspaceFolder}/src/index.ts"
+        /*
+         * Uncomment the following argument to set the API to use an experimental database
+         * schema, instead of the default 'public' database schema.
+         */
+        // "--database:schema=schema_20200302_592220"
+      ],
       "cwd": "${workspaceRoot}",
       "sourceMaps": true,
       "outFiles": ["${workspaceFolder}/**/*.ts"]
