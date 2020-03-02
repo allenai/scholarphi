@@ -27,6 +27,9 @@ class SymbolData:
     equation_index: int
     tex_path: str
     equation: str
+    equation_start: int
+    equation_depth: int
+    context_tex: str
     characters: Optional[List[Character]]
     symbols: Optional[List[Symbol]]
     errorMessage: str
@@ -175,12 +178,19 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                     tokens_path,
                     SerializableToken(
                         tex_path=result.tex_path,
-                        equation=result.equation,
+                        id_=f"{result.equation_index}-{token.i}",
                         equation_index=result.equation_index,
                         token_index=token.i,
-                        start=token.start,
-                        end=token.end,
+                        start=result.equation_start + token.start,
+                        end=result.equation_start + token.end,
+                        relative_start=token.start,
+                        relative_end=token.end,
+                        tex=result.equation[token.start : token.end],
+                        # Just make the token's context TeX the equation's context TeX
+                        context_tex=result.context_tex,
                         text=token.text,
+                        equation=result.equation,
+                        equation_depth=result.equation_depth,
                     ),
                 )
 
@@ -248,10 +258,13 @@ def _get_symbol_data(arxiv_id: ArxivId, stdout: str) -> Iterator[SymbolData]:
         yield SymbolData(
             arxiv_id=arxiv_id,
             success=data["success"],
-            equation_index=data["i"],
+            equation_index=int(data["i"]),
             tex_path=data["tex_path"],
             equation=data["equation"],
             characters=characters,
             symbols=symbols,
+            equation_start=int(data["equation_start"]),
+            equation_depth=int(data["equation_depth"]),
+            context_tex=data["context_tex"],
             errorMessage=data["errorMessage"],
         )

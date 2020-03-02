@@ -19,8 +19,24 @@ program
   )
   .action((csvPath, cmdObj) => {
     csv.parseFile(csvPath, { headers: true }).on("data", row => {
-      const { tex_path, i, katex_compatible_tex: equation } = row;
-      const baseResult = { i, tex_path, equation };
+      const {
+        tex_path,
+        i,
+        context_tex,
+        // tslint:disable-next-line: variable-name
+        depth: equation_depth,
+        // tslint:disable-next-line: variable-name
+        content_start: equation_start,
+        katex_compatible_tex: equation
+      } = row;
+      const baseResult = {
+        i,
+        tex_path,
+        equation_start,
+        equation_depth,
+        context_tex,
+        equation
+      };
       let result: EquationParseResult;
       if (row.length < 12) {
         result = {

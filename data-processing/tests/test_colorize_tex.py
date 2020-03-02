@@ -10,7 +10,7 @@ from common.colorize_tex import (
     colorize_entities,
     colorize_equation_tokens,
 )
-from common.types import Equation, FileContents, SerializableEntity, TokenWithOrigin
+from common.types import Equation, FileContents, SerializableEntity, SerializableToken
 
 COLOR_PATTERN = (
     r"\\scholarsetcolor\[rgb\]{[0-9.]+,[0-9.]+,[0-9.]+}"
@@ -123,17 +123,56 @@ def equation(
     )
 
 
+def token(
+    equation_start: int,
+    relative_start: int,
+    relative_end: int,
+    tex: str,
+    equation_tex: str,
+    id_: str = "1",
+    equation_index: int = 0,
+    token_index: int = 1,
+    text: str = "symbol text",
+    equation_depth: int = 0,
+) -> SerializableToken:
+    return SerializableToken(
+        start=equation_start + relative_start,
+        end=equation_start + relative_end,
+        tex_path="main.tex",
+        id_=id_,
+        tex=tex,
+        context_tex="context",
+        equation=equation_tex,
+        equation_index=equation_index,
+        token_index=token_index,
+        text=text,
+        equation_depth=equation_depth,
+        relative_start=relative_start,
+        relative_end=relative_end,
+    )
+
+
 def test_color_tokens():
+    equation_tex = "x + y"
     file_contents = {
-        "main.tex": FileContents("main.tex", "$ignore$ $x + y$", "encoding")
+        "main.tex": FileContents("main.tex", f"$ignore$ ${equation_tex}$", "encoding")
     }
-    eq = equation("x + y", offset=9)
     tokens = [
-        TokenWithOrigin(
-            tex_path="main.tex", equation=eq, token_index=0, start=0, end=1, text="x",
+        token(
+            equation_start=10,
+            relative_start=0,
+            relative_end=1,
+            token_index=0,
+            tex="x",
+            equation_tex=equation_tex,
         ),
-        TokenWithOrigin(
-            tex_path="main.tex", equation=eq, token_index=1, start=4, end=5, text="y",
+        token(
+            equation_start=10,
+            relative_start=4,
+            relative_end=5,
+            token_index=1,
+            tex="y",
+            equation_tex=equation_tex,
         ),
     ]
     colorized_files, _ = next(
@@ -148,11 +187,17 @@ def test_color_tokens():
 
 
 def test_color_inside_brackets():
-    file_contents = {"main.tex": FileContents("main.tex", "${x}$", "encoding")}
-    eq = equation("{x}", offset=0)
+    equation_tex = "{x}"
+    file_contents = {
+        "main.tex": FileContents("main.tex", f"${equation_tex}$", "encoding")
+    }
     tokens = [
-        TokenWithOrigin(
-            tex_path="main.tex", equation=eq, token_index=0, start=0, end=3, text="x",
+        token(
+            equation_start=1,
+            relative_start=0,
+            relative_end=3,
+            tex="x",
+            equation_tex=equation_tex,
         )
     ]
     colorized_files, _ = next(
@@ -166,21 +211,22 @@ def test_color_inside_brackets():
 
 
 def test_adjust_indexes_to_within_bounds():
+    equation_tex = "x"
     file_contents = {
-        "main.tex": FileContents("main.tex", "$x$ ignore text after", "encoding")
+        "main.tex": FileContents(
+            "main.tex", f"${equation_tex}$ ignore text after", "encoding"
+        )
     }
-    e = equation("x", offset=0)
     tokens = [
-        TokenWithOrigin(
-            tex_path="main.tex",
-            equation=e,
-            token_index=0,
-            start=0,
+        token(
+            equation_start=1,
+            relative_start=0,
             # For reasons I don't yet know, KaTeX sometimes returns character indexes that are
             # outside the equation. This will result in coloring bleeding over the edges of
             # equations into the surrounding text, and sometimes TeX compilation errors.
-            end=10,
-            text="x",
+            relative_end=9,
+            tex="x",
+            equation_tex=equation_tex,
         )
     ]
     colorized_files, _ = next(
@@ -198,33 +244,26 @@ def test_dont_color_nested_equations():
             "main.tex", "\\begin{equation}\\hbox{$x$}\\end{equation}", "encoding"
         )
     }
-    outer = equation(
-        "\\hbox{$x$}",
-        index=0,
-        offset=0,
-        before="\\begin{equation}",
-        after="\\end{equation}",
-        depth=0,
-    )
-    inner = equation("x", index=1, offset=22, depth=1)
+    equation_outer_tex = "\\hbox{$x$}"
+    equation_inner_tex = "x"
     # Simulate the same token being found twice: once within the outer equation, and once within
     # the inner equation. It should only be colorized relative to the outer (highest depth) equation.
     tokens = [
-        TokenWithOrigin(
-            tex_path="main.tex",
-            equation=outer,
-            token_index=0,
-            start=7,
-            end=8,
-            text="x",
+        token(
+            equation_start=16,
+            relative_start=7,
+            relative_end=8,
+            tex="x",
+            equation_tex=equation_outer_tex,
+            equation_depth=0,
         ),
-        TokenWithOrigin(
-            tex_path="main.tex",
-            equation=inner,
-            token_index=0,
-            start=0,
-            end=1,
-            text="x",
+        token(
+            equation_start=23,
+            relative_start=0,
+            relative_end=1,
+            tex="x",
+            equation_tex=equation_inner_tex,
+            equation_depth=1,
         ),
     ]
     colorized_files, _ = next(
