@@ -1,7 +1,10 @@
+import os
+from dataclasses import dataclass
 from typing import Dict, List, cast
 
 from peewee import ForeignKeyField, TextField
 
+from common import directories, file_utils
 from common.models import (
     BoundingBox,
     Entity,
@@ -23,6 +26,14 @@ class Sentence(OutputModel):
 SentenceId = str
 
 
+@dataclass(frozen=True)
+class SentenceIdAndModelId:
+    " Link between a sentence in the pipeline's output and its ID in the database. "
+    tex_path: str
+    entity_id: str
+    model_id: str
+
+
 def upload_sentences(processing_summary: PaperProcessingResult) -> None:
 
     arxiv_id = processing_summary.arxiv_id
@@ -35,17 +46,37 @@ def upload_sentences(processing_summary: PaperProcessingResult) -> None:
         paper = Paper.create(s2_id=s2_id, arxiv_id=arxiv_id)
 
     locations_by_sentence_id: Dict[SentenceId, List[HueLocationInfo]] = {}
+    sentences: Dict[SentenceId, SentenceEntity] = {}
     sentence_models: Dict[SentenceId, Sentence] = {}
 
     for entity_and_location in processing_summary.localized_entities:
-        sentence = cast(SentenceEntity, entity_and_location.entity)  # type: ignore
+        sentence = cast(SentenceEntity, entity_and_location.entity)
         sentence_model = Sentence(paper=paper, text=sentence.text)
 
         locations_by_sentence_id[sentence.id_] = entity_and_location.locations
         sentence_models[sentence.id_] = sentence_model
+        sentences[sentence.id_] = sentence
 
     with output_database.atomic():
         Sentence.bulk_create(sentence_models.values(), 100)
+
+    # Save the IDs for the sentence models so that they can be used in downstream tasks,
+    # like uploading which sentences symbols belong to.
+    model_ids_dir = directories.arxiv_subdir("sentences-model-ids", arxiv_id)
+    if os.path.exists(model_ids_dir):
+        file_utils.clean_directory(model_ids_dir)
+    else:
+        os.makedirs(model_ids_dir)
+    output_ids_path = os.path.join(model_ids_dir, "model_ids.csv")
+    for id_, sentence_entity in sentences.items():
+        file_utils.append_to_csv(
+            output_ids_path,
+            SentenceIdAndModelId(
+                tex_path=sentence_entity.tex_path,
+                entity_id=sentence_entity.id_,
+                model_id=sentence_models[id_].id,
+            ),
+        )
 
     entities = []
     entity_bounding_boxes = []

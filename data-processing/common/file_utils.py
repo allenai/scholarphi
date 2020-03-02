@@ -167,7 +167,7 @@ def load_equations(arxiv_id: ArxivId) -> Optional[Dict[EquationId, Equation]]:
 
 def load_tokens(arxiv_id: ArxivId) -> Optional[List[SerializableToken]]:
     tokens_path = os.path.join(
-        directories.arxiv_subdir("detected-symbols", arxiv_id), "entities.csv"
+        directories.arxiv_subdir("detected-equation-tokens", arxiv_id), "entities.csv"
     )
     if not os.path.exists(tokens_path):
         logging.warning(
@@ -180,7 +180,7 @@ def load_tokens(arxiv_id: ArxivId) -> Optional[List[SerializableToken]]:
 
 def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
 
-    data_dir = directories.arxiv_subdir("detected-symbols", arxiv_id)
+    data_dir = directories.arxiv_subdir("detected-equation-tokens", arxiv_id)
     symbols_path = os.path.join(data_dir, "symbols.csv")
     symbol_tokens_path = os.path.join(data_dir, "symbol_tokens.csv")
     symbol_children_path = os.path.join(data_dir, "symbol_children.csv")

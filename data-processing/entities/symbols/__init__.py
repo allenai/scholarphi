@@ -12,11 +12,14 @@ from ..sentences.commands.find_entity_sentences import (
 from .commands.colorize_equation_tokens import ColorizeEquationTokens
 from .commands.extract_symbols import ExtractSymbols
 from .commands.find_symbol_matches import FindSymbolMatches
+from .commands.find_symbol_sentences import FindSymbolSentences
 from .commands.locate_symbols import LocateSymbols
 from .commands.upload_symbols import UploadSymbols
+from .models import MathMl, MathMlMatch, Symbol, SymbolChild, SymbolSentence
 
-directories.register("detected-symbols")
+directories.register("detected-equation-tokens")
 directories.register("symbol-matches")
+directories.register("sentences-for-equation-tokens")
 directories.register("sentences-for-symbols")
 directories.register("sources-with-colorized-equation-tokens")
 directories.register("compiled-sources-with-colorized-equation-tokens")
@@ -29,7 +32,8 @@ directories.register("symbol-locations")
 commands = [
     ExtractSymbols,
     FindSymbolMatches,
-    make_find_entity_sentences_command("symbols"),
+    make_find_entity_sentences_command("equation-tokens"),
+    FindSymbolSentences,
     ColorizeEquationTokens,
     make_compile_tex_command("equation-tokens"),
     make_raster_pages_command("equation-tokens"),
@@ -40,6 +44,10 @@ commands = [
 ]
 
 symbols_pipeline = EntityPipeline(
-    "symbols", commands, depends_on=["equations"], optional_depends_on=["sentences"]
+    "symbols",
+    commands,
+    depends_on=["equations"],
+    optional_depends_on=["sentences"],
+    database_models=[MathMl, MathMlMatch, Symbol, SymbolChild, SymbolSentence],
 )
 register_entity_pipeline(symbols_pipeline)

@@ -53,7 +53,8 @@ class ColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, ColorizationResult]
             file_utils.clean_directory(output_root)
 
             tokens_path = os.path.join(
-                directories.arxiv_subdir("detected-symbols", arxiv_id), "entities.csv"
+                directories.arxiv_subdir("detected-equation-tokens", arxiv_id),
+                "entities.csv",
             )
             if not os.path.exists(tokens_path):
                 logging.info(

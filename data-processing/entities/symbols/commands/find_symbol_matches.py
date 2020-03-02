@@ -24,7 +24,7 @@ class FindSymbolMatches(ArxivBatchCommand[MathMLForPaper, Matches]):
         return "Find matches between a symbol and all other symbols in each paper."
 
     def get_arxiv_ids_dirkey(self) -> str:
-        return "detected-symbols"
+        return "detected-equation-tokens"
 
     def load(self) -> Iterator[MathMLForPaper]:
 

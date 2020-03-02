@@ -1,15 +1,12 @@
 import logging
 import os.path
-from typing import Dict, Iterator, List, NamedTuple
+from dataclasses import dataclass
+from typing import Dict, Iterator, List
 
 from common import directories, file_utils
 from common.commands.database import DatabaseUploadCommand
 from common.models import BoundingBox as BoundingBoxModel
-from common.models import Entity, EntityBoundingBox
-from common.models import MathMl as MathMlModel
-from common.models import MathMlMatch, Paper
-from common.models import Symbol as SymbolModel
-from common.models import SymbolChild, output_database
+from common.models import Entity, EntityBoundingBox, output_database
 from common.s2_data import get_s2_id
 from common.types import (
     ArxivId,
@@ -21,23 +18,40 @@ from common.types import (
     SymbolLocation,
     SymbolWithId,
 )
+from entities.sentences.commands.find_entity_sentences import EntitySentencePairIds
+from entities.sentences.upload import SentenceIdAndModelId
+
+from ..models import MathMl as MathMlModel
+from ..models import MathMlMatch, Paper
+from ..models import Symbol as SymbolModel
+from ..models import SymbolChild, SymbolSentence
 
 S2Id = str
 Hue = float
+SentenceModelId = str
 
 
-class SymbolKey(NamedTuple):
+@dataclass(frozen=True)
+class SymbolKey:
     arxiv_id: ArxivId
     tex_path: str
     equation_index: int
     token_index: int
 
 
-class SymbolData(NamedTuple):
+@dataclass(frozen=True)
+class SentenceKey:
+    tex_path: str
+    sentence_id: str
+
+
+@dataclass(frozen=True)
+class SymbolData:
     arxiv_id: ArxivId
     s2_id: S2Id
     symbols_with_ids: List[SymbolWithId]
     boxes: Dict[SymbolId, BoundingBox]
+    symbol_sentence_model_ids: Dict[SymbolId, SentenceModelId]
     matches: Matches
 
 
@@ -105,7 +119,63 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
                     matches[match.queried_mathml] = []
                 matches[match.queried_mathml].append(match)
 
-            yield SymbolData(arxiv_id, s2_id, symbols_with_ids, boxes, matches)
+            symbol_sentence_model_ids: Dict[SymbolId, SentenceModelId] = {}
+            sentence_data_missing = False
+
+            sentences_path = os.path.join(
+                directories.arxiv_subdir("sentences-for-symbols", arxiv_id),
+                "entity_sentences.csv",
+            )
+            if not os.path.exists(sentences_path):
+                logging.warning(  # pylint: disable=logging-not-lazy
+                    "Symbols for arXiv paper %s have not been aligned to sentences. "
+                    + "Symbol data will be uploaded without links to sentences",
+                    arxiv_id,
+                )
+                sentence_data_missing = True
+
+            sentence_model_ids_path = os.path.join(
+                directories.arxiv_subdir("sentences-model-ids", arxiv_id),
+                "model_ids.csv",
+            )
+            if not os.path.exists(sentence_model_ids_path):
+                logging.warning(  # pylint: disable=logging-not-lazy
+                    "Sentence bounding boxes have not yet been uploaded for paper %s. "
+                    + "Symbol data will be uploaded without links to sentences.",
+                    arxiv_id,
+                )
+                sentence_data_missing = True
+
+            if not sentence_data_missing:
+                sentence_model_ids: Dict[SentenceKey, SentenceModelId] = {}
+                for ids in file_utils.load_from_csv(
+                    sentence_model_ids_path, SentenceIdAndModelId
+                ):
+                    key = SentenceKey(ids.tex_path, ids.entity_id)
+                    sentence_model_ids[key] = ids.model_id
+
+                for pair in file_utils.load_from_csv(
+                    sentences_path, EntitySentencePairIds
+                ):
+                    tex_path = pair.tex_path
+                    equation_index, symbol_index = [
+                        int(t) for t in pair.entity_id.split("-")
+                    ]
+                    sentence_key = SentenceKey(pair.tex_path, pair.sentence_id)
+                    symbol_id = SymbolId(tex_path, equation_index, symbol_index)
+                    if sentence_key in sentence_model_ids:
+                        symbol_sentence_model_ids[symbol_id] = sentence_model_ids[
+                            sentence_key
+                        ]
+
+            yield SymbolData(
+                arxiv_id,
+                s2_id,
+                symbols_with_ids,
+                boxes,
+                symbol_sentence_model_ids,
+                matches,
+            )
 
     def process(self, _: SymbolData) -> Iterator[None]:
         yield None
@@ -221,3 +291,14 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
                 )
         with output_database.atomic():
             SymbolChild.bulk_create(symbol_child_models, 300)
+
+        # Upload links between symbols and the sentences they appear in.
+        symbol_sentence_models = []
+        for symbol_id, sentence_model_id in item.symbol_sentence_model_ids.items():
+            symbol_model = symbol_models[symbol_id]
+            symbol_sentence_models.append(
+                SymbolSentence(symbol=symbol_model, sentence_id=sentence_model_id)
+            )
+
+        with output_database.atomic():
+            SymbolSentence.bulk_create(symbol_sentence_models, 300)

@@ -48,7 +48,7 @@ class AnnotateTexWithSymbolMarkers(ArxivBatchCommand[TexAndSymbols, AnnotationRe
             )
             file_utils.clean_directory(output_root)
 
-            symbols_dir = directories.arxiv_subdir("detected-symbols", arxiv_id)
+            symbols_dir = directories.arxiv_subdir("detected-equation-tokens", arxiv_id)
             tokens_path = os.path.join(symbols_dir, "entities.csv")
             if not os.path.exists(tokens_path):
                 logging.info(
