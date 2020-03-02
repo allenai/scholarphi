@@ -298,14 +298,32 @@ class EquationId:
 
 
 @dataclass(frozen=True)
-class SerializableToken:
+class SerializableToken(SerializableEntity):
     tex_path: str
     equation: str
     equation_index: int
     token_index: int
-    start: int
-    end: int
+    """
+    Index of this token within the equation. These indexes are guaranteed to be unique within eqach
+    equation; however they will not necessarily be contiguous or in order from left to right.
+    """
+
     text: str
+    " Unicode (not TeX) representation of this token, computed by parsing the equation with KaTeX. "
+
+    equation_depth: int
+    " 'depth' attribute for the equation this token belongs to. "
+
+    relative_start: int
+    """
+    While the 'start' and 'end' attributes are the absolute character offsets of the token in the
+    TeX file, 'relative_start' and 'relative_end' are relative to the equation it was found in.
+    They are the count of characters after the 'content_start' of the containing equation where
+    this token starts and finishes.
+    """
+
+    relative_end: int
+    " See 'relative_start'. "
 
 
 @dataclass(frozen=True)

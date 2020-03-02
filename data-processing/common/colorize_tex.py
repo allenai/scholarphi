@@ -22,13 +22,12 @@ from common.parse_tex import BeginDocumentExtractor, DocumentclassExtractor
 from common.types import (
     CharacterRange,
     ColorizedTokenWithOrigin,
-    Equation,
     EquationId,
     FileContents,
     Hue,
     SerializableEntity,
+    SerializableToken,
     TexFileName,
-    TokenWithOrigin,
 )
 
 """
@@ -299,23 +298,31 @@ class TokenColorizationBatch(NamedTuple):
 
 def colorize_equation_tokens(
     file_contents: Dict[TexFileName, FileContents],
-    tokens: List[TokenWithOrigin],
+    tokens: List[SerializableToken],
     insert_color_macros: bool = True,
     preset_hue: Optional[float] = None,
 ) -> Iterator[TokenColorizationBatch]:
 
-    equations_by_file: Dict[TexFileName, Set[Equation]] = {}
-    tokens_by_equation: Dict[EquationId, List[TokenWithOrigin]] = {}
+    equations_by_file: Dict[TexFileName, Set[EquationId]] = {}
+    tokens_by_equation: Dict[EquationId, List[SerializableToken]] = {}
 
     for token in tokens:
-        equation_id = EquationId(token.tex_path, token.equation.i)
+        equation_id = EquationId(token.tex_path, token.equation_index)
         if equation_id not in tokens_by_equation:
             tokens_by_equation[equation_id] = []
-        tokens_by_equation[equation_id].append(token)
+
+        # Only color tokens that aren't in nested equations (i.e. equations contained in other
+        # equations). While coloring commands can technically be used multiple times on the same
+        # token with the same visual outcome, processing nested equations will break the expected
+        # positions of the tokens on the second coloring pass.
+        if token.equation_depth == 0:
+            tokens_by_equation[equation_id].append(token)
 
         if not token.tex_path in equations_by_file:
             equations_by_file[token.tex_path] = set()
-        equations_by_file[token.tex_path].add(token.equation)
+        equations_by_file[token.tex_path].add(
+            EquationId(token.tex_path, token.equation_index)
+        )
 
     # Number of tokens to skip when coloring. Starts at 0, and increases with each pass of
     # coloring. Multiple passes will be needed as the distinct hues for tokens runs out fast.
@@ -332,26 +339,18 @@ def colorize_equation_tokens(
         for tex_filename, tex_file_contents in file_contents.items():
             colorized_tex = tex_file_contents.contents
 
-            # Filter equations to those that are not nested in other equations, to avoid coloring a
-            # token more than once. It could work to color multiple times, though right now it will
-            # break colorization as a token's position will be broken for the second coloring.
-            equations_filtered = filter(
-                lambda e: e.depth == 0, equations_by_file.get(tex_filename, [])
-            )
-
+            equations_for_file = equations_by_file[tex_filename]
             equations_reverse_order = sorted(
-                equations_filtered, key=lambda e: e.content_start, reverse=True,
+                equations_for_file, key=lambda e: e.equation_index, reverse=True,
             )
-            for equation in equations_reverse_order:
-                equation_tokens = tokens_by_equation.get(
-                    EquationId(tex_filename, equation.i)
-                )
+            for equation_id in equations_reverse_order:
+                equation_tokens = tokens_by_equation.get(equation_id)
                 if equation_tokens is not None:
                     (
                         colorized_tex,
                         colorized_tokens_for_equation,
                     ) = _colorize_tokens_for_equation(
-                        colorized_tex, equation, equation_tokens, token_skip, preset_hue
+                        colorized_tex, equation_tokens, token_skip, preset_hue
                     )
                     colorized_tokens.extend(colorized_tokens_for_equation)
 
@@ -388,8 +387,7 @@ class TokenEquationColorizationBatch(NamedTuple):
 
 def _colorize_tokens_for_equation(
     tex: str,
-    equation: Equation,
-    tokens: List[TokenWithOrigin],
+    tokens: List[SerializableToken],
     skip: int = 0,
     preset_hue: Optional[float] = None,
 ) -> TokenEquationColorizationBatch:
@@ -414,19 +412,15 @@ def _colorize_tokens_for_equation(
         except StopIteration:
             break
 
-        color_positions = _get_token_color_positions(token, equation)
+        color_positions = _get_token_color_positions(token)
 
         tex = insert_color_in_tex(
-            tex,
-            hue,
-            equation.content_start + color_positions.start,
-            equation.content_start + color_positions.end,
-            braces=True,
+            tex, hue, color_positions.start, color_positions.end, braces=True,
         )
         colorized_tokens.append(
             ColorizedTokenWithOrigin(
                 token.tex_path,
-                token.equation.i,
+                token.equation_index,
                 token.token_index,
                 token.start,
                 token.end,
@@ -438,9 +432,7 @@ def _colorize_tokens_for_equation(
     return TokenEquationColorizationBatch(tex, colorized_tokens)
 
 
-def _get_token_color_positions(
-    token: TokenWithOrigin, equation: Equation
-) -> CharacterRange:
+def _get_token_color_positions(token: SerializableToken) -> CharacterRange:
     """
     Sometimes, if you try to insert coloring commands at the boundary of where a symbol appears
     in TeX, it can cause errors. For example, it can be error-prone to put color commands...
@@ -453,8 +445,8 @@ def _get_token_color_positions(
     and for a few other cases, this function adjusts the positions that coloring commands
     will be placed to avoid tricky TeX compilation gotchas.
     """
-    equation_tex = equation.content_tex
-    token_string = equation_tex[token.start : token.end]
+    equation_tex = token.equation
+    token_string = equation_tex[token.relative_start : token.relative_end]
 
     token_start = token.start
     token_end = token.end
@@ -471,8 +463,10 @@ def _get_token_color_positions(
         token_end = token_start + match.start()
 
     # And coloring commands should never go outside the bounds of the equation.
-    start = max(token_start, 0)
-    end = min(token_end, len(equation_tex))
+    equation_start = token.start - token.relative_start
+    equation_end = equation_start + len(equation_tex)
+    start = max(token_start, equation_start)
+    end = min(token_end, equation_end)
     return CharacterRange(start, end)
 
 

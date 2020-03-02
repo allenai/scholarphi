@@ -157,7 +157,7 @@ def test_documentclass_after_macro():
     # In some TeX files, the documentclass isn't declared until after some initial macros.
     # We still want to detect the documentclass in these documents.
     extractor = DocumentclassExtractor()
-    tex = "\def\year{2020}\n\documentclass{article}"
+    tex = "\\def\year{2020}\n\\documentclass{article}"
     documentclass = extractor.parse(tex)
     assert documentclass is not None
 

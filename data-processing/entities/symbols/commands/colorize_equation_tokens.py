@@ -11,7 +11,7 @@ from common.types import (
     EquationTokenColorizationRecord,
     FileContents,
     Path,
-    TokenWithOrigin,
+    SerializableToken,
 )
 from common.unpack import unpack
 
@@ -19,7 +19,7 @@ from common.unpack import unpack
 class TexAndTokens(NamedTuple):
     arxiv_id: ArxivId
     tex_contents: Dict[Path, FileContents]
-    tokens: List[TokenWithOrigin]
+    tokens: List[SerializableToken]
 
 
 class ColorizationResult(NamedTuple):
@@ -81,7 +81,7 @@ class ColorizeEquationTokens(ArxivBatchCommand[TexAndTokens, ColorizationResult]
 
     def process(self, item: TexAndTokens) -> Iterator[ColorizationResult]:
 
-        token_batches: List[List[TokenWithOrigin]] = [item.tokens]
+        token_batches: List[List[SerializableToken]] = [item.tokens]
         if self.args.one_entity_at_a_time:
             token_batches = [[token] for token in item.tokens]
 

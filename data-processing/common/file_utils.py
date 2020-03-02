@@ -179,11 +179,7 @@ def load_equations(arxiv_id: ArxivId) -> Optional[Dict[EquationId, Equation]]:
     return equations
 
 
-def load_tokens(arxiv_id: ArxivId) -> Optional[List[TokenWithOrigin]]:
-    equations = load_equations(arxiv_id)
-    if equations is None:
-        return None
-
+def load_tokens(arxiv_id: ArxivId) -> Optional[List[SerializableToken]]:
     tokens_path = os.path.join(
         directories.arxiv_subdir("symbols", arxiv_id), "tokens.csv"
     )
@@ -193,27 +189,7 @@ def load_tokens(arxiv_id: ArxivId) -> Optional[List[TokenWithOrigin]]:
         )
         return None
 
-    # Load token location information
-    tokens = []
-    for token in load_from_csv(tokens_path, SerializableToken):
-        tex_path = token.tex_path
-        equation_index = token.equation_index
-        equation_id = EquationId(tex_path, equation_index)
-        if equation_id not in equations:
-            logging.warning("Couldn't find equation with ID %s for token", equation_id)
-            continue
-        tokens.append(
-            TokenWithOrigin(
-                tex_path=token.tex_path,
-                equation=equations[equation_id],
-                token_index=token.token_index,
-                start=token.start,
-                end=token.end,
-                text=token.text,
-            )
-        )
-
-    return tokens
+    return list(load_from_csv(tokens_path, SerializableToken))
 
 
 def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
