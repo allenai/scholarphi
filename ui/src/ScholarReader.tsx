@@ -6,14 +6,7 @@ import { FavoritableId, favoritesKey } from "./FavoriteButton";
 import FeedbackButton from "./FeedbackButton";
 import PageOverlay from "./PageOverlay";
 import * as selectors from "./selectors";
-import {
-  DrawerState,
-  Pages,
-  PaperId,
-  Papers,
-  ScholarReaderContext,
-  State
-} from "./state";
+import { Pages, PaperId, Papers, ScholarReaderContext, State } from "./state";
 import "./style/index.less";
 import {
   Annotation,
@@ -75,8 +68,6 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       pdfViewer: null,
       favorites: {},
       toggleFavorite: this.toggleFavorite.bind(this),
-      drawerState: "closed",
-      setDrawerState: this.setDrawerState.bind(this),
       jumpPaperId: null,
       setJumpPaperId: this.setJumpPaperId.bind(this),
       selectedSymbol: null,
@@ -147,10 +138,6 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       favorites[key] = false;
     }
     this.setState({ favorites });
-  }
-
-  setDrawerState(state: DrawerState) {
-    this.setState({ drawerState: state });
   }
 
   setJumpPaperId(s2Id: string) {
@@ -264,7 +251,8 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
   closeDrawerOnEscape(event: KeyboardEvent) {
     if (isKeypressEscape(event)) {
-      this.setDrawerState("closed");
+      this.setSelectedCitation(null);
+      this.setSelectedSymbol(null);
     }
   }
 
