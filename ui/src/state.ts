@@ -41,6 +41,7 @@ export interface State {
   setPages(pages: Pages): void;
   pdfDocument: PDFDocumentProxy | null;
   pdfViewer: PDFViewer | null;
+  pdfSideBarIsOpen: boolean | null;
 
   /*
    * USER INTERFACE STATE
@@ -113,6 +114,7 @@ const defaultState: State = {
   setPages: () => {},
   pdfDocument: null,
   pdfViewer: null,
+  pdfSideBarIsOpen: null,
   favorites: {},
   toggleFavorite: () => {},
   jumpPaperId: null,
