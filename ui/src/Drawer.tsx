@@ -34,8 +34,8 @@ export class Drawer extends React.PureComponent {
 
   componentWillUnmount() {
     const { pdfViewer } = this.context;
-    if (pdfViewer !== null) {
-      this.removeChildClass(pdfViewer.container);
+    if (pdfViewer != null) {
+      this.removeChildClass(pdfViewer.viewer);
     }
   }
 
@@ -91,9 +91,9 @@ export class Drawer extends React.PureComponent {
     const drawerState = this.drawerState();
     if (pdfViewer != null) {
       if (drawerState !== "closed") {
-        this.addChildClass(pdfViewer.container);
+        this.addChildClass(pdfViewer.viewer);
       } else {
-        this.removeChildClass(pdfViewer.container);
+        this.removeChildClass(pdfViewer.viewer);
       }
     }
 

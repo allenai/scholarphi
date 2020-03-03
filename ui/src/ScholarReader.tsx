@@ -421,7 +421,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     const PDF_SIDE_PANEL_WIDTH = 200;
     if (pdfViewer && selectedSymbol) {
       const symBounds = selectedSymbol.bounding_boxes[0];
-      if (pages[symBounds.page + 1].view) {
+      if (pages[symBounds.page + 1].view != null) {
         const { left, width } = selectors.divDimensionStyles(
           pages[symBounds.page + 1].view, symBounds
         );
@@ -433,9 +433,6 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
         * ----------------
         * innerWidth = possible visible area of the viewport for the entire website
         * 470 = width of the drawer that is now obscuring the view
-        */
-        /*
-        * TODO(@zkirby) need to account for if the side panel is not open.
         */
         const relativeSymbolRightPosition = (left + width) - pdfViewer.container.scrollLeft + (pdfSideBarIsOpen ? PDF_SIDE_PANEL_WIDTH : 0);
         const viewableViewportWidth = window.innerWidth - 470;

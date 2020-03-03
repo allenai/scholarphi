@@ -38,6 +38,7 @@ export interface DocumentLoadedEvent {
 export interface PDFViewer {
   scrollPageIntoView: (params: ScrollPageIntoViewParameters) => void;
   container: HTMLDivElement;
+  viewer: HTMLDivElement;
 }
 
 interface ScrollPageIntoViewParameters {
