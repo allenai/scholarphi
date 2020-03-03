@@ -52,7 +52,6 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
     ) {
       this.props.view.div.removeChild(this._element);
     }
-    this.props.view.div.classList.remove("scholar-reader-overlay-2");
   }
 
   onSelectionMade(anchor: Point, active: Point) {
