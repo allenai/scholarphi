@@ -28,6 +28,7 @@ export class Drawer extends React.PureComponent {
    * is meant to open the drawer. The code below simple gets the element that the click that is intending 
    * to close the drawer originated from and traverses the class list and class list of all 
    * parent elements looking for if this click happened from within a tooltip. 
+   * Only close the drawer if the click is not within the tooltip.
    */
   clickAwayClose = (e: React.MouseEvent<Document, MouseEvent>) => {
     let elementTarget = e.target as (Element | null);
