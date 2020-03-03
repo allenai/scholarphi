@@ -25,7 +25,7 @@ export class Drawer extends React.PureComponent {
   /**
    * XXX(zkirby): Since the clickaway listener listens to *all* clicks outside of the 
    * drawer, if we do not have the code below it will close after a button is clicked that 
-   * is meant to open the drawer. The code below simple gets the element that the click that is intending 
+   * is meant to open the drawer. The code below simply gets the element that the click that is intending 
    * to close the drawer originated from and traverses the class list and class list of all 
    * parent elements looking for if this click happened from within a tooltip. 
    * Only close the drawer if the click is not within the tooltip.
