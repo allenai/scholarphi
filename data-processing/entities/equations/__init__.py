@@ -21,8 +21,8 @@ commands = create_entity_localization_command_sequence(
     "equations",
     EquationExtractor,
     Equation,
-    colorize_equation_when,
-    get_equation_color_positions,
+    colorize_entity_when=colorize_equation_when,
+    get_color_positions=get_equation_color_positions,
 )
 
 equations_pipeline = EntityPipeline("equations", commands)
