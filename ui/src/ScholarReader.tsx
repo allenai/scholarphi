@@ -419,18 +419,21 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
         const { left } = selectors.divDimensionStyles(
           pages[symBounds.page + 1].view, symBounds
         );
-        let viewPortWidth = pages[symBounds.page + 1].view.viewport.width;
         
-        console.log("VIEWPORT")
-        console.log(`show if ${left} > ${viewPortWidth - viewPortWidth/3} given vp is ${viewPortWidth} and it's already scrolled ${pdfViewer.container.scrollLeft} and with a window width of ${window.innerWidth}`);
-
-        viewPortWidth = (viewPortWidth - viewPortWidth/4);
-        // Obscures the last 1/3 of the viewport 
-        if (left > viewPortWidth) {
-          //pdfViewer.container.scrollLeft += viewPortWidth;
+        // Left = left position on the pdf page, scroll left = left offset of the pdf
+        // 200 = extra padding from the pdf side panel. 
+        const relativeSymbolLeftPosition = left - pdfViewer.container.scrollLeft + 200;
+        // window.innerWidth = possible visible area of the viewport, 
+        // 470 = width now obscured by the open drawer. 
+        const viewableViewportWidth = window.innerWidth - 470;
+        console.log(`Left Position: ${relativeSymbolLeftPosition} > ${viewableViewportWidth} | moving: ${relativeSymbolLeftPosition - viewableViewportWidth}`);
+        if (relativeSymbolLeftPosition > viewableViewportWidth) {
+          // Here we are moving the pdf to the left by the amount the symbol was obscured by
+          // + some padding to make it a little bit away from the drawer. 
+          pdfViewer.container.scrollLeft += Math.max((relativeSymbolLeftPosition - viewableViewportWidth) + 50, 0);
         }
       } 
-    }, 10);
+    }, 0);
   }
 
   render() {

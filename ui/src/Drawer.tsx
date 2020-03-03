@@ -7,7 +7,6 @@ import { Favorites } from "./Favorites";
 import FeedbackButton from "./FeedbackButton";
 import PaperList from "./PaperList";
 import SearchResults from "./SearchResults";
-import * as selectors from "./selectors";
 import { ScholarReaderContext } from "./state";
 
 const PDF_VIEWER_DRAWER_OPEN_CLASS = "drawer-open";
