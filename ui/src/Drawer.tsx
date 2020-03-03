@@ -20,6 +20,10 @@ export class Drawer extends React.PureComponent {
     Array.from(pdfViewerContainer.children).forEach(page => {
       page.classList.add(PDF_VIEWER_DRAWER_OPEN_CLASS)  
     })
+
+    if (this.drawerState() === "show-symbols") {
+      this.context.scrollSymbolIntoView();
+    }
   } 
 
   removeChildClass(pdfViewerContainer: HTMLElement) {

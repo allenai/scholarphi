@@ -72,6 +72,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       setJumpPaperId: this.setJumpPaperId.bind(this),
       selectedSymbol: null,
       setSelectedSymbol: this.setSelectedSymbol.bind(this),
+      scrollSymbolIntoView: this.scrollSymbolIntoView.bind(this),
       selectedCitation: null,
       setSelectedCitation: this.setSelectedCitation.bind(this),
       jumpSymbol: null,
@@ -412,28 +413,31 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
   }
 
   scrollSymbolIntoView() {
-    setTimeout(() => {
-      const { selectedSymbol, pdfViewer, pages } = this.state;
-      if (pdfViewer && selectedSymbol) {
-        const symBounds = selectedSymbol.bounding_boxes[0];
-        const { left } = selectors.divDimensionStyles(
-          pages[symBounds.page + 1].view, symBounds
-        );
-        
-        // Left = left position on the pdf page, scroll left = left offset of the pdf
-        // 200 = extra padding from the pdf side panel. 
-        const relativeSymbolLeftPosition = left - pdfViewer.container.scrollLeft + 200;
-        // window.innerWidth = possible visible area of the viewport, 
-        // 470 = width now obscured by the open drawer. 
-        const viewableViewportWidth = window.innerWidth - 470;
-        console.log(`Left Position: ${relativeSymbolLeftPosition} > ${viewableViewportWidth} | moving: ${relativeSymbolLeftPosition - viewableViewportWidth}`);
-        if (relativeSymbolLeftPosition > viewableViewportWidth) {
-          // Here we are moving the pdf to the left by the amount the symbol was obscured by
-          // + some padding to make it a little bit away from the drawer. 
-          pdfViewer.container.scrollLeft += Math.max((relativeSymbolLeftPosition - viewableViewportWidth) + 50, 0);
-        }
-      } 
-    }, 0);
+    const { selectedSymbol, pdfViewer, pages } = this.state;
+    if (pdfViewer && selectedSymbol) {
+      const symBounds = selectedSymbol.bounding_boxes[0];
+      const { left } = selectors.divDimensionStyles(
+        pages[symBounds.page + 1].view, symBounds
+      );
+      /*
+      * Each component of the calculation: 
+      * Left = left position on the pdf page of the selected symbol
+      * scrollLeft = how much the pdf has been scrolled left already
+      * 200 = the extra padding from the pdf's side panel
+      * ----------------
+      * innerWidth = possible visible area of the viewport
+      * 470 = width of the drawer that is now obscuring the view
+      */
+      /*
+      * TODO(@zkirby) need to account for if the side panel is not open.
+      */
+      const relativeSymbolLeftPosition = left - pdfViewer.container.scrollLeft + 200;
+      const viewableViewportWidth = window.innerWidth - 470;
+      if (relativeSymbolLeftPosition > viewableViewportWidth) {
+        // Add 50px padding to make the symbol close to the drawer but not hidden by it.
+        pdfViewer.container.scrollLeft += Math.max((relativeSymbolLeftPosition - viewableViewportWidth) + 50, 0);
+      }
+    } 
   }
 
   render() {
