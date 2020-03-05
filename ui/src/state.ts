@@ -52,7 +52,7 @@ export interface State {
   setJumpPaperId(s2Id: string | null): void;
   selectedSymbol: Symbol | null;
   setSelectedSymbol(symbol: Symbol | null): void;
-  scrollSymbolIntoView(): void;
+  scrollSymbolHorizontallyIntoView(): void;
   selectedCitation: Citation | null;
   setSelectedCitation(citation: Citation | null): void;
   jumpSymbol: Symbol | null;
@@ -121,7 +121,7 @@ const defaultState: State = {
   setJumpPaperId: () => {},
   selectedSymbol: null,
   setSelectedSymbol: () => {},
-  scrollSymbolIntoView: () => {},
+  scrollSymbolHorizontallyIntoView: () => {},
   selectedCitation: null,
   setSelectedCitation: () => {},
   jumpSymbol: null,

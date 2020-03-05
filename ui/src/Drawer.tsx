@@ -15,18 +15,18 @@ export class Drawer extends React.PureComponent {
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
 
-  addChildClass(pdfViewerContainer: HTMLElement) {
+  positionPdfForDrawerOpen(pdfViewerContainer: HTMLElement) {
     // Creating padding for scroll
     Array.from(pdfViewerContainer.children).forEach(page => {
       page.classList.add(PDF_VIEWER_DRAWER_OPEN_CLASS)  
     })
 
     if (this.drawerState() === "show-symbols") {
-      this.context.scrollSymbolIntoView();
+      this.context.scrollSymbolHorizontallyIntoView();
     }
   } 
 
-  removeChildClass(pdfViewerContainer: HTMLElement) {
+  removePdfPositioningForDrawerOpen(pdfViewerContainer: HTMLElement) {
     Array.from(pdfViewerContainer.children).forEach(page => {
       page.classList.remove(PDF_VIEWER_DRAWER_OPEN_CLASS)
     })
@@ -35,7 +35,7 @@ export class Drawer extends React.PureComponent {
   componentWillUnmount() {
     const { pdfViewer } = this.context;
     if (pdfViewer != null) {
-      this.removeChildClass(pdfViewer.viewer);
+      this.removePdfPositioningForDrawerOpen(pdfViewer.viewer);
     }
   }
 
@@ -91,9 +91,9 @@ export class Drawer extends React.PureComponent {
     const drawerState = this.drawerState();
     if (pdfViewer != null) {
       if (drawerState !== "closed") {
-        this.addChildClass(pdfViewer.viewer);
+        this.positionPdfForDrawerOpen(pdfViewer.viewer);
       } else {
-        this.removeChildClass(pdfViewer.viewer);
+        this.removePdfPositioningForDrawerOpen(pdfViewer.viewer);
       }
     }
 

@@ -73,7 +73,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       setJumpPaperId: this.setJumpPaperId.bind(this),
       selectedSymbol: null,
       setSelectedSymbol: this.setSelectedSymbol.bind(this),
-      scrollSymbolIntoView: this.scrollSymbolIntoView.bind(this),
+      scrollSymbolHorizontallyIntoView: this.scrollSymbolHorizontallyIntoView.bind(this),
       selectedCitation: null,
       setSelectedCitation: this.setSelectedCitation.bind(this),
       jumpSymbol: null,
@@ -410,17 +410,23 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
           { name: "XYZ" },
           box.left + SCROLL_OFFSET_X,
           box.top + SCROLL_OFFSET_Y,
-          null,
         ]
       });
     }
   }
 
-  scrollSymbolIntoView() {
+  /**
+   * Will scroll a symbol horizontally into view when the drawer opens
+   * if it is now obscured by the drawer.
+   */
+  scrollSymbolHorizontallyIntoView() {
     const { selectedSymbol, pdfViewer, pages, pdfSideBarIsOpen } = this.state;
     const PDF_SIDE_PANEL_WIDTH = 200;
+    const DRAWER_WIDTH = 470;
+    const SYMBOL_VIEW_PADDING = 50;
     if (pdfViewer && selectedSymbol) {
       const symBounds = selectedSymbol.bounding_boxes[0];
+      console.log("STYLE ", pdfViewer.container.getBoundingClientRect())
       if (pages[symBounds.page + 1].view != null) {
         const { left, width } = selectors.divDimensionStyles(
           pages[symBounds.page + 1].view, symBounds
@@ -435,10 +441,10 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
         * 470 = width of the drawer that is now obscuring the view
         */
         const relativeSymbolRightPosition = (left + width) - pdfViewer.container.scrollLeft + (pdfSideBarIsOpen ? PDF_SIDE_PANEL_WIDTH : 0);
-        const viewableViewportWidth = window.innerWidth - 470;
+        const viewableViewportWidth = window.innerWidth - DRAWER_WIDTH;
         if (relativeSymbolRightPosition > viewableViewportWidth) {
           // Add 50px padding to make the symbol close to the drawer but not hidden by it.
-          pdfViewer.container.scrollLeft += Math.max((relativeSymbolRightPosition - viewableViewportWidth) + 50, 0);
+          pdfViewer.container.scrollLeft += Math.max((relativeSymbolRightPosition - viewableViewportWidth) + SYMBOL_VIEW_PADDING, 0);
         }
       } 
     }
