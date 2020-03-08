@@ -2,11 +2,13 @@ import logging
 import os
 import sys
 import uuid
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 from datetime import datetime
+from typing import List
 
-from common import directories
+from common import directories, file_utils
 from common.commands.base import (
+    CommandList,
     add_arxiv_id_filter_args,
     add_one_entity_at_a_time_arg,
     create_args,
@@ -29,6 +31,47 @@ from scripts.process import (
     commands_by_entity,
     run_command,
 )
+
+
+def run_commands_for_arxiv_ids(
+    CommandClasses: CommandList, arxiv_id_list: List[str], pipeline_args: Namespace
+) -> None:
+    " Run a sequence of commands for a list of arXiv IDs. "
+
+    for CommandCls in CommandClasses:
+
+        # Initialize arguments for each command to defaults.
+        command_args_parser = ArgumentParser()
+        CommandCls.init_parser(command_args_parser)
+        command_args = command_args_parser.parse_known_args("")[0]
+
+        # Pass pipeline arguments to command.
+        command_args.arxiv_ids = arxiv_id_list
+        command_args.arxiv_ids_file = None
+        command_args.v = pipeline_args.v
+        command_args.source = pipeline_args.source
+        command_args.log_names = [log_filename]
+        command_args.one_entity_at_a_time = pipeline_args.one_entity_at_a_time
+        command_args.schema = pipeline_args.database_schema
+        if CommandCls == FetchArxivSources:
+            command_args.s3_bucket = pipeline_args.s3_arxiv_sources_bucket
+        if CommandCls in [StorePipelineLog, StoreResults]:
+            command_args.s3_bucket = pipeline_args.s3_output_bucket
+
+        if CommandCls == StorePipelineLog:
+            logging.debug("Flushing file log before storing pipeline logs.")
+            file_log_handler.flush()
+
+        logging.debug(
+            "Creating command %s with args %s",
+            CommandCls.get_name(),
+            vars(command_args),
+        )
+        command = CommandCls(command_args)
+        logging.info("Launching command %s", CommandCls.get_name())
+        run_command(command)
+        logging.info("Finished running command %s", CommandCls.get_name())
+
 
 if __name__ == "__main__":
 
@@ -76,7 +119,7 @@ if __name__ == "__main__":
         type=int,
         default=1,
         help="Number of days in the past for which to fetch arXiv papers. Cannot be used with "
-        + "arguments that specify which arXiv IDs to process)",
+        + "arguments that specify which arXiv IDs to process.",
     )
     parser.add_argument(
         "--source",
@@ -95,9 +138,25 @@ if __name__ == "__main__":
     )
     add_one_entity_at_a_time_arg(parser)
     parser.add_argument(
-        "--skip-store-results",
+        "--one-paper-at-a-time",
         action="store_true",
-        help="Don't upload results to S3 when data processing is complete.",
+        help=(
+            "Process one paper at a time. The data folders for a processed paper will be deleted "
+            + "once the paper has been processed. This moe has two advantages. First, the host "
+            + "computer will only need enough storage space to process one paper at a time. "
+            + "Second, the pipeline will upload results for papers as each paper is processed, "
+            + "instead of waiting until after all papers is processed."
+        ),
+    )
+    parser.add_argument(
+        "--keep-data",
+        action="store_true",
+        help="If '--one-paper-at-a-time' is set, keep a paper's data after it is processed.",
+    )
+    parser.add_argument(
+        "--store-results",
+        action="store_true",
+        help="Upload key results to S3 when data processing is complete.",
     )
     parser.add_argument(
         "--s3-output-bucket",
@@ -159,7 +218,7 @@ if __name__ == "__main__":
         reached_start_command = True
 
     command_classes = PIPELINE_COMMANDS
-    if not args.skip_store_results:
+    if args.store_results:
         command_classes += STORE_RESULTS_COMMANDS
 
     logging.debug("Assembling the list of commands to be run.")
@@ -195,35 +254,13 @@ if __name__ == "__main__":
         [CommandClass.get_name() for CommandClass in filtered_commands],
     )
 
-    for CommandClass in filtered_commands:
-
-        # Initialize arguments for each command to defaults.
-        command_args_parser = ArgumentParser()
-        CommandClass.init_parser(command_args_parser)
-        command_args = command_args_parser.parse_known_args("")[0]
-
-        # Pass pipeline arguments to command.
-        command_args.arxiv_ids = arxiv_ids
-        command_args.arxiv_ids_file = None
-        command_args.v = args.v
-        command_args.source = args.source
-        command_args.log_names = [log_filename]
-        command_args.one_entity_at_a_time = args.one_entity_at_a_time
-        command_args.schema = args.database_schema
-        if CommandClass == FetchArxivSources:
-            command_args.s3_bucket = args.s3_arxiv_sources_bucket
-        if CommandClass in [StorePipelineLog, StoreResults]:
-            command_args.s3_bucket = args.s3_output_bucket
-
-        if CommandClass == StorePipelineLog:
-            logging.debug("Flushing file log before storing pipeline logs.")
-            file_log_handler.flush()
-
-        logging.debug(
-            "Creating command %s with args %s",
-            CommandClass.get_name(),
-            vars(command_args),
-        )
-        command = CommandClass(command_args)
-        logging.info("Launching command %s", CommandClass.get_name())
-        run_command(command)
+    # Run the pipeline one paper at a time, or one command at a time, depending on arguments.
+    if args.one_paper_at_a_time:
+        for arxiv_id in arxiv_ids:
+            logging.info("Running pipeline for paper %s", arxiv_id)
+            run_commands_for_arxiv_ids(filtered_commands, [arxiv_id], args)
+            if not args.keep_data:
+                file_utils.delete_data(arxiv_id)
+    else:
+        logging.info("Running pipeline for papers %s", arxiv_ids)
+        run_commands_for_arxiv_ids(filtered_commands, arxiv_ids, args)

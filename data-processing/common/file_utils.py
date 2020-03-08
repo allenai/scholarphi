@@ -11,12 +11,25 @@ import shutil
 from typing import Dict, Iterator, List, Optional, Type, TypeVar
 
 from common import directories
-from common.types import (ArxivId, BoundingBox, CharacterId, CompilationResult,
-                          Equation, EquationId, FileContents, HueIteration,
-                          HueLocationInfo, Path, SerializableCharacter,
-                          SerializableChild, SerializableSymbol,
-                          SerializableToken, Symbol, SymbolId, SymbolWithId,
-                          TokenWithOrigin)
+from common.types import (
+    ArxivId,
+    BoundingBox,
+    CharacterId,
+    CompilationResult,
+    Equation,
+    EquationId,
+    FileContents,
+    HueIteration,
+    HueLocationInfo,
+    Path,
+    SerializableCharacter,
+    SerializableChild,
+    SerializableSymbol,
+    SerializableToken,
+    Symbol,
+    SymbolId,
+    SymbolWithId,
+)
 
 Contents = str
 Encoding = str
@@ -115,9 +128,7 @@ def load_from_csv(
 
 
 def clean_directory(directory: str) -> None:
-    """
-    Remove all files and subdirectories from a directory; leave the directory.
-    """
+    " Remove all files and subdirectories from a directory; leave the directory. "
     if not os.path.exists(directory):
         return
     logging.debug("Cleaning directory %s", directory)
@@ -134,12 +145,35 @@ def clean_directory(directory: str) -> None:
             )
 
 
+def delete_data(arxiv_id: ArxivId) -> None:
+    """
+    Remove all data produced in the data directories when processing an arXiv ID. Note that this
+    will remove data from data directories that have been registered using
+    'directories.register'. If the set of keys for directories change, or the order they are
+    registered changes, it may appear that some data for the paper has not been deleted.
+    """
+
+    logging.debug("Removing data files for paper %s", arxiv_id)
+
+    for dirkey in directories.dirkeys():
+        arxiv_data_path = directories.arxiv_subdir(dirkey, arxiv_id)
+        if os.path.exists(arxiv_data_path):
+            if os.path.isfile(arxiv_data_path):
+                os.unlink(arxiv_data_path)
+                logging.debug(
+                    "Removed data file %s for paper %s", arxiv_data_path, arxiv_id
+                )
+            elif os.path.isdir(arxiv_data_path):
+                shutil.rmtree(arxiv_data_path)
+                logging.debug(
+                    "Removed data directory %s for paper %s", arxiv_data_path, arxiv_id,
+                )
+
+
 def find_files(
     dir_: str, extensions: List[str], relative: bool = False
 ) -> Iterator[str]:
-    """
-    Find all files in a directory with a given extension.
-    """
+    " Find all files in a directory with a given extension. "
     for (dirpath, _, filenames) in os.walk(dir_):
         for filename in filenames:
             __, ext = os.path.splitext(filename)
