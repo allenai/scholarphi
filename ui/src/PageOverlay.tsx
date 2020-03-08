@@ -1,8 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import Annotation from "./Annotation";
 import CitationAnnotation from "./CitationAnnotation";
 import { ScholarReaderContext } from "./state";
 import SymbolAnnotation from "./SymbolAnnotation";
+import { Sentence } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 import { UserAnnotationLayer } from "./UserAnnotationLayer";
 
@@ -53,6 +55,7 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
 
   render() {
     /**
+     * TODO(andrewhead): change this using 'pointer-events'?
      * If user annotations are enabled, the overlay needs to be set to the full size of the page
      * so that it can capture mouse events. If not, the overlay should not have any size, as
      * the layers below (e.g., the text layer) need to capture the mouse events.
@@ -61,8 +64,55 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
       this._element.style.width = this.props.view.div.style.width;
       this._element.style.height = this.props.view.div.style.height;
     } else {
-      this._element.style.width = "0px";
-      this._element.style.height = "0px";
+      // this._element.style.width = "0px";
+      // this._element.style.height = "0px";
+    }
+
+    const width = this.props.view.div.style.width || "0px";
+    const height = this.props.view.div.style.height || "0px";
+
+    let clipPathPoints = "";
+    let sentences: Sentence[] = [];
+    if (this.context.selectedAnnotationId != null) {
+      const [
+        typeSelected,
+        idSelected
+      ] = this.context.selectedAnnotationId.split("-");
+      if (typeSelected !== "symbol") {
+        return false;
+      }
+      clipPathPoints = "0 0 " + "0 1 " + "1 1 " + "1 0 " + "0 0\n";
+      /*
+       * TODO(andrewhead): fix this data to be relational to enable quicker lookups.
+       */
+      /*
+       * TODO(andrewhead): find a better way of storing the ID; maybe a structure that includes
+       * the type? Also need better naming for selection vs. selected annotation.
+       */
+      const symbolIds = this.context.symbolMatches[Number(idSelected)];
+      symbolIds.add(Number(idSelected));
+      const symbols = this.context.symbols.filter(s => symbolIds.has(s.id));
+      const sentenceIds = symbols.filter(s => s !== null).map(s => s.sentence);
+      sentences = this.context.sentences.filter(
+        s => sentenceIds.indexOf(s.id) !== -1
+      );
+      sentences.sort((s1, s2) => s1.id - s2.id);
+      sentences.forEach(s => {
+        for (const boundingBox of s.bounding_boxes) {
+          const left = boundingBox.left - 0.001; // + 0.00001;
+          const top = boundingBox.top - 0.001; // + 0.00001;
+          const right = left + boundingBox.width + 0.002; // - 0.00001;
+          const bottom = top + boundingBox.height + 0.002; // - 0.00001;
+          clipPathPoints +=
+            `0 ${top}` +
+            `${left} ${top} ` +
+            `${right} ${top} ` +
+            `${right} ${bottom} ` +
+            `${left} ${bottom} ` +
+            `${left} ${top} ` +
+            `0 ${top}\n`;
+        }
+      });
     }
 
     return ReactDOM.createPortal(
@@ -81,6 +131,19 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
           );
           return (
             <>
+              <div
+                className="scholar-reader-overlay__mask"
+                style={{ width, height }}
+              />
+              {sentences.length > 0 && (
+                <Annotation
+                  className="sentence-highlight"
+                  boundingBoxes={sentences[0].bounding_boxes}
+                  id={String(sentences[0].id)}
+                  tooltipContent={null}
+                  key={sentences[0].id}
+                />
+              )}
               {localizedCitations.map(c => (
                 <CitationAnnotation
                   key={c.id}
@@ -103,6 +166,14 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
                   pageNumber={this.props.pageNumber}
                 />
               )}
+              {/* TODO(andrewhead): Prevent the following from adding a margin */}
+              <svg width="0" height="0">
+                <defs>
+                  <clipPath id="cp1" clipPathUnits="objectBoundingBox">
+                    <polygon points={clipPathPoints} />
+                  </clipPath>
+                </defs>
+              </svg>
             </>
           );
         }}

@@ -32,7 +32,7 @@ interface AnnotationSpanProps {
    * You normally should not need to set this and should be able to trust the defaults.
    */
   scaleCorrection?: number;
-  tooltipContent: React.ReactNode;
+  tooltipContent: React.ReactNode | null;
   onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
 }
 
@@ -93,7 +93,11 @@ export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
             <ClickAwayListener onClickAway={this.deselectIfSelected.bind(this)}>
               <MuiTooltip
                 className="tooltip"
-                open={this.props.inactive !== true && this.isSelected()}
+                open={
+                  this.props.inactive !== true &&
+                  this.props.tooltipContent !== null &&
+                  this.isSelected()
+                }
                 interactive
                 disableHoverListener
                 title={this.props.tooltipContent}
