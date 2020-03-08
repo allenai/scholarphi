@@ -52,20 +52,21 @@ export interface Paper {
   influentialCitationCount: number;
 }
 
-export interface Citation {
+export interface Entity {
   id: number;
   source: string;
-  paper: string;
   bounding_boxes: BoundingBox[];
 }
 
-export interface Symbol {
-  id: number;
-  source: string;
+export interface Citation extends Entity {
+  paper: string;
+}
+
+export interface Symbol extends Entity {
   mathml: string;
-  bounding_boxes: BoundingBox[];
   parent: number | null;
   children: number[];
+  sentence: number | null;
 }
 
 export interface SymbolMatches {
@@ -80,6 +81,10 @@ export interface MathMl {
 export interface MathMlMatch {
   rank: number;
   mathMl: string;
+}
+
+export interface Sentence extends Entity {
+  text: string;
 }
 
 export type AnnotationId = number;

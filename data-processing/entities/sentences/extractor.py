@@ -3,9 +3,10 @@ from dataclasses import dataclass
 from typing import Iterator, List
 
 import pysbd
-
-from common.parse_tex import DEFAULT_CONTEXT_SIZE, EntityExtractor, PlaintextExtractor
+from common.parse_tex import (DEFAULT_CONTEXT_SIZE, EntityExtractor,
+                              PlaintextExtractor)
 from common.types import SerializableEntity
+
 # These are 'reserved characters' by the pysbd module and can potentially
 # cause issues if they are present in a string. This list was compiled from the
 # psybd source code as of 3/23/20. locations:

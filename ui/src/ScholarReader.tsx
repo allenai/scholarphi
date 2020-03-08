@@ -14,6 +14,7 @@ import {
   Citation,
   MathMl,
   Paper,
+  Sentence,
   Symbol,
   SymbolMatches,
   UserAnnotationType,
@@ -62,6 +63,8 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       setSymbolMatches: this.setSymbolMatches.bind(this),
       mathMl: [],
       setMathMl: this.setMathMl.bind(this),
+      sentences: [],
+      setSentences: this.setSentences.bind(this),
       papers: {},
       setPapers: this.setPapers.bind(this),
       pages: {},
@@ -124,6 +127,10 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
   setMathMl(mathMl: MathMl[]) {
     this.setState({ mathMl });
+  }
+
+  setSentences(sentences: Sentence[]) {
+    this.setState({ sentences });
   }
 
   setPapers(papers: Papers) {
@@ -378,6 +385,9 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
           });
           this.setSymbolMatches(symbolMatches);
         }
+
+        const sentences = await api.sentencesForArxivId(this.props.paperId.id);
+        this.setSentences(sentences);
 
         const annotations = await api.annnotationsForArxivId(
           this.props.paperId.id

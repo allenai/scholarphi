@@ -5,4 +5,24 @@
   position: absolute;
   top: 0;
   left: 0;
+  /*
+   * Element has no width or height, so it does not occlude other elements or capture input
+   * events targeting the page.
+   */
+  width: 0px;
+  height: 0px;
+}
+
+/**
+ * Width and height of the mask must be set dynamically.
+ */
+.scholar-reader-overlay__mask {
+  top: 0;
+  left: 0;
+  /*
+   * Allow clicks on elements under the overlay.
+   */
+  pointer-events: none;
+  background-color: rgba(255, 255, 255, 0.75);
+  clip-path: url(#cp1);
 }
