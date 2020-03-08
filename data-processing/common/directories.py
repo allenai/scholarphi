@@ -74,10 +74,13 @@ def unescape_slashes(s: str) -> str:
 
 # Helpers for getting data subdirectories
 def dirpath(dirkey: str) -> RelativePath:
-    """
-    Get the path to a directory using the key you registered it with.
-    """
+    " Get the path to a directory using the key you registered it with. "
     return _directory_paths[dirkey]
+
+
+def dirkeys() -> List[str]:
+    " Get a list of all registered directory keys. "
+    return list(_directory_paths.keys())
 
 
 def get_arxiv_ids(dirkey: str) -> Iterator[str]:
