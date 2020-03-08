@@ -8,6 +8,7 @@ import {
   MathMl,
   Paper,
   PaperIdWithCounts,
+  Sentence,
   Symbol,
   UserInfo,
   UserLibrary
@@ -62,6 +63,13 @@ export async function symbolsForArxivId(arxivId: string) {
 export async function mathMlForArxivId(arxivId: string) {
   const data = await doGet(axios.get(`/api/v0/papers/arxiv:${arxivId}/mathml`));
   return (data || []) as MathMl[];
+}
+
+export async function sentencesForArxivId(arxivId: string) {
+  const data = await doGet(
+    axios.get(`/api/v0/papers/arxiv:${arxivId}/sentences`)
+  );
+  return (data || []) as Sentence[];
 }
 
 export async function annnotationsForArxivId(arxivId: string) {

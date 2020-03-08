@@ -38,7 +38,7 @@ interface AnnotationProps {
   /**
    * Component to show in the tooltip when this annotation is activated.
    */
-  tooltipContent: React.ReactNode;
+  tooltipContent: React.ReactNode | null;
   onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
 }
 
