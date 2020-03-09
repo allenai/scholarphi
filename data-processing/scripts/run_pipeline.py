@@ -6,7 +6,7 @@ from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from typing import List
 
-from common import directories, file_utils
+from common import directories, email, file_utils
 from common.commands.base import (
     CommandList,
     add_arxiv_id_filter_args,
@@ -26,7 +26,6 @@ from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
 from scripts.pipelines import entity_pipelines
 from scripts.process import (
     ENTITY_COMMANDS,
-    STORE_RESULTS_COMMANDS,
     TEX_PREPARATION_COMMANDS,
     commands_by_entity,
     run_command,
@@ -36,7 +35,7 @@ from scripts.process import (
 def run_commands_for_arxiv_ids(
     CommandClasses: CommandList, arxiv_id_list: List[str], pipeline_args: Namespace
 ) -> None:
-    " Run a sequence of commands for a list of arXiv IDs. "
+    " Run a sequence of pipeline commands for a list of arXiv IDs. "
 
     for CommandCls in CommandClasses:
 
@@ -142,7 +141,7 @@ if __name__ == "__main__":
         action="store_true",
         help=(
             "Process one paper at a time. The data folders for a processed paper will be deleted "
-            + "once the paper has been processed. This moe has two advantages. First, the host "
+            + "once the paper has been processed. This mode has two advantages. First, the host "
             + "computer will only need enough storage space to process one paper at a time. "
             + "Second, the pipeline will upload results for papers as each paper is processed, "
             + "instead of waiting until after all papers is processed."
@@ -159,10 +158,24 @@ if __name__ == "__main__":
         help="Upload key results to S3 when data processing is complete.",
     )
     parser.add_argument(
+        "--store-log",
+        action="store_true",
+        help="Upload log to S3 when data processing is complete.",
+    )
+    parser.add_argument(
         "--s3-output-bucket",
         type=str,
         default=DEFAULT_S3_LOGS_BUCKET,
         help="S3 bucket to upload results and logs to.",
+    )
+    parser.add_argument(
+        "--notify-emails",
+        type=str,
+        nargs="+",
+        help=(
+            "Email addresses that will receive a digest of processing results. The pipeline "
+            + "must have Internet access and must be able to connect to Gmail's SMTP server."
+        ),
     )
     parser.add_argument(
         "--upload-to-database",
@@ -218,8 +231,12 @@ if __name__ == "__main__":
         reached_start_command = True
 
     command_classes = PIPELINE_COMMANDS
+
+    # Store pipeline logs after results, so that we can include the result storage in the pipeline logs.
     if args.store_results:
-        command_classes += STORE_RESULTS_COMMANDS
+        command_classes.append(StoreResults)
+    if args.store_log:
+        command_classes.append(StorePipelineLog)
 
     logging.debug("Assembling the list of commands to be run.")
     filtered_commands = []
@@ -264,3 +281,17 @@ if __name__ == "__main__":
     else:
         logging.info("Running pipeline for papers %s", arxiv_ids)
         run_commands_for_arxiv_ids(filtered_commands, arxiv_ids, args)
+
+    # If requested, send email with paper-processing summaries.
+    if args.notify_emails is not None:
+        digest = file_utils.create_pipeline_digest(entity_pipelines, arxiv_ids)
+        log_location = None
+        if args.store_log:
+            log_preview_url = (
+                "https://s3.console.aws.amazon.com/s3/object/"
+                + args.s3_output_bucket
+                + "/master/logs/"
+                + log_filename
+            )
+
+        email.send_digest_email(digest, args.notify_emails, log_preview_url)

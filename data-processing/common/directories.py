@@ -83,6 +83,10 @@ def dirkeys() -> List[str]:
     return list(_directory_paths.keys())
 
 
+def registered(dirkey: str) -> bool:
+    return dirkey in _directory_paths
+
+
 def get_arxiv_ids(dirkey: str) -> Iterator[str]:
     """
     Most data directories will include (and only include) subdirectories, with one for each arXiv
