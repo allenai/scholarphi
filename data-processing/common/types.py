@@ -490,3 +490,29 @@ class PaperProcessingResult:
 
 
 EntityUploadCallable = Callable[[PaperProcessingResult], None]
+
+
+"""
+PIPELINE RESULTS
+"""
+
+
+@dataclass(frozen=True)
+class EntityProcessingDigest:
+    num_extracted: Optional[int]
+    " Number of entities found in the TeX by the entity extractor. "
+
+    num_hues_located: Optional[int]
+    """
+    The number of hues for colorized entities that were located. In many cases, this can be used
+    as a rough estimate of the number of entities for which bounding box positions were found
+    in the paper.
+    """
+
+
+PaperProcessingDigest = Dict[str, EntityProcessingDigest]
+" A digest of statistics of how many entities were processed for a paper, by entity type. "
+
+
+PipelineDigest = Dict[ArxivId, PaperProcessingDigest]
+" A digest of the results of running the pipeline on a set of papers. "

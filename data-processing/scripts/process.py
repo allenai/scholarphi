@@ -12,6 +12,7 @@ from common.commands.raster_pages import RasterPages
 from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import StoreResults
 from common.commands.unpack_sources import UnpackSources
+
 # Force the importing of modules for entity processing. This forces a call from each of the entity
 # modules to register pipelines for processing each entity. If these aren't imported,
 # 'entity_pipelines' will be empty and all of the commands for processing entities will be missing.
@@ -93,7 +94,6 @@ for pipeline in entity_pipelines:
 
 STORE_RESULTS_COMMANDS: CommandList = [
     StoreResults,
-    # Store pipeline logs after results, so that we can include the result storage in the pipeline logs.
     StorePipelineLog,
 ]
 
