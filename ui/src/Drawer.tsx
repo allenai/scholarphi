@@ -18,7 +18,7 @@ export class Drawer extends React.PureComponent {
   positionPdfForDrawerOpen(pdfViewerContainer: HTMLElement) {
     // Creating padding for scroll
     Array.from(pdfViewerContainer.children).forEach(page => {
-      // XXX(@zkirby, @andrewhead) per our discussion at https://github.com/allenai/scholar-reader/pull/38/files#r388514946 
+      // XXX(zkirby, andrewhead) per our discussion at https://github.com/allenai/scholar-reader/pull/38/files#r388514946 
       // this is 'safe' as pages are not deleted when scrolled out of view (just their inner content).
       page.classList.add(PDF_VIEWER_DRAWER_OPEN_CLASS)  
     })
