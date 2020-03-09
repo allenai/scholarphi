@@ -421,7 +421,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     const SYMBOL_VIEW_PADDING = 50;
     if (pdfViewer && selectedSymbol) {
       const symBounds = selectedSymbol.bounding_boxes[0];
-      const { x } = pdfViewer.container.getBoundingClientRect() as DOMRect;
+      const pdfLeft = (pdfViewer.container.getBoundingClientRect() as DOMRect).x;
       if (pages[symBounds.page + 1].view != null) {
         const { left, width } = selectors.divDimensionStyles(
           pages[symBounds.page + 1].view, symBounds
@@ -430,12 +430,12 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
         * Each component of the calculation: 
         * left + width = right position on the pdf page of the selected symbol
         * scrollLeft = how much the pdf has been scrolled left already
-        * x = how far to the left the pdf is relative to the viewport
+        * pdfLeft = how far to the left the pdf is relative to the viewport
         * ----------------
         * innerWidth = possible visible area of the viewport for the entire website
         * 470 = width of the drawer that is now obscuring the view
         */
-        const relativeSymbolRightPosition = (left + width) - pdfViewer.container.scrollLeft + x;
+        const relativeSymbolRightPosition = (left + width) - pdfViewer.container.scrollLeft + pdfLeft;
         const viewableViewportWidth = window.innerWidth - DRAWER_WIDTH;
         if (relativeSymbolRightPosition > viewableViewportWidth) {
           // Add 50px padding to make the symbol close to the drawer but not hidden by it.
