@@ -85,3 +85,8 @@ def test_get_symbol_children():
     assert len(t_sub_i.children) == 2
     assert t in t_sub_i.children
     assert i in t_sub_i.children
+
+def test_parse_consecutive_mi():
+  with open(get_test_path(os.path.join("mathml", "relu.xml"))) as mathml_file:
+        mathml = mathml_file.read()
+        symbols = get_symbols(mathml)
