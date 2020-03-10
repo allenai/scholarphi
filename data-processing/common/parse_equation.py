@@ -19,7 +19,7 @@ invisible and we wouldn't want to detect it anyway.
 KATEX_ERROR_COLOR = "#ffffff"
 CHARACTER_TAGS = ["mi"]
 SYMBOL_TAGS = ["msubsup", "msub", "msup", "mi"]
-INVALID_PARENT_TAGS = ["msubsup", "msub", "msup", "mfrac"]
+VALID_PARENT_TAG = ["mrow"]
 
 def _is_node_annotated(node: Any) -> bool:
     return (
@@ -64,8 +64,8 @@ def get_symbols(mathml: str) -> List[Symbol]:
             if index is not None:
                 characters.append(index)
 
-        # Group Consecutive Character Symbols
-        if symbol_node.parent.name not in INVALID_PARENT_TAGS and symbol_node.name in CHARACTER_TAGS:
+        # Group consecutive character symbols only if they are a child of the mrow tag.
+        if symbol_node.parent.name in VALID_PARENT_TAG and symbol_node.name in CHARACTER_TAGS:
             if len(consecutive_chars) > 0 and not consecutive_chars[-1]['s2:end'] == symbol_node['s2:start']:
                 node_symbols.append(_build_consecutive_symbols(consecutive_chars, all_indices, soup.new_tag('mi')))
                 consecutive_chars = []

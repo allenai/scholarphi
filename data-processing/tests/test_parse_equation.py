@@ -90,3 +90,10 @@ def test_parse_consecutive_mi():
   with open(get_test_path(os.path.join("mathml", "relu.xml"))) as mathml_file:
         mathml = mathml_file.read()
         symbols = get_symbols(mathml)
+
+  assert len(symbols) == 1
+
+  ReLU = symbols[0]
+  assert len(ReLU.children) == 0
+  assert len(ReLU.characters) == 4
+  assert ReLU.mathml == "<mi>ReLU</mi>"
