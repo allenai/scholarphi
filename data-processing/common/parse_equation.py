@@ -67,7 +67,8 @@ def get_symbols(mathml: str) -> List[Symbol]:
                 characters.append(index)
 
         # Group consecutive character symbols only if they are a child of the mrow tag.
-        if symbol_node.parent.name in VALID_PARENT_TAG and symbol_node.name in CHARACTER_TAGS:
+        # The .has_attr('s2:end') is necessary as not every symbol is annotated by katext
+        if symbol_node.has_attr('s2:end') and symbol_node.parent.name in VALID_PARENT_TAG and symbol_node.name in CHARACTER_TAGS:
             if len(consecutive_chars) > 0 and not consecutive_chars[-1]['s2:end'] == symbol_node['s2:start']:
                 node_symbols.append(_build_consecutive_symbols(consecutive_chars, all_indices, soup.new_tag('mi')))
                 consecutive_chars = []
