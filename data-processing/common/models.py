@@ -21,10 +21,6 @@ from scripts.pipelines import entity_pipelines
 DATABASE_CONFIG = "config.ini"
 
 
-config = configparser.ConfigParser()
-config.read(DATABASE_CONFIG)
-
-
 input_database = DatabaseProxy()
 output_database = DatabaseProxy()
 
@@ -155,6 +151,9 @@ def init_database_connections(
     """
     Initialize database connections.
     """
+
+    config = configparser.ConfigParser()
+    config.read(DATABASE_CONFIG)
 
     # By default, data will be placed in a schema with the timestamp of the time that this
     # connection to the database was established.

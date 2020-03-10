@@ -15,12 +15,6 @@ from common.types import AbsolutePath, ArxivId, RelativePath
 Load commands for rastering TeX outputs.
 """
 RASTER_CONFIG = "config.ini"
-config = configparser.ConfigParser()
-config.read(RASTER_CONFIG)
-
-raster_commands: Dict[str, str] = {}
-if "rasterers" in config:
-    raster_commands = {k: v for (k, v) in config["rasterers"].items()}
 
 
 class RasterTask(NamedTuple):
@@ -96,6 +90,13 @@ class RasterPagesCommand(ArxivBatchCommand[RasterTask, None], ABC):
         )
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
+
+        config = configparser.ConfigParser()
+        config.read(RASTER_CONFIG)
+
+        raster_commands: Dict[str, str] = {}
+        if "rasterers" in config:
+            raster_commands = {k: v for (k, v) in config["rasterers"].items()}
 
         try:
             raster_command = raster_commands[item.output_file_type]

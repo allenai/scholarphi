@@ -30,6 +30,7 @@ from scripts.process import (
     commands_by_entity,
     run_command,
 )
+from scripts.setup import fetch_config, load_job_arxiv_ids_from_s3
 
 
 def run_commands_for_arxiv_ids(
@@ -82,6 +83,16 @@ if __name__ == "__main__":
     )
     parser.add_argument("-v", help="print debugging information", action="store_true")
     parser.add_argument(
+        "--config",
+        type=str,
+        help=(
+            "Path to a pipeline config on S3 that should be downloaded before the pipeline is run. "
+            + "The only paths currently accepted are S3 addressed (prefixed with 's3://'). The "
+            + "fetched file will be written to 'config.ini'. Any existing files at 'config.ini' "
+            + "will be overwritten."
+        ),
+    )
+    parser.add_argument(
         "--log-prefix",
         type=str,
         default="pipeline",
@@ -117,8 +128,16 @@ if __name__ == "__main__":
         "--days",
         type=int,
         default=1,
-        help="Number of days in the past for which to fetch arXiv papers. Cannot be used with "
-        + "arguments that specify which arXiv IDs to process.",
+        help="Number of days in the past for which to fetch arXiv papers. Cannot be used with"
+        + "'--arxiv-ids' or '--arxiv-ids-file'",
+    )
+    parser.add_argument(
+        "--arxiv-ids-s3-job-file",
+        type=str,
+        help=(
+            "URL for a file on S3 that contains a list of arXiv IDs to process, with one arXiv "
+            + "ID per line. Cannot be used with '--arxiv-ids' or '--arxiv-ids-file'."
+        ),
     )
     parser.add_argument(
         "--source",
@@ -135,7 +154,15 @@ if __name__ == "__main__":
         default=DEFAULT_S3_ARXIV_SOURCES_BUCKET,
         help="If '--source' is 's3', arXiv sources will be downloaded from this S3 bucket.",
     )
-    add_one_entity_at_a_time_arg(parser)
+    parser.add_argument(
+        "--max-papers",
+        type=int,
+        help=(
+            "Maximum number of papers to process. This flag can be useful if you're using the "
+            + "'--days' flag to process recent papers, but only want to process a small number "
+            + "of those papers (i.e. if you are debugging the daily pipeline)."
+        ),
+    )
     parser.add_argument(
         "--one-paper-at-a-time",
         action="store_true",
@@ -152,6 +179,7 @@ if __name__ == "__main__":
         action="store_true",
         help="If '--one-paper-at-a-time' is set, keep a paper's data after it is processed.",
     )
+    add_one_entity_at_a_time_arg(parser)
     parser.add_argument(
         "--store-results",
         action="store_true",
@@ -214,8 +242,16 @@ if __name__ == "__main__":
         handlers=[console_log_handler, file_log_handler],
     )
 
+    # Fetch pipeline config
+    if args.config:
+        fetch_config(args.config)
+
     # Load arXiv IDs either from arguments or by fetching recent arXiv IDs.
-    arxiv_ids = load_arxiv_ids_using_args(args)
+    arxiv_ids = None
+    if args.arxiv_ids_s3_job_file is not None:
+        arxiv_ids = load_job_arxiv_ids_from_s3(args.arxiv_ids_s3_job_file)
+    if arxiv_ids is None:
+        arxiv_ids = load_arxiv_ids_using_args(args)
     if arxiv_ids is None:
         logging.debug("Fetching new arXiv IDs for the last %d day(s).", args.days)
         arxiv_ids_path = "arxiv_ids.txt"
@@ -265,6 +301,13 @@ if __name__ == "__main__":
             filtered_commands.append(CommandClass)
             if args.end is not None and command_name == args.end:
                 break
+
+    if args.max_papers is not None:
+        logging.debug(
+            "'--max-papers' flag is set. Only the first %d paper(s) will be processed.",
+            args.max_papers,
+        )
+        arxiv_ids = arxiv_ids[: args.max_papers]
 
     logging.debug(
         "The following commands will be run, in this order: %s",
