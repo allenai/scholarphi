@@ -21,7 +21,7 @@ invisible and we wouldn't want to detect it anyway.
 KATEX_ERROR_COLOR = "#ffffff"
 CHARACTER_TAGS = ["mi"]
 SYMBOL_TAGS = ["msubsup", "msub", "msup", "mi"]
-VALID_PARENT_TAG = ["mrow"]
+MERGABLE_PARENT_TAGS = ["mrow"]
 
 def _is_node_annotated(node: Any) -> bool:
     return (
@@ -51,9 +51,9 @@ def get_characters(mathml: str) -> List[Character]:
 def get_symbols(mathml: str) -> List[Symbol]:
     soup = BeautifulSoup(mathml, "lxml")
     node_symbols = []
-    consecutive_chars = []
-    all_indices = []
-    for symbol_node in soup.find_all(SYMBOL_TAGS):
+    consecutive_chars: List[Symbol] = []
+    all_indices: List[int] = []
+    for symbol_node in soup.find_all_next(SYMBOL_TAGS):
 
         # Collect indexes of all characters that belong to this symbol
         characters = []
@@ -68,15 +68,15 @@ def get_symbols(mathml: str) -> List[Symbol]:
 
         # Group consecutive character symbols only if they are a child of the mrow tag.
         # The .has_attr('s2:end') is necessary as not every symbol is annotated by katex
-        if symbol_node.has_attr('s2:end') and symbol_node.parent.name in VALID_PARENT_TAG and symbol_node.name in CHARACTER_TAGS:
+        if symbol_node.has_attr('s2:end') and symbol_node.parent.name in MERGABLE_PARENT_TAGS and symbol_node.name in CHARACTER_TAGS:
             if len(consecutive_chars) > 0 and not consecutive_chars[-1]['s2:end'] == symbol_node['s2:start']:
-                node_symbols.append(_build_consecutive_symbols(consecutive_chars, all_indices, soup.new_tag('mi')))
+                node_symbols.append(_merge_consecutive_symbols(consecutive_chars, all_indices, soup.new_tag('mi')))
                 consecutive_chars = []
                 all_indices = []
             consecutive_chars.append(symbol_node)
             all_indices.extend(characters)
         elif len(consecutive_chars) > 0:
-            node_symbols.append(_build_consecutive_symbols(consecutive_chars, all_indices, soup.new_tag('mi')))
+            node_symbols.append(_merge_consecutive_symbols(consecutive_chars, all_indices, soup.new_tag('mi')))
             consecutive_chars = []
             all_indices = []
 
@@ -92,7 +92,7 @@ def get_symbols(mathml: str) -> List[Symbol]:
 
     # Possibility that the last symbol was part of a continuing symbol
     if len(consecutive_chars) > 0:
-        node_symbols.append(_build_consecutive_symbols(consecutive_chars, all_indices, soup.new_tag('mi')))
+        node_symbols.append(_merge_consecutive_symbols(consecutive_chars, all_indices, soup.new_tag('mi')))
 
     # Set the children of each symbols to descendant symbols beneath it in the tree.
     symbols = _set_children(node_symbols)
@@ -103,14 +103,14 @@ def _clean_node_of_annotations(symbol_node: Symbol) -> Symbol:
     node_clone = copy.copy(symbol_node)
     _remove_s2_annotations(node_clone)
     for descendant in node_clone.descendants:
-         _remove_s2_annotations(descendant)
+        _remove_s2_annotations(descendant)
     return node_clone
 
 # Combines all symbols in consecutive_chars into one NodeSymbol
-def _build_consecutive_symbols(consecutive_chars: List[Symbol], all_indices: List[int], base_tag: Symbol) -> NodeSymbol:
+def _merge_consecutive_symbols(consecutive_chars: List[Symbol], all_indices: List[int], base_tag: Symbol) -> NodeSymbol:
     base_tag['s2:start'] = consecutive_chars[0]['s2:start']
     base_tag['s2:end'] = consecutive_chars[-1]['s2:end']
-    base_tag['s2:index'] = base_tag['s2:start']
+    base_tag['s2:index'] = consecutive_chars[0]['s2:index']
     base_tag.string  = ''.join(list(map(lambda node: node.string, consecutive_chars)))
     node_clone = _clean_node_of_annotations(base_tag)
     return NodeSymbol(characters=all_indices, mathml=str(node_clone), node=base_tag)
