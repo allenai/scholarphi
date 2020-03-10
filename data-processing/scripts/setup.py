@@ -26,8 +26,10 @@ def fetch_config(s3_url: str) -> bool:
     return True
 
 
-def load_job_arxiv_ids_from_s3(s3_url: str) -> Optional[List[ArxivId]]:
+def load_job_arxiv_ids_from_s3(s3_object_path: str) -> Optional[List[ArxivId]]:
     " Read list of arXiv IDs from a job file stored on S3. "
+
+    s3_url = f"s3://scholarphi-work-requests/{s3_object_path}"
 
     with TemporaryDirectory() as jobs_dir_path:
         jobs_file_path = os.path.join(jobs_dir_path, "s3-work-request")
