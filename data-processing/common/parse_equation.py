@@ -107,7 +107,7 @@ def _clean_node_of_annotations(symbol_node: Symbol) -> Symbol:
     return node_clone
 
 # Combines all symbols in consecutive_chars into one NodeSymbol
-def _build_consecutive_symbols(consecutive_chars: List[Symbol], all_indices, base_tag: Symbol) -> NodeSymbol:
+def _build_consecutive_symbols(consecutive_chars: List[Symbol], all_indices: List[int], base_tag: Symbol) -> NodeSymbol:
     base_tag['s2:start'] = consecutive_chars[0]['s2:start']
     base_tag['s2:end'] = consecutive_chars[-1]['s2:end']
     base_tag['s2:index'] = base_tag['s2:start']
