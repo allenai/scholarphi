@@ -6,10 +6,12 @@ from bs4 import BeautifulSoup
 
 from common.types import Character, CharacterIndex, Symbol
 
+
 class NodeSymbol(NamedTuple):
     node: BeautifulSoup
     characters: List[CharacterIndex]
     mathml: str
+
 
 """
 KaTeX error color is set to white because this is a color where we'll minimize the chance of
