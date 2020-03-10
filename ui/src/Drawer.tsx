@@ -15,10 +15,29 @@ export class Drawer extends React.PureComponent {
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
 
+  positionPdfForDrawerOpen(pdfViewerContainer: HTMLElement) {
+    // Creating padding for scroll
+    Array.from(pdfViewerContainer.children).forEach(page => {
+      // XXX(zkirby, andrewhead) per our discussion at https://github.com/allenai/scholar-reader/pull/38/files#r388514946 
+      // this is 'safe' as pages are not deleted when scrolled out of view (just their inner content).
+      page.classList.add(PDF_VIEWER_DRAWER_OPEN_CLASS)  
+    })
+
+    if (this.drawerState() === "show-symbols") {
+      this.context.scrollSymbolHorizontallyIntoView();
+    }
+  } 
+
+  removePdfPositioningForDrawerOpen(pdfViewerContainer: HTMLElement) {
+    Array.from(pdfViewerContainer.children).forEach(page => {
+      page.classList.remove(PDF_VIEWER_DRAWER_OPEN_CLASS)
+    })
+  }
+
   componentWillUnmount() {
     const { pdfViewer } = this.context;
     if (pdfViewer != null) {
-      pdfViewer.container.classList.remove(PDF_VIEWER_DRAWER_OPEN_CLASS);
+      this.removePdfPositioningForDrawerOpen(pdfViewer.viewer);
     }
   }
 
@@ -74,9 +93,9 @@ export class Drawer extends React.PureComponent {
     const drawerState = this.drawerState();
     if (pdfViewer != null) {
       if (drawerState !== "closed") {
-        pdfViewer.container.classList.add(PDF_VIEWER_DRAWER_OPEN_CLASS);
+        this.positionPdfForDrawerOpen(pdfViewer.viewer);
       } else {
-        pdfViewer.container.classList.remove(PDF_VIEWER_DRAWER_OPEN_CLASS);
+        this.removePdfPositioningForDrawerOpen(pdfViewer.viewer);
       }
     }
 
