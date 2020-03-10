@@ -108,7 +108,7 @@ class StoreResults(ArxivBatchCommand[ArxivId, None]):
         command_result = subprocess.run(
             command_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False,
         )
-        logging.debug("Finished uploading all output for arXiv ID %s to S3.", item)
+        logging.debug("Finished uploading all output for arXiv ID %s to S3", item)
         if command_result.returncode != 0:
             logging.warning(
                 "Error uploading all output to S3 for arXiv ID %s: %s",
