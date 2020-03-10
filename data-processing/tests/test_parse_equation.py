@@ -93,7 +93,7 @@ def test_parse_consecutive_mi():
 
   assert len(symbols) == 1
 
-  ReLU = symbols[0]
-  assert len(ReLU.children) == 0
-  assert len(ReLU.characters) == 4
-  assert ReLU.mathml == "<mi>ReLU</mi>"
+  relu = symbols[0]
+  assert len(relu.children) == 0
+  assert len(relu.characters) == 4
+  assert relu.mathml == "<mi>ReLU</mi>"

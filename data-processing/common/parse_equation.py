@@ -80,11 +80,10 @@ def get_symbols(mathml: str) -> List[Symbol]:
             consecutive_chars = []
             all_indices = []
 
-        # Clean the MathML of our annotations. Do this cleaning on a clone of the node, so that the
-        # annotations are available for processing later nodes.
-        node_clone = _clean_node_of_annotations(symbol_node)
-
         if len(consecutive_chars) == 0:
+            # Clean the MathML of our annotations. Do this cleaning on a clone of the node, so that the
+            # annotations are available for processing later nodes.
+            node_clone = _clean_node_of_annotations(symbol_node)
             node_symbols.append(
                 # set node to 'symbol_node', not clone, as the node must have a parent for the
                 # 'set_children' method. The clone will have had its parent removed.
