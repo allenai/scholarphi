@@ -21,7 +21,8 @@
   * Consistent highlight between default pdf.js highlight for tables, figures, etc. 
   * and custom purple highlight for citation annotations.
   */
-.linkAnnotation a:not([href^="#cite"]):hover {
+.annotationLayer .linkAnnotation > a:hover,
+.annotationLayer .buttonWidgetAnnotation.pushBotton > a:hover {
   background: @highlight-hover-background;
   opacity: @highlight-hover-opacity;
   box-shadow: 0px 2px 10px @highlight-hover-background;
