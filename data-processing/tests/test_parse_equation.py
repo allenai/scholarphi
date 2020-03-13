@@ -87,13 +87,13 @@ def test_get_symbol_children():
     assert i in t_sub_i.children
 
 def test_parse_consecutive_mi():
-  with open(get_test_path(os.path.join("mathml", "relu.xml"))) as mathml_file:
+    with open(get_test_path(os.path.join("mathml", "relu.xml"))) as mathml_file:
         mathml = mathml_file.read()
         symbols = get_symbols(mathml)
 
-  assert len(symbols) == 1
+    assert len(symbols) == 1
 
-  relu = symbols[0]
-  assert len(relu.children) == 0
-  assert len(relu.characters) == 4
-  assert relu.mathml == "<mi>ReLU</mi>"
+    relu = symbols[0]
+    assert len(relu.children) == 0
+    assert len(relu.characters) == 4
+    assert relu.mathml == "<mi>ReLU</mi>"
