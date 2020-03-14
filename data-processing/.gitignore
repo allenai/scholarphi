@@ -26,3 +26,5 @@ logs
 src
 venv
 
+# Files hidden for some other reason
+.hidden

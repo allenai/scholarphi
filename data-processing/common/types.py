@@ -30,6 +30,16 @@ class PipelineJob:
     email: Optional[str]
     " Email address to send results to. "
 
+    one_entity_at_a_time: Optional[bool]
+    " Whether to process one entity at a time. "
+
+    dry_run: Optional[bool]
+    """
+    Whether to skip uploading processing results to the database. Use this option when you want
+    to receive a digest and create logs for how a paper is processed, but you don't want to merge
+    the extracted bounding boxes into the database.
+    """
+
     arxiv_ids: List[ArxivId]
     " List of papers to process. "
 

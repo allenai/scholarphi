@@ -45,15 +45,26 @@ def load_job_from_s3(s3_object_path: str) -> Optional[PipelineJob]:
 
         with open(jobs_file_path) as jobs_file:
             try:
+                # Load job configuration into Python object
                 job_data = json.load(jobs_file)
                 arxiv_ids = job_data["arxiv_ids"]
                 logging.debug(
                     "%d arXiv ID(s) to process have been read from jobs file",
                     len(arxiv_ids),
                 )
-                email = job_data.get("email", None)
+                # Use 'get' commands to access parameters the values are set to 'None' if the
+                # key doesn't exist. That way, callers of this function can know which properties
+                # of the job config were set or not.
+                email = job_data.get("email")
+                dry_run = job_data.get("dry_run")
+                one_entity_at_a_time = job_data.get("one_entity_at_a_time")
             except (KeyError, ValueError) as error:
                 logging.error("Error parsing JSON job config: %s", error)
                 return None
 
-            return PipelineJob(email=email, arxiv_ids=arxiv_ids)
+            return PipelineJob(
+                email=email,
+                arxiv_ids=arxiv_ids,
+                dry_run=dry_run,
+                one_entity_at_a_time=one_entity_at_a_time,
+            )

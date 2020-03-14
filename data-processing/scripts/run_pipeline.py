@@ -24,6 +24,7 @@ from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
 from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
 from common.make_digest import create_pipeline_digest
+from scripts.job_config import fetch_config, load_job_from_s3
 from scripts.pipelines import entity_pipelines
 from scripts.process import (
     ENTITY_COMMANDS,
@@ -31,11 +32,13 @@ from scripts.process import (
     commands_by_entity,
     run_command,
 )
-from scripts.setup import fetch_config, load_job_from_s3
 
 
 def run_commands_for_arxiv_ids(
-    CommandClasses: CommandList, arxiv_id_list: List[str], pipeline_args: Namespace
+    CommandClasses: CommandList,
+    arxiv_id_list: List[str],
+    process_one_entity_at_a_time: bool,
+    pipeline_args: Namespace,
 ) -> None:
     " Run a sequence of pipeline commands for a list of arXiv IDs. "
 
@@ -52,7 +55,7 @@ def run_commands_for_arxiv_ids(
         command_args.v = pipeline_args.v
         command_args.source = pipeline_args.source
         command_args.log_names = [log_filename]
-        command_args.one_entity_at_a_time = pipeline_args.one_entity_at_a_time
+        command_args.one_entity_at_a_time = process_one_entity_at_a_time
         command_args.schema = pipeline_args.database_schema
         if CommandCls == FetchArxivSources:
             command_args.s3_bucket = pipeline_args.s3_arxiv_sources_bucket
@@ -128,18 +131,18 @@ if __name__ == "__main__":
     parser.add_argument(
         "--days",
         type=int,
-        default=1,
+        default=None,
         help="Number of days in the past for which to fetch arXiv papers. Cannot be used with"
         + "'--arxiv-ids' or '--arxiv-ids-file'",
     )
     parser.add_argument(
-        "--s3-job-file",
+        "--s3-job-spec",
         type=str,
         help=(
-            "Path to an object in the 'scholarphi-work-requests' S3 bucket that contains a "
-            + "spec for a job, including a list of arXiv IDs to process ('arxiv_ids' key), "
-            + "and an optional email ('email' key) to notify when the job is finished. "
-            + "Cannot be used with the '--arxiv-ids' or '--arxiv-ids-file' flags."
+            "Path to an object within the 'scholarphi-work-requests' S3 bucket that contains a "
+            + "JSON spec for a job. See 'job_config.py' for a list of supported properties.'"
+            + "Command line options (e.g., '--arxiv-ids', '--one-entity-at-a-time') take "
+            + "precedence over the job configuration."
         ),
     )
     parser.add_argument(
@@ -203,15 +206,16 @@ if __name__ == "__main__":
         "--notify-emails",
         type=str,
         nargs="+",
+        default=[],
         help=(
             "Email addresses that will receive a digest of processing results. The pipeline "
             + "must have Internet access and must be able to connect to Gmail's SMTP server."
         ),
     )
     parser.add_argument(
-        "--upload-to-database",
+        "--dry-run",
         action="store_true",
-        help="Save results of running the pipeline to the database.",
+        help="Do not save extracted entities to the database.",
     )
     parser.add_argument(
         "--database-schema",
@@ -245,22 +249,13 @@ if __name__ == "__main__":
         handlers=[console_log_handler, file_log_handler],
     )
 
-    # Fetch pipeline config
+    # Fetch pipeline config (includes credentials for accessing services).
     if args.config:
         fetch_config(args.config)
 
-    # Load S3 job
-    s3_job_spec = None
-    if args.s3_job_file is not None:
-        s3_job_spec = load_job_from_s3(args.s3_job_file)
-
-    # Load arXiv IDs either from arguments or by fetching recent arXiv IDs.
-    arxiv_ids = None
-    if s3_job_spec is not None:
-        arxiv_ids = s3_job_spec.arxiv_ids
-    if arxiv_ids is None:
-        arxiv_ids = load_arxiv_ids_using_args(args)
-    if arxiv_ids is None:
+    # Load arXiv IDs from arguments or by fetching recent arXiv IDs from a database.
+    arxiv_ids = load_arxiv_ids_using_args(args)
+    if arxiv_ids is None and args.days is not None:
         logging.debug("Fetching new arXiv IDs for the last %d day(s).", args.days)
         arxiv_ids_path = "arxiv_ids.txt"
         fetch_command_args = create_args(
@@ -270,10 +265,38 @@ if __name__ == "__main__":
         run_command(fetch_arxiv_ids_command)
         arxiv_ids = read_arxiv_ids_from_file(arxiv_ids_path)
 
-    reached_start_command = False
-    if args.start is None:
-        reached_start_command = True
+    # Load options for the job from. Command line options for jobs take precedence over properties
+    # defined in the job spec downloaded from S3.
+    s3_job_spec = load_job_from_s3(args.s3_job_spec) if args.s3_job_spec else None
+    arxiv_ids = s3_job_spec.arxiv_ids if (not arxiv_ids) and s3_job_spec else arxiv_ids
 
+    # If the list of arXiv IDs still hasn't been defined, set it to an empty list. This will
+    # allow the rest of this script to run, and provide hopefully useful debugging messages.
+    if arxiv_ids is None:
+        arxiv_ids = []
+    if len(arxiv_ids) == 0:
+        logging.warning(  # pylint: disable=logging-not-lazy
+            "There are no arXiv IDs to process. To process papers, update the arguments for "
+            + "arXiv IDs, the job spec file, or the criteria for arXiv IDs from the database."
+        )
+
+    dry_run = False
+    if args.dry_run:
+        dry_run = True
+    elif s3_job_spec and (s3_job_spec.dry_run is not None):
+        dry_run = s3_job_spec.dry_run
+
+    emails = args.notify_emails
+    if s3_job_spec and s3_job_spec.email:
+        emails.append(s3_job_spec.email)
+
+    one_entity_at_a_time = False
+    if args.one_entity_at_a_time:
+        one_entity_at_a_time = True
+    elif s3_job_spec and (s3_job_spec.one_entity_at_a_time is not None):
+        one_entity_at_a_time = s3_job_spec.one_entity_at_a_time
+
+    logging.debug("Assembling the list of commands to be run.")
     command_classes = PIPELINE_COMMANDS
 
     # Store pipeline logs after results, so that we can include the result storage in the pipeline logs.
@@ -282,8 +305,8 @@ if __name__ == "__main__":
     if args.store_log:
         command_classes.append(StorePipelineLog)
 
-    logging.debug("Assembling the list of commands to be run.")
     filtered_commands = []
+
     start_reached = True if args.start is None else False
     for CommandClass in command_classes:
         command_name = CommandClass.get_name()
@@ -304,7 +327,7 @@ if __name__ == "__main__":
                     continue
             # Optionally skip over database upload commands
             if issubclass(CommandClass, DatabaseUploadCommand):
-                if not args.upload_to_database:
+                if dry_run:
                     continue
             filtered_commands.append(CommandClass)
             if args.end is not None and command_name == args.end:
@@ -326,17 +349,18 @@ if __name__ == "__main__":
     if args.one_paper_at_a_time:
         for arxiv_id in arxiv_ids:
             logging.info("Running pipeline for paper %s", arxiv_id)
-            run_commands_for_arxiv_ids(filtered_commands, [arxiv_id], args)
+            run_commands_for_arxiv_ids(
+                filtered_commands, [arxiv_id], one_entity_at_a_time, args
+            )
             if not args.keep_data:
                 file_utils.delete_data(arxiv_id)
     else:
         logging.info("Running pipeline for papers %s", arxiv_ids)
-        run_commands_for_arxiv_ids(filtered_commands, arxiv_ids, args)
+        run_commands_for_arxiv_ids(
+            filtered_commands, arxiv_ids, one_entity_at_a_time, args
+        )
 
     # If requested, send email with paper-processing summaries.
-    emails = args.notify_emails if args.notify_emails else []
-    if s3_job_spec is not None and s3_job_spec.email is not None:
-        emails.append(s3_job_spec.email)
     if len(emails) > 0:
         digest = create_pipeline_digest(entity_pipelines, arxiv_ids)
         log_location = None
@@ -348,4 +372,4 @@ if __name__ == "__main__":
                 + log_filename
             )
 
-        email.send_digest_email(digest, args.notify_emails, log_preview_url)
+        email.send_digest_email(digest, emails, log_preview_url)
