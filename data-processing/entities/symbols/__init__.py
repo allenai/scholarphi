@@ -4,6 +4,8 @@ from common.commands.compile_tex import make_compile_tex_command
 from common.commands.diff_images import make_diff_images_command
 from common.commands.locate_hues import make_locate_hues_command
 from common.commands.raster_pages import make_raster_pages_command
+from common.make_digest import make_default_paper_digest
+from common.types import ArxivId, EntityProcessingDigest
 from scripts.pipelines import EntityPipeline, register_entity_pipeline
 
 from ..sentences.commands.find_entity_sentences import (
@@ -43,11 +45,21 @@ commands = [
     UploadSymbols,
 ]
 
+
+def make_digest(_: str, arxiv_id: ArxivId) -> EntityProcessingDigest:
+    """
+    Custom digest creator. Count the equation tokens, instead of the 'symbols', as we can
+    use the default entity counters for the outputs of equation token commands.
+    """
+    return make_default_paper_digest("equation-tokens", arxiv_id)
+
+
 symbols_pipeline = EntityPipeline(
     "symbols",
     commands,
     depends_on=["equations"],
     optional_depends_on=["sentences"],
     database_models=[MathMl, MathMlMatch, Symbol, SymbolChild, SymbolSentence],
+    make_digest=make_digest,
 )
 register_entity_pipeline(symbols_pipeline)

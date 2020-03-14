@@ -8,7 +8,7 @@ import dataclasses
 import logging
 import os
 import shutil
-from typing import Dict, Iterable, Iterator, List, Optional, Type, TypeVar
+from typing import Dict, Iterator, List, Optional, Type, TypeVar
 
 from common import directories
 from common.types import (
@@ -16,25 +16,20 @@ from common.types import (
     BoundingBox,
     CharacterId,
     CompilationResult,
-    EntityProcessingDigest,
     Equation,
     EquationId,
     FileContents,
     HueIteration,
     HueLocationInfo,
-    PaperProcessingDigest,
     Path,
-    PipelineDigest,
     SerializableCharacter,
     SerializableChild,
-    SerializableEntity,
     SerializableSymbol,
     SerializableToken,
     Symbol,
     SymbolId,
     SymbolWithId,
 )
-from scripts.pipelines import EntityPipeline
 
 Contents = str
 Encoding = str
@@ -361,50 +356,3 @@ def load_equation_token_locations(
         token_locations[character_id].append(box)
 
     return token_locations
-
-
-def create_pipeline_digest(
-    pipelines: Iterable[EntityPipeline], arxiv_ids: Iterable[ArxivId]
-) -> PipelineDigest:
-    " Create a summary of the pipeline processing results for a set of papers. "
-
-    digest: PipelineDigest = {}
-
-    for arxiv_id in arxiv_ids:
-
-        paper_digest: PaperProcessingDigest = {}
-        digest[arxiv_id] = paper_digest
-
-        for pipeline in pipelines:
-
-            # Look in the default location for a list of extracted entities.
-            num_entities_detected = None
-            detected_entities_dirkey = f"detected-{pipeline.entity_name}"
-            if directories.registered(detected_entities_dirkey):
-                detected_entities_path = os.path.join(
-                    directories.arxiv_subdir(detected_entities_dirkey, arxiv_id),
-                    "entities.csv",
-                )
-                if os.path.exists(detected_entities_path):
-                    num_entities_detected = len(
-                        list(load_from_csv(detected_entities_path, SerializableEntity))
-                    )
-
-            # Look in the default location for a list of hues located in the file.
-            num_hues_located = None
-            hue_locations_dirkey = f"hue-locations-for-{pipeline.entity_name}"
-            if directories.registered(hue_locations_dirkey):
-                hue_locations_path = os.path.join(
-                    directories.arxiv_subdir(hue_locations_dirkey, arxiv_id),
-                    "hue_locations.csv",
-                )
-                if os.path.exists(hue_locations_path):
-                    num_hues_located = len(
-                        list(load_from_csv(hue_locations_path, HueLocationInfo))
-                    )
-
-            paper_digest[pipeline.entity_name] = EntityProcessingDigest(
-                num_entities_detected, num_hues_located
-            )
-
-    return digest

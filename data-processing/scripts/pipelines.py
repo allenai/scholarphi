@@ -1,15 +1,16 @@
 import dataclasses
 from dataclasses import dataclass
-from typing import Any, List, Type
+from typing import Any, Callable, List, Optional, Type
 
 from common.commands.base import CommandList
+from common.types import ArxivId, EntityProcessingDigest
+
+EntityName = str
 
 
 @dataclass(frozen=True)
 class EntityPipeline:
-    """
-    A sequence of commands to be run by the pipeline to find a type of entity.
-    """
+    " A sequence of commands to be run by the pipeline to find a type of entity. "
 
     entity_name: str
     " Name of the entity that this sequence of commands will process. "
@@ -35,6 +36,16 @@ class EntityPipeline:
 
     While the type here is listed as 'Any' to avoid a circular import from importing
     the database models file here, all entries in 'database_models' should be 'OutputModel's.
+    """
+
+    make_digest: Optional[
+        Callable[[EntityName, ArxivId], EntityProcessingDigest]
+    ] = None
+    """
+    Create a summary of how many entities were processed for a paper by inspecting the outputs of
+    the pipeline. Called when the pipeline attempts to create a user-readable summary of the
+    pipeline's output. If not defined, a default method is called which searches for entities in
+    the locations defined by the helper function 'create_entity_localization_command_sequence'.
     """
 
 

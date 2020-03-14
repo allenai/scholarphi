@@ -509,14 +509,25 @@ PIPELINE RESULTS
 
 @dataclass(frozen=True)
 class EntityProcessingDigest:
-    num_extracted: Optional[int]
+    """
+    If a count is 'None', it could mean either that the count is 0, or that this statistic simply
+    could not be computed for this entity and paper.
+    """
+
+    num_extracted: Optional[int] = None
     " Number of entities found in the TeX by the entity extractor. "
 
-    num_hues_located: Optional[int]
+    num_entities_located: Optional[int] = None
+    " The number of entities for which a bounding box was found in the paper. "
+
+    num_hues_located: Optional[int] = None
     """
-    The number of hues for colorized entities that were located. In many cases, this can be used
-    as a rough estimate of the number of entities for which bounding box positions were found
-    in the paper.
+    The number of hues for colorized entities for which bounding boxes were found. In many cases,
+    this can be used as a rough estimate of the number of entities for which bounding box
+    positions were found in the paper; the number of entities which were located is probably less
+    than the number of hues found. This statistic should be defined if it is prohibitively
+    difficult to figure out the number of entities that were located, or as a workable default
+    when supporting a new type of entity for the first time.
     """
 
 

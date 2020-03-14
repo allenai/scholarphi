@@ -23,6 +23,7 @@ from common.commands.fetch_arxiv_sources import (
 from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
 from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
+from common.make_digest import create_pipeline_digest
 from scripts.pipelines import entity_pipelines
 from scripts.process import (
     ENTITY_COMMANDS,
@@ -254,6 +255,7 @@ if __name__ == "__main__":
         s3_job_spec = load_job_from_s3(args.s3_job_file)
 
     # Load arXiv IDs either from arguments or by fetching recent arXiv IDs.
+    arxiv_ids = None
     if s3_job_spec is not None:
         arxiv_ids = s3_job_spec.arxiv_ids
     if arxiv_ids is None:
@@ -336,7 +338,7 @@ if __name__ == "__main__":
     if s3_job_spec is not None and s3_job_spec.email is not None:
         emails.append(s3_job_spec.email)
     if len(emails) > 0:
-        digest = file_utils.create_pipeline_digest(entity_pipelines, arxiv_ids)
+        digest = create_pipeline_digest(entity_pipelines, arxiv_ids)
         log_location = None
         if args.store_log:
             log_preview_url = (

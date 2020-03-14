@@ -3,7 +3,7 @@ import logging
 import os
 import subprocess
 from tempfile import TemporaryDirectory
-from typing import List, Optional
+from typing import Optional
 
 from common.types import PipelineJob
 
