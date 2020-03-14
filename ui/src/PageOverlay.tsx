@@ -154,7 +154,7 @@ function selectionToAnnotation(
 
   const page = pageView.pdfPage.pageNumber - 1;
   const left = Math.min(anchorPdfX, activePdfX);
-  const top = Math.max(anchorPdfY, activePdfY);
+  const top = Math.min(anchorPdfY, activePdfY);
   const width = Math.abs(activePdfX - anchorPdfX);
   const height = Math.abs(activePdfY - anchorPdfY);
 
