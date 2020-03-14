@@ -73,7 +73,13 @@ def run_commands_for_arxiv_ids(
         )
         command = CommandCls(command_args)
         logging.info("Launching command %s", CommandCls.get_name())
-        run_command(command)
+        try:
+            run_command(command)
+        # Catch-all for unexpected errors from running commands. With the amount of networking
+        # and subprocess calls in the commands, it is simply unlikely that we can predict and
+        # write exceptions for every possible exception that could be thrown.
+        except Exception as e:  # pylint: disable=broad-except
+            logging.error("Unexpected exception processing paper: %s", e)
         logging.info("Finished running command %s", CommandCls.get_name())
 
 
