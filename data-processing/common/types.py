@@ -165,7 +165,7 @@ class SerializableEntity(Entity):
 
     tex_path: str
     """
-    The path to the TeX file this entity was found in. Should be a short path, relative to the 
+    The path to the TeX file this entity was found in. Should be a short path, relative to the
     directory of sources this TeX file is in, not relative to the data directory, and not
     relative to the source code directory for this project.
     """
