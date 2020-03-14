@@ -25,6 +25,16 @@ class FileContents:
 
 
 @dataclass(frozen=True)
+class PipelineJob:
+
+    email: Optional[str]
+    " Email address to send results to. "
+
+    arxiv_ids: List[ArxivId]
+    " List of papers to process. "
+
+
+@dataclass(frozen=True)
 class OutputFile:
     output_type: str
     " Type of file output by running TeX (e.g., 'ps', 'pdf')"
