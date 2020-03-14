@@ -377,5 +377,7 @@ if __name__ == "__main__":
                 + "/master/logs/"
                 + log_filename
             )
+        else:
+            log_preview_url = None
 
         email.send_digest_email(digest, emails, log_preview_url)
