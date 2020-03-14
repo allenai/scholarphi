@@ -8,7 +8,7 @@ psycopg2-binary
 pysbd
 reportlab
 requests
-TexSoup==0.20.0
+TexSoup==0.2.0
 
 # Development dependencies
 black
