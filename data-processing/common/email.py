@@ -48,6 +48,10 @@ def _format_digest(digest: PipelineDigest) -> str:
                 message += "(I didn't collect any metrics for this entity)"
             message += ".<br/>"
 
+        message += (
+            "Paper URL: "
+            + f"https://s2-reader.apps.allenai.org/?file=https://arxiv.org/pdf/{paper_id}.pdf<br/>"
+        )
         message += "<br/>"
 
     return message
@@ -93,7 +97,7 @@ def send_digest_email(
             + "more papers. Here's what I found.<br/>"
             + "<br/>"
             + f"{_format_digest(digest)}"  # digest is always followed by a new line.
-            + "Hopefully it found what you expected. If it didn't, forward this email to "
+            + "Hopefully the pipeline found what you expected. If it didn't, forward this email to "
             + "Andrew at andrewhead@berkeley.edu and he'll see what can be fixed."
         )
 
