@@ -1,10 +1,11 @@
+import json
 import logging
 import os
 import subprocess
 from tempfile import TemporaryDirectory
 from typing import List, Optional
 
-from common.types import ArxivId
+from common.types import PipelineJob
 
 
 def fetch_config(s3_url: str) -> bool:
@@ -26,7 +27,7 @@ def fetch_config(s3_url: str) -> bool:
     return True
 
 
-def load_job_arxiv_ids_from_s3(s3_object_path: str) -> Optional[List[ArxivId]]:
+def load_job_from_s3(s3_object_path: str) -> Optional[PipelineJob]:
     " Read list of arXiv IDs from a job file stored on S3. "
 
     s3_url = f"s3://scholarphi-work-requests/{s3_object_path}"
@@ -43,10 +44,16 @@ def load_job_arxiv_ids_from_s3(s3_object_path: str) -> Optional[List[ArxivId]]:
             logging.warning("Error fetching job file from S3: %s", result.stderr)
 
         with open(jobs_file_path) as jobs_file:
-            arxiv_ids = [l.strip() for l in jobs_file]
-            logging.debug(
-                "%d arXiv ID(s) to process have been read from jobs file",
-                len(arxiv_ids),
-            )
+            try:
+                job_data = json.load(jobs_file)
+                arxiv_ids = job_data["arxiv_ids"]
+                logging.debug(
+                    "%d arXiv ID(s) to process have been read from jobs file",
+                    len(arxiv_ids),
+                )
+                email = job_data.get("email", None)
+            except (KeyError, ValueError) as error:
+                logging.error("Error parsing JSON job config: %s", error)
+                return None
 
-        return arxiv_ids
+            return PipelineJob(email=email, arxiv_ids=arxiv_ids)

@@ -7,20 +7,30 @@ from datetime import datetime
 from typing import List
 
 from common import directories, email, file_utils
-from common.commands.base import (CommandList, add_arxiv_id_filter_args,
-                                  add_one_entity_at_a_time_arg, create_args,
-                                  load_arxiv_ids_using_args,
-                                  read_arxiv_ids_from_file)
+from common.commands.base import (
+    CommandList,
+    add_arxiv_id_filter_args,
+    add_one_entity_at_a_time_arg,
+    create_args,
+    load_arxiv_ids_using_args,
+    read_arxiv_ids_from_file,
+)
 from common.commands.database import DatabaseUploadCommand
 from common.commands.fetch_arxiv_sources import (
-    DEFAULT_S3_ARXIV_SOURCES_BUCKET, FetchArxivSources)
+    DEFAULT_S3_ARXIV_SOURCES_BUCKET,
+    FetchArxivSources,
+)
 from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
 from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
 from scripts.pipelines import entity_pipelines
-from scripts.process import (ENTITY_COMMANDS, TEX_PREPARATION_COMMANDS,
-                             commands_by_entity, run_command)
-from scripts.setup import fetch_config, load_job_arxiv_ids_from_s3
+from scripts.process import (
+    ENTITY_COMMANDS,
+    TEX_PREPARATION_COMMANDS,
+    commands_by_entity,
+    run_command,
+)
+from scripts.setup import fetch_config, load_job_from_s3
 
 
 def run_commands_for_arxiv_ids(
@@ -122,12 +132,13 @@ if __name__ == "__main__":
         + "'--arxiv-ids' or '--arxiv-ids-file'",
     )
     parser.add_argument(
-        "--arxiv-ids-s3-job-file",
+        "--s3-job-file",
         type=str,
         help=(
-            "Path to an object in the 'scholarphi-work-requests' S3 bucket that contains a list "
-            + "of arXiv IDs to process, with one arXiv ID per line. Cannot be used with "
-            + "'--arxiv-ids' or '--arxiv-ids-file'."
+            "Path to an object in the 'scholarphi-work-requests' S3 bucket that contains a "
+            + "spec for a job, including a list of arXiv IDs to process ('arxiv_ids' key), "
+            + "and an optional email ('email' key) to notify when the job is finished. "
+            + "Cannot be used with the '--arxiv-ids' or '--arxiv-ids-file' flags."
         ),
     )
     parser.add_argument(
@@ -237,10 +248,14 @@ if __name__ == "__main__":
     if args.config:
         fetch_config(args.config)
 
+    # Load S3 job
+    s3_job_spec = None
+    if args.s3_job_file is not None:
+        s3_job_spec = load_job_from_s3(args.s3_job_file)
+
     # Load arXiv IDs either from arguments or by fetching recent arXiv IDs.
-    arxiv_ids = None
-    if args.arxiv_ids_s3_job_file is not None:
-        arxiv_ids = load_job_arxiv_ids_from_s3(args.arxiv_ids_s3_job_file)
+    if s3_job_spec is not None:
+        arxiv_ids = s3_job_spec.arxiv_ids
     if arxiv_ids is None:
         arxiv_ids = load_arxiv_ids_using_args(args)
     if arxiv_ids is None:
@@ -317,7 +332,10 @@ if __name__ == "__main__":
         run_commands_for_arxiv_ids(filtered_commands, arxiv_ids, args)
 
     # If requested, send email with paper-processing summaries.
-    if args.notify_emails is not None:
+    emails = args.notify_emails if args.notify_emails else []
+    if s3_job_spec is not None and s3_job_spec.email is not None:
+        emails.append(s3_job_spec.email)
+    if len(emails) > 0:
         digest = file_utils.create_pipeline_digest(entity_pipelines, arxiv_ids)
         log_location = None
         if args.store_log:
