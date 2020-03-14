@@ -97,7 +97,7 @@
     "@types/react-dom": "^16.8.5",
     "less": "^3.10.3",
     "less-loader": "^5.0.0",
-    "node-sass": "^4.12.0",
+    "node-sass": "^4.13.1",
     "react-scripts": "^3.3.0",
     "rewire": "^4.0.1",
     "tslint": "^5.18.0",
