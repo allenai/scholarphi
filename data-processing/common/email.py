@@ -35,7 +35,11 @@ def _format_digest(digest: PipelineDigest) -> str:
                 )
             if entity_digest.num_hues_located is not None:
                 metrics_messages.append(
-                    f"<b>{entity_digest.num_hues_located}</b> entity hues located"
+                    f"<b>{entity_digest.num_hues_located}</b> hue(s) located"
+                )
+            if entity_digest.num_entities_located is not None:
+                metrics_messages.append(
+                    f"<b>{entity_digest.num_entities_located}</b> entity(ies) located"
                 )
 
             if metrics_messages:

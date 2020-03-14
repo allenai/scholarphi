@@ -11,6 +11,7 @@ from .commands.extract_bibitems import ExtractBibitems
 from .commands.locate_citations import LocateCitations
 from .commands.resolve_bibitems import ResolveBibitems
 from .commands.upload_citations import UploadCitations
+from .make_digest import make_digest
 
 directories.register("bibitems")
 directories.register("bibitem-resolutions")
@@ -35,5 +36,5 @@ commands: CommandList = [
     UploadCitations,
 ]
 
-citations_pipeline = EntityPipeline("citations", commands)
+citations_pipeline = EntityPipeline("citations", commands, make_digest=make_digest)
 register_entity_pipeline(citations_pipeline)

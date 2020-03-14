@@ -10,16 +10,12 @@ from peewee import IntegrityError
 from common import directories, file_utils
 from common.commands.database import DatabaseUploadCommand
 from common.models import BoundingBox as BoundingBoxModel
-from common.models import (
-    Citation,
-    CitationPaper,
-    Entity,
-    EntityBoundingBox,
-    Paper,
-    Summary,
-    output_database,
-)
-from common.types import ArxivId, BibitemMatch, CitationLocation, SerializableReference
+from common.models import (Citation, CitationPaper, Entity, EntityBoundingBox,
+                           Paper, Summary, output_database)
+from common.types import (ArxivId, BibitemMatch, CitationLocation,
+                          SerializableReference)
+
+from ..utils import load_located_citations
 
 CitationKey = str
 LocationIndex = int
@@ -51,27 +47,9 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
         for arxiv_id in self.arxiv_ids:
 
             # Load citation locations
-            citation_locations: Dict[
-                CitationKey, Dict[LocationIndex, Set[CitationLocation]]
-            ] = {}
-            citation_locations_path = os.path.join(
-                directories.arxiv_subdir("citation-locations", arxiv_id),
-                "citation_locations.csv",
-            )
-            if not os.path.exists(citation_locations_path):
-                logging.warning(
-                    "Could not find citation locations for %s. Skipping", arxiv_id
-                )
+            citation_locations = load_located_citations(arxiv_id)
+            if citation_locations is None:
                 continue
-
-            for location in file_utils.load_from_csv(
-                citation_locations_path, CitationLocation
-            ):
-                if not location.key in citation_locations:
-                    citation_locations[location.key] = {}
-                if not location.cluster_index in citation_locations[location.key]:
-                    citation_locations[location.key][location.cluster_index] = set()
-                citation_locations[location.key][location.cluster_index].add(location)
 
             # Load metadata for bibitems
             key_s2_ids: Dict[CitationKey, S2Id] = {}
