@@ -44,7 +44,9 @@ def draw_boxes(arxivIds):
         eqLocsCsv = os.path.join(outDir, "eqs_and_locs.csv")
     
         dfEqs = pd.read_csv(eqLocsCsv)
-        imgDir = os.path.join("data", "06-paper-images", arxivId, "main.pdf")
+        imgDirPrefix = os.path.join("data", "06-paper-images", arxivId)
+        imgDirSuffix = os.listdir(imgDirPrefix)
+        imgDir = os.path.join(imgDirPrefix, imgDirSuffix[0])
         paperImgFiles = os.listdir(imgDir)
         for i in range(len(paperImgFiles)):
             paperImgFile = 'page-' + str(i+1) + ".png"
@@ -85,7 +87,11 @@ def create_training_json(arxivIds):
         eqLocsCsv = os.path.join(inDir, "eqs_and_locs.csv")
         dfEqs = pd.read_csv(eqLocsCsv)
         # Get the paper image locations
-        imgDir = os.path.join("data", "06-paper-images", arxivId, "main.pdf")
+        imgDirPrefix = os.path.join("data", "06-paper-images", arxivId)
+        imgDirSuffix = os.listdir(imgDirPrefix)
+        imgDir = os.path.join(imgDirPrefix, imgDirSuffix[0])
+        
+        #imgDir = os.path.join("data", "06-paper-images", arxivId, "main.pdf")
         paperImgFiles = os.listdir(imgDir)
         # Loop trhoguh paper's pages:
         for i in range(len(paperImgFiles)):
