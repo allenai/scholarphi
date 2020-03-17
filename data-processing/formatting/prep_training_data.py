@@ -10,7 +10,7 @@ import cv2
 def join_hue_locs_and_entites(arxivIds):
     '''Joins the information about where the equations are located in 
        the paper and what the equations are into a single csv file.'''
-    for arxivId in arxivsIds:
+    for arxivId in arxivIds:
         hueCsv = os.path.join("data", "22-hue-locations-for-equations", arxivId, "hue_locations.csv")
         entCsv = os.path.join("data", "17-detected-equations", arxivId, "entities.csv")
         # Read csvs:
@@ -91,7 +91,7 @@ def create_training_json(arxivIds):
         for i in range(len(paperImgFiles)):
             paperImgFile = 'page-' + str(i+1) + ".png"
             # Create entry in dict for this page:
-            outDict[paperImgFile] = {}
+            outDict[arxivId + "-" + paperImgFile] = {}
 
             # Read in the paper page image:
             paperImg = cv2.imread(os.path.join(imgDir, paperImgFile))
@@ -100,12 +100,12 @@ def create_training_json(arxivIds):
             pgHeight = paperImg.shape[0]
             pgWidth = paperImg.shape[1]
             # Fill in entries for the page image:
-            outDict[paperImgFile]["fileref"] = ""
-            outDict[paperImgFile]["size"] = pgHeight*pgWidth
-            outDict[paperImgFile]["filename"] = paperImgFile
-            outDict[paperImgFile]["base64_img_data"] = ""
-            outDict[paperImgFile]["file_attributes"] = {}
-            outDict[paperImgFile]["regions"] = {}
+            outDict[arxivId + "-" + paperImgFile]["fileref"] = ""
+            outDict[arxivId + "-" + paperImgFile]["size"] = pgHeight*pgWidth
+            outDict[arxivId + "-" + paperImgFile]["filename"] = arxivId + "-" + paperImgFile
+            outDict[arxivId + "-" + paperImgFile]["base64_img_data"] = ""
+            outDict[arxivId + "-" + paperImgFile]["file_attributes"] = {}
+            outDict[arxivId + "-" + paperImgFile]["regions"] = {}
             # Check if there are bounding boxes for this page:
             if not boxes.empty:
                 lefts = boxes['left'].values.tolist()
@@ -115,26 +115,29 @@ def create_training_json(arxivIds):
                 # Loop through the boxes:
                 for j in range(len(lefts)):
                     # create an entry for this labelled region:
-                    outDict[paperImgFile]["regions"][str(j)] = {}
-                    outDict[paperImgFile]["regions"][str(j)]["shape_attributes"] = {}
-                    outDict[paperImgFile]["regions"][str(j)]["shape_attributes"]["name"] = "polygon"
-                    outDict[paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_x"] = []
-                    outDict[paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_y"] = []
-                    outDict[paperImgFile]["regions"][str(j)]["region_attributes"] = {}
+                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)] = {}
+                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"] = {}
+                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["name"] = "polygon"
+                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_x"] = []
+                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_y"] = []
+                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["region_attributes"] = {}
                     # Compute the coordinates of the box's corners
                     left = int(lefts[j]*pgWidth)
                     top = int(tops[j]*pgHeight)
                     width = int(widths[j]*pgWidth)
                     height = int(heights[j]*pgHeight)
                     # Add the box corner points to the representation of the box:
-                    outDict[paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_x"].append(left)
-                    outDict[paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_x"].append(left)
-                    outDict[paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_x"].append(left+width)
-                    outDict[paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_x"].append(left+width)
-                    outDict[paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_y"].append(top)
-                    outDict[paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_y"].append(top+height)
-                    outDict[paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_y"].append(top)
-                    outDict[paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_y"].append(top+height)
+                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_x"].append(left)
+                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_x"].append(left)
+                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_x"].append(left+width)
+                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_x"].append(left+width)
+                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_y"].append(top)
+                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_y"].append(top+height)
+                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_y"].append(top)
+                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_y"].append(top+height)
+
+            # Write a copy of the Page image to the output directory with the arxivId added to it's name:
+            cv2.imwrite(os.path.join(outDir, arxivId + "-" + paperImgFile), paperImg)
                     
     # After all the pages of all the papers have been taken care of, output a json: 
     with open(os.path.join(outDir, 'bounding_box_data.json'), 'w') as json_file:
