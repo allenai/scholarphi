@@ -7,63 +7,64 @@ import numpy as np
 import pandas as pd
 import cv2
 
-def join_hue_locs_and_entites(arxivId):
+def join_hue_locs_and_entites(arxivIds):
     '''Joins the information about where the equations are located in 
        the paper and what the equations are into a single csv file.'''
-    
-    hueCsv = os.path.join("data", "22-hue-locations-for-equations", arxivId, "hue_locations.csv")
-    entCsv = os.path.join("data", "17-detected-equations", arxivId, "entities.csv")
-    # Read csvs:
-    dfHue = pd.read_csv(hueCsv)
-    dfEnt = pd.read_csv(entCsv)
-    # Sort by equation ids:
-    dfHueSorted = dfHue.sort_values(by=['entity_id'])
-    dfEntSorted = dfEnt.sort_values(by=['id_'])
+    for arxivId in arxivsIds:
+        hueCsv = os.path.join("data", "22-hue-locations-for-equations", arxivId, "hue_locations.csv")
+        entCsv = os.path.join("data", "17-detected-equations", arxivId, "entities.csv")
+        # Read csvs:
+        dfHue = pd.read_csv(hueCsv)
+        dfEnt = pd.read_csv(entCsv)
+        # Sort by equation ids:
+        dfHueSorted = dfHue.sort_values(by=['entity_id'])
+        dfEntSorted = dfEnt.sort_values(by=['id_'])
 
-    # Create list of TeX commands sorted by equation idx
-    EqList = dfEntSorted["tex"].to_list()
-    # remove first entry, figure out what to do with this later:
-    EqList.remove(EqList[0])
+        # Create list of TeX commands sorted by equation idx
+        EqList = dfEntSorted["tex"].to_list()
+        # remove first entry, figure out what to do with this later:
+        EqList.remove(EqList[0])
 
-    # Create dict mapping equation indices to TeX commands:
-    Idx_to_Tex = {}
-    for i in range(len(EqList)):
-        Idx_to_Tex[i] = EqList[i]
+        # Create dict mapping equation indices to TeX commands:
+        Idx_to_Tex = {}
+        for i in range(len(EqList)):
+            Idx_to_Tex[i] = EqList[i]
 
-    dfHue["tex"] = dfHue['entity_id'].apply(lambda x: Idx_to_Tex.get(x))
-    outDir = os.path.join("data", "99-formatting-data", arxivId)
-    if not os.path.exists(outDir):
-        os.makedirs(outDir)
-    dfHue.to_csv(os.path.join(outDir, "eqs_and_locs.csv"), index=False)
+        dfHue["tex"] = dfHue['entity_id'].apply(lambda x: Idx_to_Tex.get(x))
+        outDir = os.path.join("data", "99-formatting-data", arxivId)
+        if not os.path.exists(outDir):
+            os.makedirs(outDir)
+        dfHue.to_csv(os.path.join(outDir, "eqs_and_locs.csv"), index=False)
 
 
-def draw_boxes(arxivId):
+def draw_boxes(arxivIds):
     '''Reads in the paper image files and bounbding box csv file and draws the boxes onto the corresponding paper page.'''
-    outDir = os.path.join("data", "99-formatting-data", arxivId)
-    eqLocsCsv = os.path.join(outDir, "eqs_and_locs.csv")
+    for arxivId in arxivIds:
+        outDir = os.path.join("data", "99-formatting-data", arxivId)
+        eqLocsCsv = os.path.join(outDir, "eqs_and_locs.csv")
     
-    dfEqs = pd.read_csv(eqLocsCsv)
-    imgDir = os.path.join("data", "06-paper-images", arxivId, "main.pdf")
-    paperImgFiles = os.listdir(imgDir)
-    for i in range(len(paperImgFiles)):
-        paperImgFile = 'page-' + str(i+1) + ".png"
-        paperImg = cv2.imread(os.path.join(imgDir, paperImgFile))
-        boxes = dfEqs.loc[lambda df: df['page'] == i]
-        pgHeight = paperImg.shape[0]
-        pgWidth = paperImg.shape[1]
-        if not boxes.empty:
-            lefts = boxes['left'].values.tolist()
-            tops = boxes['top'].values.tolist()
-            widths = boxes['width'].values.tolist()
-            heights = boxes['height'].values.tolist()
-            for j in range(len(lefts)):
-                left = int(lefts[j]*pgWidth)
-                top = int(tops[j]*pgHeight)
-                width = int(widths[j]*pgWidth)
-                height = int(heights[j]*pgHeight)
-                paperImg = cv2.rectangle(paperImg, (left, top), (left+width, top+height), color=(0,0,255), thickness=1)
+        dfEqs = pd.read_csv(eqLocsCsv)
+        imgDir = os.path.join("data", "06-paper-images", arxivId, "main.pdf")
+        paperImgFiles = os.listdir(imgDir)
+        for i in range(len(paperImgFiles)):
+            paperImgFile = 'page-' + str(i+1) + ".png"
+            paperImg = cv2.imread(os.path.join(imgDir, paperImgFile))
+            boxes = dfEqs.loc[lambda df: df['page'] == i]
+            pgHeight = paperImg.shape[0]
+            pgWidth = paperImg.shape[1]
+            if not boxes.empty:
+                lefts = boxes['left'].values.tolist()
+                tops = boxes['top'].values.tolist()
+                widths = boxes['width'].values.tolist()
+                heights = boxes['height'].values.tolist()
+                for j in range(len(lefts)):
+                    left = int(lefts[j]*pgWidth)
+                    top = int(tops[j]*pgHeight)
+                    width = int(widths[j]*pgWidth)
+                    height = int(heights[j]*pgHeight)
+                    paperImg = cv2.rectangle(paperImg, (left, top), (left+width, top+height), color=(0,0,255), thickness=1)
 
-        cv2.imwrite(os.path.join(outDir, paperImgFile), paperImg)
+            cv2.imwrite(os.path.join(outDir, paperImgFile), paperImg)
             
 
 
@@ -138,10 +139,11 @@ def create_training_json(arxivIds):
     # After all the pages of all the papers have been taken care of, output a json: 
     with open(os.path.join(outDir, 'bounding_box_data.json'), 'w') as json_file:
         json.dump(outDict, json_file)
-                    
-        
+
+
 if __name__ == "__main__":
-    # Run with arxiv Id as commandline arg:
-    #join_hue_locs_and_entites(sys.argv[1])
-    #draw_boxes(sys.argv[1])
+    # Run with arxiv Ids as commandline args:
+    join_hue_locs_and_entites(sys.argv[1:])
+    draw_boxes(sys.argv[1:])
     create_training_json(sys.argv[1:])
+
