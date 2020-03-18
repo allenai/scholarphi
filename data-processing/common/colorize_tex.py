@@ -337,6 +337,9 @@ def colorize_equation_tokens(
         colorized_tokens = []
 
         for tex_filename, tex_file_contents in file_contents.items():
+            if not tex_filename in equations_by_file:
+                continue
+
             colorized_tex = tex_file_contents.contents
 
             equations_for_file = equations_by_file[tex_filename]
