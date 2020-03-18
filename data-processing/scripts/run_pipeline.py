@@ -24,7 +24,8 @@ from common.commands.fetch_arxiv_sources import (
 from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
 from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
-from common.make_digest import create_pipeline_digest
+from common.make_digest import make_paper_digest
+from common.types import PipelineDigest
 from scripts.job_config import fetch_config, load_job_from_s3
 from scripts.pipelines import entity_pipelines
 from scripts.process import (
@@ -40,7 +41,7 @@ def run_commands_for_arxiv_ids(
     arxiv_id_list: List[str],
     process_one_entity_at_a_time: bool,
     pipeline_args: Namespace,
-) -> None:
+) -> PipelineDigest:
     " Run a sequence of pipeline commands for a list of arXiv IDs. "
 
     for CommandCls in CommandClasses:
@@ -84,6 +85,12 @@ def run_commands_for_arxiv_ids(
                 "Unexpected exception processing paper: %s", traceback.format_exc()
             )
         logging.info("Finished running command %s", CommandCls.get_name())
+
+    # Create digest describing the result of running these commands for these papers
+    processing_summary: PipelineDigest = {}
+    for id_ in arxiv_id_list:
+        processing_summary[id_] = make_paper_digest(entity_pipelines, id_)
+    return processing_summary
 
 
 if __name__ == "__main__":
@@ -355,23 +362,27 @@ if __name__ == "__main__":
     )
 
     # Run the pipeline one paper at a time, or one command at a time, depending on arguments.
+    pipeline_digest: PipelineDigest = {}
     if args.one_paper_at_a_time:
         for arxiv_id in arxiv_ids:
             logging.info("Running pipeline for paper %s", arxiv_id)
-            run_commands_for_arxiv_ids(
+            digest_for_paper = run_commands_for_arxiv_ids(
                 filtered_commands, [arxiv_id], one_entity_at_a_time, args
             )
+            # The pipeline digest must be updated after each arXiv ID is processed, because the
+            # digest for a paper cannot be computed once the paper's data is deleted.
+            pipeline_digest.update(digest_for_paper)
             if not args.keep_data:
                 file_utils.delete_data(arxiv_id)
     else:
         logging.info("Running pipeline for papers %s", arxiv_ids)
-        run_commands_for_arxiv_ids(
+        digest_for_papers = run_commands_for_arxiv_ids(
             filtered_commands, arxiv_ids, one_entity_at_a_time, args
         )
+        pipeline_digest.update(digest_for_papers)
 
     # If requested, send email with paper-processing summaries.
     if len(emails) > 0:
-        digest = create_pipeline_digest(entity_pipelines, arxiv_ids)
         log_location = None
         if args.store_log:
             log_preview_url = (
@@ -383,4 +394,4 @@ if __name__ == "__main__":
         else:
             log_preview_url = None
 
-        email.send_digest_email(digest, emails, log_preview_url)
+        email.send_digest_email(pipeline_digest, emails, log_preview_url)
