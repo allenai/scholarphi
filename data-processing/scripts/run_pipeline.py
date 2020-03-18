@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+import traceback
 import uuid
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
@@ -78,8 +79,10 @@ def run_commands_for_arxiv_ids(
         # Catch-all for unexpected errors from running commands. With the amount of networking
         # and subprocess calls in the commands, it is simply unlikely that we can predict and
         # write exceptions for every possible exception that could be thrown.
-        except Exception as e:  # pylint: disable=broad-except
-            logging.error("Unexpected exception processing paper: %s", e)
+        except Exception:  # pylint: disable=broad-except
+            logging.error(
+                "Unexpected exception processing paper: %s", traceback.format_exc()
+            )
         logging.info("Finished running command %s", CommandCls.get_name())
 
 
