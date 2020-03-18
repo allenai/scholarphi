@@ -19,3 +19,18 @@
 .linkAnnotation a[href^="#cite"] {
   display: none;
 }
+
+/**
+  * Consistent default behavior between pdf.js highlight for tables, figures, etc.
+  * and custom purple highlight for citation annotations.
+  */
+.annotationLayer .linkAnnotation > a {
+  border-bottom: @underline-width @underline-color dotted;
+
+  &:hover, 
+  &.selected {
+    background: @highlight-hover-background;
+    opacity: @highlight-hover-opacity;
+    box-shadow: 0px 2px 10px @highlight-hover-background;
+  }
+}
