@@ -23,7 +23,7 @@ export class UserAnnotationTooltipBody extends React.PureComponent<
     const { updateUserAnnotation } = this.context;
     updateUserAnnotation(this.props.annotation.id, {
       ...this.props.annotation,
-      type: e.target.value as "citation" | "symbol"
+      type: e.target.value as "citation" | "symbol" | "equation"
     });
   }
 
@@ -57,6 +57,11 @@ export class UserAnnotationTooltipBody extends React.PureComponent<
                 value="citation"
                 control={<Radio />}
                 label="Citation"
+              />
+              <FormControlLabel
+                value="equation"
+                control={<Radio />}
+                label="Equation"
               />
               <FormControlLabel
                 value="symbol"
