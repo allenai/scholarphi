@@ -38,7 +38,8 @@ export class UserAnnotation extends React.PureComponent<UserAnnotationProps> {
         id={`user-annotation-${this.props.annotation.id}`}
         className={classNames("user-annotation", {
           "citation-user-annotation": this.props.annotation.type === "citation",
-          "symbol-user-annotation": this.props.annotation.type === "symbol"
+          "symbol-user-annotation": this.props.annotation.type === "symbol",
+          "equation-user-annotation": this.props.annotation.type === "equation"
         })}
         boundingBoxes={[this.props.annotation.boundingBox]}
         tooltipContent={
