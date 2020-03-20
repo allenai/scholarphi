@@ -326,41 +326,41 @@ def subtract(rect1: FloatRectangle, rect2: FloatRectangle) -> Iterator[FloatRect
     """
 
     rect1_right = rect1.left + rect1.width
-    rect1_bottom = rect1.top - rect1.height
+    rect1_bottom = rect1.top + rect1.height
     rect2_right = rect2.left + rect2.width
-    rect2_bottom = rect2.top - rect2.height
+    rect2_bottom = rect2.top + rect2.height
 
     if not are_intersecting(rect1, rect2):
         yield FloatRectangle(rect1.left, rect1.top, rect1.width, rect1.height)
         return
 
     # Create 'split 1'
-    if rect2.top <= rect1.top and rect2.top >= rect1_bottom:
-        height = rect1.top - rect2.top
+    if rect2.top >= rect1.top and rect2.top <= rect1_bottom:
+        height = rect2.top - rect1.top
         if height > 0:
             yield FloatRectangle(rect1.left, rect1.top, rect1.width, height)
 
     # Create 'split 2'
     if rect2.left >= rect1.left and rect2.left <= rect1_right:
-        diff_top = min(rect1.top, rect2.top)
-        diff_bottom = max(rect1_bottom, rect2_bottom)
+        diff_top = max(rect1.top, rect2.top)
+        diff_bottom = min(rect1_bottom, rect2_bottom)
         width = rect2.left - rect1.left
-        height = diff_top - diff_bottom
+        height = diff_bottom - diff_top
         if width > 0 and height > 0:
             yield FloatRectangle(rect1.left, diff_top, width, height)
 
     # Create 'split 3'
     if rect2_right <= rect1_right and rect2_right >= rect1.left:
-        diff_top = min(rect1.top, rect2.top)
-        diff_bottom = max(rect1_bottom, rect2_bottom)
+        diff_top = max(rect1.top, rect2.top)
+        diff_bottom = min(rect1_bottom, rect2_bottom)
         width = rect1_right - rect2_right
-        height = diff_top - diff_bottom
+        height = diff_bottom - diff_top
         if width > 0 and height > 0:
             yield FloatRectangle(rect2_right, diff_top, width, height)
 
     # Create 'split 4'
-    if rect2_bottom >= rect1_bottom and rect2_bottom <= rect1.top:
-        height = rect2_bottom - rect1_bottom
+    if rect2_bottom <= rect1_bottom and rect2_bottom >= rect1.top:
+        height = rect1_bottom - rect2_bottom
         if height > 0:
             yield FloatRectangle(rect1.left, rect2_bottom, rect1.width, height)
 
@@ -379,10 +379,10 @@ def are_intersecting(rect1: FloatRectangle, rect2: FloatRectangle) -> bool:
     )
     vertical_range_overlap = any(
         [
-            between(rect1.top, rect2.top - rect2.height, rect2.top),
-            between(rect1.top - rect1.height, rect2.top - rect2.height, rect2.top),
-            between(rect2.top, rect1.top - rect1.height, rect1.top),
-            between(rect2.top - rect2.height, rect1.top - rect1.height, rect1.top),
+            between(rect1.top, rect2.top, rect2.top + rect2.height),
+            between(rect1.top + rect1.height, rect2.top, rect2.top + rect2.height),
+            between(rect2.top, rect1.top, rect1.top + rect1.height),
+            between(rect2.top + rect2.height, rect1.top, rect1.top + rect1.height),
         ]
     )
 

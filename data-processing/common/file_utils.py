@@ -295,18 +295,25 @@ def save_compilation_results(path: Path, result: CompilationResult) -> None:
         stderr_file.write(result.stderr)
 
 
-def load_citation_hue_locations(
-    arxiv_id: ArxivId,
+def load_hue_locations(
+    arxiv_id: ArxivId, entity_name: str
 ) -> Optional[Dict[HueIteration, List[BoundingBox]]]:
+    """
+    Load bounding boxes for each entity. Entities are indexes by the hue they were colored and
+    the iteraction of coloring in which they were assigned that hue. Entities can have multiple
+    bounding boxes (e.g., if they are split over multiple lines).
+    """
 
     boxes_by_hue_iteration: Dict[HueIteration, List[BoundingBox]] = {}
     bounding_boxes_path = os.path.join(
-        directories.arxiv_subdir("hue-locations-for-citations", arxiv_id),
+        directories.arxiv_subdir(f"hue-locations-for-{entity_name}", arxiv_id),
         "hue_locations.csv",
     )
     if not os.path.exists(bounding_boxes_path):
         logging.warning(
-            "Could not find bounding boxes information for %s. Skipping", arxiv_id,
+            "Could not find bounding boxes information entity of type %s for paper %s. Skipping.",
+            entity_name,
+            arxiv_id,
         )
         return None
 
@@ -324,6 +331,12 @@ def load_citation_hue_locations(
         boxes_by_hue_iteration[hue_iteration].append(box)
 
     return boxes_by_hue_iteration
+
+
+def load_citation_hue_locations(
+    arxiv_id: ArxivId,
+) -> Optional[Dict[HueIteration, List[BoundingBox]]]:
+    return load_hue_locations(arxiv_id, "citations")
 
 
 def load_equation_token_locations(
