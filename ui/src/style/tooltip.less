@@ -28,6 +28,8 @@
 
   .tooltip-body__section:not(:first-of-type) {
     padding-top: @medium * 0.5;
+    padding-left: @tooltip-padding;
+    padding-right: @tooltip-padding;
   }
 
   .tooltip-body__header {
@@ -44,8 +46,8 @@
    * right edges of the text.
    */
   .tooltip-body__citation {
-    padding-left: 4px;
-    padding-right: 4px;
+    padding-left: @tooltip-padding;
+    padding-right: @tooltip-padding;
   }
 }
 
