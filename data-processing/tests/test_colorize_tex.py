@@ -48,8 +48,10 @@ def test_add_color_macros_to_latex():
     with_macros = add_color_macros(tex)
     assert with_macros == "\n".join(
         tex_lines[0:2]
-        + ["", COLOR_MACROS_BASE_MACROS, COLOR_MACROS_LATEX_IMPORTS, COLOR_MACROS,]
-        + tex_lines[2:]
+        + ["", COLOR_MACROS_BASE_MACROS, COLOR_MACROS_LATEX_IMPORTS]
+        + [tex_lines[2]]
+        + [COLOR_MACROS]
+        + tex_lines[3:]
     )
 
 
