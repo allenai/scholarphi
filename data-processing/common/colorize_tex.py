@@ -67,9 +67,6 @@ with open(os.path.join("resources", "03-load-color-commands.tex")) as file_:
 TEX_COLOR_MACROS = "\n".join(
     [COLOR_MACROS_BASE_MACROS, COLOR_MACROS_TEX_IMPORTS, COLOR_MACROS]
 )
-LATEX_COLOR_MACROS = "\n".join(
-    [COLOR_MACROS_BASE_MACROS, COLOR_MACROS_LATEX_IMPORTS, COLOR_MACROS]
-)
 
 
 def add_color_macros(tex: str, after_macros: Optional[str] = None) -> str:
@@ -82,10 +79,20 @@ def add_color_macros(tex: str, after_macros: Optional[str] = None) -> str:
             return (
                 tex[: begin_document.start]
                 + "\n"
-                + LATEX_COLOR_MACROS
-                + ("\n" + after_macros if after_macros else "")
+                + COLOR_MACROS_BASE_MACROS
                 + "\n"
-                + tex[begin_document.start :]
+                + COLOR_MACROS_LATEX_IMPORTS
+                + "\n"
+                + tex[begin_document.start : begin_document.end]
+                + "\n"
+                # These main color macros should be included *after* "\begin{document}". This is
+                # because AutoTeX will sometimes add a "\RequirePackage{hyperref}" statement right
+                # before "\begin{document}" in the moments before compiling the TeX. If we instead
+                # put the color macros are put above "\begin{document}", what happens is that
+                # hyperref reverts the hyperref macros that we had redefined to enable coloring.
+                + COLOR_MACROS
+                + ("\n" + after_macros if after_macros else "")
+                + tex[begin_document.end :]
             )
     return (
         TEX_COLOR_MACROS + ("\n" + after_macros if after_macros else "") + "\n\n" + tex

@@ -1,4 +1,9 @@
-% Before processing this TeX file, you must load the LaTeX color commands.
+% Before processing this TeX file, you must load the TeX color commands from
+% one of the '02*-*tex-import-color' files. For the best results, this file
+% should be input after all other packages. The macros for coloring citations 
+% are just instrumented macros from LaTeX and hyperref. If hyperref is 
+% imported after this file, coloring of citations will be disabled because the 
+% the new import will overwrite the colorized versions of hyperref macros.
 
 % '@' needs to be processed in command names so we can access lower-level macros
 % (e.g., '\current@color', '\Gin@driver') that will be defined by the TeX engines
@@ -49,12 +54,13 @@
 % ========================
 % Register a color for a citation key. Everywhere a source is cited using this
 % key, the citation body will appear in this color. Takes four arguments:
-% citation key, red, green, blue.
+% citation key, red, green, blue. Take care not to register the same color
+% multiple times; it is not guaranteed this macro will handle it in a sane way.
 %
 \def\scholarregistercitecolor#1#2#3#4{%
 \expandafter\def\csname scholarcolor@#1\endcsname{#2,#3,#4}%
-\definecolor{scholarcolor@#1}{rgb}{#2,#3,#4}
-}
+\definecolor{scholarcolor@#1}{rgb}{#2,#3,#4}%
+}%
 %
 % =======================================
 % Rules for dynamic coloring of citations
@@ -62,28 +68,79 @@
 % It's important that these rules are defined only once. For some TeX engines,
 % if they are defined multiple times, it will result in infinite macro expansion.
 %
-% * Instrument default LaTeX citation formatting: Insert a color command when
-% * LaTeX is formatting a known citation.
+% == scholar@color@if@citation@registered == 
+% * This command colors text with a color registered for the key, if a color
+% * has been registered for that key. The first parameter is the citation key.
+% * In many (but not all) cases, you can supply the \@citeb for this parameter,
+% * as LaTeX often sets this value as it's formatting a citation. The second
+% * parameter is the TeX you want to color.
+\def\scholar@color@if@citation@registered#1#2{%
+\scholarifdefinedelse{scholarcolor@#1}{%
+\textcolor{scholarcolor@#1}{#2}%
+}{#2}%
+}%
+%
+% == scholar@extract@citation@key ==
+% * Extract a citation key from hyperref macro "hyper@link@" argument #3.
+% * The argument is usually of the form 'cite.<key>', so remove the first
+% * 5 characters to get the key.
+\def\scholar@extract@citation@key #1#2#3#4#5{}%
+%
+% == Instrument default LaTeX citation formatting ==
+% * Insert a color command when LaTeX is formatting a known citation.
 \let\scholar@inner@cite@ofmt\@cite@ofmt
-\def\@cite@ofmt#1{%
-\scholarifdefinedelse{scholarcolor@\@citeb}{%
-\textcolor{scholarcolor@\@citeb}{\scholar@inner@cite@ofmt{#1}}%
-}{%
+\def\@cite@ofmt#1{\scholar@color@if@citation@registered{\@citeb}{%
 \scholar@inner@cite@ofmt{#1}%
 }}%
 %
-% * Instrument hyperref citation coloring commands to use the colors specified
-% * by 'scholarregistercitecolor' instead of defaults.
-\let\scholar@inner@citecolor\@citecolor
-\def\@citecolor{%
-\scholarifdefinedelse{scholarcolor@\@citeb}{%
-scholarcolor@\@citeb%
+% == Instrument hyperref citation formatting macros ==
+% * In a previous version, we instrumented '\@citecolor' instead of
+% * '\hyper@link', but this didn't always work. One hypothesis is that
+% * '\@citecolor' wasn't getting called if 'colorlinks' was set to false.
+\let\scholar@inner@hyper@link@\hyper@link@
+\def\hyper@link@[#1]#2#3#4{%
+\scholar@inner@hyper@link@[#1]{#2}{#3}{%
+%
+% Only attempt to color if this hyperlink is for a citation.
+\def\scholar@link@type{#1}%
+\def\scholar@link@citation@type{cite}%
+\ifx\scholar@link@type\scholar@link@citation@type
+%
+% Check whether @citeb (which typically contains the citation key used
+% to look up citation color) is defined. This requires multiple checks.
+% First, check to see if @citeb was set to the '@nil' special value.
+% Make sure @nnil is defined, as it will only be defined for LaTeX.
+\scholarifdefined{@nnil}{%
+\ifx\@citeb\@nnil%
+\def\scholar@key@undefined{yes}%
+\fi%
+}%
+% Second, check to see if the @citeb macro still lacks a definition.
+\scholarifundefined{scholar@key@undefined}{%
+\scholarifundefined{@citeb}{%
+\def\scholar@key@undefined{yes}%
+}}%
+%
+% Determine the citation key from @citeb or hyperref arguments.
+\scholarifdefinedelse{scholar@key@undefined}{%
+\edef\scholar@citation@key{\scholar@extract@citation@key #3}%
+\message{%
+@citeb is not defined. This probably means that this TeX project uses the
+package called cite. Attempting to infer citation key from arguments to the
+hyperref hyperlink commands. The inferred key is \scholar@citation@key.
+}%
 }{%
-\scholar@inner@citecolor%
+\edef\scholar@citation@key{\@citeb}%
+}%
+% Finally, color the citation text.
+\scholar@color@if@citation@registered{\scholar@citation@key}{#4}%
+\else%
+% This part will be executed if it's not a citation hyperlink.
+#4%
+\fi%
 }}%
 \message{Defined S2 LaTeX coloring commands.}%
-}%
-}%
+}}%
 
 % Revert '@' to just be a normal character.
 \catcode`@ = 12
