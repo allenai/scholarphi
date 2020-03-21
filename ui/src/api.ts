@@ -25,14 +25,8 @@ export async function getAllPapers() {
 }
 
 export async function papers(s2Ids: string[]) {
-  const data = await doGet(
-    axios.get("/api/v0/papers", {
-      params: {
-        id: s2Ids.join(",")
-      }
-    })
-  );
-  return (data || []) as Paper[];
+  var promises = collectPromise(s2Ids, 50);
+  return Promise.all(promises).then(responses => (responses as Paper[][]).reduce((a, b) => a.concat(b), []));
 }
 
 export async function symbolsForArxivId(arxivId: string) {
@@ -122,4 +116,37 @@ async function doGet<T>(get: Promise<AxiosResponse<T>>) {
     console.error("API Error:", error);
   }
   return null;
+}
+
+/** 
+ * helper function for slicing arrays.
+ */
+function sliceArray(array: string[], size: number) {
+  var result = [];
+
+  for (var i = 0; i < array.length; i += size) {
+    result.push(array.slice(i, i+size));
+  }
+
+  return result
+}
+
+/** 
+ * Collect array of promises generated based on array of paper ids.
+ */
+function collectPromise(papers:string[], size:number) {
+  var paperChuck = sliceArray(papers, size);
+  var promises = [];
+
+  for (var i = 0; i < paperChuck.length; i++) {
+    promises.push(
+      doGet(axios.get<Paper[]>("/api/v0/papers", {
+        params: {
+          id: paperChuck[i].join(",")
+        }
+      }))
+    )
+  }
+
+  return promises;
 }
