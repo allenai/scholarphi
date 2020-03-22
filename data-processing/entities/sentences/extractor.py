@@ -47,14 +47,15 @@ class SentenceExtractor(EntityExtractor):
             plaintext_to_tex_offset_map[len(plaintext)] = last_segment.tex_end
         # Segment the plaintext. Return offsets for each setence relative to the TeX input
         segmenter = pysbd.Segmenter(language="en", clean=False, char_span=True)
-        # Record the previous sentence end to account for extractor bug
-        pre_sentence_end = -1
+        # Record the current length of the plain text so account for the extractor bug
+        length_so_far_in_plain_text = -1
         for i, sentence in enumerate(segmenter.segment(plaintext)):
-            length = plaintext_to_tex_offset_map[sentence.end] - plaintext_to_tex_offset_map[sentence.start]
             # Since the sentence extractor has several bugs related to finding start and end indicies
             # we will simply set them ourselves.
-            start = pre_sentence_end + 1
-            end = start + length
+            start = plaintext_to_tex_offset_map[length_so_far_in_plain_text + 1]
+            end = plaintext_to_tex_offset_map[sentence.end + (length_so_far_in_plain_text + 1 - sentence.start)]
+            length_so_far_in_plain_text += sentence.end - sentence.start + 1
+
             tex = tex[start:end]
             context_tex = tex[start - DEFAULT_CONTEXT_SIZE : end + DEFAULT_CONTEXT_SIZE]
             pre_sentence_end = end
