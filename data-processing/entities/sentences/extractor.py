@@ -58,7 +58,6 @@ class SentenceExtractor(EntityExtractor):
 
             tex = tex[start:end]
             context_tex = tex[start - DEFAULT_CONTEXT_SIZE : end + DEFAULT_CONTEXT_SIZE]
-            pre_sentence_end = end
             yield Sentence(
                 text=sentence.sent,
                 start=start,
