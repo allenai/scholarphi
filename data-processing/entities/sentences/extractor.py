@@ -58,7 +58,7 @@ class SentenceExtractor(EntityExtractor):
             end = plaintext_to_tex_offset_map[real_end]
             length_so_far_in_plain_text = real_end
 
-            tex = tex[start:end]
+            tex_sub = tex[start:end]
             context_tex = tex[start - DEFAULT_CONTEXT_SIZE : end + DEFAULT_CONTEXT_SIZE]
             yield Sentence(
                 text=sentence.sent,
@@ -66,6 +66,6 @@ class SentenceExtractor(EntityExtractor):
                 end=end,
                 id_=str(i),
                 tex_path=tex_path,
-                tex=tex,
+                tex=tex_sub,
                 context_tex=context_tex,
             )
