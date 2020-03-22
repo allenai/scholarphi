@@ -1,7 +1,6 @@
 {
   "editor.tabSize": 2,
   "files.exclude": {
-    "node_modules/": true,
-    "public/pdf.js/": true
+    "node_modules/": true
   }
 }
