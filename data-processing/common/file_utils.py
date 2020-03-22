@@ -11,25 +11,11 @@ import shutil
 from typing import Dict, Iterator, List, Optional, Type, TypeVar
 
 from common import directories
-from common.types import (
-    ArxivId,
-    BoundingBox,
-    CharacterId,
-    CompilationResult,
-    Equation,
-    EquationId,
-    FileContents,
-    HueIteration,
-    HueLocationInfo,
-    Path,
-    SerializableCharacter,
-    SerializableChild,
-    SerializableSymbol,
-    SerializableToken,
-    Symbol,
-    SymbolId,
-    SymbolWithId,
-)
+from common.types import (ArxivId, BoundingBox, CharacterId, CompilationResult,
+                          Equation, EquationId, FileContents, HueIteration,
+                          HueLocationInfo, Path, SerializableCharacter,
+                          SerializableChild, SerializableSymbol,
+                          SerializableToken, Symbol, SymbolId, SymbolWithId)
 
 Contents = str
 Encoding = str
@@ -122,9 +108,20 @@ def load_from_csv(
             # Transfer data from the row into a dictionary of arguments. By only including the
             # fields for D, we skip over columns that can't be used to initialize D. At the
             # same time, cast each column to the intended data type.
+            invalid = False
             for field in dataclasses.fields(D):
-                data[field.name] = field.type(row[field.name])
-            yield D(**data)  # type: ignore
+                try:
+                    data[field.name] = field.type(row[field.name])
+                except ValueError as e:
+                    logging.warning(  # pylint: disable=logging-not-lazy
+                        "Could not read value '%s' for field '%s' of expected type %s from CSV. "
+                        + "ValueError: %s. This row will be skipped.",
+                        row[field.name], field.name, field.type, e
+                    )
+                    invalid = True
+            
+            if not invalid:
+                yield D(**data)  # type: ignore
 
 
 def clean_directory(directory: str) -> None:
