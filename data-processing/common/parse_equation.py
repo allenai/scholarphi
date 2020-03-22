@@ -20,7 +20,7 @@ invisible and we wouldn't want to detect it anyway.
 """
 KATEX_ERROR_COLOR = "#ffffff"
 CHARACTER_TAGS = ["mi"]
-SYMBOL_TAGS = ["msubsup", "msub", "msup", "mi"]
+SYMBOL_TAGS = ["msubsup", "msub", "msup", "mi", "mn"]
 MERGABLE_PARENT_TAGS = ["mrow"]
 # Partial Symbols are symbols which are not symbols by themselves, but
 # rather symbols when in the context (e.g. a descendent) of other symbols
@@ -59,8 +59,8 @@ def get_symbols(mathml: str) -> List[Symbol]:
     # It's 'safe' to call soup.find_all as the underlying bs4 implementation
     # appears to preserve order https://bazaar.launchpad.net/~leonardr/beautifulsoup/bs4/view/head:/bs4/element.py
     for symbol_node in soup.find_all(SYMBOL_TAGS):
-        # Skip partial symbols
-        if symbol_node.name in PARTIAL_SYMBOLS and "mrow" == symbol_node.parent.name:
+        # Skip partial symbols that aren't themselves descendants of another symbol
+        if symbol_node.name in PARTIAL_SYMBOLS and not (symbol_node.parent.name in SYMBOL_TAGS):
             continue;
 
         # Collect indexes of all characters that belong to this symbol
