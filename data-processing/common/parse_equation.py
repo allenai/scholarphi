@@ -19,13 +19,9 @@ misdetecting colored equations as errors---anything that's set to 'white' in a p
 invisible and we wouldn't want to detect it anyway.
 """
 KATEX_ERROR_COLOR = "#ffffff"
-CHARACTER_TAGS = ["mi"]
+CHARACTER_TAGS = ["mi", "mn"]
 SYMBOL_TAGS = ["msubsup", "msub", "msup", "mi"]
 MERGABLE_PARENT_TAGS = ["mrow"]
-# Partial Symbols are symbols which are not symbols by themselves, but
-# rather symbols when in the context (e.g. a descendent) of other symbols
-PARTIAL_SYMBOLS = ["mn"]
-SYMBOL_TAGS.extend(PARTIAL_SYMBOLS)
 
 def _is_node_annotated(node: Any) -> bool:
     return (
@@ -60,10 +56,6 @@ def get_symbols(mathml: str) -> List[Symbol]:
     # It's 'safe' to call soup.find_all as the underlying bs4 implementation
     # appears to preserve order https://bazaar.launchpad.net/~leonardr/beautifulsoup/bs4/view/head:/bs4/element.py
     for symbol_node in soup.find_all(SYMBOL_TAGS):
-        # Skip partial symbols that aren't themselves descendants of another symbol
-        if symbol_node.name in PARTIAL_SYMBOLS and not symbol_node.parent.name in SYMBOL_TAGS:
-            continue
-
         # Collect indexes of all characters that belong to this symbol
         characters = []
         if symbol_node.name in CHARACTER_TAGS:
