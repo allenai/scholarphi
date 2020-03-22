@@ -229,6 +229,17 @@ if __name__ == "__main__":
         ),
     )
     parser.add_argument(
+        "--notify-bcc",
+        type=str,
+        nargs="+",
+        default=[],
+        help=(
+            "Email address that will be bcc'd with a digest of processing results. The pipeline "
+            + "must have Internet access and must be able to connect to Gmail's SMTP server. "
+            + " Also see '--notify-emails'."
+        ),
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Do not save extracted entities to the database.",
@@ -382,7 +393,7 @@ if __name__ == "__main__":
         pipeline_digest.update(digest_for_papers)
 
     # If requested, send email with paper-processing summaries.
-    if len(emails) > 0:
+    if len(emails) > 0 or len(args.notify_bcc) > 0:
         log_location = None
         if args.store_log:
             log_preview_url = (
@@ -394,4 +405,6 @@ if __name__ == "__main__":
         else:
             log_preview_url = None
 
-        email.send_digest_email(pipeline_digest, emails, log_preview_url)
+        email.send_digest_email(
+            pipeline_digest, emails, args.notify_bcc, log_preview_url
+        )
