@@ -52,9 +52,11 @@ class SentenceExtractor(EntityExtractor):
         for i, sentence in enumerate(segmenter.segment(plaintext)):
             # Since the sentence extractor has several bugs related to finding start and end indicies
             # we will simply set them ourselves.
-            start = plaintext_to_tex_offset_map[length_so_far_in_plain_text + 1]
-            end = plaintext_to_tex_offset_map[sentence.end + (length_so_far_in_plain_text + 1 - sentence.start)]
-            length_so_far_in_plain_text += sentence.end - sentence.start + 1
+            real_start = max(sentence.start, length_so_far_in_plain_text + 1)
+            start = plaintext_to_tex_offset_map[real_start]
+            real_end = real_start + (sentence.end - sentence.start)
+            end = plaintext_to_tex_offset_map[real_end]
+            length_so_far_in_plain_text = real_end
 
             tex = tex[start:end]
             context_tex = tex[start - DEFAULT_CONTEXT_SIZE : end + DEFAULT_CONTEXT_SIZE]
