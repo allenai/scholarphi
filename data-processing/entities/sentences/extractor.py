@@ -75,7 +75,7 @@ class SentenceExtractor(EntityExtractor):
             real_start = plaintext.find(sentence.sent, length_so_far_in_plain_text)
             real_end = real_start + len(sentence.sent)
             if real_start not in plaintext_to_tex_offset_map or real_end not in plaintext_to_tex_offset_map:
-                logging.warning('a sentence boundary was incorrect, this is probably an issue with pysbd. Skipping sentence in extractor')
+                logging.warning('A sentence boundary was incorrect for sentence %s. This is probably an issue with pysbd. Skipping sentence in extractor.', sentences.sent)
                 continue
 
             start = plaintext_to_tex_offset_map[real_start]
