@@ -9,7 +9,7 @@ from common.types import SerializableEntity
 # These are 'reserved characters' by the pysbd module and can potentially
 # cause issues if they are present in a string. This list was compiled from the
 # psybd source code as of 3/23/20
-PSYDB_RESERVED_CHARACTERS: List[str] = ["∯", "ȸ", "♨", "☝", "✂", "⎋", "ᓰ", "ᓱ", "ᓳ", "ᓴ", "ᓷ", "ᓸ"]
+PYSBD_RESERVED_CHARACTERS: List[str] = ["∯", "ȸ", "♨", "☝", "✂", "⎋", "ᓰ", "ᓱ", "ᓳ", "ᓴ", "ᓷ", "ᓸ"]
 
 @dataclass(frozen=True)
 class Sentence(SerializableEntity):
