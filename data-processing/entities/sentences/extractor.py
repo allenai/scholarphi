@@ -26,7 +26,7 @@ class SentenceExtractor(EntityExtractor):
     def parse(self, tex_path: str, tex: str) -> Iterator[Sentence]:
         for reserved_char in PSYDB_RESERVED_CHARACTERS:
             if reserved_char in tex:
-                logging.warning('reserved character "%s" found in tex string, this might break the sentence extractor.', reserved_char)
+                logging.warning('Reserved character from pysbd "%s" found in tex string, this might break the sentence extractor.', reserved_char)
 
         # Extract plaintext segments from TeX
         plaintext_extractor = PlaintextExtractor()
