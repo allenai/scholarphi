@@ -70,7 +70,7 @@ class SentenceExtractor(EntityExtractor):
             #    ex: see PSYDB_RESERVED_CHARACTERS list.
             #    sol: throw a warning if the sentence contains any of these characters.
             if len(sentence.sent) > 1000:
-                logging.warning('exceptionally long sentence, this might indicate the sentence extractor is broken')
+                logging.warning('Exceptionally long sentence (length %d), this might indicate the sentence extractor failed to properly split text into sentences.', len(sentence.sent))
 
             real_start = plaintext.find(sentence.sent, length_so_far_in_plain_text)
             real_end = real_start + len(sentence.sent)
