@@ -22,6 +22,11 @@ interface AnnotationProps {
    */
   source?: string;
   /**
+   * When inactive, the annotation cannot be interacted with (i.e. clicked). Empty boxes will appear
+   * in the places of each of the bounding boxes.
+   */
+  inactive?: boolean;
+  /**
    * Class name to apply to all spans that belong to this
    */
   className?: string;
@@ -58,6 +63,7 @@ export class Annotation extends React.PureComponent<AnnotationProps> {
               key={box.id}
               annotationId={this.props.id}
               id={box.id}
+              inactive={this.props.inactive}
               location={box}
               className={classNames(this.props.className, {
                 "source-tex-pipeline": this.props.source === "tex-pipeline",
@@ -66,6 +72,7 @@ export class Annotation extends React.PureComponent<AnnotationProps> {
               })}
               shouldHighlight={this.props.shouldHighlight}
               tooltipContent={this.props.tooltipContent}
+              onKeyDown={this.props.onKeyDown}
             />
           ))}
       </>

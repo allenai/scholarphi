@@ -13,14 +13,13 @@
   padding: @highlight-hitbox-padding * 2/3 @highlight-hitbox-padding;
 }
 
-/**
- * Provide an underline as a hint that the annotation is interactive 
- */
-.scholar-reader-annotation-span.annotation-hint {
-  border-bottom: @underline-width @underline-color dotted;
-}
-
-.scholar-reader-annotation-span:not(.user-annotation) {
+.scholar-reader-annotation-span.active:not(.user-annotation) {
+  /**
+   * Provide an underline as a hint that the annotation is interactive 
+   */
+  &.active.annotation-hint {
+    border-bottom: @underline-width @underline-color dotted;
+  }
   /**
    * Highlight the area of an annotation on hover
    */
@@ -42,7 +41,16 @@
 }
 
 /**
- * Highlight entities that were using experimental techniques
+ * Indicate inactive annotations with unclickable transparent bounding boxes.
+ */
+.scholar-reader-annotation-span.inactive {
+  background: none;
+  pointer-events: none;
+  border: 1px dotted black;
+}
+
+/**
+ * Highlight entities that were extracted using experimental techniques
  */
 .scholar-reader-annotation-span.source-other {
   background-color: rgba(255, 255, 0, 0.3);

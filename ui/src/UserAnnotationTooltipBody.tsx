@@ -7,7 +7,7 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import DeleteIcon from "@material-ui/icons/Delete";
 import React from "react";
 import { ScholarReaderContext } from "./state";
-import { Annotation } from "./types/api";
+import { Annotation, UserAnnotationType } from "./types/api";
 
 interface UserAnnotationTooltipBodyProps {
   annotation: Annotation;
@@ -23,7 +23,7 @@ export class UserAnnotationTooltipBody extends React.PureComponent<
     const { updateUserAnnotation } = this.context;
     updateUserAnnotation(this.props.annotation.id, {
       ...this.props.annotation,
-      type: e.target.value as "citation" | "symbol" | "equation"
+      type: e.target.value as UserAnnotationType
     });
   }
 

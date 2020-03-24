@@ -17,6 +17,11 @@ interface AnnotationSpanProps {
    */
   id: number;
   /**
+   * When inactive, the annotation span is not interactive (i.e. it cannot be clicked, and its
+   * tooltip will not appear). An empty box will appear in the place of the span.
+   */
+  inactive?: boolean;
+  /**
    * Bounding box of the region of the paper this span was created to cover.
    */
   location: BoundingBox;
@@ -88,7 +93,7 @@ export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
             <ClickAwayListener onClickAway={this.deselectIfSelected.bind(this)}>
               <MuiTooltip
                 className="tooltip"
-                open={this.isSelected()}
+                open={this.props.inactive !== true && this.isSelected()}
                 interactive
                 disableHoverListener
                 title={this.props.tooltipContent}
@@ -106,10 +111,12 @@ export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
                     this.props.className,
                     {
                       selected: this.isSelected(),
+                      active: this.props.inactive !== true,
+                      inactive: this.props.inactive === true,
                       "annotation-selected": this.isAnnotationSelected()
                     }
                   )}
-                  tabIndex={0}
+                  tabIndex={this.props.inactive ? undefined : 0}
                   onKeyDown={this.onKeyDown.bind(this)}
                 />
               </MuiTooltip>

@@ -9,6 +9,7 @@ import {
   Paper,
   Symbol,
   SymbolMatches,
+  UserAnnotationType,
   UserLibrary
 } from "./types/api";
 import { PDFPageView, PDFViewer } from "./types/pdfjs-viewer";
@@ -64,8 +65,8 @@ export interface State {
   setSelectedAnnotationSpanId(id: number | null): void;
   userAnnotationsEnabled: boolean;
   setUserAnnotationsEnabled(enabled: boolean): void;
-  userAnnotationType: "symbol" | "citation";
-  setUserAnnotationType(type: "symbol" | "citation"): void;
+  userAnnotationType: UserAnnotationType;
+  setUserAnnotationType(type: UserAnnotationType): void;
   userAnnotations: Readonly<Annotation[]>;
   addUserAnnotation(annotationData: AnnotationData): void;
   updateUserAnnotation(id: number, annotation: Annotation): void;
