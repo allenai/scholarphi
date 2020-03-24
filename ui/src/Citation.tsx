@@ -16,9 +16,9 @@ export class Citation extends React.PureComponent<CitationProperties> {
           if (paper === undefined) {
             return (
               <div>
-                Sorry, we currently don't have any linked information for this paper yet.<br></br>
-                Let us know what went wrong by clicking on the icon below, so we could provide 
-                you with better reading experience in the future!
+                <p>Sorry, we currently don't have any linked information for this paper yet.</p>
+                <p>Let us know what went wrong by clicking on the icon below, so we could provide 
+                you with better reading experience in the future!</p>
               </div>
             )
           } else {

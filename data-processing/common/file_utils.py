@@ -11,25 +11,11 @@ import shutil
 from typing import Dict, Iterator, List, Optional, Type, TypeVar
 
 from common import directories
-from common.types import (
-    ArxivId,
-    BoundingBox,
-    CharacterId,
-    CompilationResult,
-    Equation,
-    EquationId,
-    FileContents,
-    HueIteration,
-    HueLocationInfo,
-    Path,
-    SerializableCharacter,
-    SerializableChild,
-    SerializableSymbol,
-    SerializableToken,
-    Symbol,
-    SymbolId,
-    SymbolWithId,
-)
+from common.types import (ArxivId, BoundingBox, CharacterId, CompilationResult,
+                          Equation, EquationId, FileContents, HueIteration,
+                          HueLocationInfo, Path, SerializableCharacter,
+                          SerializableChild, SerializableSymbol,
+                          SerializableToken, Symbol, SymbolId, SymbolWithId)
 
 Contents = str
 Encoding = str
@@ -122,9 +108,20 @@ def load_from_csv(
             # Transfer data from the row into a dictionary of arguments. By only including the
             # fields for D, we skip over columns that can't be used to initialize D. At the
             # same time, cast each column to the intended data type.
+            invalid = False
             for field in dataclasses.fields(D):
-                data[field.name] = field.type(row[field.name])
-            yield D(**data)  # type: ignore
+                try:
+                    data[field.name] = field.type(row[field.name])
+                except ValueError as e:
+                    logging.warning(  # pylint: disable=logging-not-lazy
+                        "Could not read value '%s' for field '%s' of expected type %s from CSV. "
+                        + "ValueError: %s. This row will be skipped.",
+                        row[field.name], field.name, field.type, e
+                    )
+                    invalid = True
+            
+            if not invalid:
+                yield D(**data)  # type: ignore
 
 
 def clean_directory(directory: str) -> None:
@@ -295,18 +292,25 @@ def save_compilation_results(path: Path, result: CompilationResult) -> None:
         stderr_file.write(result.stderr)
 
 
-def load_citation_hue_locations(
-    arxiv_id: ArxivId,
+def load_hue_locations(
+    arxiv_id: ArxivId, entity_name: str
 ) -> Optional[Dict[HueIteration, List[BoundingBox]]]:
+    """
+    Load bounding boxes for each entity. Entities are indexes by the hue they were colored and
+    the iteraction of coloring in which they were assigned that hue. Entities can have multiple
+    bounding boxes (e.g., if they are split over multiple lines).
+    """
 
     boxes_by_hue_iteration: Dict[HueIteration, List[BoundingBox]] = {}
     bounding_boxes_path = os.path.join(
-        directories.arxiv_subdir("hue-locations-for-citations", arxiv_id),
+        directories.arxiv_subdir(f"hue-locations-for-{entity_name}", arxiv_id),
         "hue_locations.csv",
     )
     if not os.path.exists(bounding_boxes_path):
         logging.warning(
-            "Could not find bounding boxes information for %s. Skipping", arxiv_id,
+            "Could not find bounding boxes information entity of type %s for paper %s. Skipping.",
+            entity_name,
+            arxiv_id,
         )
         return None
 
@@ -324,6 +328,12 @@ def load_citation_hue_locations(
         boxes_by_hue_iteration[hue_iteration].append(box)
 
     return boxes_by_hue_iteration
+
+
+def load_citation_hue_locations(
+    arxiv_id: ArxivId,
+) -> Optional[Dict[HueIteration, List[BoundingBox]]]:
+    return load_hue_locations(arxiv_id, "citations")
 
 
 def load_equation_token_locations(

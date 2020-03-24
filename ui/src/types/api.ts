@@ -85,7 +85,7 @@ export interface MathMlMatch {
 export type AnnotationId = number;
 
 export interface AnnotationData {
-  type: "citation" | "symbol";
+  type: "citation" | "symbol" | "equation";
   page: number;
   left: number;
   top: number;
@@ -95,7 +95,7 @@ export interface AnnotationData {
 
 export interface Annotation {
   id: AnnotationId;
-  type: "citation" | "symbol";
+  type: "citation" | "symbol" | "equation";
   boundingBox: BoundingBox;
 }
 

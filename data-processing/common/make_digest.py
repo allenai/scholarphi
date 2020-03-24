@@ -2,46 +2,33 @@ import os
 from typing import Iterable, Optional
 
 from common import directories, file_utils
-from common.types import (
-    ArxivId,
-    EntityProcessingDigest,
-    HueLocationInfo,
-    PaperProcessingDigest,
-    PipelineDigest,
-    SerializableEntity,
-)
+from common.types import (ArxivId, EntityProcessingDigest, HueLocationInfo,
+                          PaperProcessingDigest, SerializableEntity)
 from scripts.pipelines import EntityPipeline
 
 
-def create_pipeline_digest(
-    pipelines: Iterable[EntityPipeline], arxiv_ids: Iterable[ArxivId]
-) -> PipelineDigest:
-    " Create a summary of the pipeline processing results for a set of papers. "
+def make_paper_digest(
+    pipelines: Iterable[EntityPipeline], arxiv_id: ArxivId
+) -> PaperProcessingDigest:
+    " Create a summary of the pipeline processing results for a paper. "
 
-    digest: PipelineDigest = {}
+    paper_digest: PaperProcessingDigest = {}
 
-    for arxiv_id in arxiv_ids:
+    for pipeline in pipelines:
 
-        paper_digest: PaperProcessingDigest = {}
-        digest[arxiv_id] = paper_digest
+        # Some entity types require custom code for detecting how many entities were
+        # processed. If the entity pipeline has such custom code, run the custom code instead
+        # of the default code for counting how many entities were processed.
+        if pipeline.make_digest is not None:
+            paper_entity_digest = pipeline.make_digest(pipeline.entity_name, arxiv_id)
+        else:
+            paper_entity_digest = make_default_paper_digest(
+                pipeline.entity_name, arxiv_id
+            )
 
-        for pipeline in pipelines:
+        paper_digest[pipeline.entity_name] = paper_entity_digest
 
-            # Some entity types require custom code for detecting how many entities were
-            # processed. If the entity pipeline has such custom code, run the custom code instead
-            # of the default code for counting how many entities were processed.
-            if pipeline.make_digest is not None:
-                paper_entity_digest = pipeline.make_digest(
-                    pipeline.entity_name, arxiv_id
-                )
-            else:
-                paper_entity_digest = make_default_paper_digest(
-                    pipeline.entity_name, arxiv_id
-                )
-
-            paper_digest[pipeline.entity_name] = paper_entity_digest
-
-    return digest
+    return paper_digest
 
 
 def make_default_paper_digest(
