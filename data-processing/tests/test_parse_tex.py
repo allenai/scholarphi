@@ -257,3 +257,32 @@ def test_extract_macro_balance_nested_braces_for_argument():
     assert macros[0].start == 0
     assert macros[0].end == 16
     assert macros[0].tex == "\\macro{{nested}}"
+
+def test_sentence_splitting_end_points():
+    extractor = SentenceExtractor()
+    sentences = list(
+        extractor.parse(
+            "main.tex",
+            "This is a sentence. Next we describe two items. 1) The first item. 2) The second item.",
+        )
+    )
+
+    assert len(sentences) == 4
+    sentence_end_points = [[0, 19], [20, 47], [48, 66], [67, 86]]
+    for i, [start, end] in enumerate(sentence_end_points):
+        assert sentences[i].start == start
+        assert sentences[i].end == end
+
+def test_sentence_splitting_end_points_and_more_text():
+    extractor = SentenceExtractor()
+    sentences = list(
+        extractor.parse(
+            "main.tex",
+            "This sentence. has extra. text. 1. first 2. second 3. third. And some extra. stuff.",
+        )
+    )
+    assert len(sentences) == 8
+    sentence_end_points = [[0, 14], [15, 25], [26, 31], [32, 40], [41, 50], [51, 60], [61, 76], [77, 83]]
+    for i, [start, end] in enumerate(sentence_end_points):
+        assert sentences[i].start == start
+        assert sentences[i].end == end
