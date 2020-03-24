@@ -9,18 +9,18 @@ from common.types import SerializableEntity
 # These are 'reserved characters' by the pysbd module and can potentially
 # cause issues if they are present in a string. This list was compiled from the
 # psybd source code as of 3/23/20. locations:
-# ∯: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/abbreviation_replacer.py, https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/lists_item_replacer.py
-# ȸ: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/processor.py
-# ♨: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/lists_item_replacer.py
-# ☝: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/lists_item_replacer.py
-# ✂: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/lists_item_replacer.py
-# ⎋: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/punctuation_replacer.py
-# ᓰ: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/punctuation_replacer.py
-# ᓱ: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/punctuation_replacer.py
-# ᓳ: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/punctuation_replacer.py
-# ᓴ: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/processor.py, https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/punctuation_replacer.py
-# ᓷ: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/cleaner.py, https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/punctuation_replacer.py
-# ᓸ: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/processor.py, https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/punctuation_replacer.py
+# ∯: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/abbreviation_replacer.py, https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/lists_item_replacer.py
+# ȸ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/processor.py
+# ♨: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/lists_item_replacer.py
+# ☝: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/lists_item_replacer.py
+# ✂: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/lists_item_replacer.py
+# ⎋: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
+# ᓰ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
+# ᓱ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
+# ᓳ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
+# ᓴ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/processor.py, https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
+# ᓷ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/cleaner.py, https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
+# ᓸ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/processor.py, https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
 PYSBD_RESERVED_CHARACTERS: List[str] = ["∯", "ȸ", "♨", "☝", "✂", "⎋", "ᓰ", "ᓱ", "ᓳ", "ᓴ", "ᓷ", "ᓸ"]
 
 @dataclass(frozen=True)
