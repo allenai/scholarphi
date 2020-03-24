@@ -86,6 +86,24 @@ def test_get_symbol_children():
     assert t in t_sub_i.children
     assert i in t_sub_i.children
 
+def test_get_symbol_sub_super_with_numeric_child():
+    with open(
+        get_test_path(os.path.join("mathml", "x_sub_four_sub_three.xml"))
+    ) as mathml_file:
+        mathml = mathml_file.read()
+        symbols = get_symbols(mathml)
+
+    assert len(symbols) == 3
+    x_sub_four_sub_three = list(
+        filter(lambda s: "msub" in s.mathml and "x" in s.mathml, symbols)
+    )[0]
+    x = list(filter(lambda s: s.mathml == "<mi>x</mi>", symbols))[0]
+    four_sub_three = list(filter(lambda s: s.mathml == "<msub>\n<mn>4</mn>\n<mn>3</mn>\n</msub>", symbols))[0]
+
+    assert len(x_sub_four_sub_three.children) == 2
+    assert x in x_sub_four_sub_three.children
+    assert four_sub_three in x_sub_four_sub_three.children
+
 def test_parse_consecutive_mi():
     with open(get_test_path(os.path.join("mathml", "relu.xml"))) as mathml_file:
         mathml = mathml_file.read()
