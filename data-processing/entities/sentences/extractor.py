@@ -90,7 +90,7 @@ class SentenceExtractor(EntityExtractor):
                 logging.warning('A sentence boundary was incorrect for sentence %s. This is probably an issue with pysbd. Skipping sentence in extractor.', sentence)
                 continue
             if plaintext_start - 500 > length_so_far_in_plain_text:
-                logging.warning('Sentence boundary start for sentence %s was %d characters a head of the previous sentence, this might indicate the sentence extractor failed to properly split text.', sentence, plaintext_start - length_so_far_in_plain_text)
+                logging.warning('Sentence boundary start for sentence %s was %d characters ahead of the previous sentence, this might indicate the sentence extractor failed to properly split text.', sentence, plaintext_start - length_so_far_in_plain_text)
 
             start = plaintext_to_tex_offset_map[plaintext_start]
             end = plaintext_to_tex_offset_map[plaintext_end]
