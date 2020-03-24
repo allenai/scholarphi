@@ -8,7 +8,19 @@ from common.parse_tex import DEFAULT_CONTEXT_SIZE, EntityExtractor, PlaintextExt
 from common.types import SerializableEntity
 # These are 'reserved characters' by the pysbd module and can potentially
 # cause issues if they are present in a string. This list was compiled from the
-# psybd source code as of 3/23/20
+# psybd source code as of 3/23/20. locations:
+# ∯: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/abbreviation_replacer.py, https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/lists_item_replacer.py
+# ȸ: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/processor.py
+# ♨: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/lists_item_replacer.py
+# ☝: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/lists_item_replacer.py
+# ✂: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/lists_item_replacer.py
+# ⎋: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/punctuation_replacer.py
+# ᓰ: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/punctuation_replacer.py
+# ᓱ: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/punctuation_replacer.py
+# ᓳ: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/punctuation_replacer.py
+# ᓴ: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/processor.py, https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/punctuation_replacer.py
+# ᓷ: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/cleaner.py, https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/punctuation_replacer.py
+# ᓸ: https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/processor.py, https://github.com/nipunsadvilkar/pySBD/blob/npn-carriage-return-fix/pysbd/punctuation_replacer.py
 PYSBD_RESERVED_CHARACTERS: List[str] = ["∯", "ȸ", "♨", "☝", "✂", "⎋", "ᓰ", "ᓱ", "ᓳ", "ᓴ", "ᓷ", "ᓸ"]
 
 @dataclass(frozen=True)
@@ -24,7 +36,7 @@ class SentenceExtractor(EntityExtractor):
     """
 
     def parse(self, tex_path: str, tex: str) -> Iterator[Sentence]:
-        for reserved_char in PSYDB_RESERVED_CHARACTERS:
+        for reserved_char in PYSBD_RESERVED_CHARACTERS:
             if reserved_char in tex:
                 logging.warning('Reserved character from pysbd "%s" found in tex string, this might break the sentence extractor.', reserved_char)
 
@@ -54,7 +66,7 @@ class SentenceExtractor(EntityExtractor):
         if last_segment is not None:
             plaintext_to_tex_offset_map[len(plaintext)] = last_segment.tex_end
         # Segment the plaintext. Return offsets for each setence relative to the TeX input
-        segmenter = pysbd.Segmenter(language="en", clean=False, char_span=True)
+        segmenter = pysbd.Segmenter(language="en", clean=False)
         # Record the current length of the plain text so account for the extractor bug
         length_so_far_in_plain_text = 0
         for i, sentence in enumerate(segmenter.segment(plaintext)):
@@ -67,24 +79,26 @@ class SentenceExtractor(EntityExtractor):
             #    ex: "hello. world. 1) item one. 2) item two. 3) item three" or "hello!!! world."
             #    sol: set indexes manually using string search + sentence length
             # 3. pysbd uses reserved characters for splitting sentences
-            #    ex: see PSYDB_RESERVED_CHARACTERS list.
+            #    ex: see PYSBD_RESERVED_CHARACTERS list.
             #    sol: throw a warning if the sentence contains any of these characters.
-            if len(sentence.sent) > 1000:
-                logging.warning('Exceptionally long sentence (length %d), this might indicate the sentence extractor failed to properly split text into sentences.', len(sentence.sent))
+            if len(sentence) > 1000:
+                logging.warning('Exceptionally long sentence (length %d), this might indicate the sentence extractor failed to properly split text into sentences.', len(sentence))
 
-            real_start = plaintext.find(sentence.sent, length_so_far_in_plain_text)
-            real_end = real_start + len(sentence.sent)
-            if real_start not in plaintext_to_tex_offset_map or real_end not in plaintext_to_tex_offset_map:
-                logging.warning('A sentence boundary was incorrect for sentence %s. This is probably an issue with pysbd. Skipping sentence in extractor.', sentences.sent)
+            plaintext_start = plaintext.find(sentence, length_so_far_in_plain_text)
+            plaintext_end = plaintext_start + len(sentence)
+            if plaintext_start not in plaintext_to_tex_offset_map or plaintext_end not in plaintext_to_tex_offset_map:
+                logging.warning('A sentence boundary was incorrect for sentence %s. This is probably an issue with pysbd. Skipping sentence in extractor.', sentence)
                 continue
+            if plaintext_start - 500 > length_so_far_in_plain_text:
+                logging.warning('Sentence boundary start for sentence %s was %d characters a head of the previous sentence, this might indicate the sentence extractor failed to properly split text.', sentence, plaintext_start - length_so_far_in_plain_text)
 
-            start = plaintext_to_tex_offset_map[real_start]
-            end = plaintext_to_tex_offset_map[real_end]
-            length_so_far_in_plain_text = real_end
+            start = plaintext_to_tex_offset_map[plaintext_start]
+            end = plaintext_to_tex_offset_map[plaintext_end]
+            length_so_far_in_plain_text = plaintext_end
             tex_sub = tex[start:end]
             context_tex = tex[start - DEFAULT_CONTEXT_SIZE : end + DEFAULT_CONTEXT_SIZE]
             yield Sentence(
-                text=sentence.sent,
+                text=sentence,
                 start=start,
                 end=end,
                 id_=str(i),
