@@ -24,15 +24,32 @@ export async function getAllPapers() {
   return await doGet<PaperIdWithCounts[]>(axios.get("/api/v0/papers/list"));
 }
 
+/**
+ * API request for paper details need to be batched as it seems that in production,
+ * when more than around 50 paper Ids are requested at once, sometimes the API fails to respond. 
+ * @param s2Ids list of Ids of all the papers cited in this paper
+ */
 export async function papers(s2Ids: string[]) {
-  const data = await doGet(
-    axios.get("/api/v0/papers", {
-      params: {
-        id: s2Ids.join(",")
-      }
-    })
-  );
-  return (data || []) as Paper[];
+
+  const PAPER_REQUEST_BATCH_SIZE = 50;
+  var s2IdsBatch = [];
+  var promises = [];
+
+  for (let i = 0; i < s2Ids.length; i += PAPER_REQUEST_BATCH_SIZE) {
+    s2IdsBatch.push(s2Ids.slice(i, i + PAPER_REQUEST_BATCH_SIZE));
+  }
+
+  for (let i = 0; i < s2IdsBatch.length; i++) {
+    promises.push(
+      doGet(axios.get<Paper[]>("/api/v0/papers", {
+        params: {
+          id: s2IdsBatch[i].join(",")
+        }
+      }))
+    )
+  }
+
+  return Promise.all(promises).then(responses => responses.flat() as Paper[]);
 }
 
 export async function symbolsForArxivId(arxivId: string) {
