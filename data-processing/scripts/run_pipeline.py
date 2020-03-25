@@ -8,19 +8,13 @@ from datetime import datetime
 from typing import List
 
 from common import directories, email, file_utils
-from common.commands.base import (
-    CommandList,
-    add_arxiv_id_filter_args,
-    add_one_entity_at_a_time_arg,
-    create_args,
-    load_arxiv_ids_using_args,
-    read_arxiv_ids_from_file,
-)
+from common.commands.base import (CommandList, add_arxiv_id_filter_args,
+                                  add_one_entity_at_a_time_arg, create_args,
+                                  load_arxiv_ids_using_args,
+                                  read_arxiv_ids_from_file)
 from common.commands.database import DatabaseUploadCommand
 from common.commands.fetch_arxiv_sources import (
-    DEFAULT_S3_ARXIV_SOURCES_BUCKET,
-    FetchArxivSources,
-)
+    DEFAULT_S3_ARXIV_SOURCES_BUCKET, FetchArxivSources)
 from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
 from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
@@ -28,12 +22,8 @@ from common.make_digest import make_paper_digest
 from common.types import PipelineDigest
 from scripts.job_config import fetch_config, load_job_from_s3
 from scripts.pipelines import entity_pipelines
-from scripts.process import (
-    ENTITY_COMMANDS,
-    TEX_PREPARATION_COMMANDS,
-    commands_by_entity,
-    run_command,
-)
+from scripts.process import (ENTITY_COMMANDS, TEX_PREPARATION_COMMANDS,
+                             commands_by_entity, run_command)
 
 
 def run_commands_for_arxiv_ids(
@@ -343,7 +333,7 @@ if __name__ == "__main__":
             else:
                 continue
         if start_reached:
-            # Skip over irrelevant entity-processing commands
+            # Skip over irrelevant entity-processing commands.
             if CommandClass in ENTITY_COMMANDS:
                 skip_command = True
                 for entity_type in args.entities:
@@ -352,7 +342,7 @@ if __name__ == "__main__":
                         break
                 if skip_command:
                     continue
-            # Optionally skip over database upload commands
+            # Optionally skip over database upload commands.
             if issubclass(CommandClass, DatabaseUploadCommand):
                 if dry_run:
                     continue
