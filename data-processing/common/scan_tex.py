@@ -30,17 +30,12 @@ class Match:
 
 
 """
-Scanning modes
-"""
-NORMAL_MODE = 0
-COMMENT_MODE = 1
-
-"""
 Patterns for parsing
 """
-COMMENT = Pattern("comment", "%")
-NEWLINE = Pattern("newline", "\n", disallow_leading_backslash=False)
-PRIVATE_PATTERNS = [COMMENT, NEWLINE]
+COMMENT = Pattern("comment", "%[^\n]*(\n|$)")
+" Comments are parsed from the '%' through the end of the line. "
+
+PRIVATE_PATTERNS = [COMMENT]
 
 
 def scan_tex(
@@ -93,7 +88,6 @@ class TexScanner:
     def __init__(self, tex: str, i: int = 0) -> None:
         self.tex = tex
         self.i = i
-        self.mode = NORMAL_MODE
         self.last_match = None
 
     def next(
@@ -106,6 +100,7 @@ class TexScanner:
         """
         scan_patterns = PRIVATE_PATTERNS + list(patterns)
 
+        # Create a master regular expression pattern for all input patterns.
         patterns_by_name = {p.name: p for p in scan_patterns}
         regexes = []
         for p in scan_patterns:
@@ -118,8 +113,11 @@ class TexScanner:
         skipped: List[Match] = []
         match = None
 
+        # Search through the TeX for the next matching pattern.
         while match is None:
             re_match = regex.search(self.tex, self.i)
+
+            # If the next match is none, the end of the TeX has been reached.
             if re_match is None:
                 if include_unmatched and len(self.tex) > self.i:
                     skipped.append(
@@ -132,6 +130,7 @@ class TexScanner:
                     )
                 raise EndOfInput(skipped)
 
+            # Get the pattern that produced the next match in the TeX.
             group_dict = re_match.groupdict()
             pattern_names = [
                 name for name, text in group_dict.items() if text is not None
@@ -143,13 +142,9 @@ class TexScanner:
             pattern_name = pattern_names[0]
             pattern = patterns_by_name[pattern_name]
 
-            # If this is normal scanning mode and some characters were skipped, report these
-            # as skipped tokens.
-            if (
-                self.mode is NORMAL_MODE
-                and re_match.start() > self.i
-                and include_unmatched
-            ):
+            # If characters were skipped between the last match and this one, get those characters.
+            # Note that comments are not considered skipped TeX, and will not be returned.
+            if re_match.start() > self.i and include_unmatched:
                 skipped.append(
                     Match(
                         pattern=Pattern("UNKNOWN", "INVALID"),
@@ -159,20 +154,15 @@ class TexScanner:
                     )
                 )
 
-            if self.mode is COMMENT_MODE and pattern is NEWLINE:
-                self.mode = NORMAL_MODE
+            # If the matched text is not a comment but rather a caller-supplied pattern, report
+            # that there was a match and return the match.
+            if pattern is not COMMENT:
+                match = Match(
+                    pattern, group_dict[pattern_name], re_match.start(), re_match.end(),
+                )
 
-            elif self.mode is NORMAL_MODE:
-                if pattern is COMMENT:
-                    self.mode = COMMENT_MODE
-                elif pattern not in PRIVATE_PATTERNS:
-                    match = Match(
-                        pattern,
-                        group_dict[pattern_name],
-                        re_match.start(),
-                        re_match.end(),
-                    )
-
+            # Update the position of the scanner in the TeX so that the next search for a pattern
+            # starts where this search ended.
             self.i = re_match.end()
 
         skipped = skipped if include_unmatched else None

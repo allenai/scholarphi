@@ -11,11 +11,25 @@ import shutil
 from typing import Dict, Iterator, List, Optional, Type, TypeVar
 
 from common import directories
-from common.types import (ArxivId, BoundingBox, CharacterId, CompilationResult,
-                          Equation, EquationId, FileContents, HueIteration,
-                          HueLocationInfo, Path, SerializableCharacter,
-                          SerializableChild, SerializableSymbol,
-                          SerializableToken, Symbol, SymbolId, SymbolWithId)
+from common.types import (
+    ArxivId,
+    BoundingBox,
+    CharacterId,
+    CompilationResult,
+    Equation,
+    EquationId,
+    FileContents,
+    HueIteration,
+    HueLocationInfo,
+    Path,
+    SerializableCharacter,
+    SerializableChild,
+    SerializableSymbol,
+    SerializableToken,
+    Symbol,
+    SymbolId,
+    SymbolWithId,
+)
 
 Contents = str
 Encoding = str
@@ -116,10 +130,13 @@ def load_from_csv(
                     logging.warning(  # pylint: disable=logging-not-lazy
                         "Could not read value '%s' for field '%s' of expected type %s from CSV. "
                         + "ValueError: %s. This row will be skipped.",
-                        row[field.name], field.name, field.type, e
+                        row[field.name],
+                        field.name,
+                        field.type,
+                        e,
                     )
                     invalid = True
-            
+
             if not invalid:
                 yield D(**data)  # type: ignore
 

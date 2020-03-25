@@ -4,9 +4,29 @@ from common.parse_tex import (
     DocumentclassExtractor,
     EquationExtractor,
     MacroExtractor,
+    PlaintextExtractor,
 )
 from common.types import MacroDefinition
 from entities.sentences.extractor import SentenceExtractor
+
+
+def test_extract_plaintext_with_newlines():
+    extractor = PlaintextExtractor()
+    plaintext_segments = list(
+        extractor.parse(
+            "main.tex",
+            "This sentence is followed by a newline.\nThis is the second sentence.",
+        )
+    )
+
+    # Earlier versions of the plaintext extractor inadvertently removed newlines, which are needed
+    # to accurately perform downstream tasks like sentence boundary detection. This test makes sure
+    # that the newlines are preserved.
+    plaintext = "".join([segment.text for segment in plaintext_segments])
+    assert (
+        plaintext
+        == "This sentence is followed by a newline.\nThis is the second sentence."
+    )
 
 
 def test_extract_sentences():
@@ -258,6 +278,7 @@ def test_extract_macro_balance_nested_braces_for_argument():
     assert macros[0].end == 16
     assert macros[0].tex == "\\macro{{nested}}"
 
+
 def test_sentence_splitting_end_points():
     extractor = SentenceExtractor()
     sentences = list(
@@ -273,6 +294,7 @@ def test_sentence_splitting_end_points():
         assert sentences[i].start == start
         assert sentences[i].end == end
 
+
 def test_sentence_splitting_end_points_and_more_text():
     extractor = SentenceExtractor()
     sentences = list(
@@ -282,7 +304,16 @@ def test_sentence_splitting_end_points_and_more_text():
         )
     )
     assert len(sentences) == 8
-    sentence_end_points = [[0, 14], [15, 25], [26, 31], [32, 40], [41, 50], [51, 60], [61, 76], [77, 83]]
+    sentence_end_points = [
+        [0, 14],
+        [15, 25],
+        [26, 31],
+        [32, 40],
+        [41, 50],
+        [51, 60],
+        [61, 76],
+        [77, 83],
+    ]
     for i, [start, end] in enumerate(sentence_end_points):
         assert sentences[i].start == start
         assert sentences[i].end == end
