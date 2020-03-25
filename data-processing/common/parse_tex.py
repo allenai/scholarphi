@@ -326,9 +326,9 @@ class PlaintextExtractor:
     other times it wouldn't. Without more sophisticated macro processing, it's not possible to
     tell which arguments would be rendered as text and which wouldn't.
 
-    For the anticipated use case of sentence boundary detection, this spurious argument test is
-    often okay and won't often influence the detected boundaries. However, for other natural
-    language processing tasks, this plaintext extractor may need to be further refined.
+    For the anticipated use case of sentence boundary detection, spurious macro arguments are often
+    okay to keep in the text as they only infrequently influence the detected boundaries. To
+    support other natural language processing tasks, this extractor may need to be further refined.
     """
 
     def __init__(self) -> None:
