@@ -7,6 +7,7 @@ from typing import Iterator, List, Set
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
 from common.types import ArxivId, Bibitem, BibitemMatch, SerializableReference
+from ..utils import extract_ngrams, ngram_sim
 
 
 @dataclass(frozen=True)
@@ -21,23 +22,6 @@ The title and authors must have at least this much overlap with the bibitem's te
 the similarity metric below to be considered a match.
 """
 SIMILARITY_THRESHOLD = 0.5
-
-
-def extract_ngrams(s: str, n: int = 3) -> Set[str]:
-    """
-    This and the 'ngram_sim' method below were provided by Kyle Lo.
-    """
-    s = re.sub(r"\W", "", s.lower())
-    ngrams = zip(*[s[i:] for i in range(n)])
-    return {"".join(ngram) for ngram in ngrams}
-
-
-def ngram_sim(s1: str, s2: str) -> float:
-    s1_grams = extract_ngrams(s1)
-    s2_grams = extract_ngrams(s2)
-    if len(s1_grams) == 0 or len(s2_grams) == 0:
-        return 0
-    return len(s1_grams.intersection(s2_grams)) / min(len(s1_grams), len(s2_grams))
 
 
 class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):

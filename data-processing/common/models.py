@@ -152,7 +152,8 @@ def init_database_connections(
     Initialize database connections.
     """
 
-    config = configparser.ConfigParser()
+    import os
+    config = configparser.ConfigParser(os.environ)
     config.read(DATABASE_CONFIG)
 
     # By default, data will be placed in a schema with the timestamp of the time that this
