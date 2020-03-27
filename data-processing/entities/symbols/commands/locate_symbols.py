@@ -7,15 +7,15 @@ from common.commands.base import ArxivBatchCommand
 from common.types import (
     ArxivId,
     BoundingBox,
-    CharacterLocations,
     SymbolLocation,
     SymbolWithId,
+    TokenLocations,
 )
 
 
 class LocationTask(NamedTuple):
     arxiv_id: ArxivId
-    character_locations: CharacterLocations
+    token_locations: TokenLocations
     symbol_with_id: SymbolWithId
 
 
@@ -52,14 +52,14 @@ class LocateSymbols(ArxivBatchCommand[LocationTask, BoundingBox]):
             for symbol_with_id in symbols_with_ids:
                 yield LocationTask(
                     arxiv_id=arxiv_id,
-                    character_locations=token_locations,
+                    token_locations=token_locations,
                     symbol_with_id=symbol_with_id,
                 )
 
     def process(self, item: LocationTask) -> Iterator[BoundingBox]:
         symbol = item.symbol_with_id.symbol
         symbol_id = item.symbol_with_id.symbol_id
-        box = get_symbol_bounding_box(symbol, symbol_id, item.character_locations)
+        box = get_symbol_bounding_box(symbol, symbol_id, item.token_locations)
         if box is not None:
             yield box
 
