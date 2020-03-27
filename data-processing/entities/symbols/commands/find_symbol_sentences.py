@@ -72,7 +72,7 @@ class FindSymbolSentences(ArxivBatchCommand[SymbolSentencesTask, SymbolSentenceP
                 continue
 
             # Filter to only those symbols for which tokens have been detected
-            symbols = [s for s in symbols if len(s.symbol.characters) > 0]
+            symbols = [s for s in symbols if len(s.symbol.tokens) > 0]
 
             yield SymbolSentencesTask(arxiv_id, symbols, token_sentence_pairs)
 
@@ -88,7 +88,7 @@ class FindSymbolSentences(ArxivBatchCommand[SymbolSentencesTask, SymbolSentenceP
             symbol_id = symbol_with_id.symbol_id
             symbol = symbol_with_id.symbol
             sentence_ids = set()
-            for token_index in symbol.characters:
+            for token_index in symbol.tokens:
                 token_id = TokenId(
                     symbol_id.tex_path, symbol_id.equation_index, token_index
                 )

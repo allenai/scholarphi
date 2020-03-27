@@ -252,14 +252,8 @@ EQUATION PARSING
 """
 
 EquationIndex = int
-CharacterIndex = int
+TokenIndex = int
 SymbolIndex = int
-
-
-class CharacterId(NamedTuple):
-    tex_path: str
-    equation_index: EquationIndex
-    character_index: CharacterIndex
 
 
 @dataclass(frozen=True)
@@ -269,32 +263,36 @@ class SymbolId:
     symbol_index: SymbolIndex
 
 
-class Character(NamedTuple):
-    text: str
-    i: CharacterIndex
-    start: int
-    end: int
+@dataclass(frozen=True)
+class TokenId:
+    tex_path: str
+    equation_index: EquationIndex
+    token_index: TokenIndex
 
 
 @dataclass(frozen=True)
-class TokenWithOrigin:
+class Token(Entity):
+    text: str
+    " Unicode (not TeX) representation of this token, computed by parsing the equation with KaTeX. "
+
+    token_index: TokenIndex
     """
-    A token and a character are the same thing, it just has two names for historical reasons.
+    Index of this token within the equation. These indexes are guaranteed to be unique within eqach
+    equation; however they will not necessarily be contiguous or in order from left to right.
     """
 
+
+@dataclass(frozen=True)
+class TokenWithOrigin(Token):
     tex_path: str
     equation: Equation
-    token_index: int
-    start: int
-    end: int
-    text: str
 
 
 MathML = str
 
 
 class Symbol(NamedTuple):
-    characters: List[CharacterIndex]
+    tokens: List[TokenIndex]
     mathml: MathML
     children: List[Any]
     """
@@ -318,18 +316,11 @@ class EquationId:
 
 
 @dataclass(frozen=True)
-class SerializableToken(SerializableEntity):
+class SerializableToken(SerializableEntity, Token):
     tex_path: str
     equation: str
-    equation_index: int
-    token_index: int
-    """
-    Index of this token within the equation. These indexes are guaranteed to be unique within eqach
-    equation; however they will not necessarily be contiguous or in order from left to right.
-    """
 
-    text: str
-    " Unicode (not TeX) representation of this token, computed by parsing the equation with KaTeX. "
+    equation_index: int
 
     equation_depth: int
     " 'depth' attribute for the equation this token belongs to. "
@@ -353,15 +344,14 @@ class SerializableSymbol(SymbolId):
 
 
 @dataclass(frozen=True)
-class SerializableCharacter(SymbolId):
-    equation: str
-    character_index: int
-
-
-@dataclass(frozen=True)
 class SerializableChild(SymbolId):
     equation: str
     child_index: int
+
+
+@dataclass(frozen=True)
+class SerializableSymbolToken(SymbolId, TokenId):
+    pass
 
 
 """
@@ -477,7 +467,7 @@ class HueLocationInfo(BoundingBox, ColorizationRecord):
     relative_file_path: str
 
 
-CharacterLocations = Dict[CharacterId, List[BoundingBox]]
+TokenLocations = Dict[TokenId, List[BoundingBox]]
 
 
 @dataclass(frozen=True)

@@ -8,15 +8,13 @@ from typing import Iterator, List, Optional
 
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
-from common.parse_equation import KATEX_ERROR_COLOR, get_characters, get_symbols
+from common.parse_equation import KATEX_ERROR_COLOR, Node, parse_equation
 from common.types import (
     ArxivId,
-    Character,
-    SerializableCharacter,
     SerializableChild,
     SerializableSymbol,
+    SerializableSymbolToken,
     SerializableToken,
-    Symbol,
 )
 
 
@@ -30,8 +28,7 @@ class SymbolData:
     equation_start: int
     equation_depth: int
     context_tex: str
-    characters: Optional[List[Character]]
-    symbols: Optional[List[Symbol]]
+    symbols: Optional[List[Node]]
     errorMessage: str
 
 
@@ -52,9 +49,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
 
     @staticmethod
     def get_description() -> str:
-        return (
-            "Extract symbols and the character tokens within them from TeX equations."
-        )
+        return "Extract symbols and the tokens within them from TeX equations."
 
     @staticmethod
     def init_parser(parser: ArgumentParser) -> None:
@@ -68,16 +63,6 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                 + " Otherwise, omit this so that a partial, perhaps slightly inaccurate parse "
                 + " is run even if errors are found in equations."
             ),
-        )
-        parser.add_argument(
-            "--katex-error-color",
-            type=str,
-            help=(
-                "Hex code that KaTeX should use when creating nodes for parts of equations that"
-                + " failed to parse. It only makes sense to set this if '--katex-throw-on-error'"
-                + " is not set."
-            ),
-            default=KATEX_ERROR_COLOR,
         )
 
     def get_arxiv_ids_dirkey(self) -> str:
@@ -115,12 +100,10 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
             equations_relative_path,
         ]
 
-        if self.args.katex_throw_on_error or (self.args.katex_error_color is not None):
-            command_args += ["--"]
-            if self.args.katex_throw_on_error:
-                command_args += ["--throw-on-error"]
-            if self.args.katex_error_color is not None:
-                command_args += ["--error-color", self.args.katex_error_color]
+        command_args += ["--"]
+        if self.args.katex_throw_on_error:
+            command_args += ["--throw-on-error"]
+        command_args += ["--error-color", KATEX_ERROR_COLOR]
 
         logging.debug("Running command with arguments: %s", command_args)
         result = subprocess.run(
@@ -148,9 +131,11 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
         if not os.path.exists(tokens_dir):
             os.makedirs(tokens_dir)
 
-        if result.success:
+        if result.success and result.symbols is not None:
             logging.debug(
-                "Successfully extracted characters: %s", str(result.characters)
+                "Successfully extracted %d symbols for equation %s.",
+                len(result.symbols),
+                result.equation,
             )
         else:
             logging.warning(
@@ -172,31 +157,12 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
             ),
         )
 
-        # Save string representations of every character extracted from the equation
-        if result.characters is not None and len(result.characters) > 0:
-            tokens_path = os.path.join(tokens_dir, "entities.csv")
-            for token in result.characters:
-                file_utils.append_to_csv(
-                    tokens_path,
-                    SerializableToken(
-                        tex_path=result.tex_path,
-                        id_=f"{result.equation_index}-{token.i}",
-                        equation_index=result.equation_index,
-                        token_index=token.i,
-                        start=result.equation_start + token.start,
-                        end=result.equation_start + token.end,
-                        relative_start=token.start,
-                        relative_end=token.end,
-                        tex=result.equation[token.start : token.end],
-                        # Just make the token's context TeX the equation's context TeX
-                        context_tex=result.context_tex,
-                        text=token.text,
-                        equation=result.equation,
-                        equation_depth=result.equation_depth,
-                    ),
-                )
-
+        # Save symbol data, including parent-child relationships between symbols, and which tokens
+        # were found in each symbol.
         if result.symbols is not None and len(result.symbols) > 0:
+            symbols = result.symbols
+
+            tokens_path = os.path.join(tokens_dir, "entities.csv")
             symbols_path = os.path.join(tokens_dir, "symbols.csv")
             symbol_tokens_path = os.path.join(tokens_dir, "symbol_tokens.csv")
             symbol_children_path = os.path.join(tokens_dir, "symbol_children.csv")
@@ -206,8 +172,11 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
             # to be able to read the list of symbol children at this path.
             open(symbol_children_path, "a").close()
 
-            for symbol_index, symbol in enumerate(result.symbols):
-                # Save data for the symbol
+            all_tokens = set()
+            for symbol in symbols:
+                symbol_index = symbols.index(symbol)
+
+                # Save a record of this symbol.
                 file_utils.append_to_csv(
                     symbols_path,
                     SerializableSymbol(
@@ -215,25 +184,26 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                         equation_index=result.equation_index,
                         equation=result.equation,
                         symbol_index=symbol_index,
-                        mathml=symbol.mathml,
+                        mathml=str(symbol.element),
                     ),
                 )
 
-                # Save the symbol's relationship to all its component characters
-                for character in symbol.characters:
+                # Save the relationships between this symbol and its tokens.
+                all_tokens.update(symbol.tokens)
+                for token in symbol.tokens:
                     file_utils.append_to_csv(
                         symbol_tokens_path,
-                        SerializableCharacter(
+                        SerializableSymbolToken(
                             tex_path=result.tex_path,
                             equation_index=result.equation_index,
-                            equation=result.equation,
                             symbol_index=symbol_index,
-                            character_index=character,
+                            token_index=token.token_index,
                         ),
                     )
 
-                # Save the symbol's relationship to its children
+                # Save the relationships between this symbol and its children.
                 for child in symbol.children:
+                    child_index = symbols.index(child)
                     file_utils.append_to_csv(
                         symbol_children_path,
                         SerializableChild(
@@ -241,21 +211,40 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                             equation_index=result.equation_index,
                             equation=result.equation,
                             symbol_index=symbol_index,
-                            child_index=result.symbols.index(child),
+                            child_index=child_index,
                         ),
                     )
+
+            # Write record of all tokens to file.
+            for token in all_tokens:
+                file_utils.append_to_csv(
+                    tokens_path,
+                    SerializableToken(
+                        tex_path=result.tex_path,
+                        id_=f"{result.equation_index}-{token.token_index}",
+                        equation_index=result.equation_index,
+                        token_index=token.token_index,
+                        start=result.equation_start + token.start,
+                        end=result.equation_start + token.end,
+                        relative_start=token.start,
+                        relative_end=token.end,
+                        tex=result.equation[token.start : token.end],
+                        context_tex=result.context_tex,
+                        text=token.text,
+                        equation=result.equation,
+                        equation_depth=result.equation_depth,
+                    ),
+                )
 
 
 def _get_symbol_data(arxiv_id: ArxivId, stdout: str) -> Iterator[SymbolData]:
     for result in stdout.strip().splitlines():
         data = json.loads(result)
-        characters = None
         symbols = None
 
         if data["success"] is True:
             mathml = data["mathMl"]
-            characters = get_characters(mathml)
-            symbols = get_symbols(mathml)
+            symbols = parse_equation(mathml)
 
         yield SymbolData(
             arxiv_id=arxiv_id,
@@ -263,10 +252,9 @@ def _get_symbol_data(arxiv_id: ArxivId, stdout: str) -> Iterator[SymbolData]:
             equation_index=int(data["i"]),
             tex_path=data["tex_path"],
             equation=data["equation"],
-            characters=characters,
-            symbols=symbols,
             equation_start=int(data["equation_start"]),
             equation_depth=int(data["equation_depth"]),
             context_tex=data["context_tex"],
             errorMessage=data["errorMessage"],
+            symbols=symbols,
         )
