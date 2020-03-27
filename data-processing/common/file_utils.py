@@ -14,7 +14,6 @@ from common import directories
 from common.types import (
     ArxivId,
     BoundingBox,
-    CharacterId,
     CompilationResult,
     Equation,
     EquationId,
@@ -22,13 +21,14 @@ from common.types import (
     HueIteration,
     HueLocationInfo,
     Path,
-    SerializableCharacter,
     SerializableChild,
     SerializableSymbol,
+    SerializableSymbolToken,
     SerializableToken,
     Symbol,
     SymbolId,
     SymbolWithId,
+    TokenId,
 )
 
 Contents = str
@@ -248,17 +248,17 @@ def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
         return None
 
     loaded_symbols = load_from_csv(symbols_path, SerializableSymbol)
-    loaded_symbol_tokens = load_from_csv(symbol_tokens_path, SerializableCharacter)
+    loaded_symbol_tokens = load_from_csv(symbol_tokens_path, SerializableSymbolToken)
     loaded_symbol_children = load_from_csv(symbol_children_path, SerializableChild)
 
     symbols_by_id: Dict[SymbolId, Symbol] = {}
     for s in loaded_symbols:
         symbol_id = SymbolId(s.tex_path, s.equation_index, s.symbol_index)
-        symbols_by_id[symbol_id] = Symbol(characters=[], mathml=s.mathml, children=[])
+        symbols_by_id[symbol_id] = Symbol(tokens=[], mathml=s.mathml, children=[])
 
     for t in loaded_symbol_tokens:
         symbol_id = SymbolId(t.tex_path, t.equation_index, t.symbol_index)
-        symbols_by_id[symbol_id].characters.append(t.character_index)
+        symbols_by_id[symbol_id].tokens.append(t.token_index)
 
     for c in loaded_symbol_children:
         parent_id = SymbolId(c.tex_path, c.equation_index, c.symbol_index)
@@ -355,9 +355,9 @@ def load_citation_hue_locations(
 
 def load_equation_token_locations(
     arxiv_id: ArxivId,
-) -> Optional[Dict[CharacterId, List[BoundingBox]]]:
+) -> Optional[Dict[TokenId, List[BoundingBox]]]:
 
-    token_locations: Dict[CharacterId, List[BoundingBox]] = {}
+    token_locations: Dict[TokenId, List[BoundingBox]] = {}
     token_locations_path = os.path.join(
         directories.arxiv_subdir("hue-locations-for-equation-tokens", arxiv_id),
         "hue_locations.csv",
@@ -369,8 +369,8 @@ def load_equation_token_locations(
         return None
 
     for record in load_from_csv(token_locations_path, HueLocationInfo):
-        equation_index, character_index = [int(t) for t in record.entity_id.split("-")]
-        character_id = CharacterId(record.tex_path, equation_index, character_index)
+        equation_index, token_index = [int(t) for t in record.entity_id.split("-")]
+        token_id = TokenId(record.tex_path, equation_index, token_index)
         box = BoundingBox(
             page=int(record.page),
             left=record.left,
@@ -378,8 +378,8 @@ def load_equation_token_locations(
             width=record.width,
             height=record.height,
         )
-        if character_id not in token_locations:
-            token_locations[character_id] = []
-        token_locations[character_id].append(box)
+        if token_id not in token_locations:
+            token_locations[token_id] = []
+        token_locations[token_id].append(box)
 
     return token_locations

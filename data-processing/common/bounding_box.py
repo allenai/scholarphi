@@ -1,29 +1,12 @@
 import logging
-from typing import (
-    Callable,
-    Dict,
-    FrozenSet,
-    Iterable,
-    Iterator,
-    List,
-    Optional,
-    Set,
-    Tuple,
-)
+from typing import (Callable, Dict, FrozenSet, Iterable, Iterator, List,
+                    Optional, Set, Tuple)
 
 import cv2
 import numpy as np
 
-from common.types import (
-    BoundingBox,
-    CharacterId,
-    CharacterLocations,
-    FloatRectangle,
-    Point,
-    Rectangle,
-    Symbol,
-    SymbolId,
-)
+from common.types import (BoundingBox, FloatRectangle, Point, Rectangle,
+                          Symbol, SymbolId, TokenId, TokenLocations)
 
 
 def extract_bounding_boxes(
@@ -235,14 +218,14 @@ def _to_pdf_coordinates(
 
 
 def get_symbol_bounding_box(
-    symbol: Symbol, symbol_id: SymbolId, character_boxes: CharacterLocations
+    symbol: Symbol, symbol_id: SymbolId, token_boxes: TokenLocations
 ) -> Optional[BoundingBox]:
     boxes = []
-    for character_index in symbol.characters:
-        character_id = CharacterId(
-            symbol_id.tex_path, symbol_id.equation_index, character_index
+    for token_index in symbol.tokens:
+        token_id = TokenId(
+            symbol_id.tex_path, symbol_id.equation_index, token_index
         )
-        boxes.extend(character_boxes.get(character_id, []))
+        boxes.extend(token_boxes.get(token_id, []))
 
     if len(boxes) == 0:
         return None
