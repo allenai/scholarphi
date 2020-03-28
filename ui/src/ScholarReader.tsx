@@ -359,6 +359,9 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
           const mathMl = await api.mathMlForArxivId(this.props.paperId.id);
           this.setMathMl(mathMl);
 
+          // TODO(andrewhead): Update this comment
+          // TODO(andrewhead): Enable the highlighting of the symbol within other symbols (e.g., if 'k')
+          // is clicked on, highlight k in the subscripts of everything else.
           /**
            * Build a mapping from symbol to all possible parent matches.
            * Step 1: Find all matches (using matchingSymbols) for said symbol
@@ -369,18 +372,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
           const symbolMatches: SymbolMatches = {};
           symbols.forEach(sym => {
             symbolMatches[sym.id] = new Set(
-              selectors.matchingSymbols(sym, symbols, mathMl).map(symMatch => {
-                let curr: Symbol = symMatch;
-                while (curr.parent != null) {
-                  const parent = symbols.find(s => s.id === curr.parent);
-                  if (parent) {
-                    curr = parent;
-                  } else {
-                    break;
-                  }
-                }
-                return curr.id;
-              })
+              selectors.matchingSymbols(sym, symbols, mathMl).map(s => s.id)
             );
           });
           this.setSymbolMatches(symbolMatches);
