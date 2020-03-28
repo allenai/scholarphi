@@ -4,7 +4,7 @@ import smtplib
 import ssl
 from email.header import Header
 from email.mime.text import MIMEText
-from typing import Iterable, Optional
+from typing import List, Optional
 
 from common.types import PipelineDigest
 
@@ -58,7 +58,10 @@ def _format_digest(digest: PipelineDigest) -> str:
 
 
 def send_digest_email(
-    digest: PipelineDigest, to: Iterable[str], log_preview_url: Optional[str] = None
+    digest: PipelineDigest,
+    to: List[str],
+    bcc: List[str],
+    log_preview_url: Optional[str] = None,
 ) -> None:
     " Send an email containing results of running the pipeline to a set of email addresses. "
 
@@ -88,36 +91,36 @@ def send_digest_email(
         )
         return
 
-    for to_address in to:
+    message_text = (
+        "Hi there!<br/>"
+        + "<br/>"
+        + "I just wanted to share with you the results I got from processing some "
+        + "more papers. Here's what I found.<br/>"
+        + "<br/>"
+        + f"{_format_digest(digest)}"  # digest is always followed by a new line.
+        + "Hopefully the pipeline found what you expected. If it didn't, forward this email to "
+        + "Andrew at andrewhead@berkeley.edu and he'll see what can be fixed."
+    )
 
-        message_text = (
-            "Hi there!<br/>"
-            + "<br/>"
-            + "I just wanted to share with you the results I got from processing some "
-            + "more papers. Here's what I found.<br/>"
-            + "<br/>"
-            + f"{_format_digest(digest)}"  # digest is always followed by a new line.
-            + "Hopefully the pipeline found what you expected. If it didn't, forward this email to "
-            + "Andrew at andrewhead@berkeley.edu and he'll see what can be fixed."
+    if log_preview_url is not None:
+        message_text += (
+            " If you have access to the logs on S3, you can also check out the "
+            + f"logs at {log_preview_url}."
         )
 
-        if log_preview_url is not None:
-            message_text += (
-                " If you have access to the logs on S3, you can also check out the "
-                + f"logs at {log_preview_url}."
-            )
+    message_text += "<br/>" + "<br/>" + "Best wishes,<br/>" + "The ScholarPhi Bot 😊"
 
-        message_text += "<br/>" + "<br/>" + "Best wishes,<br/>" + "The ScholarPhi Bot 😊"
+    message = MIMEText(message_text, "html")
 
-        message = MIMEText(message_text, "html")
+    message["Subject"] = Header(
+        "[ScholarPhi Bot] Fresh results from the paper processor"
+    )
+    message["To"] = ", ".join(to)
+    message.set_charset("utf8")
 
-        message["Subject"] = Header(
-            "[ScholarPhi Bot] Fresh results from the paper processor"
-        )
-        message["To"] = to_address
-        message.set_charset("utf8")
-
-        server.sendmail(email_address, to_address, message.as_string())
-        logging.debug(
-            "Sent a digest with the pipeline processing summary to %s", to_address
-        )
+    server.sendmail(email_address, to + bcc, message.as_string())
+    logging.debug(
+        "Sent a digest with the pipeline processing summary to %s with bbc to %s",
+        to,
+        bcc,
+    )

@@ -7,11 +7,20 @@ from common import directories, file_utils
 from common.bounding_box import compute_accuracy, iou, iou_per_rectangle, sum_areas
 from common.commands.database import DatabaseReadCommand
 from common.models import Annotation, Paper
-from common.types import ArxivId, FloatRectangle
+from common.types import ArxivId, BoundingBox, FloatRectangle
 
 CitationKey = str
 CitationKeys = Tuple[CitationKey]
 S2Id = str
+
+
+@dataclass(frozen=True)
+class EntityKeyPair:
+    pipeline_key: str
+    " Name of entity in the pipeline output data directory. "
+
+    database_key: str
+    " Name of entity in the database models. "
 
 
 @dataclass(frozen=True)
@@ -78,37 +87,46 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
             output_root = directories.arxiv_subdir("bounding-box-accuracies", arxiv_id)
             file_utils.clean_directory(output_root)
 
-            citation_locations = file_utils.load_citation_hue_locations(arxiv_id)
-            token_locations = file_utils.load_equation_token_locations(arxiv_id)
             actual: Dict[
                 Tuple[PageNumber, EntityType], List[FrozenSet[FloatRectangle]]
             ] = {}
 
-            if citation_locations is not None:
-                for bounding_boxes in citation_locations.values():
-                    key = (bounding_boxes[0].page, "citation")
-                    if key not in actual:
-                        actual[key] = []
-                    rectangles = frozenset(
-                        [
-                            FloatRectangle(b.left, b.top, b.width, b.height)
-                            for b in bounding_boxes
-                        ]
-                    )
-                    actual[key].append(rectangles)
+            entity_types = [
+                EntityKeyPair("citations", "citation"),
+                EntityKeyPair("equations", "equation"),
+                EntityKeyPair("equation-tokens", "symbol"),
+            ]
+            for type_ in entity_types:
+                entity_locations = file_utils.load_hue_locations(
+                    arxiv_id, type_.pipeline_key
+                )
+                if entity_locations is None:
+                    continue
+                for bounding_boxes in entity_locations.values():
+                    # Entities may cross pages. For instance, citations may be detected on multiple
+                    # pages, as we give all instances of a citation for the same reference the same
+                    # color. Here, we group entity bounding boxes by page so that we know what
+                    # truth bounding boxes to compare them to.
+                    by_page: Dict[PageNumber, List[BoundingBox]] = {}
+                    for box in bounding_boxes:
+                        if not box.page in by_page:
+                            by_page[box.page] = []
+                        by_page[box.page].append(box)
 
-            if token_locations is not None:
-                for bounding_boxes in token_locations.values():
-                    key = (bounding_boxes[0].page, "symbol")
-                    if key not in actual:
-                        actual[key] = []
-                    rectangles = frozenset(
-                        [
-                            FloatRectangle(b.left, b.top, b.width, b.height)
-                            for b in bounding_boxes
-                        ]
-                    )
-                    actual[key].append(rectangles)
+                    for page, page_boxes in by_page.items():
+                        key = (page, type_.database_key)
+                        if key not in actual:
+                            actual[key] = []
+                        rectangles = frozenset(
+                            [
+                                FloatRectangle(b.left, b.top, b.width, b.height)
+                                for b in page_boxes
+                            ]
+                        )
+                        # XXX(andrewhead): we may want to unpack citations; a citation may appear
+                        # multiple times on the same page, and we're currently grouping all of those
+                        # appearances of the citation together as 'one citation'.
+                        actual[key].append(rectangles)
 
             annotation_models = (
                 Annotation.select().join(Paper).where(Paper.arxiv_id == arxiv_id)

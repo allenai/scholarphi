@@ -84,8 +84,10 @@ export interface MathMlMatch {
 
 export type AnnotationId = number;
 
+export type UserAnnotationType = "citation" | "equation" | "symbol";
+
 export interface AnnotationData {
-  type: "citation" | "symbol";
+  type: UserAnnotationType;
   page: number;
   left: number;
   top: number;
@@ -95,7 +97,7 @@ export interface AnnotationData {
 
 export interface Annotation {
   id: AnnotationId;
-  type: "citation" | "symbol";
+  type: UserAnnotationType;
   boundingBox: BoundingBox;
 }
 

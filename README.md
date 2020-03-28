@@ -45,6 +45,7 @@ where it makes sense to use these guides.
 * [Marti Hearst](mailto:hearst@berkeley.edu)
 * [Zachary Kirby](mailto:zkirby@berkeley.edu)
 * [Vivek Aithal](mailto:vivek_aithal@berkeley.edu)
+* [Jocelyn Sun](mailto:jocelyn.z.sun@berkeley.edu)
 
 ## License
 

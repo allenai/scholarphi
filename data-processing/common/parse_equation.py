@@ -19,7 +19,7 @@ misdetecting colored equations as errors---anything that's set to 'white' in a p
 invisible and we wouldn't want to detect it anyway.
 """
 KATEX_ERROR_COLOR = "#ffffff"
-CHARACTER_TAGS = ["mi"]
+CHARACTER_TAGS = ["mi", "mn"]
 SYMBOL_TAGS = ["msubsup", "msub", "msup", "mi"]
 MERGABLE_PARENT_TAGS = ["mrow"]
 
@@ -53,10 +53,9 @@ def get_symbols(mathml: str) -> List[Symbol]:
     node_symbols = []
     consecutive_char_sequence: List[BeautifulSoup] = [] # The symbol_nodes of consecutive characters
     consecutive_char_indices: List[int] = [] # Indices of the characters of a consecutive character sequence
-    # It's 'safe' to call soup.find_all as the underlying bs4 implementation 
+    # It's 'safe' to call soup.find_all as the underlying bs4 implementation
     # appears to preserve order https://bazaar.launchpad.net/~leonardr/beautifulsoup/bs4/view/head:/bs4/element.py
     for symbol_node in soup.find_all(SYMBOL_TAGS):
-
         # Collect indexes of all characters that belong to this symbol
         characters = []
         if symbol_node.name in CHARACTER_TAGS:

@@ -1,13 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import CitationAnnotation from "./CitationAnnotation";
-import { Point } from "./Selection";
-import SelectionCanvas from "./SelectionLayer";
 import { ScholarReaderContext } from "./state";
 import SymbolAnnotation from "./SymbolAnnotation";
-import { AnnotationData } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
-import UserAnnotation from "./UserAnnotation";
+import { UserAnnotationLayer } from "./UserAnnotationLayer";
 
 interface PageProps {
   pageNumber: number;
@@ -54,13 +51,6 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
     }
   }
 
-  onSelectionMade(anchor: Point, active: Point) {
-    const { addUserAnnotation, userAnnotationType } = this.context;
-    addUserAnnotation(
-      selectionToAnnotation(this.props.view, anchor, active, userAnnotationType)
-    );
-  }
-
   render() {
     /**
      * If user annotations are enabled, the overlay needs to be set to the full size of the page
@@ -81,17 +71,13 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
           citations,
           symbols,
           annotationsShowing,
-          userAnnotationsEnabled,
-          userAnnotations
+          userAnnotationsEnabled
         }) => {
           const localizedCitations = citations.filter(
             c => c.bounding_boxes[0].page === this.props.pageNumber - 1
           );
           const localizedSymbols = symbols.filter(
             s => s.bounding_boxes[0].page === this.props.pageNumber - 1
-          );
-          const localizedUserAnnotations = userAnnotations.filter(
-            a => a.boundingBox.page === this.props.pageNumber - 1
           );
           return (
             <>
@@ -112,18 +98,10 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
                 />
               ))}
               {userAnnotationsEnabled && (
-                <>
-                  <SelectionCanvas
-                    key="selection-canvas"
-                    onSelection={this.onSelectionMade.bind(this)}
-                  />
-                  {localizedUserAnnotations.map(a => (
-                    <UserAnnotation
-                      key={`user-annotation-${a.id}`}
-                      annotation={a}
-                    />
-                  ))}
-                </>
+                <UserAnnotationLayer
+                  pageView={this.props.view}
+                  pageNumber={this.props.pageNumber}
+                />
               )}
             </>
           );
@@ -134,38 +112,6 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
   }
 
   private _element: HTMLElement;
-}
-
-function selectionToAnnotation(
-  pageView: PDFPageView,
-  anchor: Point,
-  active: Point,
-  type?: "citation" | "symbol"
-): AnnotationData {
-  const viewport = pageView.viewport;
-  const [anchorPdfX, anchorPdfY] = [
-    anchor.x / viewport.width,
-    anchor.y / viewport.height
-  ];
-  const [activePdfX, activePdfY] = [
-    active.x / viewport.width,
-    active.y / viewport.height
-  ];
-
-  const page = pageView.pdfPage.pageNumber - 1;
-  const left = Math.min(anchorPdfX, activePdfX);
-  const top = Math.min(anchorPdfY, activePdfY);
-  const width = Math.abs(activePdfX - anchorPdfX);
-  const height = Math.abs(activePdfY - anchorPdfY);
-
-  return {
-    type: type || "citation",
-    page,
-    left,
-    top,
-    width,
-    height
-  };
 }
 
 export default PageOverlay;

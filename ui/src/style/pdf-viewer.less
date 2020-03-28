@@ -7,7 +7,7 @@
 
   &.drawer-open {
     padding-right: @drawer-paper-clipping-width + @margin * 4;
-    // A very unfortunate side effect of using padding is that it 
+    // A very unfortunate side effect of using padding is that it
     // will distort the border image if the user shrinks the page too much.
     border-image: none;
   }
@@ -21,13 +21,23 @@
 }
 
 /**
+ * Remove border boxes added by hyperref, which conflict with our styles. Because pdf.js sets border
+ * styles dynamically, the '!important' flag is used to get sufficient precedence to override
+ * border styles. See the pdf.js code setting border styles here:
+ * https://github.com/mozilla/pdf.js/blob/474fe1757e654e67d20a53774edb293aa073ce0b/src/display/annotation_layer.js#L19
+ */
+.annotationLayer .linkAnnotation {
+  border: none !important;
+}
+
+/**
   * Consistent default behavior between pdf.js highlight for tables, figures, etc.
   * and custom purple highlight for citation annotations.
   */
 .annotationLayer .linkAnnotation > a {
   border-bottom: @underline-width @underline-color dotted;
 
-  &:hover, 
+  &:hover,
   &.selected {
     background: @highlight-hover-background;
     opacity: @highlight-hover-opacity;

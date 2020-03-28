@@ -16,6 +16,7 @@ import {
   Paper,
   Symbol,
   SymbolMatches,
+  UserAnnotationType,
   UserLibrary
 } from "./types/api";
 import {
@@ -24,6 +25,7 @@ import {
   PDFViewerApplication
 } from "./types/pdfjs-viewer";
 import { isKeypressEscape } from "./ui-utils";
+import { UserAnnotationTypeSelect } from "./UserAnnotationTypeSelect";
 
 interface ScholarReaderProps {
   paperId?: PaperId;
@@ -72,7 +74,9 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       setJumpPaperId: this.setJumpPaperId.bind(this),
       selectedSymbol: null,
       setSelectedSymbol: this.setSelectedSymbol.bind(this),
-      scrollSymbolHorizontallyIntoView: this.scrollSymbolHorizontallyIntoView.bind(this),
+      scrollSymbolHorizontallyIntoView: this.scrollSymbolHorizontallyIntoView.bind(
+        this
+      ),
       selectedCitation: null,
       setSelectedCitation: this.setSelectedCitation.bind(this),
       jumpSymbol: null,
@@ -176,7 +180,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     this.setState({ userAnnotationsEnabled: enabled });
   }
 
-  setUserAnnotationType(type: "citation" | "symbol") {
+  setUserAnnotationType(type: UserAnnotationType) {
     this.setState({ userAnnotationType: type });
   }
 
@@ -405,7 +409,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
           undefined,
           { name: "XYZ" },
           box.left + SCROLL_OFFSET_X,
-          box.top + SCROLL_OFFSET_Y,
+          box.top + SCROLL_OFFSET_Y
         ]
       });
     }
@@ -421,33 +425,44 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     const SYMBOL_VIEW_PADDING = 50;
     if (pdfViewer && selectedSymbol) {
       const symBounds = selectedSymbol.bounding_boxes[0];
-      const pdfLeft = (pdfViewer.container.getBoundingClientRect() as DOMRect).x;
+      const pdfLeft = (pdfViewer.container.getBoundingClientRect() as DOMRect)
+        .x;
       if (pages[symBounds.page + 1].view != null) {
         const { left, width } = selectors.divDimensionStyles(
-          pages[symBounds.page + 1].view, symBounds
+          pages[symBounds.page + 1].view,
+          symBounds
         );
         /*
-        * Each component of the calculation: 
-        * left + width = right position on the pdf page of the selected symbol
-        * scrollLeft = how much the pdf has been scrolled left already
-        * pdfLeft = how far to the left the pdf is relative to the viewport
-        * ----------------
-        * innerWidth = possible visible area of the viewport for the entire website
-        * 470 = width of the drawer that is now obscuring the view
-        */
-        const relativeSymbolRightPosition = (left + width) - pdfViewer.container.scrollLeft + pdfLeft;
+         * Each component of the calculation:
+         * left + width = right position on the pdf page of the selected symbol
+         * scrollLeft = how much the pdf has been scrolled left already
+         * pdfLeft = how far to the left the pdf is relative to the viewport
+         * ----------------
+         * innerWidth = possible visible area of the viewport for the entire website
+         * 470 = width of the drawer that is now obscuring the view
+         */
+        const relativeSymbolRightPosition =
+          left + width - pdfViewer.container.scrollLeft + pdfLeft;
         const viewableViewportWidth = window.innerWidth - DRAWER_WIDTH;
         if (relativeSymbolRightPosition > viewableViewportWidth) {
           // Add 50px padding to make the symbol close to the drawer but not hidden by it.
-          pdfViewer.container.scrollLeft += Math.max((relativeSymbolRightPosition - viewableViewportWidth) + SYMBOL_VIEW_PADDING, 0);
+          pdfViewer.container.scrollLeft += Math.max(
+            relativeSymbolRightPosition -
+              viewableViewportWidth +
+              SYMBOL_VIEW_PADDING,
+            0
+          );
         }
-      } 
+      }
     }
   }
 
   render() {
     const elFeedbackContainer = document.getElementById(
       "scholarReaderGlobalFeedbackButton"
+    );
+    const elUserAnnotationTypeContainer = document.getElementById(
+      "scholarReaderAnnotationTypeSelect"
     );
     return (
       <ScholarReaderContext.Provider value={this.state}>
@@ -473,6 +488,12 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
             ? createPortal(
                 <FeedbackButton variant="toolbar" />,
                 elFeedbackContainer
+              )
+            : null}
+          {this.state.userAnnotationsEnabled && elUserAnnotationTypeContainer
+            ? createPortal(
+                <UserAnnotationTypeSelect />,
+                elUserAnnotationTypeContainer
               )
             : null}
         </>
