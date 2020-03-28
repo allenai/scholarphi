@@ -15,7 +15,7 @@ from common.models import (
 )
 from common.types import HueLocationInfo, PaperProcessingResult
 
-from .extractor import Sentence as SentenceEntity
+from .types import Sentence as SentenceEntity
 
 
 class Sentence(OutputModel):

@@ -8,13 +8,19 @@ from datetime import datetime
 from typing import List
 
 from common import directories, email, file_utils
-from common.commands.base import (CommandList, add_arxiv_id_filter_args,
-                                  add_one_entity_at_a_time_arg, create_args,
-                                  load_arxiv_ids_using_args,
-                                  read_arxiv_ids_from_file)
+from common.commands.base import (
+    CommandList,
+    add_arxiv_id_filter_args,
+    add_one_entity_at_a_time_arg,
+    create_args,
+    load_arxiv_ids_using_args,
+    read_arxiv_ids_from_file,
+)
 from common.commands.database import DatabaseUploadCommand
 from common.commands.fetch_arxiv_sources import (
-    DEFAULT_S3_ARXIV_SOURCES_BUCKET, FetchArxivSources)
+    DEFAULT_S3_ARXIV_SOURCES_BUCKET,
+    FetchArxivSources,
+)
 from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
 from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
@@ -22,8 +28,12 @@ from common.make_digest import make_paper_digest
 from common.types import PipelineDigest
 from scripts.job_config import fetch_config, load_job_from_s3
 from scripts.pipelines import entity_pipelines
-from scripts.process import (ENTITY_COMMANDS, TEX_PREPARATION_COMMANDS,
-                             commands_by_entity, run_command)
+from scripts.process import (
+    ENTITY_COMMANDS,
+    TEX_PREPARATION_COMMANDS,
+    commands_by_entity,
+    run_command,
+)
 
 
 def run_commands_for_arxiv_ids(
@@ -132,6 +142,16 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--end", help="Command to stop running the pipeline at.", choices=command_names
+    )
+    parser.add_argument(
+        "--commands",
+        type=str,
+        nargs="+",
+        help=(
+            "Which commands to run. Commands in this list will be run even if they don't belong "
+            + "to the pipelines in '--entities' or fit between '--start' and '--end'."
+        ),
+        choices=command_names,
     )
     add_arxiv_id_filter_args(parser)
     parser.add_argument(
@@ -327,6 +347,10 @@ if __name__ == "__main__":
     start_reached = True if args.start is None else False
     for CommandClass in command_classes:
         command_name = CommandClass.get_name()
+        # Run any command that the user explicitly requested to run.
+        if args.commands is not None and command_name in args.commands:
+            filtered_commands.append(CommandClass)
+            continue
         if not start_reached and args.start is not None:
             if command_name == args.start:
                 start_reached = True
