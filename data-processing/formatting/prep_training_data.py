@@ -36,6 +36,7 @@ def join_hue_locs_and_entites(arxivIds):
         Idx_to_Tex = {}
         for i in range(len(EqList)):
             Idx_to_Tex[i] = EqList[i]
+<<<<<<< HEAD
             
         # match equations and their locations by idx: (note that one of them is 0-indexed and the other is 1-indexed, hence the -1
         dfHue["tex"] = dfHue['entity_id'].apply(lambda x: Idx_to_Tex.get(x-1))
@@ -49,6 +50,15 @@ def join_hue_locs_and_entites(arxivIds):
         #dfHue.to_csv(os.path.join(outDir, "eqs_and_locs.csv"), index=False)
         dfDisplay.to_csv(os.path.join(outDir, "eqs_and_locs.csv"), index=False)
         
+=======
+
+        dfHue["tex"] = dfHue['entity_id'].apply(lambda x: Idx_to_Tex.get(x))
+        outDir = os.path.join("data", "99-formatting-data", arxivId)
+        if not os.path.exists(outDir):
+            os.makedirs(outDir)
+        dfHue.to_csv(os.path.join(outDir, "eqs_and_locs.csv"), index=False)
+
+>>>>>>> daa41d271b060e7330a0bca43cd2cef1b4aec2fd
 
 def draw_boxes(arxivIds):
     '''Reads in the paper image files and bounbding box csv file and draws the boxes onto the corresponding paper page.'''
@@ -168,3 +178,7 @@ if __name__ == "__main__":
     join_hue_locs_and_entites(sys.argv[1:])
     draw_boxes(sys.argv[1:])
     create_training_json(sys.argv[1:])
+<<<<<<< HEAD
+=======
+
+>>>>>>> daa41d271b060e7330a0bca43cd2cef1b4aec2fd
