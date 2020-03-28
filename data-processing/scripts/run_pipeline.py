@@ -133,7 +133,6 @@ if __name__ == "__main__":
         ),
         choices=ENTITY_NAMES,
         nargs="+",
-        default=ENTITY_NAMES,
     )
     parser.add_argument(
         "--start",
@@ -149,7 +148,9 @@ if __name__ == "__main__":
         nargs="+",
         help=(
             "Which commands to run. Commands in this list will be run even if they don't belong "
-            + "to the pipelines in '--entities' or fit between '--start' and '--end'."
+            + "to the pipelines in '--entities' or fit between '--start' and '--end'. If no other "
+            + "entity filters are set (--entities, --start, --end), then only the commands "
+            + "specified will be run."
         ),
         choices=command_names,
     )
@@ -348,9 +349,14 @@ if __name__ == "__main__":
     for CommandClass in command_classes:
         command_name = CommandClass.get_name()
         # Run any command that the user explicitly requested to run.
-        if args.commands is not None and command_name in args.commands:
-            filtered_commands.append(CommandClass)
-            continue
+        if args.commands is not None:
+            if command_name in args.commands:
+                filtered_commands.append(CommandClass)
+                continue
+            # If no other command filters have been specified and the user didn't
+            # request this command, skip it.
+            if args.start is None and args.end is None and args.entities is None:
+                continue
         if not start_reached and args.start is not None:
             if command_name == args.start:
                 start_reached = True
@@ -360,10 +366,13 @@ if __name__ == "__main__":
             # Skip over irrelevant entity-processing commands.
             if CommandClass in ENTITY_COMMANDS:
                 skip_command = True
-                for entity_type in args.entities:
-                    if CommandClass in commands_by_entity[entity_type]:
-                        skip_command = False
-                        break
+                if args.entities is None:
+                    skip_command = False
+                else:
+                    for entity_type in args.entities:
+                        if CommandClass in commands_by_entity[entity_type]:
+                            skip_command = False
+                            break
                 if skip_command:
                     continue
             # Optionally skip over database upload commands.

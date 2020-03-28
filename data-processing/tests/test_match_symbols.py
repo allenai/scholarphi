@@ -43,3 +43,12 @@ def test_does_not_match_using_shared_subscript():
     matches = get_mathml_matches([x_sub_i, t_sub_i], allow_self_matches=False)
     assert x_sub_i not in matches
     assert t_sub_i not in matches
+
+
+def test_omit_duplicate_matches():
+    x1 = "<msub><mi>x</mi><mn>1</mn></msub>"
+    x2 = "<msub><mi>x</mi><mn>2</mn></msub>"
+    # While x2 is included in the list of MathML equations twice, only one match between
+    # x1 and x2 should be included in the matches data.
+    matches = get_mathml_matches([x1, x2, x2], allow_self_matches=False)
+    assert len(matches[x1]) == 1
