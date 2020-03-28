@@ -11,13 +11,35 @@ def test_matches_self():
     assert matches[mathml] == [Match(mathml, mathml, 1)]
 
 
-def test_matches_children_at_lower_rank():
-    parent_mathml = "<msub><mi>x</mi><mi>i</mi></msub>"
-    matches = get_mathml_matches([parent_mathml])
-    assert matches == {
-        parent_mathml: [
-            Match(parent_mathml, parent_mathml, 1),
-            Match(parent_mathml, "<mi>x</mi>", 2),
-            Match(parent_mathml, "<mi>i</mi>", 3),
-        ]
-    }
+def test_matches_symbol_with_shared_base():
+    x_sub_i = "<msub><mi>x</mi><mi>i</mi></msub>"
+    x_squared = "<msup><mi>x</mi><mn>2</mn></msup>"
+    matches = get_mathml_matches([x_sub_i, x_squared], allow_self_matches=False)
+    assert matches[x_sub_i] == [Match(x_sub_i, x_squared, 1)]
+    assert matches[x_squared] == [Match(x_squared, x_sub_i, 1)]
+
+
+def test_exact_match_ranks_higher_than_partial_match():
+    x_sub_i = "<msub><mi>x</mi><mi>i</mi></msub>"
+    x_squared = "<msup><mi>x</mi><mn>2</mn></msup>"
+    matches = get_mathml_matches([x_sub_i, x_squared])
+    assert matches[x_sub_i] == [
+        Match(x_sub_i, x_sub_i, 1),
+        Match(x_sub_i, x_squared, 2),
+    ]
+
+
+def test_does_not_match_base_to_subscript():
+    i = "<mi>i</mi>"
+    x_sub_i = "<msub><mi>x</mi><mi>i</mi></msub>"
+    matches = get_mathml_matches([i, x_sub_i], allow_self_matches=False)
+    assert i not in matches
+    assert x_sub_i not in matches
+
+
+def test_does_not_match_using_shared_subscript():
+    x_sub_i = "<msub><mi>x</mi><mi>i</mi></msub>"
+    t_sub_i = "<msub><mi>t</mi><mi>i</mi></msub>"
+    matches = get_mathml_matches([x_sub_i, t_sub_i], allow_self_matches=False)
+    assert x_sub_i not in matches
+    assert t_sub_i not in matches
