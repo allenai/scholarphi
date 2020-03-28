@@ -7,6 +7,10 @@ from datetime import datetime
 from typing import List
 
 from common import directories, email, file_utils
+
+sys.path.append("./")
+
+from common import directories
 from common.commands.base import (
     CommandList,
     add_arxiv_id_filter_args,
