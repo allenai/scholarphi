@@ -1,13 +1,11 @@
-from typing import cast
-
 from common import directories
 from common.commands.base import CommandList
-from common.parse_tex import EquationExtractor
-from common.types import CharacterRange, Equation, SerializableEntity
 from entities.common import create_entity_localization_command_sequence
 from scripts.pipelines import EntityPipeline, register_entity_pipeline
 
-from .extractor import Sentence, SentenceExtractor
+from .colorize import get_sentence_color_positions
+from .extractor import SentenceExtractor
+from .types import Sentence
 from .upload import Sentence as SentenceModel
 from .upload import upload_sentences
 
@@ -15,6 +13,7 @@ commands = create_entity_localization_command_sequence(
     "sentences",
     SentenceExtractor,
     DetectedEntityType=Sentence,
+    get_color_positions=get_sentence_color_positions,
     upload_func=upload_sentences,
 )
 

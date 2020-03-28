@@ -1,11 +1,11 @@
 import logging
-from dataclasses import dataclass
 from typing import Iterator, List
 
 import pysbd
-from common.parse_tex import (DEFAULT_CONTEXT_SIZE, EntityExtractor,
-                              PlaintextExtractor)
-from common.types import SerializableEntity
+
+from common.parse_tex import DEFAULT_CONTEXT_SIZE, EntityExtractor, PlaintextExtractor
+
+from .types import Sentence
 
 # These are 'reserved characters' by the pysbd module and can potentially
 # cause issues if they are present in a string. This list was compiled from the
@@ -22,11 +22,20 @@ from common.types import SerializableEntity
 # ᓴ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/processor.py, https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
 # ᓷ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/cleaner.py, https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
 # ᓸ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/processor.py, https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
-PYSBD_RESERVED_CHARACTERS: List[str] = ["∯", "ȸ", "♨", "☝", "✂", "⎋", "ᓰ", "ᓱ", "ᓳ", "ᓴ", "ᓷ", "ᓸ"]
-
-@dataclass(frozen=True)
-class Sentence(SerializableEntity):
-    text: str
+PYSBD_RESERVED_CHARACTERS: List[str] = [
+    "∯",
+    "ȸ",
+    "♨",
+    "☝",
+    "✂",
+    "⎋",
+    "ᓰ",
+    "ᓱ",
+    "ᓳ",
+    "ᓴ",
+    "ᓷ",
+    "ᓸ",
+]
 
 
 class SentenceExtractor(EntityExtractor):
@@ -39,7 +48,10 @@ class SentenceExtractor(EntityExtractor):
     def parse(self, tex_path: str, tex: str) -> Iterator[Sentence]:
         for reserved_char in PYSBD_RESERVED_CHARACTERS:
             if reserved_char in tex:
-                logging.warning('Reserved character from pysbd "%s" found in tex string, this might break the sentence extractor.', reserved_char)
+                logging.warning(
+                    'Reserved character from pysbd "%s" found in tex string, this might break the sentence extractor.',
+                    reserved_char,
+                )
 
         # Extract plaintext segments from TeX
         plaintext_extractor = PlaintextExtractor()
@@ -83,15 +95,28 @@ class SentenceExtractor(EntityExtractor):
             #    ex: see PYSBD_RESERVED_CHARACTERS list.
             #    sol: throw a warning if the sentence contains any of these characters.
             if len(sentence) > 1000:
-                logging.warning('Exceptionally long sentence (length %d), this might indicate the sentence extractor failed to properly split text into sentences.', len(sentence))
+                logging.warning(
+                    "Exceptionally long sentence (length %d), this might indicate the sentence extractor failed to properly split text into sentences.",
+                    len(sentence),
+                )
 
             plaintext_start = plaintext.find(sentence, length_so_far_in_plain_text)
             plaintext_end = plaintext_start + len(sentence)
-            if plaintext_start not in plaintext_to_tex_offset_map or plaintext_end not in plaintext_to_tex_offset_map:
-                logging.warning('A sentence boundary was incorrect for sentence %s. This is probably an issue with pysbd. Skipping sentence in extractor.', sentence)
+            if (
+                plaintext_start not in plaintext_to_tex_offset_map
+                or plaintext_end not in plaintext_to_tex_offset_map
+            ):
+                logging.warning(
+                    "A sentence boundary was incorrect for sentence %s. This is probably an issue with pysbd. Skipping sentence in extractor.",
+                    sentence,
+                )
                 continue
             if plaintext_start - 500 > length_so_far_in_plain_text:
-                logging.warning('Sentence boundary start for sentence %s was %d characters ahead of the previous sentence, this might indicate the sentence extractor failed to properly split text.', sentence, plaintext_start - length_so_far_in_plain_text)
+                logging.warning(
+                    "Sentence boundary start for sentence %s was %d characters ahead of the previous sentence, this might indicate the sentence extractor failed to properly split text.",
+                    sentence,
+                    plaintext_start - length_so_far_in_plain_text,
+                )
 
             start = plaintext_to_tex_offset_map[plaintext_start]
             end = plaintext_to_tex_offset_map[plaintext_end]

@@ -8,7 +8,7 @@ from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
 from common.types import ArxivId, RelativePath, SerializableEntity
 
-from ..extractor import Sentence
+from ..types import Sentence
 
 
 @dataclass(frozen=True)
