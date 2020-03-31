@@ -8,7 +8,6 @@ import pandas as pd
 import random
 import cv2
 
-# You may need to restart your runtime prior to this, to let your installation take effect
 # Some basic setup:
 # Setup detectron2 logger
 import detectron2
@@ -30,6 +29,9 @@ from detectron2.config import get_cfg
 
 from detectron2.evaluation import COCOEvaluator, inference_on_dataset
 from detectron2.data import build_detection_test_loader
+
+from detectron2.modeling import build_model
+from detectron2.checkpoint import DetectionCheckpointer
 
 
 def get_box_dicts(img_dir):
@@ -73,34 +75,55 @@ def get_box_dicts(img_dir):
                    
         
 if __name__ == "__main__":
+    CNN_data_dir = sys.argv[1]
+
     for d in ["train", "val"]:
-        DatasetCatalog.register("Eqbox_" + d, lambda d=d: get_box_dicts(sys.argv[1] + d))
+        DatasetCatalog.register("Eqbox_" + d, lambda d=d: get_box_dicts(CNN_data_dir + d))
         MetadataCatalog.get("Eqbox_" + d).set(thing_classes=["Eqbox"])
     Eqbox_metadata = MetadataCatalog.get("Eqbox_train")
 
     cfg = get_cfg()
-    cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
-    cfg.DATASETS.TRAIN = ("Eqbox_train",)
-    cfg.DATASETS.TEST = ()
-    cfg.DATALOADER.NUM_WORKERS = 1
-    #cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml")  # Let training initialize from model zoo
-    cfg.SOLVER.IMS_PER_BATCH = 2
-    cfg.SOLVER.BASE_LR = 0.00025  # pick a good LR
-    cfg.SOLVER.MAX_ITER = 500    # 500 iterations seems good enough for this toy dataset; you may need to train longer for a practical dataset
-    cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 512  # faster, and good enough for this toy dataset (default: 512)
-    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1  # only has one class (Eqbox)
-    
-    os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
-    trainer = DefaultTrainer(cfg) 
-    trainer.resume_or_load(resume=False)
-    trainer.train()
+    cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml"))
 
-    cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
-    cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7   # set the testing threshold for this model
-    cfg.DATASETS.TEST = ("Eqbox_val", )
-    predictor = DefaultPredictor(cfg)
+    # If a second commandline argument is provided, interpret it as a model path and do not train, only evaluate:
+    if len(sys.argv) > 2:
+        model_path = sys.argv[2]
+        model = build_model(cfg)
+        DetectionCheckpointer(model).load(model_path)
+
+        cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7   # set the testing threshold for this model
+        
+        cfg.DATASETS.TEST = ("Eqbox_val", )
+        predictor = DefaultPredictor(cfg)
+        evaluator = COCOEvaluator("Eqbox_val", cfg, False, output_dir="./output/")
+        val_loader = build_detection_test_loader(cfg, "Eqbox_val")
+        inference_on_dataset(model, val_loader, evaluator)
+        # another equivalent way is to use trainer.test
+
+    else:
+        # train a model
+        cfg.DATASETS.TRAIN = ("Eqbox_train",)
+        cfg.DATALOADER.NUM_WORKERS = 1
+        #cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml")  # Let training initialize from model zoo
+        cfg.SOLVER.IMS_PER_BATCH = 2
+        cfg.SOLVER.BASE_LR = 0.0025  # pick a good LR
+        cfg.SOLVER.MAX_ITER = 5000 
+        cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 512  # faster, and good enough for this toy dataset (default: 512)
+        cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1  # only has one class (Eqbox)
     
-    evaluator = COCOEvaluator("Eqbox_val", cfg, False, output_dir="./output/")
-    val_loader = build_detection_test_loader(cfg, "Eqbox_val")
-    inference_on_dataset(trainer.model, val_loader, evaluator)
-    # another equivalent way is to use trainer.test
+        os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
+        trainer = DefaultTrainer(cfg) 
+        trainer.resume_or_load(resume=False)
+        trainer.train()
+
+        cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
+        cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7   # set the testing threshold for this model
+        
+        cfg.DATASETS.TEST = ("Eqbox_val", )
+        predictor = DefaultPredictor(cfg)
+        evaluator = COCOEvaluator("Eqbox_val", cfg, False, output_dir="./output/")
+        val_loader = build_detection_test_loader(cfg, "Eqbox_val")
+        inference_on_dataset(trainer.model, val_loader, evaluator)
+        # another equivalent way is to use trainer.test
+
+    

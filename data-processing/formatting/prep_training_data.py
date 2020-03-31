@@ -1,5 +1,6 @@
 import os
 import sys
+import random
 
 import json
 
@@ -10,8 +11,16 @@ import cv2
 
 def filter_display_eqs(df):
     '''Returns only the display style equations from a dataframe.'''
-    dfResult = df.loc[df["tex"].str.contains('(\$\$.*\$\$|\\[\s.*\\]|begin{displaymath|begin{equation|begin{split|begin{array|begin{eqnarray|begin{multiline|begin{gather|begin{align|begin{flalign)',regex=True, na=False)]
+    dfResult = df.loc[df["tex"].str.contains('(\$\$\s.*\$\$|\\[\s.*\\]|begin{displaymath|begin{equation|begin{split|begin{array|begin{eqnarray|begin{multiline|begin{gather|begin{align|begin{flalign)',regex=True, na=False)]
     return dfResult
+
+def train_val_split(datList, fracTrain=.90):
+    '''For a list of arxivIds, split into a training and validation set.
+       By default, split as 90% train, 10% validation.'''
+    split = int(len(datList) * fracTrain)
+    random.shuffle(datList)
+    return datList[:split], datList[split:] 
+    
 
 
 def join_hue_locs_and_entites(arxivIds):
@@ -36,7 +45,6 @@ def join_hue_locs_and_entites(arxivIds):
         Idx_to_Tex = {}
         for i in range(len(EqList)):
             Idx_to_Tex[i] = EqList[i]
-<<<<<<< HEAD
             
         # match equations and their locations by idx: (note that one of them is 0-indexed and the other is 1-indexed, hence the -1
         dfHue["tex"] = dfHue['entity_id'].apply(lambda x: Idx_to_Tex.get(x-1))
@@ -49,16 +57,7 @@ def join_hue_locs_and_entites(arxivIds):
         dfDisplay = filter_display_eqs(dfHue)
         #dfHue.to_csv(os.path.join(outDir, "eqs_and_locs.csv"), index=False)
         dfDisplay.to_csv(os.path.join(outDir, "eqs_and_locs.csv"), index=False)
-        
-=======
 
-        dfHue["tex"] = dfHue['entity_id'].apply(lambda x: Idx_to_Tex.get(x))
-        outDir = os.path.join("data", "99-formatting-data", arxivId)
-        if not os.path.exists(outDir):
-            os.makedirs(outDir)
-        dfHue.to_csv(os.path.join(outDir, "eqs_and_locs.csv"), index=False)
-
->>>>>>> daa41d271b060e7330a0bca43cd2cef1b4aec2fd
 
 def draw_boxes(arxivIds):
     '''Reads in the paper image files and bounbding box csv file and draws the boxes onto the corresponding paper page.'''
@@ -92,13 +91,17 @@ def draw_boxes(arxivIds):
             cv2.imwrite(os.path.join(outDir, paperImgFile), paperImg)
             
 
-
-def create_training_json(arxivIds):
+def create_training_json(arxivIds, train=True):
     '''For a given list of arxiv Ids, this function creates a JSON file 
        that represents the labelled bounding box data for the pages of the 
-       paper in the format expected by detectron2's object detection.'''
+       paper in the format expected by detectron2's object detection. 
+       If train==True, make training set. If false, make validation set. 
+    '''
     # Location to output the json
-    outDir = os.path.join("data", "99-formatting-data", "TrainingAggregate")
+    if train:
+        outDir = os.path.join("data", "99-formatting-data", "TrainingData")
+    else:
+        outDir = os.path.join("data", "99-formatting-data", "ValidationData")
     if not os.path.exists(outDir):
         os.makedirs(outDir)
     # Dictionary that will become the json
@@ -175,10 +178,17 @@ def create_training_json(arxivIds):
 
 if __name__ == "__main__":
     # Run with arxiv Ids as commandline args:
-    join_hue_locs_and_entites(sys.argv[1:])
-    draw_boxes(sys.argv[1:])
-    create_training_json(sys.argv[1:])
-<<<<<<< HEAD
-=======
+    locs_dir = sys.argv[1]
+    arxivIds = os.listdir(locs_dir)
+    
+    # Prep the data by joining the equation data with corresponding bounding box data:
+    join_hue_locs_and_entites(arxivIds)
+    
+    # Todo: eventually only draw boxes if some kind of debug flag is set:
+    draw_boxes(arxivIds)
 
->>>>>>> daa41d271b060e7330a0bca43cd2cef1b4aec2fd
+    # Split into training and validation sets:
+    train_arxivs, val_arxivs = train_val_split(arxivIds)
+    # Prepare the json files foe the RCNN model:
+    create_training_json(train_arxivs, train=True)
+    create_training_json(val_arxivs, train=False)
