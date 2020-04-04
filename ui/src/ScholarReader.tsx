@@ -383,7 +383,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
           const mathMlsWithSymbols = mathMls.map(m => {
             return {
               ...m,
-              symbols: symbols.filter(s => s.mathml === m.id)
+              symbols: symbols.filter(s => s.mathml === m.id).map(s => s.id)
             };
           });
           this.setMathMls(createStateSliceFromArray(mathMlsWithSymbols, "id"));

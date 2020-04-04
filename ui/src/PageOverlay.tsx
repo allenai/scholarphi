@@ -6,6 +6,7 @@ import * as selectors from "./selectors";
 import { ScholarReaderContext } from "./state";
 import SymbolAnnotation from "./SymbolAnnotation";
 import { PDFPageView } from "./types/pdfjs-viewer";
+import { getPageViewDimensions } from "./ui-utils";
 import { UserAnnotationLayer } from "./UserAnnotationLayer";
 
 interface PageProps {
@@ -85,6 +86,7 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
       );
     }
 
+    const pageDimensions = getPageViewDimensions(this.props.view);
     return ReactDOM.createPortal(
       <ScholarReaderContext.Consumer>
         {({
@@ -96,8 +98,10 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
           return (
             <>
               <PageMask
+                key="page-mask"
                 pageNumber={this.props.pageNumber}
-                pageView={this.props.view}
+                pageWidth={pageDimensions.width}
+                pageHeight={pageDimensions.height}
               />
               {/* Add annotations for all citation bounding boxes on this page. */}
               {citations !== null
