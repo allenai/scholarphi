@@ -19,7 +19,7 @@
  * coordinates when processing PDFs and PostScript files with Python.
  */
 export interface BoundingBox {
-  id: number;
+  id: string;
   page: number;
   left: number;
   top: number;
@@ -53,7 +53,7 @@ export interface Paper {
 }
 
 export interface Entity {
-  id: number;
+  id: string;
   source: string;
   bounding_boxes: BoundingBox[];
 }
@@ -69,17 +69,16 @@ export interface Symbol extends Entity {
   sentence: number | null;
 }
 
-export interface SymbolMatches {
-  [id: number]: Set<number>;
-}
-
 export interface MathMl {
+  id: string;
   mathMl: string;
   matches: MathMlMatch[];
 }
 
 export interface MathMlMatch {
   rank: number;
+  // TODO(andrewhead): figure out if this should be an ID. If so, check if we need to update the
+  // matchingSymbols selector.
   mathMl: string;
 }
 
@@ -87,7 +86,7 @@ export interface Sentence extends Entity {
   text: string;
 }
 
-export type AnnotationId = number;
+export type AnnotationId = string;
 
 export type UserAnnotationType = "citation" | "equation" | "symbol";
 

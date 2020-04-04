@@ -25,29 +25,36 @@ interface AnnotationProps {
    * When inactive, the annotation cannot be interacted with (i.e. clicked). Empty boxes will appear
    * in the places of each of the bounding boxes.
    */
-  inactive?: boolean;
+  active?: boolean;
   /**
-   * Class name to apply to all spans that belong to this
+   * Class name to apply to all spans that belong to this.
    */
   className?: string;
   /**
-   * List of bounding boxes
+   * Positions in the paper where this annotation should be drawn. A separate 'AnnotationSpan'
+   * will be created for each box.
    */
   boundingBoxes: BoundingBox[];
-  shouldHighlight?: boolean;
   /**
-   * Component to show in the tooltip when this annotation is activated.
+   * Whether to force the highlighting of this annotation.
+   */
+  highlight?: boolean;
+  /**
+   * Component to show in the tooltip when the annotation is activated.
    */
   tooltipContent: React.ReactNode | null;
+  onSelected?: () => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
 }
 
 export class Annotation extends React.PureComponent<AnnotationProps> {
-  static defaultProps = {
-    shouldHighlight: false
-  };
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
+
+  static defaultProps = {
+    active: true,
+    highlight: false
+  };
 
   render() {
     return (
@@ -63,15 +70,16 @@ export class Annotation extends React.PureComponent<AnnotationProps> {
               key={box.id}
               annotationId={this.props.id}
               id={box.id}
-              inactive={this.props.inactive}
+              active={this.props.active}
               location={box}
               className={classNames(this.props.className, {
                 "source-tex-pipeline": this.props.source === "tex-pipeline",
                 "source-other": this.props.source === "other",
-                "matching-symbol-annotation": this.props.shouldHighlight
+                "matching-symbol-annotation": this.props.highlight
               })}
-              shouldHighlight={this.props.shouldHighlight}
+              highlight={this.props.highlight}
               tooltipContent={this.props.tooltipContent}
+              onSelected={this.props.onSelected}
               onKeyDown={this.props.onKeyDown}
             />
           ))}

@@ -10,12 +10,16 @@ import UserAnnotationTooltipBody from "./UserAnnotationTooltipBody";
 
 interface UserAnnotationProps {
   annotation: AnnotationObject;
-  inactive?: boolean;
+  active?: boolean;
 }
 
 export class UserAnnotation extends React.PureComponent<UserAnnotationProps> {
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
+
+  static defaultProps = {
+    active: true
+  };
 
   onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
     const { deleteUserAnnotation, updateUserAnnotation } = this.context;
@@ -40,7 +44,7 @@ export class UserAnnotation extends React.PureComponent<UserAnnotationProps> {
     return (
       <Annotation
         id={`user-annotation-${this.props.annotation.id}`}
-        inactive={this.props.inactive}
+        active={this.props.active}
         className={classNames("user-annotation", {
           "citation-user-annotation": this.props.annotation.type === "citation",
           "symbol-user-annotation": this.props.annotation.type === "symbol",
