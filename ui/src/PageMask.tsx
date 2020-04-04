@@ -2,11 +2,11 @@ import React from "react";
 import * as selectors from "./selectors";
 import { ScholarReaderContext } from "./state";
 import { Sentence } from "./types/api";
-import { PDFPageView } from "./types/pdfjs-viewer";
 
 interface PageMaskProps {
-  pageView: PDFPageView;
   pageNumber: number;
+  pageWidth: number;
+  pageHeight: number;
 }
 
 /* TODO(andrewhead): create a sentences table in the database */
@@ -16,8 +16,6 @@ export class PageMask extends React.PureComponent<PageMaskProps> {
 
   render() {
     const maskId = `page-${this.props.pageNumber}-mask`;
-    const pageWidth = this.props.pageView.div.scrollWidth;
-    const pageHeight = this.props.pageView.div.scrollHeight;
 
     const {
       selectedEntityType,
@@ -41,19 +39,25 @@ export class PageMask extends React.PureComponent<PageMaskProps> {
       return null;
     }
 
-    const matchingSentences = selectors
+    const matchingSentenceIds: string[] = [];
+    selectors
       .matchingSymbols(selectedEntityId, symbols, mathMls)
-      .map(matchingSymbolId => {
+      .forEach(matchingSymbolId => {
         const sentenceId = symbols.byId[matchingSymbolId].sentence;
-        return sentenceId !== null ? sentences.byId[sentenceId] : undefined;
-      })
-      .filter(s => s !== undefined)
-      .map(s => s as Sentence);
-
+        if (
+          sentenceId !== null &&
+          matchingSentenceIds.indexOf(sentenceId) === -1
+        ) {
+          matchingSentenceIds.push(sentenceId);
+        }
+      });
+    const matchingSentences = matchingSentenceIds.map(
+      sentenceId => sentences.byId[sentenceId]
+    );
     const firstMatchingSentence: Sentence | undefined = matchingSentences[0];
 
+    const { pageWidth, pageHeight } = this.props;
     return (
-      // TODO(andrewhead): Handle sizing, dynamic resizing, etc.
       <svg width={pageWidth} height={pageHeight}>
         <mask id={maskId}>
           {/*
@@ -62,28 +66,38 @@ export class PageMask extends React.PureComponent<PageMaskProps> {
            * initial mask area as the entire page. Setting the fill to "black" (as with the
            * rectangles below) subtracts from the mask.
            */}
-          <rect width={pageWidth} height={pageHeight} fill="white" />
+          <rect
+            key="entire-page-mask"
+            width={pageWidth}
+            height={pageHeight}
+            fill="white"
+          />
           {/*
            * Subtract from the mask wherever a sentence should be activated.
            */}
-          {matchingSentences.map(s => (
-            <>
-              {s.bounding_boxes
+          {matchingSentences
+            .map(s => {
+              return s.bounding_boxes
                 .filter(b => b.page === this.props.pageNumber - 1)
                 .map(b => (
                   <rect
+                    key={b.id}
                     x={b.left * pageWidth}
                     y={b.top * pageHeight}
                     width={b.width * pageWidth}
                     height={b.height * pageHeight}
                     fill="black"
                   />
-                ))}
-            </>
-          ))}
+                ));
+            })
+            /*
+             * Flatten all masks generated for each bounding box into single list.
+             */
+            .flat()}
         </mask>
         {/* Show a white mask the page anywhere a sentence rectangle wasn't added above. */}
         <rect
+          key="white-overlay"
           width={pageWidth}
           height={pageHeight}
           fill={"white"}
@@ -97,6 +111,7 @@ export class PageMask extends React.PureComponent<PageMaskProps> {
               .filter(b => b.page === this.props.pageNumber - 1)
               .map(b => (
                 <rect
+                  key={b.id}
                   x={b.left * pageWidth}
                   y={b.top * pageHeight}
                   width={b.width * pageWidth}

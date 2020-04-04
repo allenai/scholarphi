@@ -33,11 +33,8 @@ interface AnnotationSpanProps {
    */
   scaleCorrection?: number;
   tooltipContent: React.ReactNode | null;
-  /**
-   * Callback called when the annotation span is selected (typically called when the annotation
-   * span is clicked).
-   */
   onSelected?: () => void;
+  onDeselected?: () => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
 }
 
@@ -86,6 +83,9 @@ export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
     if (this.isSelected()) {
       this.context.setSelectedAnnotationId(null);
       this.context.setSelectedAnnotationSpanId(null);
+      if (this.props.onDeselected !== undefined) {
+        this.props.onDeselected();
+      }
     }
   }
 

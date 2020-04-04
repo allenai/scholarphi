@@ -123,7 +123,7 @@ export function createStateSliceFromArray(array: any[], idKey: string) {
   const itemsById = array
     .filter(item => allIds.indexOf(item[idKey]) !== -1)
     .reduce((byId, item) => {
-      byId[idKey] = item;
+      byId[item[idKey]] = item;
       return byId;
     }, {});
   return {

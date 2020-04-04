@@ -31,7 +31,7 @@ interface Symbol extends Entity {
    * The ID of the sentence this symbol belongs to. Null if a sentence could not be found for
    * this symbol.
    */
-  sentence: number | null;
+  sentence: string | null;
 }
 
 interface MathMlMatch {
@@ -179,14 +179,14 @@ export class Connection {
       const key = row["citation_id"];
       if (!citations.hasOwnProperty(key)) {
         citations[key] = {
-          id: key,
+          id: String(key),
           source: row.source,
           bounding_boxes: [],
           paper: row.cited_paper_id
         };
       }
       const bounding_box: BoundingBox = {
-        id: row.bounding_box_id,
+        id: String(row.bounding_box_id),
         page: row.page,
         left: row.left,
         top: row.top,
@@ -202,7 +202,7 @@ export class Connection {
     const rows = await this._knex("paper")
       .select(
         "symbol.id AS symbol_id",
-        "mathml",
+        "mathml_id",
         "entity.source AS source",
         "boundingbox.id AS bounding_box_id",
         "page",
@@ -217,8 +217,6 @@ export class Connection {
       .where({ arxiv_id: arxivId })
       // Get symbols.
       .join("symbol", { "paper.s2_id": "symbol.paper_id" })
-      // Get MathML.
-      .join("mathml", { "symbol.mathml_id": "mathml.id" })
       // Get bounding box.
       .join("entity", { "symbol.id": "entity.entity_id" })
       .where({ "entity.type": "symbol" })
@@ -245,7 +243,7 @@ export class Connection {
       // Aggregate a list of children by aggregating by all other fields.
       .groupBy(
         "symbol.id",
-        "mathml",
+        "mathml_id",
         "entity.source",
         "boundingbox.id",
         "page",
@@ -259,7 +257,7 @@ export class Connection {
 
     const symbols = rows.map(row => {
       const boundingBox: BoundingBox = {
-        id: row.bounding_box_id,
+        id: String(row.bounding_box_id),
         page: row.page,
         left: row.left,
         top: row.top,
@@ -267,10 +265,10 @@ export class Connection {
         height: row.height
       };
       const symbol: Symbol = {
-        id: row.symbol_id,
+        id: String(row.symbol_id),
         source: row.source,
-        mathml: row.mathml,
-        sentence: row.sentence_id,
+        mathml: String(row.mathml_id),
+        sentence: String(row.sentence_id),
         bounding_boxes: [boundingBox],
         parent: row.parent_id,
         children: row.children_ids
@@ -298,7 +296,7 @@ export class Connection {
 
     const mathMlById: { [id: string]: MathMl } = {};
     for (const row of rows) {
-      const id = row.mathml_id;
+      const id = String(row.mathml_id);
       if (mathMlById[id] === undefined) {
         const mathMl = row.mathml;
         mathMlById[id] = {
@@ -351,7 +349,7 @@ export class Connection {
         };
       }
       const bounding_box: BoundingBox = {
-        id: row.bounding_box_id,
+        id: String(row.bounding_box_id),
         page: row.page,
         left: row.left,
         top: row.top,
@@ -379,10 +377,10 @@ export class Connection {
       .join("annotation", { "paper.s2_id": "annotation.paper_id" });
 
     const annotations: Annotation[] = rows.map(row => ({
-      id: row.annotation_id,
+      id: String(row.annotation_id),
       type: row.type,
       boundingBox: {
-        id: row.annotation_id,
+        id: String(row.annotation_id),
         page: row.page,
         left: row.left,
         top: row.top,

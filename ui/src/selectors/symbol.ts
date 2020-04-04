@@ -13,10 +13,10 @@ export function matchingSymbols(
   if (exact === true) {
     return allMathMl.byId[symbols.byId[symbolId].mathml].symbols;
   } else {
-    /*
-     * TODO(andrewhead): also find matches!!
-     */
-    return allMathMl.byId[symbols.byId[symbolId].mathml].symbols;
+    const mathMl = allMathMl.byId[symbols.byId[symbolId].mathml];
+    return mathMl.matches
+      .map(match => allMathMl.byId[match.mathMl].symbols)
+      .flat();
   }
 }
 
