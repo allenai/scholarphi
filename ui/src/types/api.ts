@@ -66,7 +66,7 @@ export interface Symbol extends Entity {
   mathml: string;
   parent: number | null;
   children: number[];
-  sentence: number | null;
+  sentence: string | null;
 }
 
 export interface MathMl {
@@ -77,8 +77,6 @@ export interface MathMl {
 
 export interface MathMlMatch {
   rank: number;
-  // TODO(andrewhead): figure out if this should be an ID. If so, check if we need to update the
-  // matchingSymbols selector.
   mathMl: string;
 }
 

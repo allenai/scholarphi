@@ -17,11 +17,6 @@ export class SymbolAnnotation extends React.PureComponent<
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
 
-  selectEntityWhenAnnotationSelected() {
-    const { setSelectedEntity } = this.context;
-    setSelectedEntity(this.props.symbol.id, "symbol");
-  }
-
   render() {
     return (
       <div hidden={this.props.symbol.parent !== null}>
@@ -33,9 +28,28 @@ export class SymbolAnnotation extends React.PureComponent<
           tooltipContent={null}
           highlight={this.props.highlight}
           onSelected={this.selectEntityWhenAnnotationSelected.bind(this)}
+          onDeselected={this.deselectEntityWhenAnnotationDeselected.bind(this)}
         />
       </div>
     );
+  }
+
+  selectEntityWhenAnnotationSelected() {
+    this.context.setSelectedEntity(this.props.symbol.id, "symbol");
+  }
+
+  deselectEntityWhenAnnotationDeselected() {
+    const {
+      setSelectedEntity,
+      selectedEntityId,
+      selectedEntityType
+    } = this.context;
+    if (
+      selectedEntityType === "symbol" &&
+      selectedEntityId === this.props.symbol.id
+    ) {
+      setSelectedEntity(null, null);
+    }
   }
 }
 

@@ -43,7 +43,16 @@ interface AnnotationProps {
    * Component to show in the tooltip when the annotation is activated.
    */
   tooltipContent: React.ReactNode | null;
+  /**
+   * Callback triggered when the annotation is selected. Most often, this is triggered when the
+   * user clicks on an annotation.
+   */
   onSelected?: () => void;
+  /**
+   * Callback called when the annotation is deselected (typically called when a click has
+   * occurred outside the annotation).
+   */
+  onDeselected?: () => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
 }
 
@@ -75,11 +84,12 @@ export class Annotation extends React.PureComponent<AnnotationProps> {
               className={classNames(this.props.className, {
                 "source-tex-pipeline": this.props.source === "tex-pipeline",
                 "source-other": this.props.source === "other",
-                "matching-symbol-annotation": this.props.highlight
+                highlight: this.props.highlight
               })}
               highlight={this.props.highlight}
               tooltipContent={this.props.tooltipContent}
               onSelected={this.props.onSelected}
+              onDeselected={this.props.onDeselected}
               onKeyDown={this.props.onKeyDown}
             />
           ))}

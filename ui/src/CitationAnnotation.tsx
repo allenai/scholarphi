@@ -14,11 +14,6 @@ export class CitationAnnotation extends React.PureComponent<
   CitationAnnotationProps,
   {}
 > {
-  selectEntityWhenAnnotationSelected() {
-    const { setSelectedEntity } = this.context;
-    setSelectedEntity(this.props.citation.id, "citation");
-  }
-
   render() {
     return (
       <Annotation
@@ -33,8 +28,27 @@ export class CitationAnnotation extends React.PureComponent<
           />
         }
         onSelected={this.selectEntityWhenAnnotationSelected.bind(this)}
+        onDeselected={this.deselectEntityWhenAnnotationDeselected.bind(this)}
       />
     );
+  }
+
+  selectEntityWhenAnnotationSelected() {
+    this.context.setSelectedEntity(this.props.citation.id, "citation");
+  }
+
+  deselectEntityWhenAnnotationDeselected() {
+    const {
+      setSelectedEntity,
+      selectedEntityId,
+      selectedEntityType
+    } = this.context;
+    if (
+      selectedEntityType === "citation" &&
+      selectedEntityId === this.props.citation.id
+    ) {
+      setSelectedEntity(null, null);
+    }
   }
 }
 
