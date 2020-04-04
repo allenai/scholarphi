@@ -48,7 +48,7 @@ export class UserAnnotationLayer extends React.PureComponent<
                 <UserAnnotation
                   key={`user-annotation-${a.id}`}
                   annotation={a}
-                  inactive={a.type !== userAnnotationType}
+                  active={a.type === userAnnotationType}
                 />
               ))}
           </>

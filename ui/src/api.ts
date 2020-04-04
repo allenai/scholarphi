@@ -27,11 +27,10 @@ export async function getAllPapers() {
 
 /**
  * API request for paper details need to be batched as it seems that in production,
- * when more than around 50 paper Ids are requested at once, sometimes the API fails to respond. 
+ * when more than around 50 paper Ids are requested at once, sometimes the API fails to respond.
  * @param s2Ids list of Ids of all the papers cited in this paper
  */
 export async function papers(s2Ids: string[]) {
-
   const PAPER_REQUEST_BATCH_SIZE = 50;
   var s2IdsBatch = [];
   var promises = [];
@@ -42,12 +41,14 @@ export async function papers(s2Ids: string[]) {
 
   for (let i = 0; i < s2IdsBatch.length; i++) {
     promises.push(
-      doGet(axios.get<Paper[]>("/api/v0/papers", {
-        params: {
-          id: s2IdsBatch[i].join(",")
-        }
-      }))
-    )
+      doGet(
+        axios.get<Paper[]>("/api/v0/papers", {
+          params: {
+            id: s2IdsBatch[i].join(",")
+          }
+        })
+      )
+    );
   }
 
   return Promise.all(promises).then(responses => responses.flat() as Paper[]);
@@ -92,7 +93,7 @@ export async function postAnnotation(
 
 export async function putAnnotation(
   arxivId: string,
-  id: number,
+  id: string,
   annotationData: AnnotationData
 ) {
   const response = await axios.put(
@@ -102,7 +103,7 @@ export async function putAnnotation(
   return response.data;
 }
 
-export async function deleteAnnotation(arxivId: string, id: number) {
+export async function deleteAnnotation(arxivId: string, id: string) {
   return await axios.delete(`/api/v0/papers/arxiv:${arxivId}/annotation/${id}`);
 }
 

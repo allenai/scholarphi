@@ -1,60 +1,23 @@
-import { MathMl, Symbol } from "../types/api";
+import { MathMls, Symbols } from "../state";
+import { BoundingBox } from "../types/api";
 
 /**
- * Return an ordered list of symbols that match this one. Currently other symbols that have the
- * same MathML, or an overlapping subtree. Exact matches are returned first.
+ * Get a list of IDs of all symbols that with similar MathML.
  */
 export function matchingSymbols(
-  symbol: Symbol,
-  symbols: Symbol[],
-  allMathMl: MathMl[]
+  symbolId: string,
+  symbols: Symbols,
+  allMathMl: MathMls,
+  exact?: boolean
 ) {
-  let matchingSymbols: Symbol[] = [];
-
-  const mathMl = allMathMl.filter(m => m.mathMl === symbol.mathml)[0];
-  if (mathMl === undefined) {
-    return matchingSymbols;
+  if (exact === true) {
+    return allMathMl.byId[symbols.byId[symbolId].mathml].symbols;
+  } else {
+    /*
+     * TODO(andrewhead): also find matches!!
+     */
+    return allMathMl.byId[symbols.byId[symbolId].mathml].symbols;
   }
-
-  for (const match of mathMl.matches) {
-    matchingSymbols = matchingSymbols.concat(
-      symbols.filter(s => s.mathml === match.mathMl && s !== symbol)
-    );
-  }
-  return matchingSymbols;
-}
-
-/**
- * Get the first symbol from the set with exactly-matching MathML.
- */
-export function firstMatchingSymbol(symbol: Symbol, symbols: Symbol[]) {
-  const matchingSymbols = symbols.filter(
-    s => s.mathml === symbol.mathml && s !== symbol
-  );
-  if (matchingSymbols.length >= 1) {
-    return sortSymbolsByPosition(matchingSymbols)[0];
-  }
-  return null;
-}
-
-/**
- * Find the set of most similar symbols to this symbol based on their MathML, and return the
- * symbol from that set that appears first in the paper.
- */
-export function firstMostSimilarSymbol(
-  symbol: Symbol,
-  symbols: Symbol[],
-  allMathMl: MathMl[]
-) {
-  const rankedSymbols = matchingSymbols(symbol, symbols, allMathMl);
-  if (rankedSymbols.length >= 1) {
-    const mostSimilarMathMl = rankedSymbols[0].mathml;
-    const mostSimilarSymbols = symbols.filter(
-      s => s.mathml === mostSimilarMathMl && s !== symbol
-    );
-    return mostSimilarSymbols[0];
-  }
-  return null;
 }
 
 /**
@@ -62,29 +25,43 @@ export function firstMostSimilarSymbol(
  * order they were found when iterating through the list sequentially. Therefore if you sort the
  * the symbols, the MathML returned will match that sort order.
  */
-export function symbolMathMls(symbols: Symbol[]) {
-  const uniqueMathMls = [];
-  for (const symbol of symbols) {
-    if (uniqueMathMls.indexOf(symbol.mathml) === -1) {
-      uniqueMathMls.push(symbol.mathml);
+export function symbolMathMlIds(
+  symbolIds: string[],
+  symbols: Symbols,
+  mathMls: MathMls
+) {
+  const uniqueMathMlIds: string[] = [];
+  symbolIds.forEach(sId => {
+    const mathMlId = mathMls.byId[symbols.byId[sId].mathml].id;
+    if (uniqueMathMlIds.indexOf(mathMlId) === -1) {
+      uniqueMathMlIds.push(mathMlId);
     }
-  }
-  return uniqueMathMls;
+  });
+  return uniqueMathMlIds;
 }
 
 /**
- * Sort symbols by their position in the paper. The first symbols will be those that
- * appear at the top of the first pages.
+ * Order a list of symbol IDs by which ones appear first in the paper, using the position of
+ * the symbol bounding boxes. Does not take columns into account.
  */
-function sortSymbolsByPosition(symbols: Symbol[]) {
-  const sortedSymbols = [...symbols];
-  sortedSymbols.sort((s1, s2) => {
-    const s1Box = s1.bounding_boxes[0];
-    const s2Box = s2.bounding_boxes[0];
-    if (s1Box.page !== s2Box.page) {
-      return s1Box.page - s2Box.page;
-    }
-    return s2Box.top - s1Box.top;
+export function orderByPosition(symbolIds: string[], symbols: Symbols) {
+  const sorted = [...symbolIds];
+  sorted.sort((sId1, sId2) => {
+    const symbol1Boxes = symbols.byId[sId1].bounding_boxes;
+    const symbol1TopBox = symbol1Boxes.sort(compareBoxes)[0];
+    const symbol2Boxes = symbols.byId[sId2].bounding_boxes;
+    const symbol2TopBox = symbol2Boxes.sort(compareBoxes)[0];
+    return compareBoxes(symbol1TopBox, symbol2TopBox);
   });
-  return sortedSymbols;
+  return sorted;
+}
+
+/**
+ * Comparator for sorting boxes from highest position in the paper to lowest.
+ */
+function compareBoxes(box1: BoundingBox, box2: BoundingBox) {
+  if (box1.page !== box2.page) {
+    return box1.page - box2.page;
+  }
+  return box2.top - box1.top;
 }

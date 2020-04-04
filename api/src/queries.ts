@@ -3,7 +3,7 @@ import * as _ from "lodash";
 import * as nconf from "nconf";
 
 interface Entity {
-  id: number;
+  id: string;
   source: string;
   bounding_boxes: BoundingBox[];
 }
@@ -15,6 +15,9 @@ interface Citation extends Entity {
 type CitationsById = { [id: string]: Citation };
 
 interface Symbol extends Entity {
+  /**
+   * The ID of the MathML that represents this symbol.
+   */
   mathml: string;
   /**
    * The ID of the parent symbol of this symbol. Null if it does not have a parent.
@@ -37,6 +40,10 @@ interface MathMlMatch {
 }
 
 interface MathMl {
+  id: string;
+  /**
+   * MathML representation of an equation.
+   */
   mathMl: string;
   /**
    * Matches are ordered by rank, from highest to lowest.
@@ -51,7 +58,7 @@ interface Sentence extends Entity {
 type SentencesById = { [id: string]: Sentence };
 
 interface BoundingBox {
-  id: number;
+  id: string;
   /**
    * Page indexes start at 0.
    */
@@ -66,7 +73,7 @@ interface BoundingBox {
 }
 
 interface Annotation {
-  id: number;
+  id: string;
   type: "citation" | "symbol";
   boundingBox: BoundingBox;
 }
@@ -169,7 +176,7 @@ export class Connection {
 
     const citations: CitationsById = {};
     for (const row of rows) {
-      const key = Number(row["citation_id"]);
+      const key = row["citation_id"];
       if (!citations.hasOwnProperty(key)) {
         citations[key] = {
           id: key,
@@ -220,7 +227,9 @@ export class Connection {
         "entityboundingbox.bounding_box_id": "boundingbox.id"
       })
       // Get the ID of the sentence this symbol belongs to.
-      .join("symbolsentence", { "symbol.id": "symbolsentence.symbol_id" })
+      .leftOuterJoin("symbolsentence", {
+        "symbol.id": "symbolsentence.symbol_id"
+      })
       // Get the symbol's parent.
       .leftOuterJoin("symbolchild AS parents", function() {
         this.on({ "symbol.id": "parents.child_id" }).orOnNull(
@@ -275,8 +284,9 @@ export class Connection {
   async getMathMlForArxivId(arxivId: string) {
     const rows = await this._knex("paper")
       .select(
+        "mathml.id AS mathml_id",
         "mathml.mathml AS mathml",
-        "mathml2.mathml AS matching_mathml",
+        "mathmlmatch.match_id AS matching_mathml_id",
         "mathmlmatch.rank AS rank"
       )
       .where({ arxiv_id: arxivId })
@@ -284,30 +294,25 @@ export class Connection {
       .join("mathmlmatch", { "paper.s2_id": "mathmlmatch.paper_id" })
       // Get MathML.
       .join("mathml", { "mathmlmatch.mathml_id": "mathml.id" })
-      .join("mathml AS mathml2", { "mathmlmatch.match_id": "mathml2.id" })
       .orderBy(["mathml.id", { column: "rank", order: "asc" }]);
 
-    const matchesByMathMl: { [mathml: string]: MathMlMatch[] } = {};
+    const mathMlById: { [id: string]: MathMl } = {};
     for (const row of rows) {
-      const mathMl = row.mathml;
-      if (matchesByMathMl[mathMl] === undefined) {
-        matchesByMathMl[mathMl] = [];
+      const id = row.mathml_id;
+      if (mathMlById[id] === undefined) {
+        const mathMl = row.mathml;
+        mathMlById[id] = {
+          id,
+          mathMl,
+          matches: []
+        };
       }
-      matchesByMathMl[mathMl].push({
-        mathMl: row.matching_mathml,
-        rank: row.rank
+      mathMlById[id].matches.push({
+        mathMl: row.matching_mathml_id,
+        rank: Number(row.rank)
       });
     }
-
-    const allMathMl: MathMl[] = [];
-    for (const mathMl of Object.keys(matchesByMathMl)) {
-      allMathMl.push({
-        mathMl,
-        matches: matchesByMathMl[mathMl]
-      });
-    }
-
-    return allMathMl;
+    return Object.values(mathMlById);
   }
 
   async getSentencesForArxivId(arxivId: string) {
@@ -336,10 +341,10 @@ export class Connection {
 
     const sentences: SentencesById = {};
     for (const row of rows) {
-      const key = Number(row["sentence_id"]);
+      const key = row["sentence_id"];
       if (!sentences.hasOwnProperty(key)) {
         sentences[key] = {
-          id: key,
+          id: String(key),
           source: row.source,
           bounding_boxes: [],
           text: row.text
@@ -406,7 +411,7 @@ export class Connection {
 
   async putAnnotation(
     arxivId: string,
-    id: number,
+    id: string,
     annotationData: AnnotationData
   ): Promise<Annotation> {
     const { type } = annotationData;
@@ -445,7 +450,7 @@ export class Connection {
     };
   }
 
-  async deleteAnnotation(arxivId: string, id: number) {
+  async deleteAnnotation(arxivId: string, id: string) {
     await this._knex("annotation")
       .delete()
       .where({ "annotation.id": id })

@@ -3,7 +3,6 @@ import MuiDrawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import React from "react";
-import { Favorites } from "./Favorites";
 import FeedbackButton from "./FeedbackButton";
 import PaperList from "./PaperList";
 import SearchResults from "./SearchResults";
@@ -11,6 +10,7 @@ import { ScholarReaderContext } from "./state";
 
 const PDF_VIEWER_DRAWER_OPEN_CLASS = "drawer-open";
 const BLACK_LISTED_CLASS_NAME = "MuiTooltip-tooltip";
+
 export class Drawer extends React.PureComponent {
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
@@ -18,20 +18,21 @@ export class Drawer extends React.PureComponent {
   positionPdfForDrawerOpen(pdfViewerContainer: HTMLElement) {
     // Creating padding for scroll
     Array.from(pdfViewerContainer.children).forEach(page => {
-      // XXX(zkirby, andrewhead) per our discussion at https://github.com/allenai/scholar-reader/pull/38/files#r388514946 
+      // XXX(zkirby, andrewhead) per our discussion at https://github.com/allenai/scholar-reader/pull/38/files#r388514946
       // this is 'safe' as pages are not deleted when scrolled out of view (just their inner content).
-      page.classList.add(PDF_VIEWER_DRAWER_OPEN_CLASS)  
-    })
+      page.classList.add(PDF_VIEWER_DRAWER_OPEN_CLASS);
+    });
 
-    if (this.drawerState() === "show-symbols") {
-      this.context.scrollSymbolHorizontallyIntoView();
+    const { drawerState, selectedEntityType } = this.context;
+    if (drawerState === "open" && selectedEntityType === "symbol") {
+      this.context.scrollSymbolIntoView();
     }
-  } 
+  }
 
   removePdfPositioningForDrawerOpen(pdfViewerContainer: HTMLElement) {
     Array.from(pdfViewerContainer.children).forEach(page => {
-      page.classList.remove(PDF_VIEWER_DRAWER_OPEN_CLASS)
-    })
+      page.classList.remove(PDF_VIEWER_DRAWER_OPEN_CLASS);
+    });
   }
 
   componentWillUnmount() {
@@ -42,15 +43,15 @@ export class Drawer extends React.PureComponent {
   }
 
   /**
-   * XXX(zkirby): Since the clickaway listener listens to *all* clicks outside of the 
-   * drawer, if we do not have the code below it will close after a button is clicked that 
-   * is meant to open the drawer. The code below simply gets the element that the click that is intending 
-   * to close the drawer originated from and traverses the class list and class list of all 
-   * parent elements looking for if this click happened from within a tooltip. 
+   * XXX(zkirby): Since the clickaway listener listens to *all* clicks outside of the
+   * drawer, if we do not have the code below it will close after a button is clicked that
+   * is meant to open the drawer. The code below simply gets the element that the click that is intending
+   * to close the drawer originated from and traverses the class list and class list of all
+   * parent elements looking for if this click happened from within a tooltip.
    * Only close the drawer if the click is not within the tooltip.
    */
-  clickAwayClose = (e: React.MouseEvent<Document, MouseEvent>) => {
-    let elementTarget = e.target as (Element | null);
+  closeOnClickAway = (e: React.MouseEvent<Document, MouseEvent>) => {
+    let elementTarget = e.target as Element | null;
     while (elementTarget != null) {
       if (elementTarget.classList.contains(BLACK_LISTED_CLASS_NAME)) {
         return;
@@ -59,40 +60,24 @@ export class Drawer extends React.PureComponent {
     }
 
     this.closeDrawer();
-  }
+  };
 
-  closeDrawer = () => {
-    switch(this.drawerState()) {
-      case 'show-symbols': {
-        this.context.setSelectedSymbol(null);
-        break;
-      }
-      case 'show-citations': {
-        this.context.setSelectedCitation(null);
-        break;
-      }
+  closeDrawer() {
+    if (this.context.drawerState !== "closed") {
+      this.context.setDrawerState("closed");
+      this.context.setSelectedEntity(null, null);
     }
-  }
-
-  drawerState = () => {
-    if (this.context.selectedSymbol != null) {
-      return 'show-symbols';
-    } else if (this.context.selectedCitation != null) {
-      return 'show-citations';
-    }
-    return 'closed';
   }
 
   render() {
     /**
      * The PDF viewer should know if the drawer is open so it can reposition the paper. Currently, we
-     * notify the PDF viewer by adding a class, as the PDF viewer has no knowledge of the state
-     * of this React application.
+     * notify the PDF viewer by adding a class, as the PDF viewer otherwise has no knowledge of the
+     * state of this React application.
      */
-    const { pdfViewer } = this.context;
-    const drawerState = this.drawerState();
+    const { pdfViewer, drawerState } = this.context;
     if (pdfViewer != null) {
-      if (drawerState !== "closed") {
+      if (drawerState === "open") {
         this.positionPdfForDrawerOpen(pdfViewer.viewer);
       } else {
         this.removePdfPositioningForDrawerOpen(pdfViewer.viewer);
@@ -101,26 +86,14 @@ export class Drawer extends React.PureComponent {
 
     return (
       <ScholarReaderContext.Consumer>
-        {({ selectedSymbol, selectedCitation }) => {
-          let extraContext;
-          switch (drawerState) {
-            case "show-citations": {
-              extraContext = Object.assign(
-                { drawerState },
-                selectedCitation ? { citationId: selectedCitation.id } : null
-              );
-              break;
-            }
-            case "show-symbols": {
-              extraContext = Object.assign(
-                { drawerState },
-                selectedSymbol ? { symbolId: selectedSymbol.id } : null
-              );
-              break;
-            }
-          }
+        {({ selectedEntityType, selectedEntityId }) => {
+          const extraContext = {
+            drawerState,
+            selectedEntityType,
+            selectedEntityId
+          };
           return (
-            <ClickAwayListener onClickAway={this.clickAwayClose}>
+            <ClickAwayListener onClickAway={this.closeOnClickAway}>
               <MuiDrawer
                 className="drawer"
                 variant="persistent"
@@ -129,18 +102,22 @@ export class Drawer extends React.PureComponent {
               >
                 <div className="drawer__header">
                   <div className="drawer__close_icon">
-                    <IconButton className="MuiButton-contained" onClick={this.closeDrawer}>
+                    <IconButton
+                      className="MuiButton-contained"
+                      onClick={this.closeDrawer}
+                    >
                       <ChevronRightIcon />
                     </IconButton>
                   </div>
-                  <FeedbackButton extraContext={ extraContext } />
+                  <FeedbackButton extraContext={extraContext} />
                 </div>
                 <div className="drawer__content">
-                  <Favorites />
-                  {drawerState === "show-symbols" && (
-                    <SearchResults pageSize={4} />
-                  )}
-                  {drawerState === "show-citations" && <PaperList />}
+                  {drawerState === "open" &&
+                    selectedEntityType === "symbol" && (
+                      <SearchResults pageSize={4} />
+                    )}
+                  {drawerState === "open" &&
+                    selectedEntityType === "citation" && <PaperList />}
                 </div>
               </MuiDrawer>
             </ClickAwayListener>

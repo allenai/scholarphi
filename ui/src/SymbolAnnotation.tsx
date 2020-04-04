@@ -8,6 +8,7 @@ interface SymbolAnnotationProps {
   boundingBoxes: BoundingBox[];
   symbol: Symbol;
   showHint?: boolean;
+  highlight?: boolean;
 }
 
 export class SymbolAnnotation extends React.PureComponent<
@@ -16,19 +17,9 @@ export class SymbolAnnotation extends React.PureComponent<
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
 
-  shouldHighlight() {
-    if (!this.context.selectedAnnotationId) {
-      return false;
-    }
-    const [typeSelected, idSelected] = this.context.selectedAnnotationId.split(
-      "-"
-    );
-    if (typeSelected !== "symbol") {
-      return false;
-    }
-
-    const matchingSymbolIds = this.context.symbolMatches[Number(idSelected)];
-    return matchingSymbolIds.has(this.props.symbol.id);
+  selectEntityWhenAnnotationSelected() {
+    const { setSelectedEntity } = this.context;
+    setSelectedEntity(this.props.symbol.id, "symbol");
   }
 
   render() {
@@ -39,9 +30,9 @@ export class SymbolAnnotation extends React.PureComponent<
           className={classNames({ "annotation-hint": this.props.showHint })}
           source={this.props.symbol.source}
           boundingBoxes={this.props.boundingBoxes}
-          /* tooltipContent={<SymbolTooltipBody symbol={this.props.symbol} />} */
           tooltipContent={null}
-          shouldHighlight={this.shouldHighlight()}
+          highlight={this.props.highlight}
+          onSelected={this.selectEntityWhenAnnotationSelected.bind(this)}
         />
       </div>
     );

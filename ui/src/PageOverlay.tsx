@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import CitationAnnotation from "./CitationAnnotation";
 import PageMask from "./PageMask";
+import * as selectors from "./selectors";
 import { ScholarReaderContext } from "./state";
 import SymbolAnnotation from "./SymbolAnnotation";
 import { PDFPageView } from "./types/pdfjs-viewer";
@@ -42,7 +43,7 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
 
   componentWillUnmount() {
     /**
-     * TODO(andrewhead): this 'document.body.contains' might be expensive.
+     * XXX(andrewhead): this 'document.body.contains' might be expensive.
      */
     if (
       document.body.contains(this.props.view.div) &&
@@ -53,18 +54,35 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
   }
 
   render() {
-    /**
-     * TODO(andrewhead): change this using 'pointer-events'?
+    /*
      * If user annotations are enabled, the overlay needs to be set to the full size of the page
      * so that it can capture mouse events. If not, the overlay should not have any size, as
      * the layers below (e.g., the text layer) need to capture the mouse events.
+     * TODO: set width and height to 100% only if annotations enabled.
      */
     if (this.context.userAnnotationsEnabled) {
-      this._element.style.width = this.props.view.div.style.width;
-      this._element.style.height = this.props.view.div.style.height;
+      this._element.classList.add("user-annotation-enabled");
     } else {
-      // this._element.style.width = "0px";
-      // this._element.style.height = "0px";
+      this._element.classList.remove("user-annotation-enabled");
+    }
+
+    /*
+     * Assemble a list of symbols that should highlighted based on the currently selected entity.
+     */
+    const highlightedSymbols: string[] = [];
+    if (
+      this.context.symbols !== null &&
+      this.context.mathMls !== null &&
+      this.context.selectedEntityType === "symbol" &&
+      this.context.selectedEntityId !== null
+    ) {
+      highlightedSymbols.push(
+        ...selectors.matchingSymbols(
+          this.context.selectedEntityId,
+          this.context.symbols,
+          this.context.mathMls
+        )
+      );
     }
 
     return ReactDOM.createPortal(
@@ -75,36 +93,48 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
           annotationsShowing,
           userAnnotationsEnabled
         }) => {
-          const localizedCitations = citations.filter(
-            c => c.bounding_boxes[0].page === this.props.pageNumber - 1
-          );
-          const localizedSymbols = symbols
-            .filter(s => s.parent === null)
-            .filter(
-              s => s.bounding_boxes[0].page === this.props.pageNumber - 1
-            );
           return (
             <>
               <PageMask
                 pageNumber={this.props.pageNumber}
                 pageView={this.props.view}
               />
-              {localizedCitations.map(c => (
-                <CitationAnnotation
-                  key={c.id}
-                  showHint={annotationsShowing}
-                  boundingBoxes={c.bounding_boxes}
-                  citation={c}
-                />
-              ))}
-              {localizedSymbols.map(s => (
-                <SymbolAnnotation
-                  key={s.id}
-                  showHint={annotationsShowing}
-                  boundingBoxes={s.bounding_boxes}
-                  symbol={s}
-                />
-              ))}
+              {/* Add annotations for all citation bounding boxes on this page. */}
+              {citations !== null
+                ? citations.all.map(cId => {
+                    const citation = citations.byId[cId];
+                    const boundingBoxes = citation.bounding_boxes.filter(
+                      b => b.page === this.props.pageNumber - 1
+                    );
+                    return boundingBoxes.length > 0 ? (
+                      <CitationAnnotation
+                        key={cId}
+                        showHint={annotationsShowing}
+                        boundingBoxes={boundingBoxes}
+                        citation={citation}
+                      />
+                    ) : null;
+                  })
+                : null}
+              {/* Add annotations for all symbol bounding boxes on this page. */}
+              {symbols !== null
+                ? symbols.all.map(sId => {
+                    const symbol = symbols.byId[sId];
+                    const boundingBoxes = symbol.bounding_boxes.filter(
+                      b => b.page === this.props.pageNumber - 1
+                    );
+                    return boundingBoxes.length > 0 ? (
+                      <SymbolAnnotation
+                        key={sId}
+                        showHint={annotationsShowing}
+                        boundingBoxes={boundingBoxes}
+                        symbol={symbol}
+                        highlight={highlightedSymbols.indexOf(sId) !== -1}
+                      />
+                    ) : null;
+                  })
+                : null}
+              {/* Add layer for user annotations. */}
               {userAnnotationsEnabled && (
                 <UserAnnotationLayer
                   pageView={this.props.view}

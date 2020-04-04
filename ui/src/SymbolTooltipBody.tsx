@@ -18,91 +18,116 @@ export class SymbolTooltipBody extends React.PureComponent<
       <div className="tooltip-body symbol-tooltip-body">
         <ScholarReaderContext.Consumer>
           {({
+            setDrawerState,
             symbols,
-            mathMl,
-            setSelectedSymbol,
-            setSelectedAnnotationId,
-            setJumpSymbol
+            mathMls,
+            setSelectedEntity,
+            selectAnnotationForEntity
           }) => {
-            const matches = selectors.matchingSymbols(
-              this.props.symbol,
-              [...symbols],
-              [...mathMl]
+            if (symbols === null || mathMls === null) {
+              return (
+                <div className="tooltip-body__section tooltip-body__header">
+                  <div className="tooltip-body__label">
+                    Something unexpected happened and information for this
+                    symbol cannot be looked up. Please help us fix this issue by
+                    clicking on the feedback button below.
+                  </div>
+                  <FeedbackButton
+                    extraContext={{ symbolId: this.props.symbol.id }}
+                  />
+                </div>
+              );
+            }
+
+            let exactMatchSymbolId: string | undefined;
+            let partialMatchSymbolId: string | undefined;
+
+            /*
+             * If an exact match could not be found, attempt to find the first partially-
+             * matching symbol in the paper.
+             */
+            const partialMatchSymbolIds = selectors.matchingSymbols(
+              this.props.symbol.id,
+              symbols,
+              mathMls,
+              false
             );
-            const exactMatchSymbol = selectors.firstMatchingSymbol(
-              this.props.symbol,
-              [...symbols]
+            if (partialMatchSymbolIds.length > 0) {
+              partialMatchSymbolId = selectors.orderByPosition(
+                partialMatchSymbolIds,
+                symbols
+              )[0];
+            }
+
+            /*
+             * Attempt to find first exactly-matching symbol.
+             */
+            const exactMatchSymbolIds = selectors.matchingSymbols(
+              this.props.symbol.id,
+              symbols,
+              mathMls,
+              true
             );
-            const nearMatchSymbol = selectors.firstMostSimilarSymbol(
-              this.props.symbol,
-              [...symbols],
-              [...mathMl]
-            );
+            if (exactMatchSymbolIds.length > 0) {
+              exactMatchSymbolId = selectors.orderByPosition(
+                exactMatchSymbolIds,
+                symbols
+              )[0];
+            }
+
             return (
               <>
-                {exactMatchSymbol !== null && (
+                {exactMatchSymbolId !== undefined && (
                   <>
-                    <div className="tooltip-body__section tooltip-body__header">
-                      <div className="tooltip-body__label">
-                        This symbol is also mentioned at:
-                      </div>
+                    <div className="tooltip-body__section">
+                      <PaperClipping
+                        pageNumber={
+                          symbols.byId[exactMatchSymbolId].bounding_boxes[0]
+                            .page + 1
+                        }
+                        highlightBoxes={
+                          /* TODO(andrewhead): Only highlight bounding boxes on the page. */
+                          symbols.byId[exactMatchSymbolId].bounding_boxes
+                        }
+                      />
                       <FeedbackButton
                         extraContext={{ symbolId: this.props.symbol.id }}
                       />
                     </div>
-                    <div className="tooltip-body__section">
-                      <PaperClipping
-                        pageNumber={exactMatchSymbol.bounding_boxes[0].page + 1}
-                        highlightBoxes={exactMatchSymbol.bounding_boxes}
-                      />
-                    </div>
                   </>
                 )}
-                {exactMatchSymbol === null && nearMatchSymbol !== null && (
-                  <>
-                    <div className="tooltip-body__section tooltip-body__header">
-                      <div className="tooltip-body__label">
-                        A similar symbol is referenced at:
-                      </div>
-                      <FeedbackButton
-                        extraContext={{ symbolId: this.props.symbol.id }}
-                      />
-                    </div>
-                    <div className="tooltip-body__section">
-                      <PaperClipping
-                        pageNumber={nearMatchSymbol.bounding_boxes[0].page + 1}
-                        highlightBoxes={nearMatchSymbol.bounding_boxes}
-                      />
-                    </div>
-                  </>
-                )}
-                {exactMatchSymbol === null && nearMatchSymbol === null && (
+                {exactMatchSymbolId === undefined && (
                   <div className="tooltip-body__label tooltip-body__section">
                     This is the only place this symbol appears.
                   </div>
                 )}
-                {(exactMatchSymbol !== null || nearMatchSymbol !== null) && (
+                {(exactMatchSymbolId !== undefined ||
+                  partialMatchSymbolId !== undefined) && (
                   <div className="tooltip-body__action-buttons tooltip-body__section">
                     <Button
                       variant="outlined"
                       color="secondary"
                       className="tooltip-body__action-button"
                       onClick={() => {
-                        setSelectedAnnotationId(null);
-                        setJumpSymbol(exactMatchSymbol || nearMatchSymbol);
+                        const matchingSymbolId =
+                          exactMatchSymbolId || partialMatchSymbolId;
+                        if (matchingSymbolId !== undefined) {
+                          setSelectedEntity(matchingSymbolId, "symbol");
+                          selectAnnotationForEntity(matchingSymbolId, "symbol");
+                        }
                       }}
                     >
-                      Jump to Reference
+                      Jump to reference
                     </Button>
                     <Button
                       variant="outlined"
                       color="primary"
                       className="tooltip-body__action-button"
                       onClick={() => {
-                        setSelectedSymbol(this.props.symbol);
+                        setDrawerState("open");
                       }}
                     >
-                      View {matches.length} other References
+                      View {partialMatchSymbolIds.length} similar references
                     </Button>
                   </div>
                 )}
