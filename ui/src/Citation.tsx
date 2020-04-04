@@ -11,17 +11,22 @@ export class Citation extends React.PureComponent<CitationProperties> {
   render() {
     return (
       <ScholarReaderContext.Consumer>
-        {({ papers, setJumpPaperId, setSelectedCitation }) => {
-          const paper = papers[this.props.citation.paper];
-          if (paper === undefined) {
+        {({ papers, requestJumpToPaper, setSelectedEntity }) => {
+          if (
+            papers === null ||
+            papers[this.props.citation.paper] === undefined
+          ) {
             return (
               <div>
-                <p>Sorry, we currently don't have any linked information for this paper yet.</p>
-                <p>Let us know what went wrong by clicking on the icon below, so we could provide 
-                you with better reading experience in the future!</p>
+                <p>
+                  Sorry, no bibliographic information could be found for this
+                  citation. Help us find information for citations like this in
+                  the future by clicking on the feedback button below.
+                </p>
               </div>
-            )
+            );
           } else {
+            const paper = papers[this.props.citation.paper];
             return (
               <div className="citation">
                 <p className="title">{paper.title}</p>
@@ -37,8 +42,7 @@ export class Citation extends React.PureComponent<CitationProperties> {
                     <span
                       className="citation__abstract__sidebar-link"
                       onClick={() => {
-                        setSelectedCitation(this.props.citation);
-                        setJumpPaperId(this.props.citation.paper);
+                        requestJumpToPaper(this.props.citation.paper);
                       }}
                     >
                       (see more)

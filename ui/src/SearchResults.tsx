@@ -14,7 +14,7 @@ interface SearchResultState {
   filters: Filters;
 }
 
-type Filters = { [mathMl: string]: boolean };
+type Filters = { [mathMlId: string]: boolean };
 
 export class SearchResults extends React.PureComponent<
   SearchResultsProps,
@@ -31,30 +31,9 @@ export class SearchResults extends React.PureComponent<
     this.state = { pageNumber: 0, filters: {} };
   }
 
-  getFilteredSymbols(filters: Filters) {
-    if (this.context.selectedSymbol === null) {
-      return [];
-    }
-    const results = selectors.matchingSymbols(
-      this.context.selectedSymbol,
-      [...this.context.symbols],
-      [...this.context.mathMl]
-    );
-    const symbolMathMls = selectors.symbolMathMls(results);
-    const filteredMathMls = symbolMathMls.filter(mathMl => {
-      return (
-        this.state.filters[mathMl] === true ||
-        this.state.filters[mathMl] === undefined
-      );
-    });
-    return results.filter(symbol => {
-      return filteredMathMls.indexOf(symbol.mathml) !== -1;
-    });
-  }
-
   setFilters(filters: Filters) {
-    const filteredSymbols = this.getFilteredSymbols(filters);
-    const numPages = Math.ceil(filteredSymbols.length / this.props.pageSize);
+    const filteredSymbolIds = this.getFilteredSymbolIds(filters);
+    const numPages = Math.ceil(filteredSymbolIds.length / this.props.pageSize);
     const pageNumber = Math.max(
       Math.min(this.state.pageNumber, numPages - 1),
       0
@@ -63,39 +42,57 @@ export class SearchResults extends React.PureComponent<
   }
 
   render() {
-    const startIndex = this.state.pageNumber * this.props.pageSize;
-    const endIndex = (this.state.pageNumber + 1) * this.props.pageSize;
+    const startSymbolIndex = this.state.pageNumber * this.props.pageSize;
+    const endSymbolIndex = (this.state.pageNumber + 1) * this.props.pageSize;
     return (
       <div className="search-results">
         <ScholarReaderContext.Consumer>
-          {({ selectedSymbol, symbols, mathMl }) => {
-            if (selectedSymbol === null) {
+          {({ selectedEntityType, selectedEntityId, symbols, mathMls }) => {
+            if (
+              symbols === null ||
+              mathMls === null ||
+              selectedEntityType !== "symbol" ||
+              selectedEntityId === null
+            ) {
               return null;
             }
-            const results = selectors.matchingSymbols(
-              selectedSymbol,
-              [...symbols],
-              [...mathMl]
+
+            const matchingSymbolIds = selectors.matchingSymbols(
+              selectedEntityId,
+              symbols,
+              mathMls
             );
-            const symbolMathMls = selectors.symbolMathMls(results);
-            const filtered = this.getFilteredSymbols(this.state.filters);
-            const numPages = Math.ceil(filtered.length / this.props.pageSize);
+            const symbolMathMlIds = selectors.symbolMathMlIds(
+              matchingSymbolIds,
+              symbols,
+              mathMls
+            );
+
+            const filteredSymbolIds = this.getFilteredSymbolIds(
+              this.state.filters
+            );
+            const numPages = Math.ceil(
+              filteredSymbolIds.length / this.props.pageSize
+            );
+
             return (
               <>
                 <div className="search-results__section search-results__header">
-                  <h1>Symbol search</h1>
+                  <h1>{filteredSymbolIds.length} Results</h1>
                 </div>
+
+                {/* Symbol filters */}
                 <div className="search-results__section">
-                  Show me symbols that look like:
-                  {symbolMathMls.map(mathMl => {
+                  Search for which symbols?
+                  {symbolMathMlIds.map(mathMlId => {
                     const variant =
-                      this.state.filters[mathMl] === undefined ||
-                      this.state.filters[mathMl] === true
+                      this.state.filters[mathMlId] === undefined ||
+                      this.state.filters[mathMlId] === true
                         ? "contained"
                         : "outlined";
                     return (
                       <div
-                        key={mathMl}
+                        key={mathMlId}
                         className="search-results__filter-button"
                       >
                         <Button
@@ -104,33 +101,35 @@ export class SearchResults extends React.PureComponent<
                           onClick={() => {
                             const filters = { ...this.state.filters };
                             if (
-                              this.state.filters[mathMl] === undefined ||
-                              this.state.filters[mathMl] === true
+                              this.state.filters[mathMlId] === undefined ||
+                              this.state.filters[mathMlId] === true
                             ) {
-                              filters[mathMl] = false;
+                              filters[mathMlId] = false;
                             } else {
-                              filters[mathMl] = true;
+                              filters[mathMlId] = true;
                             }
                             this.setFilters(filters);
                           }}
                         >
-                          <MathMl mathMl={mathMl} />
+                          <MathMl mathMl={mathMls.byId[mathMlId].mathMl} />
                         </Button>
                       </div>
                     );
                   })}
                 </div>
-                <div className="search-results__section">
-                  {filtered.length} matching{" "}
-                  {filtered.length === 1 ? "symbol" : "symbols"} found.
-                </div>
+
+                {/* Search results */}
                 <div className="search-results__symbol-list search-results__section">
-                  {filtered.slice(startIndex, endIndex).map(symbol => (
-                    <div className="search-results__result" key={symbol.id}>
-                      <SymbolPreview symbol={symbol} />
-                    </div>
-                  ))}
+                  {filteredSymbolIds
+                    .slice(startSymbolIndex, endSymbolIndex)
+                    .map(sId => (
+                      <div className="search-results__result" key={sId}>
+                        <SymbolPreview symbol={symbols.byId[sId]} />
+                      </div>
+                    ))}
                 </div>
+
+                {/* Page buttons */}
                 <div className="search-results__navigation search-results__section">
                   <Button
                     className="search-results__navigation__button"
@@ -159,6 +158,44 @@ export class SearchResults extends React.PureComponent<
         </ScholarReaderContext.Consumer>
       </div>
     );
+  }
+
+  getFilteredSymbolIds(filters: Filters) {
+    const {
+      selectedEntityType,
+      selectedEntityId,
+      symbols,
+      mathMls
+    } = this.context;
+
+    if (
+      selectedEntityType !== "symbol" ||
+      selectedEntityId === null ||
+      symbols === null ||
+      mathMls === null
+    ) {
+      return [];
+    }
+
+    /*
+     * Get an initial list of matching symbols.
+     */
+    const matchingSymbolIds = selectors.matchingSymbols(
+      selectedEntityId,
+      symbols,
+      mathMls
+    );
+
+    /*
+     * Filter to those symbols with the MathML filters selected.
+     */
+    return matchingSymbolIds.filter(sId => {
+      const symbolMathMlId = symbols.byId[sId].mathml;
+      return (
+        filters[symbolMathMlId] === true ||
+        filters[symbolMathMlId] === undefined
+      );
+    });
   }
 }
 

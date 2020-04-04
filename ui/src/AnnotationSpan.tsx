@@ -7,6 +7,10 @@ import { ScholarReaderContext } from "./state";
 import { BoundingBox } from "./types/api";
 import * as uiUtils from "./ui-utils";
 
+/**
+ * Many of these properties are analogous to those in 'Annotation'. For complete documentation,
+ * see the docstrings for the 'Annotation' properties.
+ */
 interface AnnotationSpanProps {
   /**
    * ID of the annotation this span belongs to.
@@ -15,33 +19,36 @@ interface AnnotationSpanProps {
   /**
    * Unique ID for this annotation span.
    */
-  id: number;
+  id: string;
+  active?: boolean;
   /**
-   * When inactive, the annotation span is not interactive (i.e. it cannot be clicked, and its
-   * tooltip will not appear). An empty box will appear in the place of the span.
-   */
-  inactive?: boolean;
-  /**
-   * Bounding box of the region of the paper this span was created to cover.
+   * Where in the paper to draw this annotation span.
    */
   location: BoundingBox;
   className?: string;
-  shouldHighlight?: boolean;
+  highlight?: boolean;
   /**
    * Correction factor to apply to bounding box coordinates before rendering the annotation.
    * You normally should not need to set this and should be able to trust the defaults.
    */
   scaleCorrection?: number;
   tooltipContent: React.ReactNode | null;
+  /**
+   * Callback called when the annotation span is selected (typically called when the annotation
+   * span is clicked).
+   */
+  onSelected?: () => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
 }
 
 export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
-  static defaultProps = {
-    shouldHighlight: false
-  };
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
+
+  static defaultProps = {
+    active: true,
+    highlight: false
+  };
 
   onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
     if (uiUtils.isKeypressEscape(e)) {
@@ -63,6 +70,9 @@ export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
   select() {
     this.context.setSelectedAnnotationId(this.props.annotationId);
     this.context.setSelectedAnnotationSpanId(this.props.id);
+    if (this.props.onSelected !== undefined) {
+      this.props.onSelected();
+    }
   }
 
   deselectIfSelected() {
@@ -86,48 +96,62 @@ export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
   }
 
   render() {
+    const { pages } = this.context;
+    if (pages === null) {
+      return null;
+    }
+
+    /*
+     * By default, an annotation span is just a positioned div.
+     */
+    let annotationSpan = (
+      <div
+        ref={this.focusIfSelected.bind(this)}
+        onClick={this.select.bind(this)}
+        style={selectors.divDimensionStyles(
+          pages[this.props.location.page + 1].view,
+          this.props.location,
+          this.props.scaleCorrection
+        )}
+        className={classNames(
+          "scholar-reader-annotation-span",
+          this.props.className,
+          {
+            selected: this.isSelected(),
+            "annotation-selected": this.isAnnotationSelected(),
+            active: this.props.active === true,
+            inactive: this.props.active !== true
+          }
+        )}
+        tabIndex={this.props.active === true ? 0 : undefined}
+        onKeyDown={this.onKeyDown.bind(this)}
+      />
+    );
+
+    /*
+     * If tooltip content was provided, wrap span in a tooltip component.
+     */
+    if (this.props.tooltipContent !== null) {
+      annotationSpan = (
+        <MuiTooltip
+          className="tooltip"
+          open={this.props.active !== true && this.isSelected()}
+          interactive
+          disableHoverListener
+          title={this.props.tooltipContent}
+        >
+          {annotationSpan}
+        </MuiTooltip>
+      );
+    }
+
+    /*
+     * Whether or not a tooltip is provided, dismiss annotation when no longe clicked.
+     */
     return (
-      <ScholarReaderContext.Consumer>
-        {({ pages }) => {
-          return (
-            <ClickAwayListener onClickAway={this.deselectIfSelected.bind(this)}>
-              <MuiTooltip
-                className="tooltip"
-                open={
-                  this.props.inactive !== true &&
-                  this.props.tooltipContent !== null &&
-                  this.isSelected()
-                }
-                interactive
-                disableHoverListener
-                title={this.props.tooltipContent}
-              >
-                <div
-                  ref={this.focusIfSelected.bind(this)}
-                  onClick={this.select.bind(this)}
-                  style={selectors.divDimensionStyles(
-                    pages[this.props.location.page + 1].view,
-                    this.props.location,
-                    this.props.scaleCorrection
-                  )}
-                  className={classNames(
-                    "scholar-reader-annotation-span",
-                    this.props.className,
-                    {
-                      selected: this.isSelected(),
-                      active: this.props.inactive !== true,
-                      inactive: this.props.inactive === true,
-                      "annotation-selected": this.isAnnotationSelected()
-                    }
-                  )}
-                  tabIndex={this.props.inactive ? undefined : 0}
-                  onKeyDown={this.onKeyDown.bind(this)}
-                />
-              </MuiTooltip>
-            </ClickAwayListener>
-          );
-        }}
-      </ScholarReaderContext.Consumer>
+      <ClickAwayListener onClickAway={this.deselectIfSelected.bind(this)}>
+        {annotationSpan}
+      </ClickAwayListener>
     );
   }
 }

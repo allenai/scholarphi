@@ -2,21 +2,30 @@ import React from "react";
 import { createPortal } from "react-dom";
 import * as api from "./api";
 import Drawer from "./Drawer";
-import { FavoritableId, favoritesKey } from "./FavoriteButton";
 import FeedbackButton from "./FeedbackButton";
 import PageOverlay from "./PageOverlay";
 import * as selectors from "./selectors";
-import { Pages, PaperId, Papers, ScholarReaderContext, State } from "./state";
+import {
+  Citations,
+  createStateSliceFromArray,
+  defaultState,
+  DrawerState,
+  MathMls,
+  Pages,
+  PaperId,
+  Papers,
+  ScholarReaderContext,
+  SelectableEntityType,
+  Sentences,
+  State,
+  Symbols
+} from "./state";
 import "./style/index.less";
 import {
   Annotation,
   AnnotationData,
-  Citation,
-  MathMl,
+  BoundingBox,
   Paper,
-  Sentence,
-  Symbol,
-  SymbolMatches,
   UserAnnotationType,
   UserLibrary
 } from "./types/api";
@@ -44,131 +53,96 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     }
     return { paperId: props.paperId };
   }
+
   constructor(props: ScholarReaderProps) {
     super(props);
-    /*
-     * Bind all setters to 'this' so that 'setState' resolves to this object when the setters
-     * are called from outside ScholarReader.
-     */
-    this.state = {
-      userLibrary: null,
+    this.state = Object.assign({}, defaultState, {
+      paperId: props.paperId,
+      /*
+       * Bind all setters to 'this' so that 'setState' resolves to this object when the setters
+       * are called from outside ScholarReader.
+       */
+      setCitations: this.setCitations.bind(this),
+      setSymbols: this.setSymbols.bind(this),
+      setMathMls: this.setMathMls.bind(this),
+      setSentences: this.setSentences.bind(this),
+      setPapers: this.setPapers.bind(this),
+
       setUserLibrary: this.setUserLibrary.bind(this),
       addToLibrary: this.addToLibrary.bind(this),
-      paperId: props.paperId,
-      citations: [],
-      setCitations: this.setCitations.bind(this),
-      symbols: [],
-      setSymbols: this.setSymbols.bind(this),
-      symbolMatches: {},
-      setSymbolMatches: this.setSymbolMatches.bind(this),
-      mathMl: [],
-      setMathMl: this.setMathMl.bind(this),
-      sentences: [],
-      setSentences: this.setSentences.bind(this),
-      papers: {},
-      setPapers: this.setPapers.bind(this),
-      pages: {},
+
       setPages: this.setPages.bind(this),
-      pdfDocument: null,
-      pdfViewer: null,
-      favorites: {},
-      toggleFavorite: this.toggleFavorite.bind(this),
-      jumpPaperId: null,
-      setJumpPaperId: this.setJumpPaperId.bind(this),
-      selectedSymbol: null,
-      setSelectedSymbol: this.setSelectedSymbol.bind(this),
-      scrollSymbolHorizontallyIntoView: this.scrollSymbolHorizontallyIntoView.bind(
-        this
-      ),
-      selectedCitation: null,
-      setSelectedCitation: this.setSelectedCitation.bind(this),
-      jumpSymbol: null,
-      setJumpSymbol: this.setJumpSymbol.bind(this),
-      annotationsShowing: true,
+
       setAnnotationsShowing: this.setAnnotationsShowing.bind(this),
-      userAnnotationsEnabled: false,
+      setSelectedAnnotationId: this.setSelectedAnnotationId.bind(this),
+      setSelectedAnnotationSpanId: this.setSelectedAnnotationSpanId.bind(this),
+      setSelectedEntity: this.setSelectedEntity.bind(this),
+      selectAnnotationForEntity: this.selectAnnotationForEntity.bind(this),
+
+      requestJumpToPaper: this.requestJumpToPaper.bind(this),
+
+      setDrawerState: this.setDrawerState.bind(this),
+      scrollSymbolIntoView: this.scrollSymbolIntoView.bind(this),
+
       setUserAnnotationsEnabled: this.setUserAnnotationsEnabled.bind(this),
-      userAnnotationType: "citation",
       setUserAnnotationType: this.setUserAnnotationType.bind(this),
-      userAnnotations: [],
       addUserAnnotation: this.addUserAnnotation.bind(this),
       updateUserAnnotation: this.updateUserAnnotation.bind(this),
       deleteUserAnnotation: this.deleteUserAnnotation.bind(this),
-      setUserAnnotations: this.setUserAnnotations.bind(this),
-      selectedAnnotationId: null,
-      setSelectedAnnotationId: this.setSelectedAnnotationId.bind(this),
-      selectedAnnotationSpanId: null,
-      setSelectedAnnotationSpanId: this.setSelectedAnnotationSpanId.bind(this)
-    };
+      setUserAnnotations: this.setUserAnnotations.bind(this)
+    });
     /**
      * Bind event handlers so that they are always called with 'this' as its context.
      */
     this.toggleUserAnnotationState = this.toggleUserAnnotationState.bind(this);
     this.closeDrawerOnEscape = this.closeDrawerOnEscape.bind(this);
-    this.showAnnotationsOnAltDown = this.showAnnotationsOnAltDown.bind(this);
-    this.hideAnnotationsOnAltUp = this.hideAnnotationsOnAltUp.bind(this);
+    this.hideAnnotationsOnAltDown = this.hideAnnotationsOnAltDown.bind(this);
+    this.showAnnotationsOnAltUp = this.showAnnotationsOnAltUp.bind(this);
+  }
+
+  setCitations(citations: Citations | null) {
+    this.setState({ citations });
+  }
+
+  setSymbols(symbols: Symbols | null) {
+    this.setState({ symbols });
+  }
+
+  setMathMls(mathMls: MathMls | null) {
+    this.setState({ mathMls });
+  }
+
+  setSentences(sentences: Sentences | null) {
+    this.setState({ sentences });
+  }
+
+  setPapers(papers: Papers | null) {
+    this.setState({ papers });
   }
 
   setUserLibrary(userLibrary: UserLibrary | null) {
     this.setState({ userLibrary });
   }
 
-  setCitations(citations: Citation[]) {
-    this.setState({ citations });
+  async addToLibrary(paperId: string, paperTitle: string) {
+    if (this.props.paperId) {
+      const response = await api.addLibraryEntry(paperId, paperTitle);
+
+      if (!response) {
+        // Request failed, throw an error
+        throw new Error("Failed to add entry to library.");
+      }
+
+      const userLibrary = this.state.userLibrary;
+      if (userLibrary) {
+        const paperIds = userLibrary.paperIds.concat(paperId);
+        this.setUserLibrary({ paperIds });
+      }
+    }
   }
 
-  setSymbols(symbols: Symbol[]) {
-    this.setState({ symbols });
-  }
-
-  setSymbolMatches(symbolMatches: SymbolMatches) {
-    this.setState({ symbolMatches });
-  }
-
-  setMathMl(mathMl: MathMl[]) {
-    this.setState({ mathMl });
-  }
-
-  setSentences(sentences: Sentence[]) {
-    this.setState({ sentences });
-  }
-
-  setPapers(papers: Papers) {
-    this.setState({ papers });
-  }
-
-  setPages(pages: Pages) {
+  setPages(pages: Pages | null) {
     this.setState({ pages });
-  }
-
-  toggleFavorite(favoritableId: FavoritableId) {
-    const favorites = { ...this.state.favorites };
-    const key = favoritesKey(favoritableId);
-    if (favorites[key] === undefined || favorites[key] === false) {
-      favorites[key] = true;
-    } else {
-      favorites[key] = false;
-    }
-    this.setState({ favorites });
-  }
-
-  setJumpPaperId(s2Id: string) {
-    this.setState({ jumpPaperId: s2Id });
-  }
-
-  setSelectedSymbol(symbol: Symbol | null) {
-    this.setState({ selectedSymbol: symbol });
-  }
-
-  setSelectedCitation(citation: Citation | null) {
-    this.setState({ selectedCitation: citation });
-  }
-
-  setJumpSymbol(symbol: Symbol | null) {
-    this.setState({ jumpSymbol: symbol });
-    if (symbol !== null) {
-      this.jumpToSymbol(symbol);
-    }
   }
 
   setAnnotationsShowing(showing: boolean) {
@@ -179,8 +153,78 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     this.setState({ selectedAnnotationId: id });
   }
 
-  setSelectedAnnotationSpanId(id: number | null) {
+  setSelectedAnnotationSpanId(id: string | null) {
     this.setState({ selectedAnnotationSpanId: id });
+  }
+
+  setSelectedEntity(id: string | null, type: SelectableEntityType) {
+    this.setState({ selectedEntityId: id, selectedEntityType: type });
+  }
+
+  selectAnnotationForEntity(id: string | null, type: SelectableEntityType) {
+    /* TODO(andrewhead): I'm not sure how to do this... */
+  }
+
+  requestJumpToPaper(s2Id: string) {
+    this.setState({ paperJumpRequest: s2Id });
+  }
+
+  setDrawerState(state: DrawerState) {
+    this.setState({ drawerState: state });
+  }
+
+  /**
+   * Will scroll a symbol horizontally into view when the drawer opens
+   * if it is now obscured by the drawer.
+   */
+  scrollSymbolIntoView() {
+    const {
+      selectedEntityId,
+      selectedEntityType,
+      pdfViewer,
+      pages,
+      symbols
+    } = this.state;
+    const DRAWER_WIDTH = 470;
+    const SYMBOL_VIEW_PADDING = 50;
+    if (
+      pdfViewer &&
+      pages !== null &&
+      symbols !== null &&
+      selectedEntityType === "symbol" &&
+      selectedEntityId !== null
+    ) {
+      const symbol = symbols.byId[selectedEntityId];
+      const symbolBox = symbol.bounding_boxes[0];
+      const pdfLeft = pdfViewer.container.getBoundingClientRect().left;
+      if (pages[symbolBox.page + 1].view != null) {
+        const { left, width } = selectors.divDimensionStyles(
+          pages[symbolBox.page + 1].view,
+          symbolBox
+        );
+        /*
+         * Each component of the calculation:
+         * left + width = right position on the pdf page of the selected symbol
+         * scrollLeft = how much the pdf has been scrolled left already
+         * pdfLeft = how far to the left the pdf is relative to the viewport
+         * ----------------
+         * innerWidth = possible visible area of the viewport for the entire website
+         * 470 = width of the drawer that is now obscuring the view
+         */
+        const relativeSymbolRightPosition =
+          left + width - pdfViewer.container.scrollLeft + pdfLeft;
+        const viewableViewportWidth = window.innerWidth - DRAWER_WIDTH;
+        if (relativeSymbolRightPosition > viewableViewportWidth) {
+          // Add 50px padding to make the symbol close to the drawer but not hidden by it.
+          pdfViewer.container.scrollLeft += Math.max(
+            relativeSymbolRightPosition -
+              viewableViewportWidth +
+              SYMBOL_VIEW_PADDING,
+            0
+          );
+        }
+      }
+    }
   }
 
   setUserAnnotationsEnabled(enabled: boolean) {
@@ -208,24 +252,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     }
   }
 
-  async addToLibrary(paperId: string, paperTitle: string) {
-    if (this.props.paperId) {
-      const response = await api.addLibraryEntry(paperId, paperTitle);
-
-      if (!response) {
-        // Request failed, throw an error
-        throw new Error("Failed to add entry to library.");
-      }
-
-      const userLibrary = this.state.userLibrary;
-      if (userLibrary) {
-        const paperIds = userLibrary.paperIds.concat(paperId);
-        this.setUserLibrary({ paperIds });
-      }
-    }
-  }
-
-  async updateUserAnnotation(id: number, annotation: Annotation) {
+  async updateUserAnnotation(id: string, annotation: Annotation) {
     if (this.props.paperId !== undefined) {
       const { type, boundingBox } = annotation;
       const { page, left, top, width, height } = boundingBox;
@@ -249,7 +276,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     }
   }
 
-  async deleteUserAnnotation(id: number) {
+  async deleteUserAnnotation(id: string) {
     if (this.props.paperId !== undefined) {
       await api.deleteAnnotation(this.props.paperId.id, id);
       const annotations = this.state.userAnnotations.filter(a => a.id !== id);
@@ -263,25 +290,20 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
   closeDrawerOnEscape(event: KeyboardEvent) {
     if (isKeypressEscape(event)) {
-      this.setSelectedCitation(null);
-      this.setSelectedSymbol(null);
+      this.setDrawerState("closed");
     }
   }
 
-  showAnnotationsOnAltDown(event: KeyboardEvent) {
-    /*
+  hideAnnotationsOnAltDown(event: KeyboardEvent) {
     if (event.altKey) {
+      this.setAnnotationsShowing(false);
+    }
+  }
+
+  showAnnotationsOnAltUp(event: KeyboardEvent) {
+    if (event.keyCode === 18 || event.key === "Alt") {
       this.setAnnotationsShowing(true);
     }
-    */
-  }
-
-  hideAnnotationsOnAltUp(event: KeyboardEvent) {
-    /*
-    if (event.keyCode === 18 || event.key === "Alt") {
-        this.setAnnotationsShowing(false);
-    }
-    */
   }
 
   toggleUserAnnotationState(event: KeyboardEvent) {
@@ -297,15 +319,15 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     this.loadDataFromApi();
     window.addEventListener("keypress", this.toggleUserAnnotationState);
     window.addEventListener("keydown", this.closeDrawerOnEscape);
-    window.addEventListener("keydown", this.showAnnotationsOnAltDown);
-    window.addEventListener("keyup", this.hideAnnotationsOnAltUp);
+    window.addEventListener("keydown", this.hideAnnotationsOnAltDown);
+    window.addEventListener("keyup", this.showAnnotationsOnAltUp);
   }
 
   componentWillUnmount() {
     window.removeEventListener("keypress", this.toggleUserAnnotationState);
     window.removeEventListener("keydown", this.closeDrawerOnEscape);
-    window.removeEventListener("keydown", this.showAnnotationsOnAltDown);
-    window.removeEventListener("keyup", this.hideAnnotationsOnAltUp);
+    window.removeEventListener("keydown", this.hideAnnotationsOnAltDown);
+    window.removeEventListener("keyup", this.showAnnotationsOnAltUp);
   }
 
   subscribeToPDFViewerStateChanges(pdfViewerApplication: PDFViewerApplication) {
@@ -341,8 +363,6 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     if (this.props.paperId !== undefined) {
       if (this.props.paperId.type === "arxiv") {
         const citations = await api.citationsForArxivId(this.props.paperId.id);
-        this.setCitations(citations);
-
         const s2Ids = citations.map(c => c.paper);
         if (s2Ids.length >= 1) {
           const papers = (await api.papers(s2Ids)).reduce((papers, paper) => {
@@ -351,35 +371,31 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
           }, {} as { [s2Id: string]: Paper });
           this.setPapers(papers);
         }
+        /*
+         * Wait to set the citations until paper data has been fetched, so that citations are
+         * only shown when there's something to show for them.
+         */
+        this.setCitations(createStateSliceFromArray(citations, "id"));
 
         const symbols = await api.symbolsForArxivId(this.props.paperId.id);
-        this.setSymbols(symbols);
-
         if (symbols.length >= 1) {
-          const mathMl = await api.mathMlForArxivId(this.props.paperId.id);
-          this.setMathMl(mathMl);
-
-          // TODO(andrewhead): Update this comment
-          // TODO(andrewhead): Enable the highlighting of the symbol within other symbols (e.g., if 'k')
-          // is clicked on, highlight k in the subscripts of everything else.
-          /**
-           * Build a mapping from symbol to all possible parent matches.
-           * Step 1: Find all matches (using matchingSymbols) for said symbol
-           * Step 2: Find the 'top' most parent of every matching symbol since
-           *         this is the symbol that is clickable
-           * Step 3: Add top parent id of every matching symbol to symbolMatches
-           */
-          const symbolMatches: SymbolMatches = {};
-          symbols.forEach(sym => {
-            symbolMatches[sym.id] = new Set(
-              selectors.matchingSymbols(sym, symbols, mathMl).map(s => s.id)
-            );
+          const mathMls = await api.mathMlForArxivId(this.props.paperId.id);
+          const mathMlsWithSymbols = mathMls.map(m => {
+            return {
+              ...m,
+              symbols: symbols.filter(s => s.mathml === m.id)
+            };
           });
-          this.setSymbolMatches(symbolMatches);
+          this.setMathMls(createStateSliceFromArray(mathMlsWithSymbols, "id"));
         }
+        /*
+         * Wait to set the symbols until MathML data has been fetched, as parts of the interface
+         * that display symbols require MathML to function properly.
+         */
+        this.setSymbols(createStateSliceFromArray(symbols, "id"));
 
         const sentences = await api.sentencesForArxivId(this.props.paperId.id);
-        this.setSentences(sentences);
+        this.setSentences(createStateSliceFromArray(sentences, "id"));
 
         const annotations = await api.annnotationsForArxivId(
           this.props.paperId.id
@@ -394,7 +410,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     }
   }
 
-  jumpToSymbol(symbol: Symbol) {
+  jumpToBoundingBox(box: BoundingBox) {
     /*
      * Based roughly on the scroll offsets used for pdf.js "find" functionality:
      * https://github.com/mozilla/pdf.js/blob/16ae7c6960c1296370c1600312f283a68e82b137/web/pdf_find_controller.js#L190-L191
@@ -404,7 +420,6 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     const SCROLL_OFFSET_Y = +100;
 
     if (this.state.pdfViewer !== null) {
-      const box = symbol.bounding_boxes[0];
       this.state.pdfViewer.scrollPageIntoView({
         pageNumber: box.page + 1,
         destArray: [
@@ -414,48 +429,6 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
           box.top + SCROLL_OFFSET_Y
         ]
       });
-    }
-  }
-
-  /**
-   * Will scroll a symbol horizontally into view when the drawer opens
-   * if it is now obscured by the drawer.
-   */
-  scrollSymbolHorizontallyIntoView() {
-    const { selectedSymbol, pdfViewer, pages } = this.state;
-    const DRAWER_WIDTH = 470;
-    const SYMBOL_VIEW_PADDING = 50;
-    if (pdfViewer && selectedSymbol) {
-      const symBounds = selectedSymbol.bounding_boxes[0];
-      const pdfLeft = (pdfViewer.container.getBoundingClientRect() as DOMRect)
-        .x;
-      if (pages[symBounds.page + 1].view != null) {
-        const { left, width } = selectors.divDimensionStyles(
-          pages[symBounds.page + 1].view,
-          symBounds
-        );
-        /*
-         * Each component of the calculation:
-         * left + width = right position on the pdf page of the selected symbol
-         * scrollLeft = how much the pdf has been scrolled left already
-         * pdfLeft = how far to the left the pdf is relative to the viewport
-         * ----------------
-         * innerWidth = possible visible area of the viewport for the entire website
-         * 470 = width of the drawer that is now obscuring the view
-         */
-        const relativeSymbolRightPosition =
-          left + width - pdfViewer.container.scrollLeft + pdfLeft;
-        const viewableViewportWidth = window.innerWidth - DRAWER_WIDTH;
-        if (relativeSymbolRightPosition > viewableViewportWidth) {
-          // Add 50px padding to make the symbol close to the drawer but not hidden by it.
-          pdfViewer.container.scrollLeft += Math.max(
-            relativeSymbolRightPosition -
-              viewableViewportWidth +
-              SYMBOL_VIEW_PADDING,
-            0
-          );
-        }
-      }
     }
   }
 
@@ -469,22 +442,27 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     return (
       <ScholarReaderContext.Provider value={this.state}>
         <>
-          {Object.keys(this.state.pages).map(pageNumberKey => {
-            const pageNumber = Number(pageNumberKey);
-            const pageModel = this.state.pages[pageNumber];
-            /*
-             * By setting the key to the page number *and* the timestamp it was rendered, React will
-             * know to replace a page overlay when a pdf.js re-renders a page.
-             */
-            const key = `${pageNumber}-${pageModel.timeOfLastRender}`;
-            return (
-              <PageOverlay
-                key={key}
-                view={pageModel.view}
-                pageNumber={pageNumber}
-              />
-            );
-          })}
+          {this.state.pages !== null ? (
+            <>
+              {Object.keys(this.state.pages).map(pageNumberKey => {
+                const pages = this.state.pages as Pages;
+                const pageNumber = Number(pageNumberKey);
+                const pageModel = pages[pageNumber];
+                /*
+                 * By setting the key to the page number *and* the timestamp it was rendered, React will
+                 * know to replace a page overlay when a pdf.js re-renders a page.
+                 */
+                const key = `${pageNumber}-${pageModel.timeOfLastRender}`;
+                return (
+                  <PageOverlay
+                    key={key}
+                    view={pageModel.view}
+                    pageNumber={pageNumber}
+                  />
+                );
+              })}
+            </>
+          ) : null}
           <Drawer />
           {elFeedbackContainer
             ? createPortal(

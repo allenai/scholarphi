@@ -184,7 +184,7 @@ export const plugin = {
         const { arxivId, id } = request.params;
         const annotation = await dbConnection.putAnnotation(
           arxivId,
-          Number(id),
+          id,
           request.payload as AnnotationData
         );
         return h.response(annotation).code(200);
@@ -192,9 +192,7 @@ export const plugin = {
       options: {
         validate: {
           params: validation.arxivId.append({
-            id: Joi.number()
-              .integer()
-              .required()
+            id: Joi.string().required()
           }),
           payload: validation.annotation
         }
@@ -212,15 +210,13 @@ export const plugin = {
       path: "papers/arxiv:{arxivId}/annotation/{id}",
       handler: async (request, h) => {
         const { arxivId, id } = request.params;
-        await dbConnection.deleteAnnotation(arxivId, Number(id));
+        await dbConnection.deleteAnnotation(arxivId, id);
         return h.response().code(204);
       },
       options: {
         validate: {
           params: validation.arxivId.append({
-            id: Joi.number()
-              .integer()
-              .required()
+            id: Joi.string().required()
           })
         }
       }
@@ -229,7 +225,7 @@ export const plugin = {
     server.route({
       method: "GET",
       path: "papers/list",
-      handler: async (request, h) => {
+      handler: async () => {
         const papers = await dbConnection.getAllPapers();
         return papers;
       }
