@@ -20,7 +20,12 @@
  * Tooltip dimensions
  */
 @{mui-tooltip} {
-  max-width: 400px !important;
+  /*
+   * Allow width to be set by content. This is particularly important for symbol tooltips, which
+   * will be sized dynamically based on the sentence a symbol comes from.
+   */
+  min-width: 300px;
+  max-width: unset;
 
   .tooltip-body {
     padding: @medium * 0.5;
@@ -39,8 +44,7 @@
     align-items: center;
   }
 
-
-  /**
+  /*
    * Adding a small amount of horizontal padding to citations so that there's
    * some separation between the hover state background color and the left and
    * right edges of the text.

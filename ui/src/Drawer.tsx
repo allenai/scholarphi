@@ -104,7 +104,7 @@ export class Drawer extends React.PureComponent {
                   <div className="drawer__close_icon">
                     <IconButton
                       className="MuiButton-contained"
-                      onClick={this.closeDrawer}
+                      onClick={this.closeDrawer.bind(this)}
                     >
                       <ChevronRightIcon />
                     </IconButton>

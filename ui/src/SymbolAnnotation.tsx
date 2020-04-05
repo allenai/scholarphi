@@ -2,6 +2,7 @@ import classNames from "classnames";
 import React from "react";
 import Annotation from "./Annotation";
 import { ScholarReaderContext } from "./state";
+import SymbolTooltipBody from "./SymbolTooltipBody";
 import { BoundingBox, Symbol } from "./types/api";
 
 interface SymbolAnnotationProps {
@@ -25,7 +26,7 @@ export class SymbolAnnotation extends React.PureComponent<
           className={classNames({ "annotation-hint": this.props.showHint })}
           source={this.props.symbol.source}
           boundingBoxes={this.props.boundingBoxes}
-          tooltipContent={null}
+          tooltipContent={<SymbolTooltipBody symbol={this.props.symbol} />}
           highlight={this.props.highlight}
           onSelected={this.selectEntityWhenAnnotationSelected.bind(this)}
           onDeselected={this.deselectEntityWhenAnnotationDeselected.bind(this)}
