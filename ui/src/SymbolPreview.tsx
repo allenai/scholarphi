@@ -18,13 +18,13 @@ export class SymbolPreview extends React.PureComponent<SymbolPreviewProps> {
   }
 
   render() {
+    const { symbol } = this.props;
     return (
       <div className="symbol-preview favorite-container">
-        {/* TODO(andrewhead): In preview, only show the sentence, if possible (i.e if at least one
-         * sentence is found that contains this symbol). */}
         <PaperClipping
-          pageNumber={this.props.symbol.bounding_boxes[0].page + 1}
-          highlightBoxes={[this.props.symbol.bounding_boxes[0]]}
+          pageNumber={symbol.bounding_boxes[0].page + 1}
+          sentenceId={symbol.sentence !== null ? symbol.sentence : undefined}
+          highlights={[this.props.symbol.bounding_boxes[0]]}
           onClick={this.requestSelectSymbol.bind(this)}
         />
       </div>
