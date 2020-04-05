@@ -77,25 +77,24 @@ export class SymbolTooltipBody extends React.PureComponent<
 
             return (
               <>
-                {exactMatchSymbolId !== undefined && (
-                  <>
+                {(() => {
+                  if (exactMatchSymbolId === undefined) {
+                    return null;
+                  }
+                  const matchingSymbol = symbols.byId[exactMatchSymbolId];
+                  return (
                     <div className="tooltip-body__section">
                       <PaperClipping
-                        pageNumber={
-                          symbols.byId[exactMatchSymbolId].bounding_boxes[0]
-                            .page + 1
-                        }
-                        highlightBoxes={
-                          /* TODO(andrewhead): Only highlight bounding boxes on the page. */
-                          symbols.byId[exactMatchSymbolId].bounding_boxes
-                        }
+                        pageNumber={matchingSymbol.bounding_boxes[0].page + 1}
+                        sentenceId={matchingSymbol.sentence || undefined}
+                        highlights={matchingSymbol.bounding_boxes.slice(0, 1)}
                       />
                       <FeedbackButton
                         extraContext={{ symbolId: this.props.symbol.id }}
                       />
                     </div>
-                  </>
-                )}
+                  );
+                })()}
                 {exactMatchSymbolId === undefined && (
                   <div className="tooltip-body__label tooltip-body__section">
                     This is the only place this symbol appears.

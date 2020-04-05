@@ -1,4 +1,3 @@
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import MuiTooltip from "@material-ui/core/Tooltip";
 import classNames from "classnames";
 import React from "react";
@@ -135,7 +134,7 @@ export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
       annotationSpan = (
         <MuiTooltip
           className="tooltip"
-          open={this.props.active !== true && this.isSelected()}
+          open={this.props.active === true && this.isSelected()}
           interactive
           disableHoverListener
           title={this.props.tooltipContent}
@@ -145,14 +144,7 @@ export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
       );
     }
 
-    /*
-     * Whether or not a tooltip is provided, dismiss annotation when no longe clicked.
-     */
-    return (
-      <ClickAwayListener onClickAway={this.deselectIfSelected.bind(this)}>
-        {annotationSpan}
-      </ClickAwayListener>
-    );
+    return annotationSpan;
   }
 }
 
