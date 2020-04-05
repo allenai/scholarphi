@@ -62,9 +62,9 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
      * TODO: set width and height to 100% only if annotations enabled.
      */
     if (this.context.userAnnotationsEnabled) {
-      this._element.classList.add("user-annotation-enabled");
+      this._element.classList.add("user-annotations-enabled");
     } else {
-      this._element.classList.remove("user-annotation-enabled");
+      this._element.classList.remove("user-annotations-enabled");
     }
 
     /*
