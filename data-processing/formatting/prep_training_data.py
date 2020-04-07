@@ -11,7 +11,7 @@ import cv2
 
 def filter_display_eqs(df):
     '''Returns only the display style equations from a dataframe.'''
-    dfResult = df.loc[df["tex"].str.contains('(\$\$\s.*\$\$|\\[\s.*\\]|begin{displaymath|begin{equation|begin{split|begin{array|begin{eqnarray|begin{multiline|begin{gather|begin{align|begin{flalign)',regex=True, na=False)]
+    dfResult = df.loc[df["tex"].str.contains('(\$\$\s.*\$\$|\\\[\s.*\\\]|begin{displaymath|begin{equation|begin{split|begin{array|begin{eqnarray|begin{multiline|begin{gather|begin{align|begin{flalign)',regex=True, na=False)]
     return dfResult
 
 def train_val_split(datList, fracTrain=.90):
