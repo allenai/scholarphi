@@ -1,3 +1,4 @@
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import MuiTooltip from "@material-ui/core/Tooltip";
 import classNames from "classnames";
 import React from "react";
@@ -144,7 +145,11 @@ export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
       );
     }
 
-    return annotationSpan;
+    return (
+      <ClickAwayListener onClickAway={this.deselectIfSelected.bind(this)}>
+        {annotationSpan}
+      </ClickAwayListener>
+    );
   }
 }
 
