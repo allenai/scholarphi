@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, NamedTuple, Optional
+from typing import Any, Callable, Dict, Set, List, NamedTuple, Optional
 
 """
 FILE PROCESSING
@@ -484,6 +484,14 @@ CharacterLocations = Dict[CharacterId, List[BoundingBox]]
 class CitationLocation(BoundingBox):
     key: str
     cluster_index: int
+
+@dataclass(frozen=True)
+class CitationData:
+    arxiv_id: ArxivId
+    s2_id: S2Id
+    citation_locations: Dict[str, Dict[int, Set[CitationLocation]]]
+    key_s2_ids: Dict[str, str]
+    s2_data: Dict[S2Id, SerializableReference]
 
 
 @dataclass(frozen=True)
