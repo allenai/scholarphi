@@ -1,12 +1,15 @@
+import re
 import os
 import sys
-import random
-
+import math
 import json
+import random
+from shutil import copy
 
+import cv2
 import numpy as np
 import pandas as pd
-import cv2
+import matplotlib.pyplot as plt
 
 
 def filter_display_eqs(df):
@@ -39,7 +42,7 @@ def join_hue_locs_and_entites(arxivIds):
         # Create list of TeX commands sorted by equation idx
         EqList = dfEntSorted["tex"].to_list()
         # remove first entry, figure out what to do with this later:
-        EqList.remove(EqList[0])
+        #EqList.remove(EqList[0])
 
         # Create dict mapping equation indices to TeX commands:
         Idx_to_Tex = {}
@@ -47,7 +50,7 @@ def join_hue_locs_and_entites(arxivIds):
             Idx_to_Tex[i] = EqList[i]
             
         # match equations and their locations by idx: (note that one of them is 0-indexed and the other is 1-indexed, hence the -1
-        dfHue["tex"] = dfHue['entity_id'].apply(lambda x: Idx_to_Tex.get(x-1))
+        dfHue["tex"] = dfHue['entity_id'].apply(lambda x: Idx_to_Tex.get(x))
         # Set and create the output directroy:
         outDir = os.path.join("data", "99-formatting-data", arxivId)
         if not os.path.exists(outDir):
@@ -56,7 +59,15 @@ def join_hue_locs_and_entites(arxivIds):
         # write dfHue to csv instead of dfDisplay to get all equations.
         dfDisplay = filter_display_eqs(dfHue)
         #dfHue.to_csv(os.path.join(outDir, "eqs_and_locs.csv"), index=False)
-        dfDisplay.to_csv(os.path.join(outDir, "eqs_and_locs.csv"), index=False)
+        #dfDisplay.to_csv(os.path.join(outDir, "eqs_and_locs.csv"), index=False)
+
+        dfDisplay['right'] = dfDisplay['left'] + dfDisplay['width']
+        dfDisplay['bottom'] = dfDisplay['top'] + dfDisplay['height']
+        grouped = dfDisplay.groupby('tex').agg({'left':'min','top':'min','right':'max','bottom':'max'}).reset_index()
+        grouped.columns = ['tex','left_new','top_new','right_new','bottom_new']
+        
+        dfGrouped = dfDisplay.merge(grouped, how='left', on='tex')
+        dfGrouped.to_csv(os.path.join(outDir, "eqs_and_locs.csv"), index=False)
 
 
 def draw_boxes(arxivIds):
@@ -77,16 +88,22 @@ def draw_boxes(arxivIds):
             pgHeight = paperImg.shape[0]
             pgWidth = paperImg.shape[1]
             if not boxes.empty:
-                lefts = boxes['left'].values.tolist()
-                tops = boxes['top'].values.tolist()
-                widths = boxes['width'].values.tolist()
-                heights = boxes['height'].values.tolist()
+                lefts = boxes['left_new'].values.tolist()
+                tops = boxes['top_new'].values.tolist()
+                bottoms = boxes['bottom_new'].values.tolist()
+                rights = boxes['right_new'].values.tolist()
+                
+                #widths = boxes['width'].values.tolist()
+                #heights = boxes['height'].values.tolist()
                 for j in range(len(lefts)):
                     left = int(lefts[j]*pgWidth)
                     top = int(tops[j]*pgHeight)
-                    width = int(widths[j]*pgWidth)
-                    height = int(heights[j]*pgHeight)
-                    paperImg = cv2.rectangle(paperImg, (left, top), (left+width, top+height), color=(0,0,255), thickness=1)
+                    bottom = int(bottoms[j]*pgHeight)
+                    right = int(rights[j]*pgWidth)
+                    
+                    #width = int(widths[j]*pgWidth)
+                    #height = int(heights[j]*pgHeight)
+                    paperImg = cv2.rectangle(paperImg, (left, top), (right, bottom), color=(0,0,255), thickness=1)
 
             cv2.imwrite(os.path.join(outDir, paperImgFile), paperImg)
             

@@ -33,6 +33,8 @@ from detectron2.data import build_detection_test_loader
 from detectron2.modeling import build_model
 from detectron2.checkpoint import DetectionCheckpointer
 
+from detectron2.utils.visualizer import ColorMode
+
 
 def get_box_dicts(img_dir):
     json_file = os.path.join(img_dir, "bounding_box_data.json")
@@ -71,8 +73,25 @@ def get_box_dicts(img_dir):
             objs.append(obj)
         record["annotations"] = objs
         dataset_dicts.append(record)
-    return dataset_dicts  
-                   
+    return dataset_dicts
+
+
+def visualize_model_predictions(img_dir, out_dir, Nsamp=10):
+    
+    dataset_dicts = get_box_dicts(img_dir)
+    for d in random.sample(dataset_dicts, Nsamp):    
+        im = cv2.imread(d["file_name"])
+        outputs = predictor(im)
+        v = Visualizer(im[:, :, ::-1],
+                       metadata=balloon_metadata, 
+                       scale=0.8, 
+                       instance_mode=ColorMode.IMAGE_BW   # remove the colors of unsegmented pixels
+        )
+        v = v.draw_instance_predictions(outputs["instances"].to("cpu"))
+        if not os.path.exists(out_dir):
+            os.mkdir(out_dir)
+        cv2.imwrite(os.path.join(out_dir, os.path.basename(d["file_name"])), v.get_image()[:, :, ::-1])
+
         
 if __name__ == "__main__":
     CNN_data_dir = sys.argv[1]
@@ -91,11 +110,12 @@ if __name__ == "__main__":
         model = build_model(cfg)
         DetectionCheckpointer(model).load(model_path)
 
+        cfg.MODEL.WEIGHTS = model_path
         cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7   # set the testing threshold for this model
         
         cfg.DATASETS.TEST = ("Eqbox_val", )
         predictor = DefaultPredictor(cfg)
-        evaluator = COCOEvaluator("Eqbox_val", cfg, False, output_dir="./output/")
+        evaluator = COCOEvaluator("Eqbox_val", cfg, False, output_dir="./output_val/")
         val_loader = build_detection_test_loader(cfg, "Eqbox_val")
         inference_on_dataset(model, val_loader, evaluator)
         # another equivalent way is to use trainer.test
@@ -103,11 +123,12 @@ if __name__ == "__main__":
     else:
         # train a model
         cfg.DATASETS.TRAIN = ("Eqbox_train",)
+        cfg.DATASETS.TEST = ()
         cfg.DATALOADER.NUM_WORKERS = 1
         #cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml")  # Let training initialize from model zoo
         cfg.SOLVER.IMS_PER_BATCH = 2
         cfg.SOLVER.BASE_LR = 0.0025  # pick a good LR
-        cfg.SOLVER.MAX_ITER = 5000 
+        cfg.SOLVER.MAX_ITER = 10 #500 
         cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 512  # faster, and good enough for this toy dataset (default: 512)
         cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1  # only has one class (Eqbox)
     
@@ -116,14 +137,26 @@ if __name__ == "__main__":
         trainer.resume_or_load(resume=False)
         trainer.train()
 
+        # training performance evaluation:
         cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
-        cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7   # set the testing threshold for this model
-        
+        cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7   # set the testing threshold for this model (adjusting gives a precision/recall tradeoff)
+        cfg.DATASETS.TEST = ("Eqbox_train", )
+        predictor = DefaultPredictor(cfg)
+        evaluator = COCOEvaluator("Eqbox_train", cfg, False, output_dir="./output_train/")
+        val_loader = build_detection_test_loader(cfg, "Eqbox_train")
+        inference_on_dataset(trainer.model, val_loader, evaluator)
+        # another equivalent way is to use trainer.test
+
+        # validation performance evaluation:
+        cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
+        cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7   # set the testing threshold for this model (adjusting gives a precision/recall tradeoff)
         cfg.DATASETS.TEST = ("Eqbox_val", )
         predictor = DefaultPredictor(cfg)
-        evaluator = COCOEvaluator("Eqbox_val", cfg, False, output_dir="./output/")
+        evaluator = COCOEvaluator("Eqbox_val", cfg, False, output_dir="./output_val/")
         val_loader = build_detection_test_loader(cfg, "Eqbox_val")
         inference_on_dataset(trainer.model, val_loader, evaluator)
         # another equivalent way is to use trainer.test
+
+        visualize_model_predictions(CNN_data_dir + 'val', CNN_data_dir + 'vis_val', Nsamp=10)
 
     
