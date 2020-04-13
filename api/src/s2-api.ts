@@ -4,7 +4,7 @@ import { isS2ApiResponseSuccess, S2ApiPaper } from "./types/s2-api";
 /**
  * Base URL for requests to Semantic Scholar API.
  */
-const SEMANTIC_SCHOLAR_API_URL = "http://api.semanticscholar.org/v1";
+const SEMANTIC_SCHOLAR_API_URL = "https://www.semanticscholar.org/api/1";
 
 interface Author {
   id: string;
