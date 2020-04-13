@@ -25,7 +25,55 @@ def train_val_split(datList, fracTrain=.90):
     return datList[:split], datList[split:] 
     
 
+def group_near_eqns(df, all_Tex=False, v_distance_threshold=0.003, width_threshold=0.01, height_threshold=0.002):
+    df['right'] = df['left'] + df['width']
+    df['bottom'] = df['top'] + df['height']
+    
+    if not all_Tex:
+        df = df.sort_values(by=['page','tex','top']).reset_index()
+        
+        diff = []
+        for i, row in df.iterrows():
+            diff.append(df.iloc[i].right - df.iloc[i].left)
+            if i==0:
+                df.at[i,'left_new'] = df.at[i,'left']
+                df.at[i,'top_new'] = df.at[i,'top']
+                df.at[i,'right_new'] = df.at[i,'right']
+                df.at[i,'bottom_new'] = df.at[i,'bottom']
+            elif (df.iloc[i].tex == df.iloc[i-1].tex) and ((df.iloc[i].top - df.iloc[i-1].bottom)<v_distance_threshold):
+                df.at[i,'left_new'] = min(df.at[i,'left'],df.at[i-1,'left'])
+                df.at[i-1,'left_new'] = min(df.at[i,'left'],df.at[i-1,'left'])
+                df.at[i,'top_new'] = min(df.at[i,'top'],df.at[i-1,'top'])
+                df.at[i-1,'top_new'] = min(df.at[i,'top'],df.at[i-1,'top'])
+                df.at[i,'right_new'] = max(df.at[i,'right'],df.at[i-1,'right'])
+                df.at[i-1,'right_new'] = max(df.at[i,'right'],df.at[i-1,'right'])
+                df.at[i,'bottom_new'] = max(df.at[i,'bottom'],df.at[i-1,'bottom'])
+                df.at[i-1,'bottom_new'] = max(df.at[i,'bottom'],df.at[i-1,'bottom'])
+            elif (df.iloc[i].tex == df.iloc[i-1].tex) and ((df.iloc[i].right - df.iloc[i].left)<width_threshold) and ((df.iloc[i].bottom - df.iloc[i].top)>height_threshold):
+                df.at[i,'left_new'] = min(df.at[i,'left'],df.at[i-1,'left'])
+                df.at[i-1,'left_new'] = min(df.at[i,'left'],df.at[i-1,'left'])
+                df.at[i,'top_new'] = min(df.at[i,'top'],df.at[i-1,'top'])
+                df.at[i-1,'top_new'] = min(df.at[i,'top'],df.at[i-1,'top'])
+                df.at[i,'right_new'] = max(df.at[i,'right'],df.at[i-1,'right'])
+                df.at[i-1,'right_new'] = max(df.at[i,'right'],df.at[i-1,'right'])
+                df.at[i,'bottom_new'] = max(df.at[i,'bottom'],df.at[i-1,'bottom'])
+                df.at[i-1,'bottom_new'] = max(df.at[i,'bottom'],df.at[i-1,'bottom'])
+            else:
+                df.at[i,'left_new'] = df.at[i,'left']
+                df.at[i,'top_new'] = df.at[i,'top']
+                df.at[i,'right_new'] = df.at[i,'right']
+                df.at[i,'bottom_new'] = df.at[i,'bottom']
+        df = df.filter(['tex_path', 'page', 'relative_file_path', 'tex', 'tag',
+       'left_new', 'top_new', 'right_new', 'bottom_new']).drop_duplicates()
 
+    else:
+        df = df.groupby('tex').agg({'left':'min','top':'min','right':'max','bottom':'max'}).reset_index()
+        df.columns = ['tex','left_new','top_new','right_new','bottom_new']
+        
+        df= df.merge(grouped, how='left', on='tex')
+
+    return df 
+    
 def join_hue_locs_and_entites(arxivIds):
     '''Joins the information about where the equations are located in 
        the paper and what the equations are into a single csv file.'''
@@ -61,12 +109,7 @@ def join_hue_locs_and_entites(arxivIds):
         #dfHue.to_csv(os.path.join(outDir, "eqs_and_locs.csv"), index=False)
         #dfDisplay.to_csv(os.path.join(outDir, "eqs_and_locs.csv"), index=False)
 
-        dfDisplay['right'] = dfDisplay['left'] + dfDisplay['width']
-        dfDisplay['bottom'] = dfDisplay['top'] + dfDisplay['height']
-        grouped = dfDisplay.groupby('tex').agg({'left':'min','top':'min','right':'max','bottom':'max'}).reset_index()
-        grouped.columns = ['tex','left_new','top_new','right_new','bottom_new']
-        
-        dfGrouped = dfDisplay.merge(grouped, how='left', on='tex')
+        dfGrouped = group_near_eqns(dfDisplay)
         dfGrouped.to_csv(os.path.join(outDir, "eqs_and_locs.csv"), index=False)
 
 
@@ -116,10 +159,14 @@ def create_training_json(arxivIds, train=True):
     '''
     # Location to output the json
     if train:
-        outDir = os.path.join("data", "99-formatting-data", "TrainingData")
+        outDir = os.path.join("data", "CNNTest_notfulljoin", "train")
     else:
-        outDir = os.path.join("data", "99-formatting-data", "ValidationData")
+        outDir = os.path.join("data", "CNNTest_notfulljoin", "val")
     if not os.path.exists(outDir):
+        os.makedirs(outDir)
+    else:
+        # Clear between runs:
+        os.system('rm -rf ' + outDir)
         os.makedirs(outDir)
     # Dictionary that will become the json
     outDict = {}
@@ -157,10 +204,10 @@ def create_training_json(arxivIds, train=True):
             outDict[arxivId + "-" + paperImgFile]["regions"] = {}
             # Check if there are bounding boxes for this page:
             if not boxes.empty:
-                lefts = boxes['left'].values.tolist()
-                tops = boxes['top'].values.tolist()
-                widths = boxes['width'].values.tolist()
-                heights = boxes['height'].values.tolist()
+                lefts = boxes['left_new'].values.tolist()
+                tops = boxes['top_new'].values.tolist()
+                bottoms = boxes['bottom_new'].values.tolist()
+                rights = boxes['right_new'].values.tolist()
                 # Loop through the boxes:
                 for j in range(len(lefts)):
                     # create an entry for this labelled region:
@@ -173,17 +220,17 @@ def create_training_json(arxivIds, train=True):
                     # Compute the coordinates of the box's corners
                     left = int(lefts[j]*pgWidth)
                     top = int(tops[j]*pgHeight)
-                    width = int(widths[j]*pgWidth)
-                    height = int(heights[j]*pgHeight)
+                    bottom = int(bottoms[j]*pgHeight)
+                    right = int(rights[j]*pgWidth)
                     # Add the box corner points to the representation of the box:
                     outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_x"].append(left)
                     outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_x"].append(left)
-                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_x"].append(left+width)
-                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_x"].append(left+width)
+                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_x"].append(right)
+                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_x"].append(right)
                     outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_y"].append(top)
-                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_y"].append(top+height)
+                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_y"].append(bottom)
                     outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_y"].append(top)
-                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_y"].append(top+height)
+                    outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_y"].append(bottom)
 
             # Write a copy of the Page image to the output directory with the arxivId added to it's name:
             cv2.imwrite(os.path.join(outDir, arxivId + "-" + paperImgFile), paperImg)
