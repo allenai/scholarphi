@@ -97,7 +97,7 @@ class FindSymbolSentences(ArxivBatchCommand[SymbolSentencesTask, SymbolSentenceP
                 else:
                     logging.warning(  # pylint: disable=logging-not-lazy
                         "Could not find sentence associated with token %d of equation %d "
-                        + "in arXiv paper %s while detected symbol sentences.",
+                        + "in arXiv paper %s while detecting symbol sentences.",
                         token_index,
                         equation_index,
                         item.arxiv_id,

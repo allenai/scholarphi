@@ -5,14 +5,8 @@ from typing import Dict, List, cast
 from peewee import ForeignKeyField, TextField
 
 from common import directories, file_utils
-from common.models import (
-    BoundingBox,
-    Entity,
-    EntityBoundingBox,
-    OutputModel,
-    Paper,
-    output_database,
-)
+from common.models import (BoundingBox, Entity, EntityBoundingBox, OutputModel,
+                           Paper, output_database)
 from common.types import HueLocationInfo, PaperProcessingResult
 
 from .types import Sentence as SentenceEntity
@@ -23,14 +17,15 @@ class Sentence(OutputModel):
     text = TextField()
 
 
-SentenceId = str
+@dataclass(frozen=True)
+class SentenceKey:
+    tex_path: str
+    entity_id: str
 
 
 @dataclass(frozen=True)
-class SentenceIdAndModelId:
+class SentenceIdAndModelId(SentenceKey):
     " Link between a sentence in the pipeline's output and its ID in the database. "
-    tex_path: str
-    entity_id: str
     model_id: str
 
 
@@ -45,17 +40,18 @@ def upload_sentences(processing_summary: PaperProcessingResult) -> None:
     except Paper.DoesNotExist:
         paper = Paper.create(s2_id=s2_id, arxiv_id=arxiv_id)
 
-    locations_by_sentence_id: Dict[SentenceId, List[HueLocationInfo]] = {}
-    sentences: Dict[SentenceId, SentenceEntity] = {}
-    sentence_models: Dict[SentenceId, Sentence] = {}
+    locations_by_sentence_id: Dict[SentenceKey, List[HueLocationInfo]] = {}
+    sentences: Dict[SentenceKey, SentenceEntity] = {}
+    sentence_models: Dict[SentenceKey, Sentence] = {}
 
     for entity_and_location in processing_summary.localized_entities:
         sentence = cast(SentenceEntity, entity_and_location.entity)
         sentence_model = Sentence(paper=paper, text=sentence.text)
 
-        locations_by_sentence_id[sentence.id_] = entity_and_location.locations
-        sentence_models[sentence.id_] = sentence_model
-        sentences[sentence.id_] = sentence
+        sentence_key = SentenceKey(sentence.tex_path, sentence.id_)
+        locations_by_sentence_id[sentence_key] = entity_and_location.locations
+        sentence_models[sentence_key] = sentence_model
+        sentences[sentence_key] = sentence
 
     with output_database.atomic():
         Sentence.bulk_create(sentence_models.values(), 100)

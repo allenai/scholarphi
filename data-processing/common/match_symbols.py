@@ -16,7 +16,7 @@ def get_mathml_matches(
 
     matches: Matches = {}
     partial_match_rank = SECOND_HIGHEST_RANK if allow_self_matches else HIGHEST_RANK
-    
+
     deduplicated_mathml_equations = set(mathml_equations)
     for mathml in deduplicated_mathml_equations:
         if allow_self_matches:

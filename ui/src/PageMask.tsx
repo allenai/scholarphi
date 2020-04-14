@@ -9,7 +9,6 @@ interface PageMaskProps {
   pageHeight: number;
 }
 
-/* TODO(andrewhead): create a sentences table in the database */
 export class PageMask extends React.PureComponent<PageMaskProps> {
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
@@ -22,7 +21,7 @@ export class PageMask extends React.PureComponent<PageMaskProps> {
       selectedEntityId,
       symbols,
       mathMls,
-      sentences
+      sentences,
     } = this.context;
 
     /*
@@ -42,7 +41,7 @@ export class PageMask extends React.PureComponent<PageMaskProps> {
     const matchingSentenceIds: string[] = [];
     selectors
       .matchingSymbols(selectedEntityId, symbols, mathMls)
-      .forEach(matchingSymbolId => {
+      .forEach((matchingSymbolId) => {
         const sentenceId = symbols.byId[matchingSymbolId].sentence;
         if (
           sentenceId !== null &&
@@ -52,7 +51,7 @@ export class PageMask extends React.PureComponent<PageMaskProps> {
         }
       });
     const matchingSentences = matchingSentenceIds.map(
-      sentenceId => sentences.byId[sentenceId]
+      (sentenceId) => sentences.byId[sentenceId]
     );
     const firstMatchingSentence: Sentence | undefined = matchingSentences[0];
 
@@ -76,10 +75,10 @@ export class PageMask extends React.PureComponent<PageMaskProps> {
            * Subtract from the mask wherever a sentence should be activated.
            */}
           {matchingSentences
-            .map(s => {
+            .map((s) => {
               return s.bounding_boxes
-                .filter(b => b.page === this.props.pageNumber - 1)
-                .map(b => (
+                .filter((b) => b.page === this.props.pageNumber - 1)
+                .map((b) => (
                   <rect
                     key={b.id}
                     x={b.left * pageWidth}
@@ -108,8 +107,8 @@ export class PageMask extends React.PureComponent<PageMaskProps> {
         {firstMatchingSentence !== undefined && (
           <>
             {firstMatchingSentence.bounding_boxes
-              .filter(b => b.page === this.props.pageNumber - 1)
-              .map(b => (
+              .filter((b) => b.page === this.props.pageNumber - 1)
+              .map((b) => (
                 <rect
                   key={b.id}
                   x={b.left * pageWidth}

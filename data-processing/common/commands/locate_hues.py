@@ -135,6 +135,15 @@ class LocateHuesCommand(ArxivBatchCommand[SearchTask, HueLocation], ABC):
                     )
                     page_images = {}
 
+                    if not os.path.exists(diff_images_file_path):
+                        logging.warning(  # pylint: disable=logging-not-lazy
+                            "Expected but could not find a directory %s from the image diffs. "
+                            + "This suggests that the colorized paper failed to compile. Hues "
+                            + "will not be searched for in this diff directory.",
+                            diff_images_file_path,
+                        )
+                        continue
+
                     colorization_error_detected = False
                     for img_name in os.listdir(diff_images_file_path):
                         img_path = os.path.join(diff_images_file_path, img_name)
