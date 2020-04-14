@@ -14,6 +14,8 @@ invisible and we wouldn't want to detect it anyway.
 """
 
 SYMBOL_TAGS = ["msubsup", "msub", "msup", "mi"]
+TOKEN_TAGS = ["mn", "mi"]
+MERGEABLE_TOKEN_TAGS = ["mn", "mi"]
 
 
 @dataclass(frozen=True)
@@ -80,7 +82,9 @@ class ParseResult:
 def parse_element(element: Tag) -> ParseResult:
     """
     Extract symbol nodes from an element in a BeautifulSoup MathML parse tree. This function
-    recursively visits
+    recursively visits child elements in the BeautifulSoup parse tree, creating symbols for
+    each of the element's descendants. The symbol returned will have one descendant for each
+    symbol found during the recursive parse.
     """
 
     # Detect if this tag represents a KaTeX parse error. If so, return nothing.
@@ -92,7 +96,7 @@ def parse_element(element: Tag) -> ParseResult:
     # each. Merge such elements into single elements.
     soup_children = element.children
     if element.name == "mrow":
-        merged_children = MathMlElementMerger().merge(soup_children)
+        merged_children = merge_mathml_elements(soup_children)
 
         # If the 'mrow' only contains one element after its children are merged, simplify the
         # MathML tree replacing this node with its merged child.
@@ -151,7 +155,7 @@ def _extract_tokens(element: Tag) -> List[Token]:
     """
 
     tokens = []
-    if element.name in ["mi", "mn"] and _has_s2_token_annotations(element):
+    if element.name in TOKEN_TAGS and _has_s2_token_annotations(element):
         tokens.append(
             Token(
                 text=element.string,
@@ -185,6 +189,11 @@ def create_element(tag_name: str) -> Tag:
 
     # A dummy BeautifulSoup object is created to access to the 'new_tag' function.
     return BeautifulSoup("", "lxml").new_tag(tag_name)
+
+
+def merge_mathml_elements(elements: List[Tag]) -> List[Tag]:
+    merger = MathMlElementMerger()
+    return merger.merge(elements)
 
 
 class MathMlElementMerger:
@@ -222,7 +231,7 @@ class MathMlElementMerger:
 
     def _is_mergeable_type(self, element: Tag) -> bool:
         " Determine if a element is a type that is mergeable with other elements. "
-        return element.name in ["mi", "mn"] and _has_s2_token_annotations(element)
+        return element.name in MERGEABLE_TOKEN_TAGS and _has_s2_token_annotations(element)
 
     def _can_merge_with_prior_elements(self, element: Tag) -> bool:
         """
