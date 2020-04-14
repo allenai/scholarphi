@@ -7,10 +7,9 @@ from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from typing import List
 
-from common import directories, email, file_utils
-
 sys.path.append("./")
 
+from common import directories, email, file_utils
 from common import directories
 from common.commands.base import (
     CommandList,
