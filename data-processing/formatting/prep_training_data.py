@@ -23,9 +23,13 @@ def train_val_split(datList, fracTrain=.90):
     split = int(len(datList) * fracTrain)
     random.shuffle(datList)
     return datList[:split], datList[split:] 
-    
 
-def group_near_eqns(df, all_Tex=False, v_distance_threshold=0.003, width_threshold=0.01, height_threshold=0.002):
+
+def group_near_eqns(df, all_Tex=False, v_distance_threshold=0.003, width_threshold=0.05, height_threshold=0.002):
+    '''Function that joins display style equation bounding boxes so that small floating 
+       boxes will be removed or joined with their larger counterpart (ie. the indices of sums would be joined with the total sum expression).
+       The boolean flag all_Tex if true will join the entire tex expression into a single box even if it spans multiple lines, where 
+       if it is false, the function will group individual lines of equations using the threshold parameters.'''
     df['right'] = df['left'] + df['width']
     df['bottom'] = df['top'] + df['height']
     
@@ -40,7 +44,9 @@ def group_near_eqns(df, all_Tex=False, v_distance_threshold=0.003, width_thresho
                 df.at[i,'top_new'] = df.at[i,'top']
                 df.at[i,'right_new'] = df.at[i,'right']
                 df.at[i,'bottom_new'] = df.at[i,'bottom']
-            elif (df.iloc[i].tex == df.iloc[i-1].tex) and ((df.iloc[i].top - df.iloc[i-1].bottom)<v_distance_threshold):
+                df.at[i,'reason'] = 0
+            elif (df.iloc[i].page == df.iloc[i-1].page) and (df.iloc[i].tex == df.iloc[i-1].tex) and \
+                 ((df.iloc[i].top - df.iloc[i-1].bottom)<v_distance_threshold):
                 df.at[i,'left_new'] = min(df.at[i,'left'],df.at[i-1,'left'])
                 df.at[i-1,'left_new'] = min(df.at[i,'left'],df.at[i-1,'left'])
                 df.at[i,'top_new'] = min(df.at[i,'top'],df.at[i-1,'top'])
@@ -49,7 +55,9 @@ def group_near_eqns(df, all_Tex=False, v_distance_threshold=0.003, width_thresho
                 df.at[i-1,'right_new'] = max(df.at[i,'right'],df.at[i-1,'right'])
                 df.at[i,'bottom_new'] = max(df.at[i,'bottom'],df.at[i-1,'bottom'])
                 df.at[i-1,'bottom_new'] = max(df.at[i,'bottom'],df.at[i-1,'bottom'])
-            elif (df.iloc[i].tex == df.iloc[i-1].tex) and ((df.iloc[i].right - df.iloc[i].left)<width_threshold) and ((df.iloc[i].bottom - df.iloc[i].top)>height_threshold):
+                df.at[i,'reason'] = 1
+            elif (df.iloc[i].page == df.iloc[i-1].page) and (df.iloc[i].tex == df.iloc[i-1].tex) and \
+                 ((df.iloc[i].right - df.iloc[i].left)<width_threshold) and ((df.iloc[i].bottom - df.iloc[i].top)>height_threshold):
                 df.at[i,'left_new'] = min(df.at[i,'left'],df.at[i-1,'left'])
                 df.at[i-1,'left_new'] = min(df.at[i,'left'],df.at[i-1,'left'])
                 df.at[i,'top_new'] = min(df.at[i,'top'],df.at[i-1,'top'])
@@ -58,14 +66,19 @@ def group_near_eqns(df, all_Tex=False, v_distance_threshold=0.003, width_thresho
                 df.at[i-1,'right_new'] = max(df.at[i,'right'],df.at[i-1,'right'])
                 df.at[i,'bottom_new'] = max(df.at[i,'bottom'],df.at[i-1,'bottom'])
                 df.at[i-1,'bottom_new'] = max(df.at[i,'bottom'],df.at[i-1,'bottom'])
+                df.at[i,'reason'] = 2
             else:
                 df.at[i,'left_new'] = df.at[i,'left']
                 df.at[i,'top_new'] = df.at[i,'top']
                 df.at[i,'right_new'] = df.at[i,'right']
                 df.at[i,'bottom_new'] = df.at[i,'bottom']
-        df = df.filter(['tex_path', 'page', 'relative_file_path', 'tex', 'tag',
-       'left_new', 'top_new', 'right_new', 'bottom_new']).drop_duplicates()
+                df.at[i,'reason'] = 3
 
+        # handle duplicates:
+        df = df.filter(['tex_path', 'page', 'relative_file_path', 'tex', 'tag',
+       'left_new', 'top_new', 'right_new', 'bottom_new', 'reason']).drop_duplicates()
+
+    # Case where we want to join full tex expressions even if they span multiple lines:
     else:
         df = df.groupby('tex').agg({'left':'min','top':'min','right':'max','bottom':'max'}).reset_index()
         df.columns = ['tex','left_new','top_new','right_new','bottom_new']
@@ -135,17 +148,11 @@ def draw_boxes(arxivIds):
                 tops = boxes['top_new'].values.tolist()
                 bottoms = boxes['bottom_new'].values.tolist()
                 rights = boxes['right_new'].values.tolist()
-                
-                #widths = boxes['width'].values.tolist()
-                #heights = boxes['height'].values.tolist()
                 for j in range(len(lefts)):
                     left = int(lefts[j]*pgWidth)
                     top = int(tops[j]*pgHeight)
                     bottom = int(bottoms[j]*pgHeight)
                     right = int(rights[j]*pgWidth)
-                    
-                    #width = int(widths[j]*pgWidth)
-                    #height = int(heights[j]*pgHeight)
                     paperImg = cv2.rectangle(paperImg, (left, top), (right, bottom), color=(0,0,255), thickness=1)
 
             cv2.imwrite(os.path.join(outDir, paperImgFile), paperImg)
