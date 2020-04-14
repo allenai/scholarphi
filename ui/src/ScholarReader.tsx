@@ -18,7 +18,7 @@ import {
   SelectableEntityType,
   Sentences,
   State,
-  Symbols
+  Symbols,
 } from "./state";
 import "./style/index.less";
 import {
@@ -27,12 +27,12 @@ import {
   BoundingBox,
   Paper,
   UserAnnotationType,
-  UserLibrary
+  UserLibrary,
 } from "./types/api";
 import {
   DocumentLoadedEvent,
   PageRenderedEvent,
-  PDFViewerApplication
+  PDFViewerApplication,
 } from "./types/pdfjs-viewer";
 import { isKeypressEscape } from "./ui-utils";
 import { UserAnnotationTypeSelect } from "./UserAnnotationTypeSelect";
@@ -89,7 +89,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       addUserAnnotation: this.addUserAnnotation.bind(this),
       updateUserAnnotation: this.updateUserAnnotation.bind(this),
       deleteUserAnnotation: this.deleteUserAnnotation.bind(this),
-      setUserAnnotations: this.setUserAnnotations.bind(this)
+      setUserAnnotations: this.setUserAnnotations.bind(this),
     });
     /**
      * Bind event handlers so that they are always called with 'this' as its context.
@@ -161,8 +161,16 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     this.setState({ selectedEntityId: id, selectedEntityType: type });
   }
 
-  selectAnnotationForEntity(id: string | null, type: SelectableEntityType) {
-    /* TODO(andrewhead): I'm not sure how to do this... */
+  selectAnnotationForEntity(_: string | null, __: SelectableEntityType) {
+    /*
+     * TODO(andrewhead): Why is this needed? When we provide 'next' and 'back' buttons to navigate
+     * between instances of a symbol in the paper, those buttons may only know the symbol IDs to
+     * jump to, but not the IDs of their correspondeing annotations that will need to be
+     * highlighted. One potential implementation of this feature is to 'register' each annotation
+     * with the scholar reader when it's initiatlized using it's 'ref' property. This registration
+     * action will save a mapping between the symbol ID and the annotation ID. This mapping can
+     * be used here to find the annotation corresponding to an entity.
+     */
   }
 
   requestJumpToPaper(s2Id: string) {
@@ -183,7 +191,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       selectedEntityType,
       pdfViewer,
       pages,
-      symbols
+      symbols,
     } = this.state;
     const DRAWER_WIDTH = 470;
     const SYMBOL_VIEW_PADDING = 50;
@@ -245,7 +253,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       const annotation = {
         id,
         type,
-        boundingBox: { id, page, left, top, width, height }
+        boundingBox: { id, page, left, top, width, height },
       };
       this.setUserAnnotations([...this.state.userAnnotations, annotation]);
       this.setSelectedAnnotationId(`user-annotation-${id}`);
@@ -269,7 +277,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
        */
       this.setUserAnnotationType(updatedAnnotation.type);
 
-      const annotations = this.state.userAnnotations.map(a =>
+      const annotations = this.state.userAnnotations.map((a) =>
         a.id === id ? updatedAnnotation : a
       );
       this.setUserAnnotations(annotations);
@@ -279,7 +287,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
   async deleteUserAnnotation(id: string) {
     if (this.props.paperId !== undefined) {
       await api.deleteAnnotation(this.props.paperId.id, id);
-      const annotations = this.state.userAnnotations.filter(a => a.id !== id);
+      const annotations = this.state.userAnnotations.filter((a) => a.id !== id);
       this.setUserAnnotations(annotations);
     }
   }
@@ -313,7 +321,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
   }
 
   async componentDidMount() {
-    waitForPDFViewerInitialization().then(application => {
+    waitForPDFViewerInitialization().then((application) => {
       this.subscribeToPDFViewerStateChanges(application);
     });
     this.loadDataFromApi();
@@ -353,8 +361,8 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
         ...this.state.pages,
         [eventData.pageNumber]: {
           timeOfLastRender: eventData.timestamp,
-          view: eventData.source
-        }
+          view: eventData.source,
+        },
       });
     });
   }
@@ -363,7 +371,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     if (this.props.paperId !== undefined) {
       if (this.props.paperId.type === "arxiv") {
         const citations = await api.citationsForArxivId(this.props.paperId.id);
-        const s2Ids = citations.map(c => c.paper);
+        const s2Ids = citations.map((c) => c.paper);
         if (s2Ids.length >= 1) {
           const papers = (await api.papers(s2Ids)).reduce((papers, paper) => {
             papers[paper.s2Id] = paper;
@@ -380,10 +388,12 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
         const symbols = await api.symbolsForArxivId(this.props.paperId.id);
         if (symbols.length >= 1) {
           const mathMls = await api.mathMlForArxivId(this.props.paperId.id);
-          const mathMlsWithSymbols = mathMls.map(m => {
+          const mathMlsWithSymbols = mathMls.map((m) => {
             return {
               ...m,
-              symbols: symbols.filter(s => s.mathml === m.id).map(s => s.id)
+              symbols: symbols
+                .filter((s) => s.mathml === m.id)
+                .map((s) => s.id),
             };
           });
           this.setMathMls(createStateSliceFromArray(mathMlsWithSymbols, "id"));
@@ -426,8 +436,8 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
           undefined,
           { name: "XYZ" },
           box.left + SCROLL_OFFSET_X,
-          box.top + SCROLL_OFFSET_Y
-        ]
+          box.top + SCROLL_OFFSET_Y,
+        ],
       });
     }
   }
@@ -444,7 +454,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
         <>
           {this.state.pages !== null ? (
             <>
-              {Object.keys(this.state.pages).map(pageNumberKey => {
+              {Object.keys(this.state.pages).map((pageNumberKey) => {
                 const pages = this.state.pages as Pages;
                 const pageNumber = Number(pageNumberKey);
                 const pageModel = pages[pageNumber];
@@ -483,7 +493,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 }
 
 async function waitForPDFViewerInitialization() {
-  return new Promise<PDFViewerApplication>(resolve => {
+  return new Promise<PDFViewerApplication>((resolve) => {
     const CHECK_CYCLE_MS = 50;
     function check() {
       if (

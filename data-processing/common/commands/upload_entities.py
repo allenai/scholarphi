@@ -5,13 +5,9 @@ from typing import Iterator, Optional, Type
 
 from common import directories, file_utils
 from common.commands.database import DatabaseUploadCommand
-from common.types import (
-    EntityAndLocation,
-    EntityUploadCallable,
-    HueLocationInfo,
-    PaperProcessingResult,
-    SerializableEntity,
-)
+from common.types import (EntityAndLocation, EntityUploadCallable,
+                          HueLocationInfo, PaperProcessingResult,
+                          SerializableEntity)
 
 
 class UploadEntitiesCommand(DatabaseUploadCommand[PaperProcessingResult, None]):
@@ -73,7 +69,7 @@ class UploadEntitiesCommand(DatabaseUploadCommand[PaperProcessingResult, None]):
             for entity in entities:
                 matching_locations = []
                 for h in hue_location_infos:
-                    if h.entity_id == entity.id_:
+                    if h.entity_id == entity.id_ and h.tex_path == entity.tex_path:
                         matching_locations.append(h)
 
                 localized_enitites.append(EntityAndLocation(entity, matching_locations))
