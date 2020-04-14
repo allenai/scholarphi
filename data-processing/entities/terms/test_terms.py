@@ -1,4 +1,4 @@
-def test_extract_sentences():
+def test_extract_sentences(terms):
     extractor = TermExtractor()
     terms = list(
         extractor.parse(
