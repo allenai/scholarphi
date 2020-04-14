@@ -3,6 +3,7 @@ import sys
 
 import json
 
+import torch
 import numpy as np
 import pandas as pd
 import random
@@ -101,71 +102,49 @@ if __name__ == "__main__":
     Eqbox_metadata = MetadataCatalog.get("Eqbox_train")
 
     cfg = get_cfg()
-
-    # If a second commandline argument is provided, interpret it as a model path and do not train, only evaluate:
-    if len(sys.argv) > 2:
-        model_path = sys.argv[2]
-        
-        cfg.DATALOADER.NUM_WORKERS = 1
-        #cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml")  # Let training initialize from model zoo
-        cfg.SOLVER.IMS_PER_BATCH = 2
-        cfg.SOLVER.BASE_LR = 0.0025  # pick a good LR
-        #cfg.SOLVER.WEIGHT_DECAY = 0.0025 # L2 regularization
-        cfg.SOLVER.MAX_ITER = 5000 
-        cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 512  # faster, and good enough for this toy dataset (default: 512)
-        cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1  # only has one class (Eqbox)
-        cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7   # set the testing threshold for this model
-
-        model = build_model(cfg)
-        cfg.MODEL.WEIGHTS = model_path
-        DetectionCheckpointer(model).load(model_path)
-        
-        cfg.DATASETS.TEST = ("Eqbox_val", )
-        predictor = DefaultPredictor(cfg)
-        evaluator = COCOEvaluator("Eqbox_val", cfg, False, output_dir="./output_val/")
-        val_loader = build_detection_test_loader(cfg, "Eqbox_val")
-        inference_on_dataset(model, val_loader, evaluator)
-        # another equivalent way is to use trainer.test
-
-    else:
-        cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml"))
-        # train a model
-        cfg.DATASETS.TRAIN = ("Eqbox_train",)
-        cfg.DATASETS.TEST = ()
-        cfg.DATALOADER.NUM_WORKERS = 1
-        #cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml")  # Let training initialize from model zoo
-        cfg.SOLVER.IMS_PER_BATCH = 2
-        cfg.SOLVER.BASE_LR = 0.0025  # pick a good LR
-        #cfg.SOLVER.WEIGHT_DECAY = 0.0025 # L2 regularization
-        cfg.SOLVER.MAX_ITER = 3000 
-        cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 512  # faster, and good enough for this toy dataset (default: 512)
-        cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1  # only has one class (Eqbox)
+    cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml"))
     
-        os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
-        trainer = DefaultTrainer(cfg) 
-        trainer.resume_or_load(resume=False)
+    # train a model
+    cfg.DATASETS.TRAIN = ("Eqbox_train",)
+    cfg.DATASETS.TEST = ()
+    cfg.DATALOADER.NUM_WORKERS = 1
+    #cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml")  # Let training initialize from model zoo
+    cfg.SOLVER.IMS_PER_BATCH = 2
+    cfg.SOLVER.BASE_LR = 0.0025  # pick a good LR
+    #cfg.SOLVER.WEIGHT_DECAY = 0.0025 # L2 regularization
+    cfg.SOLVER.MAX_ITER = 50 #3000 
+    cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 512  # faster, and good enough for this toy dataset (default: 512)
+    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1  # only has one class (Eqbox)
+    
+    os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
+    trainer = DefaultTrainer(cfg)
+    trainer.resume_or_load(resume=True)
+    # If a thrid commandline argument is provided, only evaluate, don't train.
+    if len(sys.argv) <= 2:
         trainer.train()
 
-        # training performance evaluation:
-        #cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
-        #cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7   # set the testing threshold for this model (adjusting gives a precision/recall tradeoff)
-        #cfg.DATASETS.TEST = ("Eqbox_train", )
-        #predictor = DefaultPredictor(cfg)
-        #evaluator = COCOEvaluator("Eqbox_train", cfg, False, output_dir="./output_train/")
-        #val_loader = build_detection_test_loader(cfg, "Eqbox_train")
-        #inference_on_dataset(trainer.model, val_loader, evaluator)
-        # another equivalent way is to use trainer.test
+    # training performance evaluation:
+    #cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
+    #cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7   # set the testing threshold for this model (adjusting gives a precision/recall tradeoff)
+    #cfg.DATASETS.TEST = ("Eqbox_train", )
+    #predictor = DefaultPredictor(cfg)
+    #evaluator = COCOEvaluator("Eqbox_train", cfg, False, output_dir="./output_train/")
+    #val_loader = build_detection_test_loader(cfg, "Eqbox_train")
+    #inference_on_dataset(trainer.model, val_loader, evaluator)
+    # another equivalent way is to use trainer.test
 
-        # validation performance evaluation:
-        cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
-        cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7   # set the testing threshold for this model (adjusting gives a precision/recall tradeoff)
-        cfg.DATASETS.TEST = ("Eqbox_val", )
-        predictor = DefaultPredictor(cfg)
-        evaluator = COCOEvaluator("Eqbox_val", cfg, False, output_dir="./output_val/")
-        val_loader = build_detection_test_loader(cfg, "Eqbox_val")
-        inference_on_dataset(trainer.model, val_loader, evaluator)
-        # another equivalent way is to use trainer.test
-
-        visualize_model_predictions(Eqbox_metadata, CNN_data_dir + 'val', CNN_data_dir + 'vis_val', Nsamp=300)
+    # validation performance evaluation:
+    cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
+    cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7   # set the testing threshold for this model (adjusting gives a precision/recall tradeoff)
+    cfg.DATASETS.TEST = ("Eqbox_val", )
+    predictor = DefaultPredictor(cfg)
+    evaluator = COCOEvaluator("Eqbox_val", cfg, False, output_dir="./output_val/")
+    val_loader = build_detection_test_loader(cfg, "Eqbox_val")
+    model = build_model(cfg)
+    torch.save(model.state_dict(), os.path.join(cfg.OUTPUT_DIR, "model_final_save.pth"))
+    inference_on_dataset(trainer.model, val_loader, evaluator)
+    # another equivalent way is to use trainer.test
+    
+    visualize_model_predictions(Eqbox_metadata, CNN_data_dir + 'val', CNN_data_dir + 'vis_val', Nsamp=10)
 
     
