@@ -157,7 +157,6 @@ class EquationExtractor(EntityExtractor):
 
     def _process_token(self, match: Match) -> Iterator[Equation]:
         pattern_name = match.pattern.name
-
         if pattern_name.endswith("_start"):
             self._stack.append(match)
 
@@ -175,7 +174,6 @@ class EquationExtractor(EntityExtractor):
             context_tex = self._tex[
                 start - DEFAULT_CONTEXT_SIZE : end + DEFAULT_CONTEXT_SIZE
             ]
-
             yield Equation(
                 tex_path=self._tex_path,
                 id_=str(self._equation_index),
@@ -189,6 +187,7 @@ class EquationExtractor(EntityExtractor):
                 content_tex=content_tex,
                 katex_compatible_tex=sanitize_equation(content_tex),
                 depth=depth,
+                type_eqn=pattern_name
             )
             self._equation_index += 1
 

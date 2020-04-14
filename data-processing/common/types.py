@@ -217,6 +217,9 @@ class Equation(SerializableEntity):
     another equation, which is nested in another equation, it will have a depth of 2.
     """
 
+    type_eqn : str
+    "Display style vs inline eqns"
+
 
 @dataclass(frozen=True)
 class LengthAssignment(Entity):

@@ -11,10 +11,32 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+sys.path.insert(0, "../")
+from common.parse_tex import EquationExtractor
+
+
+def generate_tag(row):
+    '''Generates an equation tag for each row in the dataframe'''
+    string = row.tex
+    if isinstance(string, float):
+        return 'null'
+    else:
+        extractor = EquationExtractor()
+        for eqn in extractor.parse(tex=string, tex_path=''):
+            if eqn.type_eqn in ['dollar_delimiter','parens_start','parens_end','math_start','math_end']:
+                return 'inline'
+            else:
+                return 'display'
+
 
 def filter_display_eqs(df):
     '''Returns only the display style equations from a dataframe.'''
-    dfResult = df.loc[df["tex"].str.contains('(\$\$\s.*\$\$|\\\[\s.*\\\]|begin{displaymath|begin{equation|begin{split|begin{array|begin{eqnarray|begin{multiline|begin{gather|begin{align|begin{flalign)',regex=True, na=False)]
+    # This is the explicit way
+    # dfResult = df.loc[df["tex"].str.contains('(\$\$\s.*\$\$|\\\[\s.*\\\]|begin{displaymath|begin{equation|begin{split|begin{array|begin{eqnarray|begin{multiline|begin{gather|begin{align|begin{flalign)',regex=True, na=False)]
+
+    #This uses the equation extractor - so that any update will be reflected here as well
+    df['tag'] = df.apply(lambda x : generate_tag(x,paper), axis=1)
+    dfResult = df[df['tag']=='display']
     return dfResult
 
 def train_val_split(datList, fracTrain=.90):
@@ -25,7 +47,7 @@ def train_val_split(datList, fracTrain=.90):
     return datList[:split], datList[split:] 
 
 
-def group_near_eqns(df, all_Tex=False, v_distance_threshold=0.003, width_threshold=0.05, height_threshold=0.002):
+def group_near_eqns(df, all_Tex=False, v_distance_threshold=0.003, width_threshold=0.05, height_threshold=0.002, height_filter = 0.05):
     '''Function that joins display style equation bounding boxes so that small floating 
        boxes will be removed or joined with their larger counterpart (ie. the indices of sums would be joined with the total sum expression).
        The boolean flag all_Tex if true will join the entire tex expression into a single box even if it spans multiple lines, where 
@@ -77,6 +99,8 @@ def group_near_eqns(df, all_Tex=False, v_distance_threshold=0.003, width_thresho
         # handle duplicates:
         df = df.filter(['tex_path', 'page', 'relative_file_path', 'tex', 'tag',
        'left_new', 'top_new', 'right_new', 'bottom_new', 'reason']).drop_duplicates()
+
+        df = df[(df['bottom_new']-df['top_new'])<=height_filter]
 
     # Case where we want to join full tex expressions even if they span multiple lines:
     else:
