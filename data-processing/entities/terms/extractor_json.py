@@ -120,6 +120,7 @@ with open("paper.tex") as file_:
 					matched_terms_end.pop(index)
 					matched_terms_context_str.pop(index)
 
+	#ignore this comment
 	delete_duplicate_start(matched_terms, matched_terms_start, matched_terms_end, matched_terms_context_str)
 	data_dict = {"term": matched_terms, "start": matched_terms_start, "end": matched_terms_end,
 					   "context_str": matched_terms_context_str}
