@@ -77,12 +77,14 @@ def get_box_dicts(img_dir):
     return dataset_dicts
 
 
-def visualize_model_predictions(Eqbox_metadata, img_dir, out_dir, Nsamp=300):
-    
+def visualize_model_predictions(Eqbox_metadata, img_dir, out_dir):
+    results = {}
     dataset_dicts = get_box_dicts(img_dir)
-    for d in random.sample(dataset_dicts, Nsamp):    
+    for d in dataset_dicts:
+        
         im = cv2.imread(d["file_name"])
         outputs = predictor(im)
+        results[d["file_name"]] = {"pred_boxes" : outputs['instances'].pred_boxes.to("cpu").tensor.numpy().tolist(), "scores" : outputs['instances'].scores.cpu().numpy().tolist()}
         v = Visualizer(im[:, :, ::-1],
                        metadata=Eqbox_metadata, 
                        scale=0.8, 
@@ -91,12 +93,16 @@ def visualize_model_predictions(Eqbox_metadata, img_dir, out_dir, Nsamp=300):
         if not os.path.exists(out_dir):
             os.mkdir(out_dir)
         cv2.imwrite(os.path.join(out_dir, os.path.basename(d["file_name"])), v.get_image()[:, :, ::-1])
+        
+    with open(os.path.join(out_dir, 'pred_results.json'), 'w') as json_file:
+        json.dump(results, json_file)
 
         
 if __name__ == "__main__":
     CNN_data_dir = sys.argv[1]
-
-    for d in ["train", "val"]:
+    dirs = os.listdir(CNN_data_dir)
+    vals = [val_dir for val_dir in dirs if val_dir.startswith("val")]
+    for d in ["train"] + vals:
         DatasetCatalog.register("Eqbox_" + d, lambda d=d: get_box_dicts(CNN_data_dir + d))
         MetadataCatalog.get("Eqbox_" + d).set(thing_classes=["Eqbox"])
     Eqbox_metadata = MetadataCatalog.get("Eqbox_train")
@@ -112,7 +118,7 @@ if __name__ == "__main__":
     cfg.SOLVER.IMS_PER_BATCH = 2
     cfg.SOLVER.BASE_LR = 0.0025  # pick a good LR
     #cfg.SOLVER.WEIGHT_DECAY = 0.0025 # L2 regularization
-    cfg.SOLVER.MAX_ITER = 50 #3000 
+    cfg.SOLVER.MAX_ITER = 5000 
     cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 512  # faster, and good enough for this toy dataset (default: 512)
     cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1  # only has one class (Eqbox)
     
@@ -133,18 +139,20 @@ if __name__ == "__main__":
     #inference_on_dataset(trainer.model, val_loader, evaluator)
     # another equivalent way is to use trainer.test
 
-    # validation performance evaluation:
-    cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
-    cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7   # set the testing threshold for this model (adjusting gives a precision/recall tradeoff)
-    cfg.DATASETS.TEST = ("Eqbox_val", )
-    predictor = DefaultPredictor(cfg)
-    evaluator = COCOEvaluator("Eqbox_val", cfg, False, output_dir="./output_val/")
-    val_loader = build_detection_test_loader(cfg, "Eqbox_val")
-    model = build_model(cfg)
-    torch.save(model.state_dict(), os.path.join(cfg.OUTPUT_DIR, "model_final_save.pth"))
-    inference_on_dataset(trainer.model, val_loader, evaluator)
-    # another equivalent way is to use trainer.test
     
-    visualize_model_predictions(Eqbox_metadata, CNN_data_dir + 'val', CNN_data_dir + 'vis_val', Nsamp=10)
+    # validation performance evaluation:
+    for val in vals:
+        cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
+        cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7   # set the testing threshold for this model (adjusting gives a precision/recall tradeoff)
+        cfg.DATASETS.TEST = ("Eqbox_" + val, )
+        predictor = DefaultPredictor(cfg)
+        evaluator = COCOEvaluator("Eqbox_" + val, cfg, False, output_dir="./output_" + val + "/")
+        val_loader = build_detection_test_loader(cfg, "Eqbox_" + val)
+        model = build_model(cfg)
+        torch.save(model.state_dict(), os.path.join(cfg.OUTPUT_DIR, "model_final_save.pth"))
+        inference_on_dataset(trainer.model, val_loader, evaluator)
+        # another equivalent way is to use trainer.test
+    
+        visualize_model_predictions(Eqbox_metadata, CNN_data_dir + val, CNN_data_dir + 'vis_' + val)
 
     
