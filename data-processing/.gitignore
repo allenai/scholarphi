@@ -28,3 +28,8 @@ venv
 
 # Files hidden for some other reason
 .hidden
+
+
+#jupyter files
+formatting/.ipynb_checkpoints
+formatting/.nbgrader.log
