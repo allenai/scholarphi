@@ -377,4 +377,4 @@ if __name__ == "__main__":
     train_arxivs, val_arxivs = train_val_split(arxivIds)
     # Prepare the json files foe the RCNN model:
     create_training_json(train_arxivs, train=True)
-    create_training_json(val_arxivs, train=False, micro_eval=True)
+    create_training_json(val_arxivs, train=False)#, micro_eval=True)
