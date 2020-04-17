@@ -4,6 +4,7 @@ import SaveIcon from "@material-ui/icons/Bookmark";
 import CiteIcon from "@material-ui/icons/FormatQuote";
 import React from "react";
 import AuthorList from "./AuthorList";
+import FeedbackButton from "./FeedbackButton";
 import ChartIcon from "./icon/ChartIcon";
 import InfluentialCitationIcon from "./icon/InfluentialCitationIcon";
 import { userLibraryUrl } from "./s2-url";
@@ -12,12 +13,16 @@ import { ScholarReaderContext } from "./state";
 import { UserLibrary } from "./types/api";
 import { truncateText } from "./ui-utils";
 
-function warnOfUnimplementedActionAndTrack(actionType: string) {
-  alert(
+function warnOfUnimplementedActionAndTrack(
+  actionType: string,
+  message?: string
+) {
+  const DEFAULT_MESSAGE =
     "Sorry, that feature isn't implemented yet. Clicking it tells us " +
-      "you're interested in the feature, increasing the likelihood that " +
-      "it'll be implemented!"
-  );
+    "you're interested in the feature, increasing the likelihood that " +
+    "it'll be implemented!";
+  message = message || DEFAULT_MESSAGE;
+  alert(message);
   if (window.heap) {
     window.heap.track("Click on Unimplemented Action", { actionType });
   }
@@ -54,7 +59,7 @@ export class PaperSummary extends React.PureComponent<
 
     this.state = {
       showFullAbstract: false,
-      errorMessage: ""
+      errorMessage: "",
     };
   }
 
@@ -76,17 +81,22 @@ export class PaperSummary extends React.PureComponent<
     paperTitle: string
   ) {
     if (!userLibrary) {
-      warnOfUnimplementedActionAndTrack("save");
+      warnOfUnimplementedActionAndTrack(
+        "save",
+        "Before you can save papers to your library, you must be logged " +
+          "into Semantic Scholar. Visit https://semanticscholar.org to log in. " +
+          "Then refresh this page and try again."
+      );
     } else {
       try {
         await addToLibrary(this.props.paperId, paperTitle);
         trackLibrarySave();
         this.setState({
-          errorMessage: ""
+          errorMessage: "",
         });
       } catch (error) {
         this.setState({
-          errorMessage: "Cannot save to library at this time."
+          errorMessage: "Cannot save to library at this time.",
         });
       }
     }
@@ -100,7 +110,7 @@ export class PaperSummary extends React.PureComponent<
           paperJumpRequest,
           requestJumpToPaper,
           userLibrary,
-          addToLibrary
+          addToLibrary,
         }) => {
           if (papers === null || papers[this.props.paperId] === undefined) {
             return null;
@@ -119,7 +129,7 @@ export class PaperSummary extends React.PureComponent<
 
           return (
             <div
-              ref={ref => {
+              ref={(ref) => {
                 /*
                  * Jump to paper in paper list when requested.
                  */
@@ -173,7 +183,7 @@ export class PaperSummary extends React.PureComponent<
               )}
 
               {/* Actions */}
-              <div className="paper-summary__metrics-and-actions">
+              <div className="paper-summary__metrics-and-actions paper-summary__section">
                 {hasMetrics ? (
                   <div className="paper-summary__metrics">
                     {paper.influentialCitationCount > 0 ? (
@@ -231,6 +241,14 @@ export class PaperSummary extends React.PureComponent<
                       this.saveToLibrary(userLibrary, addToLibrary, paper.title)
                     )}
               </div>
+
+              <div className="paper-summary__section paper-summary__feedback">
+                Does something look wrong? Give us feedback.
+                <FeedbackButton
+                  extraContext={{ paperId: this.props.paperId }}
+                />
+              </div>
+
               <div className="paper-summary__library-error">
                 {this.state.errorMessage && this.state.errorMessage}
               </div>

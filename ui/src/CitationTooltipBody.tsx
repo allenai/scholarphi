@@ -1,6 +1,5 @@
 import React from "react";
-import Citation from "./Citation";
-import FeedbackButton from "./FeedbackButton";
+import PaperSummary from "./PaperSummary";
 import * as api from "./types/api";
 
 interface CitationTooltipBodyProps {
@@ -16,14 +15,8 @@ export class CitationTooltipBody extends React.PureComponent<
       <div className="tooltip-body citation-tooltip-body">
         <div className="tooltip-body__section">
           <div className="tooltip-body__citation">
-            <Citation citation={this.props.citation} />
+            <PaperSummary paperId={this.props.citation.paper} />
           </div>
-        </div>
-        <div className="tooltip-body__section">
-          Give feedback on this tooltip
-          <FeedbackButton
-            extraContext={{ citationId: this.props.citation.id }}
-          />
         </div>
       </div>
     );
