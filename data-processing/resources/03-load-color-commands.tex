@@ -139,6 +139,34 @@ hyperref hyperlink commands. The inferred key is \scholar@citation@key.
 #4%
 \fi%
 }}%
+%
+% == Instrument natbib citation formatting macros ==
+% * The wrapped macros are defined in 'natbib.sty' in the TeXLive distribution.
+\let\scholar@inner@NAT@hyper@\NAT@hyper@
+\def\NAT@hyper@#1{\scholar@color@if@citation@registered{\@citeb}{%
+\scholar@inner@NAT@hyper@{#1}%
+}}%
+% To fool-proof coloring for natbib, the \@citecolor macro from hyperref is
+% also redefined to return the registered color, as the color from \@citecolor
+% takes precedence over the color from \NAT@hyper. \@citecolor will be
+% defined if 'colorlinks' is set to true in \hypersetup. The \@citecolor macro
+% is redefined both as this macro is loading, and whenever \hypersetup is called
+% in the middle of a TeX file (which redefines \@citecolor by default).
+\def\scholar@wrap@citecolor{%
+\let\scholar@inner@citecolor\@citecolor
+\def\@citecolor{%
+\scholarifdefinedelse{scholarcolor@\@citeb}{%
+scholarcolor@\@citeb%
+}{%
+\scholar@inner@citecolor%
+}}%
+}%
+\scholar@wrap@citecolor{}%
+\let\scholar@inner@hypersetup\hypersetup%
+\def\hypersetup#1{%
+\scholar@inner@hypersetup{#1}%
+\scholar@wrap@citecolor{}%
+}%
 \message{Defined S2 LaTeX coloring commands.}%
 }}%
 
