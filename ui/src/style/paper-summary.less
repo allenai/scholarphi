@@ -4,16 +4,7 @@
 .paper-summary {
   max-width: @paper-summary-width;
   padding: @padding;
-  border-bottom: 1px solid @s2-border-light;
   color: @s2-text-default;
-
-  &:first-child {
-    border-top: 1px solid @s2-border-light;
-  }
-
-  &:last-child {
-    border-bottom: none;
-  }
 }
 
 /**
@@ -48,6 +39,11 @@
 
   &__abstract__show-more-label {
     color: deepskyblue;
+  }
+
+  &__feedback {
+    color: lighten(@black, 50%);
+    font-style: italic;
   }
 }
 

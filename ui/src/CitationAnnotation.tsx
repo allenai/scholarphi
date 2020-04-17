@@ -2,6 +2,7 @@ import classNames from "classnames";
 import React from "react";
 import Annotation from "./Annotation";
 import CitationTooltipBody from "./CitationTooltipBody";
+import { ScholarReaderContext } from "./state";
 import { BoundingBox, Citation } from "./types/api";
 
 interface CitationAnnotationProps {
@@ -14,6 +15,9 @@ export class CitationAnnotation extends React.PureComponent<
   CitationAnnotationProps,
   {}
 > {
+  static contextType = ScholarReaderContext;
+  context!: React.ContextType<typeof ScholarReaderContext>;
+
   render() {
     return (
       <Annotation
@@ -41,7 +45,7 @@ export class CitationAnnotation extends React.PureComponent<
     const {
       setSelectedEntity,
       selectedEntityId,
-      selectedEntityType
+      selectedEntityType,
     } = this.context;
     if (
       selectedEntityType === "citation" &&
