@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import * as api from "./api";
 import Drawer from "./Drawer";
 import FeedbackButton from "./FeedbackButton";
+import { FindBar } from "./FindBar";
 import PageOverlay from "./PageOverlay";
 import * as selectors from "./selectors";
 import {
@@ -443,6 +444,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
   }
 
   render() {
+    const elFindBarContainer = document.getElementById("mainContainer");
     const elFeedbackContainer = document.getElementById(
       "scholarReaderGlobalFeedbackButton"
     );
@@ -485,6 +487,9 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
                 <UserAnnotationTypeSelect />,
                 elUserAnnotationTypeContainer
               )
+            : null}
+          {elFindBarContainer
+            ? createPortal(<FindBar />, elFindBarContainer)
             : null}
         </>
       </ScholarReaderContext.Provider>
