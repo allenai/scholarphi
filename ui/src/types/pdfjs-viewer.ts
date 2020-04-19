@@ -22,6 +22,7 @@ export interface PDFViewerApplication {
 
 export interface EventBus {
   on: (eventName: string, listener: (...args: any[]) => void) => void;
+  dispatch: (eventName: string, ...args: any[]) => void;
 }
 
 export interface PageRenderedEvent {
