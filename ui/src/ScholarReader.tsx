@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import * as api from "./api";
 import Drawer from "./Drawer";
 import FeedbackButton from "./FeedbackButton";
-import { FindBar } from "./FindBar";
+import FindBar from "./FindBar";
 import PageOverlay from "./PageOverlay";
 import * as selectors from "./selectors";
 import {
@@ -488,7 +488,11 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
                 elUserAnnotationTypeContainer
               )
             : null}
-          {elFindBarContainer
+          {/*
+           * TODO(andrewhead): find another way of checking to see if PDFViewerApplication is
+           * available, or don't require FindBar to have access to the PDFViewerApplication.
+           */}
+          {window.PDFViewerApplication !== undefined && elFindBarContainer
             ? createPortal(<FindBar />, elFindBarContainer)
             : null}
         </>
