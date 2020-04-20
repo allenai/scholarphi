@@ -12,6 +12,7 @@ import { UserAnnotationLayer } from "./UserAnnotationLayer";
 interface PageProps {
   pageNumber: number;
   view: PDFPageView;
+  highlightedSymbols: string[];
 }
 
 /**
@@ -67,25 +68,6 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
       this._element.classList.remove("user-annotations-enabled");
     }
 
-    /*
-     * Assemble a list of symbols that should highlighted based on the currently selected entity.
-     */
-    const highlightedSymbols: string[] = [];
-    if (
-      this.context.symbols !== null &&
-      this.context.mathMls !== null &&
-      this.context.selectedEntityType === "symbol" &&
-      this.context.selectedEntityId !== null
-    ) {
-      highlightedSymbols.push(
-        ...selectors.matchingSymbols(
-          this.context.selectedEntityId,
-          this.context.symbols,
-          this.context.mathMls
-        )
-      );
-    }
-
     const pageDimensions = getPageViewDimensions(this.props.view);
     return ReactDOM.createPortal(
       <ScholarReaderContext.Consumer>
@@ -133,7 +115,7 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
                         showHint={annotationsShowing}
                         boundingBoxes={boundingBoxes}
                         symbol={symbol}
-                        highlight={highlightedSymbols.indexOf(sId) !== -1}
+                        highlight={this.props.highlightedSymbols.indexOf(sId) !== -1}
                       />
                     ) : null;
                   })

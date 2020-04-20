@@ -1,9 +1,16 @@
 import React from "react";
 import { EventBus } from "./types/pdfjs-viewer";
+import { ScholarReaderContext } from "./state";
+
+interface FindBarProps {
+  matches: Map<String, Object>;
+  jumpToBoundingBox: Function;
+}
 
 interface FindBarState {
   currentMatch: number | null;
   matchCount: number | null;
+  mode: string,
   /**
    * Event bus for the pdf.js application. The logic for performing text search within the PDF is
    * provided by pdf.js. This event bus is needed for communicating with the pdf.js code.
@@ -11,13 +18,32 @@ interface FindBarState {
   pdfJsEventBus?: EventBus;
 }
 
-export class FindBar extends React.PureComponent<{}, FindBarState> {
-  constructor(props: {}) {
-    super(props);
-    this.state = {
-      currentMatch: null,
-      matchCount: null,
-    };
+export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
+  state = {
+    currentMatch: null,
+    matchCount: null,
+    mode: 'text-search',
+  };
+
+  static contextType = ScholarReaderContext;
+  context!: React.ContextType<typeof ScholarReaderContext>;
+
+  /**
+   * This is considered an anti pattern in React (https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html),
+   * unfortunately since we are using this component for both string search (which does update match count without props) and symbol search
+   * we have to derive the match count and current match from the props. In the future we should probably divide these
+   * into separate components.
+   */
+  componentDidUpdate() {
+    if (this.context.selectedEntityId !== null) {
+      const order = [...this.props.matches.keys()];
+      console.log(this.props.matches, order, this.context.selectedEntityId)
+      this.setState({
+        currentMatch: order.indexOf(this.context.selectedEntityId) + 1,
+        matchCount: this.props.matches.size,
+        mode: 'symbol-search',
+      })
+     } 
   }
 
   componentDidMount() {
@@ -38,10 +64,10 @@ export class FindBar extends React.PureComponent<{}, FindBarState> {
     pdfViewerApplicationAny.externalServices = {
       ...pdfViewerApplicationAny.externalServices,
       updateFindControlState: (data: any) => {
-        console.log("Updating find control state", data);
+        // console.log("Updating find control state", data);
       },
       updateFindMatchesCount: (data: any) => {
-        console.log("Update find matches count", data);
+        // console.log('updating find matches count', data)
       },
       supportsIntegratedFind: true,
     };
@@ -92,12 +118,38 @@ export class FindBar extends React.PureComponent<{}, FindBarState> {
     this.dispatchEventToPdfJs("find");
   }
 
-  handleNextButtonClick() {
-    this.dispatchEventToPdfJs("findagain");
+  wrapIndex(index: number, len: number) {
+    return (index%len + len)%len;
   }
 
-  handlePreviousButtonClick() {
-    this.dispatchEventToPdfJs("findagain", true);
+  handleNextButtonClick(e) {
+    if (this.state.mode === 'symbol-search' && this.context.symbols) {
+      const { matches, jumpToBoundingBox } = this.props;
+      const order = [...matches.keys()];
+      const newEntityId = order[
+        this.wrapIndex(order.indexOf(this.context.selectedEntityId || '') + 1, order.length)
+      ];
+      jumpToBoundingBox(matches.get(newEntityId));
+      this.context.setSelectedEntity(newEntityId, "symbol");
+    } else {
+      this.dispatchEventToPdfJs("findagain");
+    }
+    e.preventDefault();
+  }
+
+  handlePreviousButtonClick(e) {
+    if (this.state.mode === 'symbol-search' && this.context.symbols) {
+      const { matches, jumpToBoundingBox } = this.props;
+      const order = [...matches.keys()];
+      const newEntityId = order[
+        this.wrapIndex(order.indexOf(this.context.selectedEntityId || '') - 1, order.length)
+      ];
+      jumpToBoundingBox(matches.get(newEntityId));
+      this.context.setSelectedEntity(newEntityId, "symbol");
+    } else {
+      this.dispatchEventToPdfJs("findagain", true);
+    }
+    e.preventDefault();
   }
 
   dispatchEventToPdfJs(eventType: string, findPrevious?: boolean) {
@@ -141,12 +193,13 @@ export class FindBar extends React.PureComponent<{}, FindBarState> {
   render() {
     return (
       <div className="find-bar">
-        <input
-          className="find-bar__query"
-          placeholder="Find in document…"
-          ref={this.initializeQueryElement.bind(this)}
-          tabIndex={0}
-        />
+        {this.state.mode === 'text-search' && 
+          <input
+            className="find-bar__query"
+            placeholder="Find in document…"
+            ref={this.initializeQueryElement.bind(this)}
+            tabIndex={0}/>
+         }
         <div className="find-bar__navigation">
           <button
             className="find-bar__navigation__previous"
