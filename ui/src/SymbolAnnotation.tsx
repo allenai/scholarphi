@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import React from "react";
 import Annotation from "./Annotation";
+import { convertToAnnotationId } from './selectors/annotation'
 import { ScholarReaderContext } from "./state";
 import { BoundingBox, Symbol } from "./types/api";
 
@@ -21,11 +22,8 @@ export class SymbolAnnotation extends React.PureComponent<
     return (
       <div hidden={this.props.symbol.parent !== null}>
         <Annotation
-          id={`symbol-${this.props.symbol.id}-annotation`}
-          className={classNames({ 
-            "annotation-hint": this.props.showHint, 
-            "annotation-is-the-selected-symbol": this.context.selectedEntityId === this.props.symbol.id,
-          })}
+          id={convertToAnnotationId(this.props.symbol.id)}
+          className={classNames({ "annotation-hint": this.props.showHint })}
           source={this.props.symbol.source}
           boundingBoxes={this.props.boundingBoxes}
           /* tooltipContent={<SymbolTooltipBody symbol={this.props.symbol} />} */

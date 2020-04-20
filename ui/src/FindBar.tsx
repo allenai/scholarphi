@@ -1,10 +1,13 @@
 import React from "react";
+import { convertToAnnotationId } from './selectors/annotation'
 import { EventBus } from "./types/pdfjs-viewer";
 import { ScholarReaderContext } from "./state";
+import { BoundingBox } from "./types/api";
 
 interface FindBarProps {
-  matches: Map<String, Object>;
-  jumpToBoundingBox: Function;
+  mappingToBounds: Map<String, BoundingBox>;
+  matches: string[];
+  selectedSymbol: string;
 }
 
 interface FindBarState {
@@ -18,13 +21,14 @@ interface FindBarState {
   pdfJsEventBus?: EventBus;
 }
 
-export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
-  state = {
-    currentMatch: null,
-    matchCount: null,
-    mode: 'text-search',
-  };
+const initialState = {
+  currentMatch: null,
+  matchCount: null,
+  mode: 'hidden',
+}
 
+export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
+  state = initialState;
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
 
@@ -34,16 +38,16 @@ export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
    * we have to derive the match count and current match from the props. In the future we should probably divide these
    * into separate components.
    */
-  componentDidUpdate() {
-    if (this.context.selectedEntityId !== null) {
-      const order = [...this.props.matches.keys()];
-      console.log(this.props.matches, order, this.context.selectedEntityId)
+  UNSAFE_componentWillReceiveProps(nextProps: FindBarProps) {
+    if (nextProps.selectedSymbol !== null) {
       this.setState({
-        currentMatch: order.indexOf(this.context.selectedEntityId) + 1,
-        matchCount: this.props.matches.size,
+        currentMatch: nextProps.matches.indexOf(nextProps.selectedSymbol) + 1,
+        matchCount: nextProps.matches.length,
         mode: 'symbol-search',
       })
-     } 
+     } else if (this.state.mode === 'symbol-search') {
+       this.setState(initialState);
+     }
   }
 
   componentDidMount() {
@@ -63,11 +67,17 @@ export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
     const pdfViewerApplicationAny: any = window.PDFViewerApplication;
     pdfViewerApplicationAny.externalServices = {
       ...pdfViewerApplicationAny.externalServices,
-      updateFindControlState: (data: any) => {
-        // console.log("Updating find control state", data);
+      updateFindControlState: ({matchesCount: {current, total}}: any) => {
+        this.setState({
+          matchCount: total, 
+          currentMatch: current,
+        });
       },
-      updateFindMatchesCount: (data: any) => {
-        // console.log('updating find matches count', data)
+      updateFindMatchesCount: ({current, total}: any) => {
+        this.setState({
+          matchCount: total, 
+          currentMatch: current,
+        });
       },
       supportsIntegratedFind: true,
     };
@@ -94,6 +104,11 @@ export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
      * https://github.com/mozilla/pdf.js/blob/49f59eb627646ae9a6e166ee2e0ef2cac9390b4f/web/app.js#L2503
      */
     if ((event.ctrlKey || event.metaKey) && event.keyCode === 70) {
+      this.setState({
+        ...initialState,
+        mode: 'text-search'
+      });
+      this.unselectSymbol();
       const opened = this.open();
       if (opened) {
         event.preventDefault();
@@ -119,18 +134,34 @@ export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
   }
 
   wrapIndex(index: number, len: number) {
-    return (index%len + len)%len;
+    return (index % len + len) % len;
+  }
+
+  selectSymbol(id: string, boxId: string) {
+    this.context.setSelectedEntity(id, "symbol");
+    this.context.setSelectedAnnotationId(convertToAnnotationId(id));
+    this.context.setSelectedAnnotationSpanId(boxId);
+  }
+
+  unselectSymbol() {
+    this.context.setSelectedEntity(null, null);
+    this.context.setSelectedAnnotationId(null);
+    this.context.setSelectedAnnotationSpanId(null);
+  }
+
+  moveToNextSymbol(movement: number) {
+    const { matches, mappingToBounds, selectedSymbol } = this.props;
+    const newEntityId = matches[
+      this.wrapIndex(matches.indexOf(selectedSymbol || '') + movement, matches.length)
+    ];
+   
+    const newBoxId = mappingToBounds.has(newEntityId) ? mappingToBounds.get(newEntityId).id : '';
+    this.selectSymbol(newEntityId, newBoxId);
   }
 
   handleNextButtonClick(e) {
-    if (this.state.mode === 'symbol-search' && this.context.symbols) {
-      const { matches, jumpToBoundingBox } = this.props;
-      const order = [...matches.keys()];
-      const newEntityId = order[
-        this.wrapIndex(order.indexOf(this.context.selectedEntityId || '') + 1, order.length)
-      ];
-      // jumpToBoundingBox(matches.get(newEntityId));
-      this.context.setSelectedEntity(newEntityId, "symbol");
+    if (this.state.mode === 'symbol-search') {
+      this.moveToNextSymbol(1);
     } else {
       this.dispatchEventToPdfJs("findagain");
     }
@@ -138,16 +169,21 @@ export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
   }
 
   handlePreviousButtonClick(e) {
-    if (this.state.mode === 'symbol-search' && this.context.symbols) {
-      const { matches, jumpToBoundingBox } = this.props;
-      const order = [...matches.keys()];
-      const newEntityId = order[
-        this.wrapIndex(order.indexOf(this.context.selectedEntityId || '') - 1, order.length)
-      ];
-      // jumpToBoundingBox(matches.get(newEntityId));
-      this.context.setSelectedEntity(newEntityId, "symbol");
+    if (this.state.mode === 'symbol-search') {
+      this.moveToNextSymbol(-1);
     } else {
       this.dispatchEventToPdfJs("findagain", true);
+    }
+    e.preventDefault();
+  }
+
+  closeFinder = (e) => {
+    this.setState(initialState);
+    this.unselectSymbol();
+    // TODO: fix this super hacky way to remove the green highlight on close.
+    if (this.queryElement) {
+      this.queryElement.value = '';
+      this.dispatchEventToPdfJs("find");
     }
     e.preventDefault();
   }
@@ -183,7 +219,7 @@ export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
       return null;
     }
 
-    if (matchCount > MATCH_COUNT_LIMIT) {
+    if ((matchCount || 0) > MATCH_COUNT_LIMIT) {
       return `More than ${MATCH_COUNT_LIMIT} matches`;
     }
 
@@ -191,6 +227,9 @@ export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
   }
 
   render() {
+    if (this.state.mode === 'hidden') {
+      return <div></div>
+    }
     return (
       <div className="find-bar">
         {this.state.mode === 'text-search' && 
@@ -219,6 +258,7 @@ export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
             {this.matchCountMessage()}
           </span>
         </div>
+        <div className="find-bar__close" onClick={this.closeFinder}>X</div>
       </div>
     );
   }
