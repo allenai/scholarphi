@@ -129,7 +129,7 @@ export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
       const newEntityId = order[
         this.wrapIndex(order.indexOf(this.context.selectedEntityId || '') + 1, order.length)
       ];
-      jumpToBoundingBox(matches.get(newEntityId));
+      // jumpToBoundingBox(matches.get(newEntityId));
       this.context.setSelectedEntity(newEntityId, "symbol");
     } else {
       this.dispatchEventToPdfJs("findagain");
@@ -144,7 +144,7 @@ export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
       const newEntityId = order[
         this.wrapIndex(order.indexOf(this.context.selectedEntityId || '') - 1, order.length)
       ];
-      jumpToBoundingBox(matches.get(newEntityId));
+      // jumpToBoundingBox(matches.get(newEntityId));
       this.context.setSelectedEntity(newEntityId, "symbol");
     } else {
       this.dispatchEventToPdfJs("findagain", true);
