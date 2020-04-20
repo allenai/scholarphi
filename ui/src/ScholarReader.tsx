@@ -78,13 +78,11 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       setSelectedAnnotationId: this.setSelectedAnnotationId.bind(this),
       setSelectedAnnotationSpanId: this.setSelectedAnnotationSpanId.bind(this),
       setSelectedEntity: this.setSelectedEntity.bind(this),
-      selectAnnotationForEntity: this.selectAnnotationForEntity.bind(this),
 
       requestJumpToPaper: this.requestJumpToPaper.bind(this),
 
       setDrawerState: this.setDrawerState.bind(this),
       scrollSymbolIntoView: this.scrollSymbolIntoView.bind(this),
-      jumpToBoundingBox: this.jumpToBoundingBox.bind(this),
 
       setUserAnnotationsEnabled: this.setUserAnnotationsEnabled.bind(this),
       setUserAnnotationType: this.setUserAnnotationType.bind(this),
@@ -161,18 +159,6 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
   setSelectedEntity(id: string | null, type: SelectableEntityType) {
     this.setState({ selectedEntityId: id, selectedEntityType: type });
-  }
-
-  selectAnnotationForEntity(_: string | null, __: SelectableEntityType) {
-    /*
-     * TODO(andrewhead): Why is this needed? When we provide 'next' and 'back' buttons to navigate
-     * between instances of a symbol in the paper, those buttons may only know the symbol IDs to
-     * jump to, but not the IDs of their correspondeing annotations that will need to be
-     * highlighted. One potential implementation of this feature is to 'register' each annotation
-     * with the scholar reader when it's initiatlized using it's 'ref' property. This registration
-     * action will save a mapping between the symbol ID and the annotation ID. This mapping can
-     * be used here to find the annotation corresponding to an entity.
-     */
   }
 
   requestJumpToPaper(s2Id: string) {
@@ -431,7 +417,6 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     const SCROLL_OFFSET_X = -400;
     const SCROLL_OFFSET_Y = +100;
 
-    console.log(this.state.pdfViewer)
     if (this.state.pdfViewer !== null && this.state.pages !== null && this.state.pages[box.page + 1] !== undefined) {
       const { left, top } = selectors.divDimensionStyles(
         this.state.pages[box.page + 1].view,
@@ -457,7 +442,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     const elUserAnnotationTypeContainer = document.getElementById(
       "scholarReaderAnnotationTypeSelect"
     );
-    const highlightedSymbols: Map<String, Object> = new Map();
+    const highlightedSymbols: Map<String, BoundingBox> = new Map();
     if (
       this.state.symbols !== null &&
       this.state.mathMls !== null &&
@@ -477,7 +462,8 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
         return [id, symbolBox]
       })
       .sort((s1, s2) => {
-        return s1[1].top - s2[1].top;
+        const pg = s1[1].page - s2[1].page;
+        return pg === 0 ? s1[1].top - s2[1].top : pg;
       })
       .map(([id, bounding]) => {
         highlightedSymbols.set(id, bounding)  
@@ -528,8 +514,13 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
           {window.PDFViewerApplication !== undefined && elFindBarContainer
             ? createPortal(
                 <FindBar 
-                  jumpToBoundingBox={this.state.jumpToBoundingBox}
-                  matches={highlightedSymbols}/>, 
+                  mappingToBounds={highlightedSymbols}
+                  matches={[...highlightedSymbols.keys()]}
+                  // unfortunately this *must* be a prop or the component will try to 
+                  // render with an unselected symbol. This is bc we are using props
+                  // as out (unsafe) data stream. This will eventually need to be refactored
+                  selectedSymbol={this.state.selectedEntityId}
+                  />, 
                 elFindBarContainer)
             : null}
         </>
