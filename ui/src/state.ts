@@ -59,7 +59,6 @@ export interface State {
   selectedEntityType: SelectableEntityType;
   selectedEntityId: string | null;
   setSelectedEntity(id: string | null, type: SelectableEntityType): void;
-  selectAnnotationForEntity(id: string, type: SelectableEntityType): void;
 
   /*
    * Jumping to content within paper
@@ -181,7 +180,6 @@ export const defaultState: State = {
   selectedEntityType: null,
   selectedEntityId: null,
   setSelectedEntity: () => {},
-  selectAnnotationForEntity: () => {},
 
   paperJumpRequest: null,
   requestJumpToPaper: () => {},

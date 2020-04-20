@@ -29,3 +29,10 @@ export function divDimensionStyles(
 export function boundingBoxString(boundingBox: BoundingBox) {
   return `${boundingBox.page}-L${boundingBox.left}-T${boundingBox.top}-W${boundingBox.width}-H${boundingBox.height}`;
 }
+
+/**
+ * Convert a *Symbols* entityId to it's AnnotationId
+ */
+export function convertToAnnotationId(id: String) {
+  return `symbol-${id}-annotation`;
+}
