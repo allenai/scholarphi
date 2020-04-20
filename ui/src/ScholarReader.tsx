@@ -84,6 +84,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
       setDrawerState: this.setDrawerState.bind(this),
       scrollSymbolIntoView: this.scrollSymbolIntoView.bind(this),
+      jumpToBoundingBox: this.jumpToBoundingBox.bind(this),
 
       setUserAnnotationsEnabled: this.setUserAnnotationsEnabled.bind(this),
       setUserAnnotationType: this.setUserAnnotationType.bind(this),
@@ -430,14 +431,19 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     const SCROLL_OFFSET_X = -400;
     const SCROLL_OFFSET_Y = +100;
 
-    if (this.state.pdfViewer !== null) {
+    console.log(this.state.pdfViewer)
+    if (this.state.pdfViewer !== null && this.state.pages !== null && this.state.pages[box.page + 1] !== undefined) {
+      const { left, top } = selectors.divDimensionStyles(
+        this.state.pages[box.page + 1].view,
+        box 
+      )
       this.state.pdfViewer.scrollPageIntoView({
         pageNumber: box.page + 1,
         destArray: [
           undefined,
           { name: "XYZ" },
-          box.left + SCROLL_OFFSET_X,
-          box.top + SCROLL_OFFSET_Y,
+          left + SCROLL_OFFSET_X,
+          top + SCROLL_OFFSET_Y,
         ],
       });
     }
@@ -451,6 +457,32 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     const elUserAnnotationTypeContainer = document.getElementById(
       "scholarReaderAnnotationTypeSelect"
     );
+    const highlightedSymbols: Map<String, Object> = new Map();
+    if (
+      this.state.symbols !== null &&
+      this.state.mathMls !== null &&
+      this.state.selectedEntityType === "symbol" &&
+      this.state.selectedEntityId !== null
+    ) {
+      // we need these highlights to be in sorted
+      // order by highlight y value so we must use a Map.
+      selectors.matchingSymbols(
+        this.state.selectedEntityId,
+        this.state.symbols,
+        this.state.mathMls
+      )
+      .map(id => {
+        const symbol = this.state.symbols.byId[id];
+        const symbolBox = symbol.bounding_boxes[0];
+        return [id, symbolBox]
+      })
+      .sort((s1, s2) => {
+        return s1[1].top - s2[1].top;
+      })
+      .map(([id, bounding]) => {
+        highlightedSymbols.set(id, bounding)  
+      })
+    }
     return (
       <ScholarReaderContext.Provider value={this.state}>
         <>
@@ -470,6 +502,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
                     key={key}
                     view={pageModel.view}
                     pageNumber={pageNumber}
+                    highlightedSymbols={[...highlightedSymbols.keys()]}
                   />
                 );
               })}
@@ -493,7 +526,11 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
            * available, or don't require FindBar to have access to the PDFViewerApplication.
            */}
           {window.PDFViewerApplication !== undefined && elFindBarContainer
-            ? createPortal(<FindBar />, elFindBarContainer)
+            ? createPortal(
+                <FindBar 
+                  jumpToBoundingBox={this.state.jumpToBoundingBox}
+                  matches={highlightedSymbols}/>, 
+                elFindBarContainer)
             : null}
         </>
       </ScholarReaderContext.Provider>
