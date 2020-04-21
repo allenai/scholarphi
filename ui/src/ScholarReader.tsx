@@ -448,8 +448,8 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
           // Add 50px padding to make the symbol close to the drawer but not hidden by it.
           pdfViewer.container.scrollLeft += Math.max(
             relativeSymbolRightPosition -
-              viewableViewportWidth +
-              SYMBOL_VIEW_PADDING,
+            viewableViewportWidth +
+            SYMBOL_VIEW_PADDING,
             0
           );
         }
@@ -486,15 +486,15 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
           <Drawer />
           {elFeedbackContainer
             ? createPortal(
-                <FeedbackButton variant="toolbar" />,
-                elFeedbackContainer
-              )
+              <FeedbackButton variant="toolbar" />,
+              elFeedbackContainer
+            )
             : null}
           {this.state.userAnnotationsEnabled && elUserAnnotationTypeContainer
             ? createPortal(
-                <UserAnnotationTypeSelect />,
-                elUserAnnotationTypeContainer
-              )
+              <UserAnnotationTypeSelect />,
+              elUserAnnotationTypeContainer
+            )
             : null}
         </>
       </ScholarReaderContext.Provider>

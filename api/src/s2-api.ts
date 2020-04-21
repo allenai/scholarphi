@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { isS2ApiResponseSuccess, S2ApiPaper } from "./types/s2-api";
+import { isS2ApiResponseSuccess, S2Api } from "./types/s2-api";
 
 /**
  * Base URL for requests to Semantic Scholar API.
@@ -9,7 +9,6 @@ const SEMANTIC_SCHOLAR_API_URL = "https://www.semanticscholar.org/api/1";
 interface Author {
   id: string;
   name: string;
-  url: string;
 }
 
 interface Paper {
@@ -17,11 +16,11 @@ interface Paper {
   title: string;
   authors: Author[];
   abstract: string | null;
-  url: string;
   venue: string | null;
   year: number | null;
   citationVelocity: number;
   influentialCitationCount: number;
+  primaryPaperLink: string;
 }
 
 /**
@@ -49,22 +48,26 @@ async function getPaper(s2Id: string): Promise<Paper | undefined> {
     return;
   }
   if (isS2ApiResponseSuccess(response)) {
-    const data = response.data as S2ApiPaper;
-    const year = parseInt(data.year) || null;
+    const data = response.data as S2Api;
+    var year;
+    if (data.paper.year.text === undefined) {
+      year = null;
+    } else {
+      year = parseInt(data.paper.year.text)
+    }
     return {
       s2Id,
-      title: data.title,
-      authors: data.authors.map(a => ({
-        id: a.authorId,
+      title: data.paper.title.text,
+      authors: data.paper.authors.map(a => ({
+        id: a.ids,
         name: a.name,
-        url: a.url
       })),
-      abstract: data.abstract,
-      url: data.url,
+      abstract: data.paper.paperAbstract.text,
       year,
-      venue: data.venue,
-      citationVelocity: data.citationVelocity || 0,
-      influentialCitationCount: data.influentialCitationCount || 0
+      venue: data.paper.venue.text,
+      citationVelocity: data.paper.citationStats.citationVelocity || 0,
+      influentialCitationCount: data.paper.citationStats.numKeyCitations || 0,
+      primaryPaperLink: data.paper.primaryPaperLink.url,
     };
   }
 }

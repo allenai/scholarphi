@@ -10,13 +10,13 @@ import InfluentialCitationIcon from "./icon/InfluentialCitationIcon";
 import S2Link from "./S2Link";
 import { ScholarReaderContext } from "./state";
 import { truncateText } from "./ui-utils";
-import {userLibraryUrl} from "./s2-url";
-import {UserLibrary} from "./types/api";
+import { userLibraryUrl } from "./s2-url";
+import { UserLibrary } from "./types/api";
 
 function warnOfUnimplementedActionAndTrack(actionType: string) {
   alert("Sorry, that feature isn't implemented yet. Clicking it tells us " +
-        "you're interested in the feature, increasing the likelihood that " +
-        "it'll be implemented!");
+    "you're interested in the feature, increasing the likelihood that " +
+    "it'll be implemented!");
   if (window.heap) {
     window.heap.track(
       "Click on Unimplemented Action",
@@ -32,8 +32,8 @@ function goToLibrary() {
 function trackLibrarySave() {
   if (window.heap) {
     window.heap.track(
-        "Save to Library",
-        { actionType: 'save' }
+      "Save to Library",
+      { actionType: 'save' }
     );
   }
 }
@@ -50,7 +50,7 @@ interface PaperSummaryState {
 export class PaperSummary extends React.PureComponent<
   PaperSummaryProps,
   PaperSummaryState
-> {
+  > {
 
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
@@ -67,9 +67,9 @@ export class PaperSummary extends React.PureComponent<
   renderLibraryButton(label: string, onClick: () => void) {
     return (
       <Button
-          startIcon={<SaveIcon />}
-          className="paper-summary__action"
-          onClick={onClick}>
+        startIcon={<SaveIcon />}
+        className="paper-summary__action"
+        onClick={onClick}>
         {label}
       </Button>
     )
@@ -101,6 +101,7 @@ export class PaperSummary extends React.PureComponent<
           const hasMetrics = paper.citationVelocity !== 0 || paper.influentialCitationCount !== 0;
           const truncatedAbstract = paper.abstract ? truncateText(paper.abstract, 300) : null;
           const inLibrary = userLibrary ? userLibrary.paperIds.includes(this.props.paperId) : false;
+          const summaryUrl = `https://www.semanticscholar.org/paper/{paper.Id}`
           return (
             <div
               ref={ref => {
@@ -115,7 +116,7 @@ export class PaperSummary extends React.PureComponent<
             >
               <div className="paper-summary__section">
                 <p className="paper-summary__title">
-                  <S2Link url={paper.url}>{paper.title}</S2Link>
+                  <S2Link url={summaryUrl}>{paper.title}</S2Link>
                 </p>
                 <p>
                   {paper.authors.length > 0 && (
@@ -130,71 +131,71 @@ export class PaperSummary extends React.PureComponent<
                 <div className="paper-summary__section">
                   <p className="paper-summary__abstract">
                     {this.state.showFullAbstract ||
-                    truncatedAbstract === paper.abstract ? (
-                      paper.abstract
-                    ) : (
-                      <>
-                        {truncatedAbstract}
-                        <span
-                          className="paper-summary__abstract__show-more-label"
-                          onClick={() => {
-                            this.setState({ showFullAbstract: true });
-                          }}
-                        >
-                          (show more)
+                      truncatedAbstract === paper.abstract ? (
+                        paper.abstract
+                      ) : (
+                        <>
+                          {truncatedAbstract}
+                          <span
+                            className="paper-summary__abstract__show-more-label"
+                            onClick={() => {
+                              this.setState({ showFullAbstract: true });
+                            }}
+                          >
+                            (show more)
                         </span>
-                      </>
-                    )}
+                        </>
+                      )}
                   </p>
                 </div>
               )}
               <div className="paper-summary__metrics-and-actions">
-                  {hasMetrics ? (
-                    <div className="paper-summary__metrics">
-                      {paper.influentialCitationCount > 0 ? (
-                        <Tooltip
-                          placement="bottom-start"
-                          title={
-                            <>
-                              <strong>{paper.influentialCitationCount} influential
+                {hasMetrics ? (
+                  <div className="paper-summary__metrics">
+                    {paper.influentialCitationCount > 0 ? (
+                      <Tooltip
+                        placement="bottom-start"
+                        title={
+                          <>
+                            <strong>{paper.influentialCitationCount} influential
                               citation{paper.influentialCitationCount !== 1 ? 's' : ''}</strong>
-                            </>
-                          }
-                        >
-                          <div className="paper-summary__metrics__metric">
-                            <InfluentialCitationIcon width="12" height="12" />
-                            {paper.influentialCitationCount}
-                          </div>
-                        </Tooltip>
-                      ): null}
-                      {paper.citationVelocity > 0 ? (
-                        <Tooltip
-                          placement="bottom-start"
-                          title={
-                            <>
-                              <strong>Averaging {paper.citationVelocity} citation{paper.citationVelocity !== 1 ? 's ' : ' '}
+                          </>
+                        }
+                      >
+                        <div className="paper-summary__metrics__metric">
+                          <InfluentialCitationIcon width="12" height="12" />
+                          {paper.influentialCitationCount}
+                        </div>
+                      </Tooltip>
+                    ) : null}
+                    {paper.citationVelocity > 0 ? (
+                      <Tooltip
+                        placement="bottom-start"
+                        title={
+                          <>
+                            <strong>Averaging {paper.citationVelocity} citation{paper.citationVelocity !== 1 ? 's ' : ' '}
                               per year</strong>
-                            </>
-                          }
-                        >
-                          <div className="paper-summary__metrics__metric">
-                            <ChartIcon width="15" height="15" />
-                            {paper.citationVelocity}
-                          </div>
-                        </Tooltip>
-                      ): null}
-                    </div>
-                  ) : null}
-                  <Button
-                    startIcon={<CiteIcon />}
-                    className="paper-summary__action"
-                    onClick={() => warnOfUnimplementedActionAndTrack("cite")}
-                  >
-                    Cite
+                          </>
+                        }
+                      >
+                        <div className="paper-summary__metrics__metric">
+                          <ChartIcon width="15" height="15" />
+                          {paper.citationVelocity}
+                        </div>
+                      </Tooltip>
+                    ) : null}
+                  </div>
+                ) : null}
+                <Button
+                  startIcon={<CiteIcon />}
+                  className="paper-summary__action"
+                  onClick={() => warnOfUnimplementedActionAndTrack("cite")}
+                >
+                  Cite
                   </Button>
-                  {inLibrary ? this.renderLibraryButton('In Your Library', () => goToLibrary())
-                      : this.renderLibraryButton('Save To Library', () => this.saveToLibrary(userLibrary, addToLibrary, paper.title))
-                  }
+                {inLibrary ? this.renderLibraryButton('In Your Library', () => goToLibrary())
+                  : this.renderLibraryButton('Save To Library', () => this.saveToLibrary(userLibrary, addToLibrary, paper.title))
+                }
               </div>
               <FavoriteButton
                 favoritableId={{
