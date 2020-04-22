@@ -47,8 +47,12 @@ async function getPaper(s2Id: string): Promise<Paper | undefined> {
     console.error("Failed to fetch data from Semantic Scholar API", err);
     return;
   }
+
   if (isS2ApiResponseSuccess(response)) {
     const data = response.data as S2Api;
+    if (data.paper === undefined) {
+      return;
+    }
     var year;
     if (data.paper.year.text === undefined) {
       year = null;
@@ -58,7 +62,7 @@ async function getPaper(s2Id: string): Promise<Paper | undefined> {
     return {
       s2Id,
       title: data.paper.title.text,
-      authors: data.paper.authors.map(a => ({
+      authors: data.paper.authors[0].map(a => ({
         id: a.ids,
         name: a.name,
       })),

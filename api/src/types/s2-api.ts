@@ -21,7 +21,7 @@ interface S2ApiPaper {
   id: string;
   title: S2ApiTitle;
   paperAbstract: S2ApiAbstract;
-  authors: S2ApiAuthor[];
+  authors: S2ApiAuthor[][];
   year: S2ApiYear;
   venue: S2ApiVenue;
   primaryPaperLink: S2ApiPaperLink;

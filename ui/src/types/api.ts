@@ -45,11 +45,11 @@ export interface Paper {
   title: string;
   authors: Author[];
   abstract: string | null;
-  url: string;
   venue: string | null;
   year: number | null;
   citationVelocity: number;
   influentialCitationCount: number;
+  primaryPaperLink: string;
 }
 
 export interface Citation {

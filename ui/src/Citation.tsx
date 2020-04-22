@@ -25,6 +25,7 @@ export class Citation extends React.PureComponent<CitationProperties> {
             return (
               <div className="citation">
                 <p className="title">{paper.title}</p>
+                {console.log(paper.authors)}
                 {paper.authors.length > 0 && (
                   <>
                     by {paper.authors[0].name}{" "}
