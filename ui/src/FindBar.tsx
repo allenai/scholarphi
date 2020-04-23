@@ -143,7 +143,7 @@ export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
     this.context.setSelectedAnnotationSpanId(boxId);
   }
 
-  unselectSymbol() {
+  deselectSymbol() {
     this.context.setSelectedEntity(null, null);
     this.context.setSelectedAnnotationId(null);
     this.context.setSelectedAnnotationSpanId(null);
