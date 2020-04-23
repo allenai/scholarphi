@@ -13,7 +13,7 @@ interface FindBarProps {
 interface FindBarState {
   currentMatch: number | null;
   matchCount: number | null;
-  mode: string,
+  mode: "hidden" | "text-search" | "symbol-search",
   /**
    * Event bus for the pdf.js application. The logic for performing text search within the PDF is
    * provided by pdf.js. This event bus is needed for communicating with the pdf.js code.
