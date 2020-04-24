@@ -462,8 +462,8 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
         return [id, symbolBox]
       })
       .sort((s1, s2) => {
-        const pg = s1[1].page - s2[1].page;
-        return pg === 0 ? s1[1].top - s2[1].top : pg;
+        const pgNumberDiff = s1[1].page - s2[1].page;
+        return pgNumberDiff === 0 ? s1[1].top - s2[1].top : pgNumberDiff;
       })
       .map(([id, boundingBox]) => {
         highlightedSymbols.set(id, bounding)  
