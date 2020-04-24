@@ -465,7 +465,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
         const pg = s1[1].page - s2[1].page;
         return pg === 0 ? s1[1].top - s2[1].top : pg;
       })
-      .map(([id, bounding]) => {
+      .map(([id, boundingBox]) => {
         highlightedSymbols.set(id, bounding)  
       })
     }
