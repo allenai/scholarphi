@@ -150,9 +150,11 @@ export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
   }
 
   moveToNextSymbol(movement: number) {
-    const { matches, mappingToBounds, selectedSymbol } = this.props;
+    const { matches, mappingToBounds } = this.props;
+
+    // -1 since currentMatch is not 0 indexed.
     const newEntityId = matches[
-      this.wrapIndex(matches.indexOf(selectedSymbol || '') + movement, matches.length)
+      this.wrapIndex((this.state.currentMatch || 0) - 1 + movement, matches.length)
     ];
    
     const newBoxId = mappingToBounds.has(newEntityId) ? mappingToBounds.get(newEntityId).id : '';
@@ -228,7 +230,7 @@ export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
 
   render() {
     if (this.state.mode === 'hidden') {
-      return <div></div>
+      return null;
     }
     return (
       <div className="find-bar">
