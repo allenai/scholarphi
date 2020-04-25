@@ -8,10 +8,12 @@ import SymbolAnnotation from "./SymbolAnnotation";
 import { PDFPageView } from "./types/pdfjs-viewer";
 import { getPageViewDimensions } from "./ui-utils";
 import { UserAnnotationLayer } from "./UserAnnotationLayer";
+import { Sentence } from "./types/api";
 
 interface PageProps {
   pageNumber: number;
   view: PDFPageView;
+  matchingSentences: Array<Sentence>;
 }
 
 /**
@@ -102,6 +104,7 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
                 pageNumber={this.props.pageNumber}
                 pageWidth={pageDimensions.width}
                 pageHeight={pageDimensions.height}
+                matchingSentences={this.props.matchingSentences}
               />
               {/* Add annotations for all citation bounding boxes on this page. */}
               {citations !== null

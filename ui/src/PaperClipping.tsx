@@ -37,13 +37,24 @@ export class PaperClipping extends React.PureComponent<PaperClippingProps, {}> {
     height: 300
   };
 
+  componentDidMount() {
+    this.renderCanvas();
+  }
+
+  componentDidUpdate({ sentenceId }: PaperClippingProps) {
+    if (this.props.sentenceId !== sentenceId) {
+      this.renderCanvas();
+    }
+  }
+
+
   /**
    * The internals of this method deal with three coordinate systems:
    * 1. Ratio coordinates: See documentation for BoundingBox type.
    * 2. Canvas coordinates: width and height of canvas where the PDF preview is drawn.
    * 3. DOM coordinates: viewport of the container holding the canvas.
    */
-  async componentDidMount() {
+  async renderCanvas() {
     const canvas = this.canvasRef;
     const container = this.containerRef;
     const { pdfDocument, sentences } = this.context;

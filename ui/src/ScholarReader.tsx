@@ -456,6 +456,28 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     const elUserAnnotationTypeContainer = document.getElementById(
       "scholarReaderAnnotationTypeSelect"
     );
+    const { symbols, mathMls, sentences, selectedEntityId } = this.state;
+    const matchingSentenceIds: string[] = [];
+    if (selectedEntityId && symbols && mathMls) {
+      selectors
+      .matchingSymbols(selectedEntityId, symbols, mathMls)
+      .forEach((matchingSymbolId) => {
+        const sentenceId = symbols.byId[matchingSymbolId].sentence;
+        if (
+          sentenceId !== null &&
+          matchingSentenceIds.indexOf(sentenceId) === -1
+        ) {
+          matchingSentenceIds.push(sentenceId);
+        }
+      });
+    }
+    let matchingSentences: Sentence[] = []; 
+    if (sentences) {
+      matchingSentences = matchingSentenceIds.map(
+        (sentenceId) => sentences.byId[sentenceId]
+      );
+    }
+    
     return (
       <ScholarReaderContext.Provider value={this.state}>
         <>
@@ -475,6 +497,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
                     key={key}
                     view={pageModel.view}
                     pageNumber={pageNumber}
+                    matchingSentences={matchingSentences}
                   />
                 );
               })}
@@ -493,8 +516,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
                 elUserAnnotationTypeContainer
               )
             : null}
-          {this.state.firstMatchingSentence && this.state.selectedEntityId ?
-            <ToolTipSentence sentence={this.state.firstMatchingSentence.text }/> : null}
+            <ToolTipSentence matchingSentences={matchingSentences} /> 
         </>
       </ScholarReaderContext.Provider>
     );

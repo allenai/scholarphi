@@ -7,6 +7,7 @@ interface PageMaskProps {
   pageNumber: number;
   pageWidth: number;
   pageHeight: number;
+  matchingSentences: Array<Sentence>;
 }
 
 export class PageMask extends React.PureComponent<PageMaskProps> {
@@ -38,28 +39,7 @@ export class PageMask extends React.PureComponent<PageMaskProps> {
       return null;
     }
 
-    const matchingSentenceIds: string[] = [];
-    selectors
-      .matchingSymbols(selectedEntityId, symbols, mathMls)
-      .forEach((matchingSymbolId) => {
-        const sentenceId = symbols.byId[matchingSymbolId].sentence;
-        if (
-          sentenceId !== null &&
-          matchingSentenceIds.indexOf(sentenceId) === -1
-        ) {
-          matchingSentenceIds.push(sentenceId);
-        }
-      });
-    const matchingSentences = matchingSentenceIds.map(
-      (sentenceId) => sentences.byId[sentenceId]
-    );
-    const firstMatchingSentence: Sentence | undefined = matchingSentences[0];
-    if (firstMatchingSentence) {
-      // TODO: If we decide to move forward with this approach this will need
-      // to be rearranged so as to not take place inside the render function
-      console.log(sentences);
-      this.context.setFirstMatchingSentence(firstMatchingSentence);
-    }
+    const firstMatchingSentence: Sentence | undefined = this.props.matchingSentences[0];
 
     const { pageWidth, pageHeight } = this.props;
     return (
@@ -80,7 +60,7 @@ export class PageMask extends React.PureComponent<PageMaskProps> {
           {/*
            * Subtract from the mask wherever a sentence should be activated.
            */}
-          {matchingSentences
+          {this.props.matchingSentences
             .map((s) => {
               return s.bounding_boxes
                 .filter((b) => b.page === this.props.pageNumber - 1)
