@@ -54,6 +54,12 @@ export class PageMask extends React.PureComponent<PageMaskProps> {
       (sentenceId) => sentences.byId[sentenceId]
     );
     const firstMatchingSentence: Sentence | undefined = matchingSentences[0];
+    if (firstMatchingSentence) {
+      // TODO: If we decide to move forward with this approach this will need
+      // to be rearranged so as to not take place inside the render function
+      console.log(sentences);
+      this.context.setFirstMatchingSentence(firstMatchingSentence);
+    }
 
     const { pageWidth, pageHeight } = this.props;
     return (

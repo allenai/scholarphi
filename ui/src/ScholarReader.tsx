@@ -4,6 +4,7 @@ import * as api from "./api";
 import Drawer from "./Drawer";
 import FeedbackButton from "./FeedbackButton";
 import PageOverlay from "./PageOverlay";
+import ToolTipSentence from "./ToolTipSentence";
 import * as selectors from "./selectors";
 import {
   Citations,
@@ -28,6 +29,7 @@ import {
   Paper,
   UserAnnotationType,
   UserLibrary,
+  Sentence,
 } from "./types/api";
 import {
   DocumentLoadedEvent,
@@ -66,6 +68,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       setSymbols: this.setSymbols.bind(this),
       setMathMls: this.setMathMls.bind(this),
       setSentences: this.setSentences.bind(this),
+      setFirstMatchingSentence: this.setFirstMatchingSentence.bind(this),
       setPapers: this.setPapers.bind(this),
 
       setUserLibrary: this.setUserLibrary.bind(this),
@@ -110,6 +113,10 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
   setMathMls(mathMls: MathMls | null) {
     this.setState({ mathMls });
+  }
+  
+  setFirstMatchingSentence(firstMatchingSentence: Sentence) {
+    this.setState({ firstMatchingSentence });
   }
 
   setSentences(sentences: Sentences | null) {
@@ -486,6 +493,8 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
                 elUserAnnotationTypeContainer
               )
             : null}
+          {this.state.firstMatchingSentence && this.state.selectedEntityId ?
+            <ToolTipSentence sentence={this.state.firstMatchingSentence.text }/> : null}
         </>
       </ScholarReaderContext.Provider>
     );
