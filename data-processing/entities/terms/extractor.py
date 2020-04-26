@@ -18,49 +18,47 @@ class Term(SerializableEntity):
 	defintion_text: str
 
 	#list if there is more than one string for the definition html
-	definition_html: str or list
+	definition_html: Union[str,list]
 
 
 # Edit location #2: Create a term extractor;
 # It should include your test code from last week; it just has an output
 # in a slightly different shape.
-class TermExtractor(EntityExtractor, glossary):
+class TermExtractor(EntityExtractor):
 	"""
 	Extract plaintext terms from TeX, with the locations of the start and end characters they correspond to in
 	the input TeX strings.
 	"""
 
-	# Extracting all the terms, definition_text and definition_html from glossary
-	terms_and_def_text_html = []
-
-	for obj in glossary:
-		new_triple = []
-
-		#Making terms lower case in one step
-		new_triple.append(obj["terms"].lower())
-		new_triple.append(obj["definition_text"])
-		new_triple.append(obj["definition_html"])
-		terms_and_def_text_html.append(new_triple)
-
-	matched_terms = []
-	matched_definition_texts = []
-	matched_definition_htmls = []
-	matched_terms_start = []
-	matched_terms_end = []
-	matched_terms_context_str = []
+	# Added a new init function to add glossary parameter.
+	def __init__(self, input_glossary):
+		super().__init__()
+		self.glossary = input_glossary
 
 	def parse(self, tex_path: str, tex: str) -> Iterator[Term]:
+
 		# Extract plaintext segments from TeX
 		plaintext_extractor = PlaintextExtractor()
 		plaintext_segments = plaintext_extractor.parse(tex_path, tex)
 
-		global terms_and_def_text_html
-		global matched_terms
-		global matched_definition_texts
-		global matched_definition_htmls
-		global matched_terms_start
-		global matched_terms_end
-		global matched_terms_context_str
+		# Extracting all the terms, definition_text and definition_html from glossary
+		terms_and_def_text_html = []
+
+		for obj in self.glossary:
+			new_triple = []
+
+			# Making terms lower case in one step
+			new_triple.append(obj["terms"].lower())
+			new_triple.append(obj["definition_text"])
+			new_triple.append(obj["definition_html"])
+			terms_and_def_text_html.append(new_triple)
+
+		matched_terms = []
+		matched_definition_texts = []
+		matched_definition_htmls = []
+		matched_terms_start = []
+		matched_terms_end = []
+		matched_terms_context_str = []
 
 		for text_segment in plaintext_segments:
 			text_segment_string = str(text_segment.text.lower())
@@ -158,6 +156,8 @@ class TermExtractor(EntityExtractor, glossary):
 
 		index = 0
 		for term_object_number in range(len(matched_terms)):
+			start = matched_terms_start[term_object_number]
+			end = matched_terms_end[term_object_number]
 			yield Term(
 				name=matched_terms[term_object_number],
 				defintion_text=matched_definition_texts[term_object_number],
