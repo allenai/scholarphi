@@ -66,6 +66,10 @@
   position: fixed;
   top: 85vh;
   right: 2vw;
+
+  &.visible {
+    animation: fadeIn 0.3s ease-in forwards;
+  }
 }
 
 /**
@@ -90,4 +94,9 @@
   font-size: @medium;
   line-height: 1em;
   font-weight: lighter;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; top: 90vh; }
+  100% { opacity: 1; top: 85vh; }
 }

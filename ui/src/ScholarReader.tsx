@@ -516,7 +516,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
                 elUserAnnotationTypeContainer
               )
             : null}
-            <ToolTipSentence matchingSentences={matchingSentences} /> 
+          {this.state.pdfViewer && <ToolTipSentence firstMatchingSentence={matchingSentences[0]} />} 
         </>
       </ScholarReaderContext.Provider>
     );
