@@ -19,6 +19,7 @@ arxiv_ids.txt
 # Pipeline inputs and outputs
 data
 data_temp
+data_toy
 
 # Pipeline logs
 logs

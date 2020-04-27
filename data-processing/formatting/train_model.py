@@ -61,6 +61,7 @@ def get_box_dicts(img_dir):
             anno = anno["shape_attributes"]
             px = anno["all_points_x"]
             py = anno["all_points_y"]
+            category_id = anno['category_id']
             poly = [(x + 0.5, y + 0.5) for x, y in zip(px, py)]
             poly = [p for x in poly for p in x]
 
@@ -68,7 +69,7 @@ def get_box_dicts(img_dir):
                 "bbox": [np.min(px), np.min(py), np.max(px), np.max(py)],
                 "bbox_mode": BoxMode.XYXY_ABS,
                 "segmentation": [poly],
-                "category_id": 0,
+                "category_id": category_id,
                 "iscrowd": 0
             }
             objs.append(obj)
@@ -100,11 +101,20 @@ def visualize_model_predictions(Eqbox_metadata, img_dir, out_dir):
         
 if __name__ == "__main__":
     CNN_data_dir = sys.argv[1]
+    classtype = sys.argv[2]
+
+    if classtype=='only_display':
+        num_classes = 1
+        classes_arr = ["Eqbox"]
+    elif classtype=='both':
+        num_classes = 2
+        classes_arr = ["DisplayEqbox","InlineEqbox"]
+
     dirs = os.listdir(CNN_data_dir)
     vals = [val_dir for val_dir in dirs if val_dir.startswith("val")]
     for d in ["train"] + vals:
         DatasetCatalog.register("Eqbox_" + d, lambda d=d: get_box_dicts(CNN_data_dir + d))
-        MetadataCatalog.get("Eqbox_" + d).set(thing_classes=["Eqbox"])
+        MetadataCatalog.get("Eqbox_" + d).set(thing_classes= classes_arr)
     Eqbox_metadata = MetadataCatalog.get("Eqbox_train")
 
     cfg = get_cfg()
@@ -120,7 +130,7 @@ if __name__ == "__main__":
     #cfg.SOLVER.WEIGHT_DECAY = 0.0025 # L2 regularization
     cfg.SOLVER.MAX_ITER = 5000 
     cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 512  # faster, and good enough for this toy dataset (default: 512)
-    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1  # only has one class (Eqbox)
+    cfg.MODEL.ROI_HEADS.NUM_CLASSES = num_classes  # only has one class (Eqbox)
     
     os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
     trainer = DefaultTrainer(cfg)

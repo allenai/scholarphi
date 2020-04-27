@@ -30,14 +30,17 @@ def generate_tag(row):
                 return 'display'
 
 
-def filter_display_eqs(df):
+def filter_display_eqs(df, include_inline=False):
     '''Returns only the display style equations from a dataframe.'''
     # This is the explicit way
     #dfResult = df.loc[df["tex"].str.contains('(\$\$\s.*\$\$|\\\[\s.*\\\]|begin{displaymath|begin{equation|begin{split|begin{array|begin{eqnarray|begin{multiline|begin{gather|begin{align|begin{flalign)',regex=True, na=False)]
 
     #This uses the equation extractor - so that any update will be reflected here as well
     df['tag'] = df.apply(lambda x : generate_tag(x), axis=1)
-    dfResult = df[df['tag']=='display']
+    if include_inline:
+        dfResult = df
+    else:
+        dfResult = df[df['tag']=='display']
     return dfResult
 
 def train_val_split(datList, fracTrain=.90):
@@ -111,11 +114,11 @@ def group_near_eqns(df, all_Tex=False, group=True):
                     df.at[i,'v_min_idx'] = v_min_idx
                     
                     # Tiny artifacts below a certain height
-                    if df.loc[i,'height_px']<height_threshold and df.loc[i,'entity_id'] == df.loc[v_min_idx,'entity_id']:
+                    if df.loc[i,'tag']=='display' and df.loc[i,'height_px']<height_threshold and df.loc[i,'entity_id'] == df.loc[v_min_idx,'entity_id']:
                         df.at[df.row_no==df.loc[i,"row_no"],'row_no'] = df.loc[v_min_idx,'row_no']
                     
                     # Fractions - N/D
-                    elif v_min<=5 and df.loc[i,'entity_id'] == df.loc[v_min_idx,'entity_id'] and 'frac' in df.loc[i,'tex']:
+                    elif df.loc[i,'tag']=='display' and v_min<=4 and df.loc[i,'entity_id'] == df.loc[v_min_idx,'entity_id'] and 'frac' in df.loc[i,'tex']:
                         df.at[df.row_no==df.loc[i,"row_no"],'row_no'] = df.loc[v_min_idx,'row_no']
                     
 
@@ -201,7 +204,7 @@ def group_near_eqns(df, all_Tex=False, group=True):
 
     return df 
     
-def join_hue_locs_and_entites(arxivIds):
+def join_hue_locs_and_entites(arxivIds, include_inline=False):
     '''Joins the information about where the equations are located in 
        the paper and what the equations are into a single csv file.'''
     for arxivId in arxivIds:
@@ -235,7 +238,7 @@ def join_hue_locs_and_entites(arxivIds):
             os.makedirs(outDir)
         # Filter out to get only display equations. Comment out this line and
         # write dfHue to csv instead of dfDisplay to get all equations.
-        dfDisplay = filter_display_eqs(dfHue)
+        dfDisplay = filter_display_eqs(dfHue, include_inline=include_inline)
         
         #dfHue.to_csv(os.path.join(outDir, "eqs_and_locs.csv"), index=False)
         #dfDisplay.to_csv(os.path.join(outDir, "eqs_and_locs.csv"), index=False)
@@ -280,12 +283,17 @@ def draw_boxes(arxivIds):
                 tops = boxes['top_new'].values.tolist()
                 bottoms = boxes['bottom_new'].values.tolist()
                 rights = boxes['right_new'].values.tolist()
+                tags = boxes['tag'].values.tolist()
                 for j in range(len(lefts)):
                     left = int(lefts[j]*pgWidth)
                     top = int(tops[j]*pgHeight)
                     bottom = int(bottoms[j]*pgHeight)
                     right = int(rights[j]*pgWidth)
-                    paperImg = cv2.rectangle(paperImg, (left, top), (right, bottom), color=(0,0,255), thickness=1)
+                    tag = tags[j]
+                    if tag=='display':
+                        paperImg = cv2.rectangle(paperImg, (left, top), (right, bottom), color=(255,0,0), thickness=1)
+                    elif tag=='inline':
+                        paperImg = cv2.rectangle(paperImg, (left, top), (right, bottom), color=(0,255,0), thickness=1)
 
             cv2.imwrite(os.path.join(outDir, paperImgFile), paperImg)
             
@@ -298,6 +306,13 @@ def create_training_json(arxivIds, train=True, micro_eval=False):
     '''
     # Location to output the json
     # determine if training or validation:
+
+    category_ids = {
+        'display':0,
+        'inline':1
+    }
+
+
     if train:
         outDir = os.path.join("data", "CNNTest", "train")
     else:
@@ -359,6 +374,7 @@ def create_training_json(arxivIds, train=True, micro_eval=False):
                     bottoms = boxes['bottom_new'].values.tolist()
                     rights = boxes['right_new'].values.tolist()
                     entity_ids = boxes['entity_id'].values.tolist()
+                    tags = boxes['tag'].values.tolist()
                     # Loop through the boxes:
                     for j in range(len(lefts)):
                         # create an entry for this labelled region:
@@ -366,6 +382,7 @@ def create_training_json(arxivIds, train=True, micro_eval=False):
                         outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"] = {}
                         outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["name"] = "polygon"
                         outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["entity_id"] = entity_ids[j]
+                        outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["category_id"] = category_ids[tags[j]]
                         outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_x"] = []
                         outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_y"] = []
                         outDict[arxivId + "-" + paperImgFile]["regions"][str(j)]["region_attributes"] = {}
@@ -441,12 +458,14 @@ def create_training_json(arxivIds, train=True, micro_eval=False):
                     tops = boxes['top_new'].values.tolist()
                     bottoms = boxes['bottom_new'].values.tolist()
                     rights = boxes['right_new'].values.tolist()
+                    tags = boxes['tag'].values.tolist()
                     # Loop through the boxes:
                     for j in range(len(lefts)):
                         # create an entry for this labelled region:
                         outDicts[-1][arxivId + "-" + paperImgFile]["regions"][str(j)] = {}
                         outDicts[-1][arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"] = {}
                         outDicts[-1][arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["name"] = "polygon"
+                        outDicts[-1][arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["category_id"] = category_ids[tags[j]]
                         outDicts[-1][arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_x"] = []
                         outDicts[-1][arxivId + "-" + paperImgFile]["regions"][str(j)]["shape_attributes"]["all_points_y"] = []
                         outDicts[-1][arxivId + "-" + paperImgFile]["regions"][str(j)]["region_attributes"] = {}
@@ -501,13 +520,13 @@ def finerFiltering(arxivIds):
     papers_to_remove = []
     papers_to_remove = papers_to_remove + ["1501.00009","1503.00066","0705.00116"] #page orientation
     papers_to_remove = papers_to_remove + ["0705.00017"] #Random figures and artifacts as eqns
-    papers_to_remove = papers_to_remove +  list(set(list(final_df[(final_df.width<=10)].paper)))
-    papers_to_remove = papers_to_remove +  list(set(list(final_df[(final_df.height<7)].paper)))
+    papers_to_remove = papers_to_remove +  list(set(list(final_df[(final_df.tag=='display') & (final_df.width<=10)].paper)))
+    papers_to_remove = papers_to_remove +  list(set(list(final_df[(final_df.tag=='display') & (final_df.height<7)].paper)))
     
     
-    total_eqns = final_df.groupby(['paper','page']).size().reset_index()
-    total_eqns.columns = ['paper','page','eqns']
-    new_final_df = final_df.merge(total_eqns, on=['paper','page'], how="left")
+    total_d_eqns = final_df[final_df.tag=='display'].groupby(['paper','page']).size().reset_index()
+    total_d_eqns.columns = ['paper','page','eqns']
+    new_final_df = final_df.merge(total_d_eqns, on=['paper','page'], how="left")
 
     
     new_final_df['remove'] = new_final_df.paper.apply(lambda x: remove_papers(x))
@@ -530,7 +549,7 @@ if __name__ == "__main__":
     start = datetime.datetime.now()
     # Prep the data by joining the equation data with corresponding bounding box data:
     print('Step 1/6 : Join Eqn and Bounding Box data, group them')
-    join_hue_locs_and_entites(arxivIds)
+    join_hue_locs_and_entites(arxivIds, include_inline = True)
     
     # # Todo: eventually only draw boxes if some kind of debug flag is set:
     print('Step 2/6 : Draw Bounding Boxes')
