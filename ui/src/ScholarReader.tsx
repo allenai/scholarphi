@@ -68,7 +68,6 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       setSymbols: this.setSymbols.bind(this),
       setMathMls: this.setMathMls.bind(this),
       setSentences: this.setSentences.bind(this),
-      setFirstMatchingSentence: this.setFirstMatchingSentence.bind(this),
       setPapers: this.setPapers.bind(this),
 
       setUserLibrary: this.setUserLibrary.bind(this),
@@ -115,10 +114,6 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     this.setState({ mathMls });
   }
   
-  setFirstMatchingSentence(firstMatchingSentence: Sentence) {
-    this.setState({ firstMatchingSentence });
-  }
-
   setSentences(sentences: Sentences | null) {
     this.setState({ sentences });
   }

@@ -26,8 +26,6 @@ export interface State {
   setMathMls(mathMls: MathMls | null): void;
   sentences: Readonly<Sentences> | null;
   setSentences(sentences: Sentences | null): void;
-  firstMatchingSentence: Sentence | null;
-  setFirstMatchingSentence(firstMatchingSentence: Sentence): void;
   papers: Readonly<Papers> | null;
   setPapers(papers: Papers | null): void;
 
@@ -164,8 +162,6 @@ export const defaultState: State = {
   setSentences: () => {},
   papers: null,
   setPapers: () => {},
-  firstMatchingSentence: null,
-  setFirstMatchingSentence: () => {},
 
   userLibrary: null,
   setUserLibrary: () => {},
@@ -186,7 +182,6 @@ export const defaultState: State = {
   selectedEntityId: null,
   setSelectedEntity: () => {},
   selectAnnotationForEntity: () => {},
-
 
   paperJumpRequest: null,
   requestJumpToPaper: () => {},
