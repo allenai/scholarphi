@@ -553,7 +553,7 @@ if __name__ == "__main__":
     
     # # Todo: eventually only draw boxes if some kind of debug flag is set:
     print('Step 2/6 : Draw Bounding Boxes')
-    draw_boxes(arxivIds)
+    #draw_boxes(arxivIds)
 
     print('Step 3/6 : More filtering based on aggregate distributions, and exceptions')
     final_arxivIds = finerFiltering(arxivIds)

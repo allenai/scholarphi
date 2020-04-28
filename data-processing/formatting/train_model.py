@@ -38,6 +38,10 @@ from detectron2.utils.visualizer import ColorMode
 
 
 def get_box_dicts(img_dir):
+    '''
+    Function that will convert the custom formatted bounding box data 
+    into the standard COCO format for loading into the RCNN model. 
+    '''
     json_file = os.path.join(img_dir, "bounding_box_data.json")
     with open(json_file) as f:
         imgs_anns = json.load(f)
@@ -79,6 +83,12 @@ def get_box_dicts(img_dir):
 
 
 def visualize_model_predictions(Eqbox_metadata, img_dir, out_dir):
+    '''
+    Function to write out the model's predicted bounding boxes 
+    along with class (if more then one) and model score (as a confidence
+    percentage). img_dir is the directory where the model inputs 
+    are stored and out_dir is where the function will write the visualizations.
+    '''
     results = {}
     dataset_dicts = get_box_dicts(img_dir)
     for d in dataset_dicts:
@@ -126,18 +136,16 @@ if __name__ == "__main__":
     cfg.DATALOADER.NUM_WORKERS = 1
     #cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml")  # Let training initialize from model zoo
     cfg.SOLVER.IMS_PER_BATCH = 2
-    cfg.SOLVER.BASE_LR = 0.0025  # pick a good LR
+    cfg.SOLVER.BASE_LR = 0.001  # pick a good Learning Rate
     #cfg.SOLVER.WEIGHT_DECAY = 0.0025 # L2 regularization
-    cfg.SOLVER.MAX_ITER = 5000 
+    cfg.SOLVER.MAX_ITER = 7000 
     cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 512  # faster, and good enough for this toy dataset (default: 512)
-    cfg.MODEL.ROI_HEADS.NUM_CLASSES = num_classes  # only has one class (Eqbox)
+    cfg.MODEL.ROI_HEADS.NUM_CLASSES = num_classes  # set num classes
     
     os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
     trainer = DefaultTrainer(cfg)
     trainer.resume_or_load(resume=True)
-    # If a thrid commandline argument is provided, only evaluate, don't train.
-    if len(sys.argv) <= 2:
-        trainer.train()
+    
 
     # training performance evaluation:
     #cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
