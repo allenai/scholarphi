@@ -88,6 +88,7 @@ class AbbreviationExtractor(EntityExtractor):
             if count == 0:
                 abb_short_forms[str(abrv)] = [[m.start(), m.start() + len(str(abrv))] for m in re.finditer(str(abrv), cons)]
 
+        count = 0
         for abb in abb_short_forms:
             for location in abb_short_forms[abb]:
                 start, end = location
@@ -97,11 +98,12 @@ class AbbreviationExtractor(EntityExtractor):
                     text= abb,
                     start=start,
                     end=end,
-                    id_= abb + " " + str(start),
+                    id_= count,
                     tex_path=tex_path,
                     tex=tex_sub,
                     context_tex=context_tex,
                 )
+                count += 1
 
     def get_text(self, soup, soup_text):
         for descendant in soup.contents:
