@@ -136,15 +136,16 @@ if __name__ == "__main__":
     cfg.DATALOADER.NUM_WORKERS = 1
     #cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml")  # Let training initialize from model zoo
     cfg.SOLVER.IMS_PER_BATCH = 2
-    cfg.SOLVER.BASE_LR = 0.001  # pick a good Learning Rate
+    cfg.SOLVER.BASE_LR = 0.0005  # pick a good Learning Rate
     #cfg.SOLVER.WEIGHT_DECAY = 0.0025 # L2 regularization
-    cfg.SOLVER.MAX_ITER = 7000 
+    cfg.SOLVER.MAX_ITER = 5000 #10000 
     cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 512  # faster, and good enough for this toy dataset (default: 512)
     cfg.MODEL.ROI_HEADS.NUM_CLASSES = num_classes  # set num classes
     
     os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
     trainer = DefaultTrainer(cfg)
     trainer.resume_or_load(resume=True)
+    trainer.train()
     
 
     # training performance evaluation:
