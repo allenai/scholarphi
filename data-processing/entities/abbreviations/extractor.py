@@ -63,8 +63,10 @@ class AbbreviationExtractor(EntityExtractor):
 
         # Extract plaintext segments from TeX
         #plaintext_extractor = PlaintextExtractor()
-
-        nlp = spacy.load("en_ner_craft_md")
+        
+        #this is the most basic model and had no real performance difference on our inputs
+        #other options include NER models and models with pretrained word vectors
+        nlp = spacy.load("en_core_sci_sm")
         abbreviation_pipe = AbbreviationDetector(nlp)
         nlp.add_pipe(abbreviation_pipe)
 
