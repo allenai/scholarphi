@@ -9,6 +9,8 @@ pysbd
 reportlab
 requests
 TexSoup==0.2.0
+spacy==2.2.3
+scispacy
 
 # Development dependencies
 black
