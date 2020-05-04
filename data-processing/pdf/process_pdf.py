@@ -207,7 +207,7 @@ class PdfStructureParser:
 
     def upload(self):
         citations = self.get_citations()
-        upload_citations(citations, 'pdf-pipeline')
+#        upload_citations(citations, 'pdf-pipeline')
         symbols = self.get_symbols()
         upload_symbols(symbols,'pdf-pipeline')
 
