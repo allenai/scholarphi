@@ -15,7 +15,8 @@ from entities.citations.utils import upload_citations, extract_ngrams, ngram_sim
 from entities.symbols.utils import upload_symbols
 
 class PdfStructureParser:
-    def __init__(self, pdf_hash, structure_map):
+    def __init__(self, paper_s2_id, pdf_hash, structure_map):
+        self.paper_s2_id = paper_s2_id
         self.pdf_hash = pdf_hash
         self.structure_map = structure_map
         self.pages = structure_map['tokens']['pages']
@@ -197,7 +198,7 @@ class PdfStructureParser:
 
         return CitationData(
             arxiv_id = None,
-            s2_id = pdf_hash,
+            s2_id = self.paper_s2_id,
             citation_locations=locations,
             key_s2_ids=s2_ids_of_citations,
             s2_data = s2_data
@@ -213,15 +214,15 @@ class PdfStructureParser:
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
-    pdf_hashes = ['8c53cd64e46cf382bf81ce2c4e0087ef31351919']
+    paper_ids_with_pdf_hash = None
     if sys.argv[1:]:
-        pdf_hashes = [s.strip() for s in open(sys.argv[1]).readlines()]
+        paper_ids_with_pdf_hash = [s.strip().split('\t') for s in open(sys.argv[1]).readlines()]
 
     init_database_connections('public')
     with TemporaryDirectory() as tempdir:
-        for pdf_hash in pdf_hashes:
+        for paper_id, pdf_hash in paper_ids_with_pdf_hash:
             start_time = time.time()
-            logging.info("Processing PDF %s", pdf_hash)
+            logging.info("Processing paper %s with PDF %s", paper_id, pdf_hash)
             try:
                 pdf_file = "{}/{}.pdf".format(tempdir, pdf_hash)
                 try:
@@ -233,7 +234,7 @@ if __name__ == '__main__':
                         "aws", "s3", "cp", "s3://ai2-s2-pdfs-private/{}/{}.pdf".format(pdf_hash[:4], pdf_hash[4:]), pdf_file
                     ])
                 s = pdf.grobid_client.get_pdf_structure(pdf_file)
-                PdfStructureParser(pdf_hash, s).upload()
+                PdfStructureParser(paper_id, pdf_hash, s).upload()
                 logging.info("Finished in %s second", time.time() - start_time)
             except Exception:
                 logging.exception('Error processing {}'.format(pdf_hash))
