@@ -20,7 +20,7 @@ class PdfStructureParser:
         self.pdf_hash = pdf_hash
         self.structure_map = structure_map
         self.pages = structure_map['tokens']['pages']
-        self.page_sizes = dict((p['page']['pageNumber'], p['page']) for p in self.pages)
+        self.page_sizes = dict((i, p['page']) for i,p in enumerate(self.pages))
         self.page_indices = dict((p['page']['pageNumber'], i) for i,p in enumerate(self.pages))
         self.elements = structure_map['elements']['elementTypes']
         self.references = None
@@ -129,7 +129,7 @@ class PdfStructureParser:
                 if bboxes:
                     box = bboxes[0]
                     page = self.page_sizes[box.page]
-                    box.page = self.page_indices[box.page]
+                    box.page = box.page
                     box.left /= page['width']
                     box.top /= page['height']
                     box.width /= page['width']
@@ -186,7 +186,7 @@ class PdfStructureParser:
                         page = self.page_sizes[box.page]
                         loc = CitationLocation(key=ref,
                                      cluster_index=citation_index,
-                                     page=self.page_indices[box.page],
+                                     page=box.page,
                                      left=box.left / page['width'],
                                      top=box.top / page['height'],
                                      width=box.width / page['width'],
