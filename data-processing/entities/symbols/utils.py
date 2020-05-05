@@ -102,9 +102,10 @@ def upload_symbols(item: SymbolData, source: str = "tex-pipeline") -> None:
     with output_database.atomic():
         Entity.bulk_create(entities, 300)
     with output_database.atomic():
-        for i in range(0,len(entity_bounding_boxes) / 300):
-            print('Inserting rows ',i*300,'-',(i+1)*(300))
-            EntityBoundingBox.bulk_create(entity_bounding_boxes[i*300:(i+1):300], 300)
+        for e in entity_bounding_boxes:
+            e.entity = e.entity
+            e.bounding_box = e.bounding_box
+        EntityBoundingBox.bulk_create(entity_bounding_boxes[i*300:(i+1):300], 300)
 
     # Upload parent-child relationships between symbols.
     symbol_child_models = []
