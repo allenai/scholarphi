@@ -140,7 +140,7 @@ class PdfStructureParser:
                 symbol_index += 1
         return SymbolData(
             arxiv_id=None,
-            s2_id=pdf_hash,
+            s2_id=self.paper_s2_id,
             symbols_with_ids=symbols_with_ids,
             boxes = boxes,
             symbol_sentence_model_ids={},
@@ -207,7 +207,7 @@ class PdfStructureParser:
 
     def upload(self):
         citations = self.get_citations()
-#        upload_citations(citations, 'pdf-pipeline')
+        upload_citations(citations, 'pdf-pipeline')
         symbols = self.get_symbols()
         upload_symbols(symbols,'pdf-pipeline')
 
