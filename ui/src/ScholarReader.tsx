@@ -3,7 +3,8 @@ import { createPortal } from "react-dom";
 import * as api from "./api";
 import Drawer from "./Drawer";
 import FeedbackButton from "./FeedbackButton";
-import FindBar from "./FindBar";
+import FindBarSymbol from "./FindBarSymbol";
+import FindBarString from "./FindBarString";
 import PageOverlay from "./PageOverlay";
 import * as selectors from "./selectors";
 import {
@@ -11,6 +12,7 @@ import {
   createStateSliceFromArray,
   defaultState,
   DrawerState,
+	FindBarState,
   MathMls,
   Pages,
   PaperId,
@@ -84,6 +86,8 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       setDrawerState: this.setDrawerState.bind(this),
       scrollSymbolIntoView: this.scrollSymbolIntoView.bind(this),
 
+			setFindBarState: this.setFindBarState.bind(this),	
+
       setUserAnnotationsEnabled: this.setUserAnnotationsEnabled.bind(this),
       setUserAnnotationType: this.setUserAnnotationType.bind(this),
       addUserAnnotation: this.addUserAnnotation.bind(this),
@@ -96,6 +100,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
      */
     this.toggleUserAnnotationState = this.toggleUserAnnotationState.bind(this);
     this.closeDrawerOnEscape = this.closeDrawerOnEscape.bind(this);
+    this.openFindBarString = this.openFindBarString.bind(this);
     this.hideAnnotationsOnAltDown = this.hideAnnotationsOnAltDown.bind(this);
     this.showAnnotationsOnAltUp = this.showAnnotationsOnAltUp.bind(this);
   }
@@ -159,6 +164,11 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
   setSelectedEntity(id: string | null, type: SelectableEntityType) {
     this.setState({ selectedEntityId: id, selectedEntityType: type });
+		if (type === 'symbol') {
+		  this.setFindBarState('symbol');
+		} else if (this.state.findBarState === 'symbol') {
+			this.setFindBarState('hidden');
+		}
   }
 
   requestJumpToPaper(s2Id: string) {
@@ -167,6 +177,10 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
   setDrawerState(state: DrawerState) {
     this.setState({ drawerState: state });
+  }
+
+  setFindBarState(state: FindBarState) {
+    this.setState({ findBarState: state });
   }
 
   /**
@@ -308,6 +322,18 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     }
   }
 
+  openFindBarString(event: KeyboardEvent) {
+    /*
+     * This logic for listening for Ctrl+F and for opening the find bar is based on the analogous
+     * code in the pdf.js project:
+     * https://github.com/mozilla/pdf.js/blob/49f59eb627646ae9a6e166ee2e0ef2cac9390b4f/web/app.js#L2503
+     */
+    if ((event.ctrlKey || event.metaKey) && event.keyCode === 70) {
+			this.setFindBarState("string");
+      event.preventDefault();
+    }
+  }
+
   async componentDidMount() {
     waitForPDFViewerInitialization().then((application) => {
       this.subscribeToPDFViewerStateChanges(application);
@@ -315,6 +341,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     this.loadDataFromApi();
     window.addEventListener("keypress", this.toggleUserAnnotationState);
     window.addEventListener("keydown", this.closeDrawerOnEscape);
+    window.addEventListener("keydown", this.openFindBarString);
     window.addEventListener("keydown", this.hideAnnotationsOnAltDown);
     window.addEventListener("keyup", this.showAnnotationsOnAltUp);
   }
@@ -322,6 +349,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
   componentWillUnmount() {
     window.removeEventListener("keypress", this.toggleUserAnnotationState);
     window.removeEventListener("keydown", this.closeDrawerOnEscape);
+    window.removeEventListener("keydown", this.openFindBarString);
     window.removeEventListener("keydown", this.hideAnnotationsOnAltDown);
     window.removeEventListener("keyup", this.showAnnotationsOnAltUp);
   }
@@ -511,16 +539,16 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
            * TODO(andrewhead): find another way of checking to see if PDFViewerApplication is
            * available, or don't require FindBar to have access to the PDFViewerApplication.
            */}
-          {window.PDFViewerApplication !== undefined && elFindBarContainer
+          {this.state.findBarState !== 'hidden' && window.PDFViewerApplication !== undefined && elFindBarContainer
             ? createPortal(
-                <FindBar 
+								this.state.findBarState === 'symbol' ? 
+                <FindBarSymbol
                   mappingToBounds={highlightedSymbols}
                   matches={[...highlightedSymbols.keys()]}
-                  // unfortunately this *must* be a prop or the component will try to 
-                  // render with an unselected symbol. This is bc we are using props
-                  // as out (unsafe) data stream. This will eventually need to be refactored
-                  selectedSymbol={this.state.selectedEntityId}
-                  />, 
+                  /> : 
+								<FindBarString 
+							    setMode={this.state.setFindBarState}
+								/>, 
                 elFindBarContainer)
             : null}
         </>
