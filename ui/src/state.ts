@@ -73,6 +73,12 @@ export interface State {
   setDrawerState(open: DrawerState): void;
   scrollSymbolIntoView(): void;
 
+	/*
+	 * Find Bar interactions
+	 */
+	findBarState: FindBarState;
+	setFindBarState(state: FindBarState): void;
+
   /*
    * User annotation layer
    */
@@ -148,6 +154,7 @@ export interface PaperId {
 }
 
 export type DrawerState = "open" | "closed";
+export type FindBarState = "hidden" | "symbol" | "string";
 
 export const defaultState: State = {
   paperId: undefined,
@@ -187,6 +194,9 @@ export const defaultState: State = {
   drawerState: "closed",
   setDrawerState: () => {},
   scrollSymbolIntoView: () => {},
+
+	setFindBarState: () => {},
+  findBarState: "hidden",
 
   userAnnotationsEnabled: false,
   setUserAnnotationsEnabled: () => {},

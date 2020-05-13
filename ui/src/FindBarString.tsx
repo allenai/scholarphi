@@ -1,19 +1,14 @@
 import React from "react";
-import { convertToAnnotationId } from './selectors/annotation'
 import { EventBus } from "./types/pdfjs-viewer";
-import { ScholarReaderContext } from "./state";
-import { BoundingBox } from "./types/api";
+import { ScholarReaderContext, FindBarState } from "./state";
 
-interface FindBarProps {
-  mappingToBounds: Map<String, BoundingBox>;
-  matches: string[];
-  selectedSymbol: string;
+interface FindBarStringProps {
+  setMode(state: FindBarState): void;
 }
 
-interface FindBarState {
+interface FindBarStringState {
   currentMatch: number | null;
   matchCount: number | null;
-  mode: "hidden" | "text-search" | "symbol-search",
   /**
    * Event bus for the pdf.js application. The logic for performing text search within the PDF is
    * provided by pdf.js. This event bus is needed for communicating with the pdf.js code.
@@ -24,35 +19,15 @@ interface FindBarState {
 const initialState = {
   currentMatch: null,
   matchCount: null,
-  mode: 'hidden',
 }
 
-export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
+export class FindBarString extends React.PureComponent<FindBarStringProps, FindBarStringState> {
   state = initialState;
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
 
-  /**
-   * This is considered an anti pattern in React (https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html),
-   * unfortunately since we are using this component for both string search (which does update match count without props) and symbol search
-   * we have to derive the match count and current match from the props. In the future we should probably divide these
-   * into separate components.
-   */
-  UNSAFE_componentWillReceiveProps(nextProps: FindBarProps) {
-    if (nextProps.selectedSymbol !== null) {
-      this.setState({
-        currentMatch: nextProps.matches.indexOf(nextProps.selectedSymbol) + 1,
-        matchCount: nextProps.matches.length,
-        mode: 'symbol-search',
-      })
-     } else if (this.state.mode === 'symbol-search') {
-       this.setState(initialState);
-     }
-  }
-
   componentDidMount() {
-    window.addEventListener("keydown", this.handleKeydown.bind(this));
-
+    console.log('caused mount')
     /*
      * XXX(andrewhead): Find a cleaner way to plug into the pdf.js find controller.
      * See https://github.com/allenai/scholar-reader/issues/96 for a discussion of alternatives.
@@ -85,6 +60,11 @@ export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
     this.setState({
       pdfJsEventBus: pdfViewerApplicationAny.eventBus,
     });
+
+    if (this.queryElement) {
+      this.queryElement.focus();
+			this.queryElement.select();
+    }
   }
 
   initializeQueryElement(queryElement: HTMLInputElement | null) {
@@ -97,32 +77,12 @@ export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
     }
   }
 
-  handleKeydown(event: KeyboardEvent) {
-    /*
-     * This logic for listening for Ctrl+F and for opening the find bar is based on the analogous
-     * code in the pdf.js project:
-     * https://github.com/mozilla/pdf.js/blob/49f59eb627646ae9a6e166ee2e0ef2cac9390b4f/web/app.js#L2503
-     */
-    if ((event.ctrlKey || event.metaKey) && event.keyCode === 70) {
-      this.setState({
-        ...initialState,
-        mode: 'text-search'
-      });
-      this.unselectSymbol();
-      const opened = this.open();
-      if (opened) {
-        event.preventDefault();
-      }
+  componentWillUnmount() {
+    // TODO: fix this super hacky way to remove the green highlight on close.
+    if (this.queryElement) {
+      this.queryElement.value = '';
+      this.dispatchEventToPdfJs("find");
     }
-  }
-
-  open() {
-    if (this.queryElement !== null) {
-      this.queryElement.focus();
-      this.queryElement.select();
-      return true;
-    }
-    return false;
   }
 
   handleQueryChange() {
@@ -133,60 +93,18 @@ export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
     this.dispatchEventToPdfJs("find");
   }
 
-  wrapIndex(index: number, len: number) {
-    return (index % len + len) % len;
-  }
-
-  selectSymbol(id: string, boxId: string) {
-    this.context.setSelectedEntity(id, "symbol");
-    this.context.setSelectedAnnotationId(convertToAnnotationId(id));
-    this.context.setSelectedAnnotationSpanId(boxId);
-  }
-
-  deselectSymbol() {
-    this.context.setSelectedEntity(null, null);
-    this.context.setSelectedAnnotationId(null);
-    this.context.setSelectedAnnotationSpanId(null);
-  }
-
-  moveToNextSymbol(movement: number) {
-    const { matches, mappingToBounds } = this.props;
-
-    // -1 since currentMatch is not 0 indexed.
-    const newEntityId = matches[
-      this.wrapIndex((this.state.currentMatch || 0) - 1 + movement, matches.length)
-    ];
-   
-    const newBoxId = mappingToBounds.has(newEntityId) ? mappingToBounds.get(newEntityId).id : '';
-    this.selectSymbol(newEntityId, newBoxId);
-  }
-
-  handleNextButtonClick(e) {
-    if (this.state.mode === 'symbol-search') {
-      this.moveToNextSymbol(1);
-    } else {
-      this.dispatchEventToPdfJs("findagain");
-    }
+  handleNextButtonClick(e: React.SyntheticEvent) {
+    this.dispatchEventToPdfJs("findagain");
     e.preventDefault();
   }
 
-  handlePreviousButtonClick(e) {
-    if (this.state.mode === 'symbol-search') {
-      this.moveToNextSymbol(-1);
-    } else {
-      this.dispatchEventToPdfJs("findagain", true);
-    }
+  handlePreviousButtonClick(e: React.SyntheticEvent) {
+    this.dispatchEventToPdfJs("findagain", true);
     e.preventDefault();
   }
 
-  closeFinder = (e) => {
-    this.setState(initialState);
-    this.unselectSymbol();
-    // TODO: fix this super hacky way to remove the green highlight on close.
-    if (this.queryElement) {
-      this.queryElement.value = '';
-      this.dispatchEventToPdfJs("find");
-    }
+  closeFinder = (e: React.SyntheticEvent) => {
+    this.props.setMode("hidden");
     e.preventDefault();
   }
 
@@ -229,18 +147,13 @@ export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
   }
 
   render() {
-    if (this.state.mode === 'hidden') {
-      return null;
-    }
     return (
       <div className="find-bar">
-        {this.state.mode === 'text-search' && 
-          <input
-            className="find-bar__query"
-            placeholder="Find in document…"
-            ref={this.initializeQueryElement.bind(this)}
-            tabIndex={0}/>
-         }
+        <input
+          className="find-bar__query"
+          placeholder="Find in document…"
+          ref={this.initializeQueryElement.bind(this)}
+          tabIndex={0}/>
         <div className="find-bar__navigation">
           <button
             className="find-bar__navigation__previous"
@@ -268,4 +181,4 @@ export class FindBar extends React.PureComponent<FindBarProps, FindBarState> {
   queryElement: HTMLInputElement | null = null;
 }
 
-export default FindBar;
+export default FindBarString;
