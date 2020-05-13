@@ -27,7 +27,6 @@ export class FindBarString extends React.PureComponent<FindBarStringProps, FindB
   context!: React.ContextType<typeof ScholarReaderContext>;
 
   componentDidMount() {
-    console.log('caused mount')
     /*
      * XXX(andrewhead): Find a cleaner way to plug into the pdf.js find controller.
      * See https://github.com/allenai/scholar-reader/issues/96 for a discussion of alternatives.
@@ -61,9 +60,11 @@ export class FindBarString extends React.PureComponent<FindBarStringProps, FindB
       pdfJsEventBus: pdfViewerApplicationAny.eventBus,
     });
 
+    // This is safe since componentDidMount will
+    // be called after one render.
     if (this.queryElement) {
       this.queryElement.focus();
-			this.queryElement.select();
+      this.queryElement.select();
     }
   }
 

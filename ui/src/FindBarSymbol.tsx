@@ -34,7 +34,7 @@ export class FindBarSymbol extends React.PureComponent<FindBarProps, {}> {
 
   moveToNextSymbol(currId: string, movement: number, e: React.SyntheticEvent) {
     const { matches, mappingToBounds } = this.props;
-		const currentMatch = matches.indexOf(currId);
+    const currentMatch = matches.indexOf(currId);
 
     const newEntityId = matches[
       this.wrapIndex((currentMatch || 0) + movement, matches.length)
@@ -42,7 +42,7 @@ export class FindBarSymbol extends React.PureComponent<FindBarProps, {}> {
    
     const newBoxId = mappingToBounds.has(newEntityId) ? mappingToBounds.get(newEntityId).id : '';
     this.selectSymbol(newEntityId, newBoxId);
-		e.preventDefault();
+    e.preventDefault();
   }
 
   closeFinder = (e: React.SyntheticEvent) => {
@@ -65,8 +65,8 @@ export class FindBarSymbol extends React.PureComponent<FindBarProps, {}> {
     if ((matches.length || 0) > MATCH_COUNT_LIMIT) {
       return `More than ${MATCH_COUNT_LIMIT} matches`;
     }
-
-		const currentMatch = matches.indexOf(selectedSymbol) + 1;
+    
+    const currentMatch = matches.indexOf(selectedSymbol) + 1;
     return `${currentMatch} of ${matches.length} matches`;
   }
 
