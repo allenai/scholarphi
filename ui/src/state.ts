@@ -194,8 +194,8 @@ export const defaultState: State = {
   drawerState: "closed",
   setDrawerState: () => {},
   scrollSymbolIntoView: () => {},
-
-	setFindBarState: () => {},
+  
+  setFindBarState: () => {},
   findBarState: "hidden",
 
   userAnnotationsEnabled: false,

@@ -12,7 +12,7 @@ import {
   createStateSliceFromArray,
   defaultState,
   DrawerState,
-	FindBarState,
+  FindBarState,
   MathMls,
   Pages,
   PaperId,
@@ -85,9 +85,9 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
       setDrawerState: this.setDrawerState.bind(this),
       scrollSymbolIntoView: this.scrollSymbolIntoView.bind(this),
-
-			setFindBarState: this.setFindBarState.bind(this),	
-
+      
+      setFindBarState: this.setFindBarState.bind(this),	
+      
       setUserAnnotationsEnabled: this.setUserAnnotationsEnabled.bind(this),
       setUserAnnotationType: this.setUserAnnotationType.bind(this),
       addUserAnnotation: this.addUserAnnotation.bind(this),
@@ -167,7 +167,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 		if (type === 'symbol') {
 		  this.setFindBarState('symbol');
 		} else if (this.state.findBarState === 'symbol') {
-			this.setFindBarState('hidden');
+      this.setFindBarState('hidden');
 		}
   }
 
@@ -329,7 +329,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
      * https://github.com/mozilla/pdf.js/blob/49f59eb627646ae9a6e166ee2e0ef2cac9390b4f/web/app.js#L2503
      */
     if ((event.ctrlKey || event.metaKey) && event.keyCode === 70) {
-			this.setFindBarState("string");
+      this.setFindBarState("string");
       event.preventDefault();
     }
   }
@@ -541,14 +541,14 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
            */}
           {this.state.findBarState !== 'hidden' && window.PDFViewerApplication !== undefined && elFindBarContainer
             ? createPortal(
-								this.state.findBarState === 'symbol' ? 
+                this.state.findBarState === 'symbol' ? 
                 <FindBarSymbol
                   mappingToBounds={highlightedSymbols}
                   matches={[...highlightedSymbols.keys()]}
                   /> : 
-								<FindBarString 
-							    setMode={this.state.setFindBarState}
-								/>, 
+                <FindBarString 
+                  setMode={this.state.setFindBarState}
+                />, 
                 elFindBarContainer)
             : null}
         </>
