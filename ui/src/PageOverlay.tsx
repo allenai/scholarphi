@@ -8,6 +8,7 @@ import SymbolAnnotation from "./SymbolAnnotation";
 import { PDFPageView } from "./types/pdfjs-viewer";
 import { getPageViewDimensions } from "./ui-utils";
 import { UserAnnotationLayer } from "./UserAnnotationLayer";
+import TermAnnotation from "./TermAnnotation";
 
 interface PageProps {
   pageNumber: number;
@@ -92,6 +93,7 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
         {({
           citations,
           symbols,
+          terms,
           annotationsShowing,
           userAnnotationsEnabled
         }) => {
@@ -134,6 +136,23 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
                         boundingBoxes={boundingBoxes}
                         symbol={symbol}
                         highlight={highlightedSymbols.indexOf(sId) !== -1}
+                      />
+                    ) : null;
+                  })
+                : null}
+              {/* Add annotations for all term bounding boxes on this page. */}
+              {terms !== null
+                ? terms.all.map(sId => {
+                    const term = terms.byId[sId];
+                    const boundingBoxes = term.bounding_boxes.filter(
+                      b => b.page === this.props.pageNumber - 1
+                    );
+                    return boundingBoxes.length > 0 ? (
+                      <TermAnnotation
+                        key={sId}
+                        showHint={annotationsShowing}
+                        boundingBoxes={boundingBoxes}
+                        term={term}
                       />
                     ) : null;
                   })

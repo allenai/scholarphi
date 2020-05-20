@@ -8,6 +8,7 @@ import {
   Paper,
   Sentence,
   Symbol,
+  Term,
   UserAnnotationType,
   UserLibrary
 } from "./types/api";
@@ -26,6 +27,8 @@ export interface State {
   setMathMls(mathMls: MathMls | null): void;
   sentences: Readonly<Sentences> | null;
   setSentences(sentences: Sentences | null): void;
+  terms: Readonly<Terms> | null;
+  setTerms(terms: Terms | null): void;
   papers: Readonly<Papers> | null;
   setPapers(papers: Papers | null): void;
 
@@ -106,12 +109,13 @@ export interface MathMlWithSymbols extends MathMl {
   symbols: string[];
 }
 
-export type SelectableEntityType = "citation" | "symbol" | null;
+export type SelectableEntityType = "citation" | "symbol" | "term" | null;
 
 export type Citations = StateSlice<Citation>;
 export type Symbols = StateSlice<Symbol>;
 export type MathMls = StateSlice<MathMlWithSymbols>;
 export type Sentences = StateSlice<Sentence>;
+export type Terms = StateSlice<Term>;
 
 export type Papers = { [s2Id: string]: Paper };
 export type Pages = { [pageNumber: number]: PageModel };
@@ -160,6 +164,8 @@ export const defaultState: State = {
   setMathMls: () => {},
   sentences: null,
   setSentences: () => {},
+  terms: null,
+  setTerms: () => {},
   papers: null,
   setPapers: () => {},
 

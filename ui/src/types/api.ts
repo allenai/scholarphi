@@ -69,6 +69,11 @@ export interface Symbol extends Entity {
   sentence: string | null;
 }
 
+export interface Term extends Entity {
+  name: string;
+  definition: string;
+}
+
 export interface MathMl {
   id: string;
   mathMl: string;
@@ -86,7 +91,7 @@ export interface Sentence extends Entity {
 
 export type AnnotationId = string;
 
-export type UserAnnotationType = "citation" | "equation" | "symbol";
+export type UserAnnotationType = "citation" | "equation" | "symbol" | "term";
 
 export interface AnnotationData {
   type: UserAnnotationType;

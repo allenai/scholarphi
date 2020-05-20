@@ -10,6 +10,7 @@ import {
   PaperIdWithCounts,
   Sentence,
   Symbol,
+  Term,
   UserInfo,
   UserLibrary
 } from "./types/api";
@@ -71,6 +72,14 @@ export async function sentencesForArxivId(arxivId: string) {
     axios.get(`/api/v0/papers/arxiv:${arxivId}/sentences`)
   );
   return (data || []) as Sentence[];
+}
+
+export async function termsForArxivId(arxivId: string) {
+  const data = await doGet(
+    axios.get(`/api/v0/papers/arxiv:${arxivId}/terms`)
+  );
+  console.log('got term data', data)
+  return (data || []) as Term[];
 }
 
 export async function annnotationsForArxivId(arxivId: string) {

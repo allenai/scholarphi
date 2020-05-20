@@ -19,6 +19,7 @@ import {
   Sentences,
   State,
   Symbols,
+  Terms,
 } from "./state";
 import "./style/index.less";
 import {
@@ -64,6 +65,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
        */
       setCitations: this.setCitations.bind(this),
       setSymbols: this.setSymbols.bind(this),
+      setTerms: this.setTerms.bind(this),
       setMathMls: this.setMathMls.bind(this),
       setSentences: this.setSentences.bind(this),
       setPapers: this.setPapers.bind(this),
@@ -106,6 +108,10 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
   setSymbols(symbols: Symbols | null) {
     this.setState({ symbols });
+  }
+
+  setTerms(terms: Terms | null) {
+    this.setState({ terms });
   }
 
   setMathMls(mathMls: MathMls | null) {
@@ -406,6 +412,9 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
         const sentences = await api.sentencesForArxivId(this.props.paperId.id);
         this.setSentences(createStateSliceFromArray(sentences, "id"));
+
+        const terms = await api.termsForArxivId(this.props.paperId.id);
+        this.setTerms(createStateSliceFromArray(terms, "id"));
 
         const annotations = await api.annnotationsForArxivId(
           this.props.paperId.id
