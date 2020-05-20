@@ -57,6 +57,13 @@ interface Sentence extends Entity {
 
 type SentencesById = { [id: string]: Sentence };
 
+interface Term extends Entity {
+  name: string;
+  definition: string;
+}
+
+type TermsById = { [id: string]: Term };
+
 interface BoundingBox {
   id: string;
   /**
@@ -359,6 +366,56 @@ export class Connection {
       add_bounding_box(sentences[key], bounding_box);
     }
     return Object.values(sentences);
+  }
+
+  async getTermsForArxivId(arxivId: string) {
+    const rows = await this._knex("paper")
+      .select(
+        "term.id AS term_id",
+        "name",
+        "definition",
+        "entity.source AS source",
+        "boundingbox.id AS bounding_box_id",
+        "page",
+        "left",
+        "top",
+        "width",
+        "height"
+      )
+      .where({ arxiv_id: arxivId })
+      // Get terms.
+      .join("term", { "paper.s2_id": "term.paper_id" })
+      // Get bounding box for each term.
+      .join("entity", { "term.id": "entity.entity_id" })
+      .where({ "entity.type": "term" })
+      .join("entityboundingbox", { "entity.id": "entityboundingbox.entity_id" })
+      .join("boundingbox", {
+        "entityboundingbox.bounding_box_id": "boundingbox.id"
+      });
+
+    const terms: TermsById = {};
+    for (const row of rows) {
+      const key = row["term_id"];
+      if (!terms.hasOwnProperty(key)) {
+        terms[key] = {
+          id: String(key),
+          source: row.source,
+          bounding_boxes: [],
+          name: row.name,
+          definition: row.definition
+        };
+      }
+      const bounding_box: BoundingBox = {
+        id: String(row.bounding_box_id),
+        page: row.page,
+        left: row.left,
+        top: row.top,
+        width: row.width,
+        height: row.height
+      };
+      add_bounding_box(terms[key], bounding_box);
+    }
+    return Object.values(terms);
   }
 
   async getAnnotationsForArxivId(arxivId: string) {

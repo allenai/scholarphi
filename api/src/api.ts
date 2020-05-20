@@ -87,6 +87,20 @@ export const plugin = {
 
     server.route({
       method: "GET",
+      path: "papers/arxiv:{arxivId}/terms",
+      handler: request => {
+        const arxivId = request.params.arxivId;
+        return dbConnection.getTermsForArxivId(arxivId);
+      },
+      options: {
+        validate: {
+          params: validation.arxivId
+        }
+      }
+    });
+
+    server.route({
+      method: "GET",
       path: "papers",
       handler: request => {
         let idString;
