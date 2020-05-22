@@ -57,12 +57,6 @@ def group_near_eqns(df, all_Tex=False, group=True):
        The boolean flag all_Tex if true will join the entire tex expression into a single box even if it spans multiple lines, where 
        if it is false, the function will group individual lines of equations using the threshold parameters.'''
     
-    # v_distance_threshold=0.003
-    # width_threshold=0.05
-    # height_threshold=0.002
-    # height_filter=0.05
-
-
     height_threshold=7
     large_pos = 10000
 
@@ -78,9 +72,6 @@ def group_near_eqns(df, all_Tex=False, group=True):
     
     df = df.sort_values(by=['page','entity_id','top_px']).reset_index()
     
-
-
-    
     if not group:
 
         df['right_new'] = df['right']
@@ -89,7 +80,6 @@ def group_near_eqns(df, all_Tex=False, group=True):
         df['top_new'] = df['top']
 
     else:
-
         # New method (operating on actual pixels)
         if not all_Tex:
             df_inline = df[df['tag']=='inline']
@@ -125,11 +115,6 @@ def group_near_eqns(df, all_Tex=False, group=True):
                     # Fractions - N/D
                     elif df.loc[i,'tag']=='display' and v_min<=4 and df.loc[i,'entity_id'] == df.loc[v_min_idx,'entity_id'] and 'frac' in df.loc[i,'tex']:
                         df.at[df.row_no==df.loc[i,"row_no"],'row_no'] = df.loc[v_min_idx,'row_no']
-                    
-
-
-
-                    
 
                 row_grps = df.filter(['row_no','left','right','bottom','top'])
                 
@@ -138,62 +123,11 @@ def group_near_eqns(df, all_Tex=False, group=True):
                 row_grps.columns = ['row_no','left_new','top_new','right_new','bottom_new']
                 df = df.merge(row_grps, how='left', on='row_no')
 
-                
-
             else:
                 df['right_new'] = df['right']
                 df['bottom_new'] = df['bottom']
                 df['left_new'] = df['left']
                 df['top_new'] = df['top']
-
-                        
-
-
-                            
-
-        # Old Method (operating on ratios)
-        # if not all_Tex:
-        #     df = df.sort_values(by=['page','tex','top']).reset_index()
-            
-
-        #     for i, row in df.iterrows():        
-        #         if i==0:
-        #             df.at[i,'left_new'] = df.at[i,'left']
-        #             df.at[i,'top_new'] = df.at[i,'top']
-        #             df.at[i,'right_new'] = df.at[i,'right']
-        #             df.at[i,'bottom_new'] = df.at[i,'bottom']
-        #             df.at[i,'reason'] = 0
-        #         elif (df.iloc[i].page == df.iloc[i-1].page) and (df.iloc[i].tex == df.iloc[i-1].tex) and \
-        #             ((df.iloc[i].top - df.iloc[i-1].bottom)<v_distance_threshold):
-        #             df.at[i,'left_new'] = min(df.at[i,'left'],df.at[i-1,'left'])
-        #             df.at[i-1,'left_new'] = min(df.at[i,'left'],df.at[i-1,'left'])
-        #             df.at[i,'top_new'] = min(df.at[i,'top'],df.at[i-1,'top'])
-        #             df.at[i-1,'top_new'] = min(df.at[i,'top'],df.at[i-1,'top'])
-        #             df.at[i,'right_new'] = max(df.at[i,'right'],df.at[i-1,'right'])
-        #             df.at[i-1,'right_new'] = max(df.at[i,'right'],df.at[i-1,'right'])
-        #             df.at[i,'bottom_new'] = max(df.at[i,'bottom'],df.at[i-1,'bottom'])
-        #             df.at[i-1,'bottom_new'] = max(df.at[i,'bottom'],df.at[i-1,'bottom'])
-        #             df.at[i,'reason'] = 1
-        #         elif (df.iloc[i].page == df.iloc[i-1].page) and (df.iloc[i].tex == df.iloc[i-1].tex) and \
-        #             ((df.iloc[i].right - df.iloc[i].left)<width_threshold) and ((df.iloc[i].bottom - df.iloc[i].top)>height_threshold):
-        #             df.at[i,'left_new'] = min(df.at[i,'left'],df.at[i-1,'left'])
-        #             df.at[i-1,'left_new'] = min(df.at[i,'left'],df.at[i-1,'left'])
-        #             df.at[i,'top_new'] = min(df.at[i,'top'],df.at[i-1,'top'])
-        #             df.at[i-1,'top_new'] = min(df.at[i,'top'],df.at[i-1,'top'])
-        #             df.at[i,'right_new'] = max(df.at[i,'right'],df.at[i-1,'right'])
-        #             df.at[i-1,'right_new'] = max(df.at[i,'right'],df.at[i-1,'right'])
-        #             df.at[i,'bottom_new'] = max(df.at[i,'bottom'],df.at[i-1,'bottom'])
-        #             df.at[i-1,'bottom_new'] = max(df.at[i,'bottom'],df.at[i-1,'bottom'])
-        #             df.at[i,'reason'] = 2
-        #         else:
-        #             df.at[i,'left_new'] = df.at[i,'left']
-        #             df.at[i,'top_new'] = df.at[i,'top']
-        #             df.at[i,'right_new'] = df.at[i,'right']
-        #             df.at[i,'bottom_new'] = df.at[i,'bottom']
-        #             df.at[i,'reason'] = 3
-                
-
-
 
             # handle duplicates:
             df = df.filter(['tex_path', 'entity_id','page', 'relative_file_path', 'tex', 'tag',
@@ -206,8 +140,6 @@ def group_near_eqns(df, all_Tex=False, group=True):
         'left_new', 'top_new', 'right_new', 'bottom_new', 'img_height','img_width']
 
             df = pd.concat([df,df_inline])
-
-            
 
         # Case where we want to join full tex expressions even if they span multiple lines:
         else:
@@ -236,8 +168,6 @@ def join_hue_locs_and_entites(arxivIds, include_inline=False):
 
         # Create list of TeX commands sorted by equation idx
         EqList = dfEntSorted["tex"].to_list()
-        # remove first entry, figure out what to do with this later:
-        #EqList.remove(EqList[0])
 
         # Create dict mapping equation indices to TeX commands:
         Idx_to_Tex = {}
@@ -253,9 +183,6 @@ def join_hue_locs_and_entites(arxivIds, include_inline=False):
         # Filter out to get only display equations. Comment out this line and
         # write dfHue to csv instead of dfDisplay to get all equations.
         dfDisplay = filter_display_eqs(dfHue, include_inline=include_inline)
-        
-        #dfHue.to_csv(os.path.join(outDir, "eqs_and_locs.csv"), index=False)
-        #dfDisplay.to_csv(os.path.join(outDir, "eqs_and_locs.csv"), index=False)
 
         imgDirPrefix = os.path.join("data", "06-paper-images", arxivId)
         imgDirSuffix = os.listdir(imgDirPrefix)
@@ -265,8 +192,6 @@ def join_hue_locs_and_entites(arxivIds, include_inline=False):
 
         dfDisplay['img_height'] = h
         dfDisplay['img_width'] = w
-
-        
 
         dfGrouped = group_near_eqns(dfDisplay, group=True)
         dfGrouped.to_csv(os.path.join(outDir, "eqs_and_locs.csv"), index=False)
@@ -530,7 +455,6 @@ def finerFiltering(arxivIds):
             return 1
         else:
             return 0
-
     papers_to_remove = []
     papers_to_remove = papers_to_remove + ["1501.00009","1503.00066","0705.00116"] #page orientation
     papers_to_remove = papers_to_remove + ["0705.00017"] #Random figures and artifacts as eqns
@@ -543,18 +467,11 @@ def finerFiltering(arxivIds):
     total_d_eqns = final_df[final_df.tag=='display'].groupby(['paper','page']).size().reset_index()
     total_d_eqns.columns = ['paper','page','eqns']
     new_final_df = final_df.merge(total_d_eqns, on=['paper','page'], how="left")
-
-    
     new_final_df['remove'] = new_final_df.paper.apply(lambda x: remove_papers(x))
-
-
     new_final_df = new_final_df[(new_final_df['eqns']<=20) & (new_final_df['remove']==0)].drop_duplicates()
 
     final_arxivIds = list(set(list(new_final_df.paper)))
     return final_arxivIds
-            
-
-        
 
 
 if __name__ == "__main__":
@@ -574,11 +491,10 @@ if __name__ == "__main__":
     print('Step 3/6 : More filtering based on aggregate distributions, and exceptions')
     final_arxivIds = finerFiltering(arxivIds)
 
-
     # Split into training and validation sets:
     print('Step 4/6 : Split Train and Valid sets')
     train_arxivs, val_arxivs = train_val_split(final_arxivIds)
-    # Prepare the json files foe the RCNN model:
+    # Prepare the json files for the RCNN model:
     print('Step 5/6 : Create Train set')
     create_training_json(train_arxivs, train=True)
     print('Step 6/6 : Create Valid set')

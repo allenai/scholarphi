@@ -1,0 +1,15 @@
+{
+  "classtype": "only_display",
+  "model": "COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml",
+  "num_workers": 1,
+  "imsPerBatch": 2,
+  "learnRate": 0.001,
+  "maxIter": 10000,
+  "batchSizePerImg": 512,
+  "scoreThresh": 0.7,
+  "resumeTraining": true,
+  "evalTrain": false,
+  "doTrain": true,
+  "visualizePredictions": true,
+  "initWeightsfromModel": false
+}
