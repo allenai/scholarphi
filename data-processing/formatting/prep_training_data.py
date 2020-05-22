@@ -77,10 +77,7 @@ def group_near_eqns(df, all_Tex=False, group=True):
     df['height_px'] = df['bottom_px'] - df['top_px']
     
     df = df.sort_values(by=['page','entity_id','top_px']).reset_index()
-    df['row_no'] = df.index
-    df['v_min'] = 0
-    df['v_min_idx'] = 0
-
+    
 
 
     
@@ -95,6 +92,14 @@ def group_near_eqns(df, all_Tex=False, group=True):
 
         # New method (operating on actual pixels)
         if not all_Tex:
+            df_inline = df[df['tag']=='inline']
+            df = df[df['tag']=='display'] 
+            
+            df = df.reset_index()
+            df['row_no'] = df.index
+            df['v_min'] = 0
+            df['v_min_idx'] = 0
+
             
             eqns = df.shape[0]-1
             if eqns>=1:
@@ -193,6 +198,15 @@ def group_near_eqns(df, all_Tex=False, group=True):
             # handle duplicates:
             df = df.filter(['tex_path', 'entity_id','page', 'relative_file_path', 'tex', 'tag',
         'left_new', 'top_new', 'right_new', 'bottom_new', 'img_height','img_width']).drop_duplicates()
+
+            df_inline = df_inline[(df_inline['height_px']>2)&(df_inline['width_px']>2)]
+            df_inline = df_inline.filter(['tex_path', 'entity_id','page', 'relative_file_path', 'tex', 'tag',
+        'left', 'top', 'right', 'bottom', 'img_height','img_width']).drop_duplicates()
+            df_inline.columns = ['tex_path', 'entity_id','page', 'relative_file_path', 'tex', 'tag',
+        'left_new', 'top_new', 'right_new', 'bottom_new', 'img_height','img_width']
+
+            df = pd.concat([df,df_inline])
+
             
 
         # Case where we want to join full tex expressions even if they span multiple lines:
@@ -522,6 +536,8 @@ def finerFiltering(arxivIds):
     papers_to_remove = papers_to_remove + ["0705.00017"] #Random figures and artifacts as eqns
     papers_to_remove = papers_to_remove +  list(set(list(final_df[(final_df.tag=='display') & (final_df.width<=10)].paper)))
     papers_to_remove = papers_to_remove +  list(set(list(final_df[(final_df.tag=='display') & (final_df.height<7)].paper)))
+    # papers_to_remove = papers_to_remove +  list(set(list(final_df[(final_df.tag=='inline') & (final_df.width<3)].paper)))
+    # papers_to_remove = papers_to_remove +  list(set(list(final_df[(final_df.tag=='inline') & (final_df.height<3)].paper)))
     
     
     total_d_eqns = final_df[final_df.tag=='display'].groupby(['paper','page']).size().reset_index()
