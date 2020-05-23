@@ -13,7 +13,7 @@ interface S2ApiSuccess {
   status: 200;
 }
 
-export interface S2Api {
+export interface S2ApiPaperResponse {
   paper: S2ApiPaper;
 }
 
@@ -47,6 +47,7 @@ interface S2ApiVenue {
 
 interface S2ApiPaperLink {
   url: string;
+  linkType: string;
 }
 
 interface S2ApiDoi {

@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { isS2ApiResponseSuccess, S2Api } from "./types/s2-api";
+import { isS2ApiResponseSuccess, S2ApiPaperResponse } from "./types/s2-api";
 
 /**
  * Base URL for requests to Semantic Scholar API.
@@ -21,6 +21,7 @@ interface Paper {
   citationVelocity: number;
   influentialCitationCount: number;
   primaryPaperLink: string;
+  paperLinkType: string;
 }
 
 /**
@@ -49,7 +50,7 @@ async function getPaper(s2Id: string): Promise<Paper | undefined> {
   }
 
   if (isS2ApiResponseSuccess(response)) {
-    const data = response.data as S2Api;
+    const data = response.data as S2ApiPaperResponse;
     if (data.paper === undefined) {
       return;
     }
@@ -72,6 +73,7 @@ async function getPaper(s2Id: string): Promise<Paper | undefined> {
       citationVelocity: data.paper.citationStats.citationVelocity || 0,
       influentialCitationCount: data.paper.citationStats.numKeyCitations || 0,
       primaryPaperLink: data.paper.primaryPaperLink.url,
+      paperLinkType: data.paper.primaryPaperLink.linkType,
     };
   }
 }
