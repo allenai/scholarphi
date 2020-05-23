@@ -1,7 +1,7 @@
 import React from "react";
 import { ScholarReaderContext } from "./state";
 import { Citation as CitationObject } from "./types/api";
-import { truncateText } from "./ui-utils";
+import { truncateText, getLinkText } from "./ui-utils";
 
 interface CitationProperties {
   citation: CitationObject;
@@ -13,6 +13,7 @@ export class Citation extends React.PureComponent<CitationProperties> {
       <ScholarReaderContext.Consumer>
         {({ papers, setJumpPaperId, setSelectedCitation }) => {
           const paper = papers[this.props.citation.paper];
+          console.log(paper.paperLinkType);
           if (paper === undefined) {
             return (
               <div>
@@ -47,7 +48,7 @@ export class Citation extends React.PureComponent<CitationProperties> {
                 ) : null}
                 {paper.primaryPaperLink !== null ? (
                   <div className="citation__utils">
-                    <a href={paper.primaryPaperLink} target="_blank" rel="noopener noreferrer">View PDF</a>
+                    <a href={paper.primaryPaperLink} target="_blank" rel="noopener noreferrer"><button className="citation__view__pdf">{getLinkText(paper.paperLinkType)}</button></a>
                   </div>
                 ) : null}
               </div>

@@ -34,3 +34,32 @@
     cursor: pointer;
   }
 }
+
+/**
+ * Citation utilities.
+ */
+.citation__utils {
+  padding-top: @padding;
+}
+
+/**
+ * button for viewing paper in PDF
+ */
+.citation__view__pdf {
+  background: @button-background-color;
+  color: @white;
+  font-size: @button-font-size;
+  line-height: normal;
+  padding: @button-padding-top @button-padding-side;
+  border: @border-width solid transparent;
+  border-radius: @button-radius;
+  justify-content: center;
+  margin: @button-margin;
+  font-weight: @button-font-weight;
+  font-family: Roboto;
+
+  &:hover {
+    cursor: pointer;
+    background: @button-hover-color;
+  }
+}

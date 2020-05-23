@@ -50,6 +50,7 @@ export interface Paper {
   citationVelocity: number;
   influentialCitationCount: number;
   primaryPaperLink: string;
+  paperLinkType: string;
 }
 
 export interface Citation {

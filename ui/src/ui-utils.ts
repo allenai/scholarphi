@@ -50,7 +50,7 @@ export function truncateText(text: string, limit: number, withEllipsis: boolean 
   if (text.length > limit) {
     while (
       limit > 1 &&
-      (!PATTERN_WORD_CHAR.test(text[limit-1]) || !PATTERN_NON_WORD_CHAR.test(text[limit]))
+      (!PATTERN_WORD_CHAR.test(text[limit - 1]) || !PATTERN_NON_WORD_CHAR.test(text[limit]))
     ) {
       limit -= 1;
     }
@@ -63,4 +63,63 @@ export function truncateText(text: string, limit: number, withEllipsis: boolean 
   } else {
     return text;
   }
+}
+
+/**
+ * Get the correct display name for certain publishers.
+ * 
+ * @param {string} the type of primaryPaperLInk
+ */
+export function getLinkText(input: string): string {
+
+  var linkText: string = "";
+
+  if (input.length > 17) {
+    linkText = "View Via Publisher";
+    return linkText;
+  }
+
+  switch (input) {
+    case "acm":
+      linkText = "View On ACM";
+      break;
+    case "anansi":
+      linkText = "View Paper";
+      break;
+    case "arxiv":
+      linkText = "View On ArXiv";
+      break;
+    case "dblp":
+      linkText = "View Paper";
+      break;
+    case "doi":
+      linkText = "View Via Publisher";
+      break;
+    case "educause":
+      linkText = "View On Educause";
+      break;
+    case "ieee":
+      linkText = "View On IEEE";
+      break;
+    case "institutional":
+      linkText = "Check Your Institution";
+      break;
+    case "medline":
+      linkText = "View On PubMed";
+      break;
+    case "s2":
+      linkText = "View Paper";
+      break;
+    case "wiley":
+      linkText = "View Via Publisher";
+      break;
+    default:
+      linkText = "View On " + input;
+  }
+
+  if (input === "publisher") {
+    linkText = "View via Publisher"
+  }
+
+  return linkText;
 }
