@@ -67,19 +67,18 @@ export function truncateText(text: string, limit: number, withEllipsis: boolean 
 
 /**
  * Get the correct display name for certain publishers.
- * 
  * @param {string} the type of primaryPaperLInk
  */
-export function getLinkText(input: string): string {
+export function getLinkText(linkType: string): string {
 
   var linkText: string = "";
   const linkTextLengthLimit = 17;
 
-  if (input.length > linkTextLengthLimit) {
+  if (linkType.length > linkTextLengthLimit) {
     return "View Via Publisher"
   }
 
-  switch (input) {
+  switch (linkType) {
     case "acm":
       return "View On ACM"
     case "anansi":
@@ -103,10 +102,10 @@ export function getLinkText(input: string): string {
     case "wiley":
       return "View Via Publisher"
     default:
-      linkText = "View On " + input;
+      linkText = "View On " + linkType;
   }
 
-  if (input === "publisher") {
+  if (linkType === "publisher") {
     linkText = "View via Publisher"
   }
 

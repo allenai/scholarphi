@@ -101,7 +101,7 @@ export class PaperSummary extends React.PureComponent<
           const hasMetrics = paper.citationVelocity !== 0 || paper.influentialCitationCount !== 0;
           const truncatedAbstract = paper.abstract ? truncateText(paper.abstract, 300) : null;
           const inLibrary = userLibrary ? userLibrary.paperIds.includes(this.props.paperId) : false;
-          const summaryUrl = `https://www.semanticscholar.org/paper/{paper.s2Id}`
+          const pdpUrl = `https://www.semanticscholar.org/paper/{paper.s2Id}`
           return (
             <div
               ref={ref => {
