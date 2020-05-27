@@ -73,46 +73,35 @@ export function truncateText(text: string, limit: number, withEllipsis: boolean 
 export function getLinkText(input: string): string {
 
   var linkText: string = "";
+  const linkTextLengthLimit = 17;
 
-  if (input.length > 17) {
-    linkText = "View Via Publisher";
-    return linkText;
+  if (input.length > linkTextLengthLimit) {
+    return "View Via Publisher"
   }
 
   switch (input) {
     case "acm":
-      linkText = "View On ACM";
-      break;
+      return "View On ACM"
     case "anansi":
-      linkText = "View Paper";
-      break;
+      return "View Paper"
     case "arxiv":
-      linkText = "View On ArXiv";
-      break;
+      return "View on ArXiv"
     case "dblp":
-      linkText = "View Paper";
-      break;
+      return "View Paper"
     case "doi":
-      linkText = "View Via Publisher";
-      break;
+      return "View Via Publisher"
     case "educause":
-      linkText = "View On Educause";
-      break;
+      return "View On Educause"
     case "ieee":
-      linkText = "View On IEEE";
-      break;
+      return "View on IEEE"
     case "institutional":
-      linkText = "Check Your Institution";
-      break;
+      return "Check Your Institution"
     case "medline":
-      linkText = "View On PubMed";
-      break;
+      return "View On PubMed"
     case "s2":
-      linkText = "View Paper";
-      break;
+      return "View Paper"
     case "wiley":
-      linkText = "View Via Publisher";
-      break;
+      return "View Via Publisher"
     default:
       linkText = "View On " + input;
   }
