@@ -13,7 +13,6 @@ export class Citation extends React.PureComponent<CitationProperties> {
       <ScholarReaderContext.Consumer>
         {({ papers, setJumpPaperId, setSelectedCitation }) => {
           const paper = papers[this.props.citation.paper];
-          console.log(paper.paperLinkType);
           if (paper === undefined) {
             return (
               <div>

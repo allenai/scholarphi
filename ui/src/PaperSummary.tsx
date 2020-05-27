@@ -116,7 +116,7 @@ export class PaperSummary extends React.PureComponent<
             >
               <div className="paper-summary__section">
                 <p className="paper-summary__title">
-                  <S2Link url={summaryUrl}>{paper.title}</S2Link>
+                  <S2Link url={pdpUrl}>{paper.title}</S2Link>
                 </p>
                 <p>
                   {paper.authors.length > 0 && (
