@@ -121,7 +121,7 @@ def get_classes_info(modelParams):
     if modelParams['classtype'] =='only_display':
         num_classes = 1
         classes_arr = ["Eqbox"]
-    elif classtype=='both':
+    elif modelParams['classtype'] =='both':
         num_classes = 2
         classes_arr = ["DisplayEqbox","InlineEqbox"]
     else:
