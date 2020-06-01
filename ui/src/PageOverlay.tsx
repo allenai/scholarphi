@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import CitationAnnotation from "./CitationAnnotation";
-import PageMask from "./PageMask";
 import * as selectors from "./selectors";
 import { ScholarReaderContext } from "./state";
 import SymbolAnnotation from "./SymbolAnnotation";
@@ -93,22 +92,24 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
           citations,
           symbols,
           annotationsShowing,
-          userAnnotationsEnabled
+          userAnnotationsEnabled,
         }) => {
           return (
             <>
+              {/*
               <PageMask
                 key="page-mask"
                 pageNumber={this.props.pageNumber}
                 pageWidth={pageDimensions.width}
                 pageHeight={pageDimensions.height}
               />
+              */}
               {/* Add annotations for all citation bounding boxes on this page. */}
               {citations !== null
-                ? citations.all.map(cId => {
+                ? citations.all.map((cId) => {
                     const citation = citations.byId[cId];
                     const boundingBoxes = citation.bounding_boxes.filter(
-                      b => b.page === this.props.pageNumber - 1
+                      (b) => b.page === this.props.pageNumber - 1
                     );
                     return boundingBoxes.length > 0 ? (
                       <CitationAnnotation
@@ -122,10 +123,10 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
                 : null}
               {/* Add annotations for all symbol bounding boxes on this page. */}
               {symbols !== null
-                ? symbols.all.map(sId => {
+                ? symbols.all.map((sId) => {
                     const symbol = symbols.byId[sId];
                     const boundingBoxes = symbol.bounding_boxes.filter(
-                      b => b.page === this.props.pageNumber - 1
+                      (b) => b.page === this.props.pageNumber - 1
                     );
                     return boundingBoxes.length > 0 ? (
                       <SymbolAnnotation

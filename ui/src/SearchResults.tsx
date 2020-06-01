@@ -62,6 +62,7 @@ export class SearchResults extends React.PureComponent<
               symbols,
               mathMls
             );
+
             const symbolMathMlIds = selectors.symbolMathMlIds(
               matchingSymbolIds,
               symbols,
@@ -71,58 +72,60 @@ export class SearchResults extends React.PureComponent<
             const filteredSymbolIds = this.getFilteredSymbolIds(
               this.state.filters
             );
-            const numPages = Math.ceil(
-              filteredSymbolIds.length / this.props.pageSize
-            );
+            const symbolIds = filteredSymbolIds;
+
+            const numPages = Math.ceil(symbolIds.length / this.props.pageSize);
 
             return (
               <>
                 <div className="search-results__section search-results__header">
-                  <h1>{filteredSymbolIds.length} Results</h1>
+                  <h1>{symbolIds.length} Results</h1>
                 </div>
 
                 {/* Symbol filters */}
                 <div className="search-results__section">
                   Search for which symbols?
-                  {symbolMathMlIds.map(mathMlId => {
-                    const variant =
-                      this.state.filters[mathMlId] === undefined ||
-                      this.state.filters[mathMlId] === true
-                        ? "contained"
-                        : "outlined";
-                    return (
-                      <div
-                        key={mathMlId}
-                        className="search-results__filter-button"
-                      >
-                        <Button
-                          size="small"
-                          variant={variant}
-                          onClick={() => {
-                            const filters = { ...this.state.filters };
-                            if (
-                              this.state.filters[mathMlId] === undefined ||
-                              this.state.filters[mathMlId] === true
-                            ) {
-                              filters[mathMlId] = false;
-                            } else {
-                              filters[mathMlId] = true;
-                            }
-                            this.setFilters(filters);
-                          }}
+                  <div className="search-results__filter-buttons">
+                    {symbolMathMlIds.map((mathMlId) => {
+                      const variant =
+                        this.state.filters[mathMlId] === undefined ||
+                        this.state.filters[mathMlId] === true
+                          ? "contained"
+                          : "outlined";
+                      return (
+                        <div
+                          key={mathMlId}
+                          className="search-results__filter-button"
                         >
-                          <MathMl mathMl={mathMls.byId[mathMlId].mathMl} />
-                        </Button>
-                      </div>
-                    );
-                  })}
+                          <Button
+                            size="small"
+                            variant={variant}
+                            onClick={() => {
+                              const filters = { ...this.state.filters };
+                              if (
+                                this.state.filters[mathMlId] === undefined ||
+                                this.state.filters[mathMlId] === true
+                              ) {
+                                filters[mathMlId] = false;
+                              } else {
+                                filters[mathMlId] = true;
+                              }
+                              this.setFilters(filters);
+                            }}
+                          >
+                            <MathMl mathMl={mathMls.byId[mathMlId].mathMl} />
+                          </Button>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 {/* Search results */}
                 <div className="search-results__symbol-list search-results__section">
-                  {filteredSymbolIds
+                  {symbolIds
                     .slice(startSymbolIndex, endSymbolIndex)
-                    .map(sId => (
+                    .map((sId) => (
                       <div className="search-results__result" key={sId}>
                         <SymbolPreview symbol={symbols.byId[sId]} />
                       </div>
@@ -165,7 +168,7 @@ export class SearchResults extends React.PureComponent<
       selectedEntityType,
       selectedEntityId,
       symbols,
-      mathMls
+      mathMls,
     } = this.context;
 
     if (
@@ -189,13 +192,16 @@ export class SearchResults extends React.PureComponent<
     /*
      * Filter to those symbols with the MathML filters selected.
      */
-    return matchingSymbolIds.filter(sId => {
+    const filteredSymbolIds = matchingSymbolIds.filter((sId) => {
       const symbolMathMlId = symbols.byId[sId].mathml;
       return (
         filters[symbolMathMlId] === true ||
         filters[symbolMathMlId] === undefined
       );
     });
+    return filteredSymbolIds.filter(
+      (sId, i) => filteredSymbolIds.indexOf(sId) === i
+    );
   }
 }
 

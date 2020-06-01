@@ -3,6 +3,7 @@
  */
 .search-results {
   padding-top: @padding;
+  max-width: 420px;
 }
 
 /**
@@ -19,6 +20,12 @@
   margin-top: @padding;
 }
 
+.search-results__result {
+  border: 5px solid #aaaaaa;
+  padding: 1px;
+  border-radius: @border-radius;
+}
+
 /**
  * A search result
  */
@@ -26,12 +33,18 @@
   margin-top: @padding;
 }
 
+.search-results__filter-buttons {
+  margin-top: @padding;
+  // width: 500px;
+}
+
 /**
  * Search result filter button layout
  */
 .search-results__filter-button {
-  display: inline;
-  margin-left: @padding;
+  display: inline-block;
+  margin-bottom: @padding;
+  margin-right: @padding;
 
   .MuiButton-root {
     min-width: @medium * 3;
@@ -51,10 +64,7 @@
  */
 .search-results__result:hover {
   cursor: pointer;
-
-  .paper-clipping {
-    border-color: @highlight-border-color;
-  }
+  border-color: @highlight-border-color;
 }
 
 /**

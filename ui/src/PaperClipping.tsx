@@ -34,7 +34,7 @@ export class PaperClipping extends React.PureComponent<PaperClippingProps, {}> {
 
   static defaultProps = {
     width: 500,
-    height: 300
+    height: 300,
   };
 
   /**
@@ -66,7 +66,7 @@ export class PaperClipping extends React.PureComponent<PaperClippingProps, {}> {
     await page.render({ canvasContext, viewport: clippingViewport }).promise;
 
     if (this.props.highlights !== undefined) {
-      this.props.highlights.forEach(highlight => {
+      this.props.highlights.forEach((highlight) => {
         addHighlightToCanvas(highlight, canvas, canvasContext, 0, 0, 255);
       });
     }
@@ -77,8 +77,8 @@ export class PaperClipping extends React.PureComponent<PaperClippingProps, {}> {
      */
     if (this.props.sentenceId && sentences !== null) {
       const sentence = sentences.byId[this.props.sentenceId];
-      sentence.bounding_boxes.forEach(box => {
-        addHighlightToCanvas(box, canvas, canvasContext, 0, 255, 0);
+      sentence.bounding_boxes.forEach((box) => {
+        // addHighlightToCanvas(box, canvas, canvasContext, 0, 255, 0);
       });
 
       const sentenceBox = computerOuterBoundingBox(sentence.bounding_boxes);
@@ -131,14 +131,14 @@ export class PaperClipping extends React.PureComponent<PaperClippingProps, {}> {
   render() {
     return (
       <div
-        ref={ref => {
+        ref={(ref) => {
           this.containerRef = ref;
         }}
         className="paper-clipping"
         onClick={this.props.onClick}
       >
         <canvas
-          ref={ref => {
+          ref={(ref) => {
             this.canvasRef = ref;
           }}
         />
@@ -160,7 +160,7 @@ function computerOuterBoundingBox(boxes: BoundingBox[]) {
   let maxRight = -Infinity;
   let maxBottom = -Infinity;
 
-  boxes.forEach(b => {
+  boxes.forEach((b) => {
     const { left, top } = b;
     const right = left + b.width;
     const bottom = top + b.height;
@@ -175,7 +175,7 @@ function computerOuterBoundingBox(boxes: BoundingBox[]) {
     left: minLeft,
     top: minTop,
     width: maxRight - minLeft,
-    height: maxBottom - minTop
+    height: maxBottom - minTop,
   };
 }
 
@@ -207,7 +207,7 @@ function toCanvasCoordinates(rect: Rectangle, canvas: HTMLCanvasElement) {
     left: rect.left * canvas.width,
     top: rect.top * canvas.height,
     width: rect.width * canvas.width,
-    height: rect.height * canvas.height
+    height: rect.height * canvas.height,
   };
 }
 

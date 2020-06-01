@@ -44,7 +44,7 @@ export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
 
   static defaultProps = {
     active: true,
-    highlight: false
+    highlight: false,
   };
 
   onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
@@ -80,6 +80,7 @@ export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
      * the user just clicked on another annotation, setting the annotation ID to 'null' would
      * nullify that new selection, which we don't want.
      */
+    /*
     if (this.isSelected()) {
       this.context.setSelectedAnnotationId(null);
       this.context.setSelectedAnnotationSpanId(null);
@@ -87,6 +88,7 @@ export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
         this.props.onDeselected();
       }
     }
+    */
   }
 
   focusIfSelected(element: HTMLDivElement | null) {
@@ -120,7 +122,7 @@ export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
             selected: this.isSelected(),
             "annotation-selected": this.isAnnotationSelected(),
             active: this.props.active === true,
-            inactive: this.props.active !== true
+            inactive: this.props.active !== true,
           }
         )}
         tabIndex={this.props.active === true ? 0 : undefined}

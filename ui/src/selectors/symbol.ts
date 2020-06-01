@@ -14,9 +14,37 @@ export function matchingSymbols(
     return allMathMl.byId[symbols.byId[symbolId].mathml].symbols;
   } else {
     const mathMl = allMathMl.byId[symbols.byId[symbolId].mathml];
-    return mathMl.matches
-      .map(match => allMathMl.byId[match.mathMl].symbols)
+    const matchingIds = mathMl.matches
+      .map((match) => allMathMl.byId[match.mathMl].symbols)
       .flat();
+    /* Deduplicate symbols */
+    const selectedBoxes: { [k: string]: boolean } = {};
+    const uniqueIds: string[] = [];
+    matchingIds.forEach((id) => {
+      const s = symbols.byId[id];
+      const key = JSON.stringify(
+        s.bounding_boxes.map((b) => [b.left, b.top, b.width, b.height])
+      );
+      if (selectedBoxes[key] === undefined) {
+        uniqueIds.push(id);
+        selectedBoxes[key] = true;
+      }
+    });
+    const symbolIds: string[] = [];
+    const parentIds: string[] = [];
+    uniqueIds.forEach((sId) => {
+      let parent = symbols.byId[sId];
+      let parentId = sId;
+      while (parent.parent !== null) {
+        parentId = String(parent.parent);
+        parent = symbols.byId[parentId];
+      }
+      if (parentIds.indexOf(parentId) === -1) {
+        parentIds.push(parentId);
+        symbolIds.push(sId);
+      }
+    });
+    return symbolIds;
   }
 }
 
@@ -31,7 +59,7 @@ export function symbolMathMlIds(
   mathMls: MathMls
 ) {
   const uniqueMathMlIds: string[] = [];
-  symbolIds.forEach(sId => {
+  symbolIds.forEach((sId) => {
     const mathMlId = mathMls.byId[symbols.byId[sId].mathml].id;
     if (uniqueMathMlIds.indexOf(mathMlId) === -1) {
       uniqueMathMlIds.push(mathMlId);

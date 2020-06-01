@@ -22,7 +22,7 @@ export class SymbolTooltipBody extends React.PureComponent<
             symbols,
             mathMls,
             setSelectedEntity,
-            selectAnnotationForEntity
+            selectAnnotationForEntity,
           }) => {
             if (symbols === null || mathMls === null) {
               return (
@@ -123,6 +123,11 @@ export class SymbolTooltipBody extends React.PureComponent<
                       color="primary"
                       className="tooltip-body__action-button"
                       onClick={() => {
+                        setSelectedEntity(this.props.symbol.id, "symbol");
+                        selectAnnotationForEntity(
+                          this.props.symbol.id,
+                          "symbol"
+                        );
                         setDrawerState("open");
                       }}
                     >

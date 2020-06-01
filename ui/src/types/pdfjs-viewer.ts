@@ -63,4 +63,6 @@ export interface PDFPageView {
   div: HTMLDivElement;
   scale: number;
   viewport: PDFPageViewport;
+  width: number;
+  height: number;
 }

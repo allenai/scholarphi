@@ -161,7 +161,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     this.setState({ selectedEntityId: id, selectedEntityType: type });
   }
 
-  selectAnnotationForEntity(_: string | null, __: SelectableEntityType) {
+  selectAnnotationForEntity(id: string | null, type: SelectableEntityType) {
     /*
      * TODO(andrewhead): Why is this needed? When we provide 'next' and 'back' buttons to navigate
      * between instances of a symbol in the paper, those buttons may only know the symbol IDs to
@@ -171,6 +171,15 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
      * action will save a mapping between the symbol ID and the annotation ID. This mapping can
      * be used here to find the annotation corresponding to an entity.
      */
+    if (type === "symbol" && id !== null && this.state.symbols !== null) {
+      const symbol = this.state.symbols.byId[id];
+      this.setState({
+        selectedAnnotationSpanId: null,
+        selectedAnnotationId: `symbol-${id}-annotation`,
+        selectedEntityId: id,
+      });
+      this.jumpToBoundingBox(symbol.bounding_boxes[0]);
+    }
   }
 
   requestJumpToPaper(s2Id: string) {
@@ -186,6 +195,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
    * if it is now obscured by the drawer.
    */
   scrollSymbolIntoView() {
+    return;
     const {
       selectedEntityId,
       selectedEntityType,
@@ -429,16 +439,22 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     const SCROLL_OFFSET_X = -400;
     const SCROLL_OFFSET_Y = +100;
 
-    if (this.state.pdfViewer !== null) {
-      this.state.pdfViewer.scrollPageIntoView({
-        pageNumber: box.page + 1,
-        destArray: [
-          undefined,
-          { name: "XYZ" },
-          box.left + SCROLL_OFFSET_X,
-          box.top + SCROLL_OFFSET_Y,
-        ],
-      });
+    if (this.state.pages !== null) {
+      const page = Object.values(this.state.pages)[0];
+      const left = box.left * page.view.width;
+      const top = box.top * page.view.height;
+
+      if (this.state.pdfViewer !== null) {
+        this.state.pdfViewer.scrollPageIntoView({
+          pageNumber: box.page + 1,
+          destArray: [
+            undefined,
+            { name: "XYZ" },
+            left + SCROLL_OFFSET_X,
+            top + SCROLL_OFFSET_Y,
+          ],
+        });
+      }
     }
   }
 
