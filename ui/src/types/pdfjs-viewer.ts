@@ -15,9 +15,19 @@ import { PDFDocumentProxy, PDFPageProxy, PDFPageViewport } from "pdfjs-dist";
  */
 export interface PDFViewerApplication {
   initialized: boolean;
+  appConfig: AppConfig;
   eventBus: EventBus;
+  externalServices: ExternalServices;
   pdfViewer: PDFViewer;
   pdfDocument: PDFDocumentProxy;
+}
+
+export interface AppConfig {
+  toolbar: Toolbar;
+}
+
+export interface Toolbar {
+  viewFind: HTMLDivElement;
 }
 
 export interface EventBus {
@@ -31,6 +41,8 @@ export interface PageRenderedEvent {
   cssTransform: boolean;
   timestamp: number;
 }
+
+export interface ExternalServices {}
 
 export interface DocumentLoadedEvent {
   source: PDFDocumentProxy;

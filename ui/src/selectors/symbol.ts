@@ -1,4 +1,4 @@
-import { MathMls, Symbols } from "../state";
+import { MathMls, SelectableEntityType, Symbols } from "../state";
 import { BoundingBox } from "../types/api";
 
 /**
@@ -15,9 +15,47 @@ export function matchingSymbols(
   } else {
     const mathMl = allMathMl.byId[symbols.byId[symbolId].mathml];
     return mathMl.matches
-      .map(match => allMathMl.byId[match.mathMl].symbols)
+      .map((match) => allMathMl.byId[match.mathMl].symbols)
       .flat();
   }
+}
+
+/**
+ * Get ordered list of symbols that should be highlighted in the paper.
+ */
+export function highlightedSymbols(
+  symbols: Symbols | null,
+  mathMls: MathMls | null,
+  selectedEntityType: SelectableEntityType,
+  selectedEntityId: string | null
+) {
+  if (
+    symbols === null ||
+    mathMls === null ||
+    selectedEntityType !== "symbol" ||
+    selectedEntityId === null
+  ) {
+    return [];
+  }
+  return (
+    matchingSymbols(selectedEntityId, symbols, mathMls)
+      .map((id) => {
+        const symbol = symbols.byId[id];
+        const box = symbol.bounding_boxes[0];
+        return { id, box };
+      })
+      // TODO(andrewhead): order by sentence order if possible
+      // TODO(andrewhead): reuse existing utilities for ordering by page
+      .sort((s1, s2) => {
+        const pgNumberDiff = s1.box.page - s2.box.page;
+        return pgNumberDiff === 0 ? s1.box.top - s2.box.top : pgNumberDiff;
+      })
+      .map(s => s.id);
+    // .reduce((map, s) => {
+    //   map[s.id] = s.box;
+    //   return map;
+    // }, {} as { [symbolId: string]: BoundingBox })
+  );
 }
 
 /**
@@ -31,7 +69,7 @@ export function symbolMathMlIds(
   mathMls: MathMls
 ) {
   const uniqueMathMlIds: string[] = [];
-  symbolIds.forEach(sId => {
+  symbolIds.forEach((sId) => {
     const mathMlId = mathMls.byId[symbols.byId[sId].mathml].id;
     if (uniqueMathMlIds.indexOf(mathMlId) === -1) {
       uniqueMathMlIds.push(mathMlId);

@@ -3,8 +3,7 @@ import { createPortal } from "react-dom";
 import * as api from "./api";
 import Drawer from "./Drawer";
 import FeedbackButton from "./FeedbackButton";
-import FindBarSymbol from "./FindBarSymbol";
-import FindBarString from "./FindBarString";
+import FindBar from "./FindBar";
 import PageOverlay from "./PageOverlay";
 import * as selectors from "./selectors";
 import {
@@ -12,7 +11,7 @@ import {
   createStateSliceFromArray,
   defaultState,
   DrawerState,
-  FindBarState,
+  FindState,
   MathMls,
   Pages,
   PaperId,
@@ -85,9 +84,9 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
       setDrawerState: this.setDrawerState.bind(this),
       scrollSymbolIntoView: this.scrollSymbolIntoView.bind(this),
-      
-      setFindBarState: this.setFindBarState.bind(this),	
-      
+
+      setFindBarState: this.setFindBarState.bind(this),
+
       setUserAnnotationsEnabled: this.setUserAnnotationsEnabled.bind(this),
       setUserAnnotationType: this.setUserAnnotationType.bind(this),
       addUserAnnotation: this.addUserAnnotation.bind(this),
@@ -164,11 +163,11 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
   setSelectedEntity(id: string | null, type: SelectableEntityType) {
     this.setState({ selectedEntityId: id, selectedEntityType: type });
-		if (type === 'symbol') {
-		  this.setFindBarState('symbol');
-		} else if (this.state.findBarState === 'symbol') {
-      this.setFindBarState('hidden');
-		}
+    if (type === "symbol") {
+      this.setFindBarState("find-symbol");
+    } else if (this.state.findBarState === "find-symbol") {
+      this.setFindBarState("closed");
+    }
   }
 
   requestJumpToPaper(s2Id: string) {
@@ -179,7 +178,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     this.setState({ drawerState: state });
   }
 
-  setFindBarState(state: FindBarState) {
+  setFindBarState(state: FindState) {
     this.setState({ findBarState: state });
   }
 
@@ -329,7 +328,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
      * https://github.com/mozilla/pdf.js/blob/49f59eb627646ae9a6e166ee2e0ef2cac9390b4f/web/app.js#L2503
      */
     if ((event.ctrlKey || event.metaKey) && event.keyCode === 70) {
-      this.setFindBarState("string");
+      this.setFindBarState("find-text");
       event.preventDefault();
     }
   }
@@ -445,11 +444,15 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     const SCROLL_OFFSET_X = -400;
     const SCROLL_OFFSET_Y = +100;
 
-    if (this.state.pdfViewer !== null && this.state.pages !== null && this.state.pages[box.page + 1] !== undefined) {
+    if (
+      this.state.pdfViewer !== null &&
+      this.state.pages !== null &&
+      this.state.pages[box.page + 1] !== undefined
+    ) {
       const { left, top } = selectors.divDimensionStyles(
         this.state.pages[box.page + 1].view,
-        box 
-      )
+        box
+      );
       this.state.pdfViewer.scrollPageIntoView({
         pageNumber: box.page + 1,
         destArray: [
@@ -463,40 +466,12 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
   }
 
   render() {
-    const elFindBarContainer = document.getElementById("mainContainer");
     const elFeedbackContainer = document.getElementById(
       "scholarReaderGlobalFeedbackButton"
     );
     const elUserAnnotationTypeContainer = document.getElementById(
       "scholarReaderAnnotationTypeSelect"
     );
-    const highlightedSymbols: Map<String, BoundingBox> = new Map();
-    if (
-      this.state.symbols !== null &&
-      this.state.mathMls !== null &&
-      this.state.selectedEntityType === "symbol" &&
-      this.state.selectedEntityId !== null
-    ) {
-      // we need these highlights to be in sorted
-      // order by highlight y value so we must use a Map.
-      selectors.matchingSymbols(
-        this.state.selectedEntityId,
-        this.state.symbols,
-        this.state.mathMls
-      )
-      .map(id => {
-        const symbol = this.state.symbols.byId[id];
-        const symbolBox = symbol.bounding_boxes[0];
-        return [id, symbolBox]
-      })
-      .sort((s1, s2) => {
-        const pgNumberDiff = s1[1].page - s2[1].page;
-        return pgNumberDiff === 0 ? s1[1].top - s2[1].top : pgNumberDiff;
-      })
-      .map(([id, boundingBox]) => {
-        highlightedSymbols.set(id, boundingBox)  
-      })
-    }
     return (
       <ScholarReaderContext.Provider value={this.state}>
         <>
@@ -516,7 +491,12 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
                     key={key}
                     view={pageModel.view}
                     pageNumber={pageNumber}
-                    highlightedSymbols={[...highlightedSymbols.keys()]}
+                    highlightedSymbols={selectors.highlightedSymbols(
+                      this.state.symbols,
+                      this.state.mathMls,
+                      this.state.selectedEntityType,
+                      this.state.selectedEntityId
+                    )}
                   />
                 );
               })}
@@ -535,22 +515,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
                 elUserAnnotationTypeContainer
               )
             : null}
-          {/*
-           * TODO(andrewhead): find another way of checking to see if PDFViewerApplication is
-           * available, or don't require FindBar to have access to the PDFViewerApplication.
-           */}
-          {this.state.findBarState !== 'hidden' && window.PDFViewerApplication !== undefined && elFindBarContainer
-            ? createPortal(
-                this.state.findBarState === 'symbol' ? 
-                <FindBarSymbol
-                  mappingToBounds={highlightedSymbols}
-                  matches={[...highlightedSymbols.keys()]}
-                  /> : 
-                <FindBarString 
-                  setMode={this.state.setFindBarState}
-                />, 
-                elFindBarContainer)
-            : null}
+          <FindBar />
         </>
       </ScholarReaderContext.Provider>
     );
