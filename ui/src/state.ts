@@ -9,11 +9,21 @@ import {
   Sentence,
   Symbol,
   UserAnnotationType,
-  UserLibrary
+  UserLibrary,
 } from "./types/api";
-import { PDFPageView, PDFViewer } from "./types/pdfjs-viewer";
+import {
+  PDFPageView,
+  PDFViewer,
+  PDFViewerApplication,
+} from "./types/pdfjs-viewer";
 
 export interface State {
+  /*
+   * STATE SETTER
+   * Sets properties on this state object.
+   */
+  setState(state: Partial<State>): void;
+
   /*
    * PAPER DATA
    */
@@ -41,6 +51,7 @@ export interface State {
    */
   pages: Readonly<Pages> | null;
   setPages(pages: Pages): void;
+  pdfViewerApplication: PDFViewerApplication | null;
   pdfDocument: PDFDocumentProxy | null;
   pdfViewer: PDFViewer | null;
 
@@ -73,11 +84,17 @@ export interface State {
   setDrawerState(open: DrawerState): void;
   scrollSymbolIntoView(): void;
 
-	/*
-	 * Find Bar interactions
-	 */
-	findBarState: FindBarState;
-	setFindBarState(state: FindBarState): void;
+  /*
+   * Find bar interactions
+   */
+  isFindActive: boolean;
+  findMode: null | "pdfjs-builtin-find" | "symbol";
+  findQuery: null;
+  findMatchIndex: number | null;
+  findMatchCount: number | null;
+
+  findBarState: FindState;
+  setFindBarState(state: FindState): void;
 
   /*
    * User annotation layer
@@ -123,17 +140,17 @@ export type Pages = { [pageNumber: number]: PageModel };
 
 export function createStateSliceFromArray(array: any[], idKey: string) {
   const allIds = array
-    .map(item => item[idKey])
-    .filter(key => typeof key === "string");
+    .map((item) => item[idKey])
+    .filter((key) => typeof key === "string");
   const itemsById = array
-    .filter(item => allIds.indexOf(item[idKey]) !== -1)
+    .filter((item) => allIds.indexOf(item[idKey]) !== -1)
     .reduce((byId, item) => {
       byId[item[idKey]] = item;
       return byId;
     }, {});
   return {
     all: allIds,
-    byId: itemsById
+    byId: itemsById,
   };
 }
 
@@ -154,9 +171,11 @@ export interface PaperId {
 }
 
 export type DrawerState = "open" | "closed";
-export type FindBarState = "hidden" | "symbol" | "string";
+export type FindState = "closed" | "find-symbol" | "find-text";
 
 export const defaultState: State = {
+  setState: () => {},
+
   paperId: undefined,
   citations: null,
   setCitations: () => {},
@@ -175,6 +194,7 @@ export const defaultState: State = {
 
   pages: null,
   setPages: () => {},
+  pdfViewerApplication: null,
   pdfDocument: null,
   pdfViewer: null,
 
@@ -194,9 +214,12 @@ export const defaultState: State = {
   drawerState: "closed",
   setDrawerState: () => {},
   scrollSymbolIntoView: () => {},
-  
-  setFindBarState: () => {},
-  findBarState: "hidden",
+
+  isFindActive: false,
+  findMode: null,
+  findQuery: null,
+  findMatchIndex: null,
+  findMatchCount: null,
 
   userAnnotationsEnabled: false,
   setUserAnnotationsEnabled: () => {},
@@ -206,7 +229,7 @@ export const defaultState: State = {
   addUserAnnotation: () => {},
   updateUserAnnotation: () => {},
   deleteUserAnnotation: () => {},
-  setUserAnnotations: () => {}
+  setUserAnnotations: () => {},
 };
 
 export const ScholarReaderContext = React.createContext<State>(defaultState);
