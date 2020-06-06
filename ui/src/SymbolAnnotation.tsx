@@ -26,15 +26,11 @@ export class SymbolAnnotation extends React.PureComponent<
           className={classNames({ "annotation-hint": this.props.showHint })}
           source={this.props.symbol.source}
           boundingBoxes={this.props.boundingBoxes}
-          tooltipContent={
-            this.context.drawerState === "open" ? null : (
-              <SymbolTooltipBody symbol={this.props.symbol} />
-            )
-          }
+          tooltipContent={<SymbolTooltipBody symbol={this.props.symbol} />}
           // highlight={this.props.highlight}
           highlight={undefined}
           onSelected={this.selectEntityWhenAnnotationSelected.bind(this)}
-          onDeselected={this.deselectEntityWhenAnnotationDeselected.bind(this)}
+          // onDeselected={this.deselectEntityWhenAnnotationDeselected.bind(this)}
         />
       </div>
     );
@@ -45,6 +41,7 @@ export class SymbolAnnotation extends React.PureComponent<
   }
 
   deselectEntityWhenAnnotationDeselected() {
+    /*
     const {
       setSelectedEntity,
       selectedEntityId,
@@ -56,6 +53,7 @@ export class SymbolAnnotation extends React.PureComponent<
     ) {
       setSelectedEntity(null, null);
     }
+    */
   }
 }
 

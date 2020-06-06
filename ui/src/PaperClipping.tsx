@@ -53,7 +53,7 @@ export class PaperClipping extends React.PureComponent<PaperClippingProps, {}> {
     }
 
     const page = await pdfDocument.getPage(this.props.pageNumber);
-    const CLIPPING_SCALE = 1.7;
+    const CLIPPING_SCALE = 3.5;
     const clippingViewport = page.getViewport({ scale: CLIPPING_SCALE });
 
     const canvasContext = canvas.getContext("2d");

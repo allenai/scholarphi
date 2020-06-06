@@ -62,7 +62,7 @@ export class Annotation extends React.PureComponent<AnnotationProps> {
 
   static defaultProps = {
     active: true,
-    highlight: false
+    highlight: false,
   };
 
   render() {
@@ -70,21 +70,21 @@ export class Annotation extends React.PureComponent<AnnotationProps> {
       <>
         {this.props.boundingBoxes
           .filter(
-            b =>
+            (b) =>
               b.height < MAXIMUM_ANNOTATION_HEIGHT ||
               this.props.source === "other"
           )
-          .map(box => (
+          .map((box) => (
             <AnnotationSpan
               key={box.id}
               annotationId={this.props.id}
               id={box.id}
-              active={this.props.active}
+              active={true}
               location={box}
               className={classNames(this.props.className, {
                 "source-tex-pipeline": this.props.source === "tex-pipeline",
                 "source-other": this.props.source === "other",
-                highlight: this.props.highlight
+                highlight: this.props.highlight,
               })}
               highlight={this.props.highlight}
               tooltipContent={this.props.tooltipContent}

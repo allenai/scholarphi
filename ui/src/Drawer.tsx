@@ -1,4 +1,3 @@
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import MuiDrawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
@@ -17,7 +16,7 @@ export class Drawer extends React.PureComponent {
 
   positionPdfForDrawerOpen(pdfViewerContainer: HTMLElement) {
     // Creating padding for scroll
-    Array.from(pdfViewerContainer.children).forEach(page => {
+    Array.from(pdfViewerContainer.children).forEach((page) => {
       // XXX(zkirby, andrewhead) per our discussion at https://github.com/allenai/scholar-reader/pull/38/files#r388514946
       // this is 'safe' as pages are not deleted when scrolled out of view (just their inner content).
       page.classList.add(PDF_VIEWER_DRAWER_OPEN_CLASS);
@@ -30,7 +29,7 @@ export class Drawer extends React.PureComponent {
   }
 
   removePdfPositioningForDrawerOpen(pdfViewerContainer: HTMLElement) {
-    Array.from(pdfViewerContainer.children).forEach(page => {
+    Array.from(pdfViewerContainer.children).forEach((page) => {
       page.classList.remove(PDF_VIEWER_DRAWER_OPEN_CLASS);
     });
   }
@@ -90,37 +89,34 @@ export class Drawer extends React.PureComponent {
           const extraContext = {
             drawerState,
             selectedEntityType,
-            selectedEntityId
+            selectedEntityId,
           };
           return (
-            <ClickAwayListener onClickAway={this.closeOnClickAway}>
-              <MuiDrawer
-                className="drawer"
-                variant="persistent"
-                anchor="right"
-                open={drawerState !== "closed"}
-              >
-                <div className="drawer__header">
-                  <div className="drawer__close_icon">
-                    <IconButton
-                      className="MuiButton-contained"
-                      onClick={this.closeDrawer.bind(this)}
-                    >
-                      <ChevronRightIcon />
-                    </IconButton>
-                  </div>
-                  <FeedbackButton extraContext={extraContext} />
+            <MuiDrawer
+              className="drawer"
+              variant="persistent"
+              anchor="right"
+              open={drawerState !== "closed"}
+            >
+              <div className="drawer__header">
+                <div className="drawer__close_icon">
+                  <IconButton
+                    className="MuiButton-contained"
+                    onClick={this.closeDrawer.bind(this)}
+                  >
+                    <ChevronRightIcon />
+                  </IconButton>
                 </div>
-                <div className="drawer__content">
-                  {drawerState === "open" &&
-                    selectedEntityType === "symbol" && (
-                      <SearchResults pageSize={4} />
-                    )}
-                  {drawerState === "open" &&
-                    selectedEntityType === "citation" && <PaperList />}
-                </div>
-              </MuiDrawer>
-            </ClickAwayListener>
+                <FeedbackButton extraContext={extraContext} />
+              </div>
+              <div className="drawer__content">
+                {drawerState === "open" && selectedEntityType === "symbol" && (
+                  <SearchResults pageSize={4} />
+                )}
+                {drawerState === "open" &&
+                  selectedEntityType === "citation" && <PaperList />}
+              </div>
+            </MuiDrawer>
           );
         }}
       </ScholarReaderContext.Consumer>

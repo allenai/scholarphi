@@ -108,7 +108,7 @@ export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
      */
     let annotationSpan = (
       <div
-        ref={this.focusIfSelected.bind(this)}
+        // ref={this.focusIfSelected.bind(this)}
         onClick={this.select.bind(this)}
         style={selectors.divDimensionStyles(
           pages[this.props.location.page + 1].view,
@@ -122,10 +122,10 @@ export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
             selected: this.isSelected(),
             "annotation-selected": this.isAnnotationSelected(),
             active: this.props.active === true,
-            inactive: this.props.active !== true,
+            // inactive: this.props.active !== true,
           }
         )}
-        tabIndex={this.props.active === true ? 0 : undefined}
+        // tabIndex={this.props.active === true ? 0 : undefined}
         onKeyDown={this.onKeyDown.bind(this)}
       />
     );
@@ -147,6 +147,7 @@ export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
       );
     }
 
+    return annotationSpan;
     return (
       <ClickAwayListener onClickAway={this.deselectIfSelected.bind(this)}>
         {annotationSpan}
