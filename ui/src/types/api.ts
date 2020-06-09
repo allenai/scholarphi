@@ -30,7 +30,6 @@ export interface BoundingBox {
 export interface Author {
   id: string;
   name: string;
-  url: string;
 }
 
 export interface PaperIdWithCounts {
@@ -45,11 +44,12 @@ export interface Paper {
   title: string;
   authors: Author[];
   abstract: string | null;
-  url: string;
   venue: string | null;
   year: number | null;
   citationVelocity: number;
   influentialCitationCount: number;
+  primaryPaperLink: string;
+  primaryPaperLinkType: string;
 }
 
 export interface Entity {

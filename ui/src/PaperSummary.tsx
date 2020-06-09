@@ -11,7 +11,7 @@ import { userLibraryUrl } from "./s2-url";
 import S2Link from "./S2Link";
 import { ScholarReaderContext } from "./state";
 import { UserLibrary } from "./types/api";
-import { truncateText } from "./ui-utils";
+import { truncateText, getLinkText } from "./ui-utils";
 
 function warnOfUnimplementedActionAndTrack(
   actionType: string,
@@ -50,7 +50,7 @@ interface PaperSummaryState {
 export class PaperSummary extends React.PureComponent<
   PaperSummaryProps,
   PaperSummaryState
-> {
+  > {
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
 
@@ -84,8 +84,8 @@ export class PaperSummary extends React.PureComponent<
       warnOfUnimplementedActionAndTrack(
         "save",
         "Before you can save papers to your library, you must be logged " +
-          "into Semantic Scholar. Visit https://semanticscholar.org to log in. " +
-          "Then refresh this page and try again."
+        "into Semantic Scholar. Visit https://semanticscholar.org to log in. " +
+        "Then refresh this page and try again."
       );
     } else {
       try {
@@ -126,6 +126,7 @@ export class PaperSummary extends React.PureComponent<
           const inLibrary = userLibrary
             ? userLibrary.paperIds.includes(this.props.paperId)
             : false;
+          const pdpUrl = `https://www.semanticscholar.org/paper/{paper.s2Id}`
 
           return (
             <div
@@ -148,7 +149,7 @@ export class PaperSummary extends React.PureComponent<
               {/* Paper details */}
               <div className="paper-summary__section">
                 <p className="paper-summary__title">
-                  <S2Link url={paper.url}>{paper.title}</S2Link>
+                  <S2Link url={pdpUrl}>{paper.title}</S2Link>
                 </p>
                 <p>
                   {paper.authors.length > 0 && (
@@ -163,26 +164,32 @@ export class PaperSummary extends React.PureComponent<
                 <div className="paper-summary__section">
                   <p className="paper-summary__abstract">
                     {this.state.showFullAbstract ||
-                    truncatedAbstract === paper.abstract ? (
-                      paper.abstract
-                    ) : (
-                      <>
-                        {truncatedAbstract}
-                        <span
-                          className="paper-summary__abstract__show-more-label"
-                          onClick={() => {
-                            this.setState({ showFullAbstract: true });
-                          }}
-                        >
-                          (show more)
+                      truncatedAbstract === paper.abstract ? (
+                        paper.abstract
+                      ) : (
+                        <>
+                          {truncatedAbstract}
+                          <span
+                            className="paper-summary__abstract__show-more-label"
+                            onClick={() => {
+                              this.setState({ showFullAbstract: true });
+                            }}
+                          >
+                            (show more)
                         </span>
-                      </>
-                    )}
+                        </>
+                      )}
                   </p>
                 </div>
               )}
 
               {/* Actions */}
+
+              <div className="paper-summary__actions">
+                <a href={paper.primaryPaperLink} target="_blank" rel="noopener noreferrer">
+                  <button className="paper-summary__view-pdf">{getLinkText(paper.primaryPaperLinkType)}</button>
+                </a>
+              </div>
               <div className="paper-summary__metrics-and-actions paper-summary__section">
                 {hasMetrics ? (
                   <div className="paper-summary__metrics">
@@ -235,11 +242,11 @@ export class PaperSummary extends React.PureComponent<
                 </Button>
                 {inLibrary
                   ? this.renderLibraryButton("In Your Library", () =>
-                      goToLibrary()
-                    )
+                    goToLibrary()
+                  )
                   : this.renderLibraryButton("Save To Library", () =>
-                      this.saveToLibrary(userLibrary, addToLibrary, paper.title)
-                    )}
+                    this.saveToLibrary(userLibrary, addToLibrary, paper.title)
+                  )}
               </div>
 
               <div className="paper-summary__section paper-summary__feedback">

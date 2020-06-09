@@ -20,11 +20,12 @@ class AuthorList extends React.PureComponent<AuthorListProps, {}> {
           } else {
             textConnector = ", ";
           }
+          var authorUrl = `https://www.semanticscholar.org/author/{author.id}`
           return (
             <span key={author.id}>
               {textConnector}
               {this.props.showLinks && (
-                <S2Link url={author.url}>{author.name}</S2Link>
+                <S2Link url={authorUrl}>{author.name}</S2Link>
               )}
               {!this.props.showLinks && <>{author.name}</>}
             </span>

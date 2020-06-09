@@ -73,6 +73,29 @@
   color: @s2-error;
 }
 
+.paper-summary__actions {
+  padding-top: @medium / 2;
+}
+
+.paper-summary__view-pdf {
+  background: @s2-primary-action-background-color;
+  color: @white;
+  font-size: @s2-primary-action-font-size;
+  line-height: normal;
+  padding: @s2-primary-action-padding-top @s2-primary-action-padding-side;
+  border: @border-width solid transparent;
+  border-radius: @s2-primary-action-radius;
+  justify-content: center;
+  margin: @s2-primary-action-margin;
+  font-weight: @s2-primary-action-font-weight;
+  font-family: Roboto;
+
+  &:hover {
+    cursor: pointer;
+    background: @s2-primary-action-hover-color;
+  }
+}
+
 /**
  * Metrics
  */

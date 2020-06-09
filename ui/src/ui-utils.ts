@@ -72,6 +72,52 @@ export function truncateText(
 }
 
 /**
+ * Get the correct display name for certain publishers.
+ * @param linkType the type of primaryPaperLink
+ */
+export function getLinkText(linkType: string): string {
+  var linkText: string = "";
+  const linkTextLengthLimit = 17;
+
+  if (linkType.length > linkTextLengthLimit) {
+    return "View Via Publisher"
+  }
+
+  switch (linkType) {
+    case "acm":
+      return "View On ACM"
+    case "anansi":
+      return "View Paper"
+    case "arxiv":
+      return "View On ArXiv"
+    case "dblp":
+      return "View Paper"
+    case "doi":
+      return "View Via Publisher"
+    case "educause":
+      return "View On Educause"
+    case "ieee":
+      return "View On IEEE"
+    case "institutional":
+      return "Check Your Institution"
+    case "medline":
+      return "View On PubMed"
+    case "s2":
+      return "View Paper"
+    case "wiley":
+      return "View Via Publisher"
+    default:
+      linkText = "View On " + linkType;
+  }
+
+  if (linkType === "publisher") {
+    linkText = "View Via Publisher"
+  }
+
+  return linkText;
+}
+
+/**
  * Call this function whenever you want to get the width and height of a pageView object from
  * PDF.js. This function avoids gotchas in computing the size of the page view. Width and
  * height are returned in pixels.
