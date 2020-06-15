@@ -17,15 +17,19 @@ import {
   PDFViewerApplication,
 } from "./types/pdfjs-viewer";
 
+/**
+ * Global state object. Conventions of setting properties on this object roughly follow Redux
+ * conventions: whenever you want a component to change based on a property, a new value for
+ * that property should be created (not merely updated).
+ */
 export interface State {
   /*
-   * STATE SETTER
-   * Sets properties on this state object.
+   * *** STATE SETTER ***
    */
   setState(state: Partial<State>): void;
 
   /*
-   * PAPER DATA
+   * *** PAPER DATA ***
    */
   paperId?: PaperId;
   citations: Readonly<Citations> | null;
@@ -40,14 +44,14 @@ export interface State {
   setPapers(papers: Papers | null): void;
 
   /*
-   * USER DATA
+   * *** USER LIBRARY DATA ***
    */
   userLibrary: UserLibrary | null;
   setUserLibrary(userLibrary: UserLibrary | null): void;
   addToLibrary(paperId: string, paperTitle: string): void;
 
   /*
-   * PDF VIEWER STATE
+   * *** PDF.JS OBJECTS ***
    */
   pages: Readonly<Pages> | null;
   setPages(pages: Pages): void;
@@ -56,10 +60,10 @@ export interface State {
   pdfViewer: PDFViewer | null;
 
   /*
-   * USER INTERFACE STATE
+   * *** USER INTERFACE STATE ***
    */
   /*
-   * Selecting annotations and entities
+   * ~ Selecting annotations and entities ~
    */
   annotationsShowing: boolean;
   setAnnotationsShowing(showing: boolean): void;
@@ -72,32 +76,37 @@ export interface State {
   setSelectedEntity(id: string | null, type: SelectableEntityType): void;
 
   /*
-   * Jumping to content within paper
+   * ~ Jumping to content within paper ~
    */
   paperJumpRequest: string | null;
   requestJumpToPaper(s2Id: string | null): void;
 
   /*
-   * Drawer (sidebar) interactions
+   * ~ Drawer (sidebar) interactions ~
    */
   drawerState: DrawerState;
   setDrawerState(open: DrawerState): void;
   scrollSymbolIntoView(): void;
 
   /*
-   * Find bar interactions
+   * ~ Find bar interactions ~
+   * When 'isFindActive' is false, the rest of the properties for finding should be set to null.
    */
   isFindActive: boolean;
+  /*
+   * The time in milliseconds that this 'find' action was triggered. The easiest way to
+   * supply this value is to call `Date.now()` when a find action is triggered. This is used to
+   * indicate to the find widget that a new 'find' has started, e.g., if a user types 'Ctrl+F'
+   * while the 'find' bar is already open.
+   */
+  findActivatedTimeMs: number | null;
   findMode: null | "pdfjs-builtin-find" | "symbol";
-  findQuery: null;
+  findQuery: null | string | SymbolFilters;
   findMatchIndex: number | null;
   findMatchCount: number | null;
 
-  findBarState: FindState;
-  setFindBarState(state: FindState): void;
-
   /*
-   * User annotation layer
+   * ~ User annotation layer ~
    */
   userAnnotationsEnabled: boolean;
   setUserAnnotationsEnabled(enabled: boolean): void;
@@ -130,10 +139,16 @@ export interface MathMlWithSymbols extends MathMl {
 
 export type SelectableEntityType = "citation" | "symbol" | null;
 
+export interface SymbolFilter {
+  key: "exact-match" | "partial-match";
+  active: boolean;
+}
+
 export type Citations = StateSlice<Citation>;
 export type Symbols = StateSlice<Symbol>;
 export type MathMls = StateSlice<MathMlWithSymbols>;
 export type Sentences = StateSlice<Sentence>;
+export type SymbolFilters = StateSlice<SymbolFilter>;
 
 export type Papers = { [s2Id: string]: Paper };
 export type Pages = { [pageNumber: number]: PageModel };
@@ -171,7 +186,6 @@ export interface PaperId {
 }
 
 export type DrawerState = "open" | "closed";
-export type FindState = "closed" | "find-symbol" | "find-text";
 
 export const defaultState: State = {
   setState: () => {},
@@ -216,6 +230,7 @@ export const defaultState: State = {
   scrollSymbolIntoView: () => {},
 
   isFindActive: false,
+  findActivatedTimeMs: null,
   findMode: null,
   findQuery: null,
   findMatchIndex: null,

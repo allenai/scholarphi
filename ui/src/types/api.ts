@@ -81,6 +81,7 @@ export interface MathMlMatch {
 }
 
 export interface Sentence extends Entity {
+  index: number;
   text: string;
 }
 

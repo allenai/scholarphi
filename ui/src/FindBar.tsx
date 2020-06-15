@@ -1,12 +1,10 @@
 import React from "react";
-import { createPortal } from "react-dom";
+import ReactDOM from "react-dom";
 import { PdfjsFindQueryWidget } from "./PdfjsFindQueryWidget";
 import { ScholarReaderContext } from "./state";
 import { SymbolFindQueryWidget } from "./SymbolFindQueryWidget";
 
-interface FindBarProps {}
-
-class FindBar extends React.PureComponent<FindBarProps> {
+class FindBar extends React.PureComponent {
   static contextType = ScholarReaderContext;
   context!: React.ContextType<typeof ScholarReaderContext>;
 
@@ -42,15 +40,23 @@ class FindBar extends React.PureComponent<FindBarProps> {
       setState: setGlobalState,
     } = this.context;
 
+    /*
+     * The default behavior when the find widget is controlled is to change which entity is
+     * selected as the 'match' and advance the global match index.
+     */
+    if (findMode !== "pdfjs-builtin-find") {
+      if (findMatchIndex !== null && findMatchCount !== null) {
+        setGlobalState({
+          findMatchIndex: this.wrapIndex(findMatchIndex + 1, findMatchCount),
+        });
+      }
+    }
+
+    /*
+     * If the find widget is for the pdf.js built-in find functionality, then instead pdf.js needs
+     * to be notified that the user has requested that the next match gets selected.
+     */
     if (
-      findMode === "symbol" &&
-      findMatchIndex !== null &&
-      findMatchCount !== null
-    ) {
-      setGlobalState({
-        findMatchIndex: this.wrapIndex(findMatchIndex + 1, findMatchCount),
-      });
-    } else if (
       findMode === "pdfjs-builtin-find" &&
       this.pdfjsFindQueryWidget !== null
     ) {
@@ -58,6 +64,9 @@ class FindBar extends React.PureComponent<FindBarProps> {
     }
   }
 
+  /*
+   * See 'onClickNext' for implementation notes.
+   */
   onClickPrevious() {
     const {
       findMode,
@@ -66,15 +75,15 @@ class FindBar extends React.PureComponent<FindBarProps> {
       setState: setGlobalState,
     } = this.context;
 
+    if (findMode !== "pdfjs-builtin-find") {
+      if (findMatchIndex !== null && findMatchCount !== null) {
+        setGlobalState({
+          findMatchIndex: this.wrapIndex(findMatchIndex - 1, findMatchCount),
+        });
+      }
+    }
+
     if (
-      findMode === "symbol" &&
-      findMatchIndex !== null &&
-      findMatchCount !== null
-    ) {
-      setGlobalState({
-        findMatchIndex: this.wrapIndex(findMatchIndex - 1, findMatchCount),
-      });
-    } else if (
       findMode === "pdfjs-builtin-find" &&
       this.pdfjsFindQueryWidget !== null
     ) {
@@ -83,17 +92,15 @@ class FindBar extends React.PureComponent<FindBarProps> {
   }
 
   close() {
+    // TODO(andrewhead): Do we still need this e.preventDefault()?
     this.context.setState({
       isFindActive: false,
+      findActivatedTimeMs: null,
       findMode: null,
       findQuery: null,
       findMatchCount: null,
       findMatchIndex: null,
     });
-    /*
-     * TODO(andrewhead): Do we still need this e.preventDefault()?
-     */
-    // e.preventDefault();
   }
 
   render() {
@@ -103,34 +110,76 @@ class FindBar extends React.PureComponent<FindBarProps> {
     const elFindBarContainer = document.getElementById("mainContainer");
     return (
       <ScholarReaderContext.Consumer>
-        {({ findBarState, pdfViewerApplication, setState: setGlobalState }) => {
-          if (elFindBarContainer) {
-            createPortal(
+        {({
+          findMode,
+          findActivatedTimeMs,
+          findQuery,
+          pdfViewerApplication,
+          setState: setGlobalState,
+        }) => {
+          if (elFindBarContainer && findMode !== null) {
+            return ReactDOM.createPortal(
               <div className="find-bar">
-                {() => {
-                  switch (findBarState) {
-                    case "find-text": {
-                      if (pdfViewerApplication === null) {
-                        return null;
+                <div className="find-bar__query">
+                  {
+                    /* Custom find widgets, depending on the type of search being performed. */
+                    (() => {
+                      switch (findMode) {
+                        case "pdfjs-builtin-find": {
+                          if (
+                            pdfViewerApplication === null ||
+                            findActivatedTimeMs === null
+                          ) {
+                            return null;
+                          }
+                          return (
+                            /*
+                             * Key this widget with the time that the find event was activated
+                             * (i.e., when 'Ctrl+F' was typed). This regenerates the widgets whenever
+                             * a new 'find' action is started, which will select and focus the text
+                             * in the search widget. See why we use key to regenerate component here:
+                             * https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html#recommendation-fully-uncontrolled-component-with-a-key
+                             */
+                            <PdfjsFindQueryWidget
+                              key={findActivatedTimeMs}
+                              ref={(ref) => (this.pdfjsFindQueryWidget = ref)}
+                              pdfViewerApplication={pdfViewerApplication}
+                              query={findQuery as string | null}
+                              onQueryChanged={(query) =>
+                                setGlobalState({
+                                  findQuery: query,
+                                  findMatchIndex: null,
+                                  findMatchCount: null,
+                                })
+                              }
+                              onMatchIndexChanged={(matchIndex) =>
+                                setGlobalState({ findMatchIndex: matchIndex })
+                              }
+                              onMatchCountChanged={(matchCount) =>
+                                setGlobalState({ findMatchCount: matchCount })
+                              }
+                            />
+                          );
+                        }
+                        case "symbol": {
+                          if (findActivatedTimeMs === null) {
+                            return;
+                          }
+                          return (
+                            /*
+                             * See note above for the 'PdfjsFindQueryWidget' for why we use a key to
+                             * regenerate this find widget when a new 'find' request is made.
+                             */
+                            <SymbolFindQueryWidget key={findActivatedTimeMs} />
+                          );
+                        }
+                        default:
+                          return;
                       }
-                      return (
-                        <PdfjsFindQueryWidget
-                          ref={(ref) => (this.pdfjsFindQueryWidget = ref)}
-                          pdfViewerApplication={pdfViewerApplication}
-                          onMatchIndexUpdated={(matchIndex) =>
-                            setGlobalState({ findMatchIndex: matchIndex })
-                          }
-                          onMatchCountUpdated={(matchCount) =>
-                            setGlobalState({ findMatchCount: matchCount })
-                          }
-                        />
-                      );
-                    }
-                    case "find-symbol": {
-                      return <SymbolFindQueryWidget />;
-                    }
+                    })()
                   }
-                }}
+                </div>
+                {/* Common components for finding: next, back, and close. */}
                 <div className="find-bar__navigation">
                   <button
                     className="find-bar__navigation__previous"
@@ -150,14 +199,16 @@ class FindBar extends React.PureComponent<FindBarProps> {
                     {this.createMatchCountMessage()}
                   </span>
                 </div>
-                <div className="find-bar__close" onClick={this.close}>
+                <div
+                  className="find-bar__close"
+                  onClick={this.close.bind(this)}
+                >
                   X
                 </div>
               </div>,
               elFindBarContainer
             );
           }
-          return null;
         }}
       </ScholarReaderContext.Consumer>
     );

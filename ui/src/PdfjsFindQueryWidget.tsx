@@ -2,13 +2,21 @@ import React from "react";
 import { EventBus, PDFViewerApplication } from "./types/pdfjs-viewer";
 
 interface PdfjsFindQueryWidgetProps {
-  onMatchCountUpdated: (matchCount: number) => void;
-  onMatchIndexUpdated: (matchIndex: number) => void;
+  query: string | null;
+  onQueryChanged: (query: string) => void;
+  onMatchCountChanged: (matchCount: number) => void;
+  onMatchIndexChanged: (matchIndex: number) => void;
   pdfViewerApplication: PDFViewerApplication;
 }
 
 /**
  * Find bar for searching for text. It relies entirely on pdf.js' 'find' functionality.
+ * This component is partially controlled:
+ *
+ * * It does not own the 'query' value. Instead, this is stored outside of the component, and
+ *   the component notifies its parent when the input field has been changed.
+ * * The component controls the pdf.js state for finding text, providing a wrapper around
+ *   the pdf.js 'find' functionality.
  */
 export class PdfjsFindQueryWidget extends React.PureComponent<
   PdfjsFindQueryWidgetProps
@@ -17,7 +25,7 @@ export class PdfjsFindQueryWidget extends React.PureComponent<
     const { pdfViewerApplication } = this.props;
 
     /*
-     * Patch the pdf.js application to support a custom implementation of a find widget. 'find'
+     * Patch the pdf.js application to support a custom find widget. 'find'
      * events are routed from the 'find controller' for pdf.js by defining the
      * 'updateFindControlState' and 'updateFindMatchesCount' function on the external services
      * property of the pdf.js application. For a discussion of our investigations of how to
@@ -26,13 +34,13 @@ export class PdfjsFindQueryWidget extends React.PureComponent<
      */
     pdfViewerApplication.externalServices = {
       ...pdfViewerApplication.externalServices,
-      updateFindControlState: ({ matchesCount: { current, total } }: any) => {
-        this.props.onMatchCountUpdated(total);
-        this.props.onMatchIndexUpdated(current);
+      updateFindControlState: ({ matchesCount: { current, total } }) => {
+        this.props.onMatchCountChanged(total);
+        this.props.onMatchIndexChanged(current);
       },
-      updateFindMatchesCount: ({ current, total }: any) => {
-        this.props.onMatchIndexUpdated(current);
-        this.props.onMatchCountUpdated(total);
+      updateFindMatchesCount: ({ current, total }) => {
+        this.props.onMatchIndexChanged(current);
+        this.props.onMatchCountChanged(total);
       },
       supportsIntegratedFind: true,
     };
@@ -55,13 +63,13 @@ export class PdfjsFindQueryWidget extends React.PureComponent<
     }
   }
 
-  initializeInputElement(inputElement: HTMLInputElement | null) {
-    if (inputElement !== null) {
-      this.inputElement = inputElement;
-      this.inputElement.addEventListener(
-        "input",
-        this.onInputChange.bind(this)
-      );
+  /*
+   * Whenever the query property changes (likely because the user has types in the 'find' box),
+   * notify the pdf.js 'find controller' to trigger a new search.
+   */
+  componentDidUpdate(nextProps: PdfjsFindQueryWidgetProps) {
+    if (this.props.query !== nextProps.query) {
+      this.dispatchToPdfjs("find");
     }
   }
 
@@ -77,7 +85,10 @@ export class PdfjsFindQueryWidget extends React.PureComponent<
    * Whenever the input changes, update the 'find' query.
    */
   onInputChange() {
-    this.dispatchToPdfjs("find");
+    if (this.inputElement === null) {
+      return;
+    }
+    this.props.onQueryChanged(this.inputElement.value);
   }
 
   next() {
@@ -94,10 +105,10 @@ export class PdfjsFindQueryWidget extends React.PureComponent<
    * https://github.com/mozilla/pdf.js/blob/49f59eb627646ae9a6e166ee2e0ef2cac9390b4f/web/firefoxcom.js#L190-L200
    */
   dispatchToPdfjs(eventName: string, findPrevious?: boolean) {
-    if (this.inputElement === null) {
+    const { query } = this.props;
+    if (query === null) {
       return;
     }
-    const query = this.inputElement.value;
     if (this.pdfjsEventBus !== undefined) {
       this.pdfjsEventBus.dispatch("find", {
         source: window,
@@ -116,8 +127,12 @@ export class PdfjsFindQueryWidget extends React.PureComponent<
     return (
       <input
         className="find-bar__query"
+        ref={(ref) => {
+          this.inputElement = ref;
+        }}
+        onInput={this.onInputChange.bind(this)}
+        defaultValue={this.props.query || ""}
         placeholder="Find in document…"
-        ref={this.initializeInputElement.bind(this)}
         tabIndex={0}
       />
     );
