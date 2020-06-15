@@ -11,7 +11,6 @@ import {
   createStateSliceFromArray,
   defaultState,
   DrawerState,
-  FindState,
   MathMls,
   Pages,
   PaperId,
@@ -64,6 +63,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
        * Bind all setters to 'this' so that 'setState' resolves to this object when the setters
        * are called from outside ScholarReader.
        */
+      setState: this.setState.bind(this),
       setCitations: this.setCitations.bind(this),
       setSymbols: this.setSymbols.bind(this),
       setMathMls: this.setMathMls.bind(this),
@@ -85,8 +85,6 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       setDrawerState: this.setDrawerState.bind(this),
       scrollSymbolIntoView: this.scrollSymbolIntoView.bind(this),
 
-      setFindBarState: this.setFindBarState.bind(this),
-
       setUserAnnotationsEnabled: this.setUserAnnotationsEnabled.bind(this),
       setUserAnnotationType: this.setUserAnnotationType.bind(this),
       addUserAnnotation: this.addUserAnnotation.bind(this),
@@ -99,7 +97,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
      */
     this.toggleUserAnnotationState = this.toggleUserAnnotationState.bind(this);
     this.closeDrawerOnEscape = this.closeDrawerOnEscape.bind(this);
-    this.openFindBarString = this.openFindBarString.bind(this);
+    this.openFindBar = this.openFindBar.bind(this);
     this.hideAnnotationsOnAltDown = this.hideAnnotationsOnAltDown.bind(this);
     this.showAnnotationsOnAltUp = this.showAnnotationsOnAltUp.bind(this);
   }
@@ -163,11 +161,6 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
   setSelectedEntity(id: string | null, type: SelectableEntityType) {
     this.setState({ selectedEntityId: id, selectedEntityType: type });
-    if (type === "symbol") {
-      this.setFindBarState("find-symbol");
-    } else if (this.state.findBarState === "find-symbol") {
-      this.setFindBarState("closed");
-    }
   }
 
   requestJumpToPaper(s2Id: string) {
@@ -176,10 +169,6 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
   setDrawerState(state: DrawerState) {
     this.setState({ drawerState: state });
-  }
-
-  setFindBarState(state: FindState) {
-    this.setState({ findBarState: state });
   }
 
   /**
@@ -321,26 +310,33 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     }
   }
 
-  openFindBarString(event: KeyboardEvent) {
+  openFindBar(event: KeyboardEvent) {
     /*
-     * This logic for listening for Ctrl+F and for opening the find bar is based on the analogous
+     * This code for listening for Ctrl+F and for opening the find bar is based on the analogous
      * code in the pdf.js project:
      * https://github.com/mozilla/pdf.js/blob/49f59eb627646ae9a6e166ee2e0ef2cac9390b4f/web/app.js#L2503
      */
     if ((event.ctrlKey || event.metaKey) && event.keyCode === 70) {
-      this.setFindBarState("find-text");
+      this.setState({
+        isFindActive: true,
+        findActivatedTimeMs: Date.now(),
+        findMode: "pdfjs-builtin-find",
+      });
       event.preventDefault();
     }
   }
 
   async componentDidMount() {
     waitForPDFViewerInitialization().then((application) => {
+      this.setState({ pdfViewerApplication: application });
+      // TODO(andrewhead): where to move this?
+      application.externalServices.supportsIntegratedFind = true;
       this.subscribeToPDFViewerStateChanges(application);
     });
     this.loadDataFromApi();
     window.addEventListener("keypress", this.toggleUserAnnotationState);
     window.addEventListener("keydown", this.closeDrawerOnEscape);
-    window.addEventListener("keydown", this.openFindBarString);
+    window.addEventListener("keydown", this.openFindBar);
     window.addEventListener("keydown", this.hideAnnotationsOnAltDown);
     window.addEventListener("keyup", this.showAnnotationsOnAltUp);
   }
@@ -348,7 +344,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
   componentWillUnmount() {
     window.removeEventListener("keypress", this.toggleUserAnnotationState);
     window.removeEventListener("keydown", this.closeDrawerOnEscape);
-    window.removeEventListener("keydown", this.openFindBarString);
+    window.removeEventListener("keydown", this.openFindBar);
     window.removeEventListener("keydown", this.hideAnnotationsOnAltDown);
     window.removeEventListener("keyup", this.showAnnotationsOnAltUp);
   }
@@ -491,12 +487,6 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
                     key={key}
                     view={pageModel.view}
                     pageNumber={pageNumber}
-                    highlightedSymbols={selectors.highlightedSymbols(
-                      this.state.symbols,
-                      this.state.mathMls,
-                      this.state.selectedEntityType,
-                      this.state.selectedEntityId
-                    )}
                   />
                 );
               })}

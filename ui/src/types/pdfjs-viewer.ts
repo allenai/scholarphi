@@ -42,7 +42,16 @@ export interface PageRenderedEvent {
   timestamp: number;
 }
 
-export interface ExternalServices {}
+export interface ExternalServices {
+  supportsIntegratedFind: boolean;
+  updateFindControlState: (state: { matchesCount: MatchInfo }) => void;
+  updateFindMatchesCount: (matchInfo: MatchInfo) => void;
+}
+
+export interface MatchInfo {
+  current: number;
+  total: number;
+}
 
 export interface DocumentLoadedEvent {
   source: PDFDocumentProxy;

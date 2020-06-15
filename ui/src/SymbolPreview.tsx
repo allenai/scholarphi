@@ -12,9 +12,8 @@ export class SymbolPreview extends React.PureComponent<SymbolPreviewProps> {
   context!: React.ContextType<typeof ScholarReaderContext>;
 
   requestSelectSymbol() {
-    const { setSelectedEntity, selectAnnotationForEntity } = this.context;
+    const { setSelectedEntity } = this.context;
     setSelectedEntity(this.props.symbol.id, "symbol");
-    selectAnnotationForEntity(this.props.symbol.id, "symbol");
   }
 
   render() {

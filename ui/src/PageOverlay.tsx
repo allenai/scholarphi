@@ -2,7 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 import CitationAnnotation from "./CitationAnnotation";
 import PageMask from "./PageMask";
-import * as selectors from "./selectors";
 import { ScholarReaderContext } from "./state";
 import SymbolAnnotation from "./SymbolAnnotation";
 import { PDFPageView } from "./types/pdfjs-viewer";
@@ -12,7 +11,6 @@ import { UserAnnotationLayer } from "./UserAnnotationLayer";
 interface PageProps {
   pageNumber: number;
   view: PDFPageView;
-  highlightedSymbols: string[];
 }
 
 /**
@@ -75,7 +73,7 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
           citations,
           symbols,
           annotationsShowing,
-          userAnnotationsEnabled
+          userAnnotationsEnabled,
         }) => {
           return (
             <>
@@ -87,10 +85,10 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
               />
               {/* Add annotations for all citation bounding boxes on this page. */}
               {citations !== null
-                ? citations.all.map(cId => {
+                ? citations.all.map((cId) => {
                     const citation = citations.byId[cId];
                     const boundingBoxes = citation.bounding_boxes.filter(
-                      b => b.page === this.props.pageNumber - 1
+                      (b) => b.page === this.props.pageNumber - 1
                     );
                     return boundingBoxes.length > 0 ? (
                       <CitationAnnotation
@@ -104,10 +102,10 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
                 : null}
               {/* Add annotations for all symbol bounding boxes on this page. */}
               {symbols !== null
-                ? symbols.all.map(sId => {
+                ? symbols.all.map((sId) => {
                     const symbol = symbols.byId[sId];
                     const boundingBoxes = symbol.bounding_boxes.filter(
-                      b => b.page === this.props.pageNumber - 1
+                      (b) => b.page === this.props.pageNumber - 1
                     );
                     return boundingBoxes.length > 0 ? (
                       <SymbolAnnotation
@@ -115,7 +113,8 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
                         showHint={annotationsShowing}
                         boundingBoxes={boundingBoxes}
                         symbol={symbol}
-                        highlight={this.props.highlightedSymbols.indexOf(sId) !== -1}
+                        // TODO(andrewhead): Determine highlighting programmatically
+                        // highlight={}
                       />
                     ) : null;
                   })

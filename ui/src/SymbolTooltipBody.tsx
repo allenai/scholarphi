@@ -17,13 +17,7 @@ export class SymbolTooltipBody extends React.PureComponent<
     return (
       <div className="tooltip-body symbol-tooltip-body">
         <ScholarReaderContext.Consumer>
-          {({
-            setDrawerState,
-            symbols,
-            mathMls,
-            setSelectedEntity,
-            selectAnnotationForEntity
-          }) => {
+          {({ setDrawerState, symbols, mathMls, setSelectedEntity }) => {
             if (symbols === null || mathMls === null) {
               return (
                 <div className="tooltip-body__section tooltip-body__header">
@@ -49,8 +43,7 @@ export class SymbolTooltipBody extends React.PureComponent<
             const partialMatchSymbolIds = selectors.matchingSymbols(
               this.props.symbol.id,
               symbols,
-              mathMls,
-              false
+              mathMls
             );
             if (partialMatchSymbolIds.length > 0) {
               partialMatchSymbolId = selectors.orderByPosition(
@@ -65,8 +58,7 @@ export class SymbolTooltipBody extends React.PureComponent<
             const exactMatchSymbolIds = selectors.matchingSymbols(
               this.props.symbol.id,
               symbols,
-              mathMls,
-              true
+              mathMls
             );
             if (exactMatchSymbolIds.length > 0) {
               exactMatchSymbolId = selectors.orderByPosition(
@@ -112,7 +104,6 @@ export class SymbolTooltipBody extends React.PureComponent<
                           exactMatchSymbolId || partialMatchSymbolId;
                         if (matchingSymbolId !== undefined) {
                           setSelectedEntity(matchingSymbolId, "symbol");
-                          selectAnnotationForEntity(matchingSymbolId, "symbol");
                         }
                       }}
                     >
