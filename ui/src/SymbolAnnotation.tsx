@@ -1,57 +1,50 @@
 import classNames from "classnames";
 import React from "react";
 import Annotation from "./Annotation";
-import { convertToAnnotationId } from './selectors/annotation'
-import { ScholarReaderContext } from "./state";
+import { convertToAnnotationId } from "./selectors/annotation";
 import { BoundingBox, Symbol } from "./types/api";
+import { PDFPageView } from "./types/pdfjs-viewer";
 
 interface SymbolAnnotationProps {
+  pageView: PDFPageView;
   boundingBoxes: BoundingBox[];
   symbol: Symbol;
   showHint?: boolean;
   highlight?: boolean;
+  selected: boolean;
+  selectedSpanId: string | null;
+  handleSelectSymbol: (id: string) => void;
+  handleSelectAnnotation: (id: string) => void;
+  handleSelectAnnotationSpan: (id: string) => void;
 }
 
 export class SymbolAnnotation extends React.PureComponent<
   SymbolAnnotationProps
 > {
-  static contextType = ScholarReaderContext;
-  context!: React.ContextType<typeof ScholarReaderContext>;
-
   render() {
     return (
       <div hidden={this.props.symbol.parent !== null}>
         <Annotation
+          pageView={this.props.pageView}
           id={convertToAnnotationId(this.props.symbol.id)}
           className={classNames({ "annotation-hint": this.props.showHint })}
           source={this.props.symbol.source}
           boundingBoxes={this.props.boundingBoxes}
           /* tooltipContent={<SymbolTooltipBody symbol={this.props.symbol} />} */
           tooltipContent={null}
+          selected={this.props.selected}
+          selectedSpanId={this.props.selectedSpanId}
           highlight={this.props.highlight}
-          onSelected={this.selectEntityWhenAnnotationSelected.bind(this)}
-          onDeselected={this.deselectEntityWhenAnnotationDeselected.bind(this)}
+          onSelected={this.onSelected.bind(this)}
+          handleSelectAnnotation={this.props.handleSelectAnnotation}
+          handleSelectAnnotationSpan={this.props.handleSelectAnnotationSpan}
         />
       </div>
     );
   }
 
-  selectEntityWhenAnnotationSelected() {
-    this.context.setSelectedEntity(this.props.symbol.id, "symbol");
-  }
-
-  deselectEntityWhenAnnotationDeselected() {
-    const {
-      setSelectedEntity,
-      selectedEntityId,
-      selectedEntityType
-    } = this.context;
-    if (
-      selectedEntityType === "symbol" &&
-      selectedEntityId === this.props.symbol.id
-    ) {
-      setSelectedEntity(null, null);
-    }
+  onSelected() {
+    this.props.handleSelectSymbol(this.props.symbol.id);
   }
 }
 
