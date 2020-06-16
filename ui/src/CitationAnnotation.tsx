@@ -2,25 +2,34 @@ import classNames from "classnames";
 import React from "react";
 import Annotation from "./Annotation";
 import CitationTooltipBody from "./CitationTooltipBody";
-import { ScholarReaderContext } from "./state";
-import { BoundingBox, Citation } from "./types/api";
+import { PaperId } from "./state";
+import { BoundingBox, Citation, Paper, UserLibrary } from "./types/api";
+import { PDFPageView } from "./types/pdfjs-viewer";
 
 interface CitationAnnotationProps {
-  boundingBoxes: BoundingBox[];
+  pageView: PDFPageView;
   citation: Citation;
+  paper: Paper;
+  userLibrary: UserLibrary | null;
+  boundingBoxes: BoundingBox[];
+  selected: boolean;
+  selectedSpanId: string | null;
   showHint?: boolean;
+  openedPaperId?: PaperId;
+  handleSelectCitation: (id: string) => void;
+  handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
+  handleSelectAnnotation: (id: string) => void;
+  handleSelectAnnotationSpan: (id: string) => void;
 }
 
 export class CitationAnnotation extends React.PureComponent<
   CitationAnnotationProps,
   {}
 > {
-  static contextType = ScholarReaderContext;
-  context!: React.ContextType<typeof ScholarReaderContext>;
-
   render() {
     return (
       <Annotation
+        pageView={this.props.pageView}
         id={`citation-${this.props.citation.id}-annotation`}
         className={classNames({ "annotation-hint": this.props.showHint })}
         source={this.props.citation.source}
@@ -28,31 +37,23 @@ export class CitationAnnotation extends React.PureComponent<
         tooltipContent={
           <CitationTooltipBody
             citation={this.props.citation}
-            paperId={this.props.citation.paper}
+            paper={this.props.paper}
+            userLibrary={this.props.userLibrary}
+            handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
+            openedPaperId={this.props.openedPaperId}
           />
         }
-        onSelected={this.selectEntityWhenAnnotationSelected.bind(this)}
-        onDeselected={this.deselectEntityWhenAnnotationDeselected.bind(this)}
+        selected={this.props.selected}
+        selectedSpanId={this.props.selectedSpanId}
+        onSelected={this.onSelected.bind(this)}
+        handleSelectAnnotation={this.props.handleSelectAnnotation}
+        handleSelectAnnotationSpan={this.props.handleSelectAnnotationSpan}
       />
     );
   }
 
-  selectEntityWhenAnnotationSelected() {
-    this.context.setSelectedEntity(this.props.citation.id, "citation");
-  }
-
-  deselectEntityWhenAnnotationDeselected() {
-    const {
-      setSelectedEntity,
-      selectedEntityId,
-      selectedEntityType,
-    } = this.context;
-    if (
-      selectedEntityType === "citation" &&
-      selectedEntityId === this.props.citation.id
-    ) {
-      setSelectedEntity(null, null);
-    }
+  onSelected() {
+    this.props.handleSelectCitation(this.props.citation.id);
   }
 }
 

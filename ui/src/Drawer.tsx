@@ -2,41 +2,67 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import MuiDrawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
 import FeedbackButton from "./FeedbackButton";
 import PaperList from "./PaperList";
 import SearchResults from "./SearchResults";
-import { ScholarReaderContext } from "./state";
+import {
+  DrawerMode,
+  MathMls,
+  PaperId,
+  Papers,
+  SelectableEntityType,
+  Sentences,
+  Symbols,
+} from "./state";
+import { UserLibrary } from "./types/api";
+import { PDFViewer } from "./types/pdfjs-viewer";
 
 const PDF_VIEWER_DRAWER_OPEN_CLASS = "drawer-open";
 const BLACK_LISTED_CLASS_NAME = "MuiTooltip-tooltip";
 
-export class Drawer extends React.PureComponent {
-  static contextType = ScholarReaderContext;
-  context!: React.ContextType<typeof ScholarReaderContext>;
+interface DrawerProps {
+  paperId: PaperId | undefined;
+  pdfViewer: PDFViewer;
+  pdfDocument: PDFDocumentProxy | null;
+  mode: DrawerMode;
+  papers: Papers | null;
+  symbols: Symbols | null;
+  mathMls: MathMls | null;
+  sentences: Sentences | null;
+  userLibrary: UserLibrary | null;
+  selectedEntityType: SelectableEntityType;
+  selectedEntityId: string | null;
+  handleClose: () => void;
+  handleSelectSymbol: (id: string) => void;
+  handleScrollSymbolIntoView: () => void;
+  handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
+}
 
+export class Drawer extends React.PureComponent<DrawerProps> {
   positionPdfForDrawerOpen(pdfViewerContainer: HTMLElement) {
     // Creating padding for scroll
-    Array.from(pdfViewerContainer.children).forEach(page => {
+    Array.from(pdfViewerContainer.children).forEach((page) => {
       // XXX(zkirby, andrewhead) per our discussion at https://github.com/allenai/scholar-reader/pull/38/files#r388514946
       // this is 'safe' as pages are not deleted when scrolled out of view (just their inner content).
       page.classList.add(PDF_VIEWER_DRAWER_OPEN_CLASS);
     });
 
-    const { drawerState, selectedEntityType } = this.context;
-    if (drawerState === "open" && selectedEntityType === "symbol") {
-      this.context.scrollSymbolIntoView();
+    const { mode, selectedEntityType } = this.props;
+    if (mode === "open" && selectedEntityType === "symbol") {
+      this.props.handleScrollSymbolIntoView();
     }
   }
 
   removePdfPositioningForDrawerOpen(pdfViewerContainer: HTMLElement) {
-    Array.from(pdfViewerContainer.children).forEach(page => {
+    Array.from(pdfViewerContainer.children).forEach((page) => {
       page.classList.remove(PDF_VIEWER_DRAWER_OPEN_CLASS);
     });
   }
 
   componentWillUnmount() {
-    const { pdfViewer } = this.context;
+    const { pdfViewer } = this.props;
     if (pdfViewer != null) {
       this.removePdfPositioningForDrawerOpen(pdfViewer.viewer);
     }
@@ -63,9 +89,8 @@ export class Drawer extends React.PureComponent {
   };
 
   closeDrawer() {
-    if (this.context.drawerState !== "closed") {
-      this.context.setDrawerState("closed");
-      this.context.setSelectedEntity(null, null);
+    if (this.props.mode !== "closed") {
+      this.props.handleClose();
     }
   }
 
@@ -75,55 +100,75 @@ export class Drawer extends React.PureComponent {
      * notify the PDF viewer by adding a class, as the PDF viewer otherwise has no knowledge of the
      * state of this React application.
      */
-    const { pdfViewer, drawerState } = this.context;
+    const {
+      paperId,
+      pdfViewer,
+      pdfDocument,
+      mode,
+      symbols,
+      mathMls,
+      sentences,
+      selectedEntityType,
+      selectedEntityId,
+      handleSelectSymbol,
+    } = this.props;
     if (pdfViewer != null) {
-      if (drawerState === "open") {
+      if (mode === "open") {
         this.positionPdfForDrawerOpen(pdfViewer.viewer);
       } else {
         this.removePdfPositioningForDrawerOpen(pdfViewer.viewer);
       }
     }
 
+    const feedbackContext = {
+      mode,
+      selectedEntityType,
+      selectedEntityId,
+    };
     return (
-      <ScholarReaderContext.Consumer>
-        {({ selectedEntityType, selectedEntityId }) => {
-          const extraContext = {
-            drawerState,
-            selectedEntityType,
-            selectedEntityId
-          };
-          return (
-            <ClickAwayListener onClickAway={this.closeOnClickAway}>
-              <MuiDrawer
-                className="drawer"
-                variant="persistent"
-                anchor="right"
-                open={drawerState !== "closed"}
+      <ClickAwayListener onClickAway={this.closeOnClickAway}>
+        <MuiDrawer
+          className="drawer"
+          variant="persistent"
+          anchor="right"
+          open={mode !== "closed"}
+        >
+          <div className="drawer__header">
+            <div className="drawer__close_icon">
+              <IconButton
+                className="MuiButton-contained"
+                onClick={this.closeDrawer.bind(this)}
               >
-                <div className="drawer__header">
-                  <div className="drawer__close_icon">
-                    <IconButton
-                      className="MuiButton-contained"
-                      onClick={this.closeDrawer.bind(this)}
-                    >
-                      <ChevronRightIcon />
-                    </IconButton>
-                  </div>
-                  <FeedbackButton extraContext={extraContext} />
-                </div>
-                <div className="drawer__content">
-                  {drawerState === "open" &&
-                    selectedEntityType === "symbol" && (
-                      <SearchResults pageSize={4} />
-                    )}
-                  {drawerState === "open" &&
-                    selectedEntityType === "citation" && <PaperList />}
-                </div>
-              </MuiDrawer>
-            </ClickAwayListener>
-          );
-        }}
-      </ScholarReaderContext.Consumer>
+                <ChevronRightIcon />
+              </IconButton>
+            </div>
+            <FeedbackButton paperId={paperId} extraContext={feedbackContext} />
+          </div>
+          <div className="drawer__content">
+            {mode === "open" &&
+              selectedEntityType === "symbol" &&
+              pdfDocument !== null && (
+                <SearchResults
+                  pdfDocument={pdfDocument}
+                  pageSize={4}
+                  symbols={symbols}
+                  mathMls={mathMls}
+                  sentences={sentences}
+                  selectedEntityType={selectedEntityType}
+                  selectedEntityId={selectedEntityId}
+                  handleSelectSymbol={handleSelectSymbol}
+                />
+              )}
+            {mode === "open" && selectedEntityType === "citation" && (
+              <PaperList
+                papers={this.props.papers}
+                userLibrary={this.props.userLibrary}
+                handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
+              />
+            )}
+          </div>
+        </MuiDrawer>
+      </ClickAwayListener>
     );
   }
 }

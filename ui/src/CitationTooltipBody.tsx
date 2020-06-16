@@ -1,10 +1,14 @@
 import React from "react";
 import PaperSummary from "./PaperSummary";
-import * as api from "./types/api";
+import { PaperId } from "./state";
+import { Citation, Paper, UserLibrary } from "./types/api";
 
 interface CitationTooltipBodyProps {
-  paperId: string;
-  citation: api.Citation;
+  paper: Paper;
+  citation: Citation;
+  userLibrary: UserLibrary | null;
+  handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
+  openedPaperId?: PaperId;
 }
 
 export class CitationTooltipBody extends React.PureComponent<
@@ -15,7 +19,12 @@ export class CitationTooltipBody extends React.PureComponent<
       <div className="tooltip-body citation-tooltip-body">
         <div className="tooltip-body__section">
           <div className="tooltip-body__citation">
-            <PaperSummary paperId={this.props.citation.paper} />
+            <PaperSummary
+              paper={this.props.paper}
+              userLibrary={this.props.userLibrary}
+              handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
+              openedPaperId={this.props.openedPaperId}
+            />
           </div>
         </div>
       </div>

@@ -35,10 +35,12 @@ export class PdfjsFindQueryWidget extends React.PureComponent<
     pdfViewerApplication.externalServices = {
       ...pdfViewerApplication.externalServices,
       updateFindControlState: ({ matchesCount: { current, total } }) => {
+        console.log("updateFindControlState called");
         this.props.onMatchCountChanged(total);
         this.props.onMatchIndexChanged(current);
       },
       updateFindMatchesCount: ({ current, total }) => {
+        console.log("updateFindMatchesCount called");
         this.props.onMatchIndexChanged(current);
         this.props.onMatchCountChanged(total);
       },
@@ -105,6 +107,7 @@ export class PdfjsFindQueryWidget extends React.PureComponent<
    * https://github.com/mozilla/pdf.js/blob/49f59eb627646ae9a6e166ee2e0ef2cac9390b4f/web/firefoxcom.js#L190-L200
    */
   dispatchToPdfjs(eventName: string, findPrevious?: boolean) {
+    console.log("new event dispatched");
     const { query } = this.props;
     if (query === null) {
       return;

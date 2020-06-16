@@ -1,31 +1,30 @@
 import Button from "@material-ui/core/Button";
 import React from "react";
-import { ScholarReaderContext, SymbolFilter, SymbolFilters } from "./state";
+import { SymbolFilter, SymbolFilters } from "./state";
 
-export class SymbolFindQueryWidget extends React.PureComponent {
-  static contextType = ScholarReaderContext;
-  context!: React.ContextType<typeof ScholarReaderContext>;
+interface SymbolFindQueryWidgetProps {
+  filters: SymbolFilters;
+  handleFilterChange: (filters: SymbolFilters) => void;
+}
 
+export class SymbolFindQueryWidget extends React.PureComponent<
+  SymbolFindQueryWidgetProps
+> {
   toggleFilter(filter: SymbolFilter) {
-    // TODO(andrewhead): Do type-checking before assuming the query is symbol filters.
-    // TODO(andrewhead): Decide whether this belongs in this widget, or in FindBar
-    const filters = this.context.findQuery as SymbolFilters;
-    this.context.setState({
-      findQuery: {
-        ...filters,
-        byId: {
-          ...filters.byId,
-          [filter.key]: {
-            ...filter,
-            active: !filter.active,
-          },
+    this.props.handleFilterChange({
+      ...this.props.filters,
+      byId: {
+        ...this.props.filters.byId,
+        [filter.key]: {
+          ...filter,
+          active: !filter.active,
         },
       },
     });
   }
 
   render() {
-    const filters = this.context.findQuery as SymbolFilters;
+    const { filters } = this.props;
     return (
       <div className="symbol-filters">
         {filters.all.map((id: string) => {

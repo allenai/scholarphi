@@ -2,15 +2,54 @@ import React from "react";
 import ReactDOM from "react-dom";
 import CitationAnnotation from "./CitationAnnotation";
 import PageMask from "./PageMask";
-import { ScholarReaderContext } from "./state";
+import {
+  Citations,
+  MathMls,
+  PaperId,
+  Papers,
+  SelectableEntityType,
+  Sentences,
+  Symbols,
+} from "./state";
 import SymbolAnnotation from "./SymbolAnnotation";
+import {
+  Annotation as AnnotationObject,
+  AnnotationData,
+  UserAnnotationType,
+  UserLibrary,
+} from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 import { getPageViewDimensions } from "./ui-utils";
 import { UserAnnotationLayer } from "./UserAnnotationLayer";
 
-interface PageProps {
+interface PageOverlayProps {
+  paperId?: PaperId;
   pageNumber: number;
   view: PDFPageView;
+  papers: Papers | null;
+  citations: Citations | null;
+  symbols: Symbols | null;
+  mathMls: MathMls | null;
+  sentences: Sentences | null;
+  userLibrary: UserLibrary | null;
+  selectedEntityId: string | null;
+  selectedEntityType: SelectableEntityType;
+  selectedAnnotationId: string | null;
+  selectedAnnotationSpanId: string | null;
+  showAnnotations: boolean;
+  userAnnotations: AnnotationObject[] | null;
+  userAnnotationsEnabled: boolean;
+  userAnnotationType: UserAnnotationType;
+  handleSelectEntity: (entityType: SelectableEntityType, id: string) => void;
+  handleSelectAnnotation: (id: string) => void;
+  handleSelectAnnotationSpan: (id: string) => void;
+  handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
+  handleAddUserAnnotation: (data: AnnotationData) => void;
+  handleUpdateUserAnnotation: (
+    id: string,
+    annotation: AnnotationObject
+  ) => void;
+  handleDeleteUserAnnotation: (id: string) => void;
 }
 
 /**
@@ -27,11 +66,8 @@ interface PageProps {
  *
  * The structure of this class is based on the example at https://reactjs.org/docs/portals.html.
  */
-class PageOverlay extends React.PureComponent<PageProps, {}> {
-  static contextType = ScholarReaderContext;
-  context!: React.ContextType<typeof ScholarReaderContext>;
-
-  constructor(props: PageProps) {
+class PageOverlay extends React.PureComponent<PageOverlayProps, {}> {
+  constructor(props: PageOverlayProps) {
     super(props);
     this._element = document.createElement("div");
     this._element.classList.add("scholar-reader-overlay");
@@ -53,14 +89,46 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
     }
   }
 
+  handleSelectCitation(id: string) {
+    this.props.handleSelectEntity("citation", id);
+  }
+
+  handleSelectSymbol(id: string) {
+    this.props.handleSelectEntity("symbol", id);
+  }
+
   render() {
+    const {
+      view,
+      pageNumber,
+      papers,
+      citations,
+      symbols,
+      mathMls,
+      sentences,
+      userLibrary,
+      selectedEntityType,
+      selectedEntityId,
+      selectedAnnotationId,
+      selectedAnnotationSpanId,
+      showAnnotations,
+      userAnnotations,
+      userAnnotationsEnabled,
+      userAnnotationType,
+      handleAddPaperToLibrary,
+      handleSelectAnnotation,
+      handleSelectAnnotationSpan,
+      handleAddUserAnnotation,
+      handleUpdateUserAnnotation,
+      handleDeleteUserAnnotation,
+    } = this.props;
+
     /*
      * If user annotations are enabled, the overlay needs to be set to the full size of the page
      * so that it can capture mouse events. If not, the overlay should not have any size, as
      * the layers below (e.g., the text layer) need to capture the mouse events.
-     * TODO: set width and height to 100% only if annotations enabled.
      */
-    if (this.context.userAnnotationsEnabled) {
+    if (userAnnotationsEnabled) {
       this._element.classList.add("user-annotations-enabled");
     } else {
       this._element.classList.remove("user-annotations-enabled");
@@ -68,68 +136,87 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
 
     const pageDimensions = getPageViewDimensions(this.props.view);
     return ReactDOM.createPortal(
-      <ScholarReaderContext.Consumer>
-        {({
-          citations,
-          symbols,
-          annotationsShowing,
-          userAnnotationsEnabled,
-        }) => {
-          return (
-            <>
-              <PageMask
-                key="page-mask"
-                pageNumber={this.props.pageNumber}
-                pageWidth={pageDimensions.width}
-                pageHeight={pageDimensions.height}
-              />
-              {/* Add annotations for all citation bounding boxes on this page. */}
-              {citations !== null
-                ? citations.all.map((cId) => {
-                    const citation = citations.byId[cId];
-                    const boundingBoxes = citation.bounding_boxes.filter(
-                      (b) => b.page === this.props.pageNumber - 1
-                    );
-                    return boundingBoxes.length > 0 ? (
-                      <CitationAnnotation
-                        key={cId}
-                        showHint={annotationsShowing}
-                        boundingBoxes={boundingBoxes}
-                        citation={citation}
-                      />
-                    ) : null;
-                  })
-                : null}
-              {/* Add annotations for all symbol bounding boxes on this page. */}
-              {symbols !== null
-                ? symbols.all.map((sId) => {
-                    const symbol = symbols.byId[sId];
-                    const boundingBoxes = symbol.bounding_boxes.filter(
-                      (b) => b.page === this.props.pageNumber - 1
-                    );
-                    return boundingBoxes.length > 0 ? (
-                      <SymbolAnnotation
-                        key={sId}
-                        showHint={annotationsShowing}
-                        boundingBoxes={boundingBoxes}
-                        symbol={symbol}
-                        // TODO(andrewhead): Determine highlighting programmatically
-                        // highlight={}
-                      />
-                    ) : null;
-                  })
-                : null}
-              {/* Add layer for user annotations. */}
-              {userAnnotationsEnabled && (
-                <UserAnnotationLayer
-                  pageView={this.props.view}
-                  pageNumber={this.props.pageNumber}
+      <>
+        <PageMask
+          key="page-mask"
+          pageNumber={this.props.pageNumber}
+          pageWidth={pageDimensions.width}
+          pageHeight={pageDimensions.height}
+          symbols={symbols}
+          mathMls={mathMls}
+          sentences={sentences}
+          selectedEntityId={selectedEntityId}
+          selectedEntityType={selectedEntityType}
+        />
+        {/* Add annotations for all citation bounding boxes on this page. */}
+        {citations !== null && papers !== null
+          ? citations.all.map((cId) => {
+              const citation = citations.byId[cId];
+              const boundingBoxes = citation.bounding_boxes.filter(
+                (b) => b.page === this.props.pageNumber - 1
+              );
+              const isSelected = cId === selectedEntityId;
+              return boundingBoxes.length > 0 ? (
+                <CitationAnnotation
+                  key={cId}
+                  pageView={view}
+                  paper={papers[citation.paper]}
+                  userLibrary={userLibrary}
+                  citation={citation}
+                  selected={isSelected}
+                  selectedSpanId={isSelected ? selectedAnnotationSpanId : null}
+                  showHint={showAnnotations}
+                  boundingBoxes={boundingBoxes}
+                  openedPaperId={this.props.paperId}
+                  handleSelectCitation={this.handleSelectCitation.bind(this)}
+                  handleAddPaperToLibrary={handleAddPaperToLibrary}
+                  handleSelectAnnotation={handleSelectAnnotation}
+                  handleSelectAnnotationSpan={handleSelectAnnotationSpan}
                 />
-              )}
-            </>
-          );
-        }}
-      </ScholarReaderContext.Consumer>,
+              ) : null;
+            })
+          : null}
+        {/* Add annotations for all symbol bounding boxes on this page. */}
+        {symbols !== null
+          ? symbols.all.map((sId) => {
+              const symbol = symbols.byId[sId];
+              const boundingBoxes = symbol.bounding_boxes.filter(
+                (b) => b.page === this.props.pageNumber - 1
+              );
+              const isSelected = sId === selectedEntityId;
+              return boundingBoxes.length > 0 ? (
+                <SymbolAnnotation
+                  key={sId}
+                  pageView={view}
+                  selected={isSelected}
+                  selectedSpanId={isSelected ? selectedAnnotationSpanId : null}
+                  showHint={showAnnotations}
+                  boundingBoxes={boundingBoxes}
+                  symbol={symbol}
+                  handleSelectSymbol={this.handleSelectSymbol.bind(this)}
+                  handleSelectAnnotation={handleSelectAnnotation}
+                  handleSelectAnnotationSpan={handleSelectAnnotationSpan}
+                />
+              ) : null;
+            })
+          : null}
+        {/* Add layer for user annotations. */}
+        {userAnnotationsEnabled && userAnnotations !== null ? (
+          <UserAnnotationLayer
+            pageView={view}
+            pageNumber={pageNumber}
+            annotations={userAnnotations}
+            annotationType={userAnnotationType}
+            selectedAnnotationId={selectedAnnotationId}
+            selectedAnnotationSpanId={selectedAnnotationSpanId}
+            handleSelectAnnotation={handleSelectAnnotation}
+            handleSelectAnnotationSpan={handleSelectAnnotationSpan}
+            handleAddAnnotation={handleAddUserAnnotation}
+            handleUpdateAnnotation={handleUpdateUserAnnotation}
+            handleDeleteAnnotation={handleDeleteUserAnnotation}
+          />
+        ) : null}
+      </>,
       this._element
     );
   }

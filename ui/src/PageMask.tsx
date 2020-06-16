@@ -1,18 +1,20 @@
 import React from "react";
 import * as selectors from "./selectors";
-import { ScholarReaderContext } from "./state";
+import { MathMls, SelectableEntityType, Sentences, Symbols } from "./state";
 import { Sentence } from "./types/api";
 
 interface PageMaskProps {
   pageNumber: number;
   pageWidth: number;
   pageHeight: number;
+  symbols: Symbols | null;
+  mathMls: MathMls | null;
+  sentences: Sentences | null;
+  selectedEntityType: SelectableEntityType;
+  selectedEntityId: string | null;
 }
 
 export class PageMask extends React.PureComponent<PageMaskProps> {
-  static contextType = ScholarReaderContext;
-  context!: React.ContextType<typeof ScholarReaderContext>;
-
   render() {
     const maskId = `page-${this.props.pageNumber}-mask`;
 
@@ -22,7 +24,7 @@ export class PageMask extends React.PureComponent<PageMaskProps> {
       symbols,
       mathMls,
       sentences,
-    } = this.context;
+    } = this.props;
 
     /*
      * Only show the mask if a symbol is selected and sentences were detected for the paper.
