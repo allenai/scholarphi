@@ -8,7 +8,7 @@ import {
 import { PDFPageView } from "./types/pdfjs-viewer";
 import UserAnnotationTooltipBody from "./UserAnnotationTooltipBody";
 
-interface UserAnnotationProps {
+interface Props {
   pageView: PDFPageView;
   annotation: AnnotationObject;
   active?: boolean;
@@ -20,10 +20,15 @@ interface UserAnnotationProps {
   handleSelectAnnotationSpan: (id: string) => void;
 }
 
-export class UserAnnotation extends React.PureComponent<UserAnnotationProps> {
+export class UserAnnotation extends React.PureComponent<Props> {
   static defaultProps = {
     active: true,
   };
+
+  constructor(props: Props) {
+    super(props);
+    this.onKeyDown = this.onKeyDown.bind(this);
+  }
 
   onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
     const { handleUpdateAnnotation, handleDeleteAnnotation } = this.props;
@@ -65,7 +70,7 @@ export class UserAnnotation extends React.PureComponent<UserAnnotationProps> {
         }
         selected={this.props.selected}
         selectedSpanId={this.props.selectedSpanId}
-        onKeyDown={this.onKeyDown.bind(this)}
+        onKeyDown={this.onKeyDown}
         handleSelectAnnotation={this.props.handleSelectAnnotation}
         handleSelectAnnotationSpan={this.props.handleSelectAnnotationSpan}
       />

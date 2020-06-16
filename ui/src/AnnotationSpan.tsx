@@ -9,7 +9,7 @@ import { PDFPageView } from "./types/pdfjs-viewer";
  * Many of these properties are analogous to those in 'Annotation'. For complete documentation,
  * see the docstrings for the 'Annotation' properties.
  */
-interface AnnotationSpanProps {
+interface Props {
   pageView: PDFPageView;
   /**
    * ID of the annotation this span belongs to.
@@ -40,7 +40,7 @@ interface AnnotationSpanProps {
   handleSelectSpan: (spanId: string) => void;
 }
 
-export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
+export class AnnotationSpan extends React.PureComponent<Props> {
   static defaultProps = {
     active: true,
     isAnnotationSelected: false,
@@ -48,10 +48,10 @@ export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
     highlight: false,
   };
 
-  onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
-    if (this.props.onKeyDown !== undefined) {
-      this.props.onKeyDown(e);
-    }
+  constructor(props: Props) {
+    super(props);
+    this.focusIfSelected = this.focusIfSelected.bind(this);
+    this.onClick = this.onClick.bind(this);
   }
 
   onClick() {
@@ -76,8 +76,8 @@ export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
      */
     let annotationSpan = (
       <div
-        ref={this.focusIfSelected.bind(this)}
-        onClick={this.onClick.bind(this)}
+        ref={this.focusIfSelected}
+        onClick={this.onClick}
         style={selectors.divDimensionStyles(
           pageView,
           this.props.location,
@@ -94,7 +94,7 @@ export class AnnotationSpan extends React.PureComponent<AnnotationSpanProps> {
           }
         )}
         tabIndex={this.props.active === true ? 0 : undefined}
-        onKeyDown={this.onKeyDown.bind(this)}
+        onKeyDown={this.props.onKeyDown}
       />
     );
 

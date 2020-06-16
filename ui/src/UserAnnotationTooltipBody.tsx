@@ -8,15 +8,19 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import React from "react";
 import { Annotation, UserAnnotationType } from "./types/api";
 
-interface UserAnnotationTooltipBodyProps {
+interface Props {
   annotation: Annotation;
   handleUpdateAnnotation: (id: string, annotation: Annotation) => void;
   handleDeleteAnnotation: (id: string) => void;
 }
 
-export class UserAnnotationTooltipBody extends React.PureComponent<
-  UserAnnotationTooltipBodyProps
-> {
+export class UserAnnotationTooltipBody extends React.PureComponent<Props> {
+  constructor(props: Props) {
+    super(props);
+    this.delete = this.delete.bind(this);
+    this.updateType = this.updateType.bind(this);
+  }
+
   updateType(e: React.ChangeEvent<HTMLInputElement>) {
     this.props.handleUpdateAnnotation(this.props.annotation.id, {
       ...this.props.annotation,
@@ -35,7 +39,7 @@ export class UserAnnotationTooltipBody extends React.PureComponent<
           <Button
             className="user-annotation-tooltip-body__delete-annotation-button"
             variant="contained"
-            onClick={this.delete.bind(this)}
+            onClick={this.delete}
           >
             Delete <DeleteIcon />
           </Button>
@@ -47,7 +51,7 @@ export class UserAnnotationTooltipBody extends React.PureComponent<
               arial-label="entity-type"
               name="entity-type"
               value={this.props.annotation.type}
-              onChange={this.updateType.bind(this)}
+              onChange={this.updateType}
             >
               <FormControlLabel
                 value="citation"

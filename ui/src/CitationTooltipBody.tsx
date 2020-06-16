@@ -3,7 +3,7 @@ import PaperSummary from "./PaperSummary";
 import { PaperId } from "./state";
 import { Citation, Paper, UserLibrary } from "./types/api";
 
-interface CitationTooltipBodyProps {
+interface Props {
   paper: Paper;
   citation: Citation;
   userLibrary: UserLibrary | null;
@@ -11,9 +11,7 @@ interface CitationTooltipBodyProps {
   openedPaperId?: PaperId;
 }
 
-export class CitationTooltipBody extends React.PureComponent<
-  CitationTooltipBodyProps
-> {
+export class CitationTooltipBody extends React.PureComponent<Props> {
   render() {
     return (
       <div className="tooltip-body citation-tooltip-body">

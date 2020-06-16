@@ -6,7 +6,7 @@ import { PaperId } from "./state";
 import { BoundingBox, Citation, Paper, UserLibrary } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
-interface CitationAnnotationProps {
+interface Props {
   pageView: PDFPageView;
   citation: Citation;
   paper: Paper;
@@ -22,10 +22,16 @@ interface CitationAnnotationProps {
   handleSelectAnnotationSpan: (id: string) => void;
 }
 
-export class CitationAnnotation extends React.PureComponent<
-  CitationAnnotationProps,
-  {}
-> {
+export class CitationAnnotation extends React.PureComponent<Props, {}> {
+  constructor(props: Props) {
+    super(props);
+    this.onSelected = this.onSelected.bind(this);
+  }
+
+  onSelected() {
+    this.props.handleSelectCitation(this.props.citation.id);
+  }
+
   render() {
     return (
       <Annotation
@@ -45,15 +51,11 @@ export class CitationAnnotation extends React.PureComponent<
         }
         selected={this.props.selected}
         selectedSpanId={this.props.selectedSpanId}
-        onSelected={this.onSelected.bind(this)}
+        onSelected={this.onSelected}
         handleSelectAnnotation={this.props.handleSelectAnnotation}
         handleSelectAnnotationSpan={this.props.handleSelectAnnotationSpan}
       />
     );
-  }
-
-  onSelected() {
-    this.props.handleSelectCitation(this.props.citation.id);
   }
 }
 
