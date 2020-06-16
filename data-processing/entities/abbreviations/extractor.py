@@ -82,6 +82,8 @@ class AbbreviationExtractor(EntityExtractor):
 
         contents = re.sub("\n", " ", contents)
         abb_short_forms = {}
+        abb_expansions = {}
+        expanded_loc = {}
         doc = nlp(contents)
         for abrv in doc._.abbreviations:
             count = 0
@@ -89,17 +91,33 @@ class AbbreviationExtractor(EntityExtractor):
                 count += str(abrv).count(s)
             if count == 0:
                 abb_short_forms[str(abrv)] = [[m.start(), m.start() + len(str(abrv))] for m in re.finditer(str(abrv), cons)]
+                abb_expansions[str(abrv)] = abrv._.long_form
+                x = cons.find(str(abrv._.long_form))
+                if x != -1:
+                    expanded_loc[str(abrv)] = [x, x + len(str(abrv._.long_form))]
+                else:
+                    for p, l in soup_text:
+                        x = p.find(str(abrv._.long_form))
+                        if x!= -1:
+                            expanded_loc[str(abrv)] = [l + x, l + x + len(str(abrv._.long_form))]
+                        else:
+                            expanded_loc[str(abrv)] = [0, 0]
 
         count = 0
         for abb in abb_short_forms:
             for location in abb_short_forms[abb]:
                 start, end = location
+                exp_start, exp_end = expanded_loc[abb]
+                expanded = abb_expansions[abb]
                 tex_sub = cons[start:end]
                 context_tex = cons[start - DEFAULT_CONTEXT_SIZE : end + DEFAULT_CONTEXT_SIZE]
                 yield Abbreviation(
                     text= abb,
                     start=start,
                     end=end,
+                    exp_start = exp_start,
+                    exp_end = exp_end,
+                    expansion = expanded,
                     id_= count,
                     tex_path=tex_path,
                     tex=tex_sub,
