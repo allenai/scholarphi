@@ -2,14 +2,12 @@ import Button from "@material-ui/core/Button";
 import React from "react";
 import { SymbolFilter, SymbolFilters } from "./state";
 
-interface SymbolFindQueryWidgetProps {
+interface Props {
   filters: SymbolFilters;
   handleFilterChange: (filters: SymbolFilters) => void;
 }
 
-export class SymbolFindQueryWidget extends React.PureComponent<
-  SymbolFindQueryWidgetProps
-> {
+export class SymbolFindQueryWidget extends React.PureComponent<Props> {
   toggleFilter(filter: SymbolFilter) {
     this.props.handleFilterChange({
       ...this.props.filters,

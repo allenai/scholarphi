@@ -4,12 +4,7 @@ import AnnotationSpan from "./AnnotationSpan";
 import { BoundingBox } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
-/**
- * Maximum height for an annotation span before it is filtered out as an outlier.
- */
-const MAXIMUM_ANNOTATION_HEIGHT = 30;
-
-interface AnnotationProps {
+interface Props {
   pageView: PDFPageView;
   /**
    * A unique ID that distinguishes this annotation from all other annotations.
@@ -56,7 +51,7 @@ interface AnnotationProps {
   handleSelectAnnotationSpan: (id: string) => void;
 }
 
-export class Annotation extends React.PureComponent<AnnotationProps> {
+export class Annotation extends React.PureComponent<Props> {
   static defaultProps = {
     active: true,
     selected: false,
@@ -64,6 +59,11 @@ export class Annotation extends React.PureComponent<AnnotationProps> {
   };
 
   render() {
+    /**
+     * Maximum height for an annotation span before it is filtered out as an outlier.
+     */
+    const MAXIMUM_ANNOTATION_HEIGHT = 30;
+
     return (
       <>
         {this.props.boundingBoxes

@@ -6,14 +6,14 @@ import { mathjax as MathJax } from "mathjax-full/js/mathjax";
 import { CHTML } from "mathjax-full/js/output/chtml";
 import React from "react";
 
-interface MathMlProps {
+interface Props {
   /**
    * This MathML will be sanitized by DOMPurify before being rendered.
    */
   mathMl: string;
 }
 
-export class MathMl extends React.PureComponent<MathMlProps, {}> {
+export class MathMl extends React.PureComponent<Props, {}> {
   async componentDidMount() {
     if (this.element !== null) {
       typesetElement(this.element);
@@ -26,7 +26,7 @@ export class MathMl extends React.PureComponent<MathMlProps, {}> {
     return (
       <div
         className="mathml"
-        ref={ref => {
+        ref={(ref) => {
           this.element = ref;
         }}
         /*
@@ -53,11 +53,11 @@ const INPUT_JAX = new MathJaxMathML();
 const OUTPUT_JAX = new CHTML();
 const MATHJAX_OPTIONS = {
   InputJax: INPUT_JAX,
-  OutputJax: OUTPUT_JAX
+  OutputJax: OUTPUT_JAX,
 };
 const mathJaxDocument = MathJax.document(document, MATHJAX_OPTIONS);
 
-let typesetPromise = new Promise(resolve => {
+let typesetPromise = new Promise((resolve) => {
   resolve();
 });
 

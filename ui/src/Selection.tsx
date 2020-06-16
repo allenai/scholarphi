@@ -1,6 +1,6 @@
 import React from "react";
 
-interface SelectionProps {
+interface Props {
   anchor: Point;
   active: Point;
 }
@@ -10,7 +10,7 @@ export interface Point {
   y: number;
 }
 
-export class Selection extends React.PureComponent<SelectionProps> {
+export class Selection extends React.PureComponent<Props> {
   render() {
     const left = Math.min(this.props.anchor.x, this.props.active.x) + "px";
     const top = Math.min(this.props.anchor.y, this.props.active.y) + "px";

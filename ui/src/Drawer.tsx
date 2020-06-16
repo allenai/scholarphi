@@ -20,9 +20,8 @@ import { UserLibrary } from "./types/api";
 import { PDFViewer } from "./types/pdfjs-viewer";
 
 const PDF_VIEWER_DRAWER_OPEN_CLASS = "drawer-open";
-const BLACK_LISTED_CLASS_NAME = "MuiTooltip-tooltip";
 
-interface DrawerProps {
+interface Props {
   paperId: PaperId | undefined;
   pdfViewer: PDFViewer;
   pdfDocument: PDFDocumentProxy | null;
@@ -40,9 +39,23 @@ interface DrawerProps {
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
 }
 
-export class Drawer extends React.PureComponent<DrawerProps> {
+export class Drawer extends React.PureComponent<Props> {
+  constructor(props: Props) {
+    super(props);
+    this.closeDrawer = this.closeDrawer.bind(this);
+  }
+
+  componentWillUnmount() {
+    const { pdfViewer } = this.props;
+    if (pdfViewer != null) {
+      this.removePdfPositioningForDrawerOpen(pdfViewer.viewer);
+    }
+  }
+
   positionPdfForDrawerOpen(pdfViewerContainer: HTMLElement) {
-    // Creating padding for scroll
+    /*
+     * Creating padding for scroll
+     */
     Array.from(pdfViewerContainer.children).forEach((page) => {
       // XXX(zkirby, andrewhead) per our discussion at https://github.com/allenai/scholar-reader/pull/38/files#r388514946
       // this is 'safe' as pages are not deleted when scrolled out of view (just their inner content).
@@ -61,22 +74,17 @@ export class Drawer extends React.PureComponent<DrawerProps> {
     });
   }
 
-  componentWillUnmount() {
-    const { pdfViewer } = this.props;
-    if (pdfViewer != null) {
-      this.removePdfPositioningForDrawerOpen(pdfViewer.viewer);
-    }
-  }
-
   /**
    * XXX(zkirby): Since the clickaway listener listens to *all* clicks outside of the
    * drawer, if we do not have the code below it will close after a button is clicked that
    * is meant to open the drawer. The code below simply gets the element that the click that is intending
    * to close the drawer originated from and traverses the class list and class list of all
    * parent elements looking for if this click happened from within a tooltip.
-   * Only close the drawer if the click is not within the tooltip.
+   * Only close the drawer if the click is not within the tooltip.\
+   * TODO(andrewhead): move this into ScholarReader.
    */
   closeOnClickAway = (e: React.MouseEvent<Document, MouseEvent>) => {
+    const BLACK_LISTED_CLASS_NAME = "MuiTooltip-tooltip";
     let elementTarget = e.target as Element | null;
     while (elementTarget != null) {
       if (elementTarget.classList.contains(BLACK_LISTED_CLASS_NAME)) {
@@ -137,7 +145,7 @@ export class Drawer extends React.PureComponent<DrawerProps> {
             <div className="drawer__close_icon">
               <IconButton
                 className="MuiButton-contained"
-                onClick={this.closeDrawer.bind(this)}
+                onClick={this.closeDrawer}
               >
                 <ChevronRightIcon />
               </IconButton>

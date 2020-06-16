@@ -22,7 +22,6 @@ import {
   BoundingBox,
   Paper,
   UserAnnotationType,
-  UserLibrary,
 } from "./types/api";
 import {
   DocumentLoadedEvent,
@@ -32,12 +31,12 @@ import {
 import { isKeypressEscape } from "./ui-utils";
 import { UserAnnotationTypeSelect } from "./UserAnnotationTypeSelect";
 
-interface ScholarReaderProps {
+interface Props {
   paperId?: PaperId;
 }
 
-class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
-  constructor(props: ScholarReaderProps) {
+class ScholarReader extends React.PureComponent<Props, State> {
+  constructor(props: Props) {
     super(props);
 
     this.state = {
@@ -103,10 +102,6 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
     this.showAnnotationsOnAltUp = this.showAnnotationsOnAltUp.bind(this);
   }
 
-  setUserLibrary(userLibrary: UserLibrary | null) {
-    this.setState({ userLibrary });
-  }
-
   async addToLibrary(paperId: string, paperTitle: string) {
     if (this.props.paperId) {
       const response = await api.addLibraryEntry(paperId, paperTitle);
@@ -119,17 +114,9 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
       const userLibrary = this.state.userLibrary;
       if (userLibrary) {
         const paperIds = userLibrary.paperIds.concat(paperId);
-        this.setUserLibrary({ paperIds });
+        this.setState({ userLibrary: { ...userLibrary, paperIds } });
       }
     }
-  }
-
-  setPages(pages: Pages | null) {
-    this.setState({ pages });
-  }
-
-  setAnnotationsShowing(showing: boolean) {
-    this.setState({ annotationsShowing: showing });
   }
 
   setSelectedAnnotationId(id: string | null) {
@@ -146,10 +133,6 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
   selectSymbol(id: string) {
     this.setSelectedEntity("symbol", id);
-  }
-
-  requestJumpToPaper(s2Id: string) {
-    this.setState({ paperJumpRequest: s2Id });
   }
 
   setDrawerState(state: DrawerMode) {
@@ -208,10 +191,6 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
         }
       }
     }
-  }
-
-  setUserAnnotationsEnabled(enabled: boolean) {
-    this.setState({ userAnnotationsEnabled: enabled });
   }
 
   setUserAnnotationType(type: UserAnnotationType) {
@@ -283,19 +262,21 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
   hideAnnotationsOnAltDown(event: KeyboardEvent) {
     if (event.altKey) {
-      this.setAnnotationsShowing(false);
+      this.setState({ annotationsShowing: false });
     }
   }
 
   showAnnotationsOnAltUp(event: KeyboardEvent) {
     if (event.keyCode === 18 || event.key === "Alt") {
-      this.setAnnotationsShowing(true);
+      this.setState({ annotationsShowing: true });
     }
   }
 
   toggleUserAnnotationState(event: KeyboardEvent) {
     if (event.ctrlKey && event.shiftKey && event.key !== "a") {
-      this.setUserAnnotationsEnabled(!this.state.userAnnotationsEnabled);
+      this.setState((prevState) => ({
+        userAnnotationsEnabled: !prevState.userAnnotationsEnabled,
+      }));
     }
   }
 
@@ -379,12 +360,14 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
      * to the state? Or will 'pagerendered' always run after this component is mounted?
      */
     eventBus.on("pagerendered", (eventData: PageRenderedEvent) => {
-      this.setState({ pdfDocument: pdfViewerApplication.pdfDocument });
-      this.setPages({
-        ...this.state.pages,
-        [eventData.pageNumber]: {
-          timeOfLastRender: eventData.timestamp,
-          view: eventData.source,
+      this.setState({
+        pdfDocument: pdfViewerApplication.pdfDocument,
+        pages: {
+          ...this.state.pages,
+          [eventData.pageNumber]: {
+            timeOfLastRender: eventData.timestamp,
+            view: eventData.source,
+          },
         },
       });
     });
@@ -445,7 +428,7 @@ class ScholarReader extends React.PureComponent<ScholarReaderProps, State> {
 
         const userLibrary = await api.getUserLibraryInfo();
         if (userLibrary) {
-          this.setUserLibrary(userLibrary);
+          this.setState({ userLibrary });
         }
       }
     }

@@ -5,7 +5,7 @@ import { Annotation, AnnotationData, UserAnnotationType } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 import UserAnnotation from "./UserAnnotation";
 
-interface UserAnnotationLayerProps {
+interface Props {
   pageNumber: number;
   /**
    * The PDFPageView this annotation layer will be added on top of. The pageView is needed for
@@ -23,9 +23,12 @@ interface UserAnnotationLayerProps {
   handleDeleteAnnotation: (id: string) => void;
 }
 
-export class UserAnnotationLayer extends React.PureComponent<
-  UserAnnotationLayerProps
-> {
+export class UserAnnotationLayer extends React.PureComponent<Props> {
+  constructor(props: Props) {
+    super(props);
+    this.onSelectionMade = this.onSelectionMade.bind(this);
+  }
+
   onSelectionMade(anchor: Point, active: Point) {
     const { handleAddAnnotation, annotationType } = this.props;
     handleAddAnnotation(
@@ -55,7 +58,7 @@ export class UserAnnotationLayer extends React.PureComponent<
       <>
         <SelectionCanvas
           key="selection-canvas"
-          onSelection={this.onSelectionMade.bind(this)}
+          onSelection={this.onSelectionMade}
         />
         {this.props.annotations
           .filter((a) => a.boundingBox.page === pageNumber - 1)

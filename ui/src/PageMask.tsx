@@ -3,7 +3,7 @@ import * as selectors from "./selectors";
 import { MathMls, SelectableEntityType, Sentences, Symbols } from "./state";
 import { Sentence } from "./types/api";
 
-interface PageMaskProps {
+interface Props {
   pageNumber: number;
   pageWidth: number;
   pageHeight: number;
@@ -14,7 +14,7 @@ interface PageMaskProps {
   selectedEntityId: string | null;
 }
 
-export class PageMask extends React.PureComponent<PageMaskProps> {
+export class PageMask extends React.PureComponent<Props> {
   render() {
     const maskId = `page-${this.props.pageNumber}-mask`;
 

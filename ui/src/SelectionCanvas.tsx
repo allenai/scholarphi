@@ -2,27 +2,29 @@ import React from "react";
 import Selection, { Point } from "./Selection";
 import * as uiUtils from "./ui-utils";
 
-interface SelectionCanvasProps {
+interface Props {
   onSelection: (anchor: Point, active: Point) => void;
 }
 
-interface SelectionCanvasState {
+interface State {
   anchor: Point | null;
   active: Point | null;
   hasFocus: boolean;
 }
 
-export class SelectionCanvas extends React.PureComponent<
-  SelectionCanvasProps,
-  SelectionCanvasState
-> {
-  constructor(props: SelectionCanvasProps) {
+export class SelectionCanvas extends React.PureComponent<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       anchor: null,
       active: null,
-      hasFocus: false
+      hasFocus: false,
     };
+    this.onFocus = this.onFocus.bind(this);
+    this.onBlur = this.onBlur.bind(this);
+    this.onClick = this.onClick.bind(this);
+    this.onMouseMove = this.onMouseMove.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
   }
 
   onClick(e: React.MouseEvent<HTMLDivElement>) {
@@ -85,18 +87,18 @@ export class SelectionCanvas extends React.PureComponent<
     return (
       <div
         className="selection-layer"
-        ref={ref => {
+        ref={(ref) => {
           this.elementRef = ref;
         }}
-        onFocus={this.onFocus.bind(this)}
-        onBlur={this.onBlur.bind(this)}
-        onClick={this.onClick.bind(this)}
-        onMouseMove={this.onMouseMove.bind(this)}
+        onFocus={this.onFocus}
+        onBlur={this.onBlur}
+        onClick={this.onClick}
+        onMouseMove={this.onMouseMove}
         /*
          * Capture keydown and focus events by setting tabIndex to 0.
          */
         tabIndex={0}
-        onKeyDown={this.onKeyDown.bind(this)}
+        onKeyDown={this.onKeyDown}
       >
         {this.state.anchor !== null && this.state.active !== null && (
           <Selection anchor={this.state.anchor} active={this.state.active} />

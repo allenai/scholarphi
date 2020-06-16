@@ -3,7 +3,7 @@ import React from "react";
 import { Sentences } from "./state";
 import { BoundingBox } from "./types/api";
 
-interface PaperClippingProps {
+interface Props {
   pdfDocument: PDFDocumentProxy;
   sentences: Sentences | null;
   pageNumber: number;
@@ -31,7 +31,7 @@ interface PaperClippingProps {
   onClick?: React.MouseEventHandler;
 }
 
-export class PaperClipping extends React.PureComponent<PaperClippingProps, {}> {
+export class PaperClipping extends React.PureComponent<Props, {}> {
   static defaultProps = {
     width: 500,
     height: 300,

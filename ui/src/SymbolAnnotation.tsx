@@ -5,7 +5,7 @@ import { convertToAnnotationId } from "./selectors/annotation";
 import { BoundingBox, Symbol } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
-interface SymbolAnnotationProps {
+interface Props {
   pageView: PDFPageView;
   boundingBoxes: BoundingBox[];
   symbol: Symbol;
@@ -18,9 +18,12 @@ interface SymbolAnnotationProps {
   handleSelectAnnotationSpan: (id: string) => void;
 }
 
-export class SymbolAnnotation extends React.PureComponent<
-  SymbolAnnotationProps
-> {
+export class SymbolAnnotation extends React.PureComponent<Props> {
+  constructor(props: Props) {
+    super(props);
+    this.onSelected = this.onSelected.bind(this);
+  }
+
   render() {
     return (
       <div hidden={this.props.symbol.parent !== null}>
@@ -35,7 +38,7 @@ export class SymbolAnnotation extends React.PureComponent<
           selected={this.props.selected}
           selectedSpanId={this.props.selectedSpanId}
           highlight={this.props.highlight}
-          onSelected={this.onSelected.bind(this)}
+          onSelected={this.onSelected}
           handleSelectAnnotation={this.props.handleSelectAnnotation}
           handleSelectAnnotationSpan={this.props.handleSelectAnnotationSpan}
         />

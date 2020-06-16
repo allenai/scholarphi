@@ -22,7 +22,7 @@ import { PDFPageView } from "./types/pdfjs-viewer";
 import { getPageViewDimensions } from "./ui-utils";
 import { UserAnnotationLayer } from "./UserAnnotationLayer";
 
-interface PageOverlayProps {
+interface Props {
   paperId?: PaperId;
   pageNumber: number;
   view: PDFPageView;
@@ -66,11 +66,13 @@ interface PageOverlayProps {
  *
  * The structure of this class is based on the example at https://reactjs.org/docs/portals.html.
  */
-class PageOverlay extends React.PureComponent<PageOverlayProps, {}> {
-  constructor(props: PageOverlayProps) {
+class PageOverlay extends React.PureComponent<Props, {}> {
+  constructor(props: Props) {
     super(props);
     this._element = document.createElement("div");
     this._element.classList.add("scholar-reader-overlay");
+    this.handleSelectSymbol = this.handleSelectSymbol.bind(this);
+    this.handleSelectCitation = this.handleSelectCitation.bind(this);
   }
 
   componentDidMount() {
@@ -168,7 +170,7 @@ class PageOverlay extends React.PureComponent<PageOverlayProps, {}> {
                   showHint={showAnnotations}
                   boundingBoxes={boundingBoxes}
                   openedPaperId={this.props.paperId}
-                  handleSelectCitation={this.handleSelectCitation.bind(this)}
+                  handleSelectCitation={this.handleSelectCitation}
                   handleAddPaperToLibrary={handleAddPaperToLibrary}
                   handleSelectAnnotation={handleSelectAnnotation}
                   handleSelectAnnotationSpan={handleSelectAnnotationSpan}
@@ -193,7 +195,7 @@ class PageOverlay extends React.PureComponent<PageOverlayProps, {}> {
                   showHint={showAnnotations}
                   boundingBoxes={boundingBoxes}
                   symbol={symbol}
-                  handleSelectSymbol={this.handleSelectSymbol.bind(this)}
+                  handleSelectSymbol={this.handleSelectSymbol}
                   handleSelectAnnotation={handleSelectAnnotation}
                   handleSelectAnnotationSpan={handleSelectAnnotationSpan}
                 />
