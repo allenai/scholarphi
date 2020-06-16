@@ -3,14 +3,14 @@ import PaperSummary from "./PaperSummary";
 import { PaperId, Papers } from "./state";
 import { UserLibrary } from "./types/api";
 
-interface PaperListProps {
+interface Props {
   paperId?: PaperId;
   papers: Papers | null;
   userLibrary: UserLibrary | null;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
 }
 
-export class PaperList extends React.PureComponent<PaperListProps> {
+export class PaperList extends React.PureComponent<Props> {
   render() {
     const { papers } = this.props;
     return papers !== null ? (

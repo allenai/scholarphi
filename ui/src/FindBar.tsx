@@ -5,7 +5,7 @@ import { FindMode, FindQuery, SymbolFilters } from "./state";
 import { SymbolFindQueryWidget } from "./SymbolFindQueryWidget";
 import { PDFViewerApplication } from "./types/pdfjs-viewer";
 
-interface FindBarProps {
+interface Props {
   pdfViewerApplication: PDFViewerApplication;
   mode: FindMode;
   query: FindQuery;
@@ -17,7 +17,15 @@ interface FindBarProps {
   handleChangeQuery: (query: FindQuery) => void;
 }
 
-class FindBar extends React.PureComponent<FindBarProps> {
+class FindBar extends React.PureComponent<Props> {
+  constructor(props: Props) {
+    super(props);
+    this.onPdfjsQueryChanged = this.onPdfjsQueryChanged.bind(this);
+    this.onClickNext = this.onClickNext.bind(this);
+    this.onClickPrevious = this.onClickPrevious.bind(this);
+    this.close = this.close.bind(this);
+  }
+
   /*
    * The code for creating the match count message is based on 'PDFFindBar.updateResultsCount' in pdf.js:
    * https://github.com/mozilla/pdf.js/blob/49f59eb627646ae9a6e166ee2e0ef2cac9390b4f/web/pdf_find_bar.js#L152
@@ -117,7 +125,7 @@ class FindBar extends React.PureComponent<FindBarProps> {
                         ref={(ref) => (this.pdfjsFindQueryWidget = ref)}
                         pdfViewerApplication={pdfViewerApplication}
                         query={query as string | null}
-                        onQueryChanged={this.onPdfjsQueryChanged.bind(this)}
+                        onQueryChanged={this.onPdfjsQueryChanged}
                         onMatchIndexChanged={this.props.handleChangeMatchIndex}
                         onMatchCountChanged={this.props.handleChangeMatchCount}
                       />
@@ -141,13 +149,13 @@ class FindBar extends React.PureComponent<FindBarProps> {
           <div className="find-bar__navigation">
             <button
               className="find-bar__navigation__previous"
-              onClick={this.onClickPrevious.bind(this)}
+              onClick={this.onClickPrevious}
             >
               <span>Previous</span>
             </button>
             <button
               className="find-bar__navigation__next"
-              onClick={this.onClickNext.bind(this)}
+              onClick={this.onClickNext}
             >
               <span>Next</span>
             </button>
@@ -157,7 +165,7 @@ class FindBar extends React.PureComponent<FindBarProps> {
               {this.createMatchCountMessage()}
             </span>
           </div>
-          <div className="find-bar__close" onClick={this.close.bind(this)}>
+          <div className="find-bar__close" onClick={this.close}>
             X
           </div>
         </div>,

@@ -13,6 +13,18 @@ import { PaperId } from "./state";
 import { Paper, UserLibrary } from "./types/api";
 import { truncateText } from "./ui-utils";
 
+interface Props {
+  paper: Paper;
+  userLibrary: UserLibrary | null;
+  handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
+  openedPaperId?: PaperId;
+}
+
+interface State {
+  showFullAbstract: boolean;
+  errorMessage: string;
+}
+
 function warnOfUnimplementedActionAndTrack(
   actionType: string,
   message?: string
@@ -38,23 +50,8 @@ function trackLibrarySave() {
   }
 }
 
-interface PaperSummaryProps {
-  paper: Paper;
-  userLibrary: UserLibrary | null;
-  handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
-  openedPaperId?: PaperId;
-}
-
-interface PaperSummaryState {
-  showFullAbstract: boolean;
-  errorMessage: string;
-}
-
-export class PaperSummary extends React.PureComponent<
-  PaperSummaryProps,
-  PaperSummaryState
-> {
-  constructor(props: PaperSummaryProps) {
+export class PaperSummary extends React.PureComponent<Props, State> {
+  constructor(props: Props) {
     super(props);
 
     this.state = {

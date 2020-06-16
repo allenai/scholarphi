@@ -7,7 +7,7 @@ import * as selectors from "./selectors";
 import { MathMls, PaperId, Sentences, Symbols } from "./state";
 import { Symbol } from "./types/api";
 
-interface SymbolTooltipBodyProps {
+interface Props {
   paperId: PaperId;
   pdfDocument: PDFDocumentProxy;
   symbols: Symbols;
@@ -18,9 +18,7 @@ interface SymbolTooltipBodyProps {
   handleSelectSymbol: (id: string) => void;
 }
 
-export class SymbolTooltipBody extends React.PureComponent<
-  SymbolTooltipBodyProps
-> {
+export class SymbolTooltipBody extends React.PureComponent<Props> {
   onClickJumpButton(symbolId: string | undefined) {
     if (symbolId !== undefined) {
       this.props.handleSelectSymbol(symbolId);
@@ -115,7 +113,7 @@ export class SymbolTooltipBody extends React.PureComponent<
                 variant="outlined"
                 color="primary"
                 className="tooltip-body__action-button"
-                onClick={this.props.handleOpenDrawer.bind(this)}
+                onClick={this.props.handleOpenDrawer}
               >
                 View {partialMatchSymbolIds.length} similar references
               </Button>

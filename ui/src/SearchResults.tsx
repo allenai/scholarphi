@@ -6,7 +6,7 @@ import * as selectors from "./selectors";
 import { MathMls, SelectableEntityType, Sentences, Symbols } from "./state";
 import SymbolPreview from "./SymbolPreview";
 
-interface SearchResultsProps {
+interface Props {
   pdfDocument: PDFDocumentProxy;
   pageSize: number;
   symbols: Symbols | null;
@@ -17,18 +17,15 @@ interface SearchResultsProps {
   handleSelectSymbol: (id: string) => void;
 }
 
-interface SearchResultState {
+interface State {
   pageNumber: number;
   filters: Filters;
 }
 
 type Filters = { [mathMlId: string]: boolean };
 
-export class SearchResults extends React.PureComponent<
-  SearchResultsProps,
-  SearchResultState
-> {
-  constructor(props: SearchResultsProps) {
+export class SearchResults extends React.PureComponent<Props, State> {
+  constructor(props: Props) {
     super(props);
     /*
      * TODO(andrewhead): MathML filters should be reset for every search. Make sure they are.

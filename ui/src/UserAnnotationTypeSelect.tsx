@@ -1,14 +1,17 @@
 import React from "react";
 import { UserAnnotationType } from "./types/api";
 
-interface UserAnnotationTypeSelectProps {
+interface Props {
   annotationType: UserAnnotationType;
   handleSelectType: (type: UserAnnotationType) => void;
 }
 
-export class UserAnnotationTypeSelect extends React.PureComponent<
-  UserAnnotationTypeSelectProps
-> {
+export class UserAnnotationTypeSelect extends React.PureComponent<Props> {
+  constructor(props: Props) {
+    super(props);
+    this.onChange = this.onChange.bind(this);
+  }
+
   onChange(event: React.ChangeEvent<{ value: unknown }>) {
     this.props.handleSelectType(event.target.value as UserAnnotationType);
   }
@@ -24,10 +27,7 @@ export class UserAnnotationTypeSelect extends React.PureComponent<
             don't fit nicely into the pdf.js toolbar because the Material-UI
             container for popovers is at a lower z-index than the toolbar,
             such that popovers getting partially blocked by the toolbar. */}
-        <select
-          value={this.props.annotationType}
-          onChange={this.onChange.bind(this)}
-        >
+        <select value={this.props.annotationType} onChange={this.onChange}>
           <option value="citation">Citations</option>
           <option value="equation">Equations</option>
           <option value="symbol">Symbols</option>
