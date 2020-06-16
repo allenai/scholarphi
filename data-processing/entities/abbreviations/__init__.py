@@ -17,6 +17,6 @@ commands = create_entity_localization_command_sequence(
 directories.register("abbreviations-model-ids")
 
 abbreviations_pipeline = EntityPipeline(
-    "abbreviationses", commands, database_models=[AbbreviationModel]
+    "abbreviations", commands
 )
 register_entity_pipeline(abbreviations_pipeline)

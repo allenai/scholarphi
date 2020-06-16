@@ -46,6 +46,8 @@ PYSBD_RESERVED_CHARACTERS: List[str] = [
 
 symbols = ["%", "^", "{", "}", "[", "]", "\\", "=", "#", "&", "~", "$", "|", "_", ":", ";"]
 
+#AbbreviationExtractor.parse("", "Natural Langauge Processing (NLP) is a sub-field of artificial intelligence (AI).")
+
 class AbbreviationExtractor(EntityExtractor):
     """
     Extract plaintext sentences from TeX, with offsets of the characters they correspond to in
@@ -63,7 +65,7 @@ class AbbreviationExtractor(EntityExtractor):
 
         # Extract plaintext segments from TeX
         #plaintext_extractor = PlaintextExtractor()
-        
+
         #this is the most basic model and had no real performance difference on our inputs
         #other options include NER models and models with pretrained word vectors
         nlp = spacy.load("en_core_sci_sm")
