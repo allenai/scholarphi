@@ -1,8 +1,11 @@
+import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
-import { ScholarReaderContext } from "./state";
+import { Sentences } from "./state";
 import { BoundingBox } from "./types/api";
 
 interface PaperClippingProps {
+  pdfDocument: PDFDocumentProxy;
+  sentences: Sentences | null;
   pageNumber: number;
   /**
    * Areas to highlight in the paper clipping. Either this or 'sentenceId' should be set. If
@@ -29,12 +32,9 @@ interface PaperClippingProps {
 }
 
 export class PaperClipping extends React.PureComponent<PaperClippingProps, {}> {
-  static contextType = ScholarReaderContext;
-  context!: React.ContextType<typeof ScholarReaderContext>;
-
   static defaultProps = {
     width: 500,
-    height: 300
+    height: 300,
   };
 
   /**
@@ -46,7 +46,7 @@ export class PaperClipping extends React.PureComponent<PaperClippingProps, {}> {
   async componentDidMount() {
     const canvas = this.canvasRef;
     const container = this.containerRef;
-    const { pdfDocument, sentences } = this.context;
+    const { pdfDocument, sentences } = this.props;
 
     if (canvas == null || container == null || pdfDocument == null) {
       return;
@@ -66,7 +66,7 @@ export class PaperClipping extends React.PureComponent<PaperClippingProps, {}> {
     await page.render({ canvasContext, viewport: clippingViewport }).promise;
 
     if (this.props.highlights !== undefined) {
-      this.props.highlights.forEach(highlight => {
+      this.props.highlights.forEach((highlight) => {
         addHighlightToCanvas(highlight, canvas, canvasContext, 0, 0, 255);
       });
     }
@@ -77,7 +77,7 @@ export class PaperClipping extends React.PureComponent<PaperClippingProps, {}> {
      */
     if (this.props.sentenceId && sentences !== null) {
       const sentence = sentences.byId[this.props.sentenceId];
-      sentence.bounding_boxes.forEach(box => {
+      sentence.bounding_boxes.forEach((box) => {
         addHighlightToCanvas(box, canvas, canvasContext, 0, 255, 0);
       });
 
@@ -131,14 +131,14 @@ export class PaperClipping extends React.PureComponent<PaperClippingProps, {}> {
   render() {
     return (
       <div
-        ref={ref => {
+        ref={(ref) => {
           this.containerRef = ref;
         }}
         className="paper-clipping"
         onClick={this.props.onClick}
       >
         <canvas
-          ref={ref => {
+          ref={(ref) => {
             this.canvasRef = ref;
           }}
         />
@@ -160,7 +160,7 @@ function computerOuterBoundingBox(boxes: BoundingBox[]) {
   let maxRight = -Infinity;
   let maxBottom = -Infinity;
 
-  boxes.forEach(b => {
+  boxes.forEach((b) => {
     const { left, top } = b;
     const right = left + b.width;
     const bottom = top + b.height;
@@ -175,7 +175,7 @@ function computerOuterBoundingBox(boxes: BoundingBox[]) {
     left: minLeft,
     top: minTop,
     width: maxRight - minLeft,
-    height: maxBottom - minTop
+    height: maxBottom - minTop,
   };
 }
 
@@ -207,7 +207,7 @@ function toCanvasCoordinates(rect: Rectangle, canvas: HTMLCanvasElement) {
     left: rect.left * canvas.width,
     top: rect.top * canvas.height,
     width: rect.width * canvas.width,
-    height: rect.height * canvas.height
+    height: rect.height * canvas.height,
   };
 }
 

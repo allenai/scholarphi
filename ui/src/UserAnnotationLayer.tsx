@@ -1,8 +1,7 @@
 import React from "react";
 import { Point } from "./Selection";
 import SelectionCanvas from "./SelectionCanvas";
-import { ScholarReaderContext } from "./state";
-import { AnnotationData, UserAnnotationType } from "./types/api";
+import { Annotation, AnnotationData, UserAnnotationType } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 import UserAnnotation from "./UserAnnotation";
 
@@ -13,52 +12,77 @@ interface UserAnnotationLayerProps {
    * transforming annotation bounding boxes into render locations in the page 'div'.
    */
   pageView: PDFPageView;
+  annotations: Annotation[];
+  annotationType: UserAnnotationType;
+  selectedAnnotationId: string | null;
+  selectedAnnotationSpanId: string | null;
+  handleSelectAnnotation: (id: string) => void;
+  handleSelectAnnotationSpan: (id: string) => void;
+  handleAddAnnotation: (data: AnnotationData) => void;
+  handleUpdateAnnotation: (id: string, annotation: Annotation) => void;
+  handleDeleteAnnotation: (id: string) => void;
 }
 
 export class UserAnnotationLayer extends React.PureComponent<
   UserAnnotationLayerProps
 > {
-  static contextType = ScholarReaderContext;
-  context!: React.ContextType<typeof ScholarReaderContext>;
-
   onSelectionMade(anchor: Point, active: Point) {
-    const { addUserAnnotation, userAnnotationType } = this.context;
-    addUserAnnotation(
-      selectionToAnnotation(
+    const { handleAddAnnotation, annotationType } = this.props;
+    handleAddAnnotation(
+      createAnnotationFromSelection(
         this.props.pageView,
         anchor,
         active,
-        userAnnotationType
+        annotationType
       )
     );
   }
 
   render() {
+    const {
+      pageNumber,
+      pageView,
+      annotationType,
+      selectedAnnotationId,
+      selectedAnnotationSpanId,
+      handleUpdateAnnotation,
+      handleDeleteAnnotation,
+      handleSelectAnnotation,
+      handleSelectAnnotationSpan,
+    } = this.props;
+
     return (
-      <ScholarReaderContext.Consumer>
-        {({ userAnnotations, userAnnotationType }) => (
-          <>
-            <SelectionCanvas
-              key="selection-canvas"
-              onSelection={this.onSelectionMade.bind(this)}
-            />
-            {userAnnotations
-              .filter(a => a.boundingBox.page === this.props.pageNumber - 1)
-              .map(a => (
-                <UserAnnotation
-                  key={`user-annotation-${a.id}`}
-                  annotation={a}
-                  active={a.type === userAnnotationType}
-                />
-              ))}
-          </>
-        )}
-      </ScholarReaderContext.Consumer>
+      <>
+        <SelectionCanvas
+          key="selection-canvas"
+          onSelection={this.onSelectionMade.bind(this)}
+        />
+        {this.props.annotations
+          .filter((a) => a.boundingBox.page === pageNumber - 1)
+          .map((a) => {
+            const annotationId = `user-annotation-${a.id}`;
+            const isSelected = annotationId === selectedAnnotationId;
+            return (
+              <UserAnnotation
+                pageView={pageView}
+                key={annotationId}
+                annotation={a}
+                active={a.type === annotationType}
+                selected={isSelected}
+                selectedSpanId={isSelected ? selectedAnnotationSpanId : null}
+                handleUpdateAnnotation={handleUpdateAnnotation}
+                handleDeleteAnnotation={handleDeleteAnnotation}
+                handleSelectAnnotation={handleSelectAnnotation}
+                handleSelectAnnotationSpan={handleSelectAnnotationSpan}
+              />
+            );
+          })}
+      </>
     );
   }
 }
 
-function selectionToAnnotation(
+function createAnnotationFromSelection(
   pageView: PDFPageView,
   anchor: Point,
   active: Point,
@@ -67,11 +91,11 @@ function selectionToAnnotation(
   const viewport = pageView.viewport;
   const [anchorPdfX, anchorPdfY] = [
     anchor.x / viewport.width,
-    anchor.y / viewport.height
+    anchor.y / viewport.height,
   ];
   const [activePdfX, activePdfY] = [
     active.x / viewport.width,
-    active.y / viewport.height
+    active.y / viewport.height,
   ];
 
   const page = pageView.pdfPage.pageNumber - 1;
@@ -86,7 +110,7 @@ function selectionToAnnotation(
     left,
     top,
     width,
-    height
+    height,
   };
 }
 

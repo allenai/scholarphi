@@ -1,19 +1,19 @@
+import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
 import PaperClipping from "./PaperClipping";
-import { ScholarReaderContext } from "./state";
+import { Sentences } from "./state";
 import { Symbol } from "./types/api";
 
 interface SymbolPreviewProps {
+  pdfDocument: PDFDocumentProxy;
+  sentences: Sentences | null;
   symbol: Symbol;
+  handleSelectSymbol: (id: string) => void;
 }
 
 export class SymbolPreview extends React.PureComponent<SymbolPreviewProps> {
-  static contextType = ScholarReaderContext;
-  context!: React.ContextType<typeof ScholarReaderContext>;
-
-  requestSelectSymbol() {
-    const { setSelectedEntity } = this.context;
-    setSelectedEntity(this.props.symbol.id, "symbol");
+  onClick() {
+    this.props.handleSelectSymbol(this.props.symbol.id);
   }
 
   render() {
@@ -21,10 +21,12 @@ export class SymbolPreview extends React.PureComponent<SymbolPreviewProps> {
     return (
       <div className="symbol-preview favorite-container">
         <PaperClipping
+          pdfDocument={this.props.pdfDocument}
+          sentences={this.props.sentences}
           pageNumber={symbol.bounding_boxes[0].page + 1}
           sentenceId={symbol.sentence !== null ? symbol.sentence : undefined}
           highlights={[this.props.symbol.bounding_boxes[0]]}
-          onClick={this.requestSelectSymbol.bind(this)}
+          onClick={this.onClick.bind(this)}
         />
       </div>
     );

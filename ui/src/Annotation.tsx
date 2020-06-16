@@ -1,8 +1,8 @@
 import classNames from "classnames";
 import React from "react";
 import AnnotationSpan from "./AnnotationSpan";
-import { ScholarReaderContext } from "./state";
 import { BoundingBox } from "./types/api";
+import { PDFPageView } from "./types/pdfjs-viewer";
 
 /**
  * Maximum height for an annotation span before it is filtered out as an outlier.
@@ -10,6 +10,7 @@ import { BoundingBox } from "./types/api";
 const MAXIMUM_ANNOTATION_HEIGHT = 30;
 
 interface AnnotationProps {
+  pageView: PDFPageView;
   /**
    * A unique ID that distinguishes this annotation from all other annotations.
    */
@@ -26,6 +27,8 @@ interface AnnotationProps {
    * in the places of each of the bounding boxes.
    */
   active?: boolean;
+  selected?: boolean;
+  selectedSpanId?: string | null;
   /**
    * Class name to apply to all spans that belong to this.
    */
@@ -48,21 +51,16 @@ interface AnnotationProps {
    * user clicks on an annotation.
    */
   onSelected?: () => void;
-  /**
-   * Callback called when the annotation is deselected (typically called when a click has
-   * occurred outside the annotation).
-   */
-  onDeselected?: () => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
+  handleSelectAnnotation: (id: string) => void;
+  handleSelectAnnotationSpan: (id: string) => void;
 }
 
 export class Annotation extends React.PureComponent<AnnotationProps> {
-  static contextType = ScholarReaderContext;
-  context!: React.ContextType<typeof ScholarReaderContext>;
-
   static defaultProps = {
     active: true,
-    highlight: false
+    selected: false,
+    highlight: false,
   };
 
   render() {
@@ -70,13 +68,14 @@ export class Annotation extends React.PureComponent<AnnotationProps> {
       <>
         {this.props.boundingBoxes
           .filter(
-            b =>
+            (b) =>
               b.height < MAXIMUM_ANNOTATION_HEIGHT ||
               this.props.source === "other"
           )
-          .map(box => (
+          .map((box) => (
             <AnnotationSpan
               key={box.id}
+              pageView={this.props.pageView}
               annotationId={this.props.id}
               id={box.id}
               active={this.props.active}
@@ -84,13 +83,16 @@ export class Annotation extends React.PureComponent<AnnotationProps> {
               className={classNames(this.props.className, {
                 "source-tex-pipeline": this.props.source === "tex-pipeline",
                 "source-other": this.props.source === "other",
-                highlight: this.props.highlight
+                highlight: this.props.highlight,
               })}
               highlight={this.props.highlight}
               tooltipContent={this.props.tooltipContent}
+              isAnnotationSelected={this.props.selected}
+              isSpanSelected={this.props.selectedSpanId === box.id}
               onSelected={this.props.onSelected}
-              onDeselected={this.props.onDeselected}
               onKeyDown={this.props.onKeyDown}
+              handleSelectAnnotation={this.props.handleSelectAnnotation}
+              handleSelectSpan={this.props.handleSelectAnnotationSpan}
             />
           ))}
       </>
