@@ -47,9 +47,6 @@ class FindBar extends React.PureComponent<Props> {
     return ((index % len) + len) % len;
   }
 
-  /*
-   * TODO(andrewhead): do we need to preventDefault or change 'selectSymbol'? I don't think so...
-   */
   onClickNext() {
     const { mode, matchIndex, matchCount, handleChangeMatchIndex } = this.props;
 
@@ -100,7 +97,6 @@ class FindBar extends React.PureComponent<Props> {
   }
 
   close() {
-    // TODO: figure out why count isn't cleared when find bar is closed.
     this.props.handleClose();
   }
 
