@@ -70,7 +70,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
   constructor(props: Props) {
     super(props);
     this._element = document.createElement("div");
-    this._element.classList.add("scholar-reader-overlay");
+    this._element.classList.add("scholar-reader-page-overlay");
     this.handleSelectSymbol = this.handleSelectSymbol.bind(this);
     this.handleSelectCitation = this.handleSelectCitation.bind(this);
   }
@@ -80,9 +80,6 @@ class PageOverlay extends React.PureComponent<Props, {}> {
   }
 
   componentWillUnmount() {
-    /**
-     * XXX(andrewhead): this 'document.body.contains' might be expensive.
-     */
     if (
       document.body.contains(this.props.view.div) &&
       this.props.view.div.contains(this._element)
