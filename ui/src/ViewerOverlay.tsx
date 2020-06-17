@@ -53,12 +53,6 @@ class ViewerOverlay extends React.PureComponent<Props> {
 
   addEventListenersToViewer(pdfViewer: PDFViewer) {
     pdfViewer.container.addEventListener("click", this.onClick);
-    /*
-     * It's possible to listen for key events on the PDF viewer container as the pdf.js source code
-     * has allowed the container to have focus by setting 'tabindex=0'. We may need to check to
-     * make sure that future versions of the pdf.js application still allow the viewer container to
-     * receive focus. Otherwise, key events will appear to do nothing.
-     */
     pdfViewer.container.addEventListener("keyup", this.onKeyUp);
   }
 

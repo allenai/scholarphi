@@ -1,6 +1,7 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import * as api from "./api";
+import AppOverlay from "./AppOverlay";
 import Drawer from "./Drawer";
 import FeedbackButton from "./FeedbackButton";
 import FindBar from "./FindBar";
@@ -28,7 +29,6 @@ import {
   PageRenderedEvent,
   PDFViewerApplication,
 } from "./types/pdfjs-viewer";
-import { isKeypressEscape } from "./ui-utils";
 import { UserAnnotationTypeSelect } from "./UserAnnotationTypeSelect";
 import ViewerOverlay from "./ViewerOverlay";
 
@@ -97,11 +97,10 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.setFindMatchIndex = this.setFindMatchIndex.bind(this);
     this.setFindQuery = this.setFindQuery.bind(this);
     this.closeFindBar = this.closeFindBar.bind(this);
-    this.toggleUserAnnotationState = this.toggleUserAnnotationState.bind(this);
-    this.closeDrawerOnEscape = this.closeDrawerOnEscape.bind(this);
-    this.openFindBar = this.openFindBar.bind(this);
-    this.hideAnnotationsOnAltDown = this.hideAnnotationsOnAltDown.bind(this);
-    this.showAnnotationsOnAltUp = this.showAnnotationsOnAltUp.bind(this);
+    this.toggleUserAnnotationMode = this.toggleUserAnnotationMode.bind(this);
+    this.startTextSearch = this.startTextSearch.bind(this);
+    this.hideAnnotations = this.hideAnnotations.bind(this);
+    this.showAnnotations = this.showAnnotations.bind(this);
   }
 
   async addToLibrary(paperId: string, paperTitle: string) {
@@ -138,6 +137,9 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   deselectSelection() {
+    if (this.state.selectedEntityType === "symbol") {
+      this.closeFindBar();
+    }
     this.setState({
       selectedAnnotationId: null,
       selectedAnnotationSpanId: null,
@@ -265,46 +267,26 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.setState({ drawerMode: "closed" });
   }
 
-  closeDrawerOnEscape(event: KeyboardEvent) {
-    if (isKeypressEscape(event)) {
-      this.closeDrawer();
-    }
+  hideAnnotations() {
+    this.setState({ annotationsShowing: false });
   }
 
-  hideAnnotationsOnAltDown(event: KeyboardEvent) {
-    if (event.altKey) {
-      this.setState({ annotationsShowing: false });
-    }
+  showAnnotations() {
+    this.setState({ annotationsShowing: true });
   }
 
-  showAnnotationsOnAltUp(event: KeyboardEvent) {
-    if (event.keyCode === 18 || event.key === "Alt") {
-      this.setState({ annotationsShowing: true });
-    }
+  toggleUserAnnotationMode() {
+    this.setState((prevState) => ({
+      userAnnotationsEnabled: !prevState.userAnnotationsEnabled,
+    }));
   }
 
-  toggleUserAnnotationState(event: KeyboardEvent) {
-    if (event.ctrlKey && event.shiftKey && event.key !== "a") {
-      this.setState((prevState) => ({
-        userAnnotationsEnabled: !prevState.userAnnotationsEnabled,
-      }));
-    }
-  }
-
-  openFindBar(event: KeyboardEvent) {
-    /*
-     * This code for listening for Ctrl+F and for opening the find bar is based on the analogous
-     * code in the pdf.js project:
-     * https://github.com/mozilla/pdf.js/blob/49f59eb627646ae9a6e166ee2e0ef2cac9390b4f/web/app.js#L2503
-     */
-    if ((event.ctrlKey || event.metaKey) && event.keyCode === 70) {
-      this.setState({
-        isFindActive: true,
-        findActivationTimeMs: Date.now(),
-        findMode: "pdfjs-builtin-find",
-      });
-      event.preventDefault();
-    }
+  startTextSearch() {
+    this.setState({
+      isFindActive: true,
+      findActivationTimeMs: Date.now(),
+      findMode: "pdfjs-builtin-find",
+    });
   }
 
   setFindMatchCount(findMatchCount: number | null) {
@@ -338,19 +320,6 @@ class ScholarReader extends React.PureComponent<Props, State> {
       this.subscribeToPDFViewerStateChanges(application);
     });
     this.loadDataFromApi();
-    window.addEventListener("keypress", this.toggleUserAnnotationState);
-    window.addEventListener("keydown", this.closeDrawerOnEscape);
-    window.addEventListener("keydown", this.openFindBar);
-    window.addEventListener("keydown", this.hideAnnotationsOnAltDown);
-    window.addEventListener("keyup", this.showAnnotationsOnAltUp);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener("keypress", this.toggleUserAnnotationState);
-    window.removeEventListener("keydown", this.closeDrawerOnEscape);
-    window.removeEventListener("keydown", this.openFindBar);
-    window.removeEventListener("keydown", this.hideAnnotationsOnAltDown);
-    window.removeEventListener("keyup", this.showAnnotationsOnAltUp);
   }
 
   subscribeToPDFViewerStateChanges(pdfViewerApplication: PDFViewerApplication) {
@@ -529,6 +498,16 @@ class ScholarReader extends React.PureComponent<Props, State> {
         ) : null}
         {this.state.pdfViewer !== null ? (
           <>
+            <AppOverlay
+              appContainer={document.body}
+              handleHideAnnotations={this.hideAnnotations}
+              handleShowAnnotations={this.showAnnotations}
+              handleDeselectSelection={this.deselectSelection}
+              handleStartTextSearch={this.startTextSearch}
+              handleTerminateSearch={this.closeFindBar}
+              handleCloseDrawer={this.closeDrawer}
+              handleToggleUserAnnotationMode={this.toggleUserAnnotationMode}
+            />
             <ViewerOverlay
               pdfViewer={this.state.pdfViewer}
               handleDeselectSelection={this.deselectSelection}
