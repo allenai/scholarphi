@@ -35,7 +35,7 @@ const ELLIPSIS = "…";
  *
  * @param {string} text The text to truncate.
  * @param {number} limit The maximum number of characters to show.
- * @param {boolean} whether to include an ellipsis after the truncation, defaults to true
+ * @param {boolean} withEllipis whether to include an ellipsis after the truncation, defaults to true
  *
  * @return {string} the truncated text, or full text if it's shorter than the provided limit.
  */
