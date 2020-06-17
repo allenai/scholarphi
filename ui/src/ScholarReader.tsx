@@ -30,6 +30,7 @@ import {
 } from "./types/pdfjs-viewer";
 import { isKeypressEscape } from "./ui-utils";
 import { UserAnnotationTypeSelect } from "./UserAnnotationTypeSelect";
+import ViewerOverlay from "./ViewerOverlay";
 
 interface Props {
   paperId?: PaperId;
@@ -83,6 +84,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.setSelectedAnnotationSpanId = this.setSelectedAnnotationSpanId.bind(
       this
     );
+    this.deselectSelection = this.deselectSelection.bind(this);
     this.addToLibrary = this.addToLibrary.bind(this);
     this.addUserAnnotation = this.addUserAnnotation.bind(this);
     this.updateUserAnnotation = this.updateUserAnnotation.bind(this);
@@ -133,6 +135,15 @@ class ScholarReader extends React.PureComponent<Props, State> {
 
   selectSymbol(id: string) {
     this.setSelectedEntity("symbol", id);
+  }
+
+  deselectSelection() {
+    this.setState({
+      selectedAnnotationId: null,
+      selectedAnnotationSpanId: null,
+      selectedEntityType: null,
+      selectedEntityId: null,
+    });
   }
 
   setDrawerState(state: DrawerMode) {
@@ -321,9 +332,9 @@ class ScholarReader extends React.PureComponent<Props, State> {
 
   async componentDidMount() {
     waitForPDFViewerInitialization().then((application) => {
-      this.setState({ pdfViewerApplication: application });
       // TODO(andrewhead): where to move this?
       application.externalServices.supportsIntegratedFind = true;
+      this.setState({ pdfViewerApplication: application });
       this.subscribeToPDFViewerStateChanges(application);
     });
     this.loadDataFromApi();
@@ -517,23 +528,29 @@ class ScholarReader extends React.PureComponent<Props, State> {
           </>
         ) : null}
         {this.state.pdfViewer !== null ? (
-          <Drawer
-            paperId={this.props.paperId}
-            pdfViewer={this.state.pdfViewer}
-            pdfDocument={this.state.pdfDocument}
-            mode={this.state.drawerMode}
-            userLibrary={this.state.userLibrary}
-            papers={this.state.papers}
-            symbols={this.state.symbols}
-            mathMls={this.state.mathMls}
-            sentences={this.state.sentences}
-            selectedEntityType={this.state.selectedEntityType}
-            selectedEntityId={this.state.selectedEntityId}
-            handleScrollSymbolIntoView={this.scrollSymbolIntoView}
-            handleClose={this.closeDrawer}
-            handleAddPaperToLibrary={this.addToLibrary}
-            handleSelectSymbol={this.selectSymbol}
-          />
+          <>
+            <ViewerOverlay
+              pdfViewer={this.state.pdfViewer}
+              handleDeselectSelection={this.deselectSelection}
+            />
+            <Drawer
+              paperId={this.props.paperId}
+              pdfViewer={this.state.pdfViewer}
+              pdfDocument={this.state.pdfDocument}
+              mode={this.state.drawerMode}
+              userLibrary={this.state.userLibrary}
+              papers={this.state.papers}
+              symbols={this.state.symbols}
+              mathMls={this.state.mathMls}
+              sentences={this.state.sentences}
+              selectedEntityType={this.state.selectedEntityType}
+              selectedEntityId={this.state.selectedEntityId}
+              handleScrollSymbolIntoView={this.scrollSymbolIntoView}
+              handleClose={this.closeDrawer}
+              handleAddPaperToLibrary={this.addToLibrary}
+              handleSelectSymbol={this.selectSymbol}
+            />
+          </>
         ) : null}
         {elFeedbackContainer
           ? createPortal(
