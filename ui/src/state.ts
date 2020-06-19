@@ -1,4 +1,6 @@
 import { PDFDocumentProxy } from "pdfjs-dist";
+import { DrawerMode } from "./Drawer";
+import { FindMode, FindQuery, SymbolFilter } from "./FindBar";
 import {
   Annotation,
   Citation,
@@ -79,11 +81,6 @@ export interface State {
   selectedEntityId: string | null;
 
   /*
-   * ~ Jumping to content within paper ~
-   */
-  paperJumpRequest: string | null;
-
-  /*
    * ~ Drawer (sidebar) interactions ~
    */
   drawerMode: DrawerMode;
@@ -94,6 +91,7 @@ export interface State {
    * When 'isFindActive' is false, the rest of the properties for finding should be set to null.
    */
   isFindActive: boolean;
+  findMode: FindMode;
   /*
    * The time in milliseconds that this 'find' action was triggered. The easiest way to
    * supply this value is to call `Date.now()` when a find action is triggered. This is used to
@@ -101,10 +99,17 @@ export interface State {
    * while the 'find' bar is already open.
    */
   findActivationTimeMs: number | null;
-  findMode: FindMode;
   findQuery: FindQuery;
+  /*
+   * Valid values are [0..(findMatchCount - 1)]
+   */
   findMatchIndex: number | null;
   findMatchCount: number | null;
+  /*
+   * A list of IDs of matching entities from the search. This will be defined for some find
+   * modes (e.g., 'symbol') and not for others.
+   */
+  findMatchedEntities: string[] | null;
 
   /*
    * ~ User annotation layer ~
@@ -180,12 +185,3 @@ export interface PaperId {
 }
 
 export type SelectableEntityType = "citation" | "symbol" | null;
-
-export type FindMode = null | "pdfjs-builtin-find" | "symbol";
-export type FindQuery = null | string | SymbolFilters;
-export interface SymbolFilter {
-  key: "exact-match" | "partial-match";
-  active: boolean;
-}
-
-export type DrawerMode = "open" | "closed";

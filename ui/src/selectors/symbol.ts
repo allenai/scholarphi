@@ -49,12 +49,27 @@ export function symbolMathMlIds(
 
 /**
  * Comparator for sorting boxes from highest position in the paper to lowest.
+ * See https://github.com/allenai/scholar-reader/issues/115 for a discussion for how we might
+ * be able to sort symbols by their order in the prose instead of their position.
  */
 function compareBoxes(box1: BoundingBox, box2: BoundingBox) {
   if (box1.page !== box2.page) {
     return box1.page - box2.page;
   }
-  return box2.top - box1.top;
+  if (areBoxesVerticallyAligned(box1, box2)) {
+    return box1.left - box2.left;
+  } else {
+    return box1.top - box2.top;
+  }
+}
+
+function areBoxesVerticallyAligned(box1: BoundingBox, box2: BoundingBox) {
+  const box1Bottom = box1.top + box1.height;
+  const box2Bottom = box2.top + box2.height;
+  return (
+    (box1.top >= box2.top && box1.top <= box2Bottom) ||
+    (box2.top >= box1.top && box2.top <= box1Bottom)
+  );
 }
 
 /**

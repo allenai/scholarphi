@@ -12,40 +12,32 @@ import { PDFPageView } from "./types/pdfjs-viewer";
 interface Props {
   pageView: PDFPageView;
   /**
-   * ID of the annotation this span belongs to.
-   */
-  annotationId: string;
-  /**
    * Unique ID for this annotation span.
    */
   id: string;
-  active?: boolean;
-  isAnnotationSelected?: boolean;
-  isSpanSelected?: boolean;
+  className?: string;
+  active: boolean;
+  selected: boolean;
+  location: BoundingBox;
   /**
    * Where in the paper to draw this annotation span.
    */
-  location: BoundingBox;
-  className?: string;
-  highlight?: boolean;
+  tooltipContent: React.ReactNode | null;
   /**
    * Correction factor to apply to bounding box coordinates before rendering the annotation.
-   * You normally should not need to set this and should be able to trust the defaults.
+   * While this was needed in past versions of the interface, at the time of this writing, the
+   * data produced by the backend had been fixed such that this isn't necessary.
+   * You shouldn't normally need to set this property.
    */
   scaleCorrection?: number;
-  tooltipContent: React.ReactNode | null;
-  onSelected?: () => void;
+  handleSelection: (spanId: string) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
-  handleSelectAnnotation: (annotationId: string) => void;
-  handleSelectSpan: (spanId: string) => void;
 }
 
 export class AnnotationSpan extends React.PureComponent<Props> {
-  static defaultProps = {
+  static defaultProps: Partial<Props> = {
     active: true,
-    isAnnotationSelected: false,
-    isSpanSelected: false,
-    highlight: false,
+    selected: false,
   };
 
   constructor(props: Props) {
@@ -55,45 +47,43 @@ export class AnnotationSpan extends React.PureComponent<Props> {
   }
 
   onClick() {
-    this.props.handleSelectAnnotation(this.props.annotationId);
-    this.props.handleSelectSpan(this.props.id);
-    if (this.props.onSelected !== undefined) {
-      this.props.onSelected();
+    if (this.props.handleSelection !== undefined) {
+      this.props.handleSelection(this.props.id);
     }
   }
 
   focusIfSelected(element: HTMLDivElement | null) {
-    if (element !== null && this.props.isSpanSelected) {
+    if (element !== null && this.props.selected) {
       element.focus();
     }
   }
 
   render() {
-    const { pageView } = this.props;
-
     /*
      * By default, an annotation span is just a positioned div.
      */
-    let annotationSpan = (
+    let span = (
       <div
         ref={this.focusIfSelected}
-        onClick={this.onClick}
-        style={selectors.divDimensionStyles(
-          pageView,
-          this.props.location,
-          this.props.scaleCorrection
-        )}
         className={classNames(
           "scholar-reader-annotation-span",
           this.props.className,
           {
-            selected: this.props.isSpanSelected,
-            "annotation-selected": this.props.isAnnotationSelected,
+            selected: this.props.selected,
             active: this.props.active === true,
             inactive: this.props.active !== true,
           }
         )}
+        style={selectors.divDimensionStyles(
+          this.props.pageView,
+          this.props.location,
+          this.props.scaleCorrection
+        )}
+        /*
+         * Span should only be able to capture focus and key events if it is active.
+         */
         tabIndex={this.props.active === true ? 0 : undefined}
+        onClick={this.onClick}
         onKeyDown={this.props.onKeyDown}
       />
     );
@@ -102,20 +92,20 @@ export class AnnotationSpan extends React.PureComponent<Props> {
      * If tooltip content was provided, wrap span in a tooltip component.
      */
     if (this.props.tooltipContent !== null) {
-      annotationSpan = (
+      span = (
         <MuiTooltip
           className="tooltip"
-          open={this.props.active === true && this.props.isSpanSelected}
+          open={this.props.active === true && this.props.selected}
           interactive
           disableHoverListener
           title={this.props.tooltipContent}
         >
-          {annotationSpan}
+          {span}
         </MuiTooltip>
       );
     }
 
-    return annotationSpan;
+    return span;
   }
 }
 

@@ -11,20 +11,16 @@ import UserAnnotationTooltipBody from "./UserAnnotationTooltipBody";
 interface Props {
   pageView: PDFPageView;
   annotation: AnnotationObject;
-  active?: boolean;
+  active: boolean;
   selected: boolean;
   selectedSpanId: string | null;
-  handleUpdateAnnotation: (id: string, annotation: AnnotationObject) => void;
-  handleDeleteAnnotation: (id: string) => void;
   handleSelectAnnotation: (id: string) => void;
   handleSelectAnnotationSpan: (id: string) => void;
+  handleUpdateAnnotation: (id: string, annotation: AnnotationObject) => void;
+  handleDeleteAnnotation: (id: string) => void;
 }
 
 export class UserAnnotation extends React.PureComponent<Props> {
-  static defaultProps = {
-    active: true,
-  };
-
   constructor(props: Props) {
     super(props);
     this.onKeyDown = this.onKeyDown.bind(this);
@@ -55,6 +51,8 @@ export class UserAnnotation extends React.PureComponent<Props> {
         pageView={this.props.pageView}
         id={`user-annotation-${this.props.annotation.id}`}
         active={this.props.active}
+        selected={this.props.selected}
+        selectedSpanId={this.props.selectedSpanId}
         className={classNames("user-annotation", {
           "citation-user-annotation": this.props.annotation.type === "citation",
           "symbol-user-annotation": this.props.annotation.type === "symbol",
@@ -68,8 +66,6 @@ export class UserAnnotation extends React.PureComponent<Props> {
             handleDeleteAnnotation={this.props.handleDeleteAnnotation}
           />
         }
-        selected={this.props.selected}
-        selectedSpanId={this.props.selectedSpanId}
         onKeyDown={this.onKeyDown}
         handleSelectAnnotation={this.props.handleSelectAnnotation}
         handleSelectAnnotationSpan={this.props.handleSelectAnnotationSpan}
