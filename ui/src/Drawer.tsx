@@ -1,4 +1,3 @@
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import MuiDrawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
@@ -8,7 +7,6 @@ import FeedbackButton from "./FeedbackButton";
 import PaperList from "./PaperList";
 import SearchResults from "./SearchResults";
 import {
-  DrawerMode,
   MathMls,
   PaperId,
   Papers,
@@ -20,6 +18,8 @@ import { UserLibrary } from "./types/api";
 import { PDFViewer } from "./types/pdfjs-viewer";
 
 const PDF_VIEWER_DRAWER_OPEN_CLASS = "drawer-open";
+
+export type DrawerMode = "open" | "closed";
 
 interface Props {
   paperId: PaperId | undefined;
@@ -74,28 +74,6 @@ export class Drawer extends React.PureComponent<Props> {
     });
   }
 
-  /**
-   * XXX(zkirby): Since the clickaway listener listens to *all* clicks outside of the
-   * drawer, if we do not have the code below it will close after a button is clicked that
-   * is meant to open the drawer. The code below simply gets the element that the click that is intending
-   * to close the drawer originated from and traverses the class list and class list of all
-   * parent elements looking for if this click happened from within a tooltip.
-   * Only close the drawer if the click is not within the tooltip.\
-   * TODO(andrewhead): move this into ScholarReader.
-   */
-  closeOnClickAway = (e: React.MouseEvent<Document, MouseEvent>) => {
-    const BLACK_LISTED_CLASS_NAME = "MuiTooltip-tooltip";
-    let elementTarget = e.target as Element | null;
-    while (elementTarget != null) {
-      if (elementTarget.classList.contains(BLACK_LISTED_CLASS_NAME)) {
-        return;
-      }
-      elementTarget = elementTarget.parentElement;
-    }
-
-    this.closeDrawer();
-  };
-
   closeDrawer() {
     if (this.props.mode !== "closed") {
       this.props.handleClose();
@@ -134,49 +112,47 @@ export class Drawer extends React.PureComponent<Props> {
       selectedEntityId,
     };
     return (
-      <ClickAwayListener onClickAway={this.closeOnClickAway}>
-        <MuiDrawer
-          className="drawer"
-          variant="persistent"
-          anchor="right"
-          open={mode !== "closed"}
-        >
-          <div className="drawer__header">
-            <div className="drawer__close_icon">
-              <IconButton
-                className="MuiButton-contained"
-                onClick={this.closeDrawer}
-              >
-                <ChevronRightIcon />
-              </IconButton>
-            </div>
-            <FeedbackButton paperId={paperId} extraContext={feedbackContext} />
+      <MuiDrawer
+        className="drawer"
+        variant="persistent"
+        anchor="right"
+        open={mode !== "closed"}
+      >
+        <div className="drawer__header">
+          <div className="drawer__close_icon">
+            <IconButton
+              className="MuiButton-contained"
+              onClick={this.closeDrawer}
+            >
+              <ChevronRightIcon />
+            </IconButton>
           </div>
-          <div className="drawer__content">
-            {mode === "open" &&
-              selectedEntityType === "symbol" &&
-              pdfDocument !== null && (
-                <SearchResults
-                  pdfDocument={pdfDocument}
-                  pageSize={4}
-                  symbols={symbols}
-                  mathMls={mathMls}
-                  sentences={sentences}
-                  selectedEntityType={selectedEntityType}
-                  selectedEntityId={selectedEntityId}
-                  handleSelectSymbol={handleSelectSymbol}
-                />
-              )}
-            {mode === "open" && selectedEntityType === "citation" && (
-              <PaperList
-                papers={this.props.papers}
-                userLibrary={this.props.userLibrary}
-                handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
+          <FeedbackButton paperId={paperId} extraContext={feedbackContext} />
+        </div>
+        <div className="drawer__content">
+          {mode === "open" &&
+            selectedEntityType === "symbol" &&
+            pdfDocument !== null && (
+              <SearchResults
+                pdfDocument={pdfDocument}
+                pageSize={4}
+                symbols={symbols}
+                mathMls={mathMls}
+                sentences={sentences}
+                selectedEntityType={selectedEntityType}
+                selectedEntityId={selectedEntityId}
+                handleSelectSymbol={handleSelectSymbol}
               />
             )}
-          </div>
-        </MuiDrawer>
-      </ClickAwayListener>
+          {mode === "open" && selectedEntityType === "citation" && (
+            <PaperList
+              papers={this.props.papers}
+              userLibrary={this.props.userLibrary}
+              handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
+            />
+          )}
+        </div>
+      </MuiDrawer>
     );
   }
 }

@@ -36,6 +36,8 @@ interface Props {
   selectedEntityType: SelectableEntityType;
   selectedAnnotationId: string | null;
   selectedAnnotationSpanId: string | null;
+  findMatchedEntityIds: string[] | null;
+  findSelectionEntityId: string | null;
   showAnnotations: boolean;
   userAnnotations: AnnotationObject[] | null;
   userAnnotationsEnabled: boolean;
@@ -43,6 +45,7 @@ interface Props {
   handleSelectEntity: (entityType: SelectableEntityType, id: string) => void;
   handleSelectAnnotation: (id: string) => void;
   handleSelectAnnotationSpan: (id: string) => void;
+  handleStartSymbolSearch: (id: string) => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
   handleAddUserAnnotation: (data: AnnotationData) => void;
   handleUpdateUserAnnotation: (
@@ -98,6 +101,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
 
   render() {
     const {
+      paperId,
       view,
       pageNumber,
       papers,
@@ -110,11 +114,14 @@ class PageOverlay extends React.PureComponent<Props, {}> {
       selectedEntityId,
       selectedAnnotationId,
       selectedAnnotationSpanId,
+      findMatchedEntityIds,
+      findSelectionEntityId,
       showAnnotations,
       userAnnotations,
       userAnnotationsEnabled,
       userAnnotationType,
       handleAddPaperToLibrary,
+      handleStartSymbolSearch,
       handleSelectAnnotation,
       handleSelectAnnotationSpan,
       handleAddUserAnnotation,
@@ -122,23 +129,13 @@ class PageOverlay extends React.PureComponent<Props, {}> {
       handleDeleteUserAnnotation,
     } = this.props;
 
-    /*
-     * If user annotations are enabled, the overlay needs to be set to the full size of the page
-     * so that it can capture mouse events. If not, the overlay should not have any size, as
-     * the layers below (e.g., the text layer) need to capture the mouse events.
-     */
-    if (userAnnotationsEnabled) {
-      this._element.classList.add("user-annotations-enabled");
-    } else {
-      this._element.classList.remove("user-annotations-enabled");
-    }
+    const pageDimensions = getPageViewDimensions(view);
 
-    const pageDimensions = getPageViewDimensions(this.props.view);
     return ReactDOM.createPortal(
       <>
         <PageMask
           key="page-mask"
-          pageNumber={this.props.pageNumber}
+          pageNumber={pageNumber}
           pageWidth={pageDimensions.width}
           pageHeight={pageDimensions.height}
           symbols={symbols}
@@ -152,7 +149,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
           ? citations.all.map((cId) => {
               const citation = citations.byId[cId];
               const boundingBoxes = citation.bounding_boxes.filter(
-                (b) => b.page === this.props.pageNumber - 1
+                (b) => b.page === pageNumber - 1
               );
               const isSelected = cId === selectedEntityId;
               return boundingBoxes.length > 0 ? (
@@ -164,13 +161,13 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                   citation={citation}
                   selected={isSelected}
                   selectedSpanId={isSelected ? selectedAnnotationSpanId : null}
-                  showHint={showAnnotations}
+                  active={showAnnotations}
                   boundingBoxes={boundingBoxes}
-                  openedPaperId={this.props.paperId}
-                  handleSelectCitation={this.handleSelectCitation}
-                  handleAddPaperToLibrary={handleAddPaperToLibrary}
+                  openedPaperId={paperId}
                   handleSelectAnnotation={handleSelectAnnotation}
                   handleSelectAnnotationSpan={handleSelectAnnotationSpan}
+                  handleSelectCitation={this.handleSelectCitation}
+                  handleAddPaperToLibrary={handleAddPaperToLibrary}
                 />
               ) : null;
             })
@@ -180,19 +177,29 @@ class PageOverlay extends React.PureComponent<Props, {}> {
           ? symbols.all.map((sId) => {
               const symbol = symbols.byId[sId];
               const boundingBoxes = symbol.bounding_boxes.filter(
-                (b) => b.page === this.props.pageNumber - 1
+                (b) => b.page === pageNumber - 1
               );
               const isSelected = sId === selectedEntityId;
+              const isFindMatch =
+                findMatchedEntityIds !== null &&
+                findMatchedEntityIds.indexOf(sId) !== -1;
               return boundingBoxes.length > 0 ? (
                 <SymbolAnnotation
                   key={sId}
                   pageView={view}
+                  /*
+                   * For now, only show interactivity for top-level symbols (i.e., symbols that
+                   * are not sub-symbols of other symbols.
+                   */
+                  active={showAnnotations && symbol.parent === null}
                   selected={isSelected}
                   selectedSpanId={isSelected ? selectedAnnotationSpanId : null}
-                  showHint={showAnnotations}
+                  isFindSelection={findSelectionEntityId === sId}
+                  isFindMatch={isFindMatch}
                   boundingBoxes={boundingBoxes}
                   symbol={symbol}
                   handleSelectSymbol={this.handleSelectSymbol}
+                  handleStartSymbolSearch={handleStartSymbolSearch}
                   handleSelectAnnotation={handleSelectAnnotation}
                   handleSelectAnnotationSpan={handleSelectAnnotationSpan}
                 />
