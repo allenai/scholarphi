@@ -1,3 +1,4 @@
+import Button from "@material-ui/core/Button";
 import React from "react";
 import ReactDOM from "react-dom";
 import { PdfjsFindQueryWidget } from "./PdfjsFindQueryWidget";
@@ -153,18 +154,18 @@ class FindBar extends React.PureComponent<Props> {
           </div>
           {/* Common components for finding: next, back, and close. */}
           <div className="find-bar__navigation">
-            <button
+            <Button
               className="find-bar__navigation__previous"
               onClick={this.onClickPrevious}
             >
-              <span>Previous</span>
-            </button>
-            <button
+              Previous
+            </Button>
+            <Button
               className="find-bar__navigation__next"
               onClick={this.onClickNext}
             >
-              <span>Next</span>
-            </button>
+              Next
+            </Button>
           </div>
           <div className="find-bar__message">
             <span className="find-bar__message__span">

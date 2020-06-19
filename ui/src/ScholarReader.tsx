@@ -14,6 +14,7 @@ import {
   PaperId,
   SelectableEntityType,
   State,
+  SymbolFilters,
 } from "./state";
 import "./style/index.less";
 import {
@@ -65,7 +66,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       findQuery: null,
       findMatchIndex: null,
       findMatchCount: null,
-      findMatchedEntities: [],
+      findMatchedEntities: null,
       drawerMode: "closed",
 
       userAnnotationsEnabled: false,
@@ -308,7 +309,19 @@ class ScholarReader extends React.PureComponent<Props, State> {
       isFindActive: true,
       findMode: "symbol",
       findActivationTimeMs: Date.now(),
-      findQuery: { byId: {}, all: [] },
+      findQuery: {
+        byId: {
+          "exact-match": {
+            active: true,
+            key: "exact-match",
+          },
+          "partial-match": {
+            active: true,
+            key: "partial-match",
+          },
+        },
+        all: ["exact-match", "partial-match"],
+      },
       findMatchCount: matchCount,
       findMatchIndex: matchIndex,
       findMatchedEntities: matching,
@@ -323,8 +336,39 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.setState({ findMatchIndex });
   }
 
+  /*
+   * TODO(andrewhead): split this into pieces, reuse its code. Too big.
+   */
   setFindQuery(findQuery: FindQuery) {
-    this.setState({ findQuery });
+    this.setState((state) => {
+      if (
+        state.findMode === "symbol" &&
+        state.selectedEntityId !== null &&
+        state.symbols !== null &&
+        state.mathMls !== null
+      ) {
+        const symbolFilters = findQuery as SymbolFilters;
+        const filterList =
+          symbolFilters !== null
+            ? Object.values(symbolFilters.byId)
+            : undefined;
+        const matching = matchingSymbols(
+          state.selectedEntityId,
+          state.symbols,
+          state.mathMls,
+          filterList
+        );
+        const matchCount = matching.length;
+        const matchIndex = matching.indexOf(state.selectedEntityId);
+        return {
+          findQuery,
+          findMatchCount: matchCount,
+          findMatchIndex: matchIndex,
+          findMatchedEntities: matching,
+        } as State;
+      }
+      return { findQuery } as State;
+    });
   }
 
   closeFindBar() {
@@ -335,6 +379,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       findQuery: null,
       findMatchCount: null,
       findMatchIndex: null,
+      findMatchedEntities: null,
     });
   }
 
