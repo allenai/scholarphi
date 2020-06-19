@@ -36,6 +36,9 @@ interface Symbol extends Entity {
 
 interface MathMlMatch {
   rank: number;
+  /**
+   * ID of matching MathMl object.
+   */
   mathMl: string;
 }
 
@@ -108,9 +111,9 @@ export class Connection {
         user: config.get("database:user"),
         password: config.get("database:password"),
         database: config.get("database:database"),
-        ssl: true
+        ssl: true,
       },
-      searchPath: [config.get("database:schema")]
+      searchPath: [config.get("database:schema")],
     });
   }
 
@@ -131,12 +134,12 @@ export class Connection {
     ORDER BY symbols DESC, citations DESC
     `);
     return response.rows
-      .filter(row => parseInt(row.citations) > 0 || parseInt(row.symbols) > 0)
-      .map(row => ({
+      .filter((row) => parseInt(row.citations) > 0 || parseInt(row.symbols) > 0)
+      .map((row) => ({
         s2Id: row.s2_id,
         arxivId: row.arxiv_id,
         extractedCitationCount: parseInt(row.citations),
-        extractedSymbolCount: parseInt(row.symbols)
+        extractedSymbolCount: parseInt(row.symbols),
       }));
   }
 
@@ -169,7 +172,7 @@ export class Connection {
       .where({ "entity.type": "citation" })
       .join("entityboundingbox", { "entity.id": "entityboundingbox.entity_id" })
       .join("boundingbox", {
-        "entityboundingbox.bounding_box_id": "boundingbox.id"
+        "entityboundingbox.bounding_box_id": "boundingbox.id",
       })
       // Get S2 paper ID for each citation.
       .join("citationpaper", { "citation.id": "citationpaper.citation_id" });
@@ -182,7 +185,7 @@ export class Connection {
           id: String(key),
           source: row.source,
           bounding_boxes: [],
-          paper: row.cited_paper_id
+          paper: row.cited_paper_id,
         };
       }
       const bounding_box: BoundingBox = {
@@ -191,7 +194,7 @@ export class Connection {
         left: row.left,
         top: row.top,
         width: row.width,
-        height: row.height
+        height: row.height,
       };
       add_bounding_box(citations[key], bounding_box);
     }
@@ -222,20 +225,20 @@ export class Connection {
       .where({ "entity.type": "symbol" })
       .join("entityboundingbox", { "entity.id": "entityboundingbox.entity_id" })
       .join("boundingbox", {
-        "entityboundingbox.bounding_box_id": "boundingbox.id"
+        "entityboundingbox.bounding_box_id": "boundingbox.id",
       })
       // Get the ID of the sentence this symbol belongs to.
       .leftOuterJoin("symbolsentence", {
-        "symbol.id": "symbolsentence.symbol_id"
+        "symbol.id": "symbolsentence.symbol_id",
       })
       // Get the symbol's parent.
-      .leftOuterJoin("symbolchild AS parents", function() {
+      .leftOuterJoin("symbolchild AS parents", function () {
         this.on({ "symbol.id": "parents.child_id" }).orOnNull(
           "parents.child_id"
         );
       })
       // Get the symbol's children.
-      .leftOuterJoin("symbolchild AS children", function() {
+      .leftOuterJoin("symbolchild AS children", function () {
         this.on({ "symbol.id": "children.parent_id" }).orOnNull(
           "children.parent_id"
         );
@@ -255,14 +258,14 @@ export class Connection {
         "parents.parent_id"
       );
 
-    const symbols = rows.map(row => {
+    const symbols = rows.map((row) => {
       const boundingBox: BoundingBox = {
         id: String(row.bounding_box_id),
         page: row.page,
         left: row.left,
         top: row.top,
         width: row.width,
-        height: row.height
+        height: row.height,
       };
       const symbol: Symbol = {
         id: String(row.symbol_id),
@@ -271,7 +274,7 @@ export class Connection {
         sentence: String(row.sentence_id),
         bounding_boxes: [boundingBox],
         parent: row.parent_id,
-        children: row.children_ids
+        children: row.children_ids,
       };
       return symbol;
     });
@@ -302,12 +305,12 @@ export class Connection {
         mathMlById[id] = {
           id,
           mathMl,
-          matches: []
+          matches: [],
         };
       }
       mathMlById[id].matches.push({
         mathMl: row.matching_mathml_id,
-        rank: Number(row.rank)
+        rank: Number(row.rank),
       });
     }
     return Object.values(mathMlById);
@@ -334,7 +337,7 @@ export class Connection {
       .where({ "entity.type": "sentence" })
       .join("entityboundingbox", { "entity.id": "entityboundingbox.entity_id" })
       .join("boundingbox", {
-        "entityboundingbox.bounding_box_id": "boundingbox.id"
+        "entityboundingbox.bounding_box_id": "boundingbox.id",
       });
 
     const sentences: SentencesById = {};
@@ -345,7 +348,7 @@ export class Connection {
           id: String(key),
           source: row.source,
           bounding_boxes: [],
-          text: row.text
+          text: row.text,
         };
       }
       const bounding_box: BoundingBox = {
@@ -354,7 +357,7 @@ export class Connection {
         left: row.left,
         top: row.top,
         width: row.width,
-        height: row.height
+        height: row.height,
       };
       add_bounding_box(sentences[key], bounding_box);
     }
@@ -376,7 +379,7 @@ export class Connection {
       // Get annotations.
       .join("annotation", { "paper.s2_id": "annotation.paper_id" });
 
-    const annotations: Annotation[] = rows.map(row => ({
+    const annotations: Annotation[] = rows.map((row) => ({
       id: String(row.annotation_id),
       type: row.type,
       boundingBox: {
@@ -385,8 +388,8 @@ export class Connection {
         left: row.left,
         top: row.top,
         width: row.width,
-        height: row.height
-      }
+        height: row.height,
+      },
     }));
     return annotations;
   }
@@ -423,14 +426,12 @@ export class Connection {
         width,
         height,
         type,
-        updated_at: this._knex.raw("NOW()")
+        updated_at: this._knex.raw("NOW()"),
       })
       .where({ "annotation.id": id })
       .whereIn(
         "annotation.paper_id",
-        this._knex("paper")
-          .select("s2_id")
-          .where({ "paper.arxiv_id": arxivId })
+        this._knex("paper").select("s2_id").where({ "paper.arxiv_id": arxivId })
       )
       .returning("id");
 
@@ -443,8 +444,8 @@ export class Connection {
         left: annotationData.left,
         top: annotationData.top,
         width: annotationData.width,
-        height: annotationData.height
-      }
+        height: annotationData.height,
+      },
     };
   }
 
@@ -454,9 +455,7 @@ export class Connection {
       .where({ "annotation.id": id })
       .whereIn(
         "annotation.paper_id",
-        this._knex("paper")
-          .select("s2_id")
-          .where({ "paper.arxiv_id": arxivId })
+        this._knex("paper").select("s2_id").where({ "paper.arxiv_id": arxivId })
       );
   }
 
@@ -464,7 +463,7 @@ export class Connection {
 }
 
 function add_bounding_box(entity: Entity, box: BoundingBox) {
-  if (!entity.bounding_boxes.some(b => _.isEqual(b, box))) {
+  if (!entity.bounding_boxes.some((b) => _.isEqual(b, box))) {
     entity.bounding_boxes.push(box);
   }
 }

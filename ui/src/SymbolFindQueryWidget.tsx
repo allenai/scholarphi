@@ -32,7 +32,8 @@ export class SymbolFindQueryWidget extends React.PureComponent<Props> {
           return (
             <Button
               key={key}
-              color={active ? "primary" : "secondary"}
+              variant={"contained"}
+              color={active ? "primary" : undefined}
               onClick={this.toggleFilter.bind(this, filter)}
             >
               {filter.key}

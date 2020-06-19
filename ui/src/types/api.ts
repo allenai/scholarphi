@@ -1,4 +1,8 @@
 /**
+ * Types returned by the Scholar-Reader API. See the code in the 'api/' directory for documentation.
+ */
+
+/**
  * Matches the schema of the data in the 'boundingbox' table in the database. At the time of
  * the writing of this comment, 'left', 'top', 'width', and 'height' were expressed in ratios
  * to the page width and height, rather than absolute coordinates
