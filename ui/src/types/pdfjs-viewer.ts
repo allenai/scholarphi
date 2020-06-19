@@ -44,13 +44,27 @@ export interface PageRenderedEvent {
 
 export interface ExternalServices {
   supportsIntegratedFind: boolean;
-  updateFindControlState: (state: { matchesCount: MatchInfo }) => void;
+  updateFindControlState: (state: {
+    result: number;
+    matchesCount: MatchInfo;
+  }) => void;
   updateFindMatchesCount: (matchInfo: MatchInfo) => void;
 }
 
 export interface MatchInfo {
   current: number;
   total: number;
+}
+
+/**
+ * States for the pdf.js find controller are defined at:
+ * https://github.com/mozilla/pdf.js/blob/8cfdfb237abc3a20013306eb43dd4cfdb76e4a8e/web/pdf_find_controller.js#L20-L25
+ */
+export enum PdfJsFindControllerState {
+  FOUND = 0,
+  NOT_FOUND = 1,
+  WRAPPED = 2,
+  PENDING = 3,
 }
 
 export interface DocumentLoadedEvent {

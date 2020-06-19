@@ -1,5 +1,9 @@
 import React from "react";
-import { EventBus, PDFViewerApplication } from "./types/pdfjs-viewer";
+import {
+  EventBus,
+  PdfJsFindControllerState,
+  PDFViewerApplication,
+} from "./types/pdfjs-viewer";
 
 interface Props {
   query: string | null;
@@ -35,15 +39,21 @@ export class PdfjsFindQueryWidget extends React.PureComponent<Props> {
      * integrate a custom find widget with pdf.js's find functionality, see
      * https://github.com/allenai/scholar-reader/issues/96
      */
+
     pdfViewerApplication.externalServices = {
       ...pdfViewerApplication.externalServices,
-      updateFindControlState: ({ matchesCount: { current, total } }) => {
-        this.props.onMatchCountChanged(total);
-        this.props.onMatchIndexChanged(current - 1);
+      updateFindControlState: ({ result }) => {
+        this.pdfjsFindControllerState = result;
+        if (result === PdfJsFindControllerState.NOT_FOUND) {
+          this.props.onMatchCountChanged(0);
+          this.props.onMatchIndexChanged(0);
+        }
       },
       updateFindMatchesCount: ({ current, total }) => {
-        this.props.onMatchCountChanged(total);
-        this.props.onMatchIndexChanged(current - 1);
+        if (this.pdfjsFindControllerState === PdfJsFindControllerState.FOUND) {
+          this.props.onMatchCountChanged(total);
+          this.props.onMatchIndexChanged(current - 1);
+        }
       },
       supportsIntegratedFind: true,
     };
@@ -152,6 +162,8 @@ export class PdfjsFindQueryWidget extends React.PureComponent<Props> {
    * in the document, and which match is currently selected.
    */
   pdfjsEventBus?: EventBus;
+
+  pdfjsFindControllerState?: PdfJsFindControllerState;
 }
 
 export default PdfjsFindQueryWidget;

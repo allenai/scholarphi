@@ -1,4 +1,8 @@
-import Button from "@material-ui/core/Button";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
+import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
+import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import React from "react";
 import ReactDOM from "react-dom";
 import { PdfjsFindQueryWidget } from "./PdfjsFindQueryWidget";
@@ -113,7 +117,13 @@ class FindBar extends React.PureComponent<Props> {
 
   render() {
     const elFindBarContainer = document.getElementById("mainContainer");
-    const { mode, pdfViewerApplication, query } = this.props;
+    const {
+      matchCount,
+      matchIndex,
+      mode,
+      pdfViewerApplication,
+      query,
+    } = this.props;
 
     if (elFindBarContainer && mode !== null) {
       return ReactDOM.createPortal(
@@ -154,27 +164,33 @@ class FindBar extends React.PureComponent<Props> {
           </div>
           {/* Common components for finding: next, back, and close. */}
           <div className="find-bar__navigation">
-            <Button
-              className="find-bar__navigation__previous"
+            <IconButton
+              disabled={matchCount === null || matchCount === 0}
               onClick={this.onClickPrevious}
             >
-              Previous
-            </Button>
-            <Button
-              className="find-bar__navigation__next"
+              <NavigateBeforeIcon />
+            </IconButton>
+            <IconButton
+              disabled={matchCount === null || matchCount === 0}
               onClick={this.onClickNext}
             >
-              Next
-            </Button>
+              <NavigateNextIcon />
+            </IconButton>
           </div>
-          <div className="find-bar__message">
-            <span className="find-bar__message__span">
-              {this.createMatchCountMessage()}
-            </span>
-          </div>
-          <div className="find-bar__close" onClick={this.close}>
-            X
-          </div>
+          {query !== null ? (
+            <div className="find-bar__message">
+              <span className="find-bar__message__span">
+                {matchCount !== null && matchIndex !== null ? (
+                  this.createMatchCountMessage()
+                ) : (
+                  <CircularProgress size={"1rem"} />
+                )}
+              </span>
+            </div>
+          ) : null}
+          <IconButton onClick={this.close}>
+            <CloseIcon />
+          </IconButton>
         </div>,
         elFindBarContainer
       );

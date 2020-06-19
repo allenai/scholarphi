@@ -498,10 +498,10 @@ class ScholarReader extends React.PureComponent<Props, State> {
 
   jumpToBoundingBox(box: BoundingBox) {
     /*
-     * Based roughly on the scroll offsets used for pdf.js "find" functionality:
+     * In a past version, these offsets were based roughly off those in the pdf.js "find" functionality:
      * https://github.com/mozilla/pdf.js/blob/16ae7c6960c1296370c1600312f283a68e82b137/web/pdf_find_controller.js#L28-L29
      */
-    const SCROLL_OFFSET_X = -400;
+    const SCROLL_OFFSET_X = -200;
     const SCROLL_OFFSET_Y = +100;
 
     if (

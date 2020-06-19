@@ -31,6 +31,7 @@ export class SymbolFindQueryWidget extends React.PureComponent<Props> {
           const { key, active } = filter;
           return (
             <Button
+              className="filter-button"
               key={key}
               variant={"contained"}
               color={active ? "primary" : undefined}
