@@ -1,4 +1,5 @@
 import { defaultMemoize } from "reselect";
+import { SymbolFilter } from "../FindBar";
 import { MathMls, Symbols } from "../state";
 import { BoundingBox } from "../types/api";
 
@@ -7,7 +8,12 @@ import { BoundingBox } from "../types/api";
  * be in the order the symbols appear in the document.
  */
 export const matchingSymbols = defaultMemoize(
-  (symbolId: string, symbols: Symbols, allMathMl: MathMls) => {
+  (
+    symbolId: string,
+    symbols: Symbols,
+    allMathMl: MathMls,
+    symbolFilters?: SymbolFilter[]
+  ) => {
     /*
      * Get ordered list of all symbols for sorting the matching symbols later. Sort all of the
      * symbols instead of sorting the matching symbols so that the sort can be run once for all
@@ -15,15 +21,42 @@ export const matchingSymbols = defaultMemoize(
      */
     const orderedSymbolIds = orderByPosition(symbols.all, symbols);
 
-    const mathMl = allMathMl.byId[symbols.byId[symbolId].mathml];
-    const matchingSymbolIds = mathMl.matches
-      .map((match) => allMathMl.byId[match.mathMl].symbols)
-      .flat();
-    const matchingSymbolIdSet = matchingSymbolIds.reduce((map, sId) => {
-      map[sId] = true;
+    const matchingMathMls = allMathMl.byId[
+      symbols.byId[symbolId].mathml
+    ].matches
+      .filter((match) => {
+        /*
+         * If no filters were provided, every match returned by the backend is considered valid.
+         */
+        if (!symbolFilters) {
+          return true;
+        }
+        const EXACT_MATCH_RANK = 1;
+        const PARTIAL_MATCH_RANK = 2;
+        /*
+         * TODO(andrewhead): this is the piece to change.
+         */
+        if (
+          symbolFilters.some((f) => f.key === "exact-match" && f.active) &&
+          match.rank === EXACT_MATCH_RANK
+        ) {
+          return true;
+        }
+        return (
+          symbolFilters.some((f) => f.key === "partial-match" && f.active) &&
+          match.rank === PARTIAL_MATCH_RANK
+        );
+      })
+      .map((match) => match.mathMl);
+
+    const matchingMathMlIdSet = matchingMathMls.reduce((map, mathMlId) => {
+      map[mathMlId] = true;
       return map;
-    }, {} as { [sId: string]: boolean });
-    return orderedSymbolIds.filter((sId) => matchingSymbolIdSet[sId]);
+    }, {} as { [mathMlId: string]: boolean });
+
+    return orderedSymbolIds.filter(
+      (sId) => matchingMathMlIdSet[symbols.byId[sId].mathml] !== undefined
+    );
   }
 );
 
