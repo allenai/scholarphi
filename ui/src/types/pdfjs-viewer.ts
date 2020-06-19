@@ -58,12 +58,33 @@ export interface DocumentLoadedEvent {
 }
 
 export interface PDFViewer {
-  scrollPageIntoView: (params: ScrollPageIntoViewParameters) => void;
   container: HTMLDivElement;
   viewer: HTMLDivElement;
+  /**
+   * Scroll the PDF viewer to a location of interest. Example usage:
+   * pdfViewer.scrollPageIntoView({
+   *     pageNumber: PAGE_NUMBER,  // page numbers start at 1.
+   *     destArray: [
+   *       undefined,
+   *       { name: "XYZ" },
+   *       LEFT_X_IN_PDF_COORDINATE_SYSTEM,
+   *       TOP_Y_IN_PDF_COORDINATE_SYSTEM,
+   *     ],
+   *   });
+   */
+  scrollPageIntoView: (options: ScrollPageIntoViewOptions) => void;
+  /**
+   * XXX(andrewhead): ideally, this internal function shouldn't be used because we don't know if
+   * pdf.js will maintain it. In practice, it is a very convenient function, as it lets the
+   * caller scroll to a specific element in the viewer without knowing its coordinates.
+   */
+  _scrollIntoView: (options: ScrollIntoViewOptions) => void;
 }
 
-interface ScrollPageIntoViewParameters {
+/**
+ * X and Y coordinates are in the PDF coordinate system, not in the viewport coordinate system.
+ */
+interface ScrollPageIntoViewOptions {
   pageNumber?: number;
   destArray?: DestArray | null;
   allowNegativeOffset?: boolean;
@@ -77,6 +98,11 @@ type DestArray = [any | undefined, DestinationType, any?, any?, any?, any?];
 
 interface DestinationType {
   name: "XYZ" | "Fit" | "FitB" | "FitH" | "FitBH" | "FitV" | "FitBV" | "FitR";
+}
+
+interface ScrollIntoViewOptions {
+  pageDiv: HTMLElement;
+  pageSpot?: { left: number; top: number };
 }
 
 export interface PDFPageView {

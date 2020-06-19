@@ -1,4 +1,5 @@
 import React from "react";
+import { BoundingBox } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
 export function getMouseXY(event: React.MouseEvent) {
@@ -69,6 +70,34 @@ export function truncateText(
   } else {
     return text;
   }
+}
+
+/**
+ * Convert a bounding box in ratio coordinates to PDF coordinates (i.e., in points). In the PDF
+ * coordinate system, 'top' is the number of points from the bottom of the page.
+ */
+export function convertBoxToPdfCoordinates(
+  view: PDFPageView,
+  box: BoundingBox
+) {
+  /*
+   * Dimensions of the page in PDF coordinates are stored in a page's 'view' property.
+   * To see how these coordinates get loaded from PDF metadata (specifically, the "ViewArea"
+   * tags), see these two links:
+   * * https://github.com/mozilla/pdf.js/blob/cd6d0894894c97264eca993b10d0d9faa02fa829/src/core/document.js#L177
+   * * https://github.com/mozilla/pdf.js/blob/cd6d0894894c97264eca993b10d0d9faa02fa829/src/core/obj.js#L522
+   * Also see information about the "ViewArea" tag in the PDF spec, "PDF 32000-1:2008", page 628.
+   */
+  //
+  const [pdfLeft, pdfBottom, pdfRight, pdfTop] = view.pdfPage.view;
+  const pdfWidth = pdfRight - pdfLeft;
+  const pdfHeight = pdfTop - pdfBottom;
+  return {
+    left: pdfLeft + box.left * pdfWidth,
+    top: pdfBottom + (1 - box.top) * pdfHeight,
+    width: box.width * pdfWidth,
+    height: box.height * pdfHeight,
+  };
 }
 
 /**
