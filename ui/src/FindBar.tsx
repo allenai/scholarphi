@@ -10,7 +10,7 @@ export type FindMode = null | "pdfjs-builtin-find" | "symbol";
 export type FindQuery = null | string | SymbolFilters;
 export interface SymbolFilter {
   key: "exact-match" | "partial-match";
-  active: boolean;
+  active?: boolean;
 }
 
 interface Props {

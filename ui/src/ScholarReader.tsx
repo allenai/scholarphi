@@ -29,6 +29,7 @@ import {
   PageRenderedEvent,
   PDFViewerApplication,
 } from "./types/pdfjs-viewer";
+import * as uiUtils from "./ui-utils";
 import { UserAnnotationTypeSelect } from "./UserAnnotationTypeSelect";
 import ViewerOverlay from "./ViewerOverlay";
 
@@ -312,11 +313,9 @@ class ScholarReader extends React.PureComponent<Props, State> {
       findQuery: {
         byId: {
           "exact-match": {
-            active: true,
             key: "exact-match",
           },
           "partial-match": {
-            active: true,
             key: "partial-match",
           },
         },
@@ -333,7 +332,19 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   setFindMatchIndex(findMatchIndex: number | null) {
-    this.setState({ findMatchIndex });
+    this.setState((state) => {
+      if (
+        state.findMode === "symbol" &&
+        state.findMatchedEntities !== null &&
+        findMatchIndex !== null &&
+        state.symbols !== null
+      ) {
+        const symbolId = state.findMatchedEntities[findMatchIndex];
+        const symbol = state.symbols.byId[symbolId];
+        this.jumpToBoundingBox(symbol.bounding_boxes[0]);
+      }
+      return { findMatchIndex };
+    });
   }
 
   /*
@@ -488,8 +499,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
   jumpToBoundingBox(box: BoundingBox) {
     /*
      * Based roughly on the scroll offsets used for pdf.js "find" functionality:
-     * https://github.com/mozilla/pdf.js/blob/16ae7c6960c1296370c1600312f283a68e82b137/web/pdf_find_controller.js#L190-L191
-     * TODO(andrewhead): this offset should be in viewport coordinates, not PDF coordinates.
+     * https://github.com/mozilla/pdf.js/blob/16ae7c6960c1296370c1600312f283a68e82b137/web/pdf_find_controller.js#L28-L29
      */
     const SCROLL_OFFSET_X = -400;
     const SCROLL_OFFSET_Y = +100;
@@ -499,10 +509,8 @@ class ScholarReader extends React.PureComponent<Props, State> {
       this.state.pages !== null &&
       this.state.pages[box.page + 1] !== undefined
     ) {
-      const { left, top } = selectors.divDimensionStyles(
-        this.state.pages[box.page + 1].view,
-        box
-      );
+      const page = this.state.pages[box.page + 1];
+      const { left, top } = uiUtils.convertBoxToPdfCoordinates(page.view, box);
       this.state.pdfViewer.scrollPageIntoView({
         pageNumber: box.page + 1,
         destArray: [
