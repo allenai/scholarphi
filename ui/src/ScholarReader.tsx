@@ -2,15 +2,14 @@ import React from "react";
 import { createPortal } from "react-dom";
 import * as api from "./api";
 import AppOverlay from "./AppOverlay";
-import Drawer from "./Drawer";
+import Drawer, { DrawerMode } from "./Drawer";
 import FeedbackButton from "./FeedbackButton";
-import FindBar from "./FindBar";
+import FindBar, { FindQuery } from "./FindBar";
 import PageOverlay from "./PageOverlay";
 import * as selectors from "./selectors";
+import { matchingSymbols } from "./selectors";
 import {
   createRelationalStoreFromArray,
-  DrawerMode,
-  FindQuery,
   Pages,
   PaperId,
   SelectableEntityType,
@@ -60,14 +59,13 @@ class ScholarReader extends React.PureComponent<Props, State> {
       selectedEntityType: null,
       selectedEntityId: null,
 
-      paperJumpRequest: null,
-
       isFindActive: false,
       findMode: null,
       findActivationTimeMs: null,
       findQuery: null,
       findMatchIndex: null,
       findMatchCount: null,
+      findMatchedEntities: [],
       drawerMode: "closed",
 
       userAnnotationsEnabled: false,
@@ -99,6 +97,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.closeFindBar = this.closeFindBar.bind(this);
     this.toggleUserAnnotationMode = this.toggleUserAnnotationMode.bind(this);
     this.startTextSearch = this.startTextSearch.bind(this);
+    this.startSymbolSearch = this.startSymbolSearch.bind(this);
     this.hideAnnotations = this.hideAnnotations.bind(this);
     this.showAnnotations = this.showAnnotations.bind(this);
   }
@@ -137,7 +136,10 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   deselectSelection() {
-    if (this.state.selectedEntityType === "symbol") {
+    if (
+      this.state.findMode === "symbol" &&
+      this.state.selectedEntityType === "symbol"
+    ) {
       this.closeFindBar();
     }
     this.setState({
@@ -286,6 +288,30 @@ class ScholarReader extends React.PureComponent<Props, State> {
       isFindActive: true,
       findActivationTimeMs: Date.now(),
       findMode: "pdfjs-builtin-find",
+    });
+  }
+
+  startSymbolSearch(symbolId: string) {
+    if (this.state.symbols === null || this.state.mathMls === null) {
+      return;
+    }
+
+    const matching = matchingSymbols(
+      symbolId,
+      this.state.symbols,
+      this.state.mathMls
+    );
+    const matchCount = matching.length;
+    const matchIndex = matching.indexOf(symbolId);
+
+    this.setState({
+      isFindActive: true,
+      findMode: "symbol",
+      findActivationTimeMs: Date.now(),
+      findQuery: { byId: {}, all: [] },
+      findMatchCount: matchCount,
+      findMatchIndex: matchIndex,
+      findMatchedEntities: matching,
     });
   }
 
@@ -451,6 +477,18 @@ class ScholarReader extends React.PureComponent<Props, State> {
     const elUserAnnotationTypeContainer = document.getElementById(
       "scholarReaderAnnotationTypeSelect"
     );
+
+    let findMatchEntityId: string | null = null;
+    if (
+      this.state.findMatchedEntities !== null &&
+      this.state.findMatchIndex !== null &&
+      this.state.findMatchIndex < this.state.findMatchedEntities.length
+    ) {
+      findMatchEntityId = this.state.findMatchedEntities[
+        this.state.findMatchIndex
+      ];
+    }
+
     return (
       <>
         {this.state.pages !== null ? (
@@ -480,6 +518,8 @@ class ScholarReader extends React.PureComponent<Props, State> {
                   selectedEntityId={this.state.selectedEntityId}
                   selectedAnnotationId={this.state.selectedAnnotationId}
                   selectedAnnotationSpanId={this.state.selectedAnnotationSpanId}
+                  findMatchedEntityIds={this.state.findMatchedEntities}
+                  findSelectionEntityId={findMatchEntityId}
                   showAnnotations={this.state.annotationsShowing}
                   userAnnotations={this.state.userAnnotations as Annotation[]}
                   userAnnotationsEnabled={this.state.userAnnotationsEnabled}
@@ -487,6 +527,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                   handleSelectEntity={this.setSelectedEntity}
                   handleSelectAnnotation={this.setSelectedAnnotationId}
                   handleSelectAnnotationSpan={this.setSelectedAnnotationSpanId}
+                  handleStartSymbolSearch={this.startSymbolSearch}
                   handleAddPaperToLibrary={this.addToLibrary}
                   handleAddUserAnnotation={this.addUserAnnotation}
                   handleUpdateUserAnnotation={this.updateUserAnnotation}

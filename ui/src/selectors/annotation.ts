@@ -22,17 +22,10 @@ export function divDimensionStyles(
     left: box.left * pageDimensions.width * scaleCorrection,
     top: box.top * pageDimensions.height * scaleCorrection,
     width: box.width * pageDimensions.width * scaleCorrection,
-    height: box.height * pageDimensions.height * scaleCorrection
+    height: box.height * pageDimensions.height * scaleCorrection,
   };
 }
 
 export function boundingBoxString(boundingBox: BoundingBox) {
   return `${boundingBox.page}-L${boundingBox.left}-T${boundingBox.top}-W${boundingBox.width}-H${boundingBox.height}`;
-}
-
-/**
- * Convert a *Symbols* entityId to it's AnnotationId
- */
-export function convertToAnnotationId(id: String) {
-  return `symbol-${id}-annotation`;
 }

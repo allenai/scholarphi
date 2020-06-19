@@ -3,7 +3,7 @@ import { EventBus, PDFViewerApplication } from "./types/pdfjs-viewer";
 
 interface Props {
   query: string | null;
-  onQueryChanged: (query: string) => void;
+  onQueryChanged: (query: string | null) => void;
   onMatchCountChanged: (matchCount: number) => void;
   onMatchIndexChanged: (matchIndex: number) => void;
   pdfViewerApplication: PDFViewerApplication;
@@ -38,14 +38,12 @@ export class PdfjsFindQueryWidget extends React.PureComponent<Props> {
     pdfViewerApplication.externalServices = {
       ...pdfViewerApplication.externalServices,
       updateFindControlState: ({ matchesCount: { current, total } }) => {
-        console.log("updateFindControlState called");
         this.props.onMatchCountChanged(total);
-        this.props.onMatchIndexChanged(current);
+        this.props.onMatchIndexChanged(current - 1);
       },
       updateFindMatchesCount: ({ current, total }) => {
-        console.log("updateFindMatchesCount called");
-        this.props.onMatchIndexChanged(current);
         this.props.onMatchCountChanged(total);
+        this.props.onMatchIndexChanged(current - 1);
       },
       supportsIntegratedFind: true,
     };
@@ -93,7 +91,9 @@ export class PdfjsFindQueryWidget extends React.PureComponent<Props> {
     if (this.inputElement === null) {
       return;
     }
-    this.props.onQueryChanged(this.inputElement.value);
+    const query =
+      this.inputElement.value === "" ? null : this.inputElement.value;
+    this.props.onQueryChanged(query);
   }
 
   next() {

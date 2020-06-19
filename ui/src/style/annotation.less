@@ -13,51 +13,63 @@
   padding: @highlight-hitbox-padding * 2/3 @highlight-hitbox-padding;
 }
 
+/**
+ * Make annotations interactive
+ */
 .scholar-reader-annotation-span.active:not(.user-annotation) {
   /**
    * Provide an underline as a hint that the annotation is interactive 
    */
-  &.active.annotation-hint {
-    border-bottom: @underline-width @underline-color dotted;
-  }
+  border-bottom: @underline-width @underline-color dotted;
+
   /**
    * Highlight the area of an annotation on hover
    */
-  &:hover,
-  &.selected,
-  &.annotation-selected {
+  &:hover {
     background: @highlight-hover-background;
     opacity: @highlight-hover-opacity;
     cursor: pointer;
   }
+
   /**
-   * Highlight all matching symbols
+   * Deepen the saturation of colors when the annotation is selected
    */
-  &.highlight,
   &.selected,
   &.annotation-selected {
     background-color: @highlight-color;
     opacity: @highlight-opacity;
   }
-  /** 
-   * Give the selected annotation extra highlighting
-   */
-  &.selected {
-    background-color: red !important;
-  }
+}
 
-  &.sentence-highlight {
-    background-color: rgba(255, 255, 0, 0.3);
+/**
+ * Highlight matches from search
+ */
+.scholar-reader-annotation-span {
+  &.find-match,
+  &.find-selection {
+    background-color: green;
+
+    &.find-match {
+      opacity: 0.1;
+    }
+
+    &.find-selection {
+      opacity: 0.5;
+    }
   }
 }
 
 /**
- * Indicate inactive annotations with unclickable transparent bounding boxes.
+ * Make inactive annotations non-interactive
  */
 .scholar-reader-annotation-span.inactive {
-  background: none;
   pointer-events: none;
-  border: 1px dotted black;
+
+  .user-annotation {
+    background: none;
+    pointer-events: none;
+    border: 1px dotted black;
+  }
 }
 
 /**

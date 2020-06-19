@@ -1,4 +1,3 @@
-import classNames from "classnames";
 import React from "react";
 import Annotation from "./Annotation";
 import CitationTooltipBody from "./CitationTooltipBody";
@@ -8,18 +7,21 @@ import { PDFPageView } from "./types/pdfjs-viewer";
 
 interface Props {
   pageView: PDFPageView;
-  citation: Citation;
   paper: Paper;
   userLibrary: UserLibrary | null;
-  boundingBoxes: BoundingBox[];
+  citation: Citation;
+  active: boolean;
   selected: boolean;
   selectedSpanId: string | null;
-  showHint?: boolean;
+  /**
+   * The ID of the paper that the user is reading.
+   */
   openedPaperId?: PaperId;
-  handleSelectCitation: (id: string) => void;
-  handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
+  boundingBoxes: BoundingBox[];
   handleSelectAnnotation: (id: string) => void;
   handleSelectAnnotationSpan: (id: string) => void;
+  handleSelectCitation: (id: string) => void;
+  handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
 }
 
 export class CitationAnnotation extends React.PureComponent<Props, {}> {
@@ -37,9 +39,11 @@ export class CitationAnnotation extends React.PureComponent<Props, {}> {
       <Annotation
         pageView={this.props.pageView}
         id={`citation-${this.props.citation.id}-annotation`}
-        className={classNames({ "annotation-hint": this.props.showHint })}
-        source={this.props.citation.source}
+        active={this.props.active}
+        selected={this.props.selected}
+        selectedSpanId={this.props.selectedSpanId}
         boundingBoxes={this.props.boundingBoxes}
+        source={this.props.citation.source}
         tooltipContent={
           <CitationTooltipBody
             citation={this.props.citation}
@@ -49,11 +53,9 @@ export class CitationAnnotation extends React.PureComponent<Props, {}> {
             openedPaperId={this.props.openedPaperId}
           />
         }
-        selected={this.props.selected}
-        selectedSpanId={this.props.selectedSpanId}
-        onSelected={this.onSelected}
         handleSelectAnnotation={this.props.handleSelectAnnotation}
         handleSelectAnnotationSpan={this.props.handleSelectAnnotationSpan}
+        onSelected={this.onSelected}
       />
     );
   }

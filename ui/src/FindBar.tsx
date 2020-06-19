@@ -1,9 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { PdfjsFindQueryWidget } from "./PdfjsFindQueryWidget";
-import { FindMode, FindQuery, SymbolFilters } from "./state";
+import { SymbolFilters } from "./state";
 import { SymbolFindQueryWidget } from "./SymbolFindQueryWidget";
 import { PDFViewerApplication } from "./types/pdfjs-viewer";
+
+export type FindMode = null | "pdfjs-builtin-find" | "symbol";
+export type FindQuery = null | string | SymbolFilters;
+export interface SymbolFilter {
+  key: "exact-match" | "partial-match";
+  active: boolean;
+}
 
 interface Props {
   pdfViewerApplication: PDFViewerApplication;
@@ -14,7 +21,7 @@ interface Props {
   handleClose: () => void;
   handleChangeMatchIndex: (matchIndex: number | null) => void;
   handleChangeMatchCount: (matchCount: number | null) => void;
-  handleChangeQuery: (query: FindQuery) => void;
+  handleChangeQuery: (query: FindQuery | null) => void;
 }
 
 class FindBar extends React.PureComponent<Props> {
@@ -32,15 +39,18 @@ class FindBar extends React.PureComponent<Props> {
    */
   createMatchCountMessage() {
     const MATCH_COUNT_LIMIT = 1000;
-    const { matchIndex, matchCount } = this.props;
-    if (matchIndex === null || matchCount === null) {
+    const { query, matchIndex, matchCount } = this.props;
+    if (query === null || matchIndex === null || matchCount === null) {
       return null;
     }
 
+    if (matchCount === 0) {
+      return "No matches found";
+    }
     if ((matchCount || 0) > MATCH_COUNT_LIMIT) {
       return `More than ${MATCH_COUNT_LIMIT} matches`;
     }
-    return `${matchIndex} of ${matchCount} matches`;
+    return `${matchIndex + 1} of ${matchCount} matches`;
   }
 
   wrapIndex(index: number, len: number) {
@@ -86,7 +96,7 @@ class FindBar extends React.PureComponent<Props> {
     }
   }
 
-  onPdfjsQueryChanged(query: string) {
+  onPdfjsQueryChanged(query: string | null) {
     this.props.handleChangeQuery(query);
     /*
      * If the query has changed, a new search has been submitted to 'pdf.js' for processing. Set
