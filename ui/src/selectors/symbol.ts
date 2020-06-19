@@ -26,9 +26,13 @@ export const matchingSymbols = defaultMemoize(
     ].matches
       .filter((match) => {
         /*
-         * If no filters were provided, every match returned by the backend is considered valid.
+         * If no filters were provided, or if no filters activated or deactivated, every match
+         * returned by the backend is considered valid.
          */
-        if (!symbolFilters) {
+        if (
+          !symbolFilters ||
+          !symbolFilters.some((f) => f.active !== undefined)
+        ) {
           return true;
         }
         const EXACT_MATCH_RANK = 1;
