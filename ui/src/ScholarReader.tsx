@@ -1,10 +1,8 @@
 import React from "react";
-import { createPortal } from "react-dom";
 import * as api from "./api";
 import AppOverlay from "./AppOverlay";
-import Drawer, { DrawerMode } from "./Drawer";
-import FeedbackButton from "./FeedbackButton";
-import FindBar, { FindQuery } from "./FindBar";
+import { DrawerMode } from "./Drawer";
+import { FindQuery } from "./FindBar";
 import PageOverlay from "./PageOverlay";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
@@ -30,7 +28,6 @@ import {
   PDFViewerApplication,
 } from "./types/pdfjs-viewer";
 import * as uiUtils from "./ui-utils";
-import { UserAnnotationTypeSelect } from "./UserAnnotationTypeSelect";
 import ViewerOverlay from "./ViewerOverlay";
 
 interface Props {
@@ -524,13 +521,6 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const elFeedbackContainer = document.getElementById(
-      "scholarReaderGlobalFeedbackButton"
-    );
-    const elUserAnnotationTypeContainer = document.getElementById(
-      "scholarReaderAnnotationTypeSelect"
-    );
-
     let findMatchEntityId: string | null = null;
     if (
       this.state.findMatchedEntities !== null &&
@@ -544,8 +534,58 @@ class ScholarReader extends React.PureComponent<Props, State> {
 
     return (
       <>
+        {this.state.pdfViewerApplication !== null &&
+        this.state.pdfViewer !== null ? (
+          <>
+            {/* Render the widgets and event handlers for the entire app and viewer containers. */}
+            <AppOverlay
+              appContainer={document.body}
+              paperId={this.props.paperId}
+              userAnnotationsEnabled={this.state.userAnnotationsEnabled}
+              userAnnotationType={this.state.userAnnotationType}
+              handleHideAnnotations={this.hideAnnotations}
+              handleShowAnnotations={this.showAnnotations}
+              handleDeselectSelection={this.deselectSelection}
+              handleStartTextSearch={this.startTextSearch}
+              handleTerminateSearch={this.closeFindBar}
+              handleCloseDrawer={this.closeDrawer}
+              handleToggleUserAnnotationMode={this.toggleUserAnnotationMode}
+              handleSelectUserAnnotationType={this.setUserAnnotationType}
+            />
+            <ViewerOverlay
+              pdfViewerApplication={this.state.pdfViewerApplication}
+              pdfViewer={this.state.pdfViewer}
+              pdfDocument={this.state.pdfDocument}
+              paperId={this.props.paperId}
+              papers={this.state.papers}
+              symbols={this.state.symbols}
+              mathMls={this.state.mathMls}
+              sentences={this.state.sentences}
+              userLibrary={this.state.userLibrary}
+              selectedEntityType={this.state.selectedEntityType}
+              selectedEntityId={this.state.selectedEntityId}
+              isFindActive={this.state.isFindActive}
+              findActivationTimeMs={this.state.findActivationTimeMs}
+              findMode={this.state.findMode}
+              findQuery={this.state.findQuery}
+              findMatchIndex={this.state.findMatchIndex}
+              findMatchCount={this.state.findMatchCount}
+              drawerMode={this.state.drawerMode}
+              handleDeselectSelection={this.deselectSelection}
+              handleChangeMatchIndex={this.setFindMatchIndex}
+              handleChangeMatchCount={this.setFindMatchCount}
+              handleChangeQuery={this.setFindQuery}
+              handleCloseFindBar={this.closeFindBar}
+              handleCloseDrawer={this.closeDrawer}
+              handleScrollSymbolIntoView={this.scrollSymbolIntoView}
+              handleAddPaperToLibrary={this.addToLibrary}
+              handleSelectSymbol={this.selectSymbol}
+            />
+          </>
+        ) : null}
         {this.state.pages !== null ? (
           <>
+            {/* Add overlays (e.g., annotations, etc.) atop each page. */}
             {Object.keys(this.state.pages).map((pageNumberKey) => {
               const pages = this.state.pages as Pages;
               const pageNumber = Number(pageNumberKey);
@@ -589,79 +629,6 @@ class ScholarReader extends React.PureComponent<Props, State> {
               );
             })}
           </>
-        ) : null}
-        {this.state.pdfViewer !== null ? (
-          <>
-            <AppOverlay
-              appContainer={document.body}
-              handleHideAnnotations={this.hideAnnotations}
-              handleShowAnnotations={this.showAnnotations}
-              handleDeselectSelection={this.deselectSelection}
-              handleStartTextSearch={this.startTextSearch}
-              handleTerminateSearch={this.closeFindBar}
-              handleCloseDrawer={this.closeDrawer}
-              handleToggleUserAnnotationMode={this.toggleUserAnnotationMode}
-            />
-            <ViewerOverlay
-              pdfViewer={this.state.pdfViewer}
-              handleDeselectSelection={this.deselectSelection}
-            />
-            <Drawer
-              paperId={this.props.paperId}
-              pdfViewer={this.state.pdfViewer}
-              pdfDocument={this.state.pdfDocument}
-              mode={this.state.drawerMode}
-              userLibrary={this.state.userLibrary}
-              papers={this.state.papers}
-              symbols={this.state.symbols}
-              mathMls={this.state.mathMls}
-              sentences={this.state.sentences}
-              selectedEntityType={this.state.selectedEntityType}
-              selectedEntityId={this.state.selectedEntityId}
-              handleScrollSymbolIntoView={this.scrollSymbolIntoView}
-              handleClose={this.closeDrawer}
-              handleAddPaperToLibrary={this.addToLibrary}
-              handleSelectSymbol={this.selectSymbol}
-            />
-          </>
-        ) : null}
-        {elFeedbackContainer
-          ? createPortal(
-              <FeedbackButton paperId={this.props.paperId} variant="toolbar" />,
-              elFeedbackContainer
-            )
-          : null}
-        {this.state.userAnnotationsEnabled && elUserAnnotationTypeContainer
-          ? createPortal(
-              <UserAnnotationTypeSelect
-                annotationType={this.state.userAnnotationType}
-                handleSelectType={this.setUserAnnotationType}
-              />,
-              elUserAnnotationTypeContainer
-            )
-          : null}
-        {this.state.pdfViewerApplication !== null &&
-        this.state.isFindActive &&
-        this.state.findActivationTimeMs !== null ? (
-          <FindBar
-            /*
-             * Key this widget with the time that the find event was activated
-             * (i.e., when 'Ctrl+F' was typed). This regenerates the widgets whenever
-             * a new 'find' action is started, which will select and focus the text
-             * in the search widget. See why we use key to regenerate component here:
-             * https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html#recommendation-fully-uncontrolled-component-with-a-key
-             */
-            key={this.state.findActivationTimeMs}
-            matchCount={this.state.findMatchCount}
-            matchIndex={this.state.findMatchIndex}
-            mode={this.state.findMode}
-            pdfViewerApplication={this.state.pdfViewerApplication}
-            query={this.state.findQuery}
-            handleChangeMatchCount={this.setFindMatchCount}
-            handleChangeMatchIndex={this.setFindMatchIndex}
-            handleChangeQuery={this.setFindQuery}
-            handleClose={this.closeFindBar}
-          />
         ) : null}
       </>
     );
