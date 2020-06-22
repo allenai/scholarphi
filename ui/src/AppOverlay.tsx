@@ -1,5 +1,10 @@
 import React from "react";
+import ReactDOM from "react-dom";
+import FeedbackButton from "./FeedbackButton";
+import { PaperId } from "./state";
+import { UserAnnotationType } from "./types/api";
 import * as uiUtils from "./ui-utils";
+import { UserAnnotationTypeSelect } from "./UserAnnotationTypeSelect";
 
 interface Props {
   /*
@@ -8,6 +13,9 @@ interface Props {
    * 'document.body' element is provided for this property.
    */
   appContainer: HTMLElement;
+  paperId?: PaperId;
+  userAnnotationsEnabled: boolean;
+  userAnnotationType: UserAnnotationType;
   handleHideAnnotations: () => void;
   handleShowAnnotations: () => void;
   handleCloseDrawer: () => void;
@@ -15,11 +23,16 @@ interface Props {
   handleTerminateSearch: () => void;
   handleDeselectSelection: () => void;
   handleToggleUserAnnotationMode: () => void;
+  handleSelectUserAnnotationType: (type: UserAnnotationType) => void;
 }
 
 /**
- * See the documentation for ViewerOverlay for a justification of why this overlay is an empty
- * component that handles events rather than a transparent element.
+ * An overlay that overlays widgets over the container for the entire app, and which captures click
+ * and keyboard events fired from anywhere within this app container. This is especially useful for
+ * handling keypresses ment to trigger mode switches from anywhere in the app.
+ *
+ * See the documentation for ViewerOverlay for a justification of why this overlay does not use a
+ * transparent full-screen HTML element to capture input events.
  */
 class AppOverlay extends React.PureComponent<Props> {
   constructor(props: Props) {
@@ -32,10 +45,10 @@ class AppOverlay extends React.PureComponent<Props> {
     this.addEventListeners(this.props.appContainer);
   }
 
-  componentWillUpdate(prevProps: Props, props: Props) {
-    if (prevProps.appContainer !== props.appContainer) {
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.appContainer !== this.props.appContainer) {
       this.removeEventListeners(prevProps.appContainer);
-      this.addEventListeners(props.appContainer);
+      this.addEventListeners(this.props.appContainer);
     }
   }
 
@@ -92,7 +105,33 @@ class AppOverlay extends React.PureComponent<Props> {
   }
 
   render() {
-    return null;
+    const elFeedbackContainer = document.getElementById(
+      "scholarReaderGlobalFeedbackButton"
+    );
+    const elUserAnnotationTypeContainer = document.getElementById(
+      "scholarReaderAnnotationTypeSelect"
+    );
+
+    return (
+      <>
+        {/* Add widgets to the toolbar */}
+        {elFeedbackContainer
+          ? ReactDOM.createPortal(
+              <FeedbackButton paperId={this.props.paperId} variant="toolbar" />,
+              elFeedbackContainer
+            )
+          : null}
+        {this.props.userAnnotationsEnabled && elUserAnnotationTypeContainer
+          ? ReactDOM.createPortal(
+              <UserAnnotationTypeSelect
+                annotationType={this.props.userAnnotationType}
+                handleSelectType={this.props.handleSelectUserAnnotationType}
+              />,
+              elUserAnnotationTypeContainer
+            )
+          : null}
+      </>
+    );
   }
 }
 
