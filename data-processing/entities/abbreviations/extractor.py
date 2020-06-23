@@ -11,7 +11,6 @@ import spacy
 from scispacy.abbreviation import AbbreviationDetector
 import re
 import sys
-from TexSoup import *
 
 
 # These are 'reserved characters' by the pysbd module and can potentially
@@ -64,7 +63,30 @@ class AbbreviationExtractor(EntityExtractor):
                 )
 
         # Extract plaintext segments from TeX
-        #plaintext_extractor = PlaintextExtractor()
+        plaintext_extractor = PlaintextExtractor()
+        plaintext_segments = plaintext_extractor.parse(tex_path, tex)
+
+        # Build a map from character offsets in the plaintext to TeX offsets. This will let us
+        # map from the character offsets of the sentences returned from the sentence boundary
+        # detector back to positions in the original TeX.
+        plaintext_to_tex_offset_map = {}
+        plaintext = ""
+        last_segment = None
+        for segment in plaintext_segments:
+            for i in range(len(segment.text)):
+                tex_offset = (
+                    (segment.tex_start + i)
+                    if not segment.transformed
+                    else segment.tex_start
+                )
+                plaintext_to_tex_offset_map[len(plaintext) + i] = tex_offset
+
+            # While building the map, also create a contiguous plaintext string
+            plaintext += segment.text
+            last_segment = segment
+
+        if last_segment is not None:
+            plaintext_to_tex_offset_map[len(plaintext)] = last_segment.tex_end
 
         #this is the most basic model and had no real performance difference on our inputs
         #other options include NER models and models with pretrained word vectors
@@ -72,15 +94,9 @@ class AbbreviationExtractor(EntityExtractor):
         abbreviation_pipe = AbbreviationDetector(nlp)
         nlp.add_pipe(abbreviation_pipe)
 
-        cons = tex
-        soup = TexSoup(cons)
-        soup_text = []
-        self.get_text(soup, soup_text)
-        contents = ""
-        for p, l in soup_text:
-            contents += p
+        contents = plaintext
 
-        contents = re.sub("\n", " ", contents)
+        #contents = re.sub("\n", " ", contents)
         abb_short_forms = {}
         abb_expansions = {}
         expanded_loc = {}
@@ -90,44 +106,51 @@ class AbbreviationExtractor(EntityExtractor):
             for s in symbols:
                 count += str(abrv).count(s)
             if count == 0:
-                abb_short_forms[str(abrv)] = [[m.start(), m.start() + len(str(abrv))] for m in re.finditer(str(abrv), cons)]
+                abb_short_forms[str(abrv)] = [[plaintext_to_tex_offset_map[m.start()], plaintext_to_tex_offset_map[m.start() + len(str(abrv))]] for m in re.finditer(str(abrv), contents)]
                 abb_expansions[str(abrv)] = abrv._.long_form
-                x = cons.find(str(abrv._.long_form))
+                x = contents.find(str(abrv._.long_form))
                 if x != -1:
-                    expanded_loc[str(abrv)] = [x, x + len(str(abrv._.long_form))]
+                    expanded_loc[str(abrv)] = [plaintext_to_tex_offset_map[x], plaintext_to_tex_offset_map[x + len(str(abrv._.long_form))]]
                 else:
-                    for p, l in soup_text:
-                        x = p.find(str(abrv._.long_form))
-                        if x!= -1:
-                            expanded_loc[str(abrv)] = [l + x, l + x + len(str(abrv._.long_form))]
-                        else:
-                            expanded_loc[str(abrv)] = [0, 0]
+                    expanded_loc[str(abrv)] = [0, 0]
 
         count = 0
+        fcount = 1
         for abb in abb_short_forms:
+            exp_start, exp_end = expanded_loc[abb]
+            expanded = abb_expansions[abb]
+            tex_sub = tex[exp_start:exp_end]
+            context_tex = tex[exp_start - DEFAULT_CONTEXT_SIZE : exp_end + DEFAULT_CONTEXT_SIZE]
+
+            yield Abbreviation(
+                text= abb,
+                start=exp_start,
+                end=exp_end,
+                expansion = expanded,
+                id_= count,
+                tex_path=tex_path,
+                tex=tex_sub,
+                context_tex=context_tex,
+                str_id = "f" + str(fcount)
+            )
+            count += 1
+            scount = 0
             for location in abb_short_forms[abb]:
+                scount += 1
                 start, end = location
-                exp_start, exp_end = expanded_loc[abb]
-                expanded = abb_expansions[abb]
-                tex_sub = cons[start:end]
-                context_tex = cons[start - DEFAULT_CONTEXT_SIZE : end + DEFAULT_CONTEXT_SIZE]
+                tex_sub = tex[start:end]
+                context_tex = tex[start - DEFAULT_CONTEXT_SIZE : end + DEFAULT_CONTEXT_SIZE]
                 yield Abbreviation(
                     text= abb,
                     start=start,
                     end=end,
-                    exp_start = exp_start,
-                    exp_end = exp_end,
                     expansion = expanded,
                     id_= count,
                     tex_path=tex_path,
                     tex=tex_sub,
                     context_tex=context_tex,
+                    str_id = "s" + str(fcount) + "-" + str(scount)
                 )
                 count += 1
 
-    def get_text(self, soup, soup_text):
-        for descendant in soup.contents:
-            if isinstance(descendant, TokenWithPosition):
-                soup_text.append([descendant, descendant.position])
-            elif hasattr(descendant, 'text'):
-                self.get_text(descendant, soup_text)
+            fcount += 1
