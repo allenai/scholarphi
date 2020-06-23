@@ -30,7 +30,7 @@ export class SymbolTooltipBody extends React.PureComponent<Props> {
   }
 
   render() {
-    const { symbols, mathMls } = this.props;
+    const { symbol, symbols, mathMls, sentences } = this.props;
 
     let exactMatchSymbolId: string | undefined;
     let partialMatchSymbolId: string | undefined;
@@ -66,6 +66,11 @@ export class SymbolTooltipBody extends React.PureComponent<Props> {
       )[0];
     }
 
+    let sentence = null;
+    if (sentences !== null && symbol.sentence !== null) {
+      sentence = sentences.byId[symbol.sentence];
+    }
+
     return (
       <div className="tooltip-body symbol-tooltip-body">
         <>
@@ -78,14 +83,13 @@ export class SymbolTooltipBody extends React.PureComponent<Props> {
               <div className="tooltip-body__section">
                 <PaperClipping
                   pdfDocument={this.props.pdfDocument}
-                  sentences={this.props.sentences}
+                  sentence={sentence}
                   pageNumber={matchingSymbol.bounding_boxes[0].page + 1}
-                  sentenceId={matchingSymbol.sentence || undefined}
                   highlights={matchingSymbol.bounding_boxes.slice(0, 1)}
                 />
                 <FeedbackButton
                   paperId={this.props.paperId}
-                  extraContext={{ symbolId: this.props.symbol.id }}
+                  extraContext={{ symbolId: symbol.id }}
                 />
               </div>
             );
