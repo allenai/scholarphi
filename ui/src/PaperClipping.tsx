@@ -1,11 +1,9 @@
 import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
-import { Sentences } from "./state";
-import { BoundingBox } from "./types/api";
+import { BoundingBox, Sentence } from "./types/api";
 
 interface Props {
   pdfDocument: PDFDocumentProxy;
-  sentences: Sentences | null;
   pageNumber: number;
   /**
    * Areas to highlight in the paper clipping. Either this or 'sentenceId' should be set. If
@@ -19,7 +17,7 @@ interface Props {
    * clipping bounds will be set to the bounds of the sentence. 'width' and 'height', if set,
    * will be ignored. Highlights will still be applied.
    */
-  sentenceId?: string;
+  sentence?: Sentence | null;
   /**
    * Width of element in pixels. If not provided, will be set to a default value.
    */
@@ -28,126 +26,21 @@ interface Props {
    * Height of element in pixels. If not provided, will be set to a default value.
    */
   height?: number;
+  /**
+   * Placeholder to show while the PDF canvas is being rendered. If no placeholder is provided,
+   * nothing will be shown until the element is rendered.
+   */
+  placeholder?: JSX.Element;
   onClick?: React.MouseEventHandler;
+  /**
+   * Optional callback called when this component has been loaded, i.e., when the canvas has
+   * finished rendereing.
+   */
+  onLoaded?: () => void;
 }
 
-export class PaperClipping extends React.PureComponent<Props, {}> {
-  static defaultProps = {
-    width: 500,
-    height: 300,
-  };
-
-  /**
-   * The internals of this method deal with three coordinate systems:
-   * 1. Ratio coordinates: See documentation for BoundingBox type.
-   * 2. Canvas coordinates: width and height of canvas where the PDF preview is drawn.
-   * 3. DOM coordinates: viewport of the container holding the canvas.
-   */
-  async componentDidMount() {
-    const canvas = this.canvasRef;
-    const container = this.containerRef;
-    const { pdfDocument, sentences } = this.props;
-
-    if (canvas == null || container == null || pdfDocument == null) {
-      return;
-    }
-
-    const page = await pdfDocument.getPage(this.props.pageNumber);
-    const CLIPPING_SCALE = 1.7;
-    const clippingViewport = page.getViewport({ scale: CLIPPING_SCALE });
-
-    const canvasContext = canvas.getContext("2d");
-    if (canvasContext == null) {
-      return;
-    }
-    canvas.width = clippingViewport.width;
-    canvas.height = clippingViewport.height;
-
-    await page.render({ canvasContext, viewport: clippingViewport }).promise;
-
-    if (this.props.highlights !== undefined) {
-      this.props.highlights.forEach((highlight) => {
-        addHighlightToCanvas(highlight, canvas, canvasContext, 0, 0, 255);
-      });
-    }
-
-    /*
-     * If a sentence was provided, set the dimensions of the container to just the size of the
-     * sentence. Then scroll the container to focus on the sentence.
-     */
-    if (this.props.sentenceId && sentences !== null) {
-      const sentence = sentences.byId[this.props.sentenceId];
-      sentence.bounding_boxes.forEach((box) => {
-        addHighlightToCanvas(box, canvas, canvasContext, 0, 255, 0);
-      });
-
-      const sentenceBox = computerOuterBoundingBox(sentence.bounding_boxes);
-      let { left, top, width, height } = toCanvasCoordinates(
-        sentenceBox,
-        canvas
-      );
-
-      /*
-       * Add padding on all sides of the sentence box that's, in all directions, equivalent to
-       * 2% of the page width.
-       */
-      const PADDING_AROUND_SENTENCE = 0.02;
-      left -= width * PADDING_AROUND_SENTENCE;
-      top -= width * PADDING_AROUND_SENTENCE;
-      width += width * (PADDING_AROUND_SENTENCE * 2);
-      height += width * (PADDING_AROUND_SENTENCE * 2);
-
-      container.style.width = width + "px";
-      container.style.height = height + "px";
-      container.scrollLeft = left;
-      container.scrollTop = top;
-      return;
-    }
-
-    /*
-     * If a sentence wasn't provided, determine the container dimensions from the properties.
-     */
-    container.style.width = this.props.width + "px";
-    container.style.height = this.props.height + "px";
-
-    /*
-     * If highlights were provided, scroll the container to center on the highlighted boxes.
-     */
-    if (this.props.highlights !== undefined) {
-      const highlightsOuterBox = computerOuterBoundingBox(
-        this.props.highlights
-      );
-      const { left, top, width, height } = toCanvasCoordinates(
-        highlightsOuterBox,
-        canvas
-      );
-      const centerX = left + width / 2;
-      const centerY = top + height / 2;
-      container.scrollLeft = Math.max(centerX - container.clientWidth / 2, 0);
-      container.scrollTop = Math.max(centerY - container.clientHeight / 2, 0);
-    }
-  }
-
-  render() {
-    return (
-      <div
-        ref={(ref) => {
-          this.containerRef = ref;
-        }}
-        className="paper-clipping"
-        onClick={this.props.onClick}
-      >
-        <canvas
-          ref={(ref) => {
-            this.canvasRef = ref;
-          }}
-        />
-      </div>
-    );
-  }
-
-  containerRef: HTMLDivElement | null = null;
-  canvasRef: HTMLCanvasElement | null = null;
+interface State {
+  canvasRendered: boolean;
 }
 
 /**
@@ -216,6 +109,165 @@ interface Rectangle {
   top: number;
   width: number;
   height: number;
+}
+
+export class PaperClipping extends React.PureComponent<Props, State> {
+  static defaultProps = {
+    placeholder: null,
+  };
+
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      canvasRendered: false,
+    };
+  }
+
+  /**
+   * The internals of this method deal with three coordinate systems:
+   * 1. Ratio coordinates: See documentation for BoundingBox type.
+   * 2. Canvas coordinates: width and height of canvas where the PDF preview is drawn.
+   * 3. DOM coordinates: viewport of the container holding the canvas.
+   */
+  async componentDidMount() {
+    const container = this.containerRef;
+    const canvas = this.canvasRef;
+    const { pdfDocument } = this.props;
+
+    if (container === null || canvas === null) {
+      return;
+    }
+
+    const page = await pdfDocument.getPage(this.props.pageNumber);
+    const CLIPPING_SCALE = 1.7;
+    const clippingViewport = page.getViewport({ scale: CLIPPING_SCALE });
+
+    /*
+     * The process for rendering the page to a canvas roughly follows that in the pdf.js source code:
+     * https://github.com/mozilla/pdf.js/blob/c1cb9ee9fc8f5af8f0a8ed1417ac716ac9477f24/web/pdf_page_view.js#L565
+     */
+    const canvasContext = canvas.getContext("2d", { alpha: false });
+    if (canvasContext == null) {
+      return;
+    }
+
+    canvas.width = clippingViewport.width;
+    canvas.height = clippingViewport.height;
+    canvas.style.width = clippingViewport.width + "px";
+    canvas.style.height = clippingViewport.height + "px";
+
+    /*
+     * The magic order to be able render a page to a canvas without flickering seems to be to set
+     * the canvas 'hidden' attribute to true, and then remove the hidden attribute right after the
+     * call to 'render'. An earlier version of this code called 'removeAttribute' for 'hidden' at
+     * the end of 'componentDidMount' (i.e., after the parent container was cropped and scrolled),
+     * and this led to much of the canvas being completely blank.
+     */
+    await page.render({ canvasContext, viewport: clippingViewport }).promise;
+    canvas.removeAttribute("hidden");
+
+    /*
+     * Crop the container to the clipping region.
+     * If a sentence was provided, set the dimensions of the container to just the size of the
+     * sentence. Then scroll the container to focus on the sentence.
+     */
+    const { sentence } = this.props;
+    if (sentence !== null && sentence !== undefined) {
+      const sentenceBox = computerOuterBoundingBox(sentence.bounding_boxes);
+      let { left, top, width, height } = toCanvasCoordinates(
+        sentenceBox,
+        canvas
+      );
+
+      /*
+       * Add padding on all sides of the sentence box that's, in all directions, equivalent to
+       * 2% of the page width.
+       */
+      const PADDING_AROUND_SENTENCE = 0.02;
+      left -= width * PADDING_AROUND_SENTENCE;
+      top -= width * PADDING_AROUND_SENTENCE;
+      width += width * (PADDING_AROUND_SENTENCE * 2);
+      height += width * (PADDING_AROUND_SENTENCE * 2);
+
+      container.style.width = width + "px";
+      container.style.height = height + "px";
+      container.scrollLeft = left;
+      container.scrollTop = top;
+    } else {
+      /*
+       * If a sentence wasn't provided, determine the container dimensions from the properties.
+       */
+      container.style.width = this.props.width + "px";
+      container.style.height = this.props.height + "px";
+
+      /*
+       * If highlights were provided, scroll the container to center on the highlighted boxes.
+       */
+      if (this.props.highlights !== undefined) {
+        const highlightsOuterBox = computerOuterBoundingBox(
+          this.props.highlights
+        );
+        const { left, top, width, height } = toCanvasCoordinates(
+          highlightsOuterBox,
+          canvas
+        );
+        const centerX = left + width / 2;
+        const centerY = top + height / 2;
+        container.scrollLeft = Math.max(centerX - container.clientWidth / 2, 0);
+        container.scrollTop = Math.max(centerY - container.clientHeight / 2, 0);
+      }
+    }
+
+    /*
+     * Add highlight marks to the canvas.
+     */
+    if (this.props.highlights !== undefined) {
+      this.props.highlights.forEach((highlight) => {
+        addHighlightToCanvas(highlight, canvas, canvasContext, 0, 0, 255);
+      });
+    }
+    if (sentence !== null && sentence !== undefined) {
+      sentence.bounding_boxes.forEach((box) => {
+        addHighlightToCanvas(box, canvas, canvasContext, 0, 255, 0);
+      });
+    }
+
+    this.setState({ canvasRendered: true });
+  }
+
+  render() {
+    console.log("Canvas rendered?", this.state.canvasRendered);
+    return (
+      <div
+        ref={(ref) => {
+          this.containerRef = ref;
+        }}
+        className="paper-clipping"
+        onClick={this.props.onClick}
+      >
+        <canvas
+          ref={(ref) => (this.canvasRef = ref)}
+          /*
+           * The canvas starts out hidden to prevent flickering as the canvas resizes as its size
+           * is dynamically computed.
+           */
+          hidden={true}
+          /*
+           * The opacity is of the canvas is set initially to 0, and only set to 1 when the
+           * canvas is scrolled completely rendered and scrolled to the right position. This is
+           * because 'componentDidMount' reveals the canvas before scrolling it to the right
+           * position. While initial tests haven't shown any flickering as the scrolling occurs,
+           * this extra property should further ensure that there is none.
+           */
+          style={{ opacity: this.state.canvasRendered ? 1 : 0 }}
+        />
+        {!this.state.canvasRendered ? this.props.placeholder : null}
+      </div>
+    );
+  }
+
+  containerRef: HTMLDivElement | null = null;
+  canvasRef: HTMLCanvasElement | null = null;
 }
 
 export default PaperClipping;

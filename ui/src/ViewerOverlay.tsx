@@ -1,7 +1,9 @@
 import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
+import DefinitionPreview from "./DefinitionPreview";
 import Drawer, { DrawerMode } from "./Drawer";
 import FindBar, { FindMode, FindQuery } from "./FindBar";
+import { matchingSymbols } from "./selectors";
 import {
   MathMls,
   PaperId,
@@ -47,7 +49,7 @@ interface Props {
 /**
  * Determine whether a click event targets a selectable element.
  */
-function isClickInSelectable(event: MouseEvent) {
+function isClickEventInsideSelectable(event: MouseEvent) {
   return (
     event.currentTarget instanceof HTMLDivElement &&
     event.currentTarget.classList.contains("scholar-reader-annotation-span")
@@ -100,7 +102,7 @@ class ViewerOverlay extends React.PureComponent<Props> {
   }
 
   onClick(event: MouseEvent) {
-    if (!isClickInSelectable(event)) {
+    if (!isClickEventInsideSelectable(event)) {
       this.props.handleDeselectSelection();
     }
   }
@@ -111,13 +113,49 @@ class ViewerOverlay extends React.PureComponent<Props> {
     }
   }
 
+  getDefinitionSentenceAndSymbol() {
+    let selectedSymbol = null,
+      selectedSentence = null;
+    const {
+      selectedEntityType,
+      selectedEntityId,
+      symbols,
+      mathMls,
+      sentences,
+    } = this.props;
+
+    if (
+      selectedEntityType !== "symbol" ||
+      selectedEntityId === null ||
+      symbols === null ||
+      mathMls === null
+    ) {
+      return { selectedSymbol: null, selectedSentence: null };
+    }
+
+    selectedSymbol = symbols.byId[selectedEntityId];
+    matchingSymbols(selectedEntityId, symbols, mathMls, [
+      { key: "exact-match", active: true },
+    ]);
+
+    if (selectedSymbol.sentence !== null && sentences !== null) {
+      selectedSentence = sentences.byId[selectedSymbol.sentence];
+    }
+    return { selectedSymbol, selectedSentence };
+  }
+
   render() {
+    const {
+      selectedSymbol,
+      selectedSentence,
+    } = this.getDefinitionSentenceAndSymbol();
+
     return (
       <>
         {this.props.isFindActive && this.props.findActivationTimeMs !== null ? (
           <FindBar
             /*
-             * Key this widget with the time that the find event was activated
+             * Set the key for the widget to the time that the find event was activated
              * (i.e., when 'Ctrl+F' was typed). This regenerates the widgets whenever
              * a new 'find' action is started, which will select and focus the text
              * in the search widget. See why we use key to regenerate component here:
@@ -152,6 +190,13 @@ class ViewerOverlay extends React.PureComponent<Props> {
           handleClose={this.props.handleCloseDrawer}
           handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
         />
+        {this.props.pdfDocument !== null && selectedSymbol !== null ? (
+          <DefinitionPreview
+            pdfDocument={this.props.pdfDocument}
+            symbol={selectedSymbol}
+            sentence={selectedSentence}
+          />
+        ) : null}
       </>
     );
   }

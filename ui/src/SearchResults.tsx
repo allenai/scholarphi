@@ -125,16 +125,23 @@ export class SearchResults extends React.PureComponent<Props, State> {
           <div className="search-results__symbol-list search-results__section">
             {filteredSymbolIds
               .slice(startSymbolIndex, endSymbolIndex)
-              .map((sId) => (
-                <div className="search-results__result" key={sId}>
-                  <SymbolPreview
-                    pdfDocument={pdfDocument}
-                    sentences={sentences}
-                    symbol={symbols.byId[sId]}
-                    handleSelectSymbol={handleSelectSymbol}
-                  />
-                </div>
-              ))}
+              .map((sId) => {
+                const symbol = symbols.byId[sId];
+                const sentence =
+                  sentences !== null && symbol.sentence !== null
+                    ? sentences.byId[symbol.sentence]
+                    : null;
+                return (
+                  <div className="search-results__result" key={sId}>
+                    <SymbolPreview
+                      pdfDocument={pdfDocument}
+                      symbol={symbols.byId[sId]}
+                      sentence={sentence}
+                      handleSelectSymbol={handleSelectSymbol}
+                    />
+                  </div>
+                );
+              })}
           </div>
 
           {/* Page buttons */}
