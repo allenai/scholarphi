@@ -34,7 +34,8 @@ class DefinitionPreview extends React.PureComponent<Props, State> {
     /**
      * Initially hide the definition preview, fading it in once the paper preview has loaded.
      * In a typical implementation for fading in this component, the component's opacity would be
-     * set to '0' in componentDidMount, and a timeout would be set to start the animation. This
+     * set to '0' in componentDidMount, and a timeout would be set to start the animation (for example,
+     * https://stackoverflow.com/a/40172212/2096369). This
      * timeout is usually critical (see https://stackoverflow.com/a/24195559/2096369). It
      * shouldn't be necessary in our case, as a brief timeout is naturally introduced by the
      * paper preview rendering in the 'SymbolPreview' component.
@@ -43,8 +44,6 @@ class DefinitionPreview extends React.PureComponent<Props, State> {
       opacity: this.state.previewLoaded ? 1 : 0,
       transition: "opacity 0.5s ease",
     };
-
-    console.log("Preview loaded", this.state.previewLoaded);
 
     return (
       <Card

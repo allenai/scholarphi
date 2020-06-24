@@ -556,6 +556,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
               pdfViewerApplication={this.state.pdfViewerApplication}
               pdfViewer={this.state.pdfViewer}
               pdfDocument={this.state.pdfDocument}
+              pages={this.state.pages}
               paperId={this.props.paperId}
               papers={this.state.papers}
               symbols={this.state.symbols}
