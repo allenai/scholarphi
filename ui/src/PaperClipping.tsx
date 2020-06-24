@@ -36,11 +36,11 @@ interface Props {
    * Optional callback called when this component has been loaded, i.e., when the canvas has
    * finished rendereing.
    */
-  onLoaded?: () => void;
+  onLoaded?: (container: HTMLDivElement, canvas: HTMLCanvasElement) => void;
 }
 
 interface State {
-  canvasRendered: boolean;
+  firstRenderFinished: boolean;
 }
 
 /**
@@ -119,8 +119,28 @@ export class PaperClipping extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      canvasRendered: false,
+      firstRenderFinished: false,
     };
+  }
+
+  async componentDidMount() {
+    this.updateCanvas();
+  }
+
+  async componentDidUpdate(prevProps: Props) {
+    /*
+     * Re-render the canvas when the properties change.
+     */
+    if (
+      this.props.pdfDocument !== prevProps.pdfDocument ||
+      this.props.pageNumber !== prevProps.pageNumber ||
+      this.props.highlights !== prevProps.highlights ||
+      this.props.sentence !== prevProps.sentence ||
+      this.props.width !== prevProps.width ||
+      this.props.height !== prevProps.height
+    ) {
+      this.updateCanvas();
+    }
   }
 
   /**
@@ -129,12 +149,11 @@ export class PaperClipping extends React.PureComponent<Props, State> {
    * 2. Canvas coordinates: width and height of canvas where the PDF preview is drawn.
    * 3. DOM coordinates: viewport of the container holding the canvas.
    */
-  async componentDidMount() {
+  async updateCanvas() {
     const container = this.containerRef;
-    const canvas = this.canvasRef;
     const { pdfDocument } = this.props;
 
-    if (container === null || canvas === null) {
+    if (container === null) {
       return;
     }
 
@@ -146,6 +165,8 @@ export class PaperClipping extends React.PureComponent<Props, State> {
      * The process for rendering the page to a canvas roughly follows that in the pdf.js source code:
      * https://github.com/mozilla/pdf.js/blob/c1cb9ee9fc8f5af8f0a8ed1417ac716ac9477f24/web/pdf_page_view.js#L565
      */
+    const canvas = document.createElement("canvas");
+    container.appendChild(canvas);
     const canvasContext = canvas.getContext("2d", { alpha: false });
     if (canvasContext == null) {
       return;
@@ -155,6 +176,7 @@ export class PaperClipping extends React.PureComponent<Props, State> {
     canvas.height = clippingViewport.height;
     canvas.style.width = clippingViewport.width + "px";
     canvas.style.height = clippingViewport.height + "px";
+    canvas.style.opacity = "0";
 
     /*
      * The magic order to be able render a page to a canvas without flickering seems to be to set
@@ -163,6 +185,7 @@ export class PaperClipping extends React.PureComponent<Props, State> {
      * the end of 'componentDidMount' (i.e., after the parent container was cropped and scrolled),
      * and this led to much of the canvas being completely blank.
      */
+    canvas.setAttribute("hidden", "hidden");
     await page.render({ canvasContext, viewport: clippingViewport }).promise;
     canvas.removeAttribute("hidden");
 
@@ -182,8 +205,10 @@ export class PaperClipping extends React.PureComponent<Props, State> {
      * Fallback width and height will only be used if width and height can't be determined from
      * input width and height or from sentence dimensions.
      */
-    const FALLBACK_WIDTH = 400;
-    const FALLBACK_HEIGHT = 200;
+    const FALLBACK_WIDTH = 300;
+    const FALLBACK_HEIGHT = 150;
+    const MAX_WIDTH = 400;
+    const MAX_HEIGHT = 200;
 
     /*
      * If the paper is supposed to be clipped to a sentence, this padding will be added on all sides
@@ -199,6 +224,7 @@ export class PaperClipping extends React.PureComponent<Props, State> {
     } else {
       clippingWidth = FALLBACK_WIDTH;
     }
+    clippingWidth = Math.min(clippingWidth, MAX_WIDTH);
 
     let clippingHeight;
     if (this.props.height !== undefined) {
@@ -208,6 +234,7 @@ export class PaperClipping extends React.PureComponent<Props, State> {
     } else {
       clippingHeight = FALLBACK_HEIGHT;
     }
+    clippingHeight = Math.min(clippingHeight, MAX_HEIGHT);
 
     /*
      * Scroll the clipping to center either the sentence (if provided) or the highlights (if provided).
@@ -241,11 +268,6 @@ export class PaperClipping extends React.PureComponent<Props, State> {
       }
     }
 
-    container.style.width = clippingWidth + "px";
-    container.style.height = clippingHeight + "px";
-    container.scrollLeft = scrollX;
-    container.scrollTop = scrollY;
-
     /*
      * Add highlight marks to the canvas for the sentence and highlights.
      */
@@ -260,11 +282,33 @@ export class PaperClipping extends React.PureComponent<Props, State> {
       });
     }
 
-    this.setState({ canvasRendered: true });
+    container.style.width = clippingWidth + "px";
+    container.style.height = clippingHeight + "px";
+    container.scrollLeft = scrollX;
+    container.scrollTop = scrollY;
+    /*
+     * Don't remove the previous canvas until this canvas has been completely rendered.
+     */
+    if (this.canvas !== null) {
+      container.removeChild(this.canvas);
+    }
+
+    this.setState({ firstRenderFinished: true });
+    /*
+     * The opacity is of the canvas is set initially to 0, and only set to 1 when the
+     * canvas is scrolled completely rendered and scrolled to the right position. This is
+     * because 'componentDidMount' reveals the canvas before scrolling it to the right
+     * position. While initial tests haven't shown any flickering as the scrolling occurs,
+     * this extra property should further ensure that there is none.
+     */
+    canvas.style.opacity = "1";
+    this.canvas = canvas;
+    if (this.props.onLoaded !== undefined) {
+      this.props.onLoaded(container, canvas);
+    }
   }
 
   render() {
-    console.log("Canvas rendered?", this.state.canvasRendered);
     return (
       <div
         ref={(ref) => {
@@ -273,29 +317,25 @@ export class PaperClipping extends React.PureComponent<Props, State> {
         className="paper-clipping"
         onClick={this.props.onClick}
       >
-        <canvas
-          ref={(ref) => (this.canvasRef = ref)}
-          /*
-           * The canvas starts out hidden to prevent flickering as the canvas resizes as its size
-           * is dynamically computed.
-           */
-          hidden={true}
-          /*
-           * The opacity is of the canvas is set initially to 0, and only set to 1 when the
-           * canvas is scrolled completely rendered and scrolled to the right position. This is
-           * because 'componentDidMount' reveals the canvas before scrolling it to the right
-           * position. While initial tests haven't shown any flickering as the scrolling occurs,
-           * this extra property should further ensure that there is none.
-           */
-          style={{ opacity: this.state.canvasRendered ? 1 : 0 }}
-        />
-        {!this.state.canvasRendered ? this.props.placeholder : null}
+        {/*
+         * The canvas gets rendered and appended to the container in the 'updateCanvas' method.
+         * The helper method is used instead of rendering the canvas with JSX due to a special need:
+         * when the properties change to this PaperClipping, it should be re-rendered without
+         * flickering, which means that the previous canvas should remain showing until the new
+         * canvas has been completely rendered. The 'updateCanvas' method handles rendering the
+         * updated canvas, and swapping out the old canvas for the new one only when the new one
+         * is completely finished rendering.
+         */}
+        {/*
+         * If the canvas is still rendering for the first time, show the placeholder.
+         */}
+        {!this.state.firstRenderFinished ? this.props.placeholder : null}
       </div>
     );
   }
 
   containerRef: HTMLDivElement | null = null;
-  canvasRef: HTMLCanvasElement | null = null;
+  canvas: HTMLCanvasElement | null = null;
 }
 
 export default PaperClipping;
