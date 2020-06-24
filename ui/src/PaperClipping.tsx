@@ -47,7 +47,7 @@ interface State {
  * Get a bounding box that contains all of a list of bounding boxes.
  * At least one bounding box must be provided.
  */
-function computerOuterBoundingBox(boxes: BoundingBox[]) {
+function computeOuterBoundingBox(boxes: BoundingBox[]) {
   let minLeft = Infinity;
   let minTop = Infinity;
   let maxRight = -Infinity;
@@ -167,59 +167,87 @@ export class PaperClipping extends React.PureComponent<Props, State> {
     canvas.removeAttribute("hidden");
 
     /*
-     * Crop the container to the clipping region.
-     * If a sentence was provided, set the dimensions of the container to just the size of the
-     * sentence. Then scroll the container to focus on the sentence.
+     * Crop the container to the clipping region. Width and height will be set by props if
+     * provided, and otherwise by the sentence. The scroll position of the container will be set
+     * using either the sentence, or the highlights.
      */
     const { sentence } = this.props;
+    let sentenceCanvasBox = null;
     if (sentence !== null && sentence !== undefined) {
-      const sentenceBox = computerOuterBoundingBox(sentence.bounding_boxes);
-      let { left, top, width, height } = toCanvasCoordinates(
-        sentenceBox,
-        canvas
-      );
-
-      /*
-       * Add padding on all sides of the sentence box that's, in all directions, equivalent to
-       * 2% of the page width.
-       */
-      const PADDING_AROUND_SENTENCE = 0.02;
-      left -= width * PADDING_AROUND_SENTENCE;
-      top -= width * PADDING_AROUND_SENTENCE;
-      width += width * (PADDING_AROUND_SENTENCE * 2);
-      height += width * (PADDING_AROUND_SENTENCE * 2);
-
-      container.style.width = width + "px";
-      container.style.height = height + "px";
-      container.scrollLeft = left;
-      container.scrollTop = top;
-    } else {
-      /*
-       * If a sentence wasn't provided, determine the container dimensions from the properties.
-       */
-      container.style.width = this.props.width + "px";
-      container.style.height = this.props.height + "px";
-
-      /*
-       * If highlights were provided, scroll the container to center on the highlighted boxes.
-       */
-      if (this.props.highlights !== undefined) {
-        const highlightsOuterBox = computerOuterBoundingBox(
-          this.props.highlights
-        );
-        const { left, top, width, height } = toCanvasCoordinates(
-          highlightsOuterBox,
-          canvas
-        );
-        const centerX = left + width / 2;
-        const centerY = top + height / 2;
-        container.scrollLeft = Math.max(centerX - container.clientWidth / 2, 0);
-        container.scrollTop = Math.max(centerY - container.clientHeight / 2, 0);
-      }
+      const sentenceBox = computeOuterBoundingBox(sentence.bounding_boxes);
+      sentenceCanvasBox = toCanvasCoordinates(sentenceBox, canvas);
     }
 
     /*
-     * Add highlight marks to the canvas.
+     * Fallback width and height will only be used if width and height can't be determined from
+     * input width and height or from sentence dimensions.
+     */
+    const FALLBACK_WIDTH = 400;
+    const FALLBACK_HEIGHT = 200;
+
+    /*
+     * If the paper is supposed to be clipped to a sentence, this padding will be added on all sides
+     * of the sentence box bounding boxes.
+     */
+    const PADDING_AROUND_SENTENCE = 10;
+
+    let clippingWidth;
+    if (this.props.width !== undefined) {
+      clippingWidth = this.props.width;
+    } else if (sentenceCanvasBox !== null) {
+      clippingWidth = sentenceCanvasBox.width + PADDING_AROUND_SENTENCE * 2;
+    } else {
+      clippingWidth = FALLBACK_WIDTH;
+    }
+
+    let clippingHeight;
+    if (this.props.height !== undefined) {
+      clippingHeight = this.props.height;
+    } else if (sentenceCanvasBox !== null) {
+      clippingHeight = sentenceCanvasBox.height + PADDING_AROUND_SENTENCE * 2;
+    } else {
+      clippingHeight = FALLBACK_HEIGHT;
+    }
+
+    /*
+     * Scroll the clipping to center either the sentence (if provided) or the highlights (if provided).
+     */
+    let scrollX = 0,
+      scrollY = 0;
+
+    let contentBox = null;
+    if (sentenceCanvasBox !== null) {
+      contentBox = sentenceCanvasBox;
+    } else if (this.props.highlights !== undefined) {
+      contentBox = toCanvasCoordinates(
+        computeOuterBoundingBox(this.props.highlights),
+        canvas
+      );
+    }
+
+    if (contentBox !== null) {
+      if (contentBox.width >= clippingWidth) {
+        scrollX = contentBox.left;
+      } else {
+        const centerX = contentBox.left + contentBox.width / 2;
+        scrollX = Math.max(centerX - clippingWidth / 2, 0);
+      }
+
+      if (contentBox.height >= clippingHeight) {
+        scrollY = contentBox.top;
+      } else {
+        const centerY = contentBox.top + contentBox.height / 2;
+        scrollY = Math.max(centerY - clippingHeight / 2, 0);
+      }
+    }
+
+    container.style.width = clippingWidth + "px";
+    container.style.height = clippingHeight + "px";
+    container.scrollLeft = scrollX;
+    container.scrollTop = scrollY;
+
+    /*
+     * Add highlight marks to the canvas for the sentence and highlights.
      */
     if (this.props.highlights !== undefined) {
       this.props.highlights.forEach((highlight) => {
