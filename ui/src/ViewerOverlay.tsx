@@ -51,8 +51,8 @@ interface Props {
  */
 function isClickEventInsideSelectable(event: MouseEvent) {
   return (
-    event.currentTarget instanceof HTMLDivElement &&
-    event.currentTarget.classList.contains("scholar-reader-annotation-span")
+    event.target instanceof HTMLDivElement &&
+    event.target.classList.contains("scholar-reader-annotation-span")
   );
 }
 
