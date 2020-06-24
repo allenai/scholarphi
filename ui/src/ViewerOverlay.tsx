@@ -3,16 +3,17 @@ import React from "react";
 import DefinitionPreview from "./DefinitionPreview";
 import Drawer, { DrawerMode } from "./Drawer";
 import FindBar, { FindMode, FindQuery } from "./FindBar";
-import { matchingSymbols } from "./selectors";
+import { divDimensionStyles, matchingSymbols } from "./selectors";
 import {
   MathMls,
+  Pages,
   PaperId,
   Papers,
   SelectableEntityType,
   Sentences,
   Symbols,
 } from "./state";
-import { UserLibrary } from "./types/api";
+import { BoundingBox, Sentence, Symbol, UserLibrary } from "./types/api";
 import { PDFViewer, PDFViewerApplication } from "./types/pdfjs-viewer";
 import * as uiUtils from "./ui-utils";
 
@@ -20,6 +21,7 @@ interface Props {
   pdfViewerApplication: PDFViewerApplication;
   pdfViewer: PDFViewer;
   pdfDocument: PDFDocumentProxy | null;
+  pages: Pages | null;
   paperId?: PaperId;
   papers: Papers | null;
   symbols: Symbols | null;
@@ -46,6 +48,15 @@ interface Props {
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
 }
 
+interface State {
+  /**
+   * Time of the last update to the viewport of the viewer. Set this variable to a new value
+   * (e.g., using using Date.now()) to trigger components of the overlay to re-render that
+   * depend on the scroll position of the viewer (e.g., the 'DefinitionPreview').
+   */
+  viewerViewportUpdateTimeMs: number;
+}
+
 /**
  * Determine whether a click event targets a selectable element.
  */
@@ -69,11 +80,15 @@ function isClickEventInsideSelectable(event: MouseEvent) {
  * *and* processed by this overlay, as in this overlay, event handlers are attached to a
  * parent element of all pages and annotations.
  */
-class ViewerOverlay extends React.PureComponent<Props> {
+class ViewerOverlay extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
+    this.state = {
+      viewerViewportUpdateTimeMs: Date.now(),
+    };
     this.onClick = this.onClick.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
+    this.onScroll = this.onScroll.bind(this);
   }
 
   componentDidMount() {
@@ -94,11 +109,13 @@ class ViewerOverlay extends React.PureComponent<Props> {
   addEventListenersToViewer(pdfViewer: PDFViewer) {
     pdfViewer.container.addEventListener("click", this.onClick);
     pdfViewer.container.addEventListener("keyup", this.onKeyUp);
+    pdfViewer.container.addEventListener("scroll", this.onScroll);
   }
 
   removeEventListenersForViewer(pdfViewer: PDFViewer) {
     pdfViewer.container.removeEventListener("click", this.onClick);
     pdfViewer.container.removeEventListener("keyup", this.onKeyUp);
+    pdfViewer.container.removeEventListener("scroll", this.onScroll);
   }
 
   onClick(event: MouseEvent) {
@@ -113,9 +130,16 @@ class ViewerOverlay extends React.PureComponent<Props> {
     }
   }
 
+  onScroll() {
+    this.setState({
+      viewerViewportUpdateTimeMs: Date.now(),
+    });
+  }
+
   getDefinitionSentenceAndSymbol() {
-    let selectedSymbol = null,
-      selectedSentence = null;
+    let definitionSymbol: Symbol | null = null,
+      definitionSentence: Sentence | null = null;
+
     const {
       selectedEntityType,
       selectedEntityId,
@@ -130,25 +154,99 @@ class ViewerOverlay extends React.PureComponent<Props> {
       symbols === null ||
       mathMls === null
     ) {
-      return { selectedSymbol: null, selectedSentence: null };
+      return { definitionSentence, symbol: definitionSymbol };
     }
 
-    selectedSymbol = symbols.byId[selectedEntityId];
-    matchingSymbols(selectedEntityId, symbols, mathMls, [
-      { key: "exact-match", active: true },
-    ]);
+    const matchingSymbolIds = matchingSymbols(
+      selectedEntityId,
+      symbols,
+      mathMls,
+      [{ key: "exact-match", active: true }]
+    );
+    const firstMatchingSymbolId =
+      matchingSymbolIds.length > 0 ? matchingSymbolIds[0] : selectedEntityId;
+    definitionSymbol = symbols.byId[firstMatchingSymbolId];
 
-    if (selectedSymbol.sentence !== null && sentences !== null) {
-      selectedSentence = sentences.byId[selectedSymbol.sentence];
+    if (definitionSymbol.sentence !== null && sentences !== null) {
+      definitionSentence = sentences.byId[definitionSymbol.sentence];
     }
-    return { selectedSymbol, selectedSentence };
+    return { definitionSentence, symbol: definitionSymbol };
+  }
+
+  areBoundingBoxesVisible(boundingBoxes: BoundingBox[]) {
+    const { pdfViewer, pages } = this.props;
+
+    let visible = false;
+    for (const box of boundingBoxes) {
+      /*
+       * If the page for this box has not yet been loaded into memory, then it is has not yet
+       * been rendered, and therefore is not visible.
+       */
+      if (pages === null) {
+        continue;
+      }
+      const page = pages[box.page + 1];
+      if (page === undefined || page === null) {
+        continue;
+      }
+
+      const {
+        scrollLeft,
+        scrollTop,
+        clientWidth,
+        clientHeight,
+      } = pdfViewer.container;
+      const boxRelativeToPage = divDimensionStyles(page.view, box);
+
+      const boxLeft = page.view.div.offsetLeft + boxRelativeToPage.left;
+      const boxRight = boxLeft + boxRelativeToPage.width;
+      const boxTop = page.view.div.offsetTop + boxRelativeToPage.top;
+      const boxBottom = boxTop + boxRelativeToPage.height;
+
+      /*
+       * If the box is not in the scrolled region of the viewer, then it is not visible.
+       */
+      if (
+        boxRight < scrollLeft ||
+        boxLeft > scrollLeft + clientWidth ||
+        boxTop > scrollTop + clientHeight ||
+        boxBottom < scrollTop
+      ) {
+        continue;
+      }
+
+      /*
+       * If all of the checks above failed, the box is visible in the viewer.
+       */
+      visible = true;
+      break;
+    }
+
+    return visible;
   }
 
   render() {
     const {
-      selectedSymbol,
-      selectedSentence,
+      symbol: definitionSymbol,
+      definitionSentence,
     } = this.getDefinitionSentenceAndSymbol();
+
+    /*
+     * Show the definition preview if the definition is currently off-screen.
+     */
+    let renderDefinitionPreview = false;
+    if (definitionSymbol !== null) {
+      if (
+        definitionSentence !== null &&
+        !this.areBoundingBoxesVisible(definitionSentence.bounding_boxes)
+      ) {
+        renderDefinitionPreview = true;
+      } else if (
+        !this.areBoundingBoxesVisible(definitionSymbol.bounding_boxes)
+      ) {
+        renderDefinitionPreview = true;
+      }
+    }
 
     return (
       <>
@@ -190,11 +288,13 @@ class ViewerOverlay extends React.PureComponent<Props> {
           handleClose={this.props.handleCloseDrawer}
           handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
         />
-        {this.props.pdfDocument !== null && selectedSymbol !== null ? (
+        {renderDefinitionPreview &&
+        this.props.pdfDocument !== null &&
+        definitionSymbol !== null ? (
           <DefinitionPreview
             pdfDocument={this.props.pdfDocument}
-            symbol={selectedSymbol}
-            sentence={selectedSentence}
+            symbol={definitionSymbol}
+            sentence={definitionSentence}
           />
         ) : null}
       </>
