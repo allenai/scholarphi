@@ -78,16 +78,16 @@ def upload_terms(processing_summary: PaperProcessingResult) -> None:
             ),
         )
 
-    # entities = []
-    # entity_bounding_boxes = []
-    # bounding_boxes = []
+    entities = []
+    entity_bounding_boxes = []
+    bounding_boxes = []
 
     for term_id, term_model in term_models.items():
 
         entity = Entity.create(
             type="term", source="tex-pipeline", entity_id=term_model.id
         )
-        # entities.append(entity)
+        entities.append(entity)
 
         for location in locations_by_term_id[term_id]:
             bounding_box = BoundingBox.create(
@@ -97,14 +97,15 @@ def upload_terms(processing_summary: PaperProcessingResult) -> None:
                 width=location.width,
                 height=location.height,
             )
-            # bounding_boxes.append(bounding_box)
+            bounding_boxes.append(bounding_box)
 
-            EntityBoundingBox.create(bounding_box=bounding_box, entity=entity)
-            # entity_bounding_boxes.append(entity_bounding_box)
+            entity_bounding_boxes.append(
+                EntityBoundingBox(bounding_box=bounding_box, entity=entity)
+            )
 
-    # with output_database.atomic():
-    #     BoundingBox.bulk_create(bounding_boxes, 100)
-    # with output_database.atomic():
-    #     Entity.bulk_create(entities, 300)
-    # with output_database.atomic():
-    #     EntityBoundingBox.bulk_create(entity_bounding_boxes, 300)
+    with output_database.atomic():
+        BoundingBox.bulk_create(bounding_boxes, 100)
+    with output_database.atomic():
+        Entity.bulk_create(entities, 300)
+    with output_database.atomic():
+        EntityBoundingBox.bulk_create(entity_bounding_boxes, 300)
