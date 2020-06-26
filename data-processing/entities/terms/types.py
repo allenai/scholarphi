@@ -13,4 +13,5 @@ class Term(SerializableEntity):
 @dataclass(frozen=True)
 class GlossaryTerm:
     name: str
-    definition: Union[str, List[str]]
+    definition: str
+    source: str
