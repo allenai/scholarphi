@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import List
 
 from common.types import SerializableEntity
 
@@ -11,8 +12,8 @@ class Sentence(SerializableEntity):
     current_section: str
     is_sentence_in_figure: str
     is_sentence_in_table: str
-    label: str
-    ref: str
-    cite: str
-    symbol: str
-    others: str
+    label: List[str]
+    ref: List[str]
+    cite: List[str]
+    symbol: List[str]
+    others: List[str]
