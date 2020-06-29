@@ -1,9 +1,6 @@
 import logging
-import re, regex
-from typing import Iterator, List
-import numpy as np
-from nltk import word_tokenize
-
+import regex
+from typing import Iterator, List, Dict
 
 import pysbd
 
@@ -51,21 +48,21 @@ PATTERN_TABLE_END = r"\\end\{table[*]*\}"
 PATTERN_FIGURE_BEGIN = r"\\begin\{figure[*]*\}"
 PATTERN_FIGURE_END = r"\\end\{figure[*]*\}"
 PATTERN_REF = r"\\ref\{[A-Za-z0-9 \\_.,:-]*\}"
-#TODO @dykang Fix to capture citations patterns like \cite[GRUs;][]{cho2004}
+# TODO @dykang Fix to capture citations patterns like \cite[GRUs;][]{cho2004}
 PATTERN_CITE = r"\\cite[A-Za-z0-9 \\_.,:-]*\{[A-Za-z0-9 \\_.,:-]*\}"
 PATTERN_SYMBOL = r"\$[A-Za-z0-9\\ \{\}\(\)\[\]^&*_.,\+:\;-\=#]*\$"
 PATTERN_ANY = r"\\[A-Za-z0-9\\_.,:-]*[\{[A-Za-z0-9 \\_.,:-]*\}]*"
 
 # objects for detecting nesting structures from the extended tex
-NESTING_CHARACTERS_MAPPING = {'{':'}', '(':')', '[':']'}
+NESTING_CHARACTERS_MAPPING = {"{": "}", "[": "]"}
 
 
-def check_nesting_structure(nesting_chars):
+def check_nesting_structure(nesting_chars: List[str]) -> bool:
     stack = []
     for nchar in nesting_chars:
-        if nchar in ['{','(', '[']:
+        if nchar in list(NESTING_CHARACTERS_MAPPING.keys()):
             stack.append(nchar)
-        elif nchar in ['}',')',']']:
+        elif nchar in list(NESTING_CHARACTERS_MAPPING.values()):
             if len(stack) == 0:
                 return False
             else:
@@ -78,48 +75,50 @@ def check_nesting_structure(nesting_chars):
     return True
 
 
-def check_sentence_or_not(tex, entity_dict):
+def check_sentence_or_not(tex: str, tex_unit_dict: Dict[str, List[str]]) -> bool:
     if tex is None:
         return False
 
-    # check whether text in section or not
-    if 'current_section' not in entity_dict or not entity_dict['current_section']:
+    # check whether tex in section or not
+    if "current_section" not in tex_unit_dict or not tex_unit_dict["current_section"]:
         return False
-    # check whether text is caption in figure/table or not. currently, we remove all text including captions in figure/table
+    # check whether tex is caption in figure/table or not. currently, we remove all text including captions in figure/table
     # TODO @dykang later, distinguish lines in table and lines in captions
-    if 'current_figure' in entity_dict and entity_dict['current_figure']:
+    if "is_sentence_in_figure" in tex_unit_dict and tex_unit_dict["is_sentence_in_figure"]:
         return False
-    if 'current_table' in entity_dict and entity_dict['current_table']:
+    if "is_sentence_in_table" in tex_unit_dict and tex_unit_dict["is_sentence_in_table"]:
         return False
 
-    # check nesting structures from tex_sub
+    # check whether tex has incomplete nesting structure or not
+    # There are some cases that the previous section/figure/table filters do not cover. For instance, some lines in section declaration have very noisy lines like "Introduction}" or "-9pt}". Those cases can be simply filtered by checking their nesting structures.
     nesting_characters_in_tex = []
     for c in tex:
-        if c in list(NESTING_CHARACTERS_MAPPING.keys()) + list(NESTING_CHARACTERS_MAPPING.values()):
+        if c in list(NESTING_CHARACTERS_MAPPING.keys()) + list(
+            NESTING_CHARACTERS_MAPPING.values()
+        ):
             nesting_characters_in_tex.append(c)
-    if not nesting_characters_in_tex:
-        return True
     return check_nesting_structure(nesting_characters_in_tex)
 
 
-
-def extract_richer_tex(context_tex, tex):
+def extract_richer_tex(context_tex: str, tex: str) -> str:
     """
-    if surrounding tex includes multiple matched tex cases, we regard the most right-handed one is the final one. This is not a perfect heuristic though for some cases including next line inside the content
+    Extracting richer context tex for better regex matching:
+    Currently `context_tex` is made of concatenating a fixed length of prefix and postfix of `tex`. In that case, `context_tex` may include a lot of other information, causing errors in extraction. For instance, given an original `tex` with `labelInTOC]{Convolutional layer}`, its corresponding `context_tex` and `richer_tex` are `ter.pdf}   \caption[labelInTOC]{Convolutional layer}   \label{fig:convla` and ` \caption[labelInTOC]{Convolutional layer}`, respectively. If the `\label{fig:convla` was actually a complete form, it would be detected by our regex extraction.
+    If surrounding tex includes multiple matched tex cases, we regard the most right-handed one is the final one. This is not a perfect heuristic though for some cases including next line inside the content
     """
-    if context_tex is '':
-        return None
+    if context_tex is "":
+        return ""
     surrounding_tex = context_tex.split(tex)
     if len(surrounding_tex) > 2:
         surrounding_tex = [tex.join(surrounding_tex[:-1]), surrounding_tex[-1]]
     before_tex, after_tex = surrounding_tex
-    richer_tex = before_tex.split('\n')[-1] + tex + after_tex.split('\n')[0]
+    richer_tex = before_tex.split("\n")[-1] + tex + after_tex.split("\n")[0]
     return richer_tex
 
 
-def extract_text_from_tex_entity(entity):
-    return entity[entity.find("{")+1:entity.find("}")]
-
+def extract_text_from_tex_group(tex_unit: str) -> str:
+    """ Extracting text from a TeX group """
+    return tex_unit[tex_unit.find("{") + 1 : tex_unit.find("}")]
 
 
 class SentenceExtractor(EntityExtractor):
@@ -167,8 +166,8 @@ class SentenceExtractor(EntityExtractor):
         # Record the current length of the plain text so account for the extractor bug
         length_so_far_in_plain_text = 0
 
-
-        current_section, current_table, current_figure = False, False, False
+        current_section = ""
+        is_sentence_in_table, is_sentence_in_figure = False, False
         for i, sentence in enumerate(segmenter.segment(plaintext)):
             # The pysbd module has several open bugs and issues which are addressed below.
             # As of 3/23/20 we know the module will fail in the following ways:
@@ -214,84 +213,103 @@ class SentenceExtractor(EntityExtractor):
             # extract richer context of tex using '\n'
             extended_tex_sub = extract_richer_tex(context_tex, tex_sub)
 
-            # detect entity fields using pre-defined regex
-            entity_dict = {}
+            # detect tex units (e.g., section, figure) using pre-defined regex
+            tex_unit_dict = {}
             if extended_tex_sub is not None:
-                entity_dict['section'] = re.findall(PATTERN_SECTION, extended_tex_sub)
-                entity_dict['label'] = re.findall(PATTERN_LABEL, extended_tex_sub)
-                entity_dict['abstract_begin'] = re.findall(PATTERN_ABSTRACT_BEGIN, extended_tex_sub)
-                entity_dict['abstract_end'] = re.findall(PATTERN_ABSTRACT_END, extended_tex_sub)
-                entity_dict['table_begin'] = re.findall(PATTERN_TABLE_BEGIN, extended_tex_sub)
-                entity_dict['table_end'] = re.findall(PATTERN_TABLE_END, extended_tex_sub)
-                entity_dict['figure_begin'] = re.findall(PATTERN_FIGURE_BEGIN, extended_tex_sub)
-                entity_dict['figure_end'] = re.findall(PATTERN_FIGURE_END, extended_tex_sub)
-                entity_dict['ref'] = re.findall(PATTERN_REF, extended_tex_sub)
-                entity_dict['cite'] = re.findall(PATTERN_CITE, extended_tex_sub)
-                entity_dict['symbol'] = regex.findall(PATTERN_SYMBOL, extended_tex_sub, overlapped=False)
-                entity_dict['any'] = re.findall(PATTERN_ANY, extended_tex_sub)
+                tex_unit_dict["section"] = regex.findall(
+                    PATTERN_SECTION, extended_tex_sub
+                )
+                tex_unit_dict["label"] = regex.findall(PATTERN_LABEL, extended_tex_sub)
+                tex_unit_dict["abstract_begin"] = regex.findall(
+                    PATTERN_ABSTRACT_BEGIN, extended_tex_sub
+                )
+                tex_unit_dict["abstract_end"] = regex.findall(
+                    PATTERN_ABSTRACT_END, extended_tex_sub
+                )
+                tex_unit_dict["table_begin"] = regex.findall(
+                    PATTERN_TABLE_BEGIN, extended_tex_sub
+                )
+                tex_unit_dict["table_end"] = regex.findall(
+                    PATTERN_TABLE_END, extended_tex_sub
+                )
+                tex_unit_dict["figure_begin"] = regex.findall(
+                    PATTERN_FIGURE_BEGIN, extended_tex_sub
+                )
+                tex_unit_dict["figure_end"] = regex.findall(
+                    PATTERN_FIGURE_END, extended_tex_sub
+                )
+                tex_unit_dict["ref"] = regex.findall(PATTERN_REF, extended_tex_sub)
+                tex_unit_dict["cite"] = regex.findall(PATTERN_CITE, extended_tex_sub)
+                tex_unit_dict["symbol"] = regex.findall(
+                    PATTERN_SYMBOL, extended_tex_sub, overlapped=False
+                )
+                tex_unit_dict["any"] = regex.findall(PATTERN_ANY, extended_tex_sub)
 
                 # store 'others' field by [any] - [section,label,...]
-                if len(entity_dict['any']) > 0:
-                    entity_values_flattend = [fone for f in entity_dict.keys() if f != 'any' for fone in entity_dict[f]]
+                if len(tex_unit_dict["any"]) > 0:
+                    tex_unit_values_flattened = [
+                        fone
+                        for f in tex_unit_dict.keys()
+                        if f != "any"
+                        for fone in tex_unit_dict[f]
+                    ]
                     others = []
-                    for any_field in entity_dict['any']:
-                        if any_field not in entity_values_flattend:
+                    for any_field in tex_unit_dict["any"]:
+                        if any_field not in tex_unit_values_flattened:
                             others.append(any_field)
-                    entity_dict['others'] = others
-                entity_dict.pop('any', None)
+                    tex_unit_dict["others"] = others
+                tex_unit_dict.pop("any", None)
 
                 # store section information
-                if len(entity_dict['abstract_begin']) > 0 :
-                    current_section = 'ABSTRACT'
-                if len(entity_dict['abstract_end']) > 0 :
-                    current_section = False
-                if len(entity_dict['section']) > 0 :
-                    section = entity_dict['section'][0]
-                    current_section = extract_text_from_tex_entity(section)
-
-
+                if len(tex_unit_dict["abstract_begin"]) > 0:
+                    current_section = "ABSTRACT"
+                if len(tex_unit_dict["abstract_end"]) > 0:
+                    current_section = None
+                if len(tex_unit_dict["section"]) > 0:
+                    section = tex_unit_dict["section"][0]
+                    current_section = extract_text_from_tex_group(section)
 
                 # store figure/table information
-                #TODO @dykang add \label{} in table/figure for better matching
-                if len(entity_dict['figure_begin']) > 0 :
-                    current_figure = True
-                if len(entity_dict['figure_end']) > 0 :
-                    current_figure = False
-                if len(entity_dict['table_begin']) > 0 :
-                    current_table = True
-                if len(entity_dict['table_end']) > 0 :
-                    current_table = False
+                # TODO @dykang add \label{} in table/figure for better matching
+                if len(tex_unit_dict["figure_begin"]) > 0:
+                    is_sentence_in_figure = True
+                if len(tex_unit_dict["figure_end"]) > 0:
+                    is_sentence_in_figure = False
+                if len(tex_unit_dict["table_begin"]) > 0:
+                    is_sentence_in_table = True
+                if len(tex_unit_dict["table_end"]) > 0:
+                    is_sentence_in_table = False
 
             # decide whether current line is in section/figure/table
             if current_section:
-                entity_dict['current_section'] = current_section
-            if current_figure:
-                entity_dict['current_figure'] = current_figure
-            if current_table:
-                entity_dict['current_table'] = current_table
+                tex_unit_dict["current_section"] = current_section
+            if is_sentence_in_figure:
+                tex_unit_dict["is_sentence_in_figure"] = is_sentence_in_figure
+            if is_sentence_in_table:
+                tex_unit_dict["is_sentence_in_table"] = is_sentence_in_table
 
             # detect whether current line is sentence or not
-            is_sentence = check_sentence_or_not(tex_sub, entity_dict)
+            is_sentence = check_sentence_or_not(tex_sub, tex_unit_dict)
 
             # clean sentence
-            cleaned_sentence = "{}".format(sentence) if is_sentence else ""
+            cleaned_sentence = sentence if is_sentence else ""
             if is_sentence:
                 # substitute entities detected with placeholders
                 replace_patterns = []
 
                 # patterns for symbols
-                #TODO @dykang replace [[math]] with SYMBOL in PlaintextExtractor
-                replace_patterns.append(('[[math]]', 'SYMBOL'))
+                # TODO @dykang replace [[math]] with SYMBOL in PlaintextExtractor
+                replace_patterns.append(("[[math]]", "SYMBOL"))
 
                 # patterns for citations
-                for citation in entity_dict['cite']:
-                    citation_text = extract_text_from_tex_entity(citation)
+                for citation in tex_unit_dict["cite"]:
+                    citation_text = extract_text_from_tex_group(citation)
                     for cite in citation_text.split(","):
                         replace_patterns.append((cite, "CITATION"))
 
                 # replace_patterns from space tokenizer. Current version relies on patterns like \ref{{fig,tab,sec,eq}:XXX} in distinguishing reference types. Also, I keep the token ahead of the reference, although they somewhat duplicate (e.g., Table \reftab:xxx} -> Table TABLE)
-                for reference in entity_dict['ref']:
-                    reference_text = extract_text_from_tex_entity(reference)
+                for reference in tex_unit_dict["ref"]:
+                    reference_text = extract_text_from_tex_group(reference)
                     for reference in reference_text.split(","):
                         if reference.lower().startswith("tab"):
                             replace_patterns.append((reference, "TABLE"))
@@ -304,24 +322,26 @@ class SentenceExtractor(EntityExtractor):
 
                 # substtitue with detected patterns
                 for substitution in replace_patterns:
-                    cleaned_sentence = cleaned_sentence.replace(substitution[0], substitution[1])
+                    cleaned_sentence = cleaned_sentence.replace(
+                        substitution[0], substitution[1]
+                    )
 
             yield Sentence(
-                text=sentence,
+                text=cleaned_sentence,
                 start=start,
                 end=end,
                 id_=str(i),
                 tex_path=tex_path,
                 tex=tex_sub,
                 context_tex=context_tex,
-                cleaned_text=cleaned_sentence,
+                extended_tex=extended_tex_sub,
                 is_sentence=is_sentence,
-                current_section=entity_dict.get('current_section',False),
-                current_figure=entity_dict.get('current_figure',False),
-                current_table=entity_dict.get('current_table',False),
-                label=entity_dict.get('label',None),
-                ref=entity_dict.get('ref',None),
-                cite=entity_dict.get('cite',None),
-                symbol=entity_dict.get('symbol',None),
-                others=entity_dict.get('others',None),
+                current_section=tex_unit_dict.get("current_section", ""),
+                is_sentence_in_figure=tex_unit_dict.get("is_sentence_in_figure", False),
+                is_sentence_in_table=tex_unit_dict.get("is_sentence_in_table", False),
+                label=tex_unit_dict.get("label", None),
+                ref=tex_unit_dict.get("ref", None),
+                cite=tex_unit_dict.get("cite", None),
+                symbol=tex_unit_dict.get("symbol", None),
+                others=tex_unit_dict.get("others", None),
             )
