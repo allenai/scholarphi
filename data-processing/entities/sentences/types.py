@@ -12,6 +12,7 @@ class Sentence(SerializableEntity):
     current_section: str
     is_sentence_in_figure: str
     is_sentence_in_table: str
+    is_sentence_in_itemize: str
     label: List[str]
     ref: List[str]
     cite: List[str]
