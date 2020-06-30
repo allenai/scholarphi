@@ -45,8 +45,6 @@ PYSBD_RESERVED_CHARACTERS: List[str] = [
 
 symbols = ["%", "^", "{", "}", "[", "]", "\\", "=", "#", "&", "~", "$", "|", "_", ":", ";"]
 
-#AbbreviationExtractor.parse("", "Natural Langauge Processing (NLP) is a sub-field of artificial intelligence (AI).")
-
 class AbbreviationExtractor(EntityExtractor):
     """
     Extract plaintext sentences from TeX, with offsets of the characters they correspond to in
@@ -94,34 +92,41 @@ class AbbreviationExtractor(EntityExtractor):
         abbreviation_pipe = AbbreviationDetector(nlp)
         nlp.add_pipe(abbreviation_pipe)
 
-        contents = plaintext
-
-        #contents = re.sub("\n", " ", contents)
+        #these dictionaries hold abbreviated forms, their expansions, and the location of the expansions
+        #all of them use the abbreviated form as keys
         abb_short_forms = {}
         abb_expansions = {}
-        expanded_loc = {}
-        doc = nlp(contents)
+        expanded_locations = {}
+        doc = nlp(plaintext)
+
+        #this extracts the abbreviations from the scispacy model
         for abrv in doc._.abbreviations:
             count = 0
             for s in symbols:
                 count += str(abrv).count(s)
+            #count makes sure that we don't accidentally include symbols or variables
             if count == 0:
-                abb_short_forms[str(abrv)] = [[plaintext_to_tex_offset_map[m.start()], plaintext_to_tex_offset_map[m.start() + len(str(abrv))]] for m in re.finditer(str(abrv), contents)]
-                abb_expansions[str(abrv)] = abrv._.long_form
-                x = contents.find(str(abrv._.long_form))
+                abb_short_forms[str(abrv)] = [[plaintext_to_tex_offset_map[m.start()], plaintext_to_tex_offset_map[m.start() + len(str(abrv))]] for m in re.finditer(str(abrv), plaintext)]
+                abb_expansions[str(abrv)] = str(abrv._.long_form)
+                x = plaintext.find(str(abrv._.long_form))
                 if x != -1:
-                    expanded_loc[str(abrv)] = [plaintext_to_tex_offset_map[x], plaintext_to_tex_offset_map[x + len(str(abrv._.long_form))]]
+                    expanded_locations[str(abrv)] = [plaintext_to_tex_offset_map[x], plaintext_to_tex_offset_map[x + len(str(abrv._.long_form))]]
                 else:
-                    expanded_loc[str(abrv)] = [0, 0]
+                    expanded_locations[str(abrv)] = [0, 0]
+
+        #if you want to use another abbreviation detection method in addition to scispacy
+        #you may implement it here and add its results to the three dictionaries
 
         count = 0
         fcount = 1
+        #yields abbreviated forms and their expansions
         for abb in abb_short_forms:
-            exp_start, exp_end = expanded_loc[abb]
+            exp_start, exp_end = expanded_locations[abb]
             expanded = abb_expansions[abb]
             tex_sub = tex[exp_start:exp_end]
             context_tex = tex[exp_start - DEFAULT_CONTEXT_SIZE : exp_end + DEFAULT_CONTEXT_SIZE]
 
+            #yields the expanded form as an Abbreviation type
             yield Abbreviation(
                 text= abb,
                 start=exp_start,
@@ -131,10 +136,12 @@ class AbbreviationExtractor(EntityExtractor):
                 tex_path=tex_path,
                 tex=tex_sub,
                 context_tex=context_tex,
-                str_id = "f" + str(fcount)
+                str_id = "f" + str(fcount) + "-0"
             )
             count += 1
             scount = 0
+
+            #yields the abbreviated forms as Abbreviation types
             for location in abb_short_forms[abb]:
                 scount += 1
                 start, end = location
