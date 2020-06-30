@@ -49,9 +49,10 @@ PATTERN_FIGURE_BEGIN = r"\\begin\{figure[*]*\}"
 PATTERN_FIGURE_END = r"\\end\{figure[*]*\}"
 PATTERN_REF = r"\\ref\{[A-Za-z0-9 \\_.,:-]*\}"
 # TODO @dykang Fix to capture citations patterns like \cite[GRUs;][]{cho2004}
-PATTERN_CITE = r"\\cite[A-Za-z0-9 \\_.,:-]*\{[A-Za-z0-9 \\_.,:-]*\}"
+PATTERN_CITE = r"\\cite[A-Za-z0-9 \\_\[\].,:-]*\{[A-Za-z0-9 \\_.,:-]*\}"
 PATTERN_SYMBOL = r"\$[A-Za-z0-9\\ \{\}\(\)\[\]^&*_.,\+:\;-\=#]*\$"
-PATTERN_ANY = r"\\[A-Za-z0-9\\_.,:-]*[\{[A-Za-z0-9 \\_.,:-]*\}]*"
+PATTERN_URL = r"\\url\{[A-Za-z0-9 \{\}/\\_.,:-]*\}"
+PATTERN_ANY = r"\\[A-Za-z0-9\\\[\]_.,:-]*[\{[A-Za-z0-9 \\_.,:-]*\}]*"
 
 # objects for detecting nesting structures from the extended tex
 NESTING_CHARACTERS_MAPPING = {"{": "}", "[": "]"}
@@ -89,15 +90,35 @@ def check_sentence_or_not(tex: str, tex_unit_dict: Dict[str, List[str]]) -> bool
     if "is_sentence_in_table" in tex_unit_dict and tex_unit_dict["is_sentence_in_table"]:
         return False
 
-    # check whether tex has incomplete nesting structure or not
-    # There are some cases that the previous section/figure/table filters do not cover. For instance, some lines in section declaration have very noisy lines like "Introduction}" or "-9pt}". Those cases can be simply filtered by checking their nesting structures.
-    nesting_characters_in_tex = []
-    for c in tex:
-        if c in list(NESTING_CHARACTERS_MAPPING.keys()) + list(
-            NESTING_CHARACTERS_MAPPING.values()
-        ):
-            nesting_characters_in_tex.append(c)
-    return check_nesting_structure(nesting_characters_in_tex)
+
+    # ignore the tex line that declares sections or begin/end of abstract section
+    if len(tex_unit_dict["abstract_begin"]) > 0:
+        return False
+    if len(tex_unit_dict["abstract_end"]) > 0:
+        return False
+    if len(tex_unit_dict["section"]) > 0:
+        return False
+    if len(tex_unit_dict["table_end"]) > 0:
+        return False
+    if len(tex_unit_dict["figure_end"]) > 0:
+        return False
+
+
+
+
+
+    return True
+
+
+#     # check whether tex has incomplete nesting structure or not
+    # # There are some cases that the previous section/figure/table filters do not cover. For instance, some lines in section declaration have very noisy lines like "Introduction}" or "-9pt}". Those cases can be simply filtered by checking their nesting structures.
+    # nesting_characters_in_tex = []
+    # for c in tex:
+        # if c in list(NESTING_CHARACTERS_MAPPING.keys()) + list(
+            # NESTING_CHARACTERS_MAPPING.values()
+        # ):
+            # nesting_characters_in_tex.append(c)
+    # return check_nesting_structure(nesting_characters_in_tex)
 
 
 def extract_richer_tex(context_tex: str, tex: str) -> str:
@@ -243,6 +264,9 @@ class SentenceExtractor(EntityExtractor):
                 tex_unit_dict["symbol"] = regex.findall(
                     PATTERN_SYMBOL, extended_tex_sub, overlapped=False
                 )
+                tex_unit_dict["url"] = regex.findall(
+                    PATTERN_URL, extended_tex_sub, overlapped=False
+                )
                 tex_unit_dict["any"] = regex.findall(PATTERN_ANY, extended_tex_sub)
 
                 # store 'others' field by [any] - [section,label,...]
@@ -307,6 +331,12 @@ class SentenceExtractor(EntityExtractor):
                     for cite in citation_text.split(","):
                         replace_patterns.append((cite, "CITATION"))
 
+                # patterns for urls
+                for url in tex_unit_dict["url"]:
+                    url_text = extract_text_from_tex_group(url)
+                    replace_patterns.append((url_text, "URL"))
+
+
                 # replace_patterns from space tokenizer. Current version relies on patterns like \ref{{fig,tab,sec,eq}:XXX} in distinguishing reference types. Also, I keep the token ahead of the reference, although they somewhat duplicate (e.g., Table \reftab:xxx} -> Table TABLE)
                 for reference in tex_unit_dict["ref"]:
                     reference_text = extract_text_from_tex_group(reference)
@@ -343,5 +373,6 @@ class SentenceExtractor(EntityExtractor):
                 ref=tex_unit_dict.get("ref", []),
                 cite=tex_unit_dict.get("cite", []),
                 symbol=tex_unit_dict.get("symbol", []),
+                url=tex_unit_dict.get("url", []),
                 others=tex_unit_dict.get("others", []),
             )
