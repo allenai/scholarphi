@@ -47,6 +47,9 @@ PATTERN_TABLE_BEGIN = r"\\begin\{table[*]*\}"
 PATTERN_TABLE_END = r"\\end\{table[*]*\}"
 PATTERN_FIGURE_BEGIN = r"\\begin\{figure[*]*\}"
 PATTERN_FIGURE_END = r"\\end\{figure[*]*\}"
+PATTERN_ITEMIZE_BEGIN = r"\\begin\{itemize[*]*\}"
+PATTERN_ITEMIZE_END = r"\\end\{itemize[*]*\}"
+
 PATTERN_REF = r"\\ref\{[A-Za-z0-9 \\_.,:-]*\}"
 # TODO @dykang Fix to capture citations patterns like \cite[GRUs;][]{cho2004}
 PATTERN_CITE = r"\\cite[A-Za-z0-9 \\_\[\].,:-]*\{[A-Za-z0-9 \\_.,:-]*\}"
@@ -58,6 +61,7 @@ PATTERN_ANY = r"\\[A-Za-z0-9\\\[\]_.,:-]*[\{[A-Za-z0-9 \\_.,:-]*\}]*"
 NESTING_CHARACTERS_MAPPING = {"{": "}", "[": "]"}
 
 
+# (deprecated function)
 def check_nesting_structure(nesting_chars: List[str]) -> bool:
     stack = []
     for nchar in nesting_chars:
@@ -90,7 +94,6 @@ def check_sentence_or_not(tex: str, tex_unit_dict: Dict[str, List[str]]) -> bool
     if "is_sentence_in_table" in tex_unit_dict and tex_unit_dict["is_sentence_in_table"]:
         return False
 
-
     # ignore the tex line that declares sections or begin/end of abstract section
     if len(tex_unit_dict["abstract_begin"]) > 0:
         return False
@@ -102,10 +105,10 @@ def check_sentence_or_not(tex: str, tex_unit_dict: Dict[str, List[str]]) -> bool
         return False
     if len(tex_unit_dict["figure_end"]) > 0:
         return False
-
-
-
-
+    if len(tex_unit_dict["itemize_begin"]) > 0:
+        return False
+    if len(tex_unit_dict["itemize_end"]) > 0:
+        return False
 
     return True
 
@@ -188,7 +191,7 @@ class SentenceExtractor(EntityExtractor):
         length_so_far_in_plain_text = 0
 
         current_section = ""
-        is_sentence_in_table, is_sentence_in_figure = False, False
+        is_sentence_in_table, is_sentence_in_figure, is_sentence_in_itemize = False, False, False
         for i, sentence in enumerate(segmenter.segment(plaintext)):
             # The pysbd module has several open bugs and issues which are addressed below.
             # As of 3/23/20 we know the module will fail in the following ways:
@@ -259,6 +262,14 @@ class SentenceExtractor(EntityExtractor):
                 tex_unit_dict["figure_end"] = regex.findall(
                     PATTERN_FIGURE_END, extended_tex_sub
                 )
+
+                tex_unit_dict["itemize_begin"] = regex.findall(
+                    PATTERN_ITEMIZE_BEGIN, extended_tex_sub
+                )
+                tex_unit_dict["itemize_end"] = regex.findall(
+                    PATTERN_ITEMIZE_END, extended_tex_sub
+                )
+
                 tex_unit_dict["ref"] = regex.findall(PATTERN_REF, extended_tex_sub)
                 tex_unit_dict["cite"] = regex.findall(PATTERN_CITE, extended_tex_sub)
                 tex_unit_dict["symbol"] = regex.findall(
@@ -303,6 +314,11 @@ class SentenceExtractor(EntityExtractor):
                     is_sentence_in_table = True
                 if len(tex_unit_dict["table_end"]) > 0:
                     is_sentence_in_table = False
+                if len(tex_unit_dict["itemize_begin"]) > 0:
+                    is_sentence_in_itemize = True
+                if len(tex_unit_dict["itemize_end"]) > 0:
+                    is_sentence_in_itemize = False
+
 
             # decide whether current line is in section/figure/table
             if current_section:
@@ -311,6 +327,8 @@ class SentenceExtractor(EntityExtractor):
                 tex_unit_dict["is_sentence_in_figure"] = is_sentence_in_figure
             if is_sentence_in_table:
                 tex_unit_dict["is_sentence_in_table"] = is_sentence_in_table
+            if is_sentence_in_itemize:
+                tex_unit_dict["is_sentence_in_itemize"] = is_sentence_in_itemize
 
             # detect whether current line is sentence or not
             is_sentence = check_sentence_or_not(tex_sub, tex_unit_dict)
@@ -369,6 +387,7 @@ class SentenceExtractor(EntityExtractor):
                 current_section=tex_unit_dict.get("current_section", ""),
                 is_sentence_in_figure=tex_unit_dict.get("is_sentence_in_figure", False),
                 is_sentence_in_table=tex_unit_dict.get("is_sentence_in_table", False),
+                is_sentence_in_itemize=tex_unit_dict.get("is_sentence_in_itemize", False),
                 label=tex_unit_dict.get("label", []),
                 ref=tex_unit_dict.get("ref", []),
                 cite=tex_unit_dict.get("cite", []),
