@@ -31,11 +31,15 @@ class FindSentencesTask:
 
 @dataclass(frozen=True)
 class DefinitionSentencePair:
-    # tex_path: str
-    # sentence_index: int
+    id_: int
+    start: int
+    end: int
+    tex_path: str
+    sentence_index: int
     # definition_index: int
     # sentence_id: str
-    sentence: Sentence
+    # sentence: Sentence
+    sentence_text: str
 
 
 # @dataclass(frozen=True)
@@ -87,7 +91,7 @@ class DetectedDefinitions(ArxivBatchCommand[FindSentencesTask, DefinitionSentenc
 
     @staticmethod
     def get_name() -> str:
-        return "detected-definitions"
+        return "detect-definitions"
 
     @staticmethod
     def get_description() -> str:
@@ -131,23 +135,31 @@ class DetectedDefinitions(ArxivBatchCommand[FindSentencesTask, DefinitionSentenc
 
         if len(item.sentences) == 0:
             logging.warning(  # pylint: disable=logging-not-lazy
-                "No sentences found for file %s for arXiv ID %s. Skipping detection of sentences "
+                "No sentences found for arXiv ID %s. Skipping detection of sentences "
                 + "that contain entities.",
-                item.tex_path,
+                #item.tex_path,
                 item.arxiv_id,
             )
             return
 
 
-        sentence = next(sentences_ordered)
+        for sid, sentence in enumerate(sentences_ordered):
+            # sentence = next(sentences_ordered)
 
-        from pdb import set_trace; set_trace()
-        while True:
-            try:
-                # if entity.start >= sentence.start and entity.end <= sentence.end:
-                yield DefniitionSentencePair(sentence)
-            except StopIteration:
-                break
+            # fake
+
+            yield DefinitionSentencePair(
+                id_=sid,
+                start=sentence.start,
+                end=sentence.end,
+                tex_path=sentence.tex_path,
+                sentence_index=sentence.id_,
+                sentence_text=sentence.text)
+       #  # while True:
+        # try:
+            # # if entity.start >= sentence.start and entity.end <= sentence.end:
+        # except StopIteration:
+       #      break
 
 
     def save(self, item: FindSentencesTask, result: DefinitionSentencePair) -> None:
@@ -157,11 +169,17 @@ class DetectedDefinitions(ArxivBatchCommand[FindSentencesTask, DefinitionSentenc
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         entity_sentences_path = os.path.join(output_dir, "entities.csv",)
+
+        # from pdb import set_trace; set_trace()
         file_utils.append_to_csv(
             entity_sentences_path,
-            DefinitionSentencePairIds(
-                # item.tex_path, result.entity.id_, result.sentence.id_
-                result.sentence
+            DefinitionSentencePair(
+                result.id_,
+                result.start,
+                result.end,
+                result.tex_path,
+                result.sentence_index,
+                result.sentence_text
             ),
         )
 

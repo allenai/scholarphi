@@ -13,18 +13,14 @@ from ..sentences.commands.find_entity_sentences import (
 )
 from common.commands.detect_entities import make_detect_entities_command
 from common.commands.base import Command, CommandList
+from common.commands.upload_entities import make_upload_entities_command
 
 
 # Register additional directories to be used by the upload function
-directories.register("definitions-model-ids")
+#directories.register("definitions-model-ids")
 
 # Register directories for output from intermediate pipeline stages.
 directories.register("detected-definitions")
-# directories.register(f"sources-with-colorized-{entity_name}")
-# directories.register(f"compiled-sources-with-colorized-{entity_name}")
-# directories.register(f"paper-with-colorized-{entity_name}-images")
-# directories.register(f"diff-images-with-colorized-{entity_name}")
-# directories.register(f"hue-locations-for-{entity_name}")
 
 # commands: CommandList = [
     # make_detect_entities_command(entity_name, EntityExtractorType),
@@ -41,44 +37,17 @@ directories.register("detected-definitions")
 # ]
 
 
-
-# commands = [
-    # DetectedDefinitions,
-    # make_find_entity_sentences_command("detected-definitions"),
-    # # make_find_entity_sentences_command("predicted-definitions"),
-    # # make_colorize_tex_command("definitions"),
-    # # make_compile_tex_command("equation-tokens"),
-    # # make_raster_pages_command("equation-tokens"),
-    # # make_diff_images_command("equation-tokens"),
-    # # make_locate_hues_command("equation-tokens"),
-    # upload_definitions  # this needs to be implemented
-# ]
-
 commands: CommandList = [
-    # make_detect_entities_command(entity_name, EntityExtractorType),
     DetectedDefinitions,
-    make_find_entity_sentences_command("detected-definitions"),
-    # make_find_entity_sentences_command("predicted-definitions"),
-    # make_colorize_tex_command("definitions"),
-    # make_compile_tex_command("equation-tokens"),
-    # make_raster_pages_command("equation-tokens"),
-    # make_diff_images_command("equation-tokens"),
-    # make_locate_hues_command("equation-tokens"),
-    upload_definitions  # this needs to be implemented
-
+    make_find_entity_sentences_command("detect-definitions"),
 ]
 
 
+upload_command = make_upload_entities_command(
+    "detect-definitions", upload_definitions, DetectedEntityType=Definition
+)
+commands.append(upload_command)
 
-
-
-# commands = create_entity_localization_command_sequence(
-    # "definitions",
-    # PredictDefinitions,
-    # DetectedEntityType=Definition,
-    # # get_color_positions=get_sentence_color_positions,
-    # upload_func=upload_definitions,
-# )
 
 definitions_pipeline = EntityPipeline(
     "definitions",
