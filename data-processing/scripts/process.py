@@ -22,6 +22,7 @@ from entities import equations  # pylint: disable=unused-import
 from entities import sentences  # pylint: disable=unused-import
 from entities import symbols  # pylint: disable=unused-import
 from entities import terms  # pylint: disable=unused-import
+from entities import definitions  # pylint: disable=unused-import
 from scripts.pipelines import EntityPipeline, entity_pipelines
 
 PAPER_DISCOVERY_COMMANDS: CommandList = [FetchNewArxivIds]
