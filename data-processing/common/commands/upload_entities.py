@@ -5,9 +5,13 @@ from typing import Iterator, Optional, Type
 
 from common import directories, file_utils
 from common.commands.database import DatabaseUploadCommand
-from common.types import (EntityAndLocation, EntityUploadCallable,
-                          HueLocationInfo, PaperProcessingResult,
-                          SerializableEntity)
+from common.types import (
+    EntityAndLocation,
+    EntityUploadCallable,
+    HueLocationInfo,
+    PaperProcessingResult,
+    SerializableEntity,
+)
 
 
 class UploadEntitiesCommand(DatabaseUploadCommand[PaperProcessingResult, None]):
@@ -117,6 +121,6 @@ def make_upload_entities_command(
             return f"hue-locations-for-{entity_name}"
 
         def save(self, item: PaperProcessingResult, _: None) -> None:
-            upload_func(item)
+            upload_func(item, self.args.data_version)
 
     return C

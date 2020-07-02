@@ -17,7 +17,6 @@ from .commands.find_symbol_matches import FindSymbolMatches
 from .commands.find_symbol_sentences import FindSymbolSentences
 from .commands.locate_symbols import LocateSymbols
 from .commands.upload_symbols import UploadSymbols
-from .models import MathMl, MathMlMatch, Symbol, SymbolChild, SymbolSentence
 
 directories.register("detected-equation-tokens")
 directories.register("symbol-matches")
@@ -59,7 +58,6 @@ symbols_pipeline = EntityPipeline(
     commands,
     depends_on=["equations"],
     optional_depends_on=["sentences"],
-    database_models=[MathMl, MathMlMatch, Symbol, SymbolChild, SymbolSentence],
     make_digest=make_digest,
 )
 register_entity_pipeline(symbols_pipeline)

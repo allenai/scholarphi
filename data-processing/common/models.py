@@ -1,11 +1,12 @@
 import configparser
+import os
+import uuid
 from datetime import datetime
 from typing import Optional
 
 from peewee import (
     SQL,
     CharField,
-    CompositeKey,
     DatabaseProxy,
     DateTimeField,
     FloatField,
@@ -15,6 +16,7 @@ from peewee import (
     PostgresqlDatabase,
     TextField,
 )
+from playhouse.postgres_ext import DateTimeTZField
 
 from scripts.pipelines import entity_pipelines
 
@@ -23,6 +25,13 @@ DATABASE_CONFIG = "config.ini"
 
 input_database = DatabaseProxy()
 output_database = DatabaseProxy()
+
+
+session_id = uuid.uuid4()
+"""
+Each time these scripts are launched, a unique session ID is generated. This session ID can be
+used to make sure that all data uploaded while these scripts are run has the same 'version'.
+"""
 
 
 class InputModel(Model):  # type: ignore
@@ -46,78 +55,137 @@ class OutputModel(Model):  # type: ignore
         database = output_database
 
 
+class TimestampsMixin(OutputModel):
+    """
+    Fields for timestamping data. If 'created_at' and 'updated_at' are not defined, and a model
+    using this mixing is created using 'bulk_create', then those timestamps will be set using the
+    *pipeline's* time instead of the server database's time, because of limitations in the
+    bulk_create method (see https://github.com/coleifer/peewee/issues/1931#issue-443944983). It's
+    expected that the pipeline's clock and the server's clock will be sufficiently synchronized
+    that this won't cause issues anytime soon.
+    """
+
+    created_at = DateTimeTZField(
+        constraints=[SQL("DEFAULT (now() at time zone 'utc')")], default=datetime.utcnow
+    )
+    updated_at = DateTimeTZField(
+        constraints=[SQL("DEFAULT (now() at time zone 'utc')")], default=datetime.utcnow
+    )
+    " The client is responsible for updating this field whenever they update the model. "
+
+
 class Paper(OutputModel):
     s2_id = CharField(primary_key=True)
     arxiv_id = CharField(index=True, null=True)
 
 
+class Version(OutputModel):
+    """
+    Data for each paper is versioned. Typically, all of the data from a single run of the pipeline
+    is grouped into the same version. This allows us to store multiple versions of the data for
+    the paper, and switch back and forth between which version is being viewed in the interface.
+    """
+
+    created_at = DateTimeField(constraints=[SQL("DEFAULT now()")])
+    paper = ForeignKeyField(Paper)
+    index = IntegerField(index=True)
+    " Starts at 0 for the first version of data for a paper, increases by 1 each time. "
+
+    session_id = TextField(index=True)
+    """
+    For use by this data pipeline only. This is a unique ID for the session of the pipeline that
+    created this version. This can be used by the pipeline to check whether it has already created
+    a version of data for a paper during an earlier stage of paper processing.
+    """
+
+    class Meta:
+        indexes = ((("paper_id", "index"), True), (("paper_id", "session_id"), True))
+
+
 class Summary(OutputModel):
+    """
+    While the summary model is defined in this project in order to create the table, it is
+    assumed that it will be filled by another service.
+    """
+
     paper = ForeignKeyField(Paper, on_delete="CASCADE")
     title = TextField()
     authors = TextField()
     doi = TextField(null=True)
     venue = TextField(index=True, null=True)
     year = IntegerField(index=True, null=True)
-    """
-    Abstract will probably be backfilled.
-    """
     abstract = TextField(null=True)
 
 
-class Citation(OutputModel):
+class Entity(TimestampsMixin, OutputModel):
+    """
+    An entity (e.g., citation, symbol, term) found in a paper.
+    """
+
     paper = ForeignKeyField(Paper, on_delete="CASCADE")
 
+    version = IntegerField(index=True)
+    """
+    The version of data for this paper that this entity belongs too. Should match a version number
+    for the paper from the 'Version' table.
+    """
 
-class CitationPaper(OutputModel):
-    citation = ForeignKeyField(Citation, on_delete="CASCADE")
-    paper = ForeignKeyField(Paper, on_delete="CASCADE")
+    type = TextField(index=True)
+    within_paper_id = TextField(index=True)
+    """
+    'within_paper_id' is a unique ID for this entity of this type within the paper. Entities of
+    different types within the same paper can have the same 'within_paper_id'. Entities of the
+    same type across different papers can also have the same 'within_paper_id'. Unlike the
+    automatically-generated Postgres ID field, this field may convey some semantic information,
+    like the order in which the entities were found in the paper. The primary purpose of this
+    field is to resolve references from one entity to another when the pipeline is uploading
+    entities that refer to other entities.
+    """
+
+    source = TextField(index=True, default="tex-pipeline")
 
     class Meta:
-        primary_key = CompositeKey("citation", "paper")
+        indexes = ((("paper_id", "version", "type", "within_paper_id"), True),)
 
 
-class Entity(OutputModel):
-    type = TextField(index=True)
-    source = TextField(
-        choices=(("tex-pipeline", None), ("other", None)),
-        index=True,
-        default="tex-pipeline",
-    )
-    entity_id = IntegerField(index=True)
+class BoundingBox(TimestampsMixin, OutputModel):
 
-
-class BoundingBox(OutputModel):
-    """
-    Expressed in PDF coordinates.
-    """
-
+    entity = ForeignKeyField(Entity, on_delete="CASCADE")
+    source = TextField(index=True, default="tex-pipeline")
     page = IntegerField()
+
+    """
+    Dimensions expressed in ratio coordinates ([0..1]).
+    """
     left = FloatField()
     top = FloatField()
     width = FloatField()
     height = FloatField()
 
 
-class EntityBoundingBox(OutputModel):
+class EntityData(TimestampsMixin, OutputModel):
+    """
+    A key-value pair holding arbitrary data for an entity.
+    """
+
     entity = ForeignKeyField(Entity, on_delete="CASCADE")
-    bounding_box = ForeignKeyField(BoundingBox, on_delete="CASCADE")
-
-    class Meta:
-        primary_key = CompositeKey("entity", "bounding_box")
-
-
-class Annotation(BoundingBox):
+    source = TextField(index=True, default="tex-pipeline")
+    type = TextField(
+        index=True,
+        choices=(
+            ("scalar", None),
+            ("reference", None),
+            ("scalar-list", None),
+            ("reference-list", None),
+        ),
+    )
+    key = TextField(index=True)
     """
-    Human annotation of an entity on a paper. Creating instances of this model with the automated
-    data processing pipeline would be unexpected.
+    If the same key appears more than once for an entity, then the data is probably a list. That said,
+    the best way to tell if the data is part of a list is to see if the type is a 'scalar-list' or
+    a 'reference-list' (see the 'type' field.)
     """
-
-    paper = ForeignKeyField(Paper, on_delete="CASCADE")
-    type = TextField(choices=(("citation", None), ("symbol", None)), index=True)
-
-    created_at = DateTimeField(constraints=[SQL("DEFAULT now()")])
-    # The client is responsible for updating this field whenever they update the model.
-    updated_at = DateTimeField(constraints=[SQL("DEFAULT now()")])
+    value = TextField()
 
 
 def init_database(
@@ -152,7 +220,6 @@ def init_database_connections(
     Initialize database connections.
     """
 
-    import os
     config = configparser.ConfigParser(os.environ)
     config.read(DATABASE_CONFIG)
 
@@ -174,13 +241,11 @@ def init_database_connections(
         # defined for specific entity pipelines.
         models_to_create = [
             Paper,
+            Version,
             Summary,
-            Citation,
-            CitationPaper,
             Entity,
             BoundingBox,
-            EntityBoundingBox,
-            Annotation,
+            EntityData,
         ]
         for pipeline in entity_pipelines:
             models_to_create.extend(pipeline.database_models)
