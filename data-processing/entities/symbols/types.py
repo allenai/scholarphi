@@ -1,7 +1,10 @@
-from typing import List, Dict
-
 from dataclasses import dataclass
-from common.types import ArxivId, SymbolWithId, SymbolId, BoundingBox, Matches, S2Id
+from typing import Dict, List
+
+from common.types import ArxivId, BoundingBox, Matches, S2Id, SymbolId, SymbolWithId
+
+SentenceId = str
+
 
 @dataclass(frozen=True)
 class SymbolKey:
@@ -23,5 +26,5 @@ class SymbolData:
     s2_id: S2Id
     symbols_with_ids: List[SymbolWithId]
     boxes: Dict[SymbolId, BoundingBox]
-    symbol_sentence_model_ids: Dict[SymbolId, str]
+    symbol_sentences: Dict[SymbolId, SentenceKey]
     matches: Matches
