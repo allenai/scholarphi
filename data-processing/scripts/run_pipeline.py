@@ -258,10 +258,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--database-schema",
         type=str,
-        default=f"schema_{datetime.utcnow().strftime('%Y%m%d_%M%H%S')}",
+        default=f"dev",
         help=(
             "Name of the Postgres schema into which to upload results. To upload into the live "
-            + "database, set this to 'public' (though this is not recommended). Schema names must "
+            + "database, set this to 'public'. The default 'dev' database is recommended for "
+            + "development. To test with the 'dev' database, a development version of the API "
+            + "needs to be launched pointing to the 'dev' schema. Schema names must "
             + "follow the naming rules for Postgres identifiers "
             + "(see https://www.postgresql.org/docs/9.2/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS)."
         ),

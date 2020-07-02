@@ -83,14 +83,22 @@ def append_to_csv(csv_path: Path, data_obj: Dataclass, encoding: str = "utf-8") 
         file_empty = True
 
     with open(csv_path, "a", encoding=encoding) as csv_file:
-        data_dict = dataclasses.asdict(data_obj)
-        writer = csv.DictWriter(
-            # QUOTE_NONNUMERIC is used in both the writer and the reader to ensure that numbers
-            # (e.g., indexes, hues, positions) are decoded as numbers.
-            csv_file,
-            fieldnames=data_dict.keys(),
-            quoting=csv.QUOTE_MINIMAL,
-        )
+        try:
+            data_dict = dataclasses.asdict(data_obj)
+        except RecursionError:
+            logging.warning(  # pylint: disable=logging-not-lazy
+                "Couldn't serialize data %s due to recursion error."
+                + "Make sure that there are no cyclic references in data",
+                data_obj,
+            )
+        else:
+            writer = csv.DictWriter(
+                # QUOTE_NONNUMERIC is used in both the writer and the reader to ensure that numbers
+                # (e.g., indexes, hues, positions) are decoded as numbers.
+                csv_file,
+                fieldnames=data_dict.keys(),
+                quoting=csv.QUOTE_MINIMAL,
+            )
 
         # Only write the header the first time a record is added to the file
         try:
