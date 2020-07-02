@@ -3,6 +3,7 @@ import os.path
 from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Iterator, List, Type
+from collections import defaultdict
 import pysbd
 
 from common import directories, file_utils
@@ -11,8 +12,10 @@ from common.commands.base import ArxivBatchCommand
 from common.types import ArxivId #, SymbolWithId
 from common.types import ArxivId, RelativePath, SerializableEntity
 from entities.sentences.types import Sentence
+
 from .types import Definition
 from .nlp_tools import DefinitionModel
+from .nlp_model.utils import highlight
 
 @dataclass(frozen=True)
 class FindSentencesTask:
@@ -57,24 +60,69 @@ class DefinitionSentencePair:
 
 
 
-# term_start, term_end, term_text, term_type = \
-def process_term_slot(text, featurized_text, slot_preds):
-    print(featurized_text['tokens'])
-    print(text)
-    print(slot_preds)
-    from pdb import set_trace; set_trace()
+def create_token_to_index_map(text, tokens):
+    indexes = []
+    current_position = 0
+    for token in tokens:
+        start_index = text[current_position:].index(token)
+        assert text[current_position+start_index:current_position+start_index+len(token)] != token:
+        indexes.append((current_position+start_index, current_position+start_index+len(token)-1))
+        current_position += len(token)
+    return indexes
+
+def process_term_definition_slot(text, featurized_text, slot_preds):
 
     # make mapping function between raw text and featurized text
+    indexes = create_token_to_index_map(text, featurized_text['tokens'])
 
-
-    for index, (slot, token) in enumerate(zip(slot_preds, featurized_text['tokens'])):
+    terms, definitions = [], []
+    term, definition = [], []
+    for index, (slot, token, index_pair) in enumerate(zip(slot_preds, featurized_text['tokens'], indexes)):
         if slot == 'TERM':
+            term.append((index_pair, token))
+        if slot == 'DEF':
+            definition.append((index_pair, token))
+        if slot == 'O':
+            if len(term) > 0:
+                terms.append(term)
+            if len(definition) > 0:
+                definitions.append(definition)
+            term, definition = [], []
+
+    # currently, match pairs of term and definitions
+    num_pair = min(len(terms), len(definitions))
+    slot_dict_list = []
+    for td_pair in range(num_pair):
+        print(featurized_text['tokens'])
+        print(text)
+        print(slot_preds)
+        print('{} out of {}'.format(td_pair, num_pair))
+
+        term_list = [t[1] for t in terms[td_pair]]
+        term_index_list = [t[0] for t in terms[td_pair]]
+        # definition, definition_index = definitions[td_pair]
+        definition_list = [t[1] for t in definitions[td_pair]]
+        definition_index_list = [t[0] for t in definitions[td_pair]]
 
 
-    return 0, 0, "", ""
+        slot_dict = defaultdict(None)
+        slot_dict['term_start'] = min([idx[0] for idx in term_index_list])
+        slot_dict['term_end'] = max([idx[1] for idx in term_index_list])
+        slot_dict['term_text'] = text[slot_dict['term_start']:slot_dict['term_end']+1]
+        slot_dict['term_type'] = None #TODO need type classifier
 
-def process_definition_slot(text, featurized_text, slot_preds):
-    return 0, 0, "", ""
+        slot_dict['definition_start'] = min([idx[0] for idx in definition_index_list])
+        slot_dict['definition_end'] = max([idx[1] for idx in definition_index_list])
+        slot_dict['definition_text'] = text[slot_dict['definition_start']:slot_dict['definition_end']+1]
+        slot_dict['definition_type'] = None #TODO need type classifier
+
+        print(highlight(text[slot_dict['term_start']:slot_dict['term_end']+1]))
+        print(highlight(text[slot_dict['definition_start']:slot_dict['definition_end']+1]))
+
+        for k,v in slot_dict.items():
+            print('\t{}\t{}'.format(k,highlight(v)))
+        slot_dict_list.append(slot_dict)
+    return slot_dict_list
 
 
 class DetectedDefinitions(ArxivBatchCommand[FindSentencesTask, DefinitionSentencePair]):
@@ -187,32 +235,32 @@ class DetectedDefinitions(ArxivBatchCommand[FindSentencesTask, DefinitionSentenc
                 continue
 
             #TODO support multiple term/definition pairs, currently only support for single cases
-            term_start, term_end, term_text, term_type = \
-                process_term_slot(sentence.text, featurized_text, slot_preds)
-            definition_start, definition_end, definition_text, definition_type = \
-                process_definition_slot(sentence.text, featurized_text, slot_preds)
+            slot_dict_list = process_term_definition_slot(sentence.text, featurized_text, slot_preds)
 
             # #TODO add confidence scores for term/definition predictions
             # term_confidence, definition_confidence = 0.0, 0.0
 
-            yield DefinitionSentencePair(
-                id_=sid,
-                term_index=term_index_count,
-                term_start=term_start,
-                term_end=term_end,
-                term_text=term_text,
-                term_type=term_type,
-                definition_index=definition_index_count,
-                definition_start=definition_start,
-                definition_end=definition_end,
-                definition_type=definition_type,
+            for slot_dict in slot_dict_list:
 
-                start=sentence.start,
-                end=sentence.end,
-                tex_path=sentence.tex_path,
-                sentence_index=sentence.id_,
-                sentence_text=sentence.text
-            )
+                yield DefinitionSentencePair(
+                    id_=sid,
+                    start=sentence.start,
+                    end=sentence.end,
+                    tex_path=sentence.tex_path,
+                    sentence_index=sentence.id_,
+                    sentence_text=sentence.text,
+                    intent=intent,
+                    term_index=term_index_count,
+                    term_start=slot_dict.get('term_start',None),
+                    term_end=slot_dict.get('term_end',None),
+                    term_text=slot_dict.get('term_text',None),
+                    term_type=slot_dict.get('term_type',None),
+                    definition_index=definition_index_count,
+                    definition_start=slot_dict.get('definition_start',None),
+                    definition_end=slot_dict.get('definition_end',None),
+                    definition_text=slot_dict.get('definition_text',None),
+                    definition_type=slot_dict.get('definition_type',None),
+                )
 
             term_index_count += 1
             definition_index_count += 1
@@ -237,7 +285,18 @@ class DetectedDefinitions(ArxivBatchCommand[FindSentencesTask, DefinitionSentenc
                 result.end,
                 result.tex_path,
                 result.sentence_index,
-                result.sentence_text
+                result.sentence_text,
+                result.intent,
+                result.term_index,
+                result.term_start,
+                result.term_end,
+                result.term_text,
+                result.term_type,
+                result.definition_index,
+                result.definition_start,
+                result.definition_end,
+                result.definition_text,
+                result.definition_type,
             ),
         )
 
