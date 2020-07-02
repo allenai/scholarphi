@@ -3,27 +3,16 @@ import os.path
 from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Iterator, List, Type
-
 import pysbd
 
-from common.parse_tex import DEFAULT_CONTEXT_SIZE, EntityExtractor, PlaintextExtractor
-
-from .types import Definition
-
-# from ..sentences.types import Sentence
-
-
 from common import directories, file_utils
+from common.parse_tex import DEFAULT_CONTEXT_SIZE, EntityExtractor, PlaintextExtractor
 from common.commands.base import ArxivBatchCommand
 from common.types import ArxivId #, SymbolWithId
 from common.types import ArxivId, RelativePath, SerializableEntity
-
-# from entities.sentences.commands.find_entity_sentences import EntitySentencePairIds
-
 from entities.sentences.types import Sentence
-
-
-from .nlp_tools import extract_featurized_text, DefinitionModel
+from .types import Definition
+from .nlp_tools import DefinitionModel
 
 @dataclass(frozen=True)
 class FindSentencesTask:
@@ -41,16 +30,21 @@ class DefinitionSentencePair:
     sentence_index: int
     sentence_text: str
 
+    intent: bool
+
     term_index: int
     term_start: int
     term_end: int
     term_text: str
+    # term_confidence: float
+    term_type: str
 
     definition_index: int
     definition_start: int
     definition_end: int
     definition_text: str
-    definition_intent: int
+    # definition_confidence: float
+    definition_type: str
 
 
 # @dataclass(frozen=True)
@@ -61,42 +55,48 @@ class DefinitionSentencePair:
 
 
 
+
+
+# term_start, term_end, term_text, term_type = \
+def process_term_slot(text, featurized_text, slot_preds):
+    print(featurized_text['tokens'])
+    print(text)
+    print(slot_preds)
+    from pdb import set_trace; set_trace()
+
+    # make mapping function between raw text and featurized text
+
+
+    for index, (slot, token) in enumerate(zip(slot_preds, featurized_text['tokens'])):
+        if slot == 'TERM':
+
+
+    return 0, 0, "", ""
+
+def process_definition_slot(text, featurized_text, slot_preds):
+    return 0, 0, "", ""
+
+
 class DetectedDefinitions(ArxivBatchCommand[FindSentencesTask, DefinitionSentencePair]):
     """
     Extract definition sentences from Sentence using the pre-trained definition extraction model.
-
-
     Takes as input the sentences
-    Logic for this
-        Tokenize the sentences
-        Featurize the sentences
-        Get predictions from the pre-trained model
-    For each one, yields two types of entities
-        Fields for Definition/Term class
-            {start,end}_{term,definition}
-            confidence_{term,definition{
-            sentence_id
-            etc
-        Definition [might be of multiple types: appositions, explanations, formulae, ...]
-            Saved with the original TeX positions of the tokens
-            Start
-        End
-            Term
-            Saved with the original TeX positions of the tokens
-    Comments:
-
-        TermDefinition.csv Range for Term/Definition
-        Term.csv, Definition.csv
-            Each term: in multiple places
-                        in multiple defniitions
-        Terms.csv - listing of term id and term plaintext
-        Term_entities.csv - ID of term, chac position,
-        Definitions.csv - start/end position, Term ID.
-
-        Term_entities.csv -  ID, multiple rows for the same word ID
-        Def_entities.csv -  ID for Term,
-
-
+    Basic steps:
+        - load cleaned sentences from detected-sentences
+        - extract features from each sentence (aka featurization)
+        - load the pre-trained nlp model, load the faetures, and predict term:definition tokens
+        - store detected term:definition pairs in TermDefinition.csv
+    Alternative logics for saving:
+        - (1) (*current version) TermDefinition.csv
+            Range for Term/Definition
+        - (2) Term.csv, Term_entities.csv, Definition.csv
+            Each term: in multiple places in multiple defniitions
+            Terms.csv - listing of term id and term plaintext
+            Term_entities.csv - ID of term, chac position,
+            Definitions.csv - start/end position, Term ID.
+        - (3) Term_entities.csv, Def_entities.csv
+            Term_entities.csv -  ID, multiple rows for the same word ID
+            Def_entities.csv -  ID for Term,
     """
 
 
@@ -140,7 +140,6 @@ class DetectedDefinitions(ArxivBatchCommand[FindSentencesTask, DefinitionSentenc
 
 
     def process(self, item: FindSentencesTask) -> Iterator[DefinitionSentencePair]:
-
         sentences_ordered = iter(sorted(item.sentences, key=lambda s: s.start))
 
         if len(item.sentences) == 0:
@@ -156,15 +155,18 @@ class DetectedDefinitions(ArxivBatchCommand[FindSentencesTask, DefinitionSentenc
         nlp_model = DefinitionModel()
 
         verbose = False
+        term_index_count, definition_index_count = 0, 0
         for sid, sentence in enumerate(sentences_ordered):
-            # fake heuristic to capture sentence-like lines. Later, this should be removed once we have the merged PR #120
-            if len(sentence.text) < 50:
+            # TODO FIXME fake heuristic to capture sentence-like lines. This should be removed once PR #120 is merged to master
+            if len(sentence.text) < 60:
                 continue
 
-
+            # extract nlp features from raw text
             featurized_text = nlp_model.featurize(sentence.text)
+            # predict terms and definitions from the featurized text
             intent_pred, slot_preds = nlp_model.predict_one(featurized_text)
 
+            # TODO delete these lines
             if verbose:
                 print(sentence.text)
                 for k,v in featurized_text.items():
@@ -173,34 +175,49 @@ class DetectedDefinitions(ArxivBatchCommand[FindSentencesTask, DefinitionSentenc
                 print(slot_preds)
                 print()
 
+            # TODO add batch processing for speed-up
+            intent_pred = intent_pred[0]
+            slot_preds = slot_preds[0]
 
-            # term_index: int
-            # term_start: int
-            # term_end: int
-            # term_text: str
+            # intent prediction whether the sentence includes a definition or not
+            intent = True if intent_pred==1 else False
 
-            # definition_index: int
-            # definition_start: int
-            # definition_end: int
-            # definition_text: str
-            # definition_intent: int
+            # we only care when predicted slots include both 'TERM' and 'DEFINITION', otherwise ignore
+            if 'TERM' not in slot_preds and 'DEF' not in slot_preds:
+                continue
 
+            #TODO support multiple term/definition pairs, currently only support for single cases
+            term_start, term_end, term_text, term_type = \
+                process_term_slot(sentence.text, featurized_text, slot_preds)
+            definition_start, definition_end, definition_text, definition_type = \
+                process_definition_slot(sentence.text, featurized_text, slot_preds)
 
-
+            # #TODO add confidence scores for term/definition predictions
+            # term_confidence, definition_confidence = 0.0, 0.0
 
             yield DefinitionSentencePair(
                 id_=sid,
+                term_index=term_index_count,
+                term_start=term_start,
+                term_end=term_end,
+                term_text=term_text,
+                term_type=term_type,
+                definition_index=definition_index_count,
+                definition_start=definition_start,
+                definition_end=definition_end,
+                definition_type=definition_type,
+
                 start=sentence.start,
                 end=sentence.end,
                 tex_path=sentence.tex_path,
                 sentence_index=sentence.id_,
                 sentence_text=sentence.text
             )
-       #  # while True:
-        # try:
-            # # if entity.start >= sentence.start and entity.end <= sentence.end:
-        # except StopIteration:
-       #      break
+
+            term_index_count += 1
+            definition_index_count += 1
+
+
 
 
     def save(self, item: FindSentencesTask, result: DefinitionSentencePair) -> None:
@@ -225,57 +242,3 @@ class DetectedDefinitions(ArxivBatchCommand[FindSentencesTask, DefinitionSentenc
         )
 
 
-
-
-
-#     def parse(self) -> Iterator[Definition]:
-        # for i, sentence in enumerate(segmenter.segment(plaintext)):
-            # # The pysbd module has several open bugs and issues which are addressed below.
-            # # As of 3/23/20 we know the module will fail in the following ways:
-            # # 1. pysbd will not break up the sentence when it starts with a punctuation mark or space.
-            # #    ex: ". hello. world. hi."
-            # #    sol: check for sentences being longer than 1000 characters.
-            # # 2. pysbd indexes are sometimes incorrectly set
-            # #    ex: "hello. world. 1) item one. 2) item two. 3) item three" or "hello!!! world."
-            # #    sol: set indexes manually using string search + sentence length
-            # # 3. pysbd uses reserved characters for splitting sentences
-            # #    ex: see PYSBD_RESERVED_CHARACTERS list.
-            # #    sol: throw a warning if the sentence contains any of these characters.
-            # if len(sentence) > 1000:
-                # logging.warning(
-                    # "Exceptionally long sentence (length %d), this might indicate the sentence extractor failed to properly split text into sentences.",
-                    # len(sentence),
-                # )
-
-            # plaintext_start = plaintext.find(sentence, length_so_far_in_plain_text)
-            # plaintext_end = plaintext_start + len(sentence)
-            # if (
-                # plaintext_start not in plaintext_to_tex_offset_map
-                # or plaintext_end not in plaintext_to_tex_offset_map
-            # ):
-                # logging.warning(
-                    # "A sentence boundary was incorrect for sentence %s. This is probably an issue with pysbd. Skipping sentence in extractor.",
-                    # sentence,
-                # )
-                # continue
-            # if plaintext_start - 500 > length_so_far_in_plain_text:
-                # logging.warning(
-                    # "Sentence boundary start for sentence %s was %d characters ahead of the previous sentence, this might indicate the sentence extractor failed to properly split text.",
-                    # sentence,
-                    # plaintext_start - length_so_far_in_plain_text,
-                # )
-
-            # start = plaintext_to_tex_offset_map[plaintext_start]
-            # end = plaintext_to_tex_offset_map[plaintext_end]
-            # length_so_far_in_plain_text = plaintext_end
-            # tex_sub = tex[start:end]
-            # context_tex = tex[start - DEFAULT_CONTEXT_SIZE : end + DEFAULT_CONTEXT_SIZE]
-            # yield Sentence(
-                # text=sentence,
-                # # start=start,
-                # # end=end,
-                # id_=str(i),
-                # tex_path=tex_path,
-                # tex=tex_sub,
-                # context_tex=context_tex,
-            # )
