@@ -22,6 +22,9 @@ from common.types import ArxivId, RelativePath, SerializableEntity
 
 from entities.sentences.types import Sentence
 
+
+from .nlp_tools import extract_featurized_text, DefinitionModel
+
 @dataclass(frozen=True)
 class FindSentencesTask:
     arxiv_id: ArxivId
@@ -36,10 +39,18 @@ class DefinitionSentencePair:
     end: int
     tex_path: str
     sentence_index: int
-    # definition_index: int
-    # sentence_id: str
-    # sentence: Sentence
     sentence_text: str
+
+    term_index: int
+    term_start: int
+    term_end: int
+    term_text: str
+
+    definition_index: int
+    definition_start: int
+    definition_end: int
+    definition_text: str
+    definition_intent: int
 
 
 # @dataclass(frozen=True)
@@ -101,7 +112,6 @@ class DetectedDefinitions(ArxivBatchCommand[FindSentencesTask, DefinitionSentenc
         return "detected-sentences"
 
     def load(self) -> Iterator[Definition]:
-
         for arxiv_id in self.arxiv_ids:
 
             output_dir = directories.arxiv_subdir("detected-definitions", arxiv_id)
@@ -142,11 +152,41 @@ class DetectedDefinitions(ArxivBatchCommand[FindSentencesTask, DefinitionSentenc
             )
             return
 
+        # load pre-trained DefinitoinModel
+        nlp_model = DefinitionModel()
 
+        verbose = False
         for sid, sentence in enumerate(sentences_ordered):
-            # sentence = next(sentences_ordered)
+            # fake heuristic to capture sentence-like lines. Later, this should be removed once we have the merged PR #120
+            if len(sentence.text) < 50:
+                continue
 
-            # fake
+
+            featurized_text = nlp_model.featurize(sentence.text)
+            intent_pred, slot_preds = nlp_model.predict_one(featurized_text)
+
+            if verbose:
+                print(sentence.text)
+                for k,v in featurized_text.items():
+                    print(k,v)
+                print(intent_pred)
+                print(slot_preds)
+                print()
+
+
+            # term_index: int
+            # term_start: int
+            # term_end: int
+            # term_text: str
+
+            # definition_index: int
+            # definition_start: int
+            # definition_end: int
+            # definition_text: str
+            # definition_intent: int
+
+
+
 
             yield DefinitionSentencePair(
                 id_=sid,
@@ -154,7 +194,8 @@ class DetectedDefinitions(ArxivBatchCommand[FindSentencesTask, DefinitionSentenc
                 end=sentence.end,
                 tex_path=sentence.tex_path,
                 sentence_index=sentence.id_,
-                sentence_text=sentence.text)
+                sentence_text=sentence.text
+            )
        #  # while True:
         # try:
             # # if entity.start >= sentence.start and entity.end <= sentence.end:
@@ -168,7 +209,7 @@ class DetectedDefinitions(ArxivBatchCommand[FindSentencesTask, DefinitionSentenc
         )
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-        entity_sentences_path = os.path.join(output_dir, "entities.csv",)
+        entity_sentences_path = os.path.join(output_dir, "TermsDefinitions.csv",)
 
         # from pdb import set_trace; set_trace()
         file_utils.append_to_csv(
