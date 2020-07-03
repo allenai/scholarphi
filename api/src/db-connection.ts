@@ -93,7 +93,9 @@ export class Connection {
     return isNaN(version) ? null : version;
   }
 
-  createBoundingBoxes(boundingBoxRows: BoundingBoxRow[]): BoundingBox[] {
+  createBoundingBoxes(
+    boundingBoxRows: Omit<BoundingBoxRow, "id">[]
+  ): BoundingBox[] {
     return boundingBoxRows.map((bbr) => ({
       source: bbr.source,
       page: bbr.page,
@@ -109,7 +111,7 @@ export class Connection {
    * relationships may need to be cleaned, as they contain *anything* that was found in the
    * entity table, which could include junk uploaded by annotators.
    */
-  unpackEntityDataRows(rows: EntityDataRow[]) {
+  unpackEntityDataRows(rows: Omit<EntityDataRow, "id">[]) {
     const attributes: GenericAttributes = {};
     const relationships: GenericRelationships = {};
     for (const row of rows) {
@@ -125,8 +127,8 @@ export class Connection {
       } else if (row.type === "reference") {
         relationships[row.key] = { type: row.key, id: row.value };
       } else if (row.type === "reference-list") {
-        if (relationships[row.type] === undefined) {
-          relationships[row.type] = [];
+        if (relationships[row.key] === undefined) {
+          relationships[row.key] = [];
         }
         (relationships[row.key] as Relationship[]).push({
           type: row.key,
@@ -251,8 +253,8 @@ export class Connection {
    */
   createEntity(
     entityRow: EntityRow,
-    boundingBoxRows: BoundingBoxRow[],
-    entityDataRows: EntityDataRow[]
+    boundingBoxRows: Omit<BoundingBoxRow, "id">[],
+    entityDataRows: Omit<EntityDataRow, "id">[]
   ): Entity | null {
     const boundingBoxes = this.createBoundingBoxes(boundingBoxRows);
 
@@ -392,9 +394,9 @@ export class Connection {
   }
 
   createBoundingBoxRows(
-    entity_id: string,
+    entity_id: number,
     bounding_boxes: BoundingBox[]
-  ): BoundingBoxRow[] {
+  ): Omit<BoundingBoxRow, "id">[] {
     return bounding_boxes.map((bb) => ({
       entity_id,
       source: bb.source,
@@ -421,12 +423,12 @@ export class Connection {
    * API relationship convention.
    */
   createEntityDataRows(
-    entity_id: string,
+    entity_id: number,
     entity_type: string,
     attributes: GenericAttributes,
     relationships: GenericRelationships
   ) {
-    const rows: EntityDataRow[] = [];
+    const rows: Omit<EntityDataRow, "id">[] = [];
     const addRow = (
       type: EntityDataRowType,
       key: string,
@@ -530,12 +532,12 @@ export class Connection {
      * Insert bounding boxes and data for entity. Must occur after the entity is inserted in
      * order to have access to the entity ID.
      */
-    const boundingBoxRows: BoundingBoxRow[] = this.createBoundingBoxRows(
-      String(id),
+    const boundingBoxRows = this.createBoundingBoxRows(
+      id,
       data.attributes.bounding_boxes
     );
-    const entityDataRows: EntityDataRow[] = this.createEntityDataRows(
-      String(id),
+    const entityDataRows = this.createEntityDataRows(
+      id,
       data.type,
       data.attributes,
       data.relationships as GenericRelationships
@@ -571,6 +573,7 @@ export class Connection {
     if (entityRowUpdates !== null && Object.keys(entityRowUpdates).length > 0) {
       this._knex("entity").update(entityRowUpdates).where({ id: data.id });
     }
+    const entityId = Number(data.id);
 
     if (data.attributes !== undefined) {
       /**
@@ -579,7 +582,7 @@ export class Connection {
       if (data.attributes.bounding_boxes !== undefined) {
         await this._knex("boundingbox").delete().where({ entity_id: data.id });
         const boundingBoxRows = this.createBoundingBoxRows(
-          data.id,
+          entityId,
           data.attributes.bounding_boxes
         );
         await this._knex.batchInsert("boundingbox", boundingBoxRows);
@@ -590,7 +593,7 @@ export class Connection {
        * them to the new values.
        */
       const attributeRows = this.createEntityDataRows(
-        data.id,
+        entityId,
         data.type,
         data.attributes,
         {}
@@ -614,7 +617,7 @@ export class Connection {
           builder.whereIn("type", ["reference", "reference-list"])
         );
       const relationshipRows = this.createEntityDataRows(
-        data.id,
+        entityId,
         data.type,
         {},
         data.relationships as GenericRelationships

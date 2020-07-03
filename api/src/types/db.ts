@@ -25,7 +25,8 @@ interface EntityRow {
 type EntityRowUpdates = Omit<EntityRow, "id" | "type" | "paper_id">;
 
 interface BoundingBoxRow {
-  entity_id: string;
+  id: number;
+  entity_id: number;
   source: string;
   page: number;
   left: number;
@@ -35,7 +36,8 @@ interface BoundingBoxRow {
 }
 
 interface EntityDataRow {
-  entity_id: string;
+  id: number;
+  entity_id: number;
   source: string;
   type: EntityDataRowType;
   key: string;
