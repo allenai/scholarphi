@@ -28,20 +28,67 @@ export const arxivId = Joi.object({
 });
 
 /**
- * Validation for 'Annotation' type.
+ * Validation for a bounding box.
  */
-export const annotation = Joi.object({
-  type: Joi.string().allow("citation", "symbol").required(),
-  page: Joi.number().integer().min(0).required(),
-  left: Joi.number().required(),
-  top: Joi.number().required(),
-  width: Joi.number().required(),
-  height: Joi.number().required(),
-  data: Joi.object({
-    arg: Joi.string().valid("definition"),
-    /*
-     * TODO(andrewhead): place an upper bound on the length of string accepted.
+const boundingBoxes = Joi.array().items(
+  Joi.object({
+    page: Joi.number().integer().min(0).required(),
+    left: Joi.number().required(),
+    top: Joi.number().required(),
+    width: Joi.number().required(),
+    height: Joi.number().required(),
+  })
+);
+
+const relationship = Joi.object({
+  type: Joi.string().required(),
+  id: Joi.string().required().allow(null),
+});
+
+const relationships = Joi.object({
+  arg: Joi.string(),
+  value: Joi.alternatives(relationship, Joi.array().items(relationship)),
+});
+
+/**
+ * Validation for entity POST request.
+ */
+export const entityPostData = Joi.object({
+  type: Joi.string().required(),
+  attributes: Joi.object({
+    version: Joi.number().optional(),
+    source: Joi.string().required(),
+    bounding_boxes: boundingBoxes.required(),
+    /**
+     * 'arg' and 'value' check arbitrary other attribute keys.
      */
-    value: Joi.string(),
+    arg: Joi.string(),
+    value: Joi.alternatives(
+      Joi.string(),
+      Joi.number(),
+      Joi.array().items(Joi.string())
+    ).allow(null),
+  }).required(),
+  relationships: relationships.required(),
+});
+
+/**
+ * Validation for entity PATCH request. This is the same as 'entityPostData' with the exception that
+ * 'id' is required, and all other properties are optional.
+ */
+export const entityPatchData = Joi.object({
+  id: Joi.string().required(),
+  type: Joi.string().required(),
+  attributes: Joi.object({
+    version: Joi.number().optional(),
+    source: Joi.string().optional(),
+    bounding_boxes: boundingBoxes.optional(),
+    arg: Joi.string(),
+    value: Joi.alternatives(
+      Joi.string(),
+      Joi.number(),
+      Joi.array().items(Joi.string())
+    ).allow(null),
   }).optional(),
+  relationships: relationships.optional(),
 });

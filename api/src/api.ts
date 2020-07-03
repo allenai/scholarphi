@@ -1,8 +1,9 @@
 import * as Hapi from "@hapi/hapi";
 import * as Joi from "@hapi/joi";
 import * as nconf from "nconf";
-import { AnnotationProperties, Connection } from "./queries";
+import { Connection, extractConnectionParams } from "./db-connection";
 import * as s2Api from "./s2-api";
+import { EntityPatchData, EntityPostData } from "./types/response";
 import * as validation from "./validation";
 
 interface ApiOptions {
@@ -11,16 +12,17 @@ interface ApiOptions {
 
 export const plugin = {
   name: "API",
-  version: "0.0.1",
+  version: "0.0.2",
   register: async function (server: Hapi.Server, options: ApiOptions) {
-    const dbConnection = new Connection(options.config);
+    const connectionParams = extractConnectionParams(options.config);
+    const dbConnection = new Connection(connectionParams);
 
     server.route({
       method: "GET",
-      path: "papers/{s2Id}/citations",
+      path: "papers/{s2Id}/entities",
       handler: (request) => {
         const s2Id = request.params.s2Id;
-        return dbConnection.getCitationsForS2Id(s2Id);
+        return dbConnection.getEntitiesForPaper({ s2_id: s2Id });
       },
       options: {
         validate: {
@@ -31,52 +33,10 @@ export const plugin = {
 
     server.route({
       method: "GET",
-      path: "papers/arxiv:{arxivId}/citations",
+      path: "papers/arxiv:{arxivId}/entities",
       handler: (request) => {
         const arxivId = request.params.arxivId;
-        return dbConnection.getCitationsForArxivId(arxivId);
-      },
-      options: {
-        validate: {
-          params: validation.arxivId,
-        },
-      },
-    });
-
-    server.route({
-      method: "GET",
-      path: "papers/arxiv:{arxivId}/symbols",
-      handler: (request) => {
-        const arxivId = request.params.arxivId;
-        return dbConnection.getSymbolsForArxivId(arxivId);
-      },
-      options: {
-        validate: {
-          params: validation.arxivId,
-        },
-      },
-    });
-
-    server.route({
-      method: "GET",
-      path: "papers/arxiv:{arxivId}/mathml",
-      handler: (request) => {
-        const arxivId = request.params.arxivId;
-        return dbConnection.getMathMlForArxivId(arxivId);
-      },
-      options: {
-        validate: {
-          params: validation.arxivId,
-        },
-      },
-    });
-
-    server.route({
-      method: "GET",
-      path: "papers/arxiv:{arxivId}/sentences",
-      handler: (request) => {
-        const arxivId = request.params.arxivId;
-        return dbConnection.getSentencesForArxivId(arxivId);
+        return dbConnection.getEntitiesForPaper({ arxiv_id: arxivId });
       },
       options: {
         validate: {
@@ -116,21 +76,8 @@ export const plugin = {
       },
     });
 
-    server.route({
-      method: "GET",
-      path: "papers/arxiv:{arxivId}/annotations",
-      handler: (request) => {
-        const arxivId = request.params.arxivId;
-        return dbConnection.getAnnotationsForArxivId(arxivId);
-      },
-      options: {
-        validate: {
-          params: validation.arxivId,
-        },
-      },
-    });
-
     /**
+     * TODO(andrewhead): update these usages.
      * Example usage:
      * requests.post(
      *   "http://localhost:3000/api/v0/papers/arxiv:1508.07252/annotations",
@@ -146,19 +93,22 @@ export const plugin = {
      */
     server.route({
       method: "POST",
-      path: "papers/arxiv:{arxivId}/annotations",
+      path: "papers/arxiv:{arxivId}/entities",
       handler: async (request, h) => {
         const arxivId = request.params.arxivId;
-        const id = await dbConnection.postAnnotationForArxivId(
-          arxivId,
-          request.payload as AnnotationProperties
+        const entity = await dbConnection.postEntity(
+          { arxiv_id: arxivId },
+          request.payload as EntityPostData
         );
-        return h.response(id).code(201);
+        if (entity === null) {
+          return h.response().code(500);
+        }
+        return h.response(entity).code(201);
       },
       options: {
         validate: {
           params: validation.arxivId,
-          payload: validation.annotation,
+          payload: validation.entityPostData,
         },
       },
     });
@@ -178,23 +128,20 @@ export const plugin = {
      * )
      */
     server.route({
-      method: "PUT",
+      method: "PATCH",
       path: "papers/arxiv:{arxivId}/annotation/{id}",
       handler: async (request, h) => {
-        const { arxivId, id } = request.params;
-        const annotation = await dbConnection.putAnnotation(
-          arxivId,
-          id,
-          request.payload as AnnotationProperties
+        const entity = await dbConnection.patchAnnotation(
+          request.payload as EntityPatchData
         );
-        return h.response(annotation).code(200);
+        return h.response({}).code(200);
       },
       options: {
         validate: {
           params: validation.arxivId.append({
             id: Joi.string().required(),
           }),
-          payload: validation.annotation,
+          payload: validation.entityPatchData,
         },
       },
     });
@@ -209,8 +156,8 @@ export const plugin = {
       method: "DELETE",
       path: "papers/arxiv:{arxivId}/annotation/{id}",
       handler: async (request, h) => {
-        const { arxivId, id } = request.params;
-        await dbConnection.deleteAnnotation(arxivId, id);
+        const { id } = request.params;
+        await dbConnection.deleteEntity(id);
         return h.response().code(204);
       },
       options: {

@@ -4,6 +4,8 @@ import {
   BoundingBox,
   Citation,
   Entity,
+  EntityPatchData,
+  EntityPostData,
   GenericAttributes,
   GenericEntity,
   GenericRelationships,
@@ -14,20 +16,46 @@ import {
   Symbol,
 } from "./types/response";
 
+/**
+ * Extract connection parameters from the application-wide configuration.
+ */
+export function extractConnectionParams(
+  config: nconf.Provider
+): ConnectionParams {
+  return config.get("database");
+}
+
+interface ConnectionParams {
+  host: string;
+  port: number;
+  database: string;
+  user: string;
+  password: string;
+  schema?: string;
+}
+
+/**
+ * Create a Knex query builder that can be used to submit queries to the database.
+ */
+export function createQueryBuilder(params: ConnectionParams) {
+  const { host, port, database, user, password } = params;
+  const config: Knex.Config = {
+    client: "pg",
+    connection: { host, port, database, user, password },
+    pool: { min: 0, max: 10, idleTimeoutMillis: 500 },
+  };
+  if (params.schema) {
+    config.searchPath = [params.schema];
+  }
+  return Knex(config);
+}
+
+/**
+ * An interface to the database. Performs queries and returns santized, typed objects.
+ */
 export class Connection {
-  constructor(config: nconf.Provider) {
-    this._knex = Knex({
-      client: "pg",
-      connection: {
-        host: config.get("database:host"),
-        port: config.get("database:port"),
-        user: config.get("database:user"),
-        password: config.get("database:password"),
-        database: config.get("database:database"),
-        ssl: true,
-      },
-      searchPath: [config.get("database:schema")],
-    });
+  constructor(params: ConnectionParams) {
+    this._knex = createQueryBuilder(params);
   }
 
   async getAllPapers() {
@@ -56,7 +84,16 @@ export class Connection {
       }));
   }
 
-  async getLatestPaperDataVersion(paperSelector: PaperSelector) {}
+  async getLatestPaperDataVersion(paperSelector: PaperSelector) {
+    const rows = await this._knex("version")
+      .select(this._knex.max("index"))
+      .join("paper", { "paper.s2_id": "version.paper_id" })
+      .where(paperSelector);
+    if (rows.length > 0 && rows[0] !== undefined) {
+      return Number(rows[0]);
+    }
+    return undefined;
+  }
 
   createBoundingBoxes(boundingBoxRows: BoundingBoxRow[]): BoundingBox[] {
     return boundingBoxRows.map((bbr) => ({
@@ -260,14 +297,8 @@ export class Connection {
 
   async getEntitiesForPaper(paperSelector: PaperSelector, version?: number) {
     if (version === undefined) {
-      const version = await this._knex("version")
-        .select(this._knex.max("index"))
-        .join("paper", { "paper.s2_id": "version.paper_id" })
-        .where(paperSelector);
+      version = await this.getLatestPaperDataVersion(paperSelector);
       if (version === undefined) {
-        /**
-         * TODO(andrewhead): figure out a way to flag errors.
-         */
         return [];
       }
     }
@@ -456,7 +487,7 @@ export class Connection {
     return rows;
   }
 
-  async postEntity(paperSelector: PaperSelector, data: Omit<Entity, "id">) {
+  async postEntity(paperSelector: PaperSelector, data: EntityPostData) {
     /**
      * Fetch the ID for the specified paper.
      */
@@ -464,6 +495,20 @@ export class Connection {
       .select("s2_id AS id")
       .where(paperSelector);
     const paperId = paperRows[0].id;
+
+    /**
+     * Create entity with the most recent data version for this paper if the data version was
+     * not specified by the client.
+     */
+    let version;
+    if (typeof data.attributes.version === "number") {
+      version = data.attributes.version;
+    } else {
+      version = this.getLatestPaperDataVersion(paperSelector);
+      if (version === undefined) {
+        return null;
+      }
+    }
 
     /**
      * Create new entity.
@@ -506,7 +551,10 @@ export class Connection {
     return cleanedEntity;
   }
 
-  async patchAnnotation(data: Pick<Entity, "type" | "id"> & Partial<Entity>) {
+  /**
+   * TODO: return an updated Entity from this method.
+   */
+  async patchAnnotation(data: EntityPatchData) {
     /**
      * Update entity data.
      */

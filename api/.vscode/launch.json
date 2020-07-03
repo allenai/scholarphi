@@ -20,6 +20,16 @@
       "cwd": "${workspaceRoot}",
       "sourceMaps": true,
       "outFiles": ["${workspaceFolder}/**/*.ts"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run tests",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": ["--runInBand"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "openOnFirstSessionStart",
+      "disableOptimisticBPs": true
     }
   ]
 }
