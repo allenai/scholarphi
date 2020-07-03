@@ -76,6 +76,21 @@ export interface GenericEntity extends BaseEntity {
 }
 
 /**
+ * When posting an entity, an 'id' need not be included, nor a version tag.
+ */
+export interface EntityPostData {
+  type: string;
+  attributes: Omit<BaseEntityAttributes, "version"> & GenericAttributes;
+  relationships: GenericRelationships;
+}
+
+/**
+ * When patching an entity, the 'type' and 'id'. The rest of the properties of
+ * the entity are optional.
+ */
+export type EntityPatchData = Pick<Entity, "type" | "id"> & Partial<Entity>;
+
+/**
  * In general, attributes can have values of type 'string | number | string[] | null | undefined'. Because
  * we're doing a type intersection with BaseEntityAttributes above to define the attributes for
  * a BasicEntity (where some properties are of other types like BoundingBox[]), 'any' is used as

@@ -4,11 +4,14 @@
  */
 
 interface EntityRow {
+  paper_id: string;
   id: string;
   version: number;
   type: string;
   source: string;
 }
+
+type EntityRowUpdates = Omit<EntityRow, "id" | "type" | "paper_id">;
 
 interface BoundingBoxRow {
   entity_id: string;
@@ -23,9 +26,9 @@ interface BoundingBoxRow {
 interface EntityDataRow {
   entity_id: string;
   source: string;
-  type: "scalar" | "reference" | "scalar-list" | "reference-list";
+  type: EntityDataRowType;
   key: string;
-  value: string;
+  value: string | null;
 }
 
 type EntityDataRowType =
