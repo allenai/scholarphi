@@ -86,13 +86,11 @@ export class Connection {
 
   async getLatestPaperDataVersion(paperSelector: PaperSelector) {
     const rows = await this._knex("version")
-      .select(this._knex.max("index"))
+      .max("index")
       .join("paper", { "paper.s2_id": "version.paper_id" })
       .where(paperSelector);
-    if (rows.length > 0 && rows[0] !== undefined) {
-      return Number(rows[0]);
-    }
-    return undefined;
+    const version = Number(rows[0].max);
+    return isNaN(version) ? null : version;
   }
 
   createBoundingBoxes(boundingBoxRows: BoundingBoxRow[]): BoundingBox[] {
@@ -266,7 +264,7 @@ export class Connection {
      */
     let entity: Entity | null = null;
     const genericEntity: GenericEntity = {
-      id: entityRow.id,
+      id: String(entityRow.id),
       type: entityRow.type,
       attributes: {
         version: entityRow.version,
@@ -297,9 +295,14 @@ export class Connection {
 
   async getEntitiesForPaper(paperSelector: PaperSelector, version?: number) {
     if (version === undefined) {
-      version = await this.getLatestPaperDataVersion(paperSelector);
-      if (version === undefined) {
-        return [];
+      try {
+        let latestVersion = await this.getLatestPaperDataVersion(paperSelector);
+        if (latestVersion === null) {
+          return [];
+        }
+        version = latestVersion;
+      } catch (e) {
+        console.log("Issues getting version number");
       }
     }
 
@@ -347,7 +350,7 @@ export class Connection {
         "key",
         "value"
       )
-      .join("entity", { "boundingbox.entity_id": "entity.id" })
+      .join("entity", { "entitydata.entity_id": "entity.id" })
       .join("paper", { "paper.s2_id": "entity.paper_id" })
       .where({ ...paperSelector, version });
 
@@ -544,7 +547,7 @@ export class Connection {
      * Create a sanitized version of the entity to return to the client.
      */
     const cleanedEntity = this.createEntity(
-      { ...entityRow, id: String(id) },
+      { ...entityRow, id },
       boundingBoxRows,
       entityDataRows
     );
