@@ -1,7 +1,7 @@
 import * as Joi from "@hapi/joi";
 
 export const s2Id = Joi.object({
-  s2Id: Joi.string().pattern(/[a-f0-9]{40}/)
+  s2Id: Joi.string().pattern(/[a-f0-9]{40}/),
 });
 
 /**
@@ -24,22 +24,24 @@ export const arxivId = Joi.object({
     Joi.string().pattern(
       /[a-zA-Z0-9-]+\.[A-Z]{2}\/[0-9]{2}[0-9]{2}[0-9]+(v[0-9]+)/
     )
-  )
+  ),
 });
 
 /**
  * Validation for 'Annotation' type.
  */
 export const annotation = Joi.object({
-  type: Joi.string()
-    .allow("citation", "symbol")
-    .required(),
-  page: Joi.number()
-    .integer()
-    .min(0)
-    .required(),
+  type: Joi.string().allow("citation", "symbol").required(),
+  page: Joi.number().integer().min(0).required(),
   left: Joi.number().required(),
   top: Joi.number().required(),
   width: Joi.number().required(),
-  height: Joi.number().required()
+  height: Joi.number().required(),
+  data: Joi.object({
+    arg: Joi.string().valid("definition"),
+    /*
+     * TODO(andrewhead): place an upper bound on the length of string accepted.
+     */
+    value: Joi.string(),
+  }).optional(),
 });

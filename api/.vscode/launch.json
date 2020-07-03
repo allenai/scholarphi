@@ -13,9 +13,9 @@
         "${workspaceFolder}/src/index.ts",
         /*
          * Uncomment the following argument to set the API to use an experimental database
-         * schema, instead of the default 'public' database schema.
+         * schema, instead of the default 'public' database schema, for instance 'dev'.
          */
-        "--database:schema=schema_20200303_310216"
+        "--database:schema=dev"
       ],
       "cwd": "${workspaceRoot}",
       "sourceMaps": true,
