@@ -32,8 +32,3 @@ export const start = async (server: Server) => {
     }
   });
 };
-
-process.on("unhandledRejection", (err) => {
-  console.log(err);
-  process.exit(1);
-});

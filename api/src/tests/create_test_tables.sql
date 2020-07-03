@@ -82,7 +82,7 @@ CREATE TABLE dev.entity (
     paper_id character varying(255) NOT NULL,
     version integer NOT NULL,
     type text NOT NULL,
-    within_paper_id text NOT NULL,
+    within_paper_id text,
     source text NOT NULL
 );
 
@@ -198,7 +198,7 @@ CREATE TABLE dev.version (
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     paper_id character varying(255) NOT NULL,
     index integer NOT NULL,
-    session_id text NOT NULL
+    session_id text
 );
 
 
