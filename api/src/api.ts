@@ -1,7 +1,7 @@
 import * as Hapi from "@hapi/hapi";
 import * as Joi from "@hapi/joi";
 import * as nconf from "nconf";
-import { AnnotationData, Connection } from "./queries";
+import { AnnotationProperties, Connection } from "./queries";
 import * as s2Api from "./s2-api";
 import * as validation from "./validation";
 
@@ -12,83 +12,83 @@ interface ApiOptions {
 export const plugin = {
   name: "API",
   version: "0.0.1",
-  register: async function(server: Hapi.Server, options: ApiOptions) {
+  register: async function (server: Hapi.Server, options: ApiOptions) {
     const dbConnection = new Connection(options.config);
 
     server.route({
       method: "GET",
       path: "papers/{s2Id}/citations",
-      handler: request => {
+      handler: (request) => {
         const s2Id = request.params.s2Id;
         return dbConnection.getCitationsForS2Id(s2Id);
       },
       options: {
         validate: {
-          params: validation.s2Id
-        }
-      }
+          params: validation.s2Id,
+        },
+      },
     });
 
     server.route({
       method: "GET",
       path: "papers/arxiv:{arxivId}/citations",
-      handler: request => {
+      handler: (request) => {
         const arxivId = request.params.arxivId;
         return dbConnection.getCitationsForArxivId(arxivId);
       },
       options: {
         validate: {
-          params: validation.arxivId
-        }
-      }
+          params: validation.arxivId,
+        },
+      },
     });
 
     server.route({
       method: "GET",
       path: "papers/arxiv:{arxivId}/symbols",
-      handler: request => {
+      handler: (request) => {
         const arxivId = request.params.arxivId;
         return dbConnection.getSymbolsForArxivId(arxivId);
       },
       options: {
         validate: {
-          params: validation.arxivId
-        }
-      }
+          params: validation.arxivId,
+        },
+      },
     });
 
     server.route({
       method: "GET",
       path: "papers/arxiv:{arxivId}/mathml",
-      handler: request => {
+      handler: (request) => {
         const arxivId = request.params.arxivId;
         return dbConnection.getMathMlForArxivId(arxivId);
       },
       options: {
         validate: {
-          params: validation.arxivId
-        }
-      }
+          params: validation.arxivId,
+        },
+      },
     });
 
     server.route({
       method: "GET",
       path: "papers/arxiv:{arxivId}/sentences",
-      handler: request => {
+      handler: (request) => {
         const arxivId = request.params.arxivId;
         return dbConnection.getSentencesForArxivId(arxivId);
       },
       options: {
         validate: {
-          params: validation.arxivId
-        }
-      }
+          params: validation.arxivId,
+        },
+      },
     });
 
     server.route({
       method: "GET",
       path: "papers",
-      handler: request => {
+      handler: (request) => {
         let idString;
         if (typeof request.query.id === "string") {
           idString = request.query.id;
@@ -110,24 +110,24 @@ export const plugin = {
              */
             id: Joi.string()
               .pattern(/^$|[a-f0-9]{40}(,[a-f0-9]{40}){0,199}/)
-              .required()
-          })
-        }
-      }
+              .required(),
+          }),
+        },
+      },
     });
 
     server.route({
       method: "GET",
       path: "papers/arxiv:{arxivId}/annotations",
-      handler: request => {
+      handler: (request) => {
         const arxivId = request.params.arxivId;
         return dbConnection.getAnnotationsForArxivId(arxivId);
       },
       options: {
         validate: {
-          params: validation.arxivId
-        }
-      }
+          params: validation.arxivId,
+        },
+      },
     });
 
     /**
@@ -151,16 +151,16 @@ export const plugin = {
         const arxivId = request.params.arxivId;
         const id = await dbConnection.postAnnotationForArxivId(
           arxivId,
-          request.payload as AnnotationData
+          request.payload as AnnotationProperties
         );
         return h.response(id).code(201);
       },
       options: {
         validate: {
           params: validation.arxivId,
-          payload: validation.annotation
-        }
-      }
+          payload: validation.annotation,
+        },
+      },
     });
 
     /**
@@ -185,18 +185,18 @@ export const plugin = {
         const annotation = await dbConnection.putAnnotation(
           arxivId,
           id,
-          request.payload as AnnotationData
+          request.payload as AnnotationProperties
         );
         return h.response(annotation).code(200);
       },
       options: {
         validate: {
           params: validation.arxivId.append({
-            id: Joi.string().required()
+            id: Joi.string().required(),
           }),
-          payload: validation.annotation
-        }
-      }
+          payload: validation.annotation,
+        },
+      },
     });
 
     /**
@@ -216,10 +216,10 @@ export const plugin = {
       options: {
         validate: {
           params: validation.arxivId.append({
-            id: Joi.string().required()
-          })
-        }
-      }
+            id: Joi.string().required(),
+          }),
+        },
+      },
     });
 
     server.route({
@@ -228,7 +228,7 @@ export const plugin = {
       handler: async () => {
         const papers = await dbConnection.getAllPapers();
         return papers;
-      }
+      },
     });
-  }
+  },
 };
