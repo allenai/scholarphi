@@ -12,6 +12,10 @@
  * into other projects, all of the types are available to the client code.
  */
 
+export interface DataResponse {
+  data?: Entity[];
+}
+
 /**
  * Use type guards (e.g., 'isSymbol') to distinguish between types of entities.
  */

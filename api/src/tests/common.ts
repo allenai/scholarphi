@@ -44,6 +44,7 @@ export async function setupTestDatabase() {
 
   console.log("Initializing database schema for tests...");
   try {
+    await knex.raw("DROP SCHEMA IF EXISTS test CASCADE");
     await knex.raw(createTestTablesSql);
     console.log("Initialization of database schema for tests was successful.");
   } catch (err) {

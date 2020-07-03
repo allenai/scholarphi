@@ -34,9 +34,15 @@ export const plugin = {
     server.route({
       method: "GET",
       path: "papers/arxiv:{arxivId}/entities",
-      handler: (request) => {
+      handler: async (request) => {
         const arxivId = request.params.arxivId;
-        return dbConnection.getEntitiesForPaper({ arxiv_id: arxivId });
+        let res;
+        try {
+          res = await dbConnection.getEntitiesForPaper({ arxiv_id: arxivId });
+        } catch (e) {
+          console.log(e);
+        }
+        return { data: res };
       },
       options: {
         validate: {

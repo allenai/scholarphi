@@ -3,9 +3,20 @@
  * in the database. Correspond to schemas in 'data-processing/common/models.py'
  */
 
+interface PaperRow {
+  s2_id: string;
+  arxiv_id: string;
+}
+
+interface VersionRow {
+  id: number;
+  paper_id: string;
+  index: number;
+}
+
 interface EntityRow {
   paper_id: string;
-  id: string;
+  id: number;
   version: number;
   type: string;
   source: string;

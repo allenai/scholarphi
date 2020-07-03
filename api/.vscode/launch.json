@@ -26,10 +26,25 @@
       "request": "launch",
       "name": "Run tests",
       "program": "${workspaceFolder}/node_modules/.bin/jest",
-      "args": ["--runInBand"],
+      "args": [
+        "--runInBand",
+        /*
+         * Test timeout can be set to a very large value to prevent the test runner from
+         * terminating one of our tests when we are stepping through the code. This is particularly
+         * important when inspecting database queries, as a quick timeout might result in the
+         * test runner destroying the test database while it's being inspected.
+         */
+        "--testTimeout",
+        "3600000"
+      ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "openOnFirstSessionStart",
-      "disableOptimisticBPs": true
+      "disableOptimisticBPs": true,
+      /*
+       * Uncomment the following to show debugging information from 'knex'. This command is
+       * particularly handy for debugging the SQL queries submitted to the database.
+       */
+      "env": { "DEBUG": "knex:*" }
     }
   ]
 }
