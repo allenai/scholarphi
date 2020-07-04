@@ -2,13 +2,15 @@ import { Server, ServerInjectOptions } from "@hapi/hapi";
 import * as nconf from "nconf";
 import * as api from "./api";
 import { Connection, extractConnectionParams } from "./db-connection";
+import { debugFailAction } from "./validation";
 
 /**
  * Wrapper around hapi server that takes care of stateful server start and stop operations.
  */
 class ApiServer {
-  constructor(config: nconf.Provider) {
+  constructor(config: nconf.Provider, debug?: boolean) {
     this._config = config;
+    this._debug = debug || false;
   }
 
   async init() {
@@ -17,6 +19,11 @@ class ApiServer {
       host: "0.0.0.0",
       debug: {
         request: ["error"],
+      },
+      routes: {
+        validate: {
+          failAction: this._debug ? debugFailAction : undefined,
+        },
       },
     });
 
@@ -33,7 +40,7 @@ class ApiServer {
      */
     await this._server.register({
       plugin: api.plugin,
-      options: { connection: this._dbConnection },
+      options: { connection: this._dbConnection, debug: this._debug },
       routes: {
         prefix: "/api/v0/",
       },
@@ -93,6 +100,7 @@ class ApiServer {
     return this._server.inject(options);
   }
 
+  private _debug: boolean;
   private _config: nconf.Provider;
   private _server: Server | null = null;
   private _dbConnection: Connection | null = null;

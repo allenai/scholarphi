@@ -14,7 +14,7 @@ import {
   Relationship,
   Sentence,
   Symbol,
-} from "./types/response";
+} from "./types/api";
 
 /**
  * Extract connection parameters from the application-wide configuration.
@@ -528,9 +528,9 @@ export class Connection {
       version: data.attributes.version,
       source: data.attributes.source,
     };
-    const id = (await this._knex("entity")
-      .insert(entityRow)
-      .returning("id")) as number;
+    const id = Number(
+      (await this._knex("entity").insert(entityRow).returning("id"))[0]
+    );
 
     /**
      * Insert bounding boxes and data for entity. Must occur after the entity is inserted in

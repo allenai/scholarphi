@@ -33,6 +33,7 @@ export const arxivId = Joi.object({
 const boundingBoxes = Joi.array().items(
   Joi.object({
     page: Joi.number().integer().min(0).required(),
+    source: Joi.string().required(),
     left: Joi.number().required(),
     top: Joi.number().required(),
     width: Joi.number().required(),
@@ -53,42 +54,56 @@ const relationships = Joi.object({
 /**
  * Validation for entity POST request.
  */
-export const entityPostData = Joi.object({
-  type: Joi.string().required(),
-  attributes: Joi.object({
-    version: Joi.number().optional(),
-    source: Joi.string().required(),
-    bounding_boxes: boundingBoxes.required(),
-    /**
-     * 'arg' and 'value' check arbitrary other attribute keys.
-     */
-    arg: Joi.string(),
-    value: Joi.alternatives(
-      Joi.string(),
-      Joi.number(),
-      Joi.array().items(Joi.string())
-    ).allow(null),
+export const entityPostPayload = Joi.object({
+  data: Joi.object({
+    type: Joi.string().required(),
+    attributes: Joi.object({
+      version: Joi.number().optional(),
+      source: Joi.string().required(),
+      bounding_boxes: boundingBoxes.required(),
+      /**
+       * 'arg' and 'value' check arbitrary other attribute keys.
+       */
+      arg: Joi.string(),
+      value: Joi.alternatives(
+        Joi.string(),
+        Joi.number(),
+        Joi.array().items(Joi.string())
+      ).allow(null),
+    }).required(),
+    relationships: relationships.required(),
   }).required(),
-  relationships: relationships.required(),
 });
 
 /**
  * Validation for entity PATCH request. This is the same as 'entityPostData' with the exception that
  * 'id' is required, and all other properties are optional.
  */
-export const entityPatchData = Joi.object({
-  id: Joi.string().required(),
-  type: Joi.string().required(),
-  attributes: Joi.object({
-    version: Joi.number().optional(),
-    source: Joi.string().optional(),
-    bounding_boxes: boundingBoxes.optional(),
-    arg: Joi.string(),
-    value: Joi.alternatives(
-      Joi.string(),
-      Joi.number(),
-      Joi.array().items(Joi.string())
-    ).allow(null),
-  }).optional(),
-  relationships: relationships.optional(),
+export const entityPatchPayload = Joi.object({
+  data: Joi.object({
+    id: Joi.string().required(),
+    type: Joi.string().required(),
+    attributes: Joi.object({
+      version: Joi.number().optional(),
+      source: Joi.string().optional(),
+      bounding_boxes: boundingBoxes.optional(),
+      arg: Joi.string(),
+      value: Joi.alternatives(
+        Joi.string(),
+        Joi.number(),
+        Joi.array().items(Joi.string())
+      ).allow(null),
+    }).optional(),
+    relationships: relationships.optional(),
+  }).required(),
 });
+
+/**
+ * Validation 'failAction' that reports the cause of error. Ideally, this should only be used in
+ * development as it will leak details about the implementation of validation.
+ * Adapted from https://github.com/hapijs/hapi/issues/3706#issuecomment-349765943
+ */
+export async function debugFailAction(_: any, __: any, err: any) {
+  console.error(err);
+  throw err;
+}
