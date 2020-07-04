@@ -1,75 +1,55 @@
 import * as Knex from "knex";
 import ApiServer from "../server";
-import { DataResponse, Entity } from "../types/response";
+import { DataResponse, Entity, EntityPostPayload } from "../types/api";
 import {
   createDefaultQueryBuilder,
   initServer,
   setupTestDatabase,
   teardownTestDatabase,
-} from "./common";
-
-beforeAll(async () => {
-  await setupTestDatabase();
-});
-
-afterAll(async () => {
-  await teardownTestDatabase();
-});
+  truncateTables,
+} from "./setup";
 
 describe("API", () => {
   let server: ApiServer;
   let knex: Knex;
 
   beforeAll(async () => {
+    await setupTestDatabase();
     knex = createDefaultQueryBuilder();
   });
 
   afterAll(async () => {
     await knex.destroy();
+    await teardownTestDatabase();
   });
 
   beforeEach(async () => {
     server = await initServer();
-    /**
-     * Reset the database between tests. Tables are listed in the order they should be
-     * truncated to make sure that foreign key references are deleted before the data that
-     * they refer to.
-     */
-    for (const table of [
-      "paper",
-      "version",
-      "entity",
-      "boundingbox",
-      "entitydata",
-    ]) {
-      await knex.raw(`TRUNCATE TABLE ${table} CASCADE`);
-    }
   });
 
+  /*
+   * Because the tables are cleared between after each test, each 'test' function must
+   * initialize its own data.
+   */
   afterEach(async () => {
+    truncateTables(knex);
     await server.stop();
     /*
-     * Destory server to ensure that the database connections created by the server have been
-     * cleaned up, to avoid those pesky "tests did not exit" warnings.
+     * Server should be destroyed to clean up the database connection created with each initServer()
      */
     await server.destroy();
   });
 
-  describe("GET /health", () => {
-    it("returns a 200", async () => {
-      const res = await server.inject({
-        method: "get",
-        url: "/health",
-      });
-      expect(res.statusCode).toEqual(200);
+  test("GET /health", async () => {
+    const response = await server.inject({
+      method: "get",
+      url: "/health",
     });
+    expect(response.statusCode).toEqual(200);
   });
 
   describe("GET /api/v0/papers/arxiv:{arxivId}/entities", () => {
-    it("returns a 200", async () => {
-      /*
-       * Insert single entity for single paper into the table with one bounding box.
-       */
+    test("generic entity", async () => {
       await knex("paper").insert({
         s2_id: "s2id",
         arxiv_id: "1111.1111",
@@ -97,12 +77,13 @@ describe("API", () => {
         height: 0.05,
       } as BoundingBoxRow);
 
-      const res = await server.inject({
+      const response = await server.inject({
         method: "get",
         url: "/api/v0/papers/arxiv:1111.1111/entities",
       });
-      expect(res.statusCode).toEqual(200);
-      expect(res.result).toEqual({
+
+      expect(response.statusCode).toEqual(200);
+      expect(response.result).toEqual({
         data: [
           {
             id: "1",
@@ -127,7 +108,7 @@ describe("API", () => {
       } as DataResponse);
     });
 
-    it("fills out attributes and relationships for symbols, citations, and sentences", async () => {
+    test("citation", async () => {
       await knex("paper").insert({
         s2_id: "s2id",
         arxiv_id: "1111.1111",
@@ -145,24 +126,7 @@ describe("API", () => {
           type: "citation",
           source: "test",
         },
-        {
-          id: 2,
-          paper_id: "s2id",
-          version: 0,
-          type: "symbol",
-          source: "test",
-        },
-        {
-          id: 3,
-          paper_id: "s2id",
-          version: 0,
-          type: "sentence",
-          source: "test",
-        },
-      ] as EntityRow[]);
-      /*
-       * These properties should be extracted and loaded into known fields of each type of entity.
-       */
+      ]);
       await knex.batchInsert("entitydata", [
         {
           id: 1,
@@ -172,6 +136,47 @@ describe("API", () => {
           key: "paper_id",
           value: "citation_paper_id",
         },
+      ] as EntityDataRow[]);
+
+      const response = await server.inject({
+        method: "get",
+        url: "/api/v0/papers/arxiv:1111.1111/entities",
+      });
+      expect(response.statusCode).toEqual(200);
+      const data = (response.result as any).data;
+      expect(data).toContainEqual({
+        id: "1",
+        type: "citation",
+        attributes: {
+          source: "test",
+          version: 0,
+          bounding_boxes: [],
+          paper_id: "citation_paper_id",
+        },
+        relationships: {},
+      } as Entity);
+    });
+
+    test("symbol", async () => {
+      await knex("paper").insert({
+        s2_id: "s2id",
+        arxiv_id: "1111.1111",
+      } as PaperRow);
+      await knex("version").insert({
+        id: 1,
+        paper_id: "s2id",
+        index: 0,
+      } as VersionRow);
+      await knex.batchInsert("entity", [
+        {
+          id: 2,
+          paper_id: "s2id",
+          version: 0,
+          type: "symbol",
+          source: "test",
+        },
+      ] as EntityRow[]);
+      await knex.batchInsert("entitydata", [
         {
           id: 2,
           entity_id: 2,
@@ -220,38 +225,6 @@ describe("API", () => {
           key: "children",
           value: "5",
         },
-        {
-          id: 8,
-          entity_id: 3,
-          source: "test",
-          type: "scalar",
-          key: "text",
-          value: "Sentence.",
-        },
-        {
-          id: 9,
-          entity_id: 3,
-          source: "test",
-          type: "scalar",
-          key: "text",
-          value: "Sentence.",
-        },
-        {
-          id: 10,
-          entity_id: 3,
-          source: "test",
-          type: "scalar",
-          key: "tex_start",
-          value: "0",
-        },
-        {
-          id: 11,
-          entity_id: 3,
-          source: "test",
-          type: "scalar",
-          key: "tex_end",
-          value: "10",
-        },
         /*
          * Here are a few data fields that should *not* show up on the returned object, as they
          * are not known data fields for the entity.
@@ -290,25 +263,12 @@ describe("API", () => {
         },
       ] as EntityDataRow[]);
 
-      const res = await server.inject({
+      const response = await server.inject({
         method: "get",
         url: "/api/v0/papers/arxiv:1111.1111/entities",
       });
-      expect(res.statusCode).toEqual(200);
-      const result = res.result as any;
-      expect(result.data.length).toBe(3);
-      expect(result.data).toContainEqual({
-        id: "1",
-        type: "citation",
-        attributes: {
-          source: "test",
-          version: 0,
-          bounding_boxes: [],
-          paper_id: "citation_paper_id",
-        },
-        relationships: {},
-      } as Entity);
-      expect(result.data).toContainEqual({
+      expect(response.statusCode).toEqual(200);
+      expect((response.result as any).data).toContainEqual({
         id: "2",
         type: "symbol",
         attributes: {
@@ -329,7 +289,66 @@ describe("API", () => {
           ],
         },
       } as Entity);
-      expect(result.data).toContainEqual({
+    });
+
+    test("sentence", async () => {
+      await knex("paper").insert({
+        s2_id: "s2id",
+        arxiv_id: "1111.1111",
+      } as PaperRow);
+      await knex("version").insert({
+        id: 1,
+        paper_id: "s2id",
+        index: 0,
+      } as VersionRow);
+      await knex.batchInsert("entity", [
+        {
+          id: 3,
+          paper_id: "s2id",
+          version: 0,
+          type: "sentence",
+          source: "test",
+        },
+      ] as EntityRow[]);
+      await knex.batchInsert("entitydata", [
+        {
+          id: 8,
+          entity_id: 3,
+          source: "test",
+          type: "scalar",
+          key: "text",
+          value: "Sentence.",
+        },
+        {
+          id: 9,
+          entity_id: 3,
+          source: "test",
+          type: "scalar",
+          key: "text",
+          value: "Sentence.",
+        },
+        {
+          id: 10,
+          entity_id: 3,
+          source: "test",
+          type: "scalar",
+          key: "tex_start",
+          value: "0",
+        },
+        {
+          id: 11,
+          entity_id: 3,
+          source: "test",
+          type: "scalar",
+          key: "tex_end",
+          value: "10",
+        },
+      ] as EntityDataRow[]);
+      const response = await server.inject({
+        method: "get",
+        url: "/api/v0/papers/arxiv:1111.1111/entities",
+      });
+      expect((response.result as any).data).toContainEqual({
         id: "3",
         type: "sentence",
         attributes: {
@@ -342,6 +361,52 @@ describe("API", () => {
         },
         relationships: {},
       } as Entity);
+    });
+  });
+
+  describe("POST /api/v0/papers/arxiv:{arxivId}/entities", () => {
+    test("generic entity", async () => {
+      await knex("paper").insert({
+        s2_id: "s2id",
+        arxiv_id: "1111.1111",
+      } as PaperRow);
+      await knex("version").insert({
+        id: 1,
+        paper_id: "s2id",
+        index: 0,
+      } as VersionRow);
+
+      let payload: EntityPostPayload = {
+        data: {
+          type: "unknown",
+          attributes: {
+            source: "test",
+            version: 0,
+            bounding_boxes: [
+              {
+                source: "test",
+                page: 0,
+                top: 0,
+                left: 0,
+                width: 0.1,
+                height: 0.05,
+              },
+            ],
+          },
+          relationships: {},
+        },
+      };
+
+      const response = await server.inject({
+        method: "post",
+        url: "/api/v0/papers/arxiv:1111.1111/entities",
+        payload,
+      });
+
+      expect(response.statusCode).toEqual(201);
+      const data = (response.result as any).data;
+      expect(data).toMatchObject(payload.data);
+      expect(data.id).not.toBeUndefined();
     });
   });
 });
