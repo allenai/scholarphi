@@ -1,9 +1,9 @@
-import { Server } from "@hapi/hapi";
 import * as Knex from "knex";
+import ApiServer from "../server";
 import { DataResponse, Entity } from "../types/response";
 import {
   createDefaultQueryBuilder,
-  initServerWithTestDatabase,
+  initServer,
   setupTestDatabase,
   teardownTestDatabase,
 } from "./common";
@@ -17,7 +17,7 @@ afterAll(async () => {
 });
 
 describe("API", () => {
-  let server: Server;
+  let server: ApiServer;
   let knex: Knex;
 
   beforeAll(async () => {
@@ -29,7 +29,7 @@ describe("API", () => {
   });
 
   beforeEach(async () => {
-    server = await initServerWithTestDatabase();
+    server = await initServer();
     /**
      * Reset the database between tests. Tables are listed in the order they should be
      * truncated to make sure that foreign key references are deleted before the data that
@@ -48,6 +48,11 @@ describe("API", () => {
 
   afterEach(async () => {
     await server.stop();
+    /*
+     * Destory server to ensure that the database connections created by the server have been
+     * cleaned up, to avoid those pesky "tests did not exit" warnings.
+     */
+    await server.destroy();
   });
 
   describe("GET /health", () => {

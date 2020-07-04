@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as nconf from "nconf";
 import { createQueryBuilder, extractConnectionParams } from "../db-connection";
-import { init } from "../server";
+import { default as APIServer } from "../server";
 
 /**
  * Configure the tests to connect to a test database instead of the production database.
@@ -66,11 +66,8 @@ export async function teardownTestDatabase() {
   knex.destroy();
 }
 
-/**
- * It is expected that a 'test' Postgres database has already been created. The location of
- * the 'test' database can be set using command line arguments or environment variables. See
- * the 'nconf' configuration in this file for defaults and what keys to set.
- */
-export async function initServerWithTestDatabase() {
-  return await init(nconf);
+export async function initServer() {
+  const server = new APIServer(nconf);
+  await server.init();
+  return server;
 }
