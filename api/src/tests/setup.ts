@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import * as Knex from "knex";
 import * as nconf from "nconf";
 import { createQueryBuilder, extractConnectionParams } from "../db-connection";
 import { default as APIServer } from "../server";
@@ -54,10 +55,19 @@ export async function setupTestDatabase() {
 }
 
 /**
- * Get a query builder that can be used to insert or inspect test data.
+ * Use this to reset the data in the database between tests.
  */
-export function createDefaultQueryBuilder() {
-  return createQueryBuilder(connectionParams);
+export async function truncateTables(knex: Knex, tables?: string[]) {
+  tables = tables || [
+    "paper",
+    "version",
+    "entity",
+    "boundingbox",
+    "entitydata",
+  ];
+  for (const table of tables) {
+    await knex.raw(`TRUNCATE TABLE ${table} CASCADE`);
+  }
 }
 
 export async function teardownTestDatabase() {
@@ -66,8 +76,15 @@ export async function teardownTestDatabase() {
   knex.destroy();
 }
 
+/**
+ * Get a query builder that can be used to insert or inspect test data.
+ */
+export function createDefaultQueryBuilder() {
+  return createQueryBuilder(connectionParams);
+}
+
 export async function initServer() {
-  const server = new APIServer(nconf);
+  const server = new APIServer(nconf, true);
   await server.init();
   return server;
 }

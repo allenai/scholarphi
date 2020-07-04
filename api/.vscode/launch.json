@@ -38,9 +38,9 @@
         "3600000"
         /*
          * If jest reports test failures that look like the result of stale code,
-         * enable this option to clear the errors.
+         * enable this option for a single run of this launch config to clear the cache.
          */
-        // "--no-cache"
+        // "--clearCache"
       ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "openOnFirstSessionStart",

@@ -2,7 +2,7 @@ import * as Hapi from "@hapi/hapi";
 import * as Joi from "@hapi/joi";
 import { Connection } from "./db-connection";
 import * as s2Api from "./s2-api";
-import { EntityPatchData, EntityPostData } from "./types/response";
+import { EntityPatchPayload, EntityPostPayload } from "./types/api";
 import * as validation from "./validation";
 
 interface ApiOptions {
@@ -16,7 +16,7 @@ export const plugin = {
   name: "API",
   version: "0.0.2",
   register: async function (server: Hapi.Server, options: ApiOptions) {
-    const dbConnection = options.connection;
+    const { connection: dbConnection } = options;
 
     server.route({
       method: "GET",
@@ -90,17 +90,17 @@ export const plugin = {
         const arxivId = request.params.arxivId;
         const entity = await dbConnection.postEntity(
           { arxiv_id: arxivId },
-          request.payload as EntityPostData
+          (request.payload as EntityPostPayload).data
         );
         if (entity === null) {
           return h.response().code(500);
         }
-        return h.response(entity).code(201);
+        return h.response({ data: entity }).code(201);
       },
       options: {
         validate: {
           params: validation.arxivId,
-          payload: validation.entityPostData,
+          payload: validation.entityPostPayload,
         },
       },
     });
@@ -110,7 +110,7 @@ export const plugin = {
       path: "papers/arxiv:{arxivId}/annotation/{id}",
       handler: async (request, h) => {
         const entity = await dbConnection.patchAnnotation(
-          request.payload as EntityPatchData
+          (request.payload as EntityPatchPayload).data
         );
         return h.response({}).code(200);
       },
@@ -119,7 +119,7 @@ export const plugin = {
           params: validation.arxivId.append({
             id: Joi.string().required(),
           }),
-          payload: validation.entityPatchData,
+          payload: validation.entityPatchPayload,
         },
       },
     });
