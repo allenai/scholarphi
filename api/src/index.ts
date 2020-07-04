@@ -1,5 +1,5 @@
 import * as nconf from "nconf";
-import { init, start } from "./server";
+import ApiServer from "./server";
 
 nconf
   .argv()
@@ -20,4 +20,5 @@ process.on("unhandledRejection", (err) => {
   process.exit(1);
 });
 
-init(nconf).then((server) => start(server));
+const server = new ApiServer(nconf);
+server.init().then(() => server.start());

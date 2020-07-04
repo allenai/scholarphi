@@ -58,6 +58,10 @@ export class Connection {
     this._knex = createQueryBuilder(params);
   }
 
+  async close() {
+    await this._knex.destroy();
+  }
+
   async getAllPapers() {
     const response = await this._knex.raw<{ rows: PaperWithEntityCounts[] }>(`
       SELECT paper.*,

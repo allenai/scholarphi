@@ -1,21 +1,22 @@
 import * as Hapi from "@hapi/hapi";
 import * as Joi from "@hapi/joi";
-import * as nconf from "nconf";
-import { Connection, extractConnectionParams } from "./db-connection";
+import { Connection } from "./db-connection";
 import * as s2Api from "./s2-api";
 import { EntityPatchData, EntityPostData } from "./types/response";
 import * as validation from "./validation";
 
 interface ApiOptions {
-  config: nconf.Provider;
+  connection: Connection;
 }
 
+/**
+ * For example usages of each route, see the unit tests.
+ */
 export const plugin = {
   name: "API",
   version: "0.0.2",
   register: async function (server: Hapi.Server, options: ApiOptions) {
-    const connectionParams = extractConnectionParams(options.config);
-    const dbConnection = new Connection(connectionParams);
+    const dbConnection = options.connection;
 
     server.route({
       method: "GET",
@@ -82,21 +83,6 @@ export const plugin = {
       },
     });
 
-    /**
-     * TODO(andrewhead): update these usages.
-     * Example usage:
-     * requests.post(
-     *   "http://localhost:3000/api/v0/papers/arxiv:1508.07252/annotations",
-     *   json={
-     *     "type": "symbol",
-     *     "page": 0,
-     *     "left": 10,
-     *     "top": 20,
-     *     "width": 100,
-     *     "height": 20
-     *   }
-     * )
-     */
     server.route({
       method: "POST",
       path: "papers/arxiv:{arxivId}/entities",
@@ -119,20 +105,6 @@ export const plugin = {
       },
     });
 
-    /**
-     * Example usage:
-     * requests.put(
-     *   "http://localhost:3000/api/v0/papers/arxiv:1508.07252/annotation/2",
-     *   json={
-     *     "type": "symbol",
-     *     "page": 0,
-     *     "left": 10,
-     *     "top": 20,
-     *     "width": 100,
-     *     "height": 20
-     *   }
-     * )
-     */
     server.route({
       method: "PATCH",
       path: "papers/arxiv:{arxivId}/annotation/{id}",
@@ -152,12 +124,6 @@ export const plugin = {
       },
     });
 
-    /**
-     * Example usage:
-     * requests.delete(
-     *   "http://localhost:3000/api/v0/papers/arxiv:1508.07252/annotation/2
-     * ")
-     */
     server.route({
       method: "DELETE",
       path: "papers/arxiv:{arxivId}/annotation/{id}",
