@@ -51,6 +51,21 @@ export function createQueryBuilder(params: ConnectionParams) {
 }
 
 /**
+ * An error in loading data for an entity from the API. Based on custom error class declaration from:
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error
+ */
+export class EntityLoadError extends Error {
+  constructor(id: string, type: string, ...params: any[]) {
+    super(...params);
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, EntityLoadError);
+    }
+    this.name = "ValidationError";
+    this.message = `Data for entity ${id} of type ${type} is either missing or typed incorrectly`;
+  }
+}
+
+/**
  * An interface to the database. Performs queries and returns santized, typed objects.
  */
 export class Connection {
@@ -157,7 +172,7 @@ export class Connection {
       !Array.isArray(attributes.mathml_near_matches) ||
       !Array.isArray(relationships.children)
     ) {
-      return null;
+      throw new EntityLoadError(genericEntity.id, genericEntity.type);
     }
     const mathml = attributes.mathml;
     const mathml_near_matches = attributes.mathml_near_matches;
@@ -198,7 +213,7 @@ export class Connection {
     _: GenericRelationships
   ) {
     if (typeof attributes.paper_id !== "string") {
-      return null;
+      throw new EntityLoadError(genericEntity.id, genericEntity.type);
     }
     const paper_id = attributes.paper_id;
 
@@ -228,14 +243,14 @@ export class Connection {
       typeof attributes.tex_start !== "string" ||
       typeof attributes.tex_end !== "string"
     ) {
-      return null;
+      throw new EntityLoadError(genericEntity.id, genericEntity.type);
     }
     const text = attributes.text;
     const tex_start = parseInt(attributes.tex_start);
     const tex_end = parseInt(attributes.tex_end);
 
     if (typeof tex_start !== "number" || typeof tex_end !== "number") {
-      return null;
+      throw new EntityLoadError(genericEntity.id, genericEntity.type);
     }
 
     const sentence: Sentence = {
@@ -259,7 +274,7 @@ export class Connection {
     entityRow: EntityRow,
     boundingBoxRows: Omit<BoundingBoxRow, "id">[],
     entityDataRows: Omit<EntityDataRow, "id">[]
-  ): Entity | null {
+  ): Entity {
     const boundingBoxes = this.createBoundingBoxes(boundingBoxRows);
 
     /**
@@ -268,7 +283,7 @@ export class Connection {
      * junk data to the user, custom attributes and relationships are not added to the
      * basic entity. Known attributes and relationships will be added to known entity types.
      */
-    let entity: Entity | null = null;
+    let entity: Entity;
     const genericEntity: GenericEntity = {
       id: String(entityRow.id),
       type: entityRow.type,
@@ -414,21 +429,12 @@ export class Connection {
 
   /**
    * Take an input entity and extract from it a list of rows that can be inserted into the
-   * 'entitydata' table to preserve all that's worth knowing about this entity. This method does
-   * some validation to make sure that the attributes and relationships are in the expected format
-   * before attempting to create data rows for this.
-   *
-   * Currently this method takes a conservative approach, creating rows only for known data fields
-   * for known types of entities.
-   *
-   * This method also expects that server validation has already run
-   * on the entity to ensure that all attribute values are of the expected types (e.g.,
-   * strings, numbers, lists of strings, or 'null') and that all relationships follow the JSON
-   * API relationship convention.
+   * 'entitydata' table to preserve all that's worth knowing about this entity. It is expected that
+   * if an entity has undergone the validation from the './validation.ts' validators, then all
+   * attributes and relationships are valid and therefore will be entered in the database.
    */
   createEntityDataRows(
     entity_id: number,
-    entity_type: string,
     attributes: GenericAttributes,
     relationships: GenericRelationships
   ) {
@@ -447,49 +453,28 @@ export class Connection {
       });
     };
 
-    /**
-     * Symbol data.
-     */
-    if (entity_type === "symbol") {
-      if (typeof attributes.mathml === "string") {
-        addRow("scalar", "mathml", attributes.mathml);
+    for (const key of Object.keys(attributes)) {
+      if (["source", "version", "bounding_boxes"].indexOf(key) !== -1) {
+        continue;
       }
-      if (Array.isArray(attributes.mathml_near_matches)) {
-        attributes.mathml_near_matches.forEach((mathml) => {
-          addRow("scalar-list", "mathml_near_matches", mathml);
-        });
-      }
-      if (isRelationship(relationships.sentence)) {
-        addRow("reference", "sentence", relationships.sentence.id);
-      }
-      if (Array.isArray(relationships.children)) {
-        relationships.children.forEach((c) => {
-          addRow("reference-list", "children", c.id);
-        });
+      const value = attributes[key];
+      if (Array.isArray(value)) {
+        for (const v of value) {
+          addRow("scalar-list", key, v);
+        }
+      } else {
+        addRow("scalar", key, value);
       }
     }
 
-    /**
-     * Citation data.
-     */
-    if (entity_type === "citation") {
-      if (typeof attributes.paper_id === "string") {
-        addRow("scalar", "paper_id", attributes.paper_id);
-      }
-    }
-
-    /**
-     * Sentence data.
-     */
-    if (entity_type === "sentence") {
-      if (typeof attributes.text === "string") {
-        addRow("scalar", "text", attributes.text);
-      }
-      if (typeof attributes.tex_start === "number") {
-        addRow("scalar", "tex_start", String(attributes.tex_start));
-      }
-      if (typeof attributes.tex_end === "number") {
-        addRow("scalar", "tex_end", String(attributes.tex_end));
+    for (const relationshipKey of Object.keys(relationships)) {
+      const relationshipsValue = relationships[relationshipKey];
+      if (Array.isArray(relationshipsValue)) {
+        for (const r of relationshipsValue) {
+          addRow("reference-list", relationshipKey, r.id);
+        }
+      } else {
+        addRow("scalar", relationshipKey, relationshipsValue.id);
       }
     }
 
@@ -515,7 +500,9 @@ export class Connection {
     } else {
       version = this.getLatestPaperDataVersion(paperSelector);
       if (version === undefined) {
-        return null;
+        throw Error(
+          "No data version was specified, and no data version exists for this paper."
+        );
       }
     }
 
@@ -542,7 +529,6 @@ export class Connection {
     );
     const entityDataRows = this.createEntityDataRows(
       id,
-      data.type,
       data.attributes,
       data.relationships as GenericRelationships
     );
@@ -598,7 +584,6 @@ export class Connection {
        */
       const attributeRows = this.createEntityDataRows(
         entityId,
-        data.type,
         data.attributes,
         {}
       );
@@ -622,7 +607,6 @@ export class Connection {
         );
       const relationshipRows = this.createEntityDataRows(
         entityId,
-        data.type,
         {},
         data.relationships as GenericRelationships
       );

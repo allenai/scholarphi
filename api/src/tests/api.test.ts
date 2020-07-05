@@ -1,6 +1,11 @@
 import * as Knex from "knex";
 import ApiServer from "../server";
-import { DataResponse, Entity, EntityPostPayload } from "../types/api";
+import {
+  Citation,
+  DataResponse,
+  Entity,
+  EntityPostPayload,
+} from "../types/api";
 import {
   createDefaultQueryBuilder,
   initServer,
@@ -376,7 +381,7 @@ describe("API", () => {
         index: 0,
       } as VersionRow);
 
-      let payload: EntityPostPayload = {
+      const payload: EntityPostPayload = {
         data: {
           type: "unknown",
           attributes: {
@@ -407,6 +412,183 @@ describe("API", () => {
       const data = (response.result as any).data;
       expect(data).toMatchObject(payload.data);
       expect(data.id).not.toBeUndefined();
+
+      const entityRows: EntityRow[] = await knex("entity").select();
+      expect(entityRows.length).toBe(1);
+      expect(entityRows[0]).toMatchObject({
+        paper_id: "s2id",
+        type: "unknown",
+        source: "test",
+        version: 0,
+      } as EntityRow);
+      const entityId = entityRows[0].id;
+      expect(entityId).not.toBeUndefined();
+
+      const boundingBoxRows: BoundingBoxRow[] = await knex(
+        "boundingbox"
+      ).select();
+      expect(boundingBoxRows.length).toBe(1);
+      expect(boundingBoxRows[0]).toMatchObject({
+        entity_id: entityId,
+        source: "test",
+        page: 0,
+        left: 0,
+        top: 0,
+        width: 0.1,
+        height: 0.05,
+      } as BoundingBoxRow);
+      expect(boundingBoxRows[0].id).not.toBeUndefined();
+
+      const entityDataRows: EntityDataRow[] = await knex("entitydata").select();
+      expect(entityDataRows.length).toBe(0);
+    });
+
+    test("generic entity with unexpected properties", async () => {
+      await knex("paper").insert({
+        s2_id: "s2id",
+        arxiv_id: "1111.1111",
+      } as PaperRow);
+      await knex("version").insert({
+        id: 1,
+        paper_id: "s2id",
+        index: 0,
+      } as VersionRow);
+
+      const payload: EntityPostPayload = {
+        data: {
+          type: "unknown",
+          attributes: {
+            UNEXPECTED_ATTRIBUTE: "unexpected",
+            source: "test",
+            version: 0,
+            bounding_boxes: [
+              {
+                source: "test",
+                page: 0,
+                top: 0,
+                left: 0,
+                width: 0.1,
+                height: 0.05,
+              },
+            ],
+          },
+          relationships: {
+            UNEXPECTED_RELATIONSHIP: { id: "1", type: "unknown" },
+          },
+        },
+      };
+
+      const response = await server.inject({
+        method: "post",
+        url: "/api/v0/papers/arxiv:1111.1111/entities",
+        payload,
+      });
+
+      expect(response.statusCode).toEqual(400);
+      expect((await knex("entity").select()).length).toBe(0);
+    });
+
+    test("citation", async () => {
+      await knex("paper").insert({
+        s2_id: "s2id",
+        arxiv_id: "1111.1111",
+      } as PaperRow);
+      await knex("version").insert({
+        id: 1,
+        paper_id: "s2id",
+        index: 0,
+      } as VersionRow);
+
+      const citation: Omit<Citation, "id"> = {
+        type: "citation",
+        attributes: {
+          source: "test",
+          version: 0,
+          paper_id: "citation_paper_id",
+          bounding_boxes: [
+            {
+              source: "test",
+              page: 0,
+              top: 0,
+              left: 0,
+              width: 0.1,
+              height: 0.05,
+            },
+          ],
+        },
+        relationships: {},
+      };
+
+      const payload: EntityPostPayload = {
+        data: citation,
+      };
+
+      const response = await server.inject({
+        method: "post",
+        url: "/api/v0/papers/arxiv:1111.1111/entities",
+        payload,
+      });
+
+      expect(response.statusCode).toEqual(201);
+      const data = (response.result as any).data;
+      expect(data).toMatchObject(payload.data);
+      expect(data.id).not.toBeUndefined();
+
+      const entityDataRows: EntityDataRow[] = await knex("entitydata").select();
+      expect(entityDataRows.length).toBe(1);
+      expect(entityDataRows[0]).toMatchObject({
+        type: "scalar",
+        source: "test",
+        key: "paper_id",
+        value: "citation_paper_id",
+      } as EntityDataRow);
+    });
+
+    test("fail on missing entity data", async () => {
+      await knex("paper").insert({
+        s2_id: "s2id",
+        arxiv_id: "1111.1111",
+      } as PaperRow);
+      await knex("version").insert({
+        id: 1,
+        paper_id: "s2id",
+        index: 0,
+      } as VersionRow);
+
+      /*
+       * Same as last test, just missing 'paper_id' attribute.
+       */
+      const citation = {
+        type: "citation",
+        attributes: {
+          source: "test",
+          version: 0,
+          bounding_boxes: [
+            {
+              source: "test",
+              page: 0,
+              top: 0,
+              left: 0,
+              width: 0.1,
+              height: 0.05,
+            },
+          ],
+        },
+        relationships: {},
+      };
+
+      const payload: EntityPostPayload = {
+        data: citation,
+      };
+
+      const response = await server.inject({
+        method: "post",
+        url: "/api/v0/papers/arxiv:1111.1111/entities",
+        payload,
+      });
+
+      expect(response.statusCode).toEqual(400);
+      expect((await knex("entity").select()).length).toBe(0);
     });
   });
 });

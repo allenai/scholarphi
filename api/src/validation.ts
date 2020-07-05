@@ -1,5 +1,15 @@
 import * as Joi from "@hapi/joi";
 
+/**
+ * Validation 'failAction' that reports the cause of error. Ideally, this should only be used in
+ * development as it will leak details about the implementation of validation.
+ * Adapted from https://github.com/hapijs/hapi/issues/3706#issuecomment-349765943
+ */
+export async function debugFailAction(_: any, __: any, err: any) {
+  console.error(err);
+  throw err;
+}
+
 export const s2Id = Joi.object({
   s2Id: Joi.string().pattern(/[a-f0-9]{40}/),
 });
@@ -28,82 +38,123 @@ export const arxivId = Joi.object({
 });
 
 /**
- * Validation for a bounding box.
+ * This helper can be used with joi's 'alter' method to require fields only
+ * for 'POST' requests (when most fields need to be set).
  */
-const boundingBoxes = Joi.array().items(
-  Joi.object({
-    page: Joi.number().integer().min(0).required(),
-    source: Joi.string().required(),
-    left: Joi.number().required(),
-    top: Joi.number().required(),
-    width: Joi.number().required(),
-    height: Joi.number().required(),
-  })
+const requireForPost = {
+  post: (s: Joi.Schema) => s.required(),
+};
+
+const boundingBox = Joi.object({
+  page: Joi.number().integer().min(0).required(),
+  source: Joi.string().required(),
+  left: Joi.number().required(),
+  top: Joi.number().required(),
+  width: Joi.number().required(),
+  height: Joi.number().required(),
+});
+
+const boundingBoxes = Joi.array().items(boundingBox);
+
+const attributes = Joi.object({
+  version: Joi.number().alter(requireForPost),
+  source: Joi.string().alter(requireForPost),
+  bounding_boxes: boundingBoxes.alter(requireForPost),
+}).alter({
+  /*
+   * Define custom attributes for specific entity types here.
+   */
+  citation: (s) =>
+    (s as Joi.ObjectSchema)
+      .keys({
+        paper_id: Joi.string().alter(requireForPost),
+      })
+      .options({ presence: "required" }),
+  symbol: (s) =>
+    (s as Joi.ObjectSchema)
+      .keys({
+        mathml: Joi.string().alter(requireForPost),
+        mathml_near_matches: Joi.array()
+          .items(Joi.string())
+          .alter(requireForPost),
+        sentence: Joi.string().allow(null).alter(requireForPost),
+      })
+      .options({ presence: "required" }),
+  sentence: (s) =>
+    (s as Joi.ObjectSchema)
+      .keys({
+        text: Joi.string().alter(requireForPost),
+        tex_start: Joi.number().alter(requireForPost),
+        tex_end: Joi.number().alter(requireForPost),
+      })
+      .options({ presence: "required" }),
+});
+
+const relationship = (options: { nullable?: boolean; type?: string }) => {
+  let typeValidation = Joi.string().required();
+  if (options.type) {
+    typeValidation = typeValidation.valid(options.type);
+  }
+  let idValidation = Joi.string().required();
+  if (options.nullable) {
+    idValidation = idValidation.allow(null);
+  }
+  return Joi.object({
+    type: typeValidation,
+    id: idValidation,
+  });
+};
+
+const relationships = Joi.object().alter({
+  /*
+   * Define custom relationships for specific entity types here.
+   */
+  symbol: (s) =>
+    (s as Joi.ObjectSchema)
+      .keys({
+        sentence: relationship({ type: "sentence", nullable: true }),
+        children: Joi.array().items(relationship({ type: "symbol" })),
+      })
+      .options({ presence: "required" }),
+});
+
+const entity = Joi.object({
+  data: Joi.object({
+    id: Joi.string().alter({
+      post: (s) => s.forbidden(),
+      patch: (s) => s.required(),
+    }),
+    type: Joi.string()
+      .required()
+      /*
+       * Add a type name for a custom entity here to enable strict attribute validation
+       * for that type. The 'type' for this entity will then only be allowed in conjunction
+       * with the strict set of expected attributes and relationships defined by the 'alter'
+       * rules for that type.
+       */
+      .disallow("citation", "symbol", "sentence")
+      .alter({
+        /*
+         * Add the type name for each allowed entity type here.
+         */
+        citation: (s) => s.valid("citation"),
+        symbol: (s) => s.valid("symbol"),
+        sentence: (s) => s.valid("sentence"),
+      }),
+    attributes: attributes.alter(requireForPost),
+    relationships: relationships.alter(requireForPost),
+  }),
+});
+
+/*
+ * Add all expected types of entities here.
+ */
+const allEntityTypes = Joi.alternatives(
+  entity.tailor("notype"),
+  entity.tailor("citation"),
+  entity.tailor("symbol"),
+  entity.tailor("sentence")
 );
 
-const relationship = Joi.object({
-  type: Joi.string().required(),
-  id: Joi.string().required().allow(null),
-});
-
-const relationships = Joi.object({
-  arg: Joi.string(),
-  value: Joi.alternatives(relationship, Joi.array().items(relationship)),
-});
-
-/**
- * Validation for entity POST request.
- */
-export const entityPostPayload = Joi.object({
-  data: Joi.object({
-    type: Joi.string().required(),
-    attributes: Joi.object({
-      version: Joi.number().optional(),
-      source: Joi.string().required(),
-      bounding_boxes: boundingBoxes.required(),
-      /**
-       * 'arg' and 'value' check arbitrary other attribute keys.
-       */
-      arg: Joi.string(),
-      value: Joi.alternatives(
-        Joi.string(),
-        Joi.number(),
-        Joi.array().items(Joi.string())
-      ).allow(null),
-    }).required(),
-    relationships: relationships.required(),
-  }).required(),
-});
-
-/**
- * Validation for entity PATCH request. This is the same as 'entityPostData' with the exception that
- * 'id' is required, and all other properties are optional.
- */
-export const entityPatchPayload = Joi.object({
-  data: Joi.object({
-    id: Joi.string().required(),
-    type: Joi.string().required(),
-    attributes: Joi.object({
-      version: Joi.number().optional(),
-      source: Joi.string().optional(),
-      bounding_boxes: boundingBoxes.optional(),
-      arg: Joi.string(),
-      value: Joi.alternatives(
-        Joi.string(),
-        Joi.number(),
-        Joi.array().items(Joi.string())
-      ).allow(null),
-    }).optional(),
-    relationships: relationships.optional(),
-  }).required(),
-});
-
-/**
- * Validation 'failAction' that reports the cause of error. Ideally, this should only be used in
- * development as it will leak details about the implementation of validation.
- * Adapted from https://github.com/hapijs/hapi/issues/3706#issuecomment-349765943
- */
-export async function debugFailAction(_: any, __: any, err: any) {
-  console.error(err);
-  throw err;
-}
+export const entityPostPayload = allEntityTypes.tailor("post");
+export const entityPatchPayload = allEntityTypes.tailor("patch");

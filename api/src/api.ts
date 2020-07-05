@@ -92,9 +92,6 @@ export const plugin = {
           { arxiv_id: arxivId },
           (request.payload as EntityPostPayload).data
         );
-        if (entity === null) {
-          return h.response().code(500);
-        }
         return h.response({ data: entity }).code(201);
       },
       options: {
