@@ -12,9 +12,16 @@
  * into other projects, all of the types are available to the client code.
  */
 
+import { S2ApiPaper } from "./s2-api";
+
 export interface DataResponse {
   data?: Entity[];
 }
+
+/**
+ * Return papers from this API using the format from the S2 API.
+ */
+export type Paper = S2ApiPaper;
 
 /**
  * Use type guards (e.g., 'isSymbol') to distinguish between types of entities.
@@ -183,8 +190,24 @@ export function isSentence(entity: Entity): entity is Sentence {
 }
 
 /**
- * Bounding box containing where an entity appears. Coordinates (left, top, width, and height) are all
- * in ratios from [0..1] relative to the actual width and height of the page.
+ * Matches the schema of the data in the 'boundingbox' table in the database.  'left', 'top',
+ * 'width', and 'height' are expressed in ratios to the page width and height, rather than
+ * absolute coordinates.
+ *
+ * For example, a bounding box is expressed as
+ * {
+ *   left: .1,
+ *   right: .1,
+ *   width: .2,
+ *   height: .05
+ * }
+ *
+ * if its absolute position is (50px, 100px), its width is (100px), and its
+ * height is (50px) on a page with dimensions (W = 500px, H = 1000px).
+ *
+ * This representation of coordinates was chosen due to constraints in the design of the data
+ * processing pipeline. More specifically, it's easier to extract ratio coordinates than absolute
+ * coordinates when processing PDFs and PostScript files with Python.
  */
 export interface BoundingBox {
   source: string;
