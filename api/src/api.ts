@@ -88,7 +88,7 @@ export const plugin = {
       path: "papers/arxiv:{arxivId}/entities",
       handler: async (request, h) => {
         const arxivId = request.params.arxivId;
-        const entity = await dbConnection.postEntity(
+        const entity = await dbConnection.createEntity(
           { arxiv_id: arxivId },
           (request.payload as EntityPostPayload).data
         );
@@ -104,9 +104,9 @@ export const plugin = {
 
     server.route({
       method: "PATCH",
-      path: "papers/arxiv:{arxivId}/annotation/{id}",
+      path: "papers/arxiv:{arxivId}/entities/{id}",
       handler: async (request, h) => {
-        const entity = await dbConnection.patchAnnotation(
+        await dbConnection.updateEntity(
           (request.payload as EntityPatchPayload).data
         );
         return h.response({}).code(200);

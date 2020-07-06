@@ -270,7 +270,7 @@ export class Connection {
   /**
    * Convert entity information from the database into an entity object.
    */
-  createEntity(
+  createEntityObjectFromRows(
     entityRow: EntityRow,
     boundingBoxRows: Omit<BoundingBoxRow, "id">[],
     entityDataRows: Omit<EntityDataRow, "id">[]
@@ -400,7 +400,7 @@ export class Connection {
           boundingBoxRowsByEntity[entityRow.id] || [];
         const entityDataRowsForEntity =
           entityDataRowsByEntity[entityRow.id] || [];
-        return this.createEntity(
+        return this.createEntityObjectFromRows(
           entityRow,
           boundingBoxRowsForEntity,
           entityDataRowsForEntity
@@ -435,6 +435,7 @@ export class Connection {
    */
   createEntityDataRows(
     entity_id: number,
+    source: string,
     attributes: GenericAttributes,
     relationships: GenericRelationships
   ) {
@@ -446,7 +447,7 @@ export class Connection {
     ) => {
       rows.push({
         entity_id,
-        source: attributes.source,
+        source,
         type,
         key,
         value,
@@ -481,7 +482,7 @@ export class Connection {
     return rows;
   }
 
-  async postEntity(paperSelector: PaperSelector, data: EntityPostData) {
+  async createEntity(paperSelector: PaperSelector, data: EntityPostData) {
     /**
      * Fetch the ID for the specified paper.
      */
@@ -529,6 +530,7 @@ export class Connection {
     );
     const entityDataRows = this.createEntityDataRows(
       id,
+      data.attributes.source,
       data.attributes,
       data.relationships as GenericRelationships
     );
@@ -538,7 +540,7 @@ export class Connection {
     /**
      * Create a sanitized version of the entity to return to the client.
      */
-    const cleanedEntity = this.createEntity(
+    const cleanedEntity = this.createEntityObjectFromRows(
       { ...entityRow, id },
       boundingBoxRows,
       entityDataRows
@@ -546,10 +548,7 @@ export class Connection {
     return cleanedEntity;
   }
 
-  /**
-   * TODO: return an updated Entity from this method.
-   */
-  async patchAnnotation(data: EntityPatchData) {
+  async updateEntity(data: EntityPatchData) {
     /**
      * Update entity data.
      */
@@ -561,55 +560,56 @@ export class Connection {
       };
     }
     if (entityRowUpdates !== null && Object.keys(entityRowUpdates).length > 0) {
-      this._knex("entity").update(entityRowUpdates).where({ id: data.id });
+      await this._knex("entity")
+        .update(entityRowUpdates)
+        .where({ id: data.id });
     }
     const entityId = Number(data.id);
 
-    if (data.attributes !== undefined) {
-      /**
-       * Update bounding boxes.
-       */
-      if (data.attributes.bounding_boxes !== undefined) {
-        await this._knex("boundingbox").delete().where({ entity_id: data.id });
-        const boundingBoxRows = this.createBoundingBoxRows(
-          entityId,
-          data.attributes.bounding_boxes
-        );
-        await this._knex.batchInsert("boundingbox", boundingBoxRows);
-      }
-
-      /**
-       * Update custom attributes, by removing previous values for known attributes and updating
-       * them to the new values.
-       */
-      const attributeRows = this.createEntityDataRows(
+    /*
+     * Update bounding boxes.
+     */
+    if (data.attributes.bounding_boxes !== undefined) {
+      await this._knex("boundingbox").delete().where({ entity_id: data.id });
+      const boundingBoxRows = this.createBoundingBoxRows(
         entityId,
-        data.attributes,
-        {}
+        data.attributes.bounding_boxes
       );
-      for (const row of attributeRows) {
+      await this._knex.batchInsert("boundingbox", boundingBoxRows);
+    }
+
+    /*
+     * Update custom attributes, by removing previous values for known attributes and updating
+     * them to the new values.
+     */
+    const attributeRows = this.createEntityDataRows(
+      entityId,
+      data.attributes.source,
+      data.attributes,
+      {}
+    );
+    for (const row of attributeRows) {
+      await this._knex("entitydata")
+        .delete()
+        .where({ entity_id: data.id, type: row.type, key: row.key });
+    }
+    await this._knex.batchInsert("entitydata", attributeRows);
+
+    /*
+     * Update relationships.
+     */
+    if (data.relationships !== undefined) {
+      const relationshipRows = this.createEntityDataRows(
+        entityId,
+        data.attributes.source,
+        {},
+        data.relationships as GenericRelationships
+      );
+      for (const row of relationshipRows) {
         await this._knex("entitydata")
           .delete()
           .where({ entity_id: data.id, type: row.type, key: row.key });
       }
-      this._knex.batchInsert("entitydata", attributeRows);
-    }
-
-    /**
-     * Update relationships.
-     */
-    if (data.relationships !== undefined) {
-      await this._knex("entitydata")
-        .delete()
-        .where({ entity_id: data.id })
-        .andWhere((builder) =>
-          builder.whereIn("type", ["reference", "reference-list"])
-        );
-      const relationshipRows = this.createEntityDataRows(
-        entityId,
-        {},
-        data.relationships as GenericRelationships
-      );
       await this._knex.batchInsert("entitydata", relationshipRows);
     }
   }
