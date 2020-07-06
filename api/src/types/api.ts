@@ -100,7 +100,12 @@ export interface EntityPatchPayload {
   data: EntityPatchData;
 }
 
-export type EntityPatchData = Pick<Entity, "type" | "id"> & Partial<Entity>;
+export interface EntityPatchData {
+  id: string;
+  type: string;
+  attributes: Pick<GenericAttributes, "source"> & Partial<GenericAttributes>;
+  relationships?: Partial<GenericRelationships>;
+}
 
 /**
  * In general, attributes can have values of type 'string | number | string[] | null | undefined'. Because

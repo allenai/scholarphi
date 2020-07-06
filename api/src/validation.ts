@@ -48,9 +48,11 @@ const boundingBox = Joi.object({
 
 const relationship = (options: { nullable?: boolean; type: string }) => {
   return Joi.object({
-    type: Joi.string().valid(options.type),
-    id: options.nullable ? Joi.string().allow(null) : Joi.string(),
-  }).options({ presence: "required" });
+    type: Joi.string().required().valid(options.type),
+    id: options.nullable
+      ? Joi.string().required().allow(null)
+      : Joi.string().required(),
+  });
 };
 
 /**
@@ -59,7 +61,11 @@ const relationship = (options: { nullable?: boolean; type: string }) => {
  */
 const attributes = Joi.object({
   version: Joi.number(),
-  source: Joi.string(),
+  /*
+   * Source is required on both POST and PATCH requests. It is required for PATCH requests because
+   * the database logs the 'source' of updated attributes and bounding boxes.
+   */
+  source: Joi.string().required(),
   bounding_boxes: Joi.array().items(boundingBox),
 })
   /*
@@ -131,9 +137,9 @@ export const entityPatch = Joi.object({
     id: Joi.string().required(),
     type: Joi.string().required(),
     /*
-     * No single attribute or relationship is required on path.
+     * Aside from the 'source' attribute, no single attribute or relationship is required on path.
      */
-    attributes,
+    attributes: attributes.required(),
     relationships,
   }),
 });
