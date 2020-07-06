@@ -49,15 +49,10 @@ def test_latex():
 
 def test_abbreviation(abb, text, start, end, expansion, tex, first, last):
     #test the equivalence of an abbreviation instance abb and the values it should have
-    assert abb.text == text, \
-        "Abbreviation Short Form Incorrect: got {bad}, but expected {good}".format(bad = abb.text, good = text)
-    assert abb.start == start, \
-        "Abbreviation Start Position Incorrect: got {bad}, but expected {good}".format(bad = abb.start, good = start)
-    assert abb.end == end, \
-        "Abbreviation End Position Incorrect: got {bad}, but expected {good}".format(bad = abb.end, good = end)
-    assert abb.expansion == expansion, \
-        "Abbreviation Expansion Incorrect: got {bad}, but expected {good}".format(bad = abb.expansion, good = expansion)
-    assert abb.tex == tex, \
-        "Abbreviation Instance Incorrect: got {bad}, but expected {good}".format(bad = abb.tex, good = tex)
+    assert abb.text == text, "Abbreviation Short Form Incorrect"
+    assert abb.start == start, "Abbreviation Start Position Incorrect"
+    assert abb.end == end, "Abbreviation End Position Incorrect"
+    assert abb.expansion == expansion, "Abbreviation Expansion Incorrect"
+    assert abb.tex == tex, "Abbreviation Instance Incorrect"
     assert abb.str_id[0] == first, "First Character of str_id Incorrect: should be f or s for full or short form"
     assert abb.str_id[-1] == last, "Last Character of str_id Incorrect: should indicate xth instance of Abbreviation"
