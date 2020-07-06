@@ -21,7 +21,7 @@ cat > $CREATE_TABLES_FILE <<- EOF
 
 EOF
 
-echo "Running script. Be prepared to enter your password for the Postgres database."
+echo "Running script. Be prepared to enter the password for the user 'api' for the Postgres database."
 
 pg_dump \
   --db $DATABASE \

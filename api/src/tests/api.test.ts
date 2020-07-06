@@ -579,11 +579,129 @@ describe("API", () => {
   });
 
   describe("PATCH /api/v0/papers/arxiv:{arxivId}/entities/{entityId}", () => {
-    /*
-     * Patching a symbol can involve changing generic entity attributes, bounding boxes, and
-     * attributes specific to symbols. All three changes are tested here.
-     */
-    test("symbol", async () => {
+    test("generic entity attributes", async () => {
+      await knex("paper").insert({
+        s2_id: "s2id",
+        arxiv_id: "1111.1111",
+      } as PaperRow);
+      await knex("version").insert({
+        id: 1,
+        paper_id: "s2id",
+        index: 0,
+      } as VersionRow);
+      await knex.batchInsert("entity", [
+        {
+          id: 1,
+          paper_id: "s2id",
+          version: 0,
+          type: "unknown",
+          source: "test",
+        },
+      ] as EntityRow[]);
+
+      const payload: EntityPatchPayload = {
+        data: {
+          id: "1",
+          type: "unknown",
+          attributes: {
+            source: "patch-source",
+          },
+        },
+      };
+
+      const response = await server.inject({
+        method: "patch",
+        url: "/api/v0/papers/arxiv:1111.1111/entities/1",
+        payload,
+      });
+
+      expect(response.statusCode).toEqual(204);
+      expect(response.result).toBeNull();
+      expect(response.payload).toEqual("");
+
+      const entityRows: EntityRow[] = await knex("entity").select();
+      expect(entityRows).toHaveLength(1);
+      expect(entityRows[0]).toMatchObject({
+        source: "patch-source",
+      } as EntityRow);
+    });
+
+    test("generic entity bounding boxes", async () => {
+      await knex("paper").insert({
+        s2_id: "s2id",
+        arxiv_id: "1111.1111",
+      } as PaperRow);
+      await knex("version").insert({
+        id: 1,
+        paper_id: "s2id",
+        index: 0,
+      } as VersionRow);
+      await knex.batchInsert("entity", [
+        {
+          id: 1,
+          paper_id: "s2id",
+          version: 0,
+          type: "unknown",
+          source: "test",
+        },
+      ] as EntityRow[]);
+      await knex.batchInsert("boundingbox", [
+        {
+          entity_id: 1,
+          source: "test",
+          page: 0,
+          left: 0,
+          top: 0,
+          width: 0.1,
+          height: 0.05,
+        },
+      ] as BoundingBoxRow[]);
+
+      const payload: EntityPatchPayload = {
+        data: {
+          id: "1",
+          type: "unknown",
+          attributes: {
+            source: "patch-source",
+            bounding_boxes: [
+              {
+                source: "test",
+                page: 1,
+                top: 10,
+                left: 10,
+                width: 0.2,
+                height: 0.1,
+              },
+            ],
+          },
+        },
+      };
+
+      const response = await server.inject({
+        method: "patch",
+        url: "/api/v0/papers/arxiv:1111.1111/entities/1",
+        payload,
+      });
+
+      expect(response.statusCode).toEqual(204);
+
+      const boundingBoxRows: BoundingBoxRow[] = await knex(
+        "boundingbox"
+      ).select();
+      expect(boundingBoxRows).toHaveLength(1);
+      expect(boundingBoxRows[0]).toMatchObject({
+        entity_id: 1,
+        source: "test",
+        page: 1,
+        top: 10,
+        left: 10,
+        width: 0.2,
+        height: 0.1,
+      } as BoundingBoxRow);
+      expect(boundingBoxRows[0].id).not.toBeUndefined();
+    });
+
+    test("entity-specific attributes", async () => {
       await knex("paper").insert({
         s2_id: "s2id",
         arxiv_id: "1111.1111",
@@ -602,17 +720,6 @@ describe("API", () => {
           source: "test",
         },
       ] as EntityRow[]);
-      await knex.batchInsert("boundingbox", [
-        {
-          entity_id: 1,
-          source: "test",
-          page: 0,
-          left: 0,
-          top: 0,
-          width: 0.1,
-          height: 0.05,
-        },
-      ] as BoundingBoxRow[]);
       await knex.batchInsert("entitydata", [
         {
           entity_id: 1,
@@ -635,6 +742,60 @@ describe("API", () => {
           key: "mathml_near_matches",
           value: "<math><mi>y</mi></math>",
         },
+      ]);
+
+      const payload: EntityPatchPayload = {
+        data: {
+          id: "1",
+          type: "symbol",
+          attributes: {
+            source: "patch-source",
+            mathml: "<math><mi>z</mi></math>",
+          },
+        },
+      };
+
+      const response = await server.inject({
+        method: "patch",
+        url: "/api/v0/papers/arxiv:1111.1111/entities/1",
+        payload,
+      });
+
+      expect(response.statusCode).toEqual(204);
+
+      const entityDataRows: EntityDataRow[] = await knex("entitydata").select();
+      expect(entityDataRows).toHaveLength(3);
+
+      const mathMlRows: EntityDataRow[] = await knex("entitydata")
+        .select()
+        .where({ key: "mathml" });
+      expect(mathMlRows).toHaveLength(1);
+      expect(mathMlRows[0]).toMatchObject({
+        value: "<math><mi>z</mi></math>",
+        source: "patch-source",
+      });
+    });
+
+    test("relationships", async () => {
+      await knex("paper").insert({
+        s2_id: "s2id",
+        arxiv_id: "1111.1111",
+      } as PaperRow);
+      await knex("version").insert({
+        id: 1,
+        paper_id: "s2id",
+        index: 0,
+      } as VersionRow);
+      await knex.batchInsert("entity", [
+        {
+          id: 1,
+          paper_id: "s2id",
+          version: 0,
+          type: "symbol",
+          source: "test",
+        },
+      ] as EntityRow[]);
+      await knex.batchInsert("entitydata", [
         {
           entity_id: 1,
           source: "test",
@@ -664,17 +825,6 @@ describe("API", () => {
           type: "symbol",
           attributes: {
             source: "patch-source",
-            bounding_boxes: [
-              {
-                source: "test",
-                page: 1,
-                top: 10,
-                left: 10,
-                width: 0.2,
-                height: 0.1,
-              },
-            ],
-            mathml: "<math><mi>z</mi></math>",
           },
           relationships: {
             children: [{ type: "symbol", id: "6" }],
@@ -688,38 +838,10 @@ describe("API", () => {
         payload,
       });
 
-      expect(response.statusCode).toEqual(200);
-      expect((response.result as any).data).toBeUndefined();
+      expect(response.statusCode).toEqual(204);
 
-      const entityRows: EntityRow[] = await knex("entity").select();
-      expect(entityRows).toHaveLength(1);
-      expect(entityRows[0]).toMatchObject({
-        source: "patch-source",
-      } as EntityRow);
-
-      const boundingBoxRows: BoundingBoxRow[] = await knex(
-        "boundingbox"
-      ).select();
-      expect(boundingBoxRows).toHaveLength(1);
-      expect(boundingBoxRows[0]).toMatchObject({
-        entity_id: 1,
-        source: "test",
-        page: 1,
-        top: 10,
-        left: 10,
-        width: 0.2,
-        height: 0.1,
-      } as BoundingBoxRow);
-      expect(boundingBoxRows[0].id).not.toBeUndefined();
-
-      const mathMlRows: EntityDataRow[] = await knex("entitydata")
-        .select()
-        .where({ key: "mathml" });
-      expect(mathMlRows).toHaveLength(1);
-      expect(mathMlRows[0]).toMatchObject({
-        value: "<math><mi>z</mi></math>",
-        source: "patch-source",
-      });
+      const entityDataRows: EntityDataRow[] = await knex("entitydata").select();
+      expect(entityDataRows).toHaveLength(2);
 
       const sentenceRows: EntityDataRow[] = await knex("entitydata")
         .select()
@@ -738,6 +860,61 @@ describe("API", () => {
         key: "children",
         value: "6",
       });
+    });
+  });
+
+  describe("DELETE /api/v0/papers/arxiv:{arxivId}/entites/{entityId}", () => {
+    test("entity with bounding box and data", async () => {
+      await knex("paper").insert({
+        s2_id: "s2id",
+        arxiv_id: "1111.1111",
+      } as PaperRow);
+      await knex("version").insert({
+        id: 1,
+        paper_id: "s2id",
+        index: 0,
+      } as VersionRow);
+      await knex.batchInsert("entity", [
+        {
+          id: 1,
+          paper_id: "s2id",
+          version: 0,
+          type: "unknown",
+          source: "test",
+        },
+      ] as EntityRow[]);
+      await knex.batchInsert("boundingbox", [
+        {
+          entity_id: 1,
+          source: "test",
+          page: 0,
+          left: 0,
+          top: 0,
+          width: 0.1,
+          height: 0.05,
+        },
+      ] as BoundingBoxRow[]);
+      await knex.batchInsert("entitydata", [
+        {
+          entity_id: 1,
+          source: "test",
+          type: "scalar",
+          key: "key",
+          value: "value",
+        },
+      ] as EntityDataRow[]);
+
+      const response = await server.inject({
+        method: "delete",
+        url: "/api/v0/papers/arxiv:1111.1111/entities/1",
+      });
+
+      expect(response.statusCode).toEqual(204);
+      expect(response.result).toBeNull();
+
+      expect(await knex("entity").select()).toHaveLength(0);
+      expect(await knex("boundingbox").select()).toHaveLength(0);
+      expect(await knex("entitydata").select()).toHaveLength(0);
     });
   });
 });

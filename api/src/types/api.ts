@@ -93,8 +93,9 @@ export interface EntityPostData {
 }
 
 /**
- * When patching an entity, the 'type' and 'id' are required. The rest of the properties of
- * the entity are optional.
+ * When patching an entity, the 'type' and 'id' are required. The 'source' attribute is also
+ * required. All modified entities and specified bounding boxes and data will be assigned the
+ * the provided 'source' value.
  */
 export interface EntityPatchPayload {
   data: EntityPatchData;
