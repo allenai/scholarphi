@@ -125,15 +125,15 @@ class AbbreviationExtractor(EntityExtractor):
 
             # Yields the expanded form as an Abbreviation type
             yield Abbreviation(
-                text= abb,
+                text=abb,
                 start=exp_start,
                 end=exp_end,
-                expansion = expanded,
-                id_= count,
+                expansion=expanded,
+                id_=count,
                 tex_path=tex_path,
                 tex=tex_sub,
                 context_tex=context_tex,
-                str_id = "f" + str(full_count) + "-0"
+                str_id="f" + str(full_count) + "-0"
             )
             count += 1
             short_count = 0
@@ -145,15 +145,15 @@ class AbbreviationExtractor(EntityExtractor):
                 tex_sub = tex[start:end]
                 context_tex = tex[start - DEFAULT_CONTEXT_SIZE : end + DEFAULT_CONTEXT_SIZE]
                 yield Abbreviation(
-                    text= abb,
+                    text=abb,
                     start=start,
                     end=end,
-                    expansion = expanded,
-                    id_= count,
+                    expansion=expanded,
+                    id_=count,
                     tex_path=tex_path,
                     tex=tex_sub,
                     context_tex=context_tex,
-                    str_id = "s" + str(full_count) + "-" + str(short_count)
+                    str_id="s" + str(full_count) + "-" + str(short_count)
                 )
                 count += 1
 
