@@ -109,10 +109,7 @@ class AbbreviationExtractor(EntityExtractor):
                 abb_short_forms[str(abrv)] = [[plaintext_to_tex_offset_map[m.start()], plaintext_to_tex_offset_map[m.start() + len(str(abrv))]] for m in re.finditer(str(abrv), plaintext)]
                 abb_expansions[str(abrv)] = str(abrv._.long_form)
                 x = plaintext.find(str(abrv._.long_form))
-                if x != -1:
-                    expanded_locations[str(abrv)] = [plaintext_to_tex_offset_map[x], plaintext_to_tex_offset_map[x + len(str(abrv._.long_form))]]
-                else:
-                    expanded_locations[str(abrv)] = [0, 0]
+                expanded_locations[str(abrv)] = [plaintext_to_tex_offset_map[x], plaintext_to_tex_offset_map[x + len(str(abrv._.long_form))]]
 
         #if you want to use another abbreviation detection method in addition to scispacy
         #you may implement it here and add its results to the three dictionaries
