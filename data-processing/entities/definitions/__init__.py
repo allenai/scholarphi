@@ -17,23 +17,23 @@ from common.commands.upload_entities import make_upload_entities_command
 
 
 # Register additional directories to be used by the upload function
-#directories.register("definitions-model-ids")
+# directories.register("definitions-model-ids")
 
 # Register directories for output from intermediate pipeline stages.
 directories.register("detected-definitions")
 
 # commands: CommandList = [
-    # make_detect_entities_command(entity_name, EntityExtractorType),
-    # make_colorize_tex_command(
-        # entity_name=entity_name,
-        # DetectedEntityType=DetectedEntityType,
-        # when=colorize_entity_when,
-        # get_color_positions=get_color_positions,
-    # ),
-    # make_compile_tex_command(entity_name),
-    # make_raster_pages_command(entity_name),
-    # make_diff_images_command(entity_name),
-    # make_locate_hues_command(entity_name),
+# make_detect_entities_command(entity_name, EntityExtractorType),
+# make_colorize_tex_command(
+# entity_name=entity_name,
+# DetectedEntityType=DetectedEntityType,
+# when=colorize_entity_when,
+# get_color_positions=get_color_positions,
+# ),
+# make_compile_tex_command(entity_name),
+# make_raster_pages_command(entity_name),
+# make_diff_images_command(entity_name),
+# make_locate_hues_command(entity_name),
 # ]
 
 
@@ -50,10 +50,6 @@ commands.append(upload_command)
 
 
 definitions_pipeline = EntityPipeline(
-    "definitions",
-    commands,
-    depends_on=["sentences"],
-    database_models=[DefinitionModel]
+    "definitions", commands, depends_on=["sentences"], database_models=[DefinitionModel]
 )
 register_entity_pipeline(definitions_pipeline)
-

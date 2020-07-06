@@ -1,5 +1,6 @@
-TBW
+
+Definition extractor requires several NLP and ML packages to extract terms and definitions from sentences. Please check dependencies related to definition extractor in requirement.txt
 
 
-#TODO write about model downloading
+
 
