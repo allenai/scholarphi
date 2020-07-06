@@ -97,7 +97,7 @@ export const plugin = {
       options: {
         validate: {
           params: validation.arxivId,
-          payload: validation.entityPostPayload,
+          payload: validation.entityPost,
         },
       },
     });
@@ -116,7 +116,7 @@ export const plugin = {
           params: validation.arxivId.append({
             id: Joi.string().required(),
           }),
-          payload: validation.entityPatchPayload,
+          payload: validation.entityPatch,
         },
       },
     });
