@@ -37,124 +37,103 @@ export const arxivId = Joi.object({
   ),
 });
 
-/**
- * This helper can be used with joi's 'alter' method to require fields only
- * for 'POST' requests (when most fields need to be set).
- */
-const requireForPost = {
-  post: (s: Joi.Schema) => s.required(),
-};
-
 const boundingBox = Joi.object({
-  page: Joi.number().integer().min(0).required(),
-  source: Joi.string().required(),
-  left: Joi.number().required(),
-  top: Joi.number().required(),
-  width: Joi.number().required(),
-  height: Joi.number().required(),
-});
+  page: Joi.number().integer().min(0),
+  source: Joi.string(),
+  left: Joi.number(),
+  top: Joi.number(),
+  width: Joi.number(),
+  height: Joi.number(),
+}).options({ presence: "required" });
 
-const boundingBoxes = Joi.array().items(boundingBox);
-
-const attributes = Joi.object({
-  version: Joi.number().alter(requireForPost),
-  source: Joi.string().alter(requireForPost),
-  bounding_boxes: boundingBoxes.alter(requireForPost),
-}).alter({
-  /*
-   * Define custom attributes for specific entity types here.
-   */
-  citation: (s) =>
-    (s as Joi.ObjectSchema)
-      .keys({
-        paper_id: Joi.string().alter(requireForPost),
-      })
-      .options({ presence: "required" }),
-  symbol: (s) =>
-    (s as Joi.ObjectSchema)
-      .keys({
-        mathml: Joi.string().alter(requireForPost),
-        mathml_near_matches: Joi.array()
-          .items(Joi.string())
-          .alter(requireForPost),
-        sentence: Joi.string().allow(null).alter(requireForPost),
-      })
-      .options({ presence: "required" }),
-  sentence: (s) =>
-    (s as Joi.ObjectSchema)
-      .keys({
-        text: Joi.string().alter(requireForPost),
-        tex_start: Joi.number().alter(requireForPost),
-        tex_end: Joi.number().alter(requireForPost),
-      })
-      .options({ presence: "required" }),
-});
-
-const relationship = (options: { nullable?: boolean; type?: string }) => {
-  let typeValidation = Joi.string().required();
-  if (options.type) {
-    typeValidation = typeValidation.valid(options.type);
-  }
-  let idValidation = Joi.string().required();
-  if (options.nullable) {
-    idValidation = idValidation.allow(null);
-  }
+const relationship = (options: { nullable?: boolean; type: string }) => {
   return Joi.object({
-    type: typeValidation,
-    id: idValidation,
-  });
+    type: Joi.string().valid(options.type),
+    id: options.nullable ? Joi.string().allow(null) : Joi.string(),
+  }).options({ presence: "required" });
 };
 
-const relationships = Joi.object().alter({
+/**
+ * Expected attributes for new entity types can be added by adding another item to
+ * the 'switch' array (see 'citation' for an example).
+ */
+const attributes = Joi.object({
+  version: Joi.number(),
+  source: Joi.string(),
+  bounding_boxes: Joi.array().items(boundingBox),
+})
   /*
-   * Define custom relationships for specific entity types here.
+   * This switch refers to the { data: { type: "..." } } property on a request.
    */
-  symbol: (s) =>
-    (s as Joi.ObjectSchema)
-      .keys({
-        sentence: relationship({ type: "sentence", nullable: true }),
-        children: Joi.array().items(relationship({ type: "symbol" })),
-      })
-      .options({ presence: "required" }),
-});
+  .when("/data.type", {
+    switch: [
+      {
+        is: "citation",
+        then: Joi.object().keys({
+          paper_id: Joi.string(),
+        }),
+      },
+      {
+        is: "symbol",
+        then: Joi.object().keys({
+          mathml: Joi.string(),
+          mathml_near_matches: Joi.array().items(Joi.string()),
+          sentence: Joi.string().allow(null),
+        }),
+      },
+      {
+        is: "sentence",
+        then: Joi.object().keys({
+          text: Joi.string(),
+          tex_start: Joi.number(),
+          tex_end: Joi.number(),
+        }),
+      },
+    ],
+  })
+  .unknown(false);
 
-const entity = Joi.object({
+/**
+ * Expected relationships for new entity types can be added by adding another item to
+ * the 'switch' array (see 'symbol' for an example).
+ */
+const relationships = Joi.object()
+  .when("/data.type", {
+    switch: [
+      {
+        is: "symbol",
+        then: Joi.object().keys({
+          sentence: relationship({ type: "sentence", nullable: true }),
+          children: Joi.array().items(relationship({ type: "symbol" })),
+        }),
+      },
+    ],
+  })
+  .unknown(false);
+
+export const entityPost = Joi.object({
   data: Joi.object({
-    id: Joi.string().alter({
-      post: (s) => s.forbidden(),
-      patch: (s) => s.required(),
-    }),
-    type: Joi.string()
-      .required()
-      /*
-       * Add a type name for a custom entity here to enable strict attribute validation
-       * for that type. The 'type' for this entity will then only be allowed in conjunction
-       * with the strict set of expected attributes and relationships defined by the 'alter'
-       * rules for that type.
-       */
-      .disallow("citation", "symbol", "sentence")
-      .alter({
-        /*
-         * Add the type name for each allowed entity type here.
-         */
-        citation: (s) => s.valid("citation"),
-        symbol: (s) => s.valid("symbol"),
-        sentence: (s) => s.valid("sentence"),
-      }),
-    attributes: attributes.alter(requireForPost),
-    relationships: relationships.alter(requireForPost),
+    id: Joi.string().forbidden(),
+    type: Joi.string().required(),
+    /*
+     * All defined attributes and relationships are required in a POST request.
+     * However, as documented in https://github.com/hapijs/joi/issues/556#issuecomment-346912235,
+     * it should be possible to mark individual properties as optional in POST requests by
+     * adding ane explicit 'optional()' to that key.
+     */
+    attributes: attributes.required().options({ presence: "required" }),
+    relationships: relationships.required().options({ presence: "required" }),
   }),
 });
 
-/*
- * Add all expected types of entities here.
- */
-const allEntityTypes = Joi.alternatives(
-  entity.tailor("notype"),
-  entity.tailor("citation"),
-  entity.tailor("symbol"),
-  entity.tailor("sentence")
-);
-
-export const entityPostPayload = allEntityTypes.tailor("post");
-export const entityPatchPayload = allEntityTypes.tailor("patch");
+export const entityPatch = Joi.object({
+  data: Joi.object({
+    id: Joi.string().required(),
+    type: Joi.string().required(),
+    /*
+     * No single attribute or relationship is required on path.
+     */
+    attributes,
+    relationships,
+  }),
+});
