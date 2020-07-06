@@ -21,6 +21,7 @@ def upload_sentences(
             bounding_boxes=boxes,
             data={
                 "text": sentence.text,
+                "tex": sentence.tex,
                 "tex_start": str(sentence.start),
                 "tex_end": str(sentence.end),
             },
