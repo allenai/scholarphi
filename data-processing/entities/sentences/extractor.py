@@ -146,7 +146,7 @@ def extract_richer_tex(context_tex: str, tex: str) -> str:
     if len(surrounding_tex) > 2:
         surrounding_tex = [tex.join(surrounding_tex[:-1]), surrounding_tex[-1]]
     before_tex, after_tex = surrounding_tex
-    richer_tex = before_tex.split("\n\n")[-1] + tex + after_tex.split("\n\n")[0]
+    richer_tex = before_tex.split("\n")[-1] + tex + after_tex.split("\n")[0]
     return richer_tex
 
 
