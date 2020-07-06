@@ -66,7 +66,11 @@ export const plugin = {
         const uniqueIds = ids.filter((id, index) => {
           return ids.indexOf(id) === index;
         });
-        return s2Api.getPapers(uniqueIds);
+        return {
+          data: {
+            papers: s2Api.getPapers(uniqueIds),
+          },
+        };
       },
       options: {
         validate: {
