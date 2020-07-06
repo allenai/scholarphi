@@ -5,8 +5,14 @@ from typing import Dict, List, cast
 from peewee import ForeignKeyField, TextField
 
 from common import directories, file_utils
-from common.models import (BoundingBox, Entity, EntityBoundingBox, OutputModel,
-                           Paper, output_database)
+from common.models import (
+    BoundingBox,
+    Entity,
+    EntityBoundingBox,
+    OutputModel,
+    Paper,
+    output_database,
+)
 from common.types import HueLocationInfo, PaperProcessingResult
 
 from .types import Definition as DefinitionEntity
@@ -40,5 +46,4 @@ def upload_definitions(processing_summary: PaperProcessingResult) -> None:
     except Paper.DoesNotExist:
         paper = Paper.create(s2_id=s2_id, arxiv_id=arxiv_id)
 
-    #TODO this needs to be implemented
-
+    # TODO this needs to be implemented
