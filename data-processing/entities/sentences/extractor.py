@@ -51,11 +51,16 @@ PATTERN_ITEMIZE_BEGIN = r"\\begin\{itemize[*]*\}"
 PATTERN_ITEMIZE_END = r"\\end\{itemize[*]*\}"
 
 PATTERN_REF = r"\\ref\{[A-Za-z0-9 \\_.,:-]*\}"
-# TODO @dykang Fix to capture citations patterns like \cite[GRUs;][]{cho2004}
 PATTERN_CITE = r"\\cite[A-Za-z0-9 \\_\[\].,:-]*\{[A-Za-z0-9 \\_.,:-]*\}"
 PATTERN_SYMBOL = r"\$[A-Za-z0-9\\ \{\}\(\)\[\]^&*_.,\+:\;-\=#]*\$"
 PATTERN_URL = r"\\url\{[A-Za-z0-9 \{\}/\\_.,:-]*\}"
 PATTERN_ANY = r"\\[A-Za-z0-9\\\[\]_.,:-]*[\{[A-Za-z0-9 \\_.,:-]*\}]*"
+
+PATTERN_IFFALSE_BEGIN = r"\\iffalse\s*"
+PATTERN_IFFALSE_END = r"\\fi\s*"
+
+PATTERN_BEGIN = r"\\begin\{[A-Za-z0-9 \{\}\\_.,:-]*\}"
+PATTERN_END = r"\\end\{[A-Za-z0-9 \{\}\\_.,:-]*\}"
 
 # objects for detecting nesting structures from the extended tex
 NESTING_CHARACTERS_MAPPING = {"{": "}", "[": "]"}
@@ -93,6 +98,8 @@ def check_sentence_or_not(tex: str, tex_unit_dict: Dict[str, List[str]]) -> bool
         return False
     if "is_sentence_in_table" in tex_unit_dict and tex_unit_dict["is_sentence_in_table"]:
         return False
+    if "is_iffalse" in tex_unit_dict and tex_unit_dict["is_iffalse"]:
+        return False
 
     # ignore the tex line that declares sections or begin/end of abstract section
     if len(tex_unit_dict["abstract_begin"]) > 0:
@@ -112,6 +119,9 @@ def check_sentence_or_not(tex: str, tex_unit_dict: Dict[str, List[str]]) -> bool
 
     return True
 
+# begin{center}, end{center}
+# begin{definition}, end{definition}
+# begin{example}
 
 #     # check whether tex has incomplete nesting structure or not
     # # There are some cases that the previous section/figure/table filters do not cover. For instance, some lines in section declaration have very noisy lines like "Introduction}" or "-9pt}". Those cases can be simply filtered by checking their nesting structures.
@@ -136,7 +146,7 @@ def extract_richer_tex(context_tex: str, tex: str) -> str:
     if len(surrounding_tex) > 2:
         surrounding_tex = [tex.join(surrounding_tex[:-1]), surrounding_tex[-1]]
     before_tex, after_tex = surrounding_tex
-    richer_tex = before_tex.split("\n")[-1] + tex + after_tex.split("\n")[0]
+    richer_tex = before_tex.split("\n\n")[-1] + tex + after_tex.split("\n\n")[0]
     return richer_tex
 
 
@@ -191,6 +201,7 @@ class SentenceExtractor(EntityExtractor):
         length_so_far_in_plain_text = 0
 
         current_section = ""
+        is_iffalse = False
         is_sentence_in_table, is_sentence_in_figure, is_sentence_in_itemize = False, False, False
         for i, sentence in enumerate(segmenter.segment(plaintext)):
             # The pysbd module has several open bugs and issues which are addressed below.
@@ -234,7 +245,7 @@ class SentenceExtractor(EntityExtractor):
             tex_sub = tex[start:end]
             context_tex = tex[start - DEFAULT_CONTEXT_SIZE : end + DEFAULT_CONTEXT_SIZE]
 
-            # extract richer context of tex using '\n'
+            # extract richer context of tex using '\n\n'
             extended_tex_sub = extract_richer_tex(context_tex, tex_sub)
 
             # detect tex units (e.g., section, figure) using pre-defined regex
@@ -262,14 +273,18 @@ class SentenceExtractor(EntityExtractor):
                 tex_unit_dict["figure_end"] = regex.findall(
                     PATTERN_FIGURE_END, extended_tex_sub
                 )
-
                 tex_unit_dict["itemize_begin"] = regex.findall(
                     PATTERN_ITEMIZE_BEGIN, extended_tex_sub
                 )
                 tex_unit_dict["itemize_end"] = regex.findall(
                     PATTERN_ITEMIZE_END, extended_tex_sub
                 )
-
+                tex_unit_dict["iffalse_begin"] = regex.findall(
+                    PATTERN_IFFALSE_BEGIN, extended_tex_sub
+                )
+                tex_unit_dict["iffalse_end"] = regex.findall(
+                    PATTERN_IFFALSE_END, extended_tex_sub
+                )
                 tex_unit_dict["ref"] = regex.findall(PATTERN_REF, extended_tex_sub)
                 tex_unit_dict["cite"] = regex.findall(PATTERN_CITE, extended_tex_sub)
                 tex_unit_dict["symbol"] = regex.findall(
@@ -300,6 +315,15 @@ class SentenceExtractor(EntityExtractor):
                     current_section = "ABSTRACT"
                 if len(tex_unit_dict["abstract_end"]) > 0:
                     current_section = None
+                if len(tex_unit_dict["iffalse_end"]) > 0:
+                    is_iffalse = False
+                if len(tex_unit_dict["iffalse_begin"]) > 0:
+                    is_iffalse = True
+
+                # if '\\fi' in extended_tex_sub:
+                    # print(extended_tex_sub)
+                #     from pdb import set_trace; set_trace()
+
                 if len(tex_unit_dict["section"]) > 0:
                     section = tex_unit_dict["section"][0]
                     current_section = extract_text_from_tex_group(section)
@@ -323,6 +347,8 @@ class SentenceExtractor(EntityExtractor):
             # decide whether current line is in section/figure/table
             if current_section:
                 tex_unit_dict["current_section"] = current_section
+            #if is_iffalse:
+            tex_unit_dict["is_iffalse"] = is_iffalse
             if is_sentence_in_figure:
                 tex_unit_dict["is_sentence_in_figure"] = is_sentence_in_figure
             if is_sentence_in_table:
@@ -385,6 +411,7 @@ class SentenceExtractor(EntityExtractor):
                 extended_tex=extended_tex_sub,
                 is_sentence=is_sentence,
                 current_section=tex_unit_dict.get("current_section", ""),
+                is_iffalse=tex_unit_dict.get("is_iffalse", False),
                 is_sentence_in_figure=tex_unit_dict.get("is_sentence_in_figure", False),
                 is_sentence_in_table=tex_unit_dict.get("is_sentence_in_table", False),
                 is_sentence_in_itemize=tex_unit_dict.get("is_sentence_in_itemize", False),
