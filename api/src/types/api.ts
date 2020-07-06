@@ -34,6 +34,9 @@ export type Entity = GenericEntity | Symbol | Citation | Sentence;
  * pass it as the first generic parameter. Otherwise, set the generic to '{}'.
  */
 export interface BaseEntity {
+  /**
+   * Entity IDs are guaranteed to be unique, both within and across papers.
+   */
   id: string;
   type: string;
   attributes: BaseEntityAttributes;
@@ -181,6 +184,7 @@ export interface Sentence extends BaseEntity {
 
 export interface SentenceAttributes extends BaseEntityAttributes {
   text: string;
+  tex: string;
   tex_start: number;
   tex_end: number;
 }

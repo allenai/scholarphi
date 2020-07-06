@@ -91,6 +91,7 @@ const attributes = Joi.object({
         is: "sentence",
         then: Joi.object().keys({
           text: Joi.string(),
+          tex: Joi.string(),
           tex_start: Joi.number(),
           tex_end: Joi.number(),
         }),
