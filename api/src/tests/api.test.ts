@@ -37,7 +37,7 @@ describe("API", () => {
    * initialize its own data.
    */
   afterEach(async () => {
-    truncateTables(knex);
+    await truncateTables(knex);
     await server.stop();
     /*
      * Server should be destroyed to clean up the database connection created with each initServer()
