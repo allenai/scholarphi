@@ -4,6 +4,7 @@ import {
   Citation,
   DataResponse,
   Entity,
+  EntityPatchPayload,
   EntityPostPayload,
 } from "../types/api";
 import {
@@ -134,7 +135,6 @@ describe("API", () => {
       ]);
       await knex.batchInsert("entitydata", [
         {
-          id: 1,
           entity_id: 1,
           source: "test",
           type: "scalar",
@@ -183,7 +183,6 @@ describe("API", () => {
       ] as EntityRow[]);
       await knex.batchInsert("entitydata", [
         {
-          id: 2,
           entity_id: 2,
           source: "test",
           type: "scalar",
@@ -191,7 +190,6 @@ describe("API", () => {
           value: "<math></math>",
         },
         {
-          id: 3,
           entity_id: 2,
           source: "test",
           type: "scalar-list",
@@ -199,7 +197,6 @@ describe("API", () => {
           value: "<math><mi>x</mi></math>",
         },
         {
-          id: 4,
           entity_id: 2,
           source: "test",
           type: "scalar-list",
@@ -207,7 +204,6 @@ describe("API", () => {
           value: "<math><mi>y</mi></math>",
         },
         {
-          id: 5,
           entity_id: 2,
           source: "test",
           type: "reference",
@@ -215,7 +211,6 @@ describe("API", () => {
           value: "3",
         },
         {
-          id: 6,
           entity_id: 2,
           source: "test",
           type: "reference-list",
@@ -223,7 +218,6 @@ describe("API", () => {
           value: "4",
         },
         {
-          id: 7,
           entity_id: 2,
           source: "test",
           type: "reference-list",
@@ -235,7 +229,6 @@ describe("API", () => {
          * are not known data fields for the entity.
          */
         {
-          id: 12,
           entity_id: 2,
           source: "test",
           type: "scalar",
@@ -243,7 +236,6 @@ describe("API", () => {
           value: "1",
         },
         {
-          id: 13,
           entity_id: 2,
           source: "test",
           type: "scalar-list",
@@ -251,7 +243,6 @@ describe("API", () => {
           value: "1",
         },
         {
-          id: 14,
           entity_id: 2,
           source: "test",
           type: "reference",
@@ -259,7 +250,6 @@ describe("API", () => {
           value: "1",
         },
         {
-          id: 15,
           entity_id: 2,
           source: "test",
           type: "reference-list",
@@ -317,7 +307,6 @@ describe("API", () => {
       ] as EntityRow[]);
       await knex.batchInsert("entitydata", [
         {
-          id: 8,
           entity_id: 3,
           source: "test",
           type: "scalar",
@@ -325,7 +314,6 @@ describe("API", () => {
           value: "Sentence.",
         },
         {
-          id: 9,
           entity_id: 3,
           source: "test",
           type: "scalar",
@@ -333,7 +321,6 @@ describe("API", () => {
           value: "Sentence.",
         },
         {
-          id: 10,
           entity_id: 3,
           source: "test",
           type: "scalar",
@@ -341,7 +328,6 @@ describe("API", () => {
           value: "0",
         },
         {
-          id: 11,
           entity_id: 3,
           source: "test",
           type: "scalar",
@@ -414,7 +400,7 @@ describe("API", () => {
       expect(data.id).not.toBeUndefined();
 
       const entityRows: EntityRow[] = await knex("entity").select();
-      expect(entityRows.length).toBe(1);
+      expect(entityRows).toHaveLength(1);
       expect(entityRows[0]).toMatchObject({
         paper_id: "s2id",
         type: "unknown",
@@ -427,7 +413,7 @@ describe("API", () => {
       const boundingBoxRows: BoundingBoxRow[] = await knex(
         "boundingbox"
       ).select();
-      expect(boundingBoxRows.length).toBe(1);
+      expect(boundingBoxRows).toHaveLength(1);
       expect(boundingBoxRows[0]).toMatchObject({
         entity_id: entityId,
         source: "test",
@@ -440,7 +426,7 @@ describe("API", () => {
       expect(boundingBoxRows[0].id).not.toBeUndefined();
 
       const entityDataRows: EntityDataRow[] = await knex("entitydata").select();
-      expect(entityDataRows.length).toBe(0);
+      expect(entityDataRows).toHaveLength(0);
     });
 
     test("generic entity with unexpected properties", async () => {
@@ -485,7 +471,7 @@ describe("API", () => {
       });
 
       expect(response.statusCode).toEqual(400);
-      expect((await knex("entity").select()).length).toBe(0);
+      expect(await knex("entity").select()).toHaveLength(0);
     });
 
     test("citation", async () => {
@@ -535,7 +521,7 @@ describe("API", () => {
       expect(data.id).not.toBeUndefined();
 
       const entityDataRows: EntityDataRow[] = await knex("entitydata").select();
-      expect(entityDataRows.length).toBe(1);
+      expect(entityDataRows).toHaveLength(1);
       expect(entityDataRows[0]).toMatchObject({
         type: "scalar",
         source: "test",
@@ -588,7 +574,170 @@ describe("API", () => {
       });
 
       expect(response.statusCode).toEqual(400);
-      expect((await knex("entity").select()).length).toBe(0);
+      expect(await knex("entity").select()).toHaveLength(0);
+    });
+  });
+
+  describe("PATCH /api/v0/papers/arxiv:{arxivId}/entities/{entityId}", () => {
+    /*
+     * Patching a symbol can involve changing generic entity attributes, bounding boxes, and
+     * attributes specific to symbols. All three changes are tested here.
+     */
+    test("symbol", async () => {
+      await knex("paper").insert({
+        s2_id: "s2id",
+        arxiv_id: "1111.1111",
+      } as PaperRow);
+      await knex("version").insert({
+        id: 1,
+        paper_id: "s2id",
+        index: 0,
+      } as VersionRow);
+      await knex.batchInsert("entity", [
+        {
+          id: 1,
+          paper_id: "s2id",
+          version: 0,
+          type: "symbol",
+          source: "test",
+        },
+      ] as EntityRow[]);
+      await knex.batchInsert("boundingbox", [
+        {
+          entity_id: 1,
+          source: "test",
+          page: 0,
+          left: 0,
+          top: 0,
+          width: 0.1,
+          height: 0.05,
+        },
+      ] as BoundingBoxRow[]);
+      await knex.batchInsert("entitydata", [
+        {
+          entity_id: 1,
+          source: "test",
+          type: "scalar",
+          key: "mathml",
+          value: "<math></math>",
+        },
+        {
+          entity_id: 1,
+          source: "test",
+          type: "scalar-list",
+          key: "mathml_near_matches",
+          value: "<math><mi>x</mi></math>",
+        },
+        {
+          entity_id: 1,
+          source: "test",
+          type: "scalar-list",
+          key: "mathml_near_matches",
+          value: "<math><mi>y</mi></math>",
+        },
+        {
+          entity_id: 1,
+          source: "test",
+          type: "reference",
+          key: "sentence",
+          value: "3",
+        },
+        {
+          entity_id: 1,
+          source: "test",
+          type: "reference-list",
+          key: "children",
+          value: "4",
+        },
+        {
+          entity_id: 1,
+          source: "test",
+          type: "reference-list",
+          key: "children",
+          value: "5",
+        },
+      ]);
+
+      const payload: EntityPatchPayload = {
+        data: {
+          id: "1",
+          type: "symbol",
+          attributes: {
+            source: "patch-source",
+            bounding_boxes: [
+              {
+                source: "test",
+                page: 1,
+                top: 10,
+                left: 10,
+                width: 0.2,
+                height: 0.1,
+              },
+            ],
+            mathml: "<math><mi>z</mi></math>",
+          },
+          relationships: {
+            children: [{ type: "symbol", id: "6" }],
+          },
+        },
+      };
+
+      const response = await server.inject({
+        method: "patch",
+        url: "/api/v0/papers/arxiv:1111.1111/entities/1",
+        payload,
+      });
+
+      expect(response.statusCode).toEqual(200);
+      expect((response.result as any).data).toBeUndefined();
+
+      const entityRows: EntityRow[] = await knex("entity").select();
+      expect(entityRows).toHaveLength(1);
+      expect(entityRows[0]).toMatchObject({
+        source: "patch-source",
+      } as EntityRow);
+
+      const boundingBoxRows: BoundingBoxRow[] = await knex(
+        "boundingbox"
+      ).select();
+      expect(boundingBoxRows).toHaveLength(1);
+      expect(boundingBoxRows[0]).toMatchObject({
+        entity_id: 1,
+        source: "test",
+        page: 1,
+        top: 10,
+        left: 10,
+        width: 0.2,
+        height: 0.1,
+      } as BoundingBoxRow);
+      expect(boundingBoxRows[0].id).not.toBeUndefined();
+
+      const mathMlRows: EntityDataRow[] = await knex("entitydata")
+        .select()
+        .where({ key: "mathml" });
+      expect(mathMlRows).toHaveLength(1);
+      expect(mathMlRows[0]).toMatchObject({
+        value: "<math><mi>z</mi></math>",
+        source: "patch-source",
+      });
+
+      const sentenceRows: EntityDataRow[] = await knex("entitydata")
+        .select()
+        .where({ key: "sentence" });
+      expect(sentenceRows[0]).toMatchObject({
+        value: "3",
+      });
+
+      const childrenRows: EntityDataRow[] = await knex("entitydata")
+        .select()
+        .where({ key: "children" });
+      expect(childrenRows).toHaveLength(1);
+      expect(childrenRows[0]).toMatchObject({
+        source: "patch-source",
+        type: "reference-list",
+        key: "children",
+        value: "6",
+      });
     });
   });
 });
