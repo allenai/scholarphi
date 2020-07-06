@@ -10,6 +10,7 @@ class Sentence(SerializableEntity):
     extended_tex: str
     is_sentence: bool # TODO @dykang this field should be deleted once we have a stable extractor
     current_section: str
+    is_iffalse: bool
     is_sentence_in_figure: str
     is_sentence_in_table: str
     is_sentence_in_itemize: str
