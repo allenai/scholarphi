@@ -43,7 +43,7 @@ PYSBD_RESERVED_CHARACTERS: List[str] = [
     "ᓸ",
 ]
 
-symbols = ["%", "^", "{", "}", "[", "]", "\\", "=", "#", "&", "~", "$", "|", "_", ":", ";"]
+NON_ACRONYM_CHARACTERS = ["%", "^", "{", "}", "[", "]", "\\", "=", "#", "&", "~", "$", "|", "_", ":", ";"]
 
 class AbbreviationExtractor(EntityExtractor):
     """
@@ -102,8 +102,8 @@ class AbbreviationExtractor(EntityExtractor):
         #this extracts the abbreviations from the scispacy model
         for abrv in doc._.abbreviations:
             count = 0
-            for s in symbols:
-                count += str(abrv).count(s)
+            for s in NON_ACRONYM_CHARACTERS:
+                 count += str(abrv).count(s)
             #count makes sure that we don't accidentally include symbols or variables
             if count == 0:
                 abb_short_forms[str(abrv)] = [[plaintext_to_tex_offset_map[m.start()], plaintext_to_tex_offset_map[m.start() + len(str(abrv))]] for m in re.finditer(str(abrv), plaintext)]
