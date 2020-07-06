@@ -240,12 +240,14 @@ export class Connection {
   ) {
     if (
       typeof attributes.text !== "string" ||
+      typeof attributes.tex !== "string" ||
       typeof attributes.tex_start !== "string" ||
       typeof attributes.tex_end !== "string"
     ) {
       throw new EntityLoadError(genericEntity.id, genericEntity.type);
     }
     const text = attributes.text;
+    const tex = attributes.tex;
     const tex_start = parseInt(attributes.tex_start);
     const tex_end = parseInt(attributes.tex_end);
 
@@ -259,6 +261,7 @@ export class Connection {
       attributes: {
         ...genericEntity.attributes,
         text,
+        tex,
         tex_start,
         tex_end,
       },
