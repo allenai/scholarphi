@@ -4,8 +4,8 @@ import {
   BoundingBox,
   Citation,
   Entity,
-  EntityPatchData,
-  EntityPostData,
+  EntityPatchData as EntityUpdateData,
+  EntityPostData as EntityCreateData,
   GenericAttributes,
   GenericEntity,
   GenericRelationships,
@@ -482,7 +482,7 @@ export class Connection {
     return rows;
   }
 
-  async createEntity(paperSelector: PaperSelector, data: EntityPostData) {
+  async createEntity(paperSelector: PaperSelector, data: EntityCreateData) {
     /**
      * Fetch the ID for the specified paper.
      */
@@ -548,7 +548,7 @@ export class Connection {
     return cleanedEntity;
   }
 
-  async updateEntity(data: EntityPatchData) {
+  async updateEntity(data: EntityUpdateData) {
     /**
      * Update entity data.
      */
@@ -562,7 +562,7 @@ export class Connection {
     if (entityRowUpdates !== null && Object.keys(entityRowUpdates).length > 0) {
       await this._knex("entity")
         .update(entityRowUpdates)
-        .where({ id: data.id });
+        .where({ id: data.id, type: data.type });
     }
     const entityId = Number(data.id);
 
