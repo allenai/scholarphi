@@ -56,7 +56,7 @@ def upload_entities(
         paper = Paper.create(s2_id=s2_id, arxiv_id=arxiv_id)
 
     # Generate the version number of data for this table if one wasn't specified. This relies on
-    # a paper having already been created, as the version table references the paper table.
+    # a paper having already been created, because the version table references the paper table.
     if data_version is None:
         data_version = get_or_create_data_version(paper.s2_id)
 
