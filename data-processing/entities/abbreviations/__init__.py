@@ -13,9 +13,6 @@ commands = create_entity_localization_command_sequence(
     DetectedEntityType=Abbreviation
 )
 
-# Register additional directories to be used by the upload function
-directories.register("abbreviations-model-ids")
-
 abbreviations_pipeline = EntityPipeline(
     "abbreviations", commands
 )
