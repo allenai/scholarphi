@@ -109,7 +109,7 @@ export const plugin = {
         await dbConnection.updateEntity(
           (request.payload as EntityPatchPayload).data
         );
-        return h.response({}).code(200);
+        return h.response({}).code(204);
       },
       options: {
         validate: {
@@ -123,7 +123,7 @@ export const plugin = {
 
     server.route({
       method: "DELETE",
-      path: "papers/arxiv:{arxivId}/annotation/{id}",
+      path: "papers/arxiv:{arxivId}/entities/{id}",
       handler: async (request, h) => {
         const { id } = request.params;
         await dbConnection.deleteEntity(id);
