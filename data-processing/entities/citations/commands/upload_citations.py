@@ -103,10 +103,19 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
 
         citation_index = 0
         for citation_key, locations in citation_locations.items():
+
+            if citation_key not in key_s2_ids:
+                logging.warning(  # pylint: disable=logging-not-lazy
+                    "Not uploading bounding box information for citation with key "
+                    + "%s because it was not resolved to a paper S2 ID.",
+                    citation_key,
+                )
+                continue
+
             for cluster_index, location_set in locations.items():
                 boxes = cast(List[BoundingBox], list(location_set))
                 entity_info = EntityInformation(
-                    id_=str(cluster_index),
+                    id_=f"{citation_key}-{cluster_index}",
                     type_="citation",
                     bounding_boxes=boxes,
                     data={"key": citation_key, "s2_id": key_s2_ids[citation_key]},

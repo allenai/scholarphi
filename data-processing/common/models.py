@@ -4,18 +4,9 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
-from peewee import (
-    SQL,
-    CharField,
-    DatabaseProxy,
-    DateTimeField,
-    FloatField,
-    ForeignKeyField,
-    IntegerField,
-    Model,
-    PostgresqlDatabase,
-    TextField,
-)
+from peewee import (SQL, CharField, DatabaseProxy, DateTimeField, FloatField,
+                    ForeignKeyField, IntegerField, Model, PostgresqlDatabase,
+                    TextField)
 from playhouse.postgres_ext import DateTimeTZField
 
 from scripts.pipelines import entity_pipelines
@@ -91,7 +82,7 @@ class Version(OutputModel):
     index = IntegerField(index=True)
     " Starts at 0 for the first version of data for a paper, increases by 1 each time. "
 
-    session_id = TextField(index=True)
+    session_id = TextField(index=True, null=True)
     """
     For use by this data pipeline only. This is a unique ID for the session of the pipeline that
     created this version. This can be used by the pipeline to check whether it has already created
@@ -131,7 +122,7 @@ class Entity(TimestampsMixin, OutputModel):
     """
 
     type = TextField(index=True)
-    within_paper_id = TextField(index=True)
+    within_paper_id = TextField(index=True, null=True)
     """
     'within_paper_id' is a unique ID for this entity of this type within the paper. Entities of
     different types within the same paper can have the same 'within_paper_id'. Entities of the
