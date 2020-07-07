@@ -188,6 +188,7 @@ class DetectedDefinitions(ArxivBatchCommand[FindSentencesTask, DefinitionSentenc
                 "entities.csv",
             )
 
+            # from pdb import set_trace; set_trace()
             try:
                 sentences = list(
                     file_utils.load_from_csv(detected_sentences_path, Sentence)
@@ -222,6 +223,9 @@ class DetectedDefinitions(ArxivBatchCommand[FindSentencesTask, DefinitionSentenc
 
         term_index_count, definition_index_count = 0, 0
         for sid, sentence in enumerate(sentences_ordered):
+
+            if not sentence.is_sentence:
+                continue
 
             # extract nlp features from raw text
             featurized_text = nlp_model.featurize(sentence.text)
