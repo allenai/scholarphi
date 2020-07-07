@@ -9,6 +9,7 @@ pysbd
 reportlab
 requests
 TexSoup==0.2.0
+nltk==3.4
 
 # Development dependencies
 black
