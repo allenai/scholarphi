@@ -6,13 +6,8 @@ from typing import Dict, Iterator, List, cast
 
 from common import directories, file_utils
 from common.commands.database import DatabaseUploadCommand
-from common.types import (
-    BibitemMatch,
-    BoundingBox,
-    CitationData,
-    EntityInformation,
-    SerializableReference,
-)
+from common.types import (BibitemMatch, BoundingBox, CitationData,
+                          EntityInformation, SerializableReference)
 from common.upload_entities import upload_entities
 
 from ..utils import load_located_citations
@@ -118,7 +113,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                     id_=f"{citation_key}-{cluster_index}",
                     type_="citation",
                     bounding_boxes=boxes,
-                    data={"key": citation_key, "s2_id": key_s2_ids[citation_key]},
+                    data={"key": citation_key, "paper_id": key_s2_ids[citation_key]},
                 )
                 entity_infos.append(entity_info)
                 citation_index += 1

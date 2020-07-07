@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from peewee import fn
 
@@ -89,24 +89,47 @@ def upload_entities(
         # Create models for each field in the entity data.
         if entity.data is not None:
             for key, value in entity.data.items():
-                if value is None or isinstance(value, str):
-                    entity_data_models.append(
-                        EntityDataModel(
-                            entity=entity_model, type="scalar", key=key, value=value
-                        )
+
+                # The value may have been specified as a list, or as a single scalar value.
+                # Unpack all of the values for this key into a list.
+                values: List[Any] = []
+                if isinstance(value, list):
+                    of_list = True
+                    values.extend(value)
+                else:
+                    of_list = False
+                    values.append(value)
+
+                value_types = {type(v) for v in values}
+                if not len(value_types) == 1:
+                    logging.warning(  # pylint: disable=logging-not-lazy
+                        "Attempted to upload multiple primitive types of data for key %s. "
+                        + "Types were %s. Not permitted. Skipping this value.",
+                        key,
+                        value_types,
                     )
-                elif (
-                    isinstance(value, list)
-                    and len(value) > 0
-                    and isinstance(value[0], str)
-                ):
-                    for item in value:
+                    continue
+
+                # Create a new row for each value, with information of the base data type
+                # and whether that row belongs to a list.
+                for v in values:
+                    type_ = None
+                    if isinstance(v, int):
+                        type_ = "int"
+                    elif isinstance(v, float):
+                        type_ = "float"
+                    elif isinstance(v, str):
+                        type_ = "str"
+
+                    if type_ is not None:
                         entity_data_models.append(
                             EntityDataModel(
                                 entity=entity_model,
-                                type="scalar-list",
                                 key=key,
-                                value=item,
+                                value=v,
+                                item_type=type_,
+                                of_list=of_list,
+                                relation_id=None,
                             )
                         )
 
@@ -161,21 +184,17 @@ def upload_entities(
             continue
 
         for k, v in entity.relationships.items():
-            if v is None:
-                entity_relationship_models.append(
-                    EntityDataModel(
-                        entity_id=model, type="reference", key=k, value=None
-                    )
-                )
             if isinstance(v, EntityReference):
                 referenced_model = resolve_model(v.type_, v.id_)
                 if referenced_model is not None:
                     entity_relationship_models.append(
                         EntityDataModel(
                             entity_id=model,
-                            type="reference",
                             key=k,
-                            value=referenced_model,
+                            value=referenced_model.id,
+                            item_type="relation-id",
+                            of_list=False,
+                            relation_type=v.type_,
                         )
                     )
             elif (
@@ -187,9 +206,11 @@ def upload_entities(
                         entity_relationship_models.append(
                             EntityDataModel(
                                 entity_id=model,
-                                type="reference-list",
                                 key=k,
-                                value=referenced_model,
+                                value=referenced_model.id,
+                                item_type="relation-id",
+                                of_list=True,
+                                relation_type=reference.type_,
                             )
                         )
 
