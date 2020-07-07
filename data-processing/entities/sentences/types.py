@@ -15,9 +15,11 @@ class Sentence(SerializableEntity):
     is_sentence_in_figure: str
     is_sentence_in_table: str
     is_sentence_in_itemize: str
-    label: List[str]
-    ref: List[str]
-    cite: List[str]
-    symbol: List[str]
-    url: List[str]
-    others: List[str]
+    #commented below for errors in cast typing in line 128 in common/file_utils.py
+
+    # label: List[str]
+    # ref: List[str]
+    # cite: List[str]
+    # symbol: List[str]
+    # url: List[str]
+    # others: List[str]
