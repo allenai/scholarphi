@@ -73,10 +73,10 @@ class TermExtractor(EntityExtractor):
                                 name=cand,
                                 definition=definition,
                                 id_=str(term_count),
-                                start=start,
-                                end=end,
+                                start=start_in_segment,
+                                end=end_in_segment,
                                 tex_path=tex_path,
-                                tex=text_segment,
+                                tex=text_segment.text,
                                 context_tex=tex[
                                     start
                                     - DEFAULT_CONTEXT_SIZE : end
