@@ -76,7 +76,7 @@ class TermExtractor(EntityExtractor):
                                 start=start,
                                 end=end,
                                 tex_path=tex_path,
-                                tex=tex,
+                                tex=tex_segment,
                                 context_tex=tex[
                                     start
                                     - DEFAULT_CONTEXT_SIZE : end
