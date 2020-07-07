@@ -143,7 +143,9 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
 
             data: EntityData = {
                 "mathml": symbol.mathml,
-                "matching_mathml": [m.matching_mathml for m in matches[symbol.mathml]],
+                "mathml_near_matches": [
+                    m.matching_mathml for m in matches[symbol.mathml]
+                ],
             }
 
             sentence_key = symbol_sentences.get(symbol_id)
@@ -163,7 +165,7 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
                 "children": [
                     EntityReference(type_="symbol", id_=id_) for id_ in child_ids
                 ],
-                "sentence": None
+                "sentence": EntityReference(type_="sentence", id_=None)
                 if sentence_id is None
                 else EntityReference(type_="sentence", id_=sentence_id),
             }
