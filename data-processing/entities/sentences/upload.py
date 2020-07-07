@@ -22,8 +22,8 @@ def upload_sentences(
             data={
                 "text": sentence.text,
                 "tex": sentence.tex,
-                "tex_start": str(sentence.start),
-                "tex_end": str(sentence.end),
+                "tex_start": sentence.start,
+                "tex_end": sentence.end,
             },
         )
         entity_infos.append(entity_info)

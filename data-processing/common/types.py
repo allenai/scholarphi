@@ -502,7 +502,7 @@ class EntityReference:
     provide a key to the entity that is unique within the paper.
     """
 
-    id_: str
+    id_: Optional[str]
     type_: str
 
 
@@ -510,14 +510,14 @@ class EntityReference:
 Unique data for each type of entity is stored as key-value pairs. Values can either be strings
 (a general catch-all data type for storing strings, HTML, integers, etc.), or lists of strings.
 """
-EntityData = Dict[str, Union[str, List[str]]]
+EntityData = Dict[str, Union[int, float, str, List[str], List[int], List[float]]]
 
 """
 Relationships for an entity, also stored as key-value pairs. The key is the name of the
 related entity. The value is an entity reference, which includes a type and ID that uniquely
 identifies the related entity in this paper.
 """
-EntityRelationships = Dict[str, Union[None, EntityReference, List[EntityReference]]]
+EntityRelationships = Dict[str, Union[EntityReference, List[EntityReference]]]
 
 
 @dataclass(frozen=True)

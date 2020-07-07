@@ -4,9 +4,20 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
-from peewee import (SQL, CharField, DatabaseProxy, DateTimeField, FloatField,
-                    ForeignKeyField, IntegerField, Model, PostgresqlDatabase,
-                    TextField)
+from peewee import (
+    SQL,
+    BooleanField,
+    CharField,
+    Check,
+    DatabaseProxy,
+    DateTimeField,
+    FloatField,
+    ForeignKeyField,
+    IntegerField,
+    Model,
+    PostgresqlDatabase,
+    TextField,
+)
 from playhouse.postgres_ext import DateTimeTZField
 
 from scripts.pipelines import entity_pipelines
@@ -156,27 +167,43 @@ class BoundingBox(TimestampsMixin, OutputModel):
 
 class EntityData(TimestampsMixin, OutputModel):
     """
-    A key-value pair holding arbitrary data for an entity.
+    A key-value pair holding arbitrary data for an entity. Together, the 'item_type', 'of_list', and
+    'relation_type' provide a specification for the type of the data.
     """
 
     entity = ForeignKeyField(Entity, on_delete="CASCADE")
     source = TextField(index=True, default="tex-pipeline")
-    type = TextField(
+    key = TextField(index=True)
+    value = TextField()
+
+    item_type = TextField(
         index=True,
         choices=(
-            ("scalar", None),
-            ("reference", None),
-            ("scalar-list", None),
-            ("reference-list", None),
+            ("int", None),
+            ("float", None),
+            ("string", None),
+            ("relation-id", None),
         ),
     )
-    key = TextField(index=True)
+    " Base type of data. This can be used for casting data when it's retrieved from the datatbase. "
+
+    of_list = BooleanField(index=True)
+    " Whether this data point is an element in a list. "
+
+    relation_type = TextField(
+        index=True,
+        null=True,
+        constraints=[
+            Check(
+                "(item_type = 'relation-id' AND relation_type IS NOT NULL) OR"
+                + "(item_type != 'relation-id' AND relation_type IS NULL)"
+            )
+        ],
+    )
     """
-    If the same key appears more than once for an entity, then the data is probably a list. That said,
-    the best way to tell if the data is part of a list is to see if the type is a 'scalar-list' or
-    a 'reference-list' (see the 'type' field.)
+    The type of entity referred to by a relation-id. Will be defined if the item type is 
+    'relation-id'. Otherwise, will be undefined.
     """
-    value = TextField()
 
 
 def init_database(
