@@ -222,9 +222,6 @@ class DetectedDefinitions(ArxivBatchCommand[FindSentencesTask, DefinitionSentenc
 
         term_index_count, definition_index_count = 0, 0
         for sid, sentence in enumerate(sentences_ordered):
-            # TODO FIXME fake heuristic to capture sentence-like lines. This should be removed once PR #120 is merged to master
-            if len(sentence.text) < 60:
-                continue
 
             # extract nlp features from raw text
             featurized_text = nlp_model.featurize(sentence.text)
