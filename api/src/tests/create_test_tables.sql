@@ -117,9 +117,12 @@ CREATE TABLE dev.entitydata (
     updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
     entity_id integer NOT NULL,
     source text NOT NULL,
-    type text NOT NULL,
     key text NOT NULL,
-    value text NOT NULL
+    value text,
+    item_type text NOT NULL,
+    of_list boolean NOT NULL,
+    relation_type text,
+    CONSTRAINT entitydata_check CHECK ((((item_type = 'relation-id'::text) AND (relation_type IS NOT NULL)) OR ((item_type <> 'relation-id'::text) AND (relation_type IS NULL))))
 );
 
 
@@ -369,6 +372,13 @@ CREATE INDEX entitydata_entity_id ON dev.entitydata USING btree (entity_id);
 
 
 --
+-- Name: entitydata_item_type; Type: INDEX; Schema: dev; Owner: -
+--
+
+CREATE INDEX entitydata_item_type ON dev.entitydata USING btree (item_type);
+
+
+--
 -- Name: entitydata_key; Type: INDEX; Schema: dev; Owner: -
 --
 
@@ -376,17 +386,24 @@ CREATE INDEX entitydata_key ON dev.entitydata USING btree (key);
 
 
 --
+-- Name: entitydata_of_list; Type: INDEX; Schema: dev; Owner: -
+--
+
+CREATE INDEX entitydata_of_list ON dev.entitydata USING btree (of_list);
+
+
+--
+-- Name: entitydata_relation_type; Type: INDEX; Schema: dev; Owner: -
+--
+
+CREATE INDEX entitydata_relation_type ON dev.entitydata USING btree (relation_type);
+
+
+--
 -- Name: entitydata_source; Type: INDEX; Schema: dev; Owner: -
 --
 
 CREATE INDEX entitydata_source ON dev.entitydata USING btree (source);
-
-
---
--- Name: entitydata_type; Type: INDEX; Schema: dev; Owner: -
---
-
-CREATE INDEX entitydata_type ON dev.entitydata USING btree (type);
 
 
 --

@@ -2,10 +2,10 @@ import * as Knex from "knex";
 import ApiServer from "../server";
 import {
   Citation,
-  DataResponse,
   Entity,
-  EntityPatchPayload,
-  EntityPostPayload,
+  EntityCreatePayload,
+  EntityGetResponse,
+  EntityUpdatePayload,
 } from "../types/api";
 import {
   createDefaultQueryBuilder,
@@ -111,7 +111,7 @@ describe("API", () => {
             relationships: {},
           },
         ],
-      } as DataResponse);
+      } as EntityGetResponse);
     });
 
     test("citation", async () => {
@@ -137,9 +137,11 @@ describe("API", () => {
         {
           entity_id: 1,
           source: "test",
-          type: "scalar",
           key: "paper_id",
           value: "citation_paper_id",
+          item_type: "string",
+          of_list: false,
+          relation_type: null,
         },
       ] as EntityDataRow[]);
 
@@ -185,44 +187,56 @@ describe("API", () => {
         {
           entity_id: 2,
           source: "test",
-          type: "scalar",
           key: "mathml",
           value: "<math></math>",
+          item_type: "string",
+          of_list: false,
+          relation_type: null,
         },
         {
           entity_id: 2,
           source: "test",
-          type: "scalar-list",
           key: "mathml_near_matches",
           value: "<math><mi>x</mi></math>",
+          item_type: "string",
+          of_list: true,
+          relation_type: null,
         },
         {
           entity_id: 2,
           source: "test",
-          type: "scalar-list",
           key: "mathml_near_matches",
           value: "<math><mi>y</mi></math>",
+          item_type: "string",
+          of_list: true,
+          relation_type: null,
         },
         {
           entity_id: 2,
           source: "test",
-          type: "reference",
           key: "sentence",
           value: "3",
+          item_type: "relation-id",
+          of_list: false,
+          relation_type: "sentence",
         },
         {
           entity_id: 2,
           source: "test",
-          type: "reference-list",
           key: "children",
           value: "4",
+          item_type: "relation-id",
+          of_list: true,
+          relation_type: "symbol",
         },
         {
           entity_id: 2,
           source: "test",
-          type: "reference-list",
           key: "children",
           value: "5",
+          item_type: "relation-id",
+          of_list: true,
+          relation_type: "symbol",
         },
         /*
          * Here are a few data fields that should *not* show up on the returned object, as they
@@ -231,30 +245,20 @@ describe("API", () => {
         {
           entity_id: 2,
           source: "test",
-          type: "scalar",
           key: "unknown_property_1",
           value: "1",
+          item_type: "int",
+          of_list: false,
+          relation_type: null,
         },
         {
           entity_id: 2,
           source: "test",
-          type: "scalar-list",
-          key: "unknown_property_2",
-          value: "1",
-        },
-        {
-          entity_id: 2,
-          source: "test",
-          type: "reference",
           key: "unknown_property_3",
           value: "1",
-        },
-        {
-          entity_id: 2,
-          source: "test",
-          type: "reference-list",
-          key: "unknown_property_4",
-          value: "1",
+          item_type: "relation-id",
+          of_list: true,
+          relation_type: "unknown_entity",
         },
       ] as EntityDataRow[]);
 
@@ -309,37 +313,38 @@ describe("API", () => {
         {
           entity_id: 3,
           source: "test",
-          type: "scalar",
-          key: "text",
-          value: "Sentence.",
-        },
-        {
-          entity_id: 3,
-          source: "test",
-          type: "scalar",
           key: "text",
           value: "Sentence <symbol>.",
+          item_type: "string",
+          of_list: false,
+          relation_type: null,
         },
         {
           entity_id: 3,
           source: "test",
-          type: "scalar",
           key: "tex",
           value: "Sentence $x$.",
+          item_type: "string",
+          of_list: false,
+          relation_type: null,
         },
         {
           entity_id: 3,
           source: "test",
-          type: "scalar",
           key: "tex_start",
           value: "0",
+          item_type: "int",
+          of_list: false,
+          relation_type: null,
         },
         {
           entity_id: 3,
           source: "test",
-          type: "scalar",
           key: "tex_end",
           value: "10",
+          item_type: "int",
+          of_list: false,
+          relation_type: null,
         },
       ] as EntityDataRow[]);
       const response = await server.inject({
@@ -375,7 +380,7 @@ describe("API", () => {
         index: 0,
       } as VersionRow);
 
-      const payload: EntityPostPayload = {
+      const payload: EntityCreatePayload = {
         data: {
           type: "unknown",
           attributes: {
@@ -448,7 +453,7 @@ describe("API", () => {
         index: 0,
       } as VersionRow);
 
-      const payload: EntityPostPayload = {
+      const payload: EntityCreatePayload = {
         data: {
           type: "unknown",
           attributes: {
@@ -513,7 +518,7 @@ describe("API", () => {
         relationships: {},
       };
 
-      const payload: EntityPostPayload = {
+      const payload: EntityCreatePayload = {
         data: citation,
       };
 
@@ -531,10 +536,12 @@ describe("API", () => {
       const entityDataRows: EntityDataRow[] = await knex("entitydata").select();
       expect(entityDataRows).toHaveLength(1);
       expect(entityDataRows[0]).toMatchObject({
-        type: "scalar",
         source: "test",
         key: "paper_id",
         value: "citation_paper_id",
+        item_type: "string",
+        of_list: false,
+        relation_type: null,
       } as EntityDataRow);
     });
 
@@ -571,7 +578,7 @@ describe("API", () => {
         relationships: {},
       };
 
-      const payload: EntityPostPayload = {
+      const payload: EntityCreatePayload = {
         data: citation,
       };
 
@@ -607,7 +614,7 @@ describe("API", () => {
         },
       ] as EntityRow[]);
 
-      const payload: EntityPatchPayload = {
+      const payload: EntityUpdatePayload = {
         data: {
           id: "1",
           type: "unknown",
@@ -665,7 +672,7 @@ describe("API", () => {
         },
       ] as BoundingBoxRow[]);
 
-      const payload: EntityPatchPayload = {
+      const payload: EntityUpdatePayload = {
         data: {
           id: "1",
           type: "unknown",
@@ -732,27 +739,33 @@ describe("API", () => {
         {
           entity_id: 1,
           source: "test",
-          type: "scalar",
           key: "mathml",
           value: "<math></math>",
+          item_type: "string",
+          of_list: false,
+          relation_type: null,
         },
         {
           entity_id: 1,
           source: "test",
-          type: "scalar-list",
           key: "mathml_near_matches",
           value: "<math><mi>x</mi></math>",
+          item_type: "string",
+          of_list: true,
+          relation_type: null,
         },
         {
           entity_id: 1,
           source: "test",
-          type: "scalar-list",
           key: "mathml_near_matches",
           value: "<math><mi>y</mi></math>",
+          item_type: "string",
+          of_list: true,
+          relation_type: null,
         },
       ]);
 
-      const payload: EntityPatchPayload = {
+      const payload: EntityUpdatePayload = {
         data: {
           id: "1",
           type: "symbol",
@@ -807,27 +820,33 @@ describe("API", () => {
         {
           entity_id: 1,
           source: "test",
-          type: "reference",
           key: "sentence",
           value: "3",
+          item_type: "relation-id",
+          of_list: false,
+          relation_type: "sentence",
         },
         {
           entity_id: 1,
           source: "test",
-          type: "reference-list",
           key: "children",
           value: "4",
+          item_type: "relation-id",
+          of_list: true,
+          relation_type: "symbol",
         },
         {
           entity_id: 1,
           source: "test",
-          type: "reference-list",
           key: "children",
           value: "5",
+          item_type: "relation-id",
+          of_list: true,
+          relation_type: "symbol",
         },
       ]);
 
-      const payload: EntityPatchPayload = {
+      const payload: EntityUpdatePayload = {
         data: {
           id: "1",
           type: "symbol",
@@ -864,10 +883,12 @@ describe("API", () => {
       expect(childrenRows).toHaveLength(1);
       expect(childrenRows[0]).toMatchObject({
         source: "patch-source",
-        type: "reference-list",
         key: "children",
         value: "6",
-      });
+        item_type: "relation-id",
+        of_list: true,
+        relation_type: "symbol",
+      } as EntityDataRow);
     });
   });
 
@@ -906,9 +927,11 @@ describe("API", () => {
         {
           entity_id: 1,
           source: "test",
-          type: "scalar",
           key: "key",
           value: "value",
+          item_type: "string",
+          of_list: false,
+          relation_type: null,
         },
       ] as EntityDataRow[]);
 

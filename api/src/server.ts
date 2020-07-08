@@ -2,7 +2,7 @@ import { Server, ServerInjectOptions } from "@hapi/hapi";
 import * as nconf from "nconf";
 import * as api from "./api";
 import { Connection, extractConnectionParams } from "./db-connection";
-import { debugFailAction } from "./validation";
+import { debugFailAction } from "./types/validation";
 
 /**
  * Wrapper around hapi server that takes care of stateful server start and stop operations.

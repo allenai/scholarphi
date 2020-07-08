@@ -12,16 +12,38 @@
  * into other projects, all of the types are available to the client code.
  */
 
-import { S2ApiPaper } from "./s2-api";
-
-export interface DataResponse {
-  data?: Entity[];
+export interface PaperIdWithCounts {
+  s2Id: string;
+  arxivId?: string;
+  extractedSymbolCount: number;
+  extractedCitationCount: number;
 }
 
 /**
- * Return papers from this API using the format from the S2 API.
+ * Format of returned papers loosely follows that for the S2 API:
+ * https://api.semanticscholar.org/
  */
-export type Paper = S2ApiPaper;
+export interface Paper {
+  s2Id: string;
+  abstract: string;
+  authors: Author[];
+  title: string;
+  url: string;
+  venue: string;
+  year: number | null;
+  influentialCitationCount?: number;
+  citationVelocity?: number;
+}
+
+export interface Author {
+  id: string;
+  name: string;
+  url: string;
+}
+
+export interface EntityGetResponse {
+  data?: Entity[];
+}
 
 /**
  * Use type guards (e.g., 'isSymbol') to distinguish between types of entities.
@@ -92,11 +114,11 @@ export interface GenericEntity extends BaseEntity {
 /**
  * When posting an entity, an 'id' need not be included, nor a version tag.
  */
-export interface EntityPostPayload {
-  data: EntityPostData;
+export interface EntityCreatePayload {
+  data: EntityCreateData;
 }
 
-export interface EntityPostData {
+export interface EntityCreateData {
   type: string;
   attributes: Omit<BaseEntityAttributes, "version"> & GenericAttributes;
   relationships: GenericRelationships;
@@ -107,11 +129,11 @@ export interface EntityPostData {
  * required. All modified entities and specified bounding boxes and data will be assigned the
  * the provided 'source' value.
  */
-export interface EntityPatchPayload {
-  data: EntityPatchData;
+export interface EntityUpdatePayload {
+  data: EntityUpdateData;
 }
 
-export interface EntityPatchData {
+export interface EntityUpdateData {
   id: string;
   type: string;
   attributes: Pick<GenericAttributes, "source"> & Partial<GenericAttributes>;
@@ -146,7 +168,7 @@ export interface Symbol extends BaseEntity {
 }
 
 export interface SymbolAttributes extends BaseEntityAttributes {
-  mathml: string;
+  mathml: string | null;
   mathml_near_matches: string[];
 }
 
@@ -169,7 +191,7 @@ export interface Citation extends BaseEntity {
 }
 
 export interface CitationAttributes extends BaseEntityAttributes {
-  paper_id: string;
+  paper_id: string | null;
 }
 
 export function isCitation(entity: Entity): entity is Citation {
@@ -183,10 +205,10 @@ export interface Sentence extends BaseEntity {
 }
 
 export interface SentenceAttributes extends BaseEntityAttributes {
-  text: string;
-  tex: string;
-  tex_start: number;
-  tex_end: number;
+  text: string | null;
+  tex: string | null;
+  tex_start: number | null;
+  tex_end: number | null;
 }
 
 export function isSentence(entity: Entity): entity is Sentence {

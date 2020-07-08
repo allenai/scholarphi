@@ -174,7 +174,7 @@ class EntityData(TimestampsMixin, OutputModel):
     entity = ForeignKeyField(Entity, on_delete="CASCADE")
     source = TextField(index=True, default="tex-pipeline")
     key = TextField(index=True)
-    value = TextField()
+    value = TextField(null=True)
 
     item_type = TextField(
         index=True,
