@@ -24,13 +24,13 @@ import ErrorIcon from "@material-ui/icons/Error";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { getAllPapers } from "../api";
+import { listPapers } from "../api";
 import { PaperIdWithCounts } from "../types/api";
 
 enum ViewState {
   LOADING,
   READY,
-  ERROR
+  ERROR,
 }
 
 interface PaperListState {
@@ -97,7 +97,7 @@ async function getPaperInfoFromS2(
     title: s2Paper.title,
     authors: s2Paper.authors,
     venue: s2Paper.venue,
-    year: s2Paper.year
+    year: s2Paper.year,
   });
   if (localStorage) {
     localStorage.setItem(
@@ -105,7 +105,7 @@ async function getPaperInfoFromS2(
       JSON.stringify({
         // cache for 24 hours, JavaScript timestamps are expressed in ms
         expires: Date.now() + 24 * 60 * 60 * 1000,
-        paper: paperWithMeta
+        paper: paperWithMeta,
       })
     );
   }
@@ -115,11 +115,11 @@ async function getPaperInfoFromS2(
 const PaperList = () => {
   const [{ state, papers }, setViewState] = useState<PaperListState>({
     papers: [],
-    state: ViewState.LOADING
+    state: ViewState.LOADING,
   });
   useEffect(() => {
     (async () => {
-      const allPapers = await getAllPapers();
+      const allPapers = await listPapers();
       if (allPapers === null) {
         setViewState({ papers: [], state: ViewState.ERROR });
         return;
@@ -129,7 +129,7 @@ const PaperList = () => {
       );
       setViewState({
         papers: allPapersWithTitle,
-        state: ViewState.READY
+        state: ViewState.READY,
       });
     })();
     return () => setViewState({ papers: [], state: ViewState.LOADING });
@@ -161,7 +161,7 @@ const PaperList = () => {
             </TableHead>
             <TableBody>
               {papers
-                .filter(paper => {
+                .filter((paper) => {
                   return (
                     paper.arxivId !== undefined &&
                     [
@@ -170,11 +170,11 @@ const PaperList = () => {
                       "1811.12160",
                       "1010.2823",
                       "1309.7440",
-                      "1404.6635"
+                      "1404.6635",
                     ].indexOf(paper.arxivId) !== -1
                   );
                 })
-                .map(paper => (
+                .map((paper) => (
                   <TableRow key={paper.s2Id}>
                     <TableCell>
                       <Typography variant="subtitle1">

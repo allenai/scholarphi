@@ -43,8 +43,8 @@ export class SymbolPreview extends React.PureComponent<Props> {
         <PaperClipping
           pdfDocument={this.props.pdfDocument}
           sentence={this.props.sentence}
-          pageNumber={symbol.bounding_boxes[0].page + 1}
-          highlights={[this.props.symbol.bounding_boxes[0]]}
+          pageNumber={symbol.attributes.bounding_boxes[0].page + 1}
+          highlights={[this.props.symbol.attributes.bounding_boxes[0]]}
           onLoaded={this.onClippingLoaded}
           onClick={this.onClick}
         />

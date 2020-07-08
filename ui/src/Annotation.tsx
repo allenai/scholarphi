@@ -95,26 +95,29 @@ export class Annotation extends React.PureComponent<Props> {
               this.props.source === "other"
             );
           })
-          .map((box) => (
-            <AnnotationSpan
-              key={box.id}
-              id={box.id}
-              pageView={this.props.pageView}
-              className={classNames(this.props.className, {
-                "annotation-selected": this.props.selected,
-                "find-match": this.props.isFindMatch,
-                "find-selection": this.props.isFindSelection,
-                "source-tex-pipeline": this.props.source === "tex-pipeline",
-                "source-other": this.props.source === "other",
-              })}
-              active={this.props.active}
-              location={box}
-              selected={this.props.selectedSpanId === box.id}
-              tooltipContent={this.props.tooltipContent}
-              onKeyDown={this.props.onKeyDown}
-              handleSelection={this.handleSelection}
-            />
-          ))}
+          .map((box, i) => {
+            const spanId = `${this.props.id}-span-${i}`;
+            return (
+              <AnnotationSpan
+                key={spanId}
+                id={spanId}
+                pageView={this.props.pageView}
+                className={classNames(this.props.className, {
+                  "annotation-selected": this.props.selected,
+                  "find-match": this.props.isFindMatch,
+                  "find-selection": this.props.isFindSelection,
+                  "source-tex-pipeline": this.props.source === "tex-pipeline",
+                  "source-other": this.props.source === "other",
+                })}
+                active={this.props.active}
+                location={box}
+                selected={this.props.selectedSpanId === spanId}
+                tooltipContent={this.props.tooltipContent}
+                onKeyDown={this.props.onKeyDown}
+                handleSelection={this.handleSelection}
+              />
+            );
+          })}
       </>
     );
   }

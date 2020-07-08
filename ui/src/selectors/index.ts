@@ -5,6 +5,5 @@
  * one. See the 'matchingSymbols' function for an example.
  */
 export * from "./annotation";
-export * from "./citation";
-export * from "./page-overlay";
+export * from "./entity";
 export * from "./symbol";

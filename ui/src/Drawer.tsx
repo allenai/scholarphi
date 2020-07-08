@@ -6,15 +6,9 @@ import React from "react";
 import FeedbackButton from "./FeedbackButton";
 import PaperList from "./PaperList";
 import SearchResults from "./SearchResults";
-import {
-  MathMls,
-  PaperId,
-  Papers,
-  SelectableEntityType,
-  Sentences,
-  Symbols,
-} from "./state";
-import { UserLibrary } from "./types/api";
+import * as selectors from "./selectors";
+import { Entities, PaperId, Papers, UserLibrary } from "./state";
+import { isCitation } from "./types/api";
 import { PDFViewer } from "./types/pdfjs-viewer";
 
 const PDF_VIEWER_DRAWER_OPEN_CLASS = "drawer-open";
@@ -27,11 +21,8 @@ interface Props {
   pdfDocument: PDFDocumentProxy | null;
   mode: DrawerMode;
   papers: Papers | null;
-  symbols: Symbols | null;
-  mathMls: MathMls | null;
-  sentences: Sentences | null;
+  entities: Entities | null;
   userLibrary: UserLibrary | null;
-  selectedEntityType: SelectableEntityType;
   selectedEntityId: string | null;
   handleClose: () => void;
   handleSelectSymbol: (id: string) => void;
@@ -62,8 +53,11 @@ export class Drawer extends React.PureComponent<Props> {
       page.classList.add(PDF_VIEWER_DRAWER_OPEN_CLASS);
     });
 
-    const { mode, selectedEntityType } = this.props;
-    if (mode === "open" && selectedEntityType === "symbol") {
+    const { mode, selectedEntityId, entities } = this.props;
+    if (
+      mode === "open" &&
+      selectors.selectedEntityType(selectedEntityId, entities) === "symbol"
+    ) {
       this.props.handleScrollSymbolIntoView();
     }
   }
@@ -91,10 +85,7 @@ export class Drawer extends React.PureComponent<Props> {
       pdfViewer,
       pdfDocument,
       mode,
-      symbols,
-      mathMls,
-      sentences,
-      selectedEntityType,
+      entities,
       selectedEntityId,
       handleSelectSymbol,
     } = this.props;
@@ -108,9 +99,9 @@ export class Drawer extends React.PureComponent<Props> {
 
     const feedbackContext = {
       mode,
-      selectedEntityType,
       selectedEntityId,
     };
+
     return (
       <MuiDrawer
         className="drawer"
@@ -131,26 +122,29 @@ export class Drawer extends React.PureComponent<Props> {
         </div>
         <div className="drawer__content">
           {mode === "open" &&
-            selectedEntityType === "symbol" &&
+            selectors.selectedEntityType(selectedEntityId, entities) ===
+              "symbol" &&
             pdfDocument !== null && (
               <SearchResults
                 pdfDocument={pdfDocument}
                 pageSize={4}
-                symbols={symbols}
-                mathMls={mathMls}
-                sentences={sentences}
-                selectedEntityType={selectedEntityType}
+                entities={entities}
                 selectedEntityId={selectedEntityId}
                 handleSelectSymbol={handleSelectSymbol}
               />
             )}
-          {mode === "open" && selectedEntityType === "citation" && (
-            <PaperList
-              papers={this.props.papers}
-              userLibrary={this.props.userLibrary}
-              handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
-            />
-          )}
+          {mode === "open" &&
+            entities !== null &&
+            selectors.selectedEntityType(selectedEntityId, entities) ===
+              "citation" &&
+            selectedEntityId !== null &&
+            isCitation(entities.byId[selectedEntityId]) && (
+              <PaperList
+                papers={this.props.papers}
+                userLibrary={this.props.userLibrary}
+                handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
+              />
+            )}
         </div>
       </MuiDrawer>
     );

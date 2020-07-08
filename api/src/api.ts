@@ -2,7 +2,7 @@ import * as Hapi from "@hapi/hapi";
 import * as Joi from "@hapi/joi";
 import { Connection } from "./db-connection";
 import * as s2Api from "./s2-api";
-import { EntityCreatePayload, EntityUpdatePayload } from "./types/api";
+import { EntityCreatePayload, EntityUpdatePayload, Paper } from "./types/api";
 import * as validation from "./types/validation";
 
 interface ApiOptions {
@@ -30,7 +30,7 @@ export const plugin = {
     server.route({
       method: "GET",
       path: "papers",
-      handler: (request) => {
+      handler: async (request) => {
         let idString;
         if (typeof request.query.id === "string") {
           idString = request.query.id;
@@ -41,11 +41,15 @@ export const plugin = {
         const uniqueIds = ids.filter((id, index) => {
           return ids.indexOf(id) === index;
         });
-        return {
-          data: {
-            papers: s2Api.getPapers(uniqueIds),
-          },
-        };
+        const data = (await s2Api.getPapers(uniqueIds))
+          .filter((paper) => paper !== undefined)
+          .map((paper) => paper as Paper)
+          .map((paper) => ({
+            id: paper.s2Id,
+            type: "paper",
+            attributes: paper,
+          }));
+        return { data };
       },
       options: {
         validate: {
