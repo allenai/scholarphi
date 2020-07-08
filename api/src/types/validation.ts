@@ -46,20 +46,7 @@ const boundingBox = Joi.object({
   height: Joi.number(),
 }).options({ presence: "required" });
 
-const relationship = (options: { nullable?: boolean; type: string }) => {
-  return Joi.object({
-    type: Joi.string().required().valid(options.type),
-    id: options.nullable
-      ? Joi.string().required().allow(null)
-      : Joi.string().required(),
-  });
-};
-
-/**
- * Expected attributes for new entity types can be added by adding another item to
- * the 'switch' array (see 'citation' for an example).
- */
-const attributes = Joi.object({
+export let attributes = Joi.object({
   version: Joi.number(),
   /*
    * Source is required on both POST and PATCH requests. It is required for PATCH requests because
@@ -67,51 +54,101 @@ const attributes = Joi.object({
    */
   source: Joi.string().required(),
   bounding_boxes: Joi.array().items(boundingBox),
-})
+});
+
+/**
+ * Types for extended attributes for certain entity types. Unlike the base attributes defined
+ * just above, which are required with every request, extended attributes:
+ *
+ * 1. Can be null or empty lists.
+ * 2. Are defined with default values.
+ *
+ * The main reason it's important to permit null values and default values is that this
+ * helps the API 'fill out' entity objects when expected data is missing in the database.
+ * It's particularly important for loading list attributes from the database, where an
+ * absence of data indicates an empty list, not a null value.
+ */
+const stringAttribute = Joi.string().allow(null).default(null);
+const numberAttribute = Joi.number()
+  .allow(null)
+  .default(null)
+  .options({ convert: true });
+const stringListAttribute = Joi.array().items(Joi.string()).default([]);
+
+/**
+ * Expected attributes for specific entity types can be added by adding another item to
+ * the 'switch' array (see 'citation' for an example). All added attributes should be
+ * defined using the helper schemas above (e.g., stringAttribute, etc.).
+ */
+attributes = attributes
   /*
-   * This switch refers to the { data: { type: "..." } } property on a request.
+   * This switch refers to the 'type' attribute on an entity.
    */
-  .when("/data.type", {
+  .when("..type", {
     switch: [
       {
         is: "citation",
         then: Joi.object().keys({
-          paper_id: Joi.string(),
+          paper_id: stringAttribute,
         }),
       },
       {
         is: "symbol",
         then: Joi.object().keys({
-          mathml: Joi.string(),
-          mathml_near_matches: Joi.array().items(Joi.string()),
-          sentence: Joi.string().allow(null),
+          mathml: stringAttribute,
+          mathml_near_matches: stringListAttribute,
         }),
       },
       {
         is: "sentence",
         then: Joi.object().keys({
-          text: Joi.string(),
-          tex: Joi.string(),
-          tex_start: Joi.number(),
-          tex_end: Joi.number(),
+          text: stringAttribute,
+          tex: stringAttribute,
+          tex_start: numberAttribute,
+          tex_end: numberAttribute,
         }),
       },
     ],
   })
   .unknown(false);
 
+export let relationships = Joi.object();
+
 /**
- * Expected relationships for new entity types can be added by adding another item to
- * the 'switch' array (see 'symbol' for an example).
+ * Validation rules for extensions to relationship rules for specific entity types.
+ * All relationship provide default values, for the reasons described above in the comments
+ * about extended attributes.
  */
-const relationships = Joi.object()
-  .when("/data.type", {
+const oneToOneRelationship = (type: string) => {
+  return Joi.object({
+    type: Joi.string().required().valid(type),
+    id: Joi.string().required().allow(null),
+  }).default({ type, id: null });
+};
+const oneToManyRelationship = (type: string) => {
+  return Joi.array()
+    .items(
+      Joi.object({
+        type: Joi.string().required().valid(type),
+        id: Joi.string().required(),
+      })
+    )
+    .default([]);
+};
+
+/**
+ * Expected relationships for specific entity types can be added in the same way that they are
+ * added to attributes (see comment above). All added attributes should be
+ * defined using the helpers above (e.g., oneToOneRelationship).
+ */
+relationships = relationships
+  .when("..type", {
     switch: [
       {
         is: "symbol",
         then: Joi.object().keys({
-          sentence: relationship({ type: "sentence", nullable: true }),
-          children: Joi.array().items(relationship({ type: "symbol" })),
+          sentence: oneToOneRelationship("sentence"),
+          children: oneToManyRelationship("symbol"),
         }),
       },
     ],
@@ -143,4 +180,15 @@ export const entityPatch = Joi.object({
     attributes: attributes.required(),
     relationships,
   }),
+  /*
+   * Don't allow defaults for 'patch' data, as this will lead to resetting attributes and
+   * relationships of the entity that were not specified by the client.
+   */
+}).options({ noDefaults: true });
+
+export const loadedEntity = Joi.object({
+  id: Joi.string().required(),
+  type: Joi.string().required(),
+  attributes: attributes.required(),
+  relationships: relationships.required(),
 });
