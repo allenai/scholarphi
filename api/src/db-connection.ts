@@ -2,19 +2,15 @@ import * as Knex from "knex";
 import * as nconf from "nconf";
 import {
   BoundingBox,
-  Citation,
   Entity,
-  EntityPatchData as EntityUpdateData,
-  EntityPostData as EntityCreateData,
+  EntityCreateData,
+  EntityUpdateData,
   GenericAttributes,
-  GenericEntity,
   GenericRelationships,
-  isRelationship,
   PaperWithEntityCounts,
   Relationship,
-  Sentence,
-  Symbol,
 } from "./types/api";
+import * as validation from "./types/validation";
 
 /**
  * Extract connection parameters from the application-wide configuration.
@@ -134,140 +130,48 @@ export class Connection {
     const attributes: GenericAttributes = {};
     const relationships: GenericRelationships = {};
     for (const row of rows) {
-      if (row.type === "scalar") {
-        attributes[row.key] = row.value;
-      } else if (row.type === "scalar-list") {
-        if (row.value !== null) {
+      /**
+       * Read attributes.
+       */
+      let casted_value;
+      if (row.value === null) {
+        if (!row.of_list) {
+          casted_value = null;
+        }
+      } else if (row.item_type === "int") {
+        casted_value = parseInt(row.value);
+      } else if (row.item_type === "float") {
+        casted_value = parseFloat(row.value);
+      } else if (row.item_type === "string") {
+        casted_value = row.value;
+      }
+      if (casted_value !== undefined) {
+        if (row.of_list) {
           if (attributes[row.key] === undefined) {
             attributes[row.key] = [];
           }
-          (attributes[row.key] as string[]).push(row.value);
+          attributes[row.key].push(casted_value);
+        } else {
+          attributes[row.key] = casted_value;
         }
-      } else if (row.type === "reference") {
-        relationships[row.key] = { type: row.key, id: row.value };
-      } else if (row.type === "reference-list") {
-        if (relationships[row.key] === undefined) {
-          relationships[row.key] = [];
+      }
+
+      /**
+       * Read relationships.
+       */
+      if (row.item_type === "relation-id" && row.relation_type !== null) {
+        const relationship = { type: row.relation_type, id: row.value };
+        if (row.of_list) {
+          if (relationships[row.key] === undefined) {
+            relationships[row.key] = [];
+          }
+          (relationships[row.key] as Relationship[]).push(relationship);
+        } else {
+          relationships[row.key] = relationship;
         }
-        (relationships[row.key] as Relationship[]).push({
-          type: row.key,
-          id: row.value,
-        });
       }
     }
     return { attributes, relationships };
-  }
-
-  /**
-   * Create a symbol entity from loaded entity data. Return 'null' if a symbol couldn't be
-   * created from the attributes and relationships provided.
-   */
-  createSymbol(
-    genericEntity: GenericEntity,
-    attributes: GenericAttributes,
-    relationships: GenericRelationships
-  ) {
-    if (
-      typeof attributes.mathml !== "string" ||
-      !Array.isArray(attributes.mathml_near_matches) ||
-      !Array.isArray(relationships.children)
-    ) {
-      throw new EntityLoadError(genericEntity.id, genericEntity.type);
-    }
-    const mathml = attributes.mathml;
-    const mathml_near_matches = attributes.mathml_near_matches;
-
-    let children: Relationship[] = relationships.children.map((c) => ({
-      type: "symbol",
-      id: c.id,
-    }));
-    const sentenceId = isRelationship(relationships.sentence)
-      ? relationships.sentence.id
-      : null;
-    const sentence = { type: "sentence", id: sentenceId };
-
-    const symbol: Symbol = {
-      ...genericEntity,
-      type: "symbol",
-      attributes: {
-        ...genericEntity.attributes,
-        mathml,
-        mathml_near_matches,
-      },
-      relationships: {
-        ...genericEntity.relationships,
-        children,
-        sentence,
-      },
-    };
-    return symbol;
-  }
-
-  /**
-   * Create a citation entity from loaded entity data. Return 'null' if a citation couldn't be
-   * created from the attributes provided.
-   */
-  createCitation(
-    genericEntity: GenericEntity,
-    attributes: GenericAttributes,
-    _: GenericRelationships
-  ) {
-    if (typeof attributes.paper_id !== "string") {
-      throw new EntityLoadError(genericEntity.id, genericEntity.type);
-    }
-    const paper_id = attributes.paper_id;
-
-    const citation: Citation = {
-      ...genericEntity,
-      type: "citation",
-      attributes: {
-        ...genericEntity.attributes,
-        paper_id,
-      },
-      relationships: genericEntity.relationships,
-    };
-    return citation;
-  }
-
-  /**
-   * Create a sentence entity from loaded entity data. Return 'null' if a sentence couldn't be
-   * created from the attributes provided.
-   */
-  createSentence(
-    genericEntity: GenericEntity,
-    attributes: GenericAttributes,
-    _: GenericRelationships
-  ) {
-    if (
-      typeof attributes.text !== "string" ||
-      typeof attributes.tex !== "string" ||
-      typeof attributes.tex_start !== "string" ||
-      typeof attributes.tex_end !== "string"
-    ) {
-      throw new EntityLoadError(genericEntity.id, genericEntity.type);
-    }
-    const text = attributes.text;
-    const tex = attributes.tex;
-    const tex_start = parseInt(attributes.tex_start);
-    const tex_end = parseInt(attributes.tex_end);
-
-    if (typeof tex_start !== "number" || typeof tex_end !== "number") {
-      throw new EntityLoadError(genericEntity.id, genericEntity.type);
-    }
-
-    const sentence: Sentence = {
-      ...genericEntity,
-      type: "sentence",
-      attributes: {
-        ...genericEntity.attributes,
-        text,
-        tex,
-        tex_start,
-        tex_end,
-      },
-      relationships: genericEntity.relationships,
-    };
-    return sentence;
   }
 
   /**
@@ -280,41 +184,23 @@ export class Connection {
   ): Entity {
     const boundingBoxes = this.createBoundingBoxes(boundingBoxRows);
 
-    /**
-     * Create a basic, bare entity. This entity will be returned if it's not possible to find
-     * a known type that has additional attributes and relationships. To avoid leaking
-     * junk data to the user, custom attributes and relationships are not added to the
-     * basic entity. Known attributes and relationships will be added to known entity types.
-     */
-    let entity: Entity;
-    const genericEntity: GenericEntity = {
-      id: String(entityRow.id),
-      type: entityRow.type,
-      attributes: {
-        version: entityRow.version,
-        source: entityRow.source,
-        bounding_boxes: boundingBoxes,
-      },
-      relationships: {},
-    };
-
     const { attributes, relationships } = this.unpackEntityDataRows(
       entityDataRows
     );
 
-    /**
-     * Attempt to create specialized entity types from the entity data.
-     */
-    if (entityRow.type === "symbol") {
-      entity = this.createSymbol(genericEntity, attributes, relationships);
-    } else if (entityRow.type === "citation") {
-      entity = this.createCitation(genericEntity, attributes, relationships);
-    } else if (entityRow.type === "sentence") {
-      entity = this.createSentence(genericEntity, attributes, relationships);
-    } else {
-      entity = genericEntity;
-    }
-    return entity;
+    return {
+      id: String(entityRow.id),
+      type: entityRow.type,
+      attributes: {
+        ...attributes,
+        version: entityRow.version,
+        source: entityRow.source,
+        bounding_boxes: boundingBoxes,
+      },
+      relationships: {
+        ...relationships,
+      },
+    };
   }
 
   async getEntitiesForPaper(paperSelector: PaperSelector, version?: number) {
@@ -326,7 +212,7 @@ export class Connection {
         }
         version = latestVersion;
       } catch (e) {
-        console.log("Issues getting version number");
+        console.log("Error fetching latest data version number:", e);
       }
     }
 
@@ -370,9 +256,11 @@ export class Connection {
       .select(
         "entity.id AS entity_id",
         "entitydata.source AS source",
-        "entitydata.type AS type",
         "key",
-        "value"
+        "value",
+        "item_type",
+        "of_list",
+        "relation_type"
       )
       .join("entity", { "entitydata.entity_id": "entity.id" })
       .join("paper", { "paper.s2_id": "entity.paper_id" })
@@ -409,8 +297,23 @@ export class Connection {
           entityDataRowsForEntity
         );
       })
-      .filter((e) => e !== null)
-      .map((e) => e as Entity);
+      /*
+       * Validation with Joi does two things:
+       * 1. It adds default values to fields for an entity.
+       * 2. It lists errors when an entity is still missing reuqired properties.
+       */
+      .map((e) => validation.loadedEntity.validate(e, { stripUnknown: true }))
+      .filter((validationResult) => {
+        if (validationResult.error !== undefined) {
+          console.error(
+            "Invalid entity will not be returned. Error:",
+            validationResult.error
+          );
+          return false;
+        }
+        return true;
+      })
+      .map((validationResult) => validationResult.value as Entity);
 
     return entities;
   }
@@ -444,16 +347,20 @@ export class Connection {
   ) {
     const rows: Omit<EntityDataRow, "id">[] = [];
     const addRow = (
-      type: EntityDataRowType,
       key: string,
-      value: string | null
+      value: string | null,
+      item_type: EntityDataRowType,
+      of_list: boolean,
+      relation_type?: string | null
     ) => {
       rows.push({
         entity_id,
         source,
-        type,
         key,
         value,
+        item_type,
+        of_list,
+        relation_type: relation_type || null,
       });
     };
 
@@ -462,23 +369,44 @@ export class Connection {
         continue;
       }
       const value = attributes[key];
+      let values = [];
+      let of_list;
       if (Array.isArray(value)) {
-        for (const v of value) {
-          addRow("scalar-list", key, v);
-        }
+        values = value;
+        of_list = true;
       } else {
-        addRow("scalar", key, value);
+        values = [value];
+        of_list = false;
+      }
+      for (const v of values) {
+        let item_type: EntityDataRowType | undefined = undefined;
+        if (typeof value === "number") {
+          /**
+           * This check for whether a number is an integer is based on the polyfill from MDN:
+           * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger#Polyfill
+           */
+          if (isFinite(value) && Math.floor(value) === value) {
+            item_type = "int";
+          } else {
+            item_type = "float";
+          }
+        } else if (typeof value === "string") {
+          item_type = "string";
+        }
+        if (item_type !== undefined) {
+          addRow(key, String(v), item_type, of_list, null);
+        }
       }
     }
 
-    for (const relationshipKey of Object.keys(relationships)) {
-      const relationshipsValue = relationships[relationshipKey];
-      if (Array.isArray(relationshipsValue)) {
-        for (const r of relationshipsValue) {
-          addRow("reference-list", relationshipKey, r.id);
+    for (const key of Object.keys(relationships)) {
+      const value = relationships[key];
+      if (Array.isArray(value)) {
+        for (const r of value) {
+          addRow(key, r.id, "relation-id", true, r.type);
         }
       } else {
-        addRow("scalar", relationshipKey, relationshipsValue.id);
+        addRow(key, value.id, "relation-id", false, value.type);
       }
     }
 
@@ -594,7 +522,7 @@ export class Connection {
     for (const row of attributeRows) {
       await this._knex("entitydata")
         .delete()
-        .where({ entity_id: data.id, type: row.type, key: row.key });
+        .where({ entity_id: data.id, key: row.key });
     }
     await this._knex.batchInsert("entitydata", attributeRows);
 
@@ -611,7 +539,7 @@ export class Connection {
       for (const row of relationshipRows) {
         await this._knex("entitydata")
           .delete()
-          .where({ entity_id: data.id, type: row.type, key: row.key });
+          .where({ entity_id: data.id, key: row.key });
       }
       await this._knex.batchInsert("entitydata", relationshipRows);
     }

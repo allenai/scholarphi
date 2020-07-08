@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from "axios";
+import { Paper } from "./types/api";
 import { isS2ApiResponseSuccess, S2ApiPaper } from "./types/s2-api";
 
 /**
@@ -6,32 +7,14 @@ import { isS2ApiResponseSuccess, S2ApiPaper } from "./types/s2-api";
  */
 const SEMANTIC_SCHOLAR_API_URL = "http://api.semanticscholar.org/v1";
 
-interface Author {
-  id: string;
-  name: string;
-  url: string;
-}
-
-interface Paper {
-  s2Id: string;
-  title: string;
-  authors: Author[];
-  abstract: string | null;
-  url: string;
-  venue: string | null;
-  year: number | null;
-  citationVelocity: number;
-  influentialCitationCount: number;
-}
-
 /**
  * TODO(andrewhead): Add decay to the cache.
  */
 const paperCache: { [paperId: string]: AxiosResponse<any> } = {};
 
 export async function getPapers(s2Ids: string[]) {
-  const results = await Promise.all(s2Ids.map(s2Id => getPaper(s2Id)));
-  const papers = results.filter(paper => paper !== undefined);
+  const results = await Promise.all(s2Ids.map((s2Id) => getPaper(s2Id)));
+  const papers = results.filter((paper) => paper !== undefined);
   return papers;
 }
 
@@ -54,17 +37,17 @@ async function getPaper(s2Id: string): Promise<Paper | undefined> {
     return {
       s2Id,
       title: data.title,
-      authors: data.authors.map(a => ({
+      authors: data.authors.map((a) => ({
         id: a.authorId,
         name: a.name,
-        url: a.url
+        url: a.url,
       })),
       abstract: data.abstract,
       url: data.url,
       year,
       venue: data.venue,
       citationVelocity: data.citationVelocity || 0,
-      influentialCitationCount: data.influentialCitationCount || 0
+      influentialCitationCount: data.influentialCitationCount || 0,
     };
   }
 }

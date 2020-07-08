@@ -2,8 +2,8 @@ import * as Hapi from "@hapi/hapi";
 import * as Joi from "@hapi/joi";
 import { Connection } from "./db-connection";
 import * as s2Api from "./s2-api";
-import { EntityPatchPayload, EntityPostPayload } from "./types/api";
-import * as validation from "./validation";
+import { EntityCreatePayload, EntityUpdatePayload } from "./types/api";
+import * as validation from "./types/validation";
 
 interface ApiOptions {
   connection: Connection;
@@ -20,35 +20,10 @@ export const plugin = {
 
     server.route({
       method: "GET",
-      path: "papers/{s2Id}/entities",
-      handler: (request) => {
-        const s2Id = request.params.s2Id;
-        return dbConnection.getEntitiesForPaper({ s2_id: s2Id });
-      },
-      options: {
-        validate: {
-          params: validation.s2Id,
-        },
-      },
-    });
-
-    server.route({
-      method: "GET",
-      path: "papers/arxiv:{arxivId}/entities",
-      handler: async (request) => {
-        const arxivId = request.params.arxivId;
-        let res;
-        try {
-          res = await dbConnection.getEntitiesForPaper({ arxiv_id: arxivId });
-        } catch (e) {
-          console.log(e);
-        }
-        return { data: res };
-      },
-      options: {
-        validate: {
-          params: validation.arxivId,
-        },
+      path: "papers/list",
+      handler: async () => {
+        const papers = await dbConnection.getAllPapers();
+        return papers;
       },
     });
 
@@ -88,13 +63,47 @@ export const plugin = {
     });
 
     server.route({
+      method: "GET",
+      path: "papers/{s2Id}/entities",
+      handler: (request) => {
+        const s2Id = request.params.s2Id;
+        return dbConnection.getEntitiesForPaper({ s2_id: s2Id });
+      },
+      options: {
+        validate: {
+          params: validation.s2Id,
+        },
+      },
+    });
+
+    server.route({
+      method: "GET",
+      path: "papers/arxiv:{arxivId}/entities",
+      handler: async (request) => {
+        const arxivId = request.params.arxivId;
+        let res;
+        try {
+          res = await dbConnection.getEntitiesForPaper({ arxiv_id: arxivId });
+        } catch (e) {
+          console.log(e);
+        }
+        return { data: res };
+      },
+      options: {
+        validate: {
+          params: validation.arxivId,
+        },
+      },
+    });
+
+    server.route({
       method: "POST",
       path: "papers/arxiv:{arxivId}/entities",
       handler: async (request, h) => {
         const arxivId = request.params.arxivId;
         const entity = await dbConnection.createEntity(
           { arxiv_id: arxivId },
-          (request.payload as EntityPostPayload).data
+          (request.payload as EntityCreatePayload).data
         );
         return h.response({ data: entity }).code(201);
       },
@@ -111,7 +120,7 @@ export const plugin = {
       path: "papers/arxiv:{arxivId}/entities/{id}",
       handler: async (request, h) => {
         await dbConnection.updateEntity(
-          (request.payload as EntityPatchPayload).data
+          (request.payload as EntityUpdatePayload).data
         );
         return h.response({}).code(204);
       },
@@ -139,15 +148,6 @@ export const plugin = {
             id: Joi.string().required(),
           }),
         },
-      },
-    });
-
-    server.route({
-      method: "GET",
-      path: "papers/list",
-      handler: async () => {
-        const papers = await dbConnection.getAllPapers();
-        return papers;
       },
     });
   },

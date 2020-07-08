@@ -39,13 +39,11 @@ interface EntityDataRow {
   id: number;
   entity_id: number;
   source: string;
-  type: EntityDataRowType;
   key: string;
   value: string | null;
+  item_type: EntityDataRowType;
+  of_list: boolean;
+  relation_type: string | null;
 }
 
-type EntityDataRowType =
-  | "scalar"
-  | "reference"
-  | "scalar-list"
-  | "reference-list";
+type EntityDataRowType = "int" | "float" | "string" | "relation-id";
