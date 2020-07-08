@@ -6,12 +6,13 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import DeleteIcon from "@material-ui/icons/Delete";
 import React from "react";
-import { Annotation, UserAnnotationType } from "./types/api";
+import { KnownEntityType } from "./state";
+import { Entity, EntityUpdateData } from "./types/api";
 
 interface Props {
-  annotation: Annotation;
-  handleUpdateAnnotation: (id: string, annotation: Annotation) => void;
-  handleDeleteAnnotation: (id: string) => void;
+  entity: Entity;
+  handleUpdateEntity: (data: EntityUpdateData) => void;
+  handleDeleteEntity: (id: string) => void;
 }
 
 export class UserAnnotationTooltipBody extends React.PureComponent<Props> {
@@ -22,14 +23,17 @@ export class UserAnnotationTooltipBody extends React.PureComponent<Props> {
   }
 
   updateType(e: React.ChangeEvent<HTMLInputElement>) {
-    this.props.handleUpdateAnnotation(this.props.annotation.id, {
-      ...this.props.annotation,
-      type: e.target.value as UserAnnotationType,
+    this.props.handleUpdateEntity({
+      id: this.props.entity.id,
+      type: e.target.value as KnownEntityType,
+      attributes: {
+        source: "human-annotation",
+      },
     });
   }
 
   delete() {
-    this.props.handleDeleteAnnotation(this.props.annotation.id);
+    this.props.handleDeleteEntity(this.props.entity.id);
   }
 
   render() {
@@ -50,7 +54,7 @@ export class UserAnnotationTooltipBody extends React.PureComponent<Props> {
             <RadioGroup
               arial-label="entity-type"
               name="entity-type"
-              value={this.props.annotation.type}
+              value={this.props.entity.type}
               onChange={this.updateType}
             >
               <FormControlLabel

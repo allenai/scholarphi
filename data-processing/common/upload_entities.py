@@ -115,11 +115,11 @@ def upload_entities(
                 for v in values:
                     type_ = None
                     if isinstance(v, int):
-                        type_ = "int"
+                        type_ = "integer"
                     elif isinstance(v, float):
                         type_ = "float"
                     elif isinstance(v, str):
-                        type_ = "str"
+                        type_ = "string"
 
                     if type_ is not None:
                         entity_data_models.append(

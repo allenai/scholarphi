@@ -1,7 +1,6 @@
 import React from "react";
 import PaperSummary from "./PaperSummary";
-import { PaperId, Papers } from "./state";
-import { UserLibrary } from "./types/api";
+import { PaperId, Papers, UserLibrary } from "./state";
 
 interface Props {
   paperId?: PaperId;

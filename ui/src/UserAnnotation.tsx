@@ -1,23 +1,21 @@
 import classNames from "classnames";
 import React from "react";
 import Annotation from "./Annotation";
-import {
-  Annotation as AnnotationObject,
-  UserAnnotationType,
-} from "./types/api";
+import { KnownEntityType } from "./state";
+import { Entity, EntityUpdateData } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 import UserAnnotationTooltipBody from "./UserAnnotationTooltipBody";
 
 interface Props {
   pageView: PDFPageView;
-  annotation: AnnotationObject;
+  entity: Entity;
   active: boolean;
   selected: boolean;
   selectedSpanId: string | null;
   handleSelectAnnotation: (id: string) => void;
   handleSelectAnnotationSpan: (id: string) => void;
-  handleUpdateAnnotation: (id: string, annotation: AnnotationObject) => void;
-  handleDeleteAnnotation: (id: string) => void;
+  handleUpdateEntity: (data: EntityUpdateData) => void;
+  handleDeleteEntity: (id: string) => void;
 }
 
 export class UserAnnotation extends React.PureComponent<Props> {
@@ -27,19 +25,22 @@ export class UserAnnotation extends React.PureComponent<Props> {
   }
 
   onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
-    const { handleUpdateAnnotation, handleDeleteAnnotation } = this.props;
-    const ENTITY_TYPES_BY_KEY: { [key: string]: UserAnnotationType } = {
+    const { handleUpdateEntity, handleDeleteEntity } = this.props;
+    const ENTITY_TYPES_BY_KEY: { [key: string]: KnownEntityType } = {
       c: "citation",
       e: "equation",
       s: "symbol",
     };
     if (e.key !== undefined) {
       if (e.key === "Backspace" || e.key === "Delete") {
-        handleDeleteAnnotation(this.props.annotation.id);
+        handleDeleteEntity(this.props.entity.id);
       } else if (ENTITY_TYPES_BY_KEY[e.key] !== undefined) {
-        handleUpdateAnnotation(this.props.annotation.id, {
-          ...this.props.annotation,
+        handleUpdateEntity({
+          id: this.props.entity.id,
           type: ENTITY_TYPES_BY_KEY[e.key],
+          attributes: {
+            source: "human-annotation",
+          },
         });
       }
     }
@@ -49,21 +50,21 @@ export class UserAnnotation extends React.PureComponent<Props> {
     return (
       <Annotation
         pageView={this.props.pageView}
-        id={`user-annotation-${this.props.annotation.id}`}
+        id={`user-annotation-${this.props.entity.id}`}
         active={this.props.active}
         selected={this.props.selected}
         selectedSpanId={this.props.selectedSpanId}
         className={classNames("user-annotation", {
-          "citation-user-annotation": this.props.annotation.type === "citation",
-          "symbol-user-annotation": this.props.annotation.type === "symbol",
-          "equation-user-annotation": this.props.annotation.type === "equation",
+          "citation-user-annotation": this.props.entity.type === "citation",
+          "symbol-user-annotation": this.props.entity.type === "symbol",
+          "equation-user-annotation": this.props.entity.type === "equation",
         })}
-        boundingBoxes={[this.props.annotation.boundingBox]}
+        boundingBoxes={this.props.entity.attributes.bounding_boxes}
         tooltipContent={
           <UserAnnotationTooltipBody
-            annotation={this.props.annotation}
-            handleUpdateAnnotation={this.props.handleUpdateAnnotation}
-            handleDeleteAnnotation={this.props.handleDeleteAnnotation}
+            entity={this.props.entity}
+            handleUpdateEntity={this.props.handleUpdateEntity}
+            handleDeleteEntity={this.props.handleDeleteEntity}
           />
         }
         onKeyDown={this.onKeyDown}

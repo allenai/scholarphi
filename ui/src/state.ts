@@ -1,16 +1,7 @@
 import { PDFDocumentProxy } from "pdfjs-dist";
 import { DrawerMode } from "./Drawer";
 import { FindMode, FindQuery, SymbolFilter } from "./FindBar";
-import {
-  Annotation,
-  Citation,
-  MathMl,
-  Paper,
-  Sentence,
-  Symbol,
-  UserAnnotationType,
-  UserLibrary,
-} from "./types/api";
+import { Entity, Paper } from "./types/api";
 import {
   PDFPageView,
   PDFViewer,
@@ -49,10 +40,7 @@ export interface State {
   /*
    * *** PAPER DATA ***
    */
-  citations: Readonly<Citations> | null;
-  symbols: Readonly<Symbols> | null;
-  mathMls: Readonly<MathMls> | null;
-  sentences: Readonly<Sentences> | null;
+  entities: Readonly<Entities> | null;
   papers: Readonly<Papers> | null;
 
   /*
@@ -77,7 +65,6 @@ export interface State {
   annotationsShowing: boolean;
   selectedAnnotationId: string | null;
   selectedAnnotationSpanId: string | null;
-  selectedEntityType: SelectableEntityType;
   selectedEntityId: string | null;
 
   /*
@@ -114,10 +101,52 @@ export interface State {
   /*
    * ~ User annotation layer ~
    */
-  userAnnotationsEnabled: boolean;
-  userAnnotationType: UserAnnotationType;
-  userAnnotations: Readonly<Annotation[]>;
+  entityCreationEnabled: boolean;
+  entityCreationType: KnownEntityType;
 }
+
+export type Entities = RelationalStore<Entity>;
+export const KNOWN_ENTITY_TYPES = [
+  "citation",
+  "symbol",
+  "equation",
+  "sentence",
+  "term",
+] as const;
+export type KnownEntityType = typeof KNOWN_ENTITY_TYPES[number];
+export type Papers = { [s2Id: string]: Paper };
+export type SymbolFilters = RelationalStore<SymbolFilter>;
+
+export interface UserInfo {
+  user: {
+    id: number;
+  };
+  entriesWithPaperIds: [number, string][];
+}
+
+export interface UserLibrary {
+  paperIds: string[];
+}
+
+export type Pages = { [pageNumber: number]: PageModel };
+
+interface PageModel {
+  /**
+   * Timestamp of 'pagerendered' event that created this page.
+   */
+  timeOfLastRender: number;
+  /**
+   * Reference to pdf.js page view object.
+   */
+  view: PDFPageView;
+}
+
+export interface PaperId {
+  id: string;
+  type: "s2" | "arxiv";
+}
+
+export type SelectableEntityType = "citation" | "symbol" | null;
 
 /**
  * Collections of data objects are stored in relational stores, comprising two properties:
@@ -151,37 +180,3 @@ export function createRelationalStoreFromArray(array: any[], idKey: string) {
     byId: itemsById,
   };
 }
-
-export type Citations = RelationalStore<Citation>;
-export type Symbols = RelationalStore<Symbol>;
-export type MathMls = RelationalStore<MathMlWithSymbols>;
-export type Sentences = RelationalStore<Sentence>;
-export type SymbolFilters = RelationalStore<SymbolFilter>;
-
-/**
- * Allow the lookup of which symbols use what MathML.
- */
-export interface MathMlWithSymbols extends MathMl {
-  symbols: string[];
-}
-
-export type Papers = { [s2Id: string]: Paper };
-export type Pages = { [pageNumber: number]: PageModel };
-
-interface PageModel {
-  /**
-   * Timestamp of 'pagerendered' event that created this page.
-   */
-  timeOfLastRender: number;
-  /**
-   * Reference to pdf.js page view object.
-   */
-  view: PDFPageView;
-}
-
-export interface PaperId {
-  id: string;
-  type: "s2" | "arxiv";
-}
-
-export type SelectableEntityType = "citation" | "symbol" | null;

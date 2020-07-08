@@ -1,58 +1,49 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import CitationAnnotation from "./CitationAnnotation";
+import EntityCreationCanvas from "./EntityCreationCanvas";
 import PageMask from "./PageMask";
+import * as selectors from "./selectors";
 import {
-  Citations,
-  MathMls,
+  Entities,
+  KnownEntityType,
   PaperId,
   Papers,
-  SelectableEntityType,
-  Sentences,
-  Symbols,
+  UserLibrary,
 } from "./state";
 import SymbolAnnotation from "./SymbolAnnotation";
 import {
-  Annotation as AnnotationObject,
-  AnnotationData,
-  UserAnnotationType,
-  UserLibrary,
+  EntityCreateData,
+  EntityUpdateData,
+  isCitation,
+  isSymbol,
 } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 import { getPageViewDimensions } from "./ui-utils";
-import { UserAnnotationLayer } from "./UserAnnotationLayer";
 
 interface Props {
   paperId?: PaperId;
   pageNumber: number;
   view: PDFPageView;
   papers: Papers | null;
-  citations: Citations | null;
-  symbols: Symbols | null;
-  mathMls: MathMls | null;
-  sentences: Sentences | null;
+  entities: Entities | null;
   userLibrary: UserLibrary | null;
   selectedEntityId: string | null;
-  selectedEntityType: SelectableEntityType;
   selectedAnnotationId: string | null;
   selectedAnnotationSpanId: string | null;
   findMatchedEntityIds: string[] | null;
   findSelectionEntityId: string | null;
   showAnnotations: boolean;
-  userAnnotations: AnnotationObject[] | null;
   userAnnotationsEnabled: boolean;
-  userAnnotationType: UserAnnotationType;
-  handleSelectEntity: (entityType: SelectableEntityType, id: string) => void;
+  entityCreationType: KnownEntityType;
+  handleSelectEntity: (id: string) => void;
   handleSelectAnnotation: (id: string) => void;
   handleSelectAnnotationSpan: (id: string) => void;
   handleStartSymbolSearch: (id: string) => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
-  handleAddUserAnnotation: (data: AnnotationData) => void;
-  handleUpdateUserAnnotation: (
-    id: string,
-    annotation: AnnotationObject
-  ) => void;
-  handleDeleteUserAnnotation: (id: string) => void;
+  handleCreateEntity: (entity: EntityCreateData) => void;
+  handleUpdateEntity: (data: EntityUpdateData) => void;
+  handleDeleteEntity: (id: string) => void;
 }
 
 /**
@@ -74,8 +65,6 @@ class PageOverlay extends React.PureComponent<Props, {}> {
     super(props);
     this._element = document.createElement("div");
     this._element.classList.add("scholar-reader-page-overlay");
-    this.handleSelectSymbol = this.handleSelectSymbol.bind(this);
-    this.handleSelectCitation = this.handleSelectCitation.bind(this);
   }
 
   componentDidMount() {
@@ -91,42 +80,27 @@ class PageOverlay extends React.PureComponent<Props, {}> {
     }
   }
 
-  handleSelectCitation(id: string) {
-    this.props.handleSelectEntity("citation", id);
-  }
-
-  handleSelectSymbol(id: string) {
-    this.props.handleSelectEntity("symbol", id);
-  }
-
   render() {
     const {
       paperId,
       view,
       pageNumber,
       papers,
-      citations,
-      symbols,
-      mathMls,
-      sentences,
+      entities,
       userLibrary,
-      selectedEntityType,
       selectedEntityId,
       selectedAnnotationId,
       selectedAnnotationSpanId,
       findMatchedEntityIds,
       findSelectionEntityId,
       showAnnotations,
-      userAnnotations,
       userAnnotationsEnabled,
-      userAnnotationType,
+      entityCreationType,
       handleAddPaperToLibrary,
       handleStartSymbolSearch,
       handleSelectAnnotation,
       handleSelectAnnotationSpan,
-      handleAddUserAnnotation,
-      handleUpdateUserAnnotation,
-      handleDeleteUserAnnotation,
+      handleCreateEntity,
     } = this.props;
 
     const pageDimensions = getPageViewDimensions(view);
@@ -138,88 +112,88 @@ class PageOverlay extends React.PureComponent<Props, {}> {
           pageNumber={pageNumber}
           pageWidth={pageDimensions.width}
           pageHeight={pageDimensions.height}
-          symbols={symbols}
-          mathMls={mathMls}
-          sentences={sentences}
+          entities={entities}
           selectedEntityId={selectedEntityId}
-          selectedEntityType={selectedEntityType}
         />
         {/* Add annotations for all citation bounding boxes on this page. */}
-        {citations !== null && papers !== null
-          ? citations.all.map((cId) => {
-              const citation = citations.byId[cId];
-              const boundingBoxes = citation.bounding_boxes.filter(
-                (b) => b.page === pageNumber - 1
+        {entities !== null
+          ? entities.all.map((entityId) => {
+              const entity = entities.byId[entityId];
+              const annotationId = `entity-${entityId}-page-${pageNumber}-annotation`;
+              const isSelected = annotationId === selectedAnnotationId;
+              const boundingBoxes = entity.attributes.bounding_boxes.filter(
+                (box) => box.page === pageNumber - 1
               );
-              const isSelected = cId === selectedEntityId;
-              return boundingBoxes.length > 0 ? (
-                <CitationAnnotation
-                  key={cId}
-                  pageView={view}
-                  paper={papers[citation.paper]}
-                  userLibrary={userLibrary}
-                  citation={citation}
-                  selected={isSelected}
-                  selectedSpanId={isSelected ? selectedAnnotationSpanId : null}
-                  active={showAnnotations}
-                  boundingBoxes={boundingBoxes}
-                  openedPaperId={paperId}
-                  handleSelectAnnotation={handleSelectAnnotation}
-                  handleSelectAnnotationSpan={handleSelectAnnotationSpan}
-                  handleSelectCitation={this.handleSelectCitation}
-                  handleAddPaperToLibrary={handleAddPaperToLibrary}
-                />
-              ) : null;
-            })
-          : null}
-        {/* Add annotations for all symbol bounding boxes on this page. */}
-        {symbols !== null
-          ? symbols.all.map((sId) => {
-              const symbol = symbols.byId[sId];
-              const boundingBoxes = symbol.bounding_boxes.filter(
-                (b) => b.page === pageNumber - 1
-              );
-              const isSelected = sId === selectedEntityId;
-              const isFindMatch =
-                findMatchedEntityIds !== null &&
-                findMatchedEntityIds.indexOf(sId) !== -1;
-              return boundingBoxes.length > 0 ? (
-                <SymbolAnnotation
-                  key={sId}
-                  pageView={view}
-                  /*
-                   * For now, only show interactivity for top-level symbols (i.e., symbols that
-                   * are not sub-symbols of other symbols.
-                   */
-                  active={showAnnotations && symbol.parent === null}
-                  selected={isSelected}
-                  selectedSpanId={isSelected ? selectedAnnotationSpanId : null}
-                  isFindSelection={findSelectionEntityId === sId}
-                  isFindMatch={isFindMatch}
-                  boundingBoxes={boundingBoxes}
-                  symbol={symbol}
-                  handleSelectSymbol={this.handleSelectSymbol}
-                  handleStartSymbolSearch={handleStartSymbolSearch}
-                  handleSelectAnnotation={handleSelectAnnotation}
-                  handleSelectAnnotationSpan={handleSelectAnnotationSpan}
-                />
-              ) : null;
+              if (
+                isCitation(entity) &&
+                papers !== null &&
+                entity.attributes.paper_id !== null &&
+                papers[entity.attributes.paper_id] !== undefined
+              ) {
+                return (
+                  <CitationAnnotation
+                    key={annotationId}
+                    id={annotationId}
+                    pageView={view}
+                    userLibrary={userLibrary}
+                    citation={entity}
+                    paper={papers[entity.attributes.paper_id]}
+                    boundingBoxes={boundingBoxes}
+                    active={showAnnotations}
+                    selected={isSelected}
+                    selectedSpanId={
+                      isSelected ? selectedAnnotationSpanId : null
+                    }
+                    openedPaperId={paperId}
+                    handleSelect={handleSelectAnnotation}
+                    handleSelectSpan={handleSelectAnnotationSpan}
+                    handleSelectEntity={this.props.handleSelectEntity}
+                    handleAddPaperToLibrary={handleAddPaperToLibrary}
+                  />
+                );
+              } else if (isSymbol(entity)) {
+                const isFindMatch =
+                  findMatchedEntityIds !== null &&
+                  findMatchedEntityIds.indexOf(entityId) !== -1;
+                return (
+                  <SymbolAnnotation
+                    key={annotationId}
+                    id={annotationId}
+                    pageView={view}
+                    boundingBoxes={boundingBoxes}
+                    /*
+                     * Only show interactivity for top-level symbols (i.e., symbols that are
+                     * not children of other symbols).
+                     */
+                    active={
+                      showAnnotations &&
+                      selectors.isSymbolTopLevel(entity, entities)
+                    }
+                    selected={isSelected}
+                    selectedSpanId={
+                      isSelected ? selectedAnnotationSpanId : null
+                    }
+                    isFindSelection={findSelectionEntityId === entityId}
+                    isFindMatch={isFindMatch}
+                    symbol={entity}
+                    handleSelect={handleSelectAnnotation}
+                    handleSelectAnnotationSpan={handleSelectAnnotationSpan}
+                    handleSelectEntity={this.props.handleSelectEntity}
+                    handleStartSymbolSearch={handleStartSymbolSearch}
+                  />
+                );
+              } else {
+                return null;
+              }
             })
           : null}
         {/* Add layer for user annotations. */}
-        {userAnnotationsEnabled && userAnnotations !== null ? (
-          <UserAnnotationLayer
+        {userAnnotationsEnabled ? (
+          <EntityCreationCanvas
             pageView={view}
             pageNumber={pageNumber}
-            annotations={userAnnotations}
-            annotationType={userAnnotationType}
-            selectedAnnotationId={selectedAnnotationId}
-            selectedAnnotationSpanId={selectedAnnotationSpanId}
-            handleSelectAnnotation={handleSelectAnnotation}
-            handleSelectAnnotationSpan={handleSelectAnnotationSpan}
-            handleAddAnnotation={handleAddUserAnnotation}
-            handleUpdateAnnotation={handleUpdateUserAnnotation}
-            handleDeleteAnnotation={handleDeleteUserAnnotation}
+            entityType={entityCreationType}
+            handleCreateEntity={handleCreateEntity}
           />
         ) : null}
       </>,

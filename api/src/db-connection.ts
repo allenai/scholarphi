@@ -138,7 +138,7 @@ export class Connection {
         if (!row.of_list) {
           casted_value = null;
         }
-      } else if (row.item_type === "int") {
+      } else if (row.item_type === "integer") {
         casted_value = parseInt(row.value);
       } else if (row.item_type === "float") {
         casted_value = parseFloat(row.value);
@@ -221,20 +221,26 @@ export class Connection {
       .join("paper", { "paper.s2_id": "entity.paper_id" })
       .where({ ...paperSelector, version });
 
-    const boundingBoxRows: BoundingBoxRow[] = await this._knex("boundingbox")
-      .select(
-        "entity.id AS entity_id",
-        "boundingbox.id AS id",
-        "boundingbox.source AS source",
-        "page",
-        "left",
-        "top",
-        "width",
-        "height"
-      )
-      .join("entity", { "boundingbox.entity_id": "entity.id" })
-      .join("paper", { "paper.s2_id": "entity.paper_id" })
-      .where({ ...paperSelector, version });
+    let boundingBoxRows: BoundingBoxRow[];
+    try {
+      boundingBoxRows = await this._knex("boundingbox")
+        .select(
+          "entity.id AS entity_id",
+          "boundingbox.id AS id",
+          "boundingbox.source AS source",
+          "page",
+          "left",
+          "top",
+          "width",
+          "height"
+        )
+        .join("entity", { "boundingbox.entity_id": "entity.id" })
+        .join("paper", { "paper.s2_id": "entity.paper_id" })
+        .where({ ...paperSelector, version });
+    } catch (e) {
+      console.log(e);
+      throw "Error";
+    }
 
     /*
      * Organize bounding box data by the entity they belong to.
@@ -386,7 +392,7 @@ export class Connection {
            * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger#Polyfill
            */
           if (isFinite(value) && Math.floor(value) === value) {
-            item_type = "int";
+            item_type = "integer";
           } else {
             item_type = "float";
           }

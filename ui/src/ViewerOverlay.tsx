@@ -3,17 +3,10 @@ import React from "react";
 import DefinitionPreview from "./DefinitionPreview";
 import Drawer, { DrawerMode } from "./Drawer";
 import FindBar, { FindMode, FindQuery } from "./FindBar";
+import * as selectors from "./selectors";
 import { divDimensionStyles, matchingSymbols } from "./selectors";
-import {
-  MathMls,
-  Pages,
-  PaperId,
-  Papers,
-  SelectableEntityType,
-  Sentences,
-  Symbols,
-} from "./state";
-import { BoundingBox, Sentence, Symbol, UserLibrary } from "./types/api";
+import { Entities, Pages, PaperId, Papers, UserLibrary } from "./state";
+import { BoundingBox, isSentence, Sentence, Symbol } from "./types/api";
 import { PDFViewer, PDFViewerApplication } from "./types/pdfjs-viewer";
 import * as uiUtils from "./ui-utils";
 
@@ -24,11 +17,8 @@ interface Props {
   pages: Pages | null;
   paperId?: PaperId;
   papers: Papers | null;
-  symbols: Symbols | null;
-  mathMls: MathMls | null;
-  sentences: Sentences | null;
+  entities: Entities | null;
   userLibrary: UserLibrary | null;
-  selectedEntityType: SelectableEntityType;
   selectedEntityId: string | null;
   isFindActive: boolean;
   findActivationTimeMs: number | null;
@@ -43,7 +33,7 @@ interface Props {
   handleChangeMatchCount: (matchCount: number | null) => void;
   handleChangeQuery: (query: FindQuery | null) => void;
   handleDeselectSelection: () => void;
-  handleSelectSymbol: (id: string) => void;
+  handleSelectEntity: (id: string) => void;
   handleScrollSymbolIntoView: () => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
 }
@@ -140,35 +130,29 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
     let definitionSymbol: Symbol | null = null,
       definitionSentence: Sentence | null = null;
 
-    const {
-      selectedEntityType,
-      selectedEntityId,
-      symbols,
-      mathMls,
-      sentences,
-    } = this.props;
+    const { selectedEntityId, entities } = this.props;
 
     if (
-      selectedEntityType !== "symbol" ||
       selectedEntityId === null ||
-      symbols === null ||
-      mathMls === null
+      entities === null ||
+      selectors.selectedEntityType(selectedEntityId, entities) !== "symbol"
     ) {
       return { definitionSentence, symbol: definitionSymbol };
     }
 
-    const matchingSymbolIds = matchingSymbols(
-      selectedEntityId,
-      symbols,
-      mathMls,
-      [{ key: "exact-match", active: true }]
-    );
+    const matchingSymbolIds = matchingSymbols(selectedEntityId, entities, [
+      { key: "exact-match", active: true },
+    ]);
     const firstMatchingSymbolId =
       matchingSymbolIds.length > 0 ? matchingSymbolIds[0] : selectedEntityId;
-    definitionSymbol = symbols.byId[firstMatchingSymbolId];
+    definitionSymbol = entities.byId[firstMatchingSymbolId] as Symbol;
 
-    if (definitionSymbol.sentence !== null && sentences !== null) {
-      definitionSentence = sentences.byId[definitionSymbol.sentence];
+    const sentenceId = definitionSymbol.relationships.sentence.id;
+    if (sentenceId !== null && entities.byId[sentenceId] !== null) {
+      const sentence = entities.byId[sentenceId];
+      if (isSentence(sentence)) {
+        definitionSentence = sentence;
+      }
     }
     return { definitionSentence, symbol: definitionSymbol };
   }
@@ -238,11 +222,15 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
     if (definitionSymbol !== null) {
       if (
         definitionSentence !== null &&
-        !this.areBoundingBoxesVisible(definitionSentence.bounding_boxes)
+        !this.areBoundingBoxesVisible(
+          definitionSentence.attributes.bounding_boxes
+        )
       ) {
         renderDefinitionPreview = true;
       } else if (
-        !this.areBoundingBoxesVisible(definitionSymbol.bounding_boxes)
+        !this.areBoundingBoxesVisible(
+          definitionSymbol.attributes.bounding_boxes
+        )
       ) {
         renderDefinitionPreview = true;
       }
@@ -278,12 +266,9 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
           mode={this.props.drawerMode}
           userLibrary={this.props.userLibrary}
           papers={this.props.papers}
-          symbols={this.props.symbols}
-          mathMls={this.props.mathMls}
-          sentences={this.props.sentences}
-          selectedEntityType={this.props.selectedEntityType}
+          entities={this.props.entities}
           selectedEntityId={this.props.selectedEntityId}
-          handleSelectSymbol={this.props.handleSelectSymbol}
+          handleSelectSymbol={this.props.handleSelectEntity}
           handleScrollSymbolIntoView={this.props.handleScrollSymbolIntoView}
           handleClose={this.props.handleCloseDrawer}
           handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}

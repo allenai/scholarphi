@@ -4,15 +4,13 @@ import React from "react";
 import FeedbackButton from "./FeedbackButton";
 import PaperClipping from "./PaperClipping";
 import * as selectors from "./selectors";
-import { MathMls, PaperId, Sentences, Symbols } from "./state";
+import { Entities, PaperId } from "./state";
 import { Symbol } from "./types/api";
 
 interface Props {
   paperId: PaperId;
   pdfDocument: PDFDocumentProxy;
-  symbols: Symbols;
-  mathMls: MathMls;
-  sentences: Sentences | null;
+  entities: Entities;
   symbol: Symbol;
   handleOpenDrawer: () => void;
   handleSelectSymbol: (id: string) => void;
@@ -30,7 +28,7 @@ export class SymbolTooltipBody extends React.PureComponent<Props> {
   }
 
   render() {
-    const { symbol, symbols, mathMls, sentences } = this.props;
+    const { symbol, entities } = this.props;
 
     let exactMatchSymbolId: string | undefined;
     let partialMatchSymbolId: string | undefined;
@@ -41,13 +39,12 @@ export class SymbolTooltipBody extends React.PureComponent<Props> {
      */
     const partialMatchSymbolIds = selectors.matchingSymbols(
       this.props.symbol.id,
-      symbols,
-      mathMls
+      entities
     );
     if (partialMatchSymbolIds.length > 0) {
       partialMatchSymbolId = selectors.orderByPosition(
         partialMatchSymbolIds,
-        symbols
+        entities
       )[0];
     }
 
@@ -56,20 +53,16 @@ export class SymbolTooltipBody extends React.PureComponent<Props> {
      */
     const exactMatchSymbolIds = selectors.matchingSymbols(
       this.props.symbol.id,
-      symbols,
-      mathMls
+      entities
     );
     if (exactMatchSymbolIds.length > 0) {
       exactMatchSymbolId = selectors.orderByPosition(
         exactMatchSymbolIds,
-        symbols
+        entities
       )[0];
     }
 
-    let sentence = null;
-    if (sentences !== null && symbol.sentence !== null) {
-      sentence = sentences.byId[symbol.sentence];
-    }
+    const sentence = selectors.symbolSentence(symbol.id, entities);
 
     return (
       <div className="tooltip-body symbol-tooltip-body">
@@ -78,14 +71,19 @@ export class SymbolTooltipBody extends React.PureComponent<Props> {
             if (exactMatchSymbolId === undefined) {
               return null;
             }
-            const matchingSymbol = symbols.byId[exactMatchSymbolId];
+            const matchingSymbol = entities.byId[exactMatchSymbolId];
             return (
               <div className="tooltip-body__section">
                 <PaperClipping
                   pdfDocument={this.props.pdfDocument}
                   sentence={sentence}
-                  pageNumber={matchingSymbol.bounding_boxes[0].page + 1}
-                  highlights={matchingSymbol.bounding_boxes.slice(0, 1)}
+                  pageNumber={
+                    matchingSymbol.attributes.bounding_boxes[0].page + 1
+                  }
+                  highlights={matchingSymbol.attributes.bounding_boxes.slice(
+                    0,
+                    1
+                  )}
                 />
                 <FeedbackButton
                   paperId={this.props.paperId}

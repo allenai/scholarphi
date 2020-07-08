@@ -1,8 +1,8 @@
 import React from "react";
 import Annotation from "./Annotation";
 import CitationTooltipBody from "./CitationTooltipBody";
-import { PaperId } from "./state";
-import { BoundingBox, Citation, Paper, UserLibrary } from "./types/api";
+import { PaperId, UserLibrary } from "./state";
+import { BoundingBox, Citation, Paper } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
 interface Props {
@@ -10,6 +10,8 @@ interface Props {
   paper: Paper;
   userLibrary: UserLibrary | null;
   citation: Citation;
+  id: string;
+  boundingBoxes: BoundingBox[];
   active: boolean;
   selected: boolean;
   selectedSpanId: string | null;
@@ -17,10 +19,9 @@ interface Props {
    * The ID of the paper that the user is reading.
    */
   openedPaperId?: PaperId;
-  boundingBoxes: BoundingBox[];
-  handleSelectAnnotation: (id: string) => void;
-  handleSelectAnnotationSpan: (id: string) => void;
-  handleSelectCitation: (id: string) => void;
+  handleSelect: (id: string) => void;
+  handleSelectSpan: (id: string) => void;
+  handleSelectEntity: (id: string) => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
 }
 
@@ -31,19 +32,19 @@ export class CitationAnnotation extends React.PureComponent<Props, {}> {
   }
 
   onSelected() {
-    this.props.handleSelectCitation(this.props.citation.id);
+    this.props.handleSelectEntity(this.props.citation.id);
   }
 
   render() {
     return (
       <Annotation
         pageView={this.props.pageView}
-        id={`citation-${this.props.citation.id}-annotation`}
+        id={this.props.id}
         active={this.props.active}
         selected={this.props.selected}
         selectedSpanId={this.props.selectedSpanId}
         boundingBoxes={this.props.boundingBoxes}
-        source={this.props.citation.source}
+        source={this.props.citation.attributes.source}
         tooltipContent={
           <CitationTooltipBody
             citation={this.props.citation}
@@ -53,8 +54,8 @@ export class CitationAnnotation extends React.PureComponent<Props, {}> {
             openedPaperId={this.props.openedPaperId}
           />
         }
-        handleSelectAnnotation={this.props.handleSelectAnnotation}
-        handleSelectAnnotationSpan={this.props.handleSelectAnnotationSpan}
+        handleSelectAnnotation={this.props.handleSelect}
+        handleSelectAnnotationSpan={this.props.handleSelectSpan}
         onSelected={this.onSelected}
       />
     );

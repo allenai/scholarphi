@@ -1,7 +1,7 @@
 import React from "react";
 import PaperSummary from "./PaperSummary";
-import { PaperId } from "./state";
-import { Citation, Paper, UserLibrary } from "./types/api";
+import { PaperId, UserLibrary } from "./state";
+import { Citation, Paper } from "./types/api";
 
 interface Props {
   paper: Paper;
