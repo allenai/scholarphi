@@ -388,10 +388,10 @@ class SentenceExtractor(EntityExtractor):
                 is_sentence_in_table=tex_unit_dict.get("is_sentence_in_table", False),
                 is_sentence_in_itemize=tex_unit_dict.get("is_sentence_in_itemize", False),
                 # commented below for errors in cast typing in line 128 in common/file_utils.py
-                # label=tex_unit_dict.get("label", []),
-                # ref=tex_unit_dict.get("ref", []),
-                # cite=tex_unit_dict.get("cite", []),
-                # symbol=tex_unit_dict.get("symbol", []),
-                # url=tex_unit_dict.get("url", []),
-                # others=tex_unit_dict.get("others", []),
+                label=tex_unit_dict.get("label", []),
+                ref=tex_unit_dict.get("ref", []),
+                cite=tex_unit_dict.get("cite", []),
+                symbol=tex_unit_dict.get("symbol", []),
+                url=tex_unit_dict.get("url", []),
+                others=tex_unit_dict.get("others", []),
             )
