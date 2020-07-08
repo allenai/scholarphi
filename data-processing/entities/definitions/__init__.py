@@ -38,7 +38,7 @@ directories.register("detected-definitions")
 
 
 commands: CommandList = [
-    DetectedDefinitions,
+    DetectDefinitions,
     make_find_entity_sentences_command("detect-definitions"),
 ]
 
