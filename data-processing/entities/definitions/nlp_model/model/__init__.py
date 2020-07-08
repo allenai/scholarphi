@@ -1,1 +1,1 @@
-from .modeling_jointroberta import JointRoberta
+from .modeling_joint_roberta import JointRoberta
