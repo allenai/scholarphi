@@ -8,6 +8,7 @@ import csv
 import dataclasses
 import logging
 import os
+import ast
 import shutil
 from typing import Dict, Iterator, List, Optional, Type, TypeVar
 
