@@ -8,19 +8,20 @@ import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
 import {
   createRelationalStoreFromArray,
+  KnownEntityType,
+  KNOWN_ENTITY_TYPES,
   Pages,
   PaperId,
-  SelectableEntityType,
   State,
   SymbolFilters,
 } from "./state";
 import "./style/index.less";
 import {
-  Annotation,
-  AnnotationData,
   BoundingBox,
+  EntityCreateData,
+  EntityUpdateData,
+  isCitation,
   Paper,
-  UserAnnotationType,
 } from "./types/api";
 import {
   DocumentLoadedEvent,
@@ -39,10 +40,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     super(props);
 
     this.state = {
-      citations: null,
-      symbols: null,
-      mathMls: null,
-      sentences: null,
+      entities: null,
       papers: null,
 
       userLibrary: null,
@@ -55,7 +53,6 @@ class ScholarReader extends React.PureComponent<Props, State> {
       annotationsShowing: true,
       selectedAnnotationId: null,
       selectedAnnotationSpanId: null,
-      selectedEntityType: null,
       selectedEntityId: null,
 
       isFindActive: false,
@@ -67,38 +64,36 @@ class ScholarReader extends React.PureComponent<Props, State> {
       findMatchedEntities: null,
       drawerMode: "closed",
 
-      userAnnotationsEnabled: false,
-      userAnnotationType: "citation",
-      userAnnotations: [],
+      entityCreationEnabled: false,
+      entityCreationType: "citation",
     };
 
     /**
      * Bind state-changing handlers so that they will be called with 'this' as its context.
      * See https://reactjs.org/docs/faq-functions.html#how-do-i-bind-a-function-to-a-component-instance
      */
-    this.setSelectedEntity = this.setSelectedEntity.bind(this);
-    this.setSelectedAnnotationId = this.setSelectedAnnotationId.bind(this);
-    this.setSelectedAnnotationSpanId = this.setSelectedAnnotationSpanId.bind(
-      this
-    );
-    this.deselectSelection = this.deselectSelection.bind(this);
+    this.createEntity = this.createEntity.bind(this);
+    this.updateEntity = this.updateEntity.bind(this);
+    this.deleteEntity = this.deleteEntity.bind(this);
     this.addToLibrary = this.addToLibrary.bind(this);
-    this.addUserAnnotation = this.addUserAnnotation.bind(this);
-    this.updateUserAnnotation = this.updateUserAnnotation.bind(this);
-    this.deleteUserAnnotation = this.deleteUserAnnotation.bind(this);
+
+    this.selectEntity = this.selectEntity.bind(this);
+    this.selectAnnotion = this.selectAnnotion.bind(this);
+    this.selectAnnotationSpan = this.selectAnnotationSpan.bind(this);
+    this.deselectSelection = this.deselectSelection.bind(this);
+
+    this.hideAnnotations = this.hideAnnotations.bind(this);
+    this.showAnnotations = this.showAnnotations.bind(this);
     this.scrollSymbolIntoView = this.scrollSymbolIntoView.bind(this);
     this.closeDrawer = this.closeDrawer.bind(this);
-    this.selectSymbol = this.selectSymbol.bind(this);
-    this.setUserAnnotationType = this.setUserAnnotationType.bind(this);
+    this.startTextSearch = this.startTextSearch.bind(this);
+    this.startSymbolSearch = this.startSymbolSearch.bind(this);
     this.setFindMatchCount = this.setFindMatchCount.bind(this);
     this.setFindMatchIndex = this.setFindMatchIndex.bind(this);
     this.setFindQuery = this.setFindQuery.bind(this);
     this.closeFindBar = this.closeFindBar.bind(this);
-    this.toggleUserAnnotationMode = this.toggleUserAnnotationMode.bind(this);
-    this.startTextSearch = this.startTextSearch.bind(this);
-    this.startSymbolSearch = this.startSymbolSearch.bind(this);
-    this.hideAnnotations = this.hideAnnotations.bind(this);
-    this.showAnnotations = this.showAnnotations.bind(this);
+    this.toggleEntityCreationMode = this.toggleEntityCreationMode.bind(this);
+    this.setEntityCreationType = this.setEntityCreationType.bind(this);
   }
 
   async addToLibrary(paperId: string, paperTitle: string) {
@@ -118,33 +113,25 @@ class ScholarReader extends React.PureComponent<Props, State> {
     }
   }
 
-  setSelectedAnnotationId(id: string | null) {
+  selectEntity(id: string | null) {
+    this.setState({ selectedEntityId: id });
+  }
+
+  selectAnnotion(id: string | null) {
     this.setState({ selectedAnnotationId: id });
   }
 
-  setSelectedAnnotationSpanId(id: string | null) {
+  selectAnnotationSpan(id: string | null) {
     this.setState({ selectedAnnotationSpanId: id });
   }
 
-  setSelectedEntity(type: SelectableEntityType, id: string | null) {
-    this.setState({ selectedEntityId: id, selectedEntityType: type });
-  }
-
-  selectSymbol(id: string) {
-    this.setSelectedEntity("symbol", id);
-  }
-
   deselectSelection() {
-    if (
-      this.state.findMode === "symbol" &&
-      this.state.selectedEntityType === "symbol"
-    ) {
+    if (this.state.findMode === "symbol") {
       this.closeFindBar();
     }
     this.setState({
       selectedAnnotationId: null,
       selectedAnnotationSpanId: null,
-      selectedEntityType: null,
       selectedEntityId: null,
     });
   }
@@ -158,24 +145,17 @@ class ScholarReader extends React.PureComponent<Props, State> {
    * if it is now obscured by the drawer.
    */
   scrollSymbolIntoView() {
-    const {
-      selectedEntityId,
-      selectedEntityType,
-      pdfViewer,
-      pages,
-      symbols,
-    } = this.state;
+    const { selectedEntityId, pdfViewer, entities, pages } = this.state;
     const DRAWER_WIDTH = 470;
     const SYMBOL_VIEW_PADDING = 50;
     if (
       pdfViewer &&
       pages !== null &&
-      symbols !== null &&
-      selectedEntityType === "symbol" &&
+      entities !== null &&
       selectedEntityId !== null
     ) {
-      const symbol = symbols.byId[selectedEntityId];
-      const symbolBox = symbol.bounding_boxes[0];
+      const symbol = entities.byId[selectedEntityId];
+      const symbolBox = symbol.attributes.bounding_boxes[0];
       const pdfLeft = pdfViewer.container.getBoundingClientRect().left;
       if (pages[symbolBox.page + 1].view != null) {
         const { left, width } = selectors.divDimensionStyles(
@@ -207,61 +187,60 @@ class ScholarReader extends React.PureComponent<Props, State> {
     }
   }
 
-  setUserAnnotationType(type: UserAnnotationType) {
-    this.setState({ userAnnotationType: type });
+  setEntityCreationType(type: KnownEntityType) {
+    this.setState({ entityCreationType: type });
   }
 
-  async addUserAnnotation(annotationData: AnnotationData) {
+  async createEntity(data: EntityCreateData) {
     if (this.props.paperId !== undefined) {
-      const id = await api.postAnnotation(
-        this.props.paperId.id,
-        annotationData
-      );
-      const { type, page, left, top, width, height } = annotationData;
-      const annotation = {
-        id,
-        type,
-        boundingBox: { id, page, left, top, width, height },
-      };
-      this.setUserAnnotations([...this.state.userAnnotations, annotation]);
-      this.setSelectedAnnotationId(`user-annotation-${id}`);
+      /**
+       * TODO(andrewhead):
+       * 1. Add temporary item to set of entities
+       * 1b. Select the new entity
+       * 2. On success, update the ID
+       * 3. On failure, remove it from the list
+       */
+      // const id = await api.postAnnotation(
+      //   this.props.paperId.id,
+      //   annotationData
+      // );
     }
   }
 
-  async updateUserAnnotation(id: string, annotation: Annotation) {
+  async updateEntity(data: EntityUpdateData) {
     if (this.props.paperId !== undefined) {
-      const { type, boundingBox } = annotation;
-      const { page, left, top, width, height } = boundingBox;
-      const annotationData = { type, page, left, top, width, height };
-      const updatedAnnotation = await api.putAnnotation(
-        this.props.paperId.id,
-        id,
-        annotationData
-      );
+      /**
+       * TODO(andrewhead):
+       * 1. Update the state for the entity immediately
+       * 2. On success, do nothing
+       * 3. On failure, revert the change
+       */
+      // const updatedAnnotation = await api.putAnnotation(
+      //   this.props.paperId.id,
+      //   id,
+      //   annotationData
+      // );
 
       /*
-       * Update annotation type for creating new annotations to the type of the most recently
-       * changed annotation.
+       * Update type for creating new annotations to the type of the most recently
+       * changed entity.
        */
-      this.setUserAnnotationType(updatedAnnotation.type);
-
-      const annotations = this.state.userAnnotations.map((a) =>
-        a.id === id ? updatedAnnotation : a
-      );
-      this.setUserAnnotations(annotations);
+      if (KNOWN_ENTITY_TYPES.some((t) => t === data.type)) {
+        this.setEntityCreationType(data.type as KnownEntityType);
+      }
     }
   }
 
-  async deleteUserAnnotation(id: string) {
+  async deleteEntity(id: string) {
     if (this.props.paperId !== undefined) {
-      await api.deleteAnnotation(this.props.paperId.id, id);
-      const annotations = this.state.userAnnotations.filter((a) => a.id !== id);
-      this.setUserAnnotations(annotations);
+      /**
+       * TODO(andrewhead):
+       * 1. Update the state to delete the entity immediately
+       * 2. On success, do nothing
+       * 3. On failure, revert the change
+       */
+      // await api.deleteAnnotation(this.props.paperId.id, id);
     }
-  }
-
-  setUserAnnotations(annotations: Annotation[]) {
-    this.setState({ userAnnotations: annotations });
   }
 
   closeDrawer() {
@@ -276,9 +255,9 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.setState({ annotationsShowing: true });
   }
 
-  toggleUserAnnotationMode() {
+  toggleEntityCreationMode() {
     this.setState((prevState) => ({
-      userAnnotationsEnabled: !prevState.userAnnotationsEnabled,
+      entityCreationEnabled: !prevState.entityCreationEnabled,
     }));
   }
 
@@ -291,15 +270,11 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   startSymbolSearch(symbolId: string) {
-    if (this.state.symbols === null || this.state.mathMls === null) {
+    if (this.state.entities === null) {
       return;
     }
 
-    const matching = matchingSymbols(
-      symbolId,
-      this.state.symbols,
-      this.state.mathMls
-    );
+    const matching = matchingSymbols(symbolId, this.state.entities);
     const matchCount = matching.length;
     const matchIndex = matching.indexOf(symbolId);
 
@@ -334,26 +309,22 @@ class ScholarReader extends React.PureComponent<Props, State> {
         state.findMode === "symbol" &&
         state.findMatchedEntities !== null &&
         findMatchIndex !== null &&
-        state.symbols !== null
+        state.entities !== null
       ) {
         const symbolId = state.findMatchedEntities[findMatchIndex];
-        const symbol = state.symbols.byId[symbolId];
-        this.jumpToBoundingBox(symbol.bounding_boxes[0]);
+        const symbol = state.entities.byId[symbolId];
+        this.jumpToBoundingBox(symbol.attributes.bounding_boxes[0]);
       }
       return { findMatchIndex };
     });
   }
 
-  /*
-   * TODO(andrewhead): split this into pieces, reuse its code. Too big.
-   */
   setFindQuery(findQuery: FindQuery) {
     this.setState((state) => {
       if (
         state.findMode === "symbol" &&
         state.selectedEntityId !== null &&
-        state.symbols !== null &&
-        state.mathMls !== null
+        state.entities !== null
       ) {
         const symbolFilters = findQuery as SymbolFilters;
         const filterList =
@@ -362,8 +333,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
             : undefined;
         const matching = matchingSymbols(
           state.selectedEntityId,
-          state.symbols,
-          state.mathMls,
+          state.entities,
           filterList
         );
         const matchCount = matching.length;
@@ -393,8 +363,12 @@ class ScholarReader extends React.PureComponent<Props, State> {
 
   async componentDidMount() {
     waitForPDFViewerInitialization().then((application) => {
-      // TODO(andrewhead): where to move this?
+      /*
+       * Tell pdf.js not to use default find functionality, but instead to forward find events
+       * to external services. The events are intercepted in 'FindBar'.
+       */
       application.externalServices.supportsIntegratedFind = true;
+
       this.setState({ pdfViewerApplication: application });
       this.subscribeToPDFViewerStateChanges(application);
     });
@@ -435,55 +409,26 @@ class ScholarReader extends React.PureComponent<Props, State> {
   async loadDataFromApi() {
     if (this.props.paperId !== undefined) {
       if (this.props.paperId.type === "arxiv") {
-        const citations = await api.citationsForArxivId(this.props.paperId.id);
-        const s2Ids = citations.map((c) => c.paper);
-        if (s2Ids.length >= 1) {
-          const papers = (await api.papers(s2Ids)).reduce((papers, paper) => {
-            papers[paper.s2Id] = paper;
-            return papers;
-          }, {} as { [s2Id: string]: Paper });
+        const entities = await api.getEntities(this.props.paperId.id);
+        this.setState({
+          entities: createRelationalStoreFromArray(entities, "id"),
+        });
+
+        const citationS2Ids = entities
+          .filter(isCitation)
+          .map((c) => c.attributes.paper_id)
+          .filter((id) => id !== null)
+          .map((id) => id as string);
+        if (citationS2Ids.length >= 1) {
+          const papers = (await api.getPapers(citationS2Ids)).reduce(
+            (papers, paper) => {
+              papers[paper.s2Id] = paper;
+              return papers;
+            },
+            {} as { [s2Id: string]: Paper }
+          );
           this.setState({ papers });
         }
-        /*
-         * Wait to set the citations until paper data has been fetched, so that citations are
-         * only shown when there's something to show for them.
-         */
-        this.setState({
-          citations: createRelationalStoreFromArray(citations, "id"),
-        });
-
-        const symbols = await api.symbolsForArxivId(this.props.paperId.id);
-        if (symbols.length >= 1) {
-          const mathMls = await api.mathMlForArxivId(this.props.paperId.id);
-          const mathMlsWithSymbols = mathMls.map((m) => {
-            return {
-              ...m,
-              symbols: symbols
-                .filter((s) => s.mathml === m.id)
-                .map((s) => s.id),
-            };
-          });
-          this.setState({
-            mathMls: createRelationalStoreFromArray(mathMlsWithSymbols, "id"),
-          });
-        }
-        /*
-         * Wait to set the symbols until MathML data has been fetched, as parts of the interface
-         * that display symbols require MathML to function properly.
-         */
-        this.setState({
-          symbols: createRelationalStoreFromArray(symbols, "id"),
-        });
-
-        const sentences = await api.sentencesForArxivId(this.props.paperId.id);
-        this.setState({
-          sentences: createRelationalStoreFromArray(sentences, "id"),
-        });
-
-        const annotations = await api.annnotationsForArxivId(
-          this.props.paperId.id
-        );
-        this.setUserAnnotations(annotations);
 
         const userLibrary = await api.getUserLibraryInfo();
         if (userLibrary) {
@@ -541,16 +486,16 @@ class ScholarReader extends React.PureComponent<Props, State> {
             <AppOverlay
               appContainer={document.body}
               paperId={this.props.paperId}
-              userAnnotationsEnabled={this.state.userAnnotationsEnabled}
-              userAnnotationType={this.state.userAnnotationType}
+              entityCreationEnabled={this.state.entityCreationEnabled}
+              entityCreationType={this.state.entityCreationType}
               handleHideAnnotations={this.hideAnnotations}
               handleShowAnnotations={this.showAnnotations}
               handleDeselectSelection={this.deselectSelection}
               handleStartTextSearch={this.startTextSearch}
               handleTerminateSearch={this.closeFindBar}
               handleCloseDrawer={this.closeDrawer}
-              handleToggleUserAnnotationMode={this.toggleUserAnnotationMode}
-              handleSelectUserAnnotationType={this.setUserAnnotationType}
+              handleToggleEntityCreationMode={this.toggleEntityCreationMode}
+              handleSelectEntityCreationType={this.setEntityCreationType}
             />
             <ViewerOverlay
               pdfViewerApplication={this.state.pdfViewerApplication}
@@ -559,11 +504,8 @@ class ScholarReader extends React.PureComponent<Props, State> {
               pages={this.state.pages}
               paperId={this.props.paperId}
               papers={this.state.papers}
-              symbols={this.state.symbols}
-              mathMls={this.state.mathMls}
-              sentences={this.state.sentences}
+              entities={this.state.entities}
               userLibrary={this.state.userLibrary}
-              selectedEntityType={this.state.selectedEntityType}
               selectedEntityId={this.state.selectedEntityId}
               isFindActive={this.state.isFindActive}
               findActivationTimeMs={this.state.findActivationTimeMs}
@@ -580,7 +522,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
               handleCloseDrawer={this.closeDrawer}
               handleScrollSymbolIntoView={this.scrollSymbolIntoView}
               handleAddPaperToLibrary={this.addToLibrary}
-              handleSelectSymbol={this.selectSymbol}
+              handleSelectEntity={this.selectEntity}
             />
           </>
         ) : null}
@@ -603,29 +545,24 @@ class ScholarReader extends React.PureComponent<Props, State> {
                   view={pageModel.view}
                   pageNumber={pageNumber}
                   papers={this.state.papers}
-                  citations={this.state.citations}
-                  symbols={this.state.symbols}
-                  mathMls={this.state.mathMls}
-                  sentences={this.state.sentences}
+                  entities={this.state.entities}
                   userLibrary={this.state.userLibrary}
-                  selectedEntityType={this.state.selectedEntityType}
                   selectedEntityId={this.state.selectedEntityId}
                   selectedAnnotationId={this.state.selectedAnnotationId}
                   selectedAnnotationSpanId={this.state.selectedAnnotationSpanId}
                   findMatchedEntityIds={this.state.findMatchedEntities}
                   findSelectionEntityId={findMatchEntityId}
                   showAnnotations={this.state.annotationsShowing}
-                  userAnnotations={this.state.userAnnotations as Annotation[]}
-                  userAnnotationsEnabled={this.state.userAnnotationsEnabled}
-                  userAnnotationType={this.state.userAnnotationType}
-                  handleSelectEntity={this.setSelectedEntity}
-                  handleSelectAnnotation={this.setSelectedAnnotationId}
-                  handleSelectAnnotationSpan={this.setSelectedAnnotationSpanId}
+                  userAnnotationsEnabled={this.state.entityCreationEnabled}
+                  entityCreationType={this.state.entityCreationType}
+                  handleSelectEntity={this.selectEntity}
+                  handleSelectAnnotation={this.selectAnnotion}
+                  handleSelectAnnotationSpan={this.selectAnnotationSpan}
                   handleStartSymbolSearch={this.startSymbolSearch}
                   handleAddPaperToLibrary={this.addToLibrary}
-                  handleAddUserAnnotation={this.addUserAnnotation}
-                  handleUpdateUserAnnotation={this.updateUserAnnotation}
-                  handleDeleteUserAnnotation={this.deleteUserAnnotation}
+                  handleCreateEntity={this.createEntity}
+                  handleUpdateEntity={this.updateEntity}
+                  handleDeleteEntity={this.deleteEntity}
                 />
               );
             })}

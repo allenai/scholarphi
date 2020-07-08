@@ -1,10 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import EntityCreationTypeSelect from "./EntityCreationTypeSelect";
 import FeedbackButton from "./FeedbackButton";
-import { PaperId } from "./state";
-import { UserAnnotationType } from "./types/api";
+import { KnownEntityType, PaperId } from "./state";
 import * as uiUtils from "./ui-utils";
-import { UserAnnotationTypeSelect } from "./UserAnnotationTypeSelect";
 
 interface Props {
   /*
@@ -14,16 +13,16 @@ interface Props {
    */
   appContainer: HTMLElement;
   paperId?: PaperId;
-  userAnnotationsEnabled: boolean;
-  userAnnotationType: UserAnnotationType;
+  entityCreationEnabled: boolean;
+  entityCreationType: KnownEntityType;
   handleHideAnnotations: () => void;
   handleShowAnnotations: () => void;
   handleCloseDrawer: () => void;
   handleStartTextSearch: () => void;
   handleTerminateSearch: () => void;
   handleDeselectSelection: () => void;
-  handleToggleUserAnnotationMode: () => void;
-  handleSelectUserAnnotationType: (type: UserAnnotationType) => void;
+  handleToggleEntityCreationMode: () => void;
+  handleSelectEntityCreationType: (type: KnownEntityType) => void;
 }
 
 /**
@@ -97,7 +96,7 @@ class AppOverlay extends React.PureComponent<Props> {
       this.props.handleCloseDrawer();
     }
     if (event.ctrlKey && event.shiftKey && event.key !== "a") {
-      this.props.handleToggleUserAnnotationMode();
+      this.props.handleToggleEntityCreationMode();
     }
     if (event.keyCode === 18 || event.key === "Alt") {
       this.props.handleShowAnnotations();
@@ -108,7 +107,7 @@ class AppOverlay extends React.PureComponent<Props> {
     const elFeedbackContainer = document.getElementById(
       "scholarReaderGlobalFeedbackButton"
     );
-    const elUserAnnotationTypeContainer = document.getElementById(
+    const elEntityCreationTypeContainer = document.getElementById(
       "scholarReaderAnnotationTypeSelect"
     );
 
@@ -121,13 +120,13 @@ class AppOverlay extends React.PureComponent<Props> {
               elFeedbackContainer
             )
           : null}
-        {this.props.userAnnotationsEnabled && elUserAnnotationTypeContainer
+        {this.props.entityCreationEnabled && elEntityCreationTypeContainer
           ? ReactDOM.createPortal(
-              <UserAnnotationTypeSelect
-                annotationType={this.props.userAnnotationType}
-                handleSelectType={this.props.handleSelectUserAnnotationType}
+              <EntityCreationTypeSelect
+                entityType={this.props.entityCreationType}
+                handleSelectType={this.props.handleSelectEntityCreationType}
               />,
-              elUserAnnotationTypeContainer
+              elEntityCreationTypeContainer
             )
           : null}
       </>

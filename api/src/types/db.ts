@@ -46,4 +46,4 @@ interface EntityDataRow {
   relation_type: string | null;
 }
 
-type EntityDataRowType = "int" | "float" | "string" | "relation-id";
+type EntityDataRowType = "integer" | "float" | "string" | "relation-id";

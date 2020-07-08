@@ -9,8 +9,8 @@ import ChartIcon from "./icon/ChartIcon";
 import InfluentialCitationIcon from "./icon/InfluentialCitationIcon";
 import { userLibraryUrl } from "./s2-url";
 import S2Link from "./S2Link";
-import { PaperId } from "./state";
-import { Paper, UserLibrary } from "./types/api";
+import { PaperId, UserLibrary } from "./state";
+import { Paper } from "./types/api";
 import { truncateText } from "./ui-utils";
 
 interface Props {
@@ -155,7 +155,8 @@ export class PaperSummary extends React.PureComponent<Props, State> {
         <div className="paper-summary__metrics-and-actions paper-summary__section">
           {hasMetrics ? (
             <div className="paper-summary__metrics">
-              {paper.influentialCitationCount > 0 ? (
+              {paper.influentialCitationCount !== undefined &&
+              paper.influentialCitationCount > 0 ? (
                 <Tooltip
                   placement="bottom-start"
                   title={
@@ -173,7 +174,8 @@ export class PaperSummary extends React.PureComponent<Props, State> {
                   </div>
                 </Tooltip>
               ) : null}
-              {paper.citationVelocity > 0 ? (
+              {paper.citationVelocity !== undefined &&
+              paper.citationVelocity > 0 ? (
                 <Tooltip
                   placement="bottom-start"
                   title={

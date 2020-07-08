@@ -1,50 +1,36 @@
 import React from "react";
 import * as selectors from "./selectors";
-import { MathMls, SelectableEntityType, Sentences, Symbols } from "./state";
-import { Sentence } from "./types/api";
+import { Entities } from "./state";
+import { isSentence, isSymbol, Sentence, Symbol } from "./types/api";
 
 interface Props {
   pageNumber: number;
   pageWidth: number;
   pageHeight: number;
-  symbols: Symbols | null;
-  mathMls: MathMls | null;
-  sentences: Sentences | null;
-  selectedEntityType: SelectableEntityType;
+  entities: Entities | null;
   selectedEntityId: string | null;
 }
 
 export class PageMask extends React.PureComponent<Props> {
   render() {
-    const maskId = `page-${this.props.pageNumber}-mask`;
-
-    const {
-      selectedEntityType,
-      selectedEntityId,
-      symbols,
-      mathMls,
-      sentences,
-    } = this.props;
-
     /*
      * Only show the mask if a symbol is selected and sentences were detected for the paper.
      */
-    if (
-      selectedEntityType !== "symbol" ||
-      selectedEntityId === null ||
-      symbols === null ||
-      mathMls === null ||
-      sentences === null ||
-      sentences.all.length === 0
-    ) {
+    const { selectedEntityId, entities } = this.props;
+    if (entities === null || selectedEntityId === null) {
+      return null;
+    }
+    const selectedEntity = entities.byId[selectedEntityId];
+    if (!isSymbol(selectedEntity)) {
       return null;
     }
 
     const matchingSentenceIds: string[] = [];
     selectors
-      .matchingSymbols(selectedEntityId, symbols, mathMls)
+      .matchingSymbols(selectedEntityId, entities)
       .forEach((matchingSymbolId) => {
-        const sentenceId = symbols.byId[matchingSymbolId].sentence;
+        const sentenceId = (entities.byId[matchingSymbolId] as Symbol)
+          .relationships.sentence.id;
         if (
           sentenceId !== null &&
           matchingSentenceIds.indexOf(sentenceId) === -1
@@ -52,11 +38,15 @@ export class PageMask extends React.PureComponent<Props> {
           matchingSentenceIds.push(sentenceId);
         }
       });
-    const matchingSentences = matchingSentenceIds.map(
-      (sentenceId) => sentences.byId[sentenceId]
-    );
-    const firstMatchingSentence: Sentence | undefined = matchingSentences[0];
+    const matchingSentences = matchingSentenceIds
+      .map((sentenceId) => entities.byId[sentenceId])
+      .filter(isSentence)
+      .filter((s) => s !== undefined);
+    const firstMatchingSentence:
+      | Sentence
+      | undefined = matchingSentences[0] as Sentence;
 
+    const maskId = `page-${this.props.pageNumber}-mask`;
     const { pageWidth, pageHeight } = this.props;
     return (
       <svg width={pageWidth} height={pageHeight}>
@@ -78,11 +68,11 @@ export class PageMask extends React.PureComponent<Props> {
            */}
           {matchingSentences
             .map((s) => {
-              return s.bounding_boxes
+              return s.attributes.bounding_boxes
                 .filter((b) => b.page === this.props.pageNumber - 1)
-                .map((b) => (
+                .map((b, i) => (
                   <rect
-                    key={b.id}
+                    key={`${s.id}-box${i}`}
                     x={b.left * pageWidth}
                     y={b.top * pageHeight}
                     width={b.width * pageWidth}
@@ -108,11 +98,11 @@ export class PageMask extends React.PureComponent<Props> {
         {/* Highlight the first sentence in the document where the symbol appears. */}
         {firstMatchingSentence !== undefined && (
           <>
-            {firstMatchingSentence.bounding_boxes
+            {firstMatchingSentence.attributes.bounding_boxes
               .filter((b) => b.page === this.props.pageNumber - 1)
-              .map((b) => (
+              .map((b, i) => (
                 <rect
-                  key={b.id}
+                  key={`${firstMatchingSentence.id}-box${i}`}
                   x={b.left * pageWidth}
                   y={b.top * pageHeight}
                   width={b.width * pageWidth}

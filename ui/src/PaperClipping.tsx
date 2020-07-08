@@ -197,7 +197,9 @@ export class PaperClipping extends React.PureComponent<Props, State> {
     const { sentence } = this.props;
     let sentenceCanvasBox = null;
     if (sentence !== null && sentence !== undefined) {
-      const sentenceBox = computeOuterBoundingBox(sentence.bounding_boxes);
+      const sentenceBox = computeOuterBoundingBox(
+        sentence.attributes.bounding_boxes
+      );
       sentenceCanvasBox = toCanvasCoordinates(sentenceBox, canvas);
     }
 
@@ -277,7 +279,7 @@ export class PaperClipping extends React.PureComponent<Props, State> {
       });
     }
     if (sentence !== null && sentence !== undefined) {
-      sentence.bounding_boxes.forEach((box) => {
+      sentence.attributes.bounding_boxes.forEach((box) => {
         addHighlightToCanvas(box, canvas, canvasContext, 0, 255, 0);
       });
     }
