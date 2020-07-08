@@ -144,7 +144,7 @@ def process_term_definition_slot(
     return slot_dict_list
 
 
-class DetectedDefinitions(ArxivBatchCommand[FindSentencesTask, DefinitionSentencePair]):
+class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, DefinitionSentencePair]):
     """
     Extract definition sentences from Sentence using the pre-trained definition extraction model.
     Takes as input the sentences
