@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List, Union
 
 from common.types import SerializableEntity
 
