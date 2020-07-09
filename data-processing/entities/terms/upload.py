@@ -6,7 +6,7 @@ from common.upload_entities import upload_entities
 from .types import Term as TermEntity
 
 
-def upload_sentences(
+def upload_terms(
     processing_summary: PaperProcessingResult, data_version: Optional[int]
 ) -> None:
 
