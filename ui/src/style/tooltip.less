@@ -21,17 +21,25 @@
  */
 @{mui-tooltip} {
   /*
-   * Allow width to be set by content. This is particularly important for symbol tooltips, which
+   * By default, allo width to be set by content. This is particularly important for symbol tooltips, which
    * will be sized dynamically based on the sentence a symbol comes from.
    */
   min-width: 300px;
   max-width: unset;
 
+  /*
+   * Hard-code the width of some tooltips.
+   */
+  .citation-tooltip-body,
+  .term-tooltip-body {
+    max-width: 400px;
+  }
+
   .tooltip-body {
     padding: @medium * 0.5;
   }
 
-  .tooltip-body__section:not(:first-of-type) {
+  .tooltip-body__section {
     padding-top: @medium * 0.5;
     padding-left: @tooltip-padding;
     padding-right: @tooltip-padding;
@@ -52,13 +60,6 @@
   .tooltip-body__citation {
     padding-left: @tooltip-padding;
     padding-right: @tooltip-padding;
-  }
-
-  /*
-   * Hard-code the width of citation tooltips.
-   */
-  .citation-tooltip-body {
-    max-width: 400px;
   }
 }
 

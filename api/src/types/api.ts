@@ -184,6 +184,22 @@ export function isSymbol(entity: Entity): entity is Symbol {
   return entity.type === "symbol";
 }
 
+export interface Term extends BaseEntity {
+  type: "term";
+  attributes: TermAttributes;
+  relationships: {};
+}
+
+export interface TermAttributes extends BaseEntityAttributes {
+  name: string;
+  definitions: string[];
+  sources: string[];
+}
+
+export function isTerm(entity: Entity): entity is Term {
+  return entity.type === "term";
+}
+
 export interface Citation extends BaseEntity {
   type: "citation";
   attributes: CitationAttributes;

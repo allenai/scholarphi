@@ -12,11 +12,13 @@ import {
   UserLibrary,
 } from "./state";
 import SymbolAnnotation from "./SymbolAnnotation";
+import TermAnnotation from "./TermAnnotation";
 import {
   EntityCreateData,
   EntityUpdateData,
   isCitation,
   isSymbol,
+  isTerm,
 } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 import { getPageViewDimensions } from "./ui-utils";
@@ -124,6 +126,25 @@ class PageOverlay extends React.PureComponent<Props, {}> {
               const boundingBoxes = entity.attributes.bounding_boxes.filter(
                 (box) => box.page === pageNumber - 1
               );
+              if (isTerm(entity)) {
+                return (
+                  <TermAnnotation
+                    key={annotationId}
+                    id={annotationId}
+                    pageView={view}
+                    term={entity}
+                    boundingBoxes={boundingBoxes}
+                    active={showAnnotations}
+                    selected={isSelected}
+                    selectedSpanId={
+                      isSelected ? selectedAnnotationSpanId : null
+                    }
+                    handleSelect={handleSelectAnnotation}
+                    handleSelectSpan={handleSelectAnnotationSpan}
+                    handleSelectEntity={this.props.handleSelectEntity}
+                  />
+                );
+              }
               if (
                 isCitation(entity) &&
                 papers !== null &&

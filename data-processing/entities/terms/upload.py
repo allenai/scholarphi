@@ -17,7 +17,7 @@ def upload_terms(
 
         entity_info = EntityInformation(
             id_=f"{term.tex_path}-{term.id_}",
-            type_="sentence",
+            type_="term",
             bounding_boxes=boxes,
             data={
                 "name": term.name,
