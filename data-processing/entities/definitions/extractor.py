@@ -14,7 +14,7 @@ from .nlp_tools import DefinitionModel
 
 
 @dataclass(frozen=True)
-class FindSentencesTask:
+class DetectDefinitionsTask:
     arxiv_id: ArxivId
     sentences: List[Sentence]
     # tex_path: RelativePath
@@ -177,7 +177,7 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, DefinitionSente
     def get_arxiv_ids_dirkey(self) -> str:
         return "detected-sentences"
 
-    def load(self) -> Iterator[FindSentencesTask]:
+    def load(self) -> Iterator[DetectDefinitionsTask]:
         for arxiv_id in self.arxiv_ids:
 
             output_dir = directories.arxiv_subdir("detected-definitions", arxiv_id)
@@ -202,10 +202,10 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, DefinitionSente
                 )
                 continue
 
-            yield FindSentencesTask(arxiv_id, sentences)
+            yield DetectDefinitionsTask(arxiv_id, sentences)
 
     def process(
-        self, item: FindSentencesTask, verbose: bool = False
+        self, item: DetectDefinitionsTask, verbose: bool = False
     ) -> Iterator[DefinitionSentencePair]:
         sentences_ordered = iter(sorted(item.sentences, key=lambda s: s.start))
 
@@ -280,7 +280,7 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, DefinitionSente
             term_index_count += 1
             definition_index_count += 1
 
-    def save(self, item: FindSentencesTask, result: DefinitionSentencePair) -> None:
+    def save(self, item: DetectDefinitionsTask, result: DefinitionSentencePair) -> None:
         output_dir = directories.arxiv_subdir("detected-definitions", item.arxiv_id)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
