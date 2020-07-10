@@ -111,9 +111,16 @@ def upload_entities(
                     continue
 
                 # Create a new row for each value, with information of the base data type
-                # and whether that row belongs to a list.
+                # and whether that row belongs to a list. If casting of values needs to occur
+                # for values based on type to make them appropriate for insertion in Postgres
+                # (e.g., casting booleans to 0 / 1), that should happen here.
                 for v in values:
                     type_ = None
+                    # Check for boolean needs to come before check for int, because booleans
+                    # will pass the check 'isinstance(v, int)'.
+                    if isinstance(v, bool):
+                        type_ = "boolean"
+                        v = 1 if v else 0
                     if isinstance(v, int):
                         type_ = "integer"
                     elif isinstance(v, float):

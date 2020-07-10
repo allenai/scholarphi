@@ -2,9 +2,10 @@ import json
 import os
 import string
 from collections import defaultdict
-from typing import Iterator
+from typing import Dict, Iterator, List
 
-from common.parse_tex import DEFAULT_CONTEXT_SIZE, EntityExtractor, PlaintextExtractor
+from common.parse_tex import (DEFAULT_CONTEXT_SIZE, EntityExtractor,
+                              PlaintextExtractor)
 
 from .types import GlossaryTerm, Term
 
@@ -19,7 +20,7 @@ class TermExtractor(EntityExtractor):
     """
 
     def __init__(self) -> None:
-        self.glossary = defaultdict(list)
+        self.glossary: Dict[str, List[GlossaryTerm]] = defaultdict(list)
         with open(os.path.join(DIR_PATH, "google_ml-glossary.json"), "r") as f:
             google_ml_glossary = json.load(f)
 
@@ -63,18 +64,19 @@ class TermExtractor(EntityExtractor):
                     final_cands = set(cands)
                     for cand in final_cands:
                         if cand in self.glossary:
-                            definition = str(self.glossary[cand][0].definition)
+                            entries = self.glossary[cand]
+                            definitions = [e.definition for e in entries]
+                            sources = [e.source for e in entries]
+
                             start_in_segment = text_segment.text.find(shingle)
                             end_in_segment = start_in_segment + len(shingle)
                             start = text_segment.tex_start + start_in_segment
                             end = text_segment.tex_start + end_in_segment
 
                             term = Term(
-                                name=cand,
-                                definition=definition,
                                 id_=str(term_count),
-                                start=start_in_segment,
-                                end=end_in_segment,
+                                start=start,
+                                end=end,
                                 tex_path=tex_path,
                                 tex=text_segment.text,
                                 context_tex=tex[
@@ -82,6 +84,10 @@ class TermExtractor(EntityExtractor):
                                     - DEFAULT_CONTEXT_SIZE : end
                                     + DEFAULT_CONTEXT_SIZE
                                 ],
+                                name=cand,
+                                definitions=definitions,
+                                sources=sources,
+                                val=False,
                             )
                             term_count += 1
                             yield term

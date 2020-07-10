@@ -19,7 +19,12 @@ def upload_terms(
             id_=f"{term.tex_path}-{term.id_}",
             type_="sentence",
             bounding_boxes=boxes,
-            data={"name": term.name, "definition": term.definition,},
+            data={
+                "name": term.name,
+                "definitions": term.definitions,
+                "sources": term.sources,
+                "val": term.val,
+            },
         )
         entity_infos.append(entity_info)
 

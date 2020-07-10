@@ -3,6 +3,7 @@ Utilities for reading and writing to files. Functions should be placed in here i
 used by multiple scripts or modules.
 """
 
+import ast
 import csv
 import dataclasses
 import logging
@@ -133,7 +134,26 @@ def load_from_csv(
             invalid = False
             for field in dataclasses.fields(D):
                 try:
-                    data[field.name] = field.type(row[field.name])
+                    # Rules for reading Booleans. Support casting of '0' and '1' or the strings
+                    # 'True' and 'False'. 'True' and 'False' are the default output of CSV writer.
+                    if field.type == bool:
+                        data[field.name] = bool(ast.literal_eval(row[field.name]))
+                    # This one general case should handle ints, floats, and strings.
+                    else:
+                        data[field.name] = field.type(row[field.name])
+                # Parse other more complex data types like lists.
+                except TypeError as e:
+                    # XXX(andrewhead): It's not guaranteed that type-checks like this one will work
+                    # as the 'typing' library evolves. At the time of writing, it looked like calls
+                    # to the '__eq__' method of classes that extend GenericMeta (like List, Tuple)
+                    # should work (i.e., comparing a type with '=='). See:
+                    # https://github.com/python/typing/blob/c85016137eab6d0784b76252460235638087f468/src/typing.py#L1093-L1098
+                    # See also this test for equality in the Tuple class.
+                    # https://github.com/python/typing/blob/c85016137eab6d0784b76252460235638087f468/src/test_typing.py#L400
+                    # If at some point this comparison stops working, perhaps we can define a custom
+                    # type for types of interest (like StrList) and compare the ID of the newly defined type.
+                    if field.type == List[str]:
+                        data[field.name] = ast.literal_eval(row[field.name])
                 except ValueError as e:
                     logging.warning(  # pylint: disable=logging-not-lazy
                         "Could not read value '%s' for field '%s' of expected type %s from CSV. "
