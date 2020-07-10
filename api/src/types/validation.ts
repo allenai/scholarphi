@@ -108,6 +108,14 @@ attributes = attributes
           tex_end: numberAttribute,
         }),
       },
+      {
+        is: "term",
+        then: Joi.object().keys({
+          name: stringAttribute,
+          definitions: stringListAttribute,
+          sources: stringListAttribute,
+        }),
+      },
     ],
   })
   .unknown(false);
