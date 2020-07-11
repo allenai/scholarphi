@@ -1,0 +1,29 @@
+.entity-property-editor {
+  width: 250px;
+}
+
+.entity-property-field-container {
+  padding-bottom: @padding;
+}
+
+.entity-property-field-row {
+  display: flex;
+
+  .entity-property-field {
+    display: flex;
+    flex: 1 1 auto;
+  }
+
+  .action-button {
+    display: flex;
+    flex: 0 0 auto;
+  }
+}
+
+.entity-property-editor__action-buttons {
+  text-align: center;
+
+  .action-button + .action-button {
+    margin-left: @padding;
+  }
+}

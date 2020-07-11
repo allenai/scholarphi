@@ -20,7 +20,7 @@
 .paper-summary {
   color: @black;
   font-size: @medium;
-  line-height: @medium * 1.2;
+  line-height: @medium * @line-height-ratio;
 
   &__section {
     padding-bottom: @tooltip-content-vertical-padding;
@@ -28,7 +28,7 @@
 
   &__title {
     font-size: @large;
-    line-height: @large * 1.2;
+    line-height: @large * @line-height-ratio;
     font-weight: bold;
   }
 
