@@ -23,6 +23,7 @@ interface Props {
   handleDeselectSelection: () => void;
   handleToggleEntityCreationMode: () => void;
   handleSelectEntityCreationType: (type: KnownEntityType) => void;
+  handleToggleEntityEditMode: () => void;
 }
 
 /**
@@ -95,8 +96,11 @@ class AppOverlay extends React.PureComponent<Props> {
       this.props.handleTerminateSearch();
       this.props.handleCloseDrawer();
     }
-    if (event.ctrlKey && event.shiftKey && event.key !== "a") {
+    if (event.ctrlKey && event.shiftKey && event.key === "A") {
       this.props.handleToggleEntityCreationMode();
+    }
+    if (event.ctrlKey && event.shiftKey && event.key === "E") {
+      this.props.handleToggleEntityEditMode();
     }
     if (event.keyCode === 18 || event.key === "Alt") {
       this.props.handleShowAnnotations();
