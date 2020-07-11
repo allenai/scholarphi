@@ -9,7 +9,7 @@ import PaperList from "./PaperList";
 import SearchResults from "./SearchResults";
 import * as selectors from "./selectors";
 import { Entities, PaperId, Papers, UserLibrary } from "./state";
-import { Entity, EntityUpdateData, isCitation } from "./types/api";
+import { Entity, EntityUpdateData } from "./types/api";
 import { PDFViewer } from "./types/pdfjs-viewer";
 
 const PDF_VIEWER_DRAWER_OPEN_CLASS = "drawer-open";
@@ -111,63 +111,75 @@ export class Drawer extends React.PureComponent<Props> {
       selectedEntity = entities.byId[selectedEntityId] || null;
     }
 
+    /*
+     * Only one type of drawer content can appear at a time. This conditional block determines
+     * which types of drawer content have precedence.
+     */
+    type DrawerContentType =
+      | null
+      | "entity-property-editor"
+      | "symbol-search-results"
+      | "paper-list";
+    let drawerContentType: DrawerContentType = null;
+    if (entityEditingEnabled === true) {
+      drawerContentType = "entity-property-editor";
+    } else if (
+      selectors.selectedEntityType(selectedEntityId, entities) === "symbol" &&
+      pdfDocument !== null
+    ) {
+      drawerContentType = "symbol-search-results";
+    } else if (
+      selectors.selectedEntityType(selectedEntityId, entities) === "citation"
+    ) {
+      drawerContentType = "paper-list";
+    }
+
     return (
       <MuiDrawer
         className="drawer"
         variant="persistent"
         anchor="right"
-        open={mode !== "closed" || entityEditingEnabled}
+        /*
+         * If for the drawer has been requested to open but there's nothing to show
+         * in it, don't show it.
+         */
+        open={mode === "open" && drawerContentType !== null}
       >
         <div className="drawer__header">
           <div className="drawer__close_icon">
-            <IconButton
-              className="MuiButton-contained"
-              onClick={this.closeDrawer}
-            >
+            <IconButton size="small" onClick={this.closeDrawer}>
               <ChevronRightIcon />
             </IconButton>
           </div>
           <FeedbackButton paperId={paperId} extraContext={feedbackContext} />
         </div>
         <div className="drawer__content">
-          {mode === "open" &&
-            entityEditingEnabled === false &&
-            selectors.selectedEntityType(selectedEntityId, entities) ===
-              "symbol" &&
-            pdfDocument !== null && (
-              <SearchResults
-                pdfDocument={pdfDocument}
-                pageSize={4}
-                entities={entities}
-                selectedEntityId={selectedEntityId}
-                handleSelectSymbol={handleSelectSymbol}
-              />
-            )}
-          {mode === "open" &&
-            entityEditingEnabled === false &&
-            entities !== null &&
-            selectors.selectedEntityType(selectedEntityId, entities) ===
-              "citation" &&
-            selectedEntityId !== null &&
-            isCitation(entities.byId[selectedEntityId]) && (
-              <PaperList
-                papers={this.props.papers}
-                userLibrary={this.props.userLibrary}
-                handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
-              />
-            )}
-          {entityEditingEnabled === true &&
-            selectedEntityId !== null &&
-            selectedEntity !== null && (
-              <EntityPropertyEditor
-                /*
-                 * When the selected entity changes, clear the property editor.
-                 */
-                key={selectedEntityId}
-                entity={selectedEntity}
-                handleSaveChanges={this.props.handleUpdateEntity}
-              />
-            )}
+          {drawerContentType === "symbol-search-results" && (
+            <SearchResults
+              pdfDocument={pdfDocument as PDFDocumentProxy}
+              pageSize={4}
+              entities={entities}
+              selectedEntityId={selectedEntityId}
+              handleSelectSymbol={handleSelectSymbol}
+            />
+          )}
+          {drawerContentType === "paper-list" && (
+            <PaperList
+              papers={this.props.papers}
+              userLibrary={this.props.userLibrary}
+              handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
+            />
+          )}
+          {drawerContentType === "entity-property-editor" && (
+            <EntityPropertyEditor
+              /*
+               * When the selected entity changes, clear the property editor.
+               */
+              key={selectedEntityId || undefined}
+              entity={selectedEntity}
+              handleSaveChanges={this.props.handleUpdateEntity}
+            />
+          )}
         </div>
       </MuiDrawer>
     );

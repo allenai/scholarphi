@@ -264,9 +264,20 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   toggleEntityEditMode() {
-    this.setState((prevState) => ({
-      entityEditingEnabled: !prevState.entityEditingEnabled,
-    }));
+    this.setState((prevState) => {
+      const entityEditingEnabled = !prevState.entityEditingEnabled;
+      /*
+       * Open drawer if editing just enabled and drawer was closed.
+       */
+      const drawerMode =
+        entityEditingEnabled && prevState.drawerMode !== "open"
+          ? "open"
+          : prevState.drawerMode;
+      return {
+        entityEditingEnabled,
+        drawerMode,
+      };
+    });
   }
 
   startTextSearch() {
