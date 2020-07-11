@@ -6,7 +6,13 @@ import FindBar, { FindMode, FindQuery } from "./FindBar";
 import * as selectors from "./selectors";
 import { divDimensionStyles, matchingSymbols } from "./selectors";
 import { Entities, Pages, PaperId, Papers, UserLibrary } from "./state";
-import { BoundingBox, isSentence, Sentence, Symbol } from "./types/api";
+import {
+  BoundingBox,
+  EntityUpdateData,
+  isSentence,
+  Sentence,
+  Symbol,
+} from "./types/api";
 import { PDFViewer, PDFViewerApplication } from "./types/pdfjs-viewer";
 import * as uiUtils from "./ui-utils";
 
@@ -20,6 +26,7 @@ interface Props {
   entities: Entities | null;
   userLibrary: UserLibrary | null;
   selectedEntityId: string | null;
+  entityEditingEnabled: boolean;
   isFindActive: boolean;
   findActivationTimeMs: number | null;
   findMode: FindMode;
@@ -36,6 +43,7 @@ interface Props {
   handleSelectEntity: (id: string) => void;
   handleScrollSymbolIntoView: () => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
+  handleUpdateEntity: (entity: EntityUpdateData) => void;
 }
 
 interface State {
@@ -268,10 +276,12 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
           papers={this.props.papers}
           entities={this.props.entities}
           selectedEntityId={this.props.selectedEntityId}
+          entityEditingEnabled={this.props.entityEditingEnabled}
           handleSelectSymbol={this.props.handleSelectEntity}
           handleScrollSymbolIntoView={this.props.handleScrollSymbolIntoView}
           handleClose={this.props.handleCloseDrawer}
           handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
+          handleUpdateEntity={this.props.handleUpdateEntity}
         />
         {renderDefinitionPreview &&
         this.props.pdfDocument !== null &&

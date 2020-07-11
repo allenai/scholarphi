@@ -99,10 +99,11 @@ export interface State {
   findMatchedEntities: string[] | null;
 
   /*
-   * ~ User annotation layer ~
+   * ~ Human annotations ~
    */
   entityCreationEnabled: boolean;
   entityCreationType: KnownEntityType;
+  entityEditingEnabled: boolean;
 }
 
 export type Entities = RelationalStore<Entity>;

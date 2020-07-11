@@ -3,12 +3,13 @@ import IconButton from "@material-ui/core/IconButton";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
+import EntityPropertyEditor from "./EntityPropertyEditor";
 import FeedbackButton from "./FeedbackButton";
 import PaperList from "./PaperList";
 import SearchResults from "./SearchResults";
 import * as selectors from "./selectors";
 import { Entities, PaperId, Papers, UserLibrary } from "./state";
-import { isCitation } from "./types/api";
+import { Entity, EntityUpdateData, isCitation } from "./types/api";
 import { PDFViewer } from "./types/pdfjs-viewer";
 
 const PDF_VIEWER_DRAWER_OPEN_CLASS = "drawer-open";
@@ -24,10 +25,12 @@ interface Props {
   entities: Entities | null;
   userLibrary: UserLibrary | null;
   selectedEntityId: string | null;
+  entityEditingEnabled: boolean;
   handleClose: () => void;
   handleSelectSymbol: (id: string) => void;
   handleScrollSymbolIntoView: () => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
+  handleUpdateEntity: (entity: EntityUpdateData) => void;
 }
 
 export class Drawer extends React.PureComponent<Props> {
@@ -87,6 +90,7 @@ export class Drawer extends React.PureComponent<Props> {
       mode,
       entities,
       selectedEntityId,
+      entityEditingEnabled,
       handleSelectSymbol,
     } = this.props;
     if (pdfViewer != null) {
@@ -102,12 +106,17 @@ export class Drawer extends React.PureComponent<Props> {
       selectedEntityId,
     };
 
+    let selectedEntity: Entity | null = null;
+    if (entities !== null && selectedEntityId !== null) {
+      selectedEntity = entities.byId[selectedEntityId] || null;
+    }
+
     return (
       <MuiDrawer
         className="drawer"
         variant="persistent"
         anchor="right"
-        open={mode !== "closed"}
+        open={mode !== "closed" || entityEditingEnabled}
       >
         <div className="drawer__header">
           <div className="drawer__close_icon">
@@ -122,6 +131,7 @@ export class Drawer extends React.PureComponent<Props> {
         </div>
         <div className="drawer__content">
           {mode === "open" &&
+            entityEditingEnabled === false &&
             selectors.selectedEntityType(selectedEntityId, entities) ===
               "symbol" &&
             pdfDocument !== null && (
@@ -134,6 +144,7 @@ export class Drawer extends React.PureComponent<Props> {
               />
             )}
           {mode === "open" &&
+            entityEditingEnabled === false &&
             entities !== null &&
             selectors.selectedEntityType(selectedEntityId, entities) ===
               "citation" &&
@@ -143,6 +154,18 @@ export class Drawer extends React.PureComponent<Props> {
                 papers={this.props.papers}
                 userLibrary={this.props.userLibrary}
                 handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
+              />
+            )}
+          {entityEditingEnabled === true &&
+            selectedEntityId !== null &&
+            selectedEntity !== null && (
+              <EntityPropertyEditor
+                /*
+                 * When the selected entity changes, clear the property editor.
+                 */
+                key={selectedEntityId}
+                entity={selectedEntity}
+                handleSaveChanges={this.props.handleUpdateEntity}
               />
             )}
         </div>

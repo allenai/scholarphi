@@ -66,6 +66,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
 
       entityCreationEnabled: false,
       entityCreationType: "citation",
+      entityEditingEnabled: false,
     };
 
     /**
@@ -94,6 +95,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.closeFindBar = this.closeFindBar.bind(this);
     this.toggleEntityCreationMode = this.toggleEntityCreationMode.bind(this);
     this.setEntityCreationType = this.setEntityCreationType.bind(this);
+    this.toggleEntityEditMode = this.toggleEntityEditMode.bind(this);
   }
 
   async addToLibrary(paperId: string, paperTitle: string) {
@@ -258,6 +260,12 @@ class ScholarReader extends React.PureComponent<Props, State> {
   toggleEntityCreationMode() {
     this.setState((prevState) => ({
       entityCreationEnabled: !prevState.entityCreationEnabled,
+    }));
+  }
+
+  toggleEntityEditMode() {
+    this.setState((prevState) => ({
+      entityEditingEnabled: !prevState.entityEditingEnabled,
     }));
   }
 
@@ -496,6 +504,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
               handleCloseDrawer={this.closeDrawer}
               handleToggleEntityCreationMode={this.toggleEntityCreationMode}
               handleSelectEntityCreationType={this.setEntityCreationType}
+              handleToggleEntityEditMode={this.toggleEntityEditMode}
             />
             <ViewerOverlay
               pdfViewerApplication={this.state.pdfViewerApplication}
@@ -507,6 +516,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
               entities={this.state.entities}
               userLibrary={this.state.userLibrary}
               selectedEntityId={this.state.selectedEntityId}
+              entityEditingEnabled={this.state.entityEditingEnabled}
               isFindActive={this.state.isFindActive}
               findActivationTimeMs={this.state.findActivationTimeMs}
               findMode={this.state.findMode}
@@ -523,6 +533,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
               handleScrollSymbolIntoView={this.scrollSymbolIntoView}
               handleAddPaperToLibrary={this.addToLibrary}
               handleSelectEntity={this.selectEntity}
+              handleUpdateEntity={this.updateEntity}
             />
           </>
         ) : null}
