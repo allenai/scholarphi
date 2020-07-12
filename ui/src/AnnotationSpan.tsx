@@ -23,6 +23,7 @@ interface Props {
    * Where in the paper to draw this annotation span.
    */
   tooltipContent: React.ReactNode | null;
+  underline: boolean;
   /**
    * Correction factor to apply to bounding box coordinates before rendering the annotation.
    * While this was needed in past versions of the interface, at the time of this writing, the
@@ -72,6 +73,7 @@ export class AnnotationSpan extends React.PureComponent<Props> {
             selected: this.props.selected,
             active: this.props.active === true,
             inactive: this.props.active !== true,
+            underline: this.props.active === true && this.props.underline,
           }
         )}
         style={selectors.divDimensionStyles(

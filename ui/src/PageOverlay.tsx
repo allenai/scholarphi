@@ -4,6 +4,7 @@ import CitationAnnotation from "./CitationAnnotation";
 import EntityCreationCanvas from "./EntityCreationCanvas";
 import PageMask from "./PageMask";
 import * as selectors from "./selectors";
+import SentenceAnnotation from "./SentenceAnnotation";
 import {
   Entities,
   KnownEntityType,
@@ -17,6 +18,7 @@ import {
   EntityCreateData,
   EntityUpdateData,
   isCitation,
+  isSentence,
   isSymbol,
   isTerm,
 } from "./types/api";
@@ -36,8 +38,9 @@ interface Props {
   findMatchedEntityIds: string[] | null;
   findSelectionEntityId: string | null;
   showAnnotations: boolean;
-  userAnnotationsEnabled: boolean;
+  entityCreationEnabled: boolean;
   entityCreationType: KnownEntityType;
+  entityEditingEnabled: boolean;
   handleSelectEntity: (id: string) => void;
   handleSelectAnnotation: (id: string) => void;
   handleSelectAnnotationSpan: (id: string) => void;
@@ -96,8 +99,9 @@ class PageOverlay extends React.PureComponent<Props, {}> {
       findMatchedEntityIds,
       findSelectionEntityId,
       showAnnotations,
-      userAnnotationsEnabled,
+      entityCreationEnabled,
       entityCreationType,
+      entityEditingEnabled,
       handleAddPaperToLibrary,
       handleStartSymbolSearch,
       handleSelectAnnotation,
@@ -126,6 +130,29 @@ class PageOverlay extends React.PureComponent<Props, {}> {
               const boundingBoxes = entity.attributes.bounding_boxes.filter(
                 (box) => box.page === pageNumber - 1
               );
+              /*
+               * Add sentences first, as they are the broadest, and would occlude all of the
+               * other annotations if appended last.
+               */
+              if (entityEditingEnabled && isSentence(entity)) {
+                return (
+                  <SentenceAnnotation
+                    key={annotationId}
+                    id={annotationId}
+                    pageView={view}
+                    sentence={entity}
+                    boundingBoxes={boundingBoxes}
+                    active={showAnnotations}
+                    selected={isSelected}
+                    selectedSpanId={
+                      isSelected ? selectedAnnotationSpanId : null
+                    }
+                    handleSelect={handleSelectAnnotation}
+                    handleSelectSpan={handleSelectAnnotationSpan}
+                    handleSelectEntity={this.props.handleSelectEntity}
+                  />
+                );
+              }
               if (isTerm(entity)) {
                 return (
                   <TermAnnotation
@@ -209,7 +236,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
             })
           : null}
         {/* Add layer for user annotations. */}
-        {userAnnotationsEnabled ? (
+        {entityCreationEnabled ? (
           <EntityCreationCanvas
             pageView={view}
             pageNumber={pageNumber}

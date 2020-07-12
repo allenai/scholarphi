@@ -44,6 +44,10 @@ interface Props {
    */
   tooltipContent: React.ReactNode | null;
   /**
+   * Whether to show an underline hint beneath the annotation. Defaults to true.
+   */
+  underline?: boolean;
+  /**
    * The data source that detected the annotated entity. This property should
    * be used for development purposes only. Production features and styles should not rely on this
    * property. It is provided to help developers visualize and compare the results of
@@ -66,6 +70,7 @@ export class Annotation extends React.PureComponent<Props> {
     selected: false,
     isFindMatch: false,
     isFindSelection: false,
+    underline: true,
   };
 
   constructor(props: Props) {
@@ -113,6 +118,7 @@ export class Annotation extends React.PureComponent<Props> {
                 location={box}
                 selected={this.props.selectedSpanId === spanId}
                 tooltipContent={this.props.tooltipContent}
+                underline={this.props.underline}
                 onKeyDown={this.props.onKeyDown}
                 handleSelection={this.handleSelection}
               />

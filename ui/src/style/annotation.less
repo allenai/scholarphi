@@ -8,7 +8,7 @@
 /**
  * Enlarge the hitbox of an annotation
  */
-.scholar-reader-annotation-span:not(.user-annotation) {
+.scholar-reader-annotation-span {
   margin: -@highlight-hitbox-padding * 2/3 -@highlight-hitbox-padding;
   padding: @highlight-hitbox-padding * 2/3 @highlight-hitbox-padding;
 }
@@ -16,11 +16,13 @@
 /**
  * Make annotations interactive
  */
-.scholar-reader-annotation-span.active:not(.user-annotation) {
+.scholar-reader-annotation-span.active {
   /**
    * Provide an underline as a hint that the annotation is interactive 
    */
-  border-bottom: @underline-width @underline-color dotted;
+  &.underline {
+    border-bottom: @underline-width @underline-color dotted;
+  }
 
   /**
    * Highlight the area of an annotation on hover
