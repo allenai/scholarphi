@@ -92,7 +92,7 @@ class EntityPropertyField extends React.PureComponent<Props> {
     const { property, value, error } = this.props;
     const { label, is_list, key } = property;
 
-    const is_latex = property.type === "latex";
+    const is_latex = property.type === "latex" || property.type === "multiline-latex";
     const multiline =
       property.type === "multiline-text" || property.type === "multiline-latex";
 

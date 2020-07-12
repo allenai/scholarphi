@@ -575,8 +575,9 @@ class ScholarReader extends React.PureComponent<Props, State> {
                   findMatchedEntityIds={this.state.findMatchedEntities}
                   findSelectionEntityId={findMatchEntityId}
                   showAnnotations={this.state.annotationsShowing}
-                  userAnnotationsEnabled={this.state.entityCreationEnabled}
+                  entityCreationEnabled={this.state.entityCreationEnabled}
                   entityCreationType={this.state.entityCreationType}
+                  entityEditingEnabled={this.state.entityEditingEnabled}
                   handleSelectEntity={this.selectEntity}
                   handleSelectAnnotation={this.selectAnnotion}
                   handleSelectAnnotationSpan={this.selectAnnotationSpan}
