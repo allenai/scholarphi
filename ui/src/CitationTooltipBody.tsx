@@ -14,7 +14,7 @@ interface Props {
 export class CitationTooltipBody extends React.PureComponent<Props> {
   render() {
     return (
-      <div className="tooltip-body citation-tooltip-body">
+      <div className="tooltip-body citation-tooltip-body scholar-reader-ui-element">
         <div className="tooltip-body__section">
           <div className="tooltip-body__citation">
             <PaperSummary

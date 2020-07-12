@@ -51,7 +51,7 @@ const FeedbackButton = ({ variant, extraContext, paperId }: Props) => {
           className="toolbarButton hiddenLargeView toolbar__feedback-button"
           title="Submit Feedback"
         >
-          <FeedbackIcon fontSize="large" />
+          <FeedbackIcon />
           <span>Submit Feedback</span>
         </button>
       );
@@ -65,7 +65,7 @@ const FeedbackButton = ({ variant, extraContext, paperId }: Props) => {
           }
           className="feedback-button"
         >
-          <FeedbackIcon fontSize="large" />
+          <FeedbackIcon />
         </Button>
       );
     }
