@@ -39,7 +39,7 @@
     padding: @medium * 0.5;
   }
 
-  .tooltip-body__section {
+  .tooltip-body__section + .tooltip-body__section {
     padding-top: @medium * 0.5;
     padding-left: @tooltip-padding;
     padding-right: @tooltip-padding;
@@ -83,6 +83,6 @@
 @{mui-tooltip} {
   color: @black;
   font-size: @medium;
-  line-height: 1em;
+  line-height: @medium * @line-height-ratio;
   font-weight: lighter;
 }

@@ -1,13 +1,24 @@
+/**
+ * Property editor dimensions.
+ */
 .entity-property-editor {
   width: 250px;
 }
 
 .entity-property-field-container {
-  padding-bottom: @padding;
+  margin-bottom: @padding * 2;
+
+  .entity-property-field {
+    margin-bottom: @padding / 2;
+  }
 }
 
+/**
+ * Formatting of rows (field + add/delete buttons) for list-type properties.
+ */
 .entity-property-field-row {
   display: flex;
+  flex-wrap: wrap;
 
   .entity-property-field {
     display: flex;
@@ -20,10 +31,36 @@
   }
 }
 
+/**
+ *
+ */
+
+/**
+ * Buttons for entity fields.
+ */
 .entity-property-editor__action-buttons {
   text-align: center;
 
   .action-button + .action-button {
     margin-left: @padding;
   }
+}
+
+/**
+ * Error message.
+ */
+p.entity-property-input-error {
+  font-size: @small;
+  color: @s2-error;
+}
+
+/**
+ * LaTeX previews.
+ */
+.latex-preview {
+  font-size: @medium;
+  width: 100%;
+  box-sizing: border-box;
+  padding: @padding / 2;
+  margin-bottom: @padding / 2;
 }

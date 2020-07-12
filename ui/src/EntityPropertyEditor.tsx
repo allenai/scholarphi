@@ -1,4 +1,5 @@
 import Button from "@material-ui/core/Button";
+import katex from "katex";
 import React from "react";
 import EntityPropertyField from "./EntityPropertyField";
 import {
@@ -15,7 +16,7 @@ interface Props {
 
 interface State {
   updates: UpdatedProperties;
-  errors: { [propertyKey: string]: string };
+  errors: { [propertyKey: string]: string | undefined };
 }
 
 interface UpdatedProperties {
@@ -43,6 +44,7 @@ export interface Property {
     | "text"
     | "multiline-text"
     | "latex"
+    | "multiline-latex"
     | "relation-id";
   is_list: boolean;
   relation_type: string | null;
@@ -50,16 +52,6 @@ export interface Property {
 }
 
 const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
-  symbol: [
-    {
-      key: "children",
-      parentKey: "relationships",
-      type: "integer",
-      is_list: true,
-      relation_type: "symbol",
-      label: "Child IDs",
-    },
-  ],
   term: [
     {
       key: "name",
@@ -72,10 +64,56 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
     {
       key: "definitions",
       parentKey: "attributes",
-      type: "multiline-text",
+      type: "float",
       is_list: true,
       relation_type: null,
       label: "Definitions",
+    },
+  ],
+  sentence: [
+    {
+      key: "text",
+      parentKey: "attributes",
+      type: "text",
+      is_list: false,
+      relation_type: null,
+      label: "Text",
+    },
+    {
+      key: "tex",
+      parentKey: "attributes",
+      type: "multiline-latex",
+      is_list: false,
+      relation_type: null,
+      label: "LaTeX",
+    },
+  ],
+  citation: [
+    {
+      key: "paper_id",
+      parentKey: "attributes",
+      type: "text",
+      is_list: false,
+      relation_type: null,
+      label: "Cited paper ID",
+    },
+  ],
+  symbol: [
+    {
+      key: "sentence",
+      parentKey: "relationships",
+      type: "relation-id",
+      is_list: false,
+      relation_type: "sentence",
+      label: "Sentence ID",
+    },
+    {
+      key: "children",
+      parentKey: "relationships",
+      type: "relation-id",
+      is_list: true,
+      relation_type: "symbol",
+      label: "Child IDs",
     },
   ],
 };
@@ -83,16 +121,17 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
 class EntityPropertyEditor extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = this.createInitialState(props);
+    this.state = this.createInitialState();
     this.updatePropertyValue = this.updatePropertyValue.bind(this);
+    this.handleLatexError = this.handleLatexError.bind(this);
     this.reset = this.reset.bind(this);
     this.save = this.save.bind(this);
   }
 
-  createInitialState(props: Props): State {
+  createInitialState(): State {
     return {
       updates: {
-        attributes: { source: "human-annotation" },
+        attributes: {},
         relationships: {},
       },
       errors: {},
@@ -139,63 +178,124 @@ class EntityPropertyEditor extends React.PureComponent<Props, State> {
     return null;
   }
 
-  areValuesUnchanged() {
-    return (
-      Object.keys(this.state.updates.attributes).length === 0 &&
-      Object.keys(this.state.updates.relationships).length === 0
+  areThereErrors() {
+    return Object.keys(this.state.errors).some(
+      (key) => this.state.errors[key] !== undefined
     );
   }
 
-  updatePropertyValue(property: Property, value: any, index?: number) {
+  haveValuesChanged() {
+    return (
+      Object.keys(this.state.updates.attributes).length > 0 ||
+      Object.keys(this.state.updates.relationships).length > 0
+    );
+  }
+
+  updatePropertyValue(property: Property, value: any) {
     /*
-     * Cast the value to the intended type if possible. Otherwise, save the raw value with an
-     * error that will be shown to the user.
+     * Before saving the value (as a string), do validation to check that it can be converted
+     * to the intended type when saved.
      */
-    let castedValue: any;
-    let error: string;
-    if (property.type === "float") {
-      try {
-        castedValue = parseFloat(value);
-      } catch (e) {
-        error = `This value could not be read as a float. JavaScript error: ${e}`;
-        castedValue = value;
+    let values: Array<any> = property.is_list ? value : [value];
+
+    const error =
+      values
+        .map((v) => {
+          if (property.type === "float") {
+            if (/^\s*$/.test(v) || isNaN(Number(v))) {
+              return `Value "${v}" must be a floating point number.`;
+            }
+          } else if (property.type === "integer") {
+            const num = Number(value);
+            /**
+             * This check for whether a number is an integer is based on the polyfill from MDN:
+             * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger#Polyfill
+             */
+            if (
+              /^\s*$/.test(v) ||
+              isNaN(num) ||
+              !isFinite(num) ||
+              Math.floor(num) !== num
+            ) {
+              return `Value "${v}" must be an integer.`;
+            }
+          } else if (property.type === "relation-id" && property.is_list) {
+            if (/^\s*$/.test(v)) {
+              return "ID should not be empty. Delete row if not needed.";
+            }
+          }
+          return null;
+        })
+        .filter((errorString) => errorString !== null)
+        .join(" ") || undefined;
+
+    /*
+     * If relation data is being set, wrap each value as an ID of a relationship object.
+     */
+    if (property.type === "relation-id") {
+      if (Array.isArray(value)) {
+        value = value.map((v) => ({ type: property.relation_type, id: v }));
+      } else {
+        value = { type: property.relation_type, id: value };
       }
-    } else if (property.type === "integer") {
-      try {
-        castedValue = parseInt(value);
-      } catch (e) {
-        error = `This value could not be read as an integer. JavaScript error: ${e}`;
-        castedValue = value;
-      }
-    } else if (
-      property.type === "latex" ||
-      property.type === "multiline-text" ||
-      property.type === "text"
-    ) {
-      castedValue = value;
-    } else if (property.type === "relation-id") {
     }
 
+    /*
+     * Update data. Set errors for this field if validation errors were found.
+     */
     this.setState((state) => ({
       ...state,
       errors: {
+        ...state.errors,
         [property.key]: error,
       },
       updates: {
         ...state.updates,
         [property.parentKey]: {
           ...state.updates[property.parentKey],
-          [property.key]: castedValue,
+          [property.key]: value,
         },
       },
     }));
   }
 
-  reset() {
-    this.setState(this.createInitialState(this.props));
+  handleLatexError(
+    property: Property,
+    message: string,
+    error: katex.ParseError
+  ) {
+    this.setState((state) => ({
+      ...state,
+      errors: {
+        ...state.errors,
+        [property.key]: `${message} ${error}`,
+      },
+    }));
   }
 
-  save() {}
+  reset() {
+    this.setState(this.createInitialState());
+  }
+
+  save() {
+    const { entity } = this.props;
+    if (entity === null) {
+      return;
+    }
+
+    const entityUpdateData: EntityUpdateData = {
+      id: entity.id,
+      type: entity.type,
+      attributes: {
+        ...this.state.updates.attributes,
+        source: "human-annotation",
+      },
+      relationships: {
+        ...this.state.updates.relationships,
+      },
+    };
+    this.props.handleSaveChanges(entityUpdateData);
+  }
 
   render() {
     const { entity } = this.props;
@@ -224,6 +324,7 @@ class EntityPropertyEditor extends React.PureComponent<Props, State> {
               value={this.getPropertyValue(property)}
               error={this.state.errors[property.key]}
               handlePropertyChanged={this.updatePropertyValue}
+              handleLatexError={this.handleLatexError}
             />
           );
         })}
@@ -239,10 +340,7 @@ class EntityPropertyEditor extends React.PureComponent<Props, State> {
           <Button
             className="action-button"
             onClick={this.save}
-            disabled={
-              this.areValuesUnchanged() ||
-              Object.keys(this.state.errors).length > 0
-            }
+            disabled={!this.haveValuesChanged() || this.areThereErrors()}
             variant="contained"
             color="primary"
           >

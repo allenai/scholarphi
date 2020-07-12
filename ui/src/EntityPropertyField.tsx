@@ -2,14 +2,26 @@ import IconButton from "@material-ui/core/IconButton";
 import TextField from "@material-ui/core/TextField";
 import Add from "@material-ui/icons/Add";
 import DeleteForever from "@material-ui/icons/DeleteForever";
+import katex from "katex";
 import React from "react";
 import { Property } from "./EntityPropertyEditor";
+import LatexPreview from "./LatexPreview";
 
 interface Props {
   property: Property;
   value: any;
   error: string | undefined;
   handlePropertyChanged: (property: Property, value: any) => void;
+  /**
+   * While the EntityPropertyEditor is responsible for most validation, the LatexPreview performs
+   * additional validation on the LaTeX to determine if it can render with the built-in
+   * LaTeX rendering package. This callback can be used to detect LaTeX formatting issues.
+   */
+  handleLatexError?: (
+    property: Property,
+    message: string,
+    error: katex.ParseError
+  ) => void;
 }
 
 class EntityPropertyField extends React.PureComponent<Props> {
@@ -18,6 +30,7 @@ class EntityPropertyField extends React.PureComponent<Props> {
     this.onFieldChanged = this.onFieldChanged.bind(this);
     this.onClickAddItem = this.onClickAddItem.bind(this);
     this.onClickDeleteItem = this.onClickDeleteItem.bind(this);
+    this.handleLatexError = this.handleLatexError.bind(this);
   }
 
   onFieldChanged(
@@ -69,29 +82,43 @@ class EntityPropertyField extends React.PureComponent<Props> {
     this.props.handlePropertyChanged(property, newValues);
   }
 
+  handleLatexError(message: string, error: katex.ParseError) {
+    if (this.props.handleLatexError !== undefined) {
+      this.props.handleLatexError(this.props.property, message, error);
+    }
+  }
+
   render() {
     const { property, value, error } = this.props;
     const { label, is_list, key } = property;
 
+    const is_latex = property.type === "latex";
     const multiline =
-      property.type === "multiline-text" || property.type === "latex";
+      property.type === "multiline-text" || property.type === "multiline-latex";
 
     return (
       <div className="entity-property-field-container">
         {!is_list ? (
-          <TextField
-            className="entity-property-field"
-            InputProps={{ id: `property-${key}-field` }}
-            label={label}
-            error={error !== undefined}
-            helperText={error}
-            value={value}
-            fullWidth={true}
-            multiline={multiline}
-            rows={multiline ? 2 : 1}
-            rowsMax={multiline ? 3 : 1}
-            onChange={this.onFieldChanged}
-          />
+          <>
+            <TextField
+              className="entity-property-field"
+              InputProps={{ id: `property-${key}-field` }}
+              label={label}
+              error={error !== undefined}
+              value={value}
+              fullWidth={true}
+              multiline={multiline}
+              rows={multiline ? 2 : 1}
+              rowsMax={multiline ? 3 : 1}
+              onChange={this.onFieldChanged}
+            />
+            {is_latex ? (
+              <LatexPreview
+                latex={value}
+                handleParseError={this.handleLatexError}
+              />
+            ) : null}
+          </>
         ) : null}
         {is_list ? (
           <>
@@ -101,11 +128,10 @@ class EntityPropertyField extends React.PureComponent<Props> {
                   className="entity-property-field"
                   InputProps={{ id: `property-${key}-field-${i}` }}
                   /*
-                   * Show label above the first item, error message below the last iterm.
+                   * Show label above only the first item.
                    */
                   label={i === 0 ? label : undefined}
                   error={error !== undefined}
-                  helperText={i === value.length - 1 ? error : undefined}
                   value={v}
                   multiline={multiline}
                   rows={multiline ? 2 : 1}
@@ -128,12 +154,18 @@ class EntityPropertyField extends React.PureComponent<Props> {
                 >
                   <DeleteForever />
                 </IconButton>
+                {is_latex ? (
+                  <LatexPreview
+                    latex={v}
+                    handleParseError={this.handleLatexError}
+                  />
+                ) : null}
               </div>
             ))}
           </>
         ) : null}
         {this.props.error !== undefined ? (
-          <p className="entity-property-error">{this.props.error}</p>
+          <p className="entity-property-input-error">{this.props.error}</p>
         ) : null}
       </div>
     );
