@@ -62,6 +62,9 @@ class ScholarReader extends React.PureComponent<Props, State> {
       findMatchCount: null,
       findMatchedEntities: null,
       drawerMode: "closed",
+      snackbarMode: "closed",
+      snackbarActivationTimeMs: null,
+      snackbarMessage: null,
 
       entityCreationEnabled: false,
       entityCreationType: "citation",
@@ -85,6 +88,8 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.hideAnnotations = this.hideAnnotations.bind(this);
     this.showAnnotations = this.showAnnotations.bind(this);
     this.scrollSymbolIntoView = this.scrollSymbolIntoView.bind(this);
+    this.showSnackbarMessage = this.showSnackbarMessage.bind(this);
+    this.closeSnackbar = this.closeSnackbar.bind(this);
     this.closeDrawer = this.closeDrawer.bind(this);
     this.startTextSearch = this.startTextSearch.bind(this);
     this.startSymbolSearch = this.startSymbolSearch.bind(this);
@@ -238,6 +243,22 @@ class ScholarReader extends React.PureComponent<Props, State> {
        */
       // await api.deleteAnnotation(this.props.paperId.id, id);
     }
+  }
+
+  showSnackbarMessage(message: string) {
+    this.setState({
+      snackbarMode: "open",
+      snackbarActivationTimeMs: Date.now(),
+      snackbarMessage: message,
+    });
+  }
+
+  closeSnackbar() {
+    this.setState({
+      snackbarMode: "closed",
+      snackbarActivationTimeMs: null,
+      snackbarMessage: null,
+    });
   }
 
   closeDrawer() {
@@ -502,11 +523,15 @@ class ScholarReader extends React.PureComponent<Props, State> {
               paperId={this.props.paperId}
               entityCreationEnabled={this.state.entityCreationEnabled}
               entityCreationType={this.state.entityCreationType}
+              snackbarMode={this.state.snackbarMode}
+              snackbarActivationTimeMs={this.state.snackbarActivationTimeMs}
+              snackbarMessage={this.state.snackbarMessage}
               handleHideAnnotations={this.hideAnnotations}
               handleShowAnnotations={this.showAnnotations}
               handleDeselectSelection={this.deselectSelection}
               handleStartTextSearch={this.startTextSearch}
               handleTerminateSearch={this.closeFindBar}
+              handleCloseSnackbar={this.closeSnackbar}
               handleCloseDrawer={this.closeDrawer}
               handleToggleEntityCreationMode={this.toggleEntityCreationMode}
               handleSelectEntityCreationType={this.setEntityCreationType}
@@ -576,6 +601,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                   handleSelectEntity={this.selectEntity}
                   handleSelectAnnotation={this.selectAnnotion}
                   handleSelectAnnotationSpan={this.selectAnnotationSpan}
+                  handleShowSnackbarMessage={this.showSnackbarMessage}
                   handleStartSymbolSearch={this.startSymbolSearch}
                   handleAddPaperToLibrary={this.addToLibrary}
                   handleCreateEntity={this.createEntity}

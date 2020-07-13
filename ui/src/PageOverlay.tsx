@@ -44,6 +44,7 @@ interface Props {
   handleSelectEntity: (id: string) => void;
   handleSelectAnnotation: (id: string) => void;
   handleSelectAnnotationSpan: (id: string) => void;
+  handleShowSnackbarMessage: (message: string) => void;
   handleStartSymbolSearch: (id: string) => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
   handleCreateEntity: (entity: EntityCreateData) => void;
@@ -223,6 +224,9 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     handleSelect={handleSelectAnnotation}
                     handleSelectSpan={handleSelectAnnotationSpan}
                     handleSelectEntity={this.props.handleSelectEntity}
+                    handleShowSnackbarMessage={
+                      this.props.handleShowSnackbarMessage
+                    }
                   />
                 );
               } else {

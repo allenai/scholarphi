@@ -20,6 +20,9 @@ interface Props {
    * If not active, an annotation can still be highlighted
    */
   active?: boolean;
+  /**
+   * Whether the current annotation is currently selected.
+   */
   selected?: boolean;
   /**
    * If the annotation is selected, this is the ID of the span of the annotation that was selected.
@@ -61,6 +64,14 @@ interface Props {
    * user clicks on an annotation.
    */
   onSelected?: () => void;
+  /**
+   * Callback triggered when the annotation has been clicked. First argument is the event, where
+   * 'currentTarget' is the 'div' element for the AnnotationSpan that was clicked. The return
+   * value can be used to indicate whether the click event is 'handled' and whether the default
+   * behavior (selecting the annotation) should be prevented. Return 'true' to suppress the default
+   * behavior.
+   */
+  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void | boolean;
   onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
 }
 
@@ -119,6 +130,7 @@ export class Annotation extends React.PureComponent<Props> {
                 selected={this.props.selectedSpanId === spanId}
                 tooltipContent={this.props.tooltipContent}
                 underline={this.props.underline}
+                onClick={this.props.onClick}
                 onKeyDown={this.props.onKeyDown}
                 handleSelection={this.handleSelection}
               />
