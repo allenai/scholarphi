@@ -1,8 +1,13 @@
+import classNames from "classnames";
 import React from "react";
 import Selection, { Point } from "./Selection";
 import * as uiUtils from "./utils/ui";
 
 interface Props {
+  /**
+   * Temporarily disable selection on the canvas.
+   */
+  wait: boolean;
   onSelection: (anchor: Point, active: Point) => void;
 }
 
@@ -29,6 +34,9 @@ export class SelectionCanvas extends React.PureComponent<Props, State> {
 
   onClick(e: React.MouseEvent<HTMLDivElement>) {
     this.terminateIfEventOutsideElement(e);
+    if (this.props.wait) {
+      return;
+    }
     if (this.state.hasFocus && this.state.anchor === null) {
       /*
        * Start selection.
@@ -86,7 +94,7 @@ export class SelectionCanvas extends React.PureComponent<Props, State> {
   render() {
     return (
       <div
-        className="selection-layer"
+        className={classNames("selection-layer", { wait: this.props.wait })}
         ref={(ref) => {
           this.elementRef = ref;
         }}

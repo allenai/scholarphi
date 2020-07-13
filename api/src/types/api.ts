@@ -191,7 +191,7 @@ export interface Term extends BaseEntity {
 }
 
 export interface TermAttributes extends BaseEntityAttributes {
-  name: string;
+  name: string | null;
   definitions: string[];
   sources: string[];
 }

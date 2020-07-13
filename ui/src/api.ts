@@ -60,18 +60,18 @@ export async function getEntities(arxivId: string) {
 export async function postEntity(
   arxivId: string,
   data: EntityCreateData
-): Promise<string | null> {
-  const response = await axios.post(
-    `/api/v0/papers/arxiv:${arxivId}/entities`,
-    { data } as EntityCreatePayload
-  );
-  if (response.status === 201) {
-    return (response.data as Entity).id;
+): Promise<Entity | null> {
+  try {
+    const response = await axios.post(
+      `/api/v0/papers/arxiv:${arxivId}/entities`,
+      { data } as EntityCreatePayload
+    );
+    if (response.status === 201) {
+      return (response.data as any).data as Entity;
+    }
+  } catch (e) {
+    console.error("Unexpected response from API for POST entity request.", e);
   }
-  console.error(
-    "Unexpected response from API for POST entity request.",
-    response
-  );
   return null;
 }
 

@@ -7,7 +7,7 @@ import { PDFPageView } from "./types/pdfjs-viewer";
 
 interface Props {
   pageView: PDFPageView;
-  paper: Paper;
+  paper: Paper | null;
   userLibrary: UserLibrary | null;
   citation: Citation;
   id: string;
@@ -47,13 +47,15 @@ export class CitationAnnotation extends React.PureComponent<Props, {}> {
         boundingBoxes={this.props.boundingBoxes}
         source={this.props.citation.attributes.source}
         tooltipContent={
-          <CitationTooltipBody
-            citation={this.props.citation}
-            paper={this.props.paper}
-            userLibrary={this.props.userLibrary}
-            handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
-            openedPaperId={this.props.openedPaperId}
-          />
+          this.props.paper !== null ? (
+            <CitationTooltipBody
+              citation={this.props.citation}
+              paper={this.props.paper}
+              userLibrary={this.props.userLibrary}
+              handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
+              openedPaperId={this.props.openedPaperId}
+            />
+          ) : null
         }
         handleSelectAnnotation={this.props.handleSelect}
         handleSelectAnnotationSpan={this.props.handleSelectSpan}

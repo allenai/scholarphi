@@ -436,8 +436,8 @@ export class Connection {
     if (typeof data.attributes.version === "number") {
       version = data.attributes.version;
     } else {
-      version = this.getLatestPaperDataVersion(paperSelector);
-      if (version === undefined) {
+      version = await this.getLatestPaperDataVersion(paperSelector);
+      if (version === null) {
         throw Error(
           "No data version was specified, and no data version exists for this paper."
         );
@@ -450,7 +450,7 @@ export class Connection {
     const entityRow: Omit<EntityRow, "id"> = {
       paper_id: paperId,
       type: data.type,
-      version: data.attributes.version,
+      version,
       source: data.attributes.source,
     };
     const id = Number(
@@ -475,14 +475,16 @@ export class Connection {
     await this._knex.batchInsert("entitydata", entityDataRows);
 
     /**
-     * Create a sanitized version of the entity to return to the client.
+     * Create a completed version of the entity to return to the client.
      */
-    const cleanedEntity = this.createEntityObjectFromRows(
-      { ...entityRow, id },
-      boundingBoxRows,
-      entityDataRows
-    );
-    return cleanedEntity;
+    return {
+      ...data,
+      id: String(id),
+      attributes: {
+        ...data.attributes,
+        version,
+      },
+    };
   }
 
   async updateEntity(data: EntityUpdateData) {
