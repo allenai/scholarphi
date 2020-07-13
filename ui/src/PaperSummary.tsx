@@ -11,7 +11,7 @@ import { userLibraryUrl } from "./s2-url";
 import S2Link from "./S2Link";
 import { PaperId, UserLibrary } from "./state";
 import { Paper } from "./types/api";
-import { truncateText } from "./ui-utils";
+import { truncateText } from "./utils/ui";
 
 interface Props {
   paper: Paper;

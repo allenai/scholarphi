@@ -11,6 +11,8 @@ import LatexPreview from "./LatexPreview";
 interface Props {
   property: Property;
   value: any;
+  disabled?: boolean;
+
   error: string | undefined;
   handlePropertyChanged: (property: Property, value: any) => void;
   /**
@@ -97,7 +99,7 @@ class EntityPropertyField extends React.PureComponent<Props> {
   }
 
   render() {
-    const { property, value, error } = this.props;
+    const { property, value, disabled, error } = this.props;
     const { label, is_list, key } = property;
 
     const is_latex =
@@ -113,6 +115,7 @@ class EntityPropertyField extends React.PureComponent<Props> {
               className="entity-property-field"
               InputProps={{ id: `property-${key}-field` }}
               label={label}
+              disabled={disabled === true}
               error={error !== undefined}
               value={value || ""}
               placeholder="NULL"
@@ -165,6 +168,7 @@ class EntityPropertyField extends React.PureComponent<Props> {
                     <TextField
                       className="entity-property-field"
                       InputProps={{ id: `property-${key}-field-${i}` }}
+                      disabled={disabled === true}
                       error={error !== undefined}
                       value={v || ""}
                       placeholder={"NULL"}

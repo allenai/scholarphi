@@ -11,10 +11,17 @@ import {
 
 interface Props {
   entity: Entity | null;
-  handleSaveChanges: (entity: EntityUpdateData) => void;
+  /**
+   * Callback returns a Promise that resolves to 'true' when saving was successful, and 'false'
+   * when saving failed.
+   */
+  handleSaveChanges: (entity: EntityUpdateData) => Promise<boolean>;
+  handleDeleteEntity: (id: string) => Promise<boolean>;
 }
 
 interface State {
+  state: "edits-enabled" | "saving" | "deleting";
+  syncError: null | "save" | "delete";
   updates: UpdatedProperties;
   errors: { [propertyKey: string]: string | undefined };
 }
@@ -64,7 +71,7 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
     {
       key: "definitions",
       parentKey: "attributes",
-      type: "float",
+      type: "multiline-text",
       is_list: true,
       relation_type: null,
       label: "Definitions",
@@ -126,6 +133,7 @@ class EntityPropertyEditor extends React.PureComponent<Props, State> {
     this.handleLatexError = this.handleLatexError.bind(this);
     this.reset = this.reset.bind(this);
     this.save = this.save.bind(this);
+    this.deleteEntity = this.deleteEntity.bind(this);
   }
 
   createInitialState(): State {
@@ -135,6 +143,8 @@ class EntityPropertyEditor extends React.PureComponent<Props, State> {
         relationships: {},
       },
       errors: {},
+      state: "edits-enabled",
+      syncError: null,
     };
   }
 
@@ -277,11 +287,16 @@ class EntityPropertyEditor extends React.PureComponent<Props, State> {
     this.setState(this.createInitialState());
   }
 
-  save() {
+  async save() {
     const { entity } = this.props;
     if (entity === null) {
       return;
     }
+
+    this.setState({
+      state: "saving",
+      syncError: null,
+    });
 
     const entityUpdateData: EntityUpdateData = {
       id: entity.id,
@@ -294,7 +309,36 @@ class EntityPropertyEditor extends React.PureComponent<Props, State> {
         ...this.state.updates.relationships,
       },
     };
-    this.props.handleSaveChanges(entityUpdateData);
+
+    const saveResult = await this.props.handleSaveChanges(entityUpdateData);
+    if (saveResult === true) {
+      /*
+       * Revert to initial state (i.e., clear all internal records of updates and validation
+       * errors) once the updates are saved successfully.
+       */
+      this.setState(this.createInitialState());
+    } else {
+      this.setState({
+        state: "edits-enabled",
+        syncError: null,
+      });
+    }
+  }
+
+  async deleteEntity() {
+    if (this.props.entity === null) {
+      return;
+    }
+
+    const deleteResult = await this.props.handleDeleteEntity(
+      this.props.entity.id
+    );
+    if (deleteResult === false) {
+      this.setState({
+        state: "edits-enabled",
+        syncError: "delete",
+      });
+    }
   }
 
   render() {
@@ -316,12 +360,24 @@ class EntityPropertyEditor extends React.PureComponent<Props, State> {
 
     return (
       <div className="entity-property-editor">
+        {this.state.syncError && (
+          <p className="entity-property-editor__save-error-label">
+            Error{" "}
+            {this.state.syncError === "save"
+              ? "saving edits"
+              : this.state.syncError === "delete"
+              ? "deleting entity"
+              : ""}
+            . Check that you're connected to the internet and try again.
+          </p>
+        )}
         {properties.map((property: Property) => {
           return (
             <EntityPropertyField
               key={property.key}
               property={property}
               value={this.getPropertyValue(property)}
+              disabled={this.state.state !== "edits-enabled"}
               error={this.state.errors[property.key]}
               handlePropertyChanged={this.updatePropertyValue}
               handleLatexError={this.handleLatexError}
@@ -331,6 +387,7 @@ class EntityPropertyEditor extends React.PureComponent<Props, State> {
         <div className="entity-property-editor__action-buttons">
           <Button
             className="action-button"
+            disabled={this.state.state === "edits-enabled"}
             onClick={this.reset}
             variant="outlined"
           >
@@ -340,11 +397,26 @@ class EntityPropertyEditor extends React.PureComponent<Props, State> {
           <Button
             className="action-button"
             onClick={this.save}
-            disabled={!this.haveValuesChanged() || this.areThereErrors()}
+            disabled={
+              !this.haveValuesChanged() ||
+              this.areThereErrors() ||
+              this.state.state !== "edits-enabled"
+            }
             variant="contained"
             color="primary"
           >
-            Save
+            {this.state.state === "saving" ? "Saving..." : "Save"}
+          </Button>
+          <Button
+            className="action-button"
+            onClick={this.deleteEntity}
+            disabled={this.state.state !== "edits-enabled"}
+            variant="outlined"
+            color="secondary"
+          >
+            {this.state.state === "deleting"
+              ? "Deleting..."
+              : "Delete (can't be undone)"}
           </Button>
         </div>
       </div>

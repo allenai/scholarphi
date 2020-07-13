@@ -5,6 +5,13 @@
   width: 250px;
 }
 
+/**
+ * Padding between sections.
+ */
+.entity-property-editor > p {
+  margin-bottom: @padding * 2;
+}
+
 .entity-property-field-container {
   margin-bottom: @padding * 2;
 
@@ -48,14 +55,24 @@
 .entity-property-editor__action-buttons {
   text-align: center;
 
-  .action-button + .action-button {
-    margin-left: @padding;
+  .action-button {
+    margin-bottom: @padding / 2;
+
+    & + .action-button {
+      margin-left: @padding;
+    }
   }
 }
 
 /**
- * Error message.
+ * Error messages.
  */
+.entity-property-editor {
+  .entity-property-editor__save-error-label {
+    color: @s2-error;
+  }
+}
+
 p.entity-property-input-error {
   font-size: @small;
   color: @s2-error;

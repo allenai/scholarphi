@@ -1,6 +1,6 @@
 import React from "react";
 import Selection, { Point } from "./Selection";
-import * as uiUtils from "./ui-utils";
+import * as uiUtils from "./utils/ui";
 
 interface Props {
   onSelection: (anchor: Point, active: Point) => void;

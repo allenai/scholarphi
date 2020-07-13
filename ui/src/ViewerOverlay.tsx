@@ -14,7 +14,7 @@ import {
   Symbol,
 } from "./types/api";
 import { PDFViewer, PDFViewerApplication } from "./types/pdfjs-viewer";
-import * as uiUtils from "./ui-utils";
+import * as uiUtils from "./utils/ui";
 
 interface Props {
   pdfViewerApplication: PDFViewerApplication;
@@ -43,7 +43,8 @@ interface Props {
   handleSelectEntity: (id: string) => void;
   handleScrollSymbolIntoView: () => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
-  handleUpdateEntity: (entity: EntityUpdateData) => void;
+  handleUpdateEntity: (entity: EntityUpdateData) => Promise<boolean>;
+  handleDeleteEntity: (id: string) => Promise<boolean>;
 }
 
 interface State {
@@ -282,6 +283,7 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
           handleClose={this.props.handleCloseDrawer}
           handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
           handleUpdateEntity={this.props.handleUpdateEntity}
+          handleDeleteEntity={this.props.handleDeleteEntity}
         />
         {renderDefinitionPreview &&
         this.props.pdfDocument !== null &&

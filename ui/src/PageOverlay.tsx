@@ -23,7 +23,7 @@ import {
   isTerm,
 } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
-import { getPageViewDimensions } from "./ui-utils";
+import { getPageViewDimensions } from "./utils/ui";
 
 interface Props {
   paperId?: PaperId;
