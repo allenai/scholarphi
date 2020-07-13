@@ -1,6 +1,6 @@
 import os
 from dataclasses import dataclass
-from typing import Dict, List, cast
+from typing import Dict, List, cast, Optional
 
 from peewee import ForeignKeyField, TextField
 
