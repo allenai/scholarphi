@@ -4,7 +4,7 @@ from entities.common import create_entity_localization_command_sequence
 from scripts.pipelines import EntityPipeline, register_entity_pipeline
 
 # from .colorize import get_definition_color_positions
-from .extractor import DetectedDefinitions
+from .extractor import DetectDefinitions
 from .types import Definition
 from .upload import upload_definitions, Definition as DefinitionModel
 
