@@ -4,46 +4,41 @@ from typing import Dict, List, cast
 
 from peewee import ForeignKeyField, TextField
 
-from common import directories, file_utils
-from common.models import (
-    BoundingBox,
-    Entity,
-    EntityBoundingBox,
-    OutputModel,
-    Paper,
-    output_database,
-)
-from common.types import HueLocationInfo, PaperProcessingResult
+from common.types import BoundingBox, EntityInformation, PaperProcessingResult
+from common.upload_entities import upload_entities
 
 from .types import Definition as DefinitionEntity
 
 
-class Definition(OutputModel):
-    paper = ForeignKeyField(Paper, on_delete="CASCADE")
-    text = TextField()
+
+def upload_definitions(
+    processing_summary: PaperProcessingResult, data_version: Optional[int]
+) -> None:
+
+    entity_infos = []
+    for entity_and_location in processing_summary.localized_entities:
+        definition = cast(DefinitionEntity, entity_and_location.entity)
+        boxes = [cast(BoundingBox, l) for l in entity_and_location.locations]
+
+        entity_info = EntityInformation(
+            id_=f"{definition.tex_path}-{definition.id_}",
+            type_="termdefinition",
+            bounding_boxes=boxes,
+            data={
+                "name": definition.name,
+                "definitions": definition.definitions,
+                "sources": term.sources,
+                "val": term.val,
+            },
+        )
+        entity_infos.append(entity_info)
+
+    upload_entities(
+        processing_summary.s2_id,
+        processing_summary.arxiv_id,
+        entity_infos,
+        data_version,
+    )
 
 
-@dataclass(frozen=True)
-class DefinitionKey:
-    tex_path: str
-    entity_id: str
 
-
-@dataclass(frozen=True)
-class DefinitionIdAndModelId(DefinitionKey):
-    " Link between a definition in the pipeline's output and its ID in the database. "
-    model_id: str
-
-
-def upload_definitions(processing_summary: PaperProcessingResult) -> None:
-
-    arxiv_id = processing_summary.arxiv_id
-    s2_id = processing_summary.s2_id
-
-    # Create entry for the paper if it does not yet exist
-    try:
-        paper = Paper.get(Paper.s2_id == s2_id)
-    except Paper.DoesNotExist:
-        paper = Paper.create(s2_id=s2_id, arxiv_id=arxiv_id)
-
-    # TODO this needs to be implemented
