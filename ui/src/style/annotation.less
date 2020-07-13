@@ -81,3 +81,18 @@
 .scholar-reader-annotation-span.source-other {
   background-color: rgba(255, 255, 0, 0.3);
 }
+
+/**
+ * Set z-index of annotation spans to minimize occlusion. For example, sentences annotations will
+ * often contain the full area of other annotations. To allow the other annotations to be
+ * clickable, show sentence annotations under other annotations.
+ */
+.scholar-reader-annotation-span {
+  &.sentence-annotation {
+    z-index: @base-annotation-z-index;
+  }
+
+  &:not(.sentence-annotation) {
+    z-index: @base-annotation-z-index + 1;
+  }
+}

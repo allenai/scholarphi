@@ -219,9 +219,9 @@ class EntityPropertyEditor extends React.PureComponent<Props, State> {
             ) {
               return `Value "${v}" must be an integer.`;
             }
-          } else if (property.type === "relation-id" && property.is_list) {
+          } else if (property.is_list) {
             if (/^\s*$/.test(v)) {
-              return "ID should not be empty. Delete row if not needed.";
+              return "NULL values not allowed in list. Delete row if not needed.";
             }
           }
           return null;
