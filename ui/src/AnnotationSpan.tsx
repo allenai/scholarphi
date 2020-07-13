@@ -32,6 +32,7 @@ interface Props {
    */
   scaleCorrection?: number;
   handleSelection: (spanId: string) => void;
+  onClick: (e: React.MouseEvent<HTMLDivElement>) => boolean | void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
 }
 
@@ -47,9 +48,17 @@ export class AnnotationSpan extends React.PureComponent<Props> {
     this.onClick = this.onClick.bind(this);
   }
 
-  onClick() {
-    if (this.props.handleSelection !== undefined) {
-      this.props.handleSelection(this.props.id);
+  onClick(e: React.MouseEvent<HTMLDivElement>) {
+    let eventHandled = false;
+    if (this.props.onClick !== undefined) {
+      if (this.props.onClick(e) === true) {
+        eventHandled = true;
+      }
+    }
+    if (!eventHandled) {
+      if (this.props.handleSelection !== undefined) {
+        this.props.handleSelection(this.props.id);
+      }
     }
   }
 

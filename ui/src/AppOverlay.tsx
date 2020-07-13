@@ -1,3 +1,4 @@
+import Snackbar from "@material-ui/core/Snackbar";
 import React from "react";
 import ReactDOM from "react-dom";
 import EntityCreationTypeSelect from "./EntityCreationTypeSelect";
@@ -15,8 +16,12 @@ interface Props {
   paperId?: PaperId;
   entityCreationEnabled: boolean;
   entityCreationType: KnownEntityType;
+  snackbarMode: SnackbarMode;
+  snackbarActivationTimeMs: number | null;
+  snackbarMessage: string | null;
   handleHideAnnotations: () => void;
   handleShowAnnotations: () => void;
+  handleCloseSnackbar: () => void;
   handleCloseDrawer: () => void;
   handleStartTextSearch: () => void;
   handleTerminateSearch: () => void;
@@ -25,6 +30,8 @@ interface Props {
   handleSelectEntityCreationType: (type: KnownEntityType) => void;
   handleToggleEntityEditMode: () => void;
 }
+
+export type SnackbarMode = "open" | "closed";
 
 /**
  * An overlay that overlays widgets over the container for the entire app, and which captures click
@@ -39,6 +46,7 @@ class AppOverlay extends React.PureComponent<Props> {
     super(props);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
+    this.onCloseSnackbar = this.onCloseSnackbar.bind(this);
   }
 
   componentDidMount() {
@@ -73,7 +81,7 @@ class AppOverlay extends React.PureComponent<Props> {
   }
 
   onKeyDown(event: KeyboardEvent) {
-    if (event.keyCode === 18 || event.key === "Alt") {
+    if (event.keyCode === 91 || event.key === "Meta") {
       this.props.handleHideAnnotations();
     }
     /*
@@ -102,8 +110,18 @@ class AppOverlay extends React.PureComponent<Props> {
     if (event.ctrlKey && event.shiftKey && event.key === "E") {
       this.props.handleToggleEntityEditMode();
     }
-    if (event.keyCode === 18 || event.key === "Alt") {
+    if (event.keyCode === 91 || event.key === "Meta") {
       this.props.handleShowAnnotations();
+    }
+  }
+
+  onCloseSnackbar(_: any, reason: string) {
+    /*
+     * Only dismiss the snack bar when it has shown for the requested duration. Don't hide it
+     * on clickaway, as that absorbs a click the user probably meant for some other target.
+     */
+    if (reason === "timeout") {
+      this.props.handleCloseSnackbar();
     }
   }
 
@@ -133,6 +151,25 @@ class AppOverlay extends React.PureComponent<Props> {
               elEntityCreationTypeContainer
             )
           : null}
+        {/*
+         * Add other overlays that are appropriate to show over the entire app. For overlays that
+         * should be shown over the PDF viewer, add them to 'ViewerOverlay'.
+         */}
+        {this.props.snackbarMessage !== null &&
+        this.props.snackbarActivationTimeMs !== null ? (
+          <Snackbar
+            key={this.props.snackbarActivationTimeMs}
+            open={this.props.snackbarMode === "open"}
+            message={this.props.snackbarMessage}
+            anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+            /*
+             * Set to Snackbar showing time to recommended lower limit from Material design
+             * guidelines. See https://material.io/components/snackbars#behavior
+             */
+            autoHideDuration={4000}
+            onClose={this.onCloseSnackbar}
+          ></Snackbar>
+        ) : null}
       </>
     );
   }

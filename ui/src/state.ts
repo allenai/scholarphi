@@ -1,4 +1,5 @@
 import { PDFDocumentProxy } from "pdfjs-dist";
+import { SnackbarMode } from "./AppOverlay";
 import { DrawerMode } from "./Drawer";
 import { FindMode, FindQuery, SymbolFilter } from "./FindBar";
 import { Entity, Paper } from "./types/api";
@@ -68,9 +69,21 @@ export interface State {
   selectedEntityId: string | null;
 
   /*
-   * ~ Drawer (sidebar) interactions ~
+   * ~ Drawer (sidebar) state ~
    */
   drawerMode: DrawerMode;
+
+  /*
+   * ~ Snackbar (alert) state ~
+   */
+  snackbarMode: SnackbarMode;
+  /*
+   * The time in milliseconds when the latest snackbar message was submitted. A simple way to
+   * supply this value is to call `Date.now()` when the message is submitted. This is used to
+   * trigger a re-render of the snackbar with a new message when another message is already showing.
+   */
+  snackbarActivationTimeMs: number | null;
+  snackbarMessage: string | null;
 
   /* 
    * ~ Find bar state ~
@@ -80,7 +93,7 @@ export interface State {
   isFindActive: boolean;
   findMode: FindMode;
   /*
-   * The time in milliseconds that this 'find' action was triggered. The easiest way to
+   * The time in milliseconds that this 'find' action was triggered. A simple way to
    * supply this value is to call `Date.now()` when a find action is triggered. This is used to
    * indicate to the find widget that a new 'find' has started, e.g., if a user types 'Ctrl+F'
    * while the 'find' bar is already open.
