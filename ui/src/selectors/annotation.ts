@@ -1,6 +1,6 @@
 import { BoundingBox } from "../types/api";
 import { PDFPageView } from "../types/pdfjs-viewer";
-import { getPageViewDimensions } from "../ui-utils";
+import { getPageViewDimensions } from "../utils/ui";
 
 /**
  * Get the 'left', 'top', 'width', and 'height' CSS parameters for a paper annotation from a

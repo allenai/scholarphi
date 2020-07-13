@@ -2,7 +2,7 @@ import React from "react";
 import Annotation from "./Annotation";
 import { BoundingBox, Sentence } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
-import * as uiUtils from "./ui-utils";
+import * as uiUtils from "./utils/ui";
 
 interface Props {
   pageView: PDFPageView;

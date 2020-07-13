@@ -80,7 +80,7 @@ export async function patchEntity(
   data: EntityUpdateData
 ): Promise<boolean> {
   const response = await axios.patch(
-    `/api/v0/papers/arxiv:${arxivId}/annotation/${data.id}`,
+    `/api/v0/papers/arxiv:${arxivId}/entities/${data.id}`,
     { data } as EntityUpdatePayload
   );
   if (response.status === 204) {
@@ -98,7 +98,7 @@ export async function deleteEntity(
   id: string
 ): Promise<boolean> {
   const response = await axios.delete(
-    `/api/v0/papers/arxiv:${arxivId}/annotation/${id}`
+    `/api/v0/papers/arxiv:${arxivId}/entities/${id}`
   );
   if (response.status === 204) {
     return true;

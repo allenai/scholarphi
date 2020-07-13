@@ -171,26 +171,7 @@ export type SelectableEntityType = "citation" | "symbol" | null;
  * from Redux. For rationale and best practices, see
  * https://redux.js.org/recipes/structuring-reducers/normalizing-state-shape
  */
-interface RelationalStore<T> {
+export interface RelationalStore<T> {
   all: string[];
   byId: { [id: string]: T };
-}
-
-/**
- * Convert an array into a relational store with the specified key as an ID.
- */
-export function createRelationalStoreFromArray(array: any[], idKey: string) {
-  const allIds = array
-    .map((item) => item[idKey])
-    .filter((key) => typeof key === "string");
-  const itemsById = array
-    .filter((item) => allIds.indexOf(item[idKey]) !== -1)
-    .reduce((byId, item) => {
-      byId[item[idKey]] = item;
-      return byId;
-    }, {});
-  return {
-    all: allIds,
-    byId: itemsById,
-  };
 }

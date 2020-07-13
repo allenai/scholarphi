@@ -5,15 +5,7 @@ import { FindQuery } from "./FindBar";
 import PageOverlay from "./PageOverlay";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
-import {
-  createRelationalStoreFromArray,
-  KnownEntityType,
-  KNOWN_ENTITY_TYPES,
-  Pages,
-  PaperId,
-  State,
-  SymbolFilters,
-} from "./state";
+import { KnownEntityType, Pages, PaperId, State, SymbolFilters } from "./state";
 import "./style/index.less";
 import {
   BoundingBox,
@@ -27,7 +19,8 @@ import {
   PageRenderedEvent,
   PDFViewerApplication,
 } from "./types/pdfjs-viewer";
-import * as uiUtils from "./ui-utils";
+import * as stateUtils from "./utils/state";
+import * as uiUtils from "./utils/ui";
 import ViewerOverlay from "./ViewerOverlay";
 
 interface Props {
@@ -209,7 +202,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     }
   }
 
-  async updateEntity(data: EntityUpdateData) {
+  async updateEntity(data: EntityUpdateData): Promise<boolean> {
     if (this.props.paperId !== undefined) {
       /**
        * TODO(andrewhead):
@@ -217,32 +210,71 @@ class ScholarReader extends React.PureComponent<Props, State> {
        * 2. On success, do nothing
        * 3. On failure, revert the change
        */
-      // const updatedAnnotation = await api.putAnnotation(
-      //   this.props.paperId.id,
-      //   id,
-      //   annotationData
-      // );
-
-      /*
-       * Update type for creating new annotations to the type of the most recently
-       * changed entity.
-       */
-      if (KNOWN_ENTITY_TYPES.some((t) => t === data.type)) {
-        this.setEntityCreationType(data.type as KnownEntityType);
+      const result = await api.patchEntity(this.props.paperId.id, data);
+      if (result) {
+        /*
+         * Update the entity in memory.
+         */
+        this.setState((prevState) => {
+          if (prevState.entities !== null) {
+            const entity = prevState.entities.byId[data.id];
+            const updated = {
+              ...entity,
+              attributes: { ...entity.attributes, ...data.attributes },
+              relationships: { ...entity.relationships, ...data.relationships },
+            };
+            return {
+              entities: {
+                ...prevState.entities,
+                byId: {
+                  ...prevState.entities.byId,
+                  [data.id]: updated,
+                },
+              },
+            };
+          }
+          return { entities: prevState.entities };
+        });
+        return true;
       }
     }
+    return false;
   }
 
   async deleteEntity(id: string) {
     if (this.props.paperId !== undefined) {
-      /**
-       * TODO(andrewhead):
-       * 1. Update the state to delete the entity immediately
-       * 2. On success, do nothing
-       * 3. On failure, revert the change
-       */
-      // await api.deleteAnnotation(this.props.paperId.id, id);
+      const result = await api.deleteEntity(this.props.paperId.id, id);
+      if (result) {
+        this.setState((prevState) => {
+          const updatedEntities =
+            prevState.entities !== null
+              ? stateUtils.del(prevState.entities, id)
+              : null;
+
+          /*
+           * Deselect the entiti if it's currently selected.
+           */
+          let selectionState;
+          if (prevState.selectedEntityId === id) {
+            selectionState = {
+              selectedEntityId: null,
+              selectedAnnotationId: null,
+              selectedAnnotationSpanId: null,
+            };
+          } else {
+            selectionState = {
+              selectedEntityId: prevState.selectedEntityId,
+              selectedAnnotationId: prevState.selectedAnnotationId,
+              selectedAnnotationSpanId: prevState.selectedAnnotationSpanId,
+            };
+          }
+
+          return { ...selectionState, entities: updatedEntities };
+        });
+        return true;
+      }
     }
+    return false;
   }
 
   showSnackbarMessage(message: string) {
@@ -446,7 +478,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       if (this.props.paperId.type === "arxiv") {
         const entities = await api.getEntities(this.props.paperId.id);
         this.setState({
-          entities: createRelationalStoreFromArray(entities, "id"),
+          entities: stateUtils.createRelationalStoreFromArray(entities, "id"),
         });
 
         const citationS2Ids = entities
@@ -565,6 +597,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
               handleAddPaperToLibrary={this.addToLibrary}
               handleSelectEntity={this.selectEntity}
               handleUpdateEntity={this.updateEntity}
+              handleDeleteEntity={this.deleteEntity}
             />
           </>
         ) : null}

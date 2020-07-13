@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import EntityCreationTypeSelect from "./EntityCreationTypeSelect";
 import FeedbackButton from "./FeedbackButton";
 import { KnownEntityType, PaperId } from "./state";
-import * as uiUtils from "./ui-utils";
+import * as uiUtils from "./utils/ui";
 
 interface Props {
   /*

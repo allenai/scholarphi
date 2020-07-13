@@ -30,7 +30,8 @@ interface Props {
   handleSelectSymbol: (id: string) => void;
   handleScrollSymbolIntoView: () => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
-  handleUpdateEntity: (entity: EntityUpdateData) => void;
+  handleUpdateEntity: (entity: EntityUpdateData) => Promise<boolean>;
+  handleDeleteEntity: (id: string) => Promise<boolean>;
 }
 
 export class Drawer extends React.PureComponent<Props> {
@@ -178,6 +179,7 @@ export class Drawer extends React.PureComponent<Props> {
               key={selectedEntityId || undefined}
               entity={selectedEntity}
               handleSaveChanges={this.props.handleUpdateEntity}
+              handleDeleteEntity={this.props.handleDeleteEntity}
             />
           )}
         </div>

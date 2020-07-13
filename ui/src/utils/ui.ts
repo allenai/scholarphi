@@ -1,6 +1,6 @@
 import React from "react";
-import { BoundingBox } from "./types/api";
-import { PDFPageView } from "./types/pdfjs-viewer";
+import { BoundingBox } from "../types/api";
+import { PDFPageView } from "../types/pdfjs-viewer";
 
 export function getMouseXY(event: React.MouseEvent) {
   const rect = event.currentTarget.getBoundingClientRect();
