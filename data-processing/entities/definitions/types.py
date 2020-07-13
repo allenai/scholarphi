@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-
+from typing import List
 from common.types import SerializableEntity
 
 
