@@ -20,5 +20,5 @@ process.on("unhandledRejection", (err) => {
   process.exit(1);
 });
 
-const server = new ApiServer(nconf);
+const server = new ApiServer(nconf, true);
 server.init().then(() => server.start());

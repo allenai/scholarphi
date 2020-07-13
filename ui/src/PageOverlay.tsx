@@ -39,7 +39,7 @@ interface Props {
   findSelectionEntityId: string | null;
   showAnnotations: boolean;
   entityCreationEnabled: boolean;
-  entityCreationType: KnownEntityType;
+  entityCreationType: KnownEntityType | null;
   entityEditingEnabled: boolean;
   handleSelectEntity: (id: string) => void;
   handleSelectAnnotation: (id: string) => void;
@@ -47,9 +47,9 @@ interface Props {
   handleShowSnackbarMessage: (message: string) => void;
   handleStartSymbolSearch: (id: string) => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
-  handleCreateEntity: (entity: EntityCreateData) => void;
-  handleUpdateEntity: (data: EntityUpdateData) => void;
-  handleDeleteEntity: (id: string) => void;
+  handleCreateEntity: (entity: EntityCreateData) => Promise<boolean>;
+  handleUpdateEntity: (data: EntityUpdateData) => Promise<boolean>;
+  handleDeleteEntity: (id: string) => Promise<boolean>;
 }
 
 /**
@@ -150,12 +150,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                   />
                 );
               }
-              if (
-                isCitation(entity) &&
-                papers !== null &&
-                entity.attributes.paper_id !== null &&
-                papers[entity.attributes.paper_id] !== undefined
-              ) {
+              if (isCitation(entity) && papers !== null) {
                 return (
                   <CitationAnnotation
                     key={annotationId}
@@ -163,7 +158,11 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     pageView={view}
                     userLibrary={userLibrary}
                     citation={entity}
-                    paper={papers[entity.attributes.paper_id]}
+                    paper={
+                      entity.attributes.paper_id !== null
+                        ? papers[entity.attributes.paper_id] || null
+                        : null
+                    }
                     boundingBoxes={boundingBoxes}
                     active={showAnnotations}
                     selected={isSelected}
@@ -235,11 +234,12 @@ class PageOverlay extends React.PureComponent<Props, {}> {
             })
           : null}
         {/* Add layer for user annotations. */}
-        {entityCreationEnabled ? (
+        {entityCreationEnabled && entityCreationType !== null ? (
           <EntityCreationCanvas
             pageView={view}
             pageNumber={pageNumber}
             entityType={entityCreationType}
+            handleShowSnackbarMessage={this.props.handleShowSnackbarMessage}
             handleCreateEntity={handleCreateEntity}
           />
         ) : null}

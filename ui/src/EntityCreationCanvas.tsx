@@ -8,6 +8,7 @@ import {
   SentenceAttributes,
   SymbolAttributes,
   SymbolRelationships,
+  TermAttributes,
 } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
@@ -19,25 +20,42 @@ interface Props {
    */
   pageView: PDFPageView;
   entityType: KnownEntityType;
-  handleCreateEntity: (entity: EntityCreateData) => void;
+  handleShowSnackbarMessage: (message: string) => void;
+  handleCreateEntity: (entity: EntityCreateData) => Promise<boolean>;
 }
 
-export class UserAnnotationLayer extends React.PureComponent<Props> {
+interface State {
+  state: "canvas-enabled" | "creating-entity";
+}
+
+export class EntityCreationCanvas extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
+    this.state = { state: "canvas-enabled" };
     this.onSelectionMade = this.onSelectionMade.bind(this);
   }
 
-  onSelectionMade(anchor: Point, active: Point) {
-    const { handleCreateEntity, entityType: annotationType } = this.props;
-    handleCreateEntity(
+  async onSelectionMade(anchor: Point, active: Point) {
+    const { handleCreateEntity, entityType } = this.props;
+    this.setState({
+      state: "creating-entity",
+    });
+    const result = await handleCreateEntity(
       createCreateEntityDataFromSelection(
         this.props.pageView,
         anchor,
         active,
-        annotationType
+        entityType
       )
     );
+    if (result === false) {
+      this.props.handleShowSnackbarMessage(
+        "Entity could not be created. Check that you are connected to the internet."
+      );
+    }
+    this.setState({
+      state: "canvas-enabled",
+    });
   }
 
   render() {
@@ -45,6 +63,7 @@ export class UserAnnotationLayer extends React.PureComponent<Props> {
       <>
         <SelectionCanvas
           key="selection-canvas"
+          wait={this.state.state !== "canvas-enabled"}
           onSelection={this.onSelectionMade}
         />
       </>
@@ -91,7 +110,14 @@ function createCreateEntityDataFromSelection(
    * Set default values for known entity types. If this step is skipped, the API server might
    * reject the creation of the entity due to missing properties.
    */
-  if (type === "citation") {
+  if (type === "term") {
+    data.attributes = {
+      ...data.attributes,
+      name: null,
+      definitions: [],
+      sources: [],
+    } as Omit<TermAttributes, "version">;
+  } else if (type === "citation") {
     data.attributes = {
       ...data.attributes,
       paper_id: null,
@@ -119,4 +145,4 @@ function createCreateEntityDataFromSelection(
   return data;
 }
 
-export default UserAnnotationLayer;
+export default EntityCreationCanvas;

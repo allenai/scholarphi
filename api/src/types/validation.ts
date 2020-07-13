@@ -47,7 +47,11 @@ const boundingBox = Joi.object({
 }).options({ presence: "required" });
 
 export let attributes = Joi.object({
-  version: Joi.number(),
+  /*
+   * Version is optional on POST requests, as it will otherwise can be set by default to the
+   * latest version of data for a paper in the database.
+   */
+  version: Joi.number().optional(),
   /*
    * Source is required on both POST and PATCH requests. It is required for PATCH requests because
    * the database logs the 'source' of updated attributes and bounding boxes.

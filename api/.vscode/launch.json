@@ -33,29 +33,12 @@
          * Uncomment the following argument to set the API to use an experimental database
          * schema, instead of the default 'public' database schema, for instance 'dev'.
          */
-        "--database:schema=dev"
+        "--database:schema=public"
       ],
       "protocol": "inspector",
       "internalConsoleOptions": "openOnSessionStart",
       "port": 9229
     },
-    // {
-    //   "type": "node",
-    //   "request": "launch",
-    //   "name": "Run Server",
-    //   "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/ts-node-dev",
-    //   "protocol": "inspector",
-    //   "args": [
-    //     "${workspaceFolder}/src/index.ts"
-
-    //   ],
-    //   "restart": true,
-    //   "cwd": "${workspaceRoot}",
-    //   "sourceMaps": true,
-    //   "outFiles": ["${workspaceFolder}/**/*.ts"],
-    //   "console": "integratedTerminal",
-    //   "internalConsoleOptions": "openOnFirstSessionStart"
-    // },
     {
       "type": "node",
       "request": "launch",

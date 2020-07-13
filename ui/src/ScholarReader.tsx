@@ -60,7 +60,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       snackbarMessage: null,
 
       entityCreationEnabled: false,
-      entityCreationType: "citation",
+      entityCreationType: null,
       entityEditingEnabled: false,
     };
 
@@ -182,34 +182,39 @@ class ScholarReader extends React.PureComponent<Props, State> {
     }
   }
 
-  setEntityCreationType(type: KnownEntityType) {
+  setEntityCreationType(type: KnownEntityType | null) {
     this.setState({ entityCreationType: type });
   }
 
   async createEntity(data: EntityCreateData) {
     if (this.props.paperId !== undefined) {
-      /**
-       * TODO(andrewhead):
-       * 1. Add temporary item to set of entities
-       * 1b. Select the new entity
-       * 2. On success, update the ID
-       * 3. On failure, remove it from the list
-       */
-      // const id = await api.postAnnotation(
-      //   this.props.paperId.id,
-      //   annotationData
-      // );
+      const createdEntity = await api.postEntity(this.props.paperId.id, data);
+      if (createdEntity !== null) {
+        this.setState((prevState) => ({
+          /*
+           * Add the entity to memory
+           */
+          entities:
+            prevState.entities !== null
+              ? stateUtils.add(
+                  prevState.entities,
+                  createdEntity.id,
+                  createdEntity
+                )
+              : null,
+          /*
+           * Select the new entity
+           */
+          selectedEntityId: createdEntity.id,
+        }));
+        return true;
+      }
     }
+    return false;
   }
 
   async updateEntity(data: EntityUpdateData): Promise<boolean> {
     if (this.props.paperId !== undefined) {
-      /**
-       * TODO(andrewhead):
-       * 1. Update the state for the entity immediately
-       * 2. On success, do nothing
-       * 3. On failure, revert the change
-       */
       const result = await api.patchEntity(this.props.paperId.id, data);
       if (result) {
         /*
@@ -224,13 +229,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
               relationships: { ...entity.relationships, ...data.relationships },
             };
             return {
-              entities: {
-                ...prevState.entities,
-                byId: {
-                  ...prevState.entities.byId,
-                  [data.id]: updated,
-                },
-              },
+              entities: stateUtils.update(prevState.entities, data.id, updated),
             };
           }
           return { entities: prevState.entities };
@@ -246,6 +245,9 @@ class ScholarReader extends React.PureComponent<Props, State> {
       const result = await api.deleteEntity(this.props.paperId.id, id);
       if (result) {
         this.setState((prevState) => {
+          /*
+           * Delete the entity from memory.
+           */
           const updatedEntities =
             prevState.entities !== null
               ? stateUtils.del(prevState.entities, id)

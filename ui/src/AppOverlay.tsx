@@ -15,7 +15,7 @@ interface Props {
   appContainer: HTMLElement;
   paperId?: PaperId;
   entityCreationEnabled: boolean;
-  entityCreationType: KnownEntityType;
+  entityCreationType: KnownEntityType | null;
   snackbarMode: SnackbarMode;
   snackbarActivationTimeMs: number | null;
   snackbarMessage: string | null;
@@ -27,7 +27,7 @@ interface Props {
   handleTerminateSearch: () => void;
   handleDeselectSelection: () => void;
   handleToggleEntityCreationMode: () => void;
-  handleSelectEntityCreationType: (type: KnownEntityType) => void;
+  handleSelectEntityCreationType: (type: KnownEntityType | null) => void;
   handleToggleEntityEditMode: () => void;
 }
 

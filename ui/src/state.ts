@@ -115,7 +115,7 @@ export interface State {
    * ~ Human annotations ~
    */
   entityCreationEnabled: boolean;
-  entityCreationType: KnownEntityType;
+  entityCreationType: KnownEntityType | null;
   entityEditingEnabled: boolean;
 }
 
