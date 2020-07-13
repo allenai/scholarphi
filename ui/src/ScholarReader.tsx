@@ -1,7 +1,6 @@
 import React from "react";
 import * as api from "./api";
 import AppOverlay from "./AppOverlay";
-import { DrawerMode } from "./Drawer";
 import { FindQuery } from "./FindBar";
 import PageOverlay from "./PageOverlay";
 import * as selectors from "./selectors";
@@ -136,10 +135,6 @@ class ScholarReader extends React.PureComponent<Props, State> {
       selectedAnnotationSpanId: null,
       selectedEntityId: null,
     });
-  }
-
-  setDrawerState(state: DrawerMode) {
-    this.setState({ drawerMode: state });
   }
 
   /**

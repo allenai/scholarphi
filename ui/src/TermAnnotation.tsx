@@ -32,6 +32,7 @@ export class TermAnnotation extends React.PureComponent<Props, {}> {
       <Annotation
         pageView={this.props.pageView}
         id={this.props.id}
+        className="term-annotation"
         active={this.props.active}
         selected={this.props.selected}
         selectedSpanId={this.props.selectedSpanId}

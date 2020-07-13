@@ -35,6 +35,7 @@ export class SymbolAnnotation extends React.PureComponent<Props> {
       <Annotation
         pageView={this.props.pageView}
         id={this.props.id}
+        className="symbol-annotation"
         boundingBoxes={this.props.boundingBoxes}
         active={this.props.active}
         selected={this.props.selected}

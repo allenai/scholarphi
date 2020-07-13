@@ -40,6 +40,7 @@ export class CitationAnnotation extends React.PureComponent<Props, {}> {
       <Annotation
         pageView={this.props.pageView}
         id={this.props.id}
+        className="citation-annotation"
         active={this.props.active}
         selected={this.props.selected}
         selectedSpanId={this.props.selectedSpanId}

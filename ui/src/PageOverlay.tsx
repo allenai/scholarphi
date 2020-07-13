@@ -130,29 +130,6 @@ class PageOverlay extends React.PureComponent<Props, {}> {
               const boundingBoxes = entity.attributes.bounding_boxes.filter(
                 (box) => box.page === pageNumber - 1
               );
-              /*
-               * Add sentences first, as they are the broadest, and would occlude all of the
-               * other annotations if appended last.
-               */
-              if (entityEditingEnabled && isSentence(entity)) {
-                return (
-                  <SentenceAnnotation
-                    key={annotationId}
-                    id={annotationId}
-                    pageView={view}
-                    sentence={entity}
-                    boundingBoxes={boundingBoxes}
-                    active={showAnnotations}
-                    selected={isSelected}
-                    selectedSpanId={
-                      isSelected ? selectedAnnotationSpanId : null
-                    }
-                    handleSelect={handleSelectAnnotation}
-                    handleSelectSpan={handleSelectAnnotationSpan}
-                    handleSelectEntity={this.props.handleSelectEntity}
-                  />
-                );
-              }
               if (isTerm(entity)) {
                 return (
                   <TermAnnotation
@@ -228,6 +205,24 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     handleSelectAnnotationSpan={handleSelectAnnotationSpan}
                     handleSelectEntity={this.props.handleSelectEntity}
                     handleStartSymbolSearch={handleStartSymbolSearch}
+                  />
+                );
+              } else if (entityEditingEnabled && isSentence(entity)) {
+                return (
+                  <SentenceAnnotation
+                    key={annotationId}
+                    id={annotationId}
+                    pageView={view}
+                    sentence={entity}
+                    boundingBoxes={boundingBoxes}
+                    active={showAnnotations}
+                    selected={isSelected}
+                    selectedSpanId={
+                      isSelected ? selectedAnnotationSpanId : null
+                    }
+                    handleSelect={handleSelectAnnotation}
+                    handleSelectSpan={handleSelectAnnotationSpan}
+                    handleSelectEntity={this.props.handleSelectEntity}
                   />
                 );
               } else {
