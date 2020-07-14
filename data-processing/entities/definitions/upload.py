@@ -16,6 +16,7 @@ def upload_definitions(
 ) -> None:
 
     entity_infos = []
+
     for entity_and_location in processing_summary.localized_entities:
         definition = cast(DefinitionEntity, entity_and_location.entity)
         boxes = [cast(BoundingBox, l) for l in entity_and_location.locations]
@@ -25,10 +26,11 @@ def upload_definitions(
             type_="termdefinition",
             bounding_boxes=boxes,
             data={
-                "name": definition.name,
-                "definitions": definition.definitions,
-                "sources": term.sources,
-                "val": term.val,
+                "name": definition.term_text,
+                "definition": definition.definition_text,
+                # "definitions": definition.definitions,
+                # "sources": term.sources,
+                # "val": definition.val,
             },
         )
         entity_infos.append(entity_info)

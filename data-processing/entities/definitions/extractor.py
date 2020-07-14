@@ -9,6 +9,8 @@ from common.commands.base import ArxivBatchCommand
 from common.types import ArxivId, RelativePath, SerializableEntity
 from entities.sentences.types import Sentence
 
+from tqdm import tqdm
+
 from .types import Definition
 from .nlp_tools import DefinitionModel
 
@@ -26,8 +28,10 @@ class DefinitionSentencePair:
     start: int
     end: int
     tex_path: str
+    tex: str
+    context_tex: str
     sentence_index: str
-    sentence_text: str
+    text: str
 
     # whether to include a definition or not
     intent: bool
@@ -155,7 +159,7 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, DefinitionSente
         - store detected term:definition pairs in TermDefinition.csv
     Alternative logics for saving:
         - (1) (*current version) TermDefinition.csv
-            Range for Term/Definition
+            jRange for Term/Definition
         - (2) Term.csv, Term_entities.csv, Definition.csv
             Each term: in multiple places in multiple defniitions
             Terms.csv - listing of term id and term plaintext
@@ -207,7 +211,9 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, DefinitionSente
     def process(
         self, item: DetectDefinitionsTask, verbose: bool = False
     ) -> Iterator[DefinitionSentencePair]:
-        sentences_ordered = iter(sorted(item.sentences, key=lambda s: s.start))
+        sentences_ordered = sorted(item.sentences, key=lambda s: s.start)
+        num_sentences = len(sentences_ordered)
+        sentences_ordered_iterator = iter(sentences_ordered)
 
         if len(item.sentences) == 0:
             logging.warning(  # pylint: disable=logging-not-lazy
@@ -218,73 +224,116 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, DefinitionSente
             )
             return
 
+
+        # Show the number of sentences extracted and definitions predicted
+
         # load pre-trained DefinitoinModel
         nlp_model = DefinitionModel()
 
+
+        # start term/definition inference for each sentence
+        definitions = []
         term_index_count, definition_index_count = 0, 0
-        for sid, sentence in enumerate(sentences_ordered):
+        batch_size = 8
+        features = []
+        sentences = []
+        with tqdm(total=num_sentences) as sentence_iter:
+            for sid, sentence_obj in enumerate(sentences_ordered_iterator):
+                sentence_iter.update(1)
 
-            if not sentence.is_sentence:
-                continue
+                if not sentence_obj.is_sentence or sentence_obj.text == "":
+                    continue
 
-            # extract nlp features from raw text
-            featurized_text = nlp_model.featurize(sentence.text)
+                # extract nlp features from raw text
+                featurized_text = nlp_model.featurize(sentence_obj.text)
 
-            # predict terms and definitions from the featurized text
-            intent_pred, slot_preds = nlp_model.predict_one(featurized_text)
+                features.append(featurized_text)
+                sentences.append(sentence_obj)
 
-            if verbose:
-                print(sentence.text)
-                for k, v in featurized_text.items():
-                    print(k, v)
-                print(intent_pred)
-                print(slot_preds)
-                print()
 
-            # TODO add batch processing for speed-up
-            intent_pred_first = intent_pred[0]
-            slot_preds_first = slot_preds[0]
+                if len(features) >= batch_size or sid >= num_sentences-1:
+                    #TODO FIXME missing the current feature/sentence
 
-            # intent prediction whether the sentence includes a definition or not
-            intent = True if intent_pred_first == 1 else False
+                    # # predict terms and definitions from the featurized text
+                    # intent_pred, slot_preds = nlp_model.predict_one(featurized_text)
 
-            # we only care when predicted slots include both 'TERM' and 'DEFINITION', otherwise ignore
-            if "TERM" not in slot_preds_first and "DEF" not in slot_preds_first:
-                continue
+                    # predict terms and definitions from the featurized text
+                    intent_pred, slot_preds = nlp_model.predict_batch(features)
 
-            slot_dict_list = process_term_definition_slot(
-                sentence.text, featurized_text, slot_preds_first, verbose=False
-            )
+                    for sentence, feature, intent_pred_first, slot_preds_first in zip(sentences, features, intent_pred, slot_preds):
+                        # # TODO add batch processing for speed-up
+                        # intent_pred_first = intent_pred[0]
+                        # slot_preds_first = slot_preds[0]
 
-            for slot_dict in slot_dict_list:
-                yield DefinitionSentencePair(
-                    id_=sid,
-                    start=sentence.start,
-                    end=sentence.end,
-                    tex_path=sentence.tex_path,
-                    sentence_index=sentence.id_,
-                    sentence_text=sentence.text,
-                    intent=intent,
-                    term_index=term_index_count,
-                    term_start=slot_dict.get("term_start", None),
-                    term_end=slot_dict.get("term_end", None),
-                    term_text=slot_dict.get("term_text", None),
-                    term_type=slot_dict.get("term_type", None),
-                    definition_index=definition_index_count,
-                    definition_start=slot_dict.get("definition_start", None),
-                    definition_end=slot_dict.get("definition_end", None),
-                    definition_text=slot_dict.get("definition_text", None),
-                    definition_type=slot_dict.get("definition_type", None),
-                )
+                        # intent prediction whether the sentence includes a definition or not
+                        intent = True if intent_pred_first == 1 else False
 
-            term_index_count += 1
-            definition_index_count += 1
+
+                        # we only care when predicted slots include both 'TERM' and 'DEFINITION', otherwise ignore
+                        if "TERM" not in slot_preds_first and "DEF" not in slot_preds_first:
+                            continue
+
+                        slot_dict_list = process_term_definition_slot(
+                            sentence.text, feature, slot_preds_first, verbose=False
+                        )
+
+                        if verbose:
+                            print(sentence.is_sentence)
+                            print(sentence.text)
+                            for k, v in feature.items():
+                                print(k, v)
+                            print(intent_pred_first)
+                            print(slot_preds_first)
+                            print()
+                            #TODO replace print with logging
+                            # logging.warning()
+
+
+
+
+                        for slot_dict in slot_dict_list:
+                            definitions.append( DefinitionSentencePair(
+                                id_=sid,
+                                start=sentence.start,
+                                end=sentence.end,
+                                tex_path=sentence.tex_path,
+                                sentence_index=sentence.id_,
+                                text=sentence.text,
+                                tex=sentence.tex,
+                                context_tex=sentence.context_tex,
+
+                                intent=intent,
+                                term_index=term_index_count,
+                                term_start=slot_dict.get("term_start", None),
+                                term_end=slot_dict.get("term_end", None),
+                                term_text=slot_dict.get("term_text", None),
+                                term_type=slot_dict.get("term_type", None),
+                                definition_index=definition_index_count,
+                                definition_start=slot_dict.get("definition_start", None),
+                                definition_end=slot_dict.get("definition_end", None),
+                                definition_text=slot_dict.get("definition_text", None),
+                                definition_type=slot_dict.get("definition_type", None),
+                            ))
+
+                            term_index_count += 1
+                            definition_index_count += 1
+
+                    features = []
+                    sentences = []
+
+
+        logging.info('Total number of definitions {} out of {} sentences'.format(
+            len(definitions), num_sentences))
+
+        for definition in definitions:
+            yield definition
+
 
     def save(self, item: DetectDefinitionsTask, result: DefinitionSentencePair) -> None:
         output_dir = directories.arxiv_subdir("detected-definitions", item.arxiv_id)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-        entity_sentences_path = os.path.join(output_dir, "TermsDefinitions.csv",)
+        entity_sentences_path = os.path.join(output_dir, "entities.csv",)
 
         file_utils.append_to_csv(
             entity_sentences_path,
@@ -293,8 +342,10 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, DefinitionSente
                 result.start,
                 result.end,
                 result.tex_path,
+                result.tex,
+                result.context_tex,
                 result.sentence_index,
-                result.sentence_text,
+                result.text,
                 result.intent,
                 result.term_index,
                 result.term_start,
