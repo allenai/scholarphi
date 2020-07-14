@@ -20,6 +20,7 @@ https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.2.4/en_core_sci_s
 transformers==2.11.0
 spacy==2.2.4
 scispacy==0.2.4
+tqdm==4.28.0
 
 
 # Development dependencies
