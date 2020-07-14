@@ -4,7 +4,7 @@ from typing import Iterator, List, Dict
 
 import pysbd
 
-from common.parse_tex import DEFAULT_CONTEXT_SIZE, EntityExtractor, PlaintextExtractor
+from common.parse_tex import DEFAULT_CONTEXT_SIZE, EntityExtractor, check_for_reserved_characters, plaintext_and_offset
 
 from .types import Sentence
 
@@ -163,38 +163,9 @@ class SentenceExtractor(EntityExtractor):
     """
 
     def parse(self, tex_path: str, tex: str) -> Iterator[Sentence]:
-        for reserved_char in PYSBD_RESERVED_CHARACTERS:
-            if reserved_char in tex:
-                logging.warning(
-                    'Reserved character from pysbd "%s" found in tex string, this might break the sentence extractor.',
-                    reserved_char,
-                )
+        check_for_reserved_characters(tex)
+        plaintext, plaintext_to_tex_offset_map = plaintext_and_offset(tex_path, tex)
 
-        # Extract plaintext segments from TeX
-        plaintext_extractor = PlaintextExtractor()
-        plaintext_segments = plaintext_extractor.parse(tex_path, tex)
-
-        # Build a map from character offsets in the plaintext to TeX offsets. This will let us
-        # map from the character offsets of the sentences returned from the sentence boundary
-        # detector back to positions in the original TeX.
-        plaintext_to_tex_offset_map = {}
-        plaintext = ""
-        last_segment = None
-        for segment in plaintext_segments:
-            for i in range(len(segment.text)):
-                tex_offset = (
-                    (segment.tex_start + i)
-                    if not segment.transformed
-                    else segment.tex_start
-                )
-                plaintext_to_tex_offset_map[len(plaintext) + i] = tex_offset
-
-            # While building the map, also create a contiguous plaintext string
-            plaintext += segment.text
-            last_segment = segment
-
-        if last_segment is not None:
-            plaintext_to_tex_offset_map[len(plaintext)] = last_segment.tex_end
         # Segment the plaintext. Return offsets for each setence relative to the TeX input
         segmenter = pysbd.Segmenter(language="en", clean=False)
         # Record the current length of the plain text so account for the extractor bug
