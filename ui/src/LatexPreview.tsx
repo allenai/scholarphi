@@ -2,7 +2,7 @@
  * See https://github.com/KaTeX/KaTeX/issues/1927#issuecomment-485294236 for documentation
  * from the KaTeX team on importing KaTeX in a Node environment.
  */
-import Card from "@material-ui/core/Card";
+
 import LinearProgress from "@material-ui/core/LinearProgress";
 import katex from "katex";
 import renderMathInElement from "katex/dist/contrib/auto-render";
@@ -46,6 +46,7 @@ class LatexPreview extends React.PureComponent<Props> {
           { left: "$", right: "$", display: false },
           { left: "\\(", right: "\\)", display: false },
           { left: "\\[", right: "\\]", display: true },
+          { left: "\\begin{align}", right: "\\end{align}", display: true },
         ],
         errorCallback: (message: string, error: katex.ParseError) => {
           if (this.props.handleParseError !== undefined) {
@@ -64,19 +65,15 @@ class LatexPreview extends React.PureComponent<Props> {
 
   render() {
     return (
-      <Card className="latex-preview">
-        <div
-          className="latex-preview__container"
-          ref={(ref) => (this._latexContainer = ref)}
-        >
-          {/*
-           * LaTeX has to be in an element of its own for a change in the 'latex' prop to
-           * trigger a re-rendering of the component.
-           */}
+      <span>
+        {/*
+         * LaTeX has to be in an element of its own for a change in the 'latex' prop to
+         * trigger a re-rendering of the component.
+         */}
+        <span ref={(ref) => (this._latexContainer = ref)}>
           <span>{this.props.latex}</span>
-          <div className="latex-preview__preview-label">Preview</div>
-        </div>
-        <div
+        </span>
+        <span
           /**
            * The LinearProgress will be hidden as soon as the LaTeX renders
            * in the 'componentDidMount' and 'componentDidUpdate' hooks. But the
@@ -89,8 +86,8 @@ class LatexPreview extends React.PureComponent<Props> {
           ref={(ref) => (this._progressContainer = ref)}
         >
           <LinearProgress />
-        </div>
-      </Card>
+        </span>
+      </span>
     );
   }
 

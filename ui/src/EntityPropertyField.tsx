@@ -1,3 +1,4 @@
+import Card from "@material-ui/core/Card";
 import IconButton from "@material-ui/core/IconButton";
 import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
@@ -126,10 +127,15 @@ class EntityPropertyField extends React.PureComponent<Props> {
               onChange={this.onFieldChanged}
             />
             {is_latex ? (
-              <LatexPreview
-                latex={value}
-                handleParseError={this.handleLatexError}
-              />
+              <Card className="latex-preview">
+                <div className="latex-preview__container">
+                  <LatexPreview
+                    latex={value}
+                    handleParseError={this.handleLatexError}
+                  />
+                </div>
+                <div className="latex-preview__preview-label">Preview</div>
+              </Card>
             ) : null}
           </>
         ) : null}
@@ -194,10 +200,17 @@ class EntityPropertyField extends React.PureComponent<Props> {
                       <DeleteForever />
                     </IconButton>
                     {is_latex ? (
-                      <LatexPreview
-                        latex={v}
-                        handleParseError={this.handleLatexError}
-                      />
+                      <Card className="latex-preview">
+                        <div className="latex-preview__container">
+                          <LatexPreview
+                            latex={v}
+                            handleParseError={this.handleLatexError}
+                          />
+                        </div>
+                        <div className="latex-preview__preview-label">
+                          Preview
+                        </div>
+                      </Card>
                     ) : null}
                   </div>
                 ))}

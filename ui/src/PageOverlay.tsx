@@ -185,6 +185,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     id={annotationId}
                     pageView={view}
                     pageNumber={pageNumber}
+                    symbol={entity}
                     /*
                      * Only show interactivity for top-level symbols (i.e., symbols that are
                      * not children of other symbols).
@@ -199,7 +200,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     }
                     isFindSelection={findSelectionEntityId === entityId}
                     isFindMatch={isFindMatch}
-                    symbol={entity}
+                    tooltip={entityEditingEnabled ? "property-viewer" : null}
                     handleSelect={this.props.handleSelectEntityAnnotation}
                     handleStartSymbolSearch={handleStartSymbolSearch}
                   />

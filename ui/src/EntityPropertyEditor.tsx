@@ -144,7 +144,7 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
       type: "multiline-latex",
       is_list: true,
       relation_type: null,
-      label: "Relevant passages",
+      label: "Related passages",
     },
     {
       key: "sentence",

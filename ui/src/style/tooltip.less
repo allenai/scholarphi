@@ -31,6 +31,7 @@
    * Hard-code the width of some tooltips.
    */
   .citation-tooltip-body,
+  .symbol-properties-tooltip-body,
   .term-tooltip-body {
     max-width: 400px;
   }
@@ -39,10 +40,13 @@
     padding: @medium * 0.5;
   }
 
-  .tooltip-body__section + .tooltip-body__section {
-    padding-top: @medium * 0.5;
+  .tooltip-body__section {
     padding-left: @tooltip-padding;
     padding-right: @tooltip-padding;
+
+    & + .tooltip-body__section {
+      padding-top: @medium * 0.5;
+    }
   }
 
   .tooltip-body__header {

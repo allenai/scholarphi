@@ -1,5 +1,6 @@
 import React from "react";
 import Annotation from "./Annotation";
+import SymbolPropertiesTooltipBody from "./SymbolPropertiesTooltipBody";
 import { Symbol } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
@@ -13,6 +14,7 @@ interface Props {
   selectedSpanId: string | null;
   isFindMatch?: boolean;
   isFindSelection?: boolean;
+  tooltip: TooltipType;
   handleSelect: (
     symbolId: string,
     annotationId: string,
@@ -20,6 +22,8 @@ interface Props {
   ) => void;
   handleStartSymbolSearch: (id: string) => void;
 }
+
+type TooltipType = "property-viewer" | null;
 
 export class SymbolAnnotation extends React.PureComponent<Props> {
   constructor(props: Props) {
@@ -44,7 +48,11 @@ export class SymbolAnnotation extends React.PureComponent<Props> {
         selectedSpanId={this.props.selectedSpanId}
         isFindMatch={this.props.isFindMatch}
         isFindSelection={this.props.isFindSelection}
-        tooltipContent={null}
+        tooltipContent={
+          this.props.tooltip === "property-viewer" ? (
+            <SymbolPropertiesTooltipBody symbol={this.props.symbol} />
+          ) : null
+        }
         source={this.props.symbol.attributes.source}
         handleSelect={this.handleSelect}
       />

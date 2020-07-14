@@ -16,7 +16,7 @@ interface Props {
   handleSelectSymbol: (id: string) => void;
 }
 
-export class SymbolTooltipBody extends React.PureComponent<Props> {
+export class SymbolPreviewTooltipBody extends React.PureComponent<Props> {
   onClickJumpButton(symbolId: string | undefined) {
     if (symbolId !== undefined) {
       this.props.handleSelectSymbol(symbolId);
@@ -127,4 +127,4 @@ export class SymbolTooltipBody extends React.PureComponent<Props> {
   }
 }
 
-export default SymbolTooltipBody;
+export default SymbolPreviewTooltipBody;
