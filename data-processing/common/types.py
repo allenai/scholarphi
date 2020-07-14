@@ -293,6 +293,9 @@ MathML = str
 
 class Symbol(NamedTuple):
     tokens: List[TokenIndex]
+    tex: str
+    start: int
+    end: int
     mathml: MathML
     children: List[Any]
     """
@@ -340,6 +343,9 @@ class SerializableToken(SerializableEntity, Token):
 @dataclass(frozen=True)
 class SerializableSymbol(SymbolId):
     equation: str
+    start: int
+    end: int
+    tex: str
     mathml: str
 
 
