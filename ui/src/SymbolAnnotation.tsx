@@ -1,13 +1,13 @@
 import React from "react";
 import Annotation from "./Annotation";
-import { BoundingBox, Symbol } from "./types/api";
+import { Symbol } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
 interface Props {
   pageView: PDFPageView;
+  pageNumber: number;
   symbol: Symbol;
   id: string;
-  boundingBoxes: BoundingBox[];
   active: boolean;
   selected: boolean;
   selectedSpanId: string | null;
@@ -37,7 +37,8 @@ export class SymbolAnnotation extends React.PureComponent<Props> {
         pageView={this.props.pageView}
         id={this.props.id}
         className="symbol-annotation"
-        boundingBoxes={this.props.boundingBoxes}
+        boundingBoxes={this.props.symbol.attributes.bounding_boxes}
+        pageNumber={this.props.pageNumber}
         active={this.props.active}
         selected={this.props.selected}
         selectedSpanId={this.props.selectedSpanId}

@@ -2,16 +2,16 @@ import React from "react";
 import Annotation from "./Annotation";
 import CitationTooltipBody from "./CitationTooltipBody";
 import { PaperId, UserLibrary } from "./state";
-import { BoundingBox, Citation, Paper } from "./types/api";
+import { Citation, Paper } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
 interface Props {
   pageView: PDFPageView;
+  pageNumber: number;
   paper: Paper | null;
   userLibrary: UserLibrary | null;
   citation: Citation;
   id: string;
-  boundingBoxes: BoundingBox[];
   active: boolean;
   selected: boolean;
   selectedSpanId: string | null;
@@ -46,7 +46,8 @@ export class CitationAnnotation extends React.PureComponent<Props, {}> {
         active={this.props.active}
         selected={this.props.selected}
         selectedSpanId={this.props.selectedSpanId}
-        boundingBoxes={this.props.boundingBoxes}
+        boundingBoxes={this.props.citation.attributes.bounding_boxes}
+        pageNumber={this.props.pageNumber}
         source={this.props.citation.attributes.source}
         tooltipContent={
           this.props.paper !== null ? (

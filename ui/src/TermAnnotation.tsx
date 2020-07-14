@@ -1,14 +1,14 @@
 import React from "react";
 import Annotation from "./Annotation";
 import TermTooltipBody from "./TermTooltipBody";
-import { BoundingBox, Term } from "./types/api";
+import { Term } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
 interface Props {
   pageView: PDFPageView;
+  pageNumber: number;
   term: Term;
   id: string;
-  boundingBoxes: BoundingBox[];
   active: boolean;
   selected: boolean;
   selectedSpanId: string | null;
@@ -38,7 +38,8 @@ export class TermAnnotation extends React.PureComponent<Props, {}> {
         active={this.props.active}
         selected={this.props.selected}
         selectedSpanId={this.props.selectedSpanId}
-        boundingBoxes={this.props.boundingBoxes}
+        boundingBoxes={this.props.term.attributes.bounding_boxes}
+        pageNumber={this.props.pageNumber}
         source={this.props.term.attributes.source}
         tooltipContent={<TermTooltipBody term={this.props.term} />}
         handleSelect={this.handleSelect}

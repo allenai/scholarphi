@@ -131,14 +131,17 @@ class PageOverlay extends React.PureComponent<Props, {}> {
               const boundingBoxes = entity.attributes.bounding_boxes.filter(
                 (box) => box.page === pageNumber - 1
               );
+              if (boundingBoxes.length === 0) {
+                return null;
+              }
               if (isTerm(entity)) {
                 return (
                   <TermAnnotation
                     key={annotationId}
                     id={annotationId}
                     pageView={view}
+                    pageNumber={pageNumber}
                     term={entity}
-                    boundingBoxes={boundingBoxes}
                     active={showAnnotations}
                     selected={isSelected}
                     selectedSpanId={
@@ -154,6 +157,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     key={annotationId}
                     id={annotationId}
                     pageView={view}
+                    pageNumber={pageNumber}
                     userLibrary={userLibrary}
                     citation={entity}
                     paper={
@@ -161,7 +165,6 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                         ? papers[entity.attributes.paper_id] || null
                         : null
                     }
-                    boundingBoxes={boundingBoxes}
                     active={showAnnotations}
                     selected={isSelected}
                     selectedSpanId={
@@ -181,7 +184,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     key={annotationId}
                     id={annotationId}
                     pageView={view}
-                    boundingBoxes={boundingBoxes}
+                    pageNumber={pageNumber}
                     /*
                      * Only show interactivity for top-level symbols (i.e., symbols that are
                      * not children of other symbols).
@@ -207,8 +210,8 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     key={annotationId}
                     id={annotationId}
                     pageView={view}
+                    pageNumber={pageNumber}
                     sentence={entity}
-                    boundingBoxes={boundingBoxes}
                     active={showAnnotations}
                     selected={isSelected}
                     selectedSpanId={

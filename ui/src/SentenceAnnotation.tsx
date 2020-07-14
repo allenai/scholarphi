@@ -1,14 +1,14 @@
 import React from "react";
 import Annotation from "./Annotation";
-import { BoundingBox, Sentence } from "./types/api";
+import { Sentence } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 import * as uiUtils from "./utils/ui";
 
 interface Props {
   pageView: PDFPageView;
+  pageNumber: number;
   sentence: Sentence;
   id: string;
-  boundingBoxes: BoundingBox[];
   active: boolean;
   selected: boolean;
   selectedSpanId: string | null;
@@ -57,7 +57,8 @@ export class SentenceAnnotation extends React.PureComponent<Props, {}> {
         active={this.props.active}
         selected={this.props.selected}
         selectedSpanId={this.props.selectedSpanId}
-        boundingBoxes={this.props.boundingBoxes}
+        boundingBoxes={this.props.sentence.attributes.bounding_boxes}
+        pageNumber={this.props.pageNumber}
         source={this.props.sentence.attributes.source}
         tooltipContent={null}
         /*
