@@ -27,7 +27,7 @@ from .nlp_model.utils import (
     highlight,
     info,
 )
-from .nlp_model.data_loader import load_and_cache_examples, load_and_cache_examples_one
+from .nlp_model.data_loader import load_and_cache_examples, load_and_cache_examples_one, load_and_cache_examples_batch
 from .nlp_model.configuration import (
     ModelArguments,
     DataTrainingArguments,
@@ -271,3 +271,32 @@ class DefinitionModel:
             simplified_slot_preds.append(simplified_slot_pred)
 
         return intent_pred, simplified_slot_preds
+
+
+    def predict_batch(self, data: List[DefaultDict[Any,Any]]) -> Tuple[List[int], List[List[str]]]:
+        # get dataset
+        test_dataset = load_and_cache_examples_batch(
+            self.data_args,
+            self.tokenizer,
+            data,
+            model_name=self.model_args.model_name_or_path,
+        )
+
+        # inference
+        intent_pred, slot_preds = self.trainer.evaluate_one(test_dataset)
+
+        # simplify prediction tokens for slot_preds
+        simplified_slot_preds = []
+        for slot_pred in slot_preds:
+            simplified_slot_pred = []
+            for s in slot_pred:
+                if s.endswith("TERM"):
+                    simplified_slot_pred.append("TERM")
+                elif s.endswith("DEF"):
+                    simplified_slot_pred.append("DEF")
+                else:
+                    simplified_slot_pred.append("O")
+            simplified_slot_preds.append(simplified_slot_pred)
+
+        return intent_pred, simplified_slot_preds
+
