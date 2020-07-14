@@ -100,6 +100,11 @@ attributes = attributes
         is: "symbol",
         then: Joi.object().keys({
           mathml: stringAttribute,
+          tex: stringAttribute,
+          name: stringAttribute,
+          definition: stringAttribute,
+          equation: stringAttribute,
+          passages: stringListAttribute,
           mathml_near_matches: stringListAttribute,
         }),
       },

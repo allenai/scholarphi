@@ -19,20 +19,22 @@ interface Props {
    * The ID of the paper that the user is reading.
    */
   openedPaperId?: PaperId;
-  handleSelect: (id: string) => void;
-  handleSelectSpan: (id: string) => void;
-  handleSelectEntity: (id: string) => void;
+  handleSelect: (
+    citationId: string,
+    annotationId: string,
+    annotationSpanId: string
+  ) => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
 }
 
 export class CitationAnnotation extends React.PureComponent<Props, {}> {
   constructor(props: Props) {
     super(props);
-    this.onSelected = this.onSelected.bind(this);
+    this.handleSelect = this.handleSelect.bind(this);
   }
 
-  onSelected() {
-    this.props.handleSelectEntity(this.props.citation.id);
+  handleSelect(annotationId: string, spanId: string) {
+    this.props.handleSelect(this.props.citation.id, annotationId, spanId);
   }
 
   render() {
@@ -57,9 +59,7 @@ export class CitationAnnotation extends React.PureComponent<Props, {}> {
             />
           ) : null
         }
-        handleSelectAnnotation={this.props.handleSelect}
-        handleSelectAnnotationSpan={this.props.handleSelectSpan}
-        onSelected={this.onSelected}
+        handleSelect={this.handleSelect}
       />
     );
   }

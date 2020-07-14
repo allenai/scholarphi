@@ -40,8 +40,8 @@ export class PageMask extends React.PureComponent<Props> {
       });
     const matchingSentences = matchingSentenceIds
       .map((sentenceId) => entities.byId[sentenceId])
-      .filter(isSentence)
-      .filter((s) => s !== undefined);
+      .filter((s) => s !== undefined)
+      .filter(isSentence);
     const firstMatchingSentence:
       | Sentence
       | undefined = matchingSentences[0] as Sentence;

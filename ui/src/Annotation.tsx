@@ -57,13 +57,7 @@ interface Props {
    * different methods for detecting entities.
    */
   source?: string;
-  handleSelectAnnotation: (id: string) => void;
-  handleSelectAnnotationSpan: (id: string) => void;
-  /**
-   * Callback triggered when the annotation is selected. Most often, this is triggered when the
-   * user clicks on an annotation.
-   */
-  onSelected?: () => void;
+  handleSelect: (id: string, spanId: string) => void;
   /**
    * Callback triggered when the annotation has been clicked. First argument is the event, where
    * 'currentTarget' is the 'div' element for the AnnotationSpan that was clicked. The return
@@ -86,15 +80,11 @@ export class Annotation extends React.PureComponent<Props> {
 
   constructor(props: Props) {
     super(props);
-    this.handleSelection = this.handleSelection.bind(this);
+    this.handleSelect = this.handleSelect.bind(this);
   }
 
-  handleSelection(spanId: string) {
-    this.props.handleSelectAnnotation(this.props.id);
-    this.props.handleSelectAnnotationSpan(spanId);
-    if (this.props.onSelected !== undefined) {
-      this.props.onSelected();
-    }
+  handleSelect(spanId: string) {
+    this.props.handleSelect(this.props.id, spanId);
   }
 
   render() {
@@ -132,7 +122,7 @@ export class Annotation extends React.PureComponent<Props> {
                 underline={this.props.underline}
                 onClick={this.props.onClick}
                 onKeyDown={this.props.onKeyDown}
-                handleSelection={this.handleSelection}
+                handleSelect={this.handleSelect}
               />
             );
           })}

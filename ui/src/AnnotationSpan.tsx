@@ -31,7 +31,7 @@ interface Props {
    * You shouldn't normally need to set this property.
    */
   scaleCorrection?: number;
-  handleSelection: (spanId: string) => void;
+  handleSelect: (spanId: string) => void;
   onClick: (e: React.MouseEvent<HTMLDivElement>) => boolean | void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
 }
@@ -56,9 +56,7 @@ export class AnnotationSpan extends React.PureComponent<Props> {
       }
     }
     if (!eventHandled) {
-      if (this.props.handleSelection !== undefined) {
-        this.props.handleSelection(this.props.id);
-      }
+      this.props.handleSelect(this.props.id);
     }
   }
 
