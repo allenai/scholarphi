@@ -176,6 +176,16 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
             for symbol in symbols:
                 symbol_index = symbols.index(symbol)
 
+                if len(symbol.tokens) == 0:
+                    continue
+
+                # Collect extra information about the symbol.
+                relative_start = min([t.start for t in symbol.tokens])
+                relative_end = max([t.end for t in symbol.tokens])
+                symbol_tex = result.equation[relative_start:relative_end]
+                start = result.equation_start + relative_start
+                end = result.equation_start + relative_end
+
                 # Save a record of this symbol.
                 file_utils.append_to_csv(
                     symbols_path,
@@ -184,6 +194,9 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                         equation_index=result.equation_index,
                         equation=result.equation,
                         symbol_index=symbol_index,
+                        start=start,
+                        end=end,
+                        tex=symbol_tex,
                         mathml=str(symbol.element),
                     ),
                 )

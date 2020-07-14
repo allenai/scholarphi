@@ -142,6 +142,9 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
                 continue
 
             data: EntityData = {
+                "tex": symbol.tex,
+                "tex_start": symbol.start,
+                "tex_end": symbol.end,
                 "mathml": symbol.mathml,
                 "mathml_near_matches": [
                     m.matching_mathml for m in matches[symbol.mathml]
