@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Set, List, NamedTuple, Optional
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, Set, Union
 
 """
 FILE PROCESSING
@@ -293,6 +293,9 @@ MathML = str
 
 class Symbol(NamedTuple):
     tokens: List[TokenIndex]
+    tex: str
+    start: int
+    end: int
     mathml: MathML
     children: List[Any]
     """
@@ -340,6 +343,9 @@ class SerializableToken(SerializableEntity, Token):
 @dataclass(frozen=True)
 class SerializableSymbol(SymbolId):
     equation: str
+    start: int
+    end: int
+    tex: str
     mathml: str
 
 
@@ -475,6 +481,7 @@ class CitationLocation(BoundingBox):
     key: str
     cluster_index: int
 
+
 @dataclass(frozen=True)
 class CitationData:
     arxiv_id: ArxivId
@@ -495,6 +502,42 @@ DATABASE UPLOADS
 
 
 @dataclass(frozen=True)
+class EntityReference:
+    """
+    Reference to another entity within the same paper. The combination of entity ID and type should
+    provide a key to the entity that is unique within the paper.
+    """
+
+    id_: Optional[str]
+    type_: str
+
+
+"""
+Unique data for each type of entity is stored as key-value pairs. Values can either be strings
+(a general catch-all data type for storing strings, HTML, integers, etc.), or lists of strings.
+"""
+EntityData = Dict[str, Union[int, float, str, List[str], List[int], List[float]]]
+
+"""
+Relationships for an entity, also stored as key-value pairs. The key is the name of the
+related entity. The value is an entity reference, which includes a type and ID that uniquely
+identifies the related entity in this paper.
+"""
+EntityRelationships = Dict[str, Union[EntityReference, List[EntityReference]]]
+
+
+@dataclass(frozen=True)
+class EntityInformation:
+    id_: str
+    type_: str
+    " Together, the 'id' and the 'type' should provide a unique ID for this entity within the paper. "
+
+    bounding_boxes: List[BoundingBox]
+    data: Optional[EntityData] = None
+    relationships: Optional[EntityRelationships] = None
+
+
+@dataclass(frozen=True)
 class EntityAndLocation:
     entity: SerializableEntity
     locations: List[HueLocationInfo]
@@ -507,7 +550,10 @@ class PaperProcessingResult:
     localized_entities: List[EntityAndLocation]
 
 
-EntityUploadCallable = Callable[[PaperProcessingResult], None]
+VersionNumber = int
+
+
+EntityUploadCallable = Callable[[PaperProcessingResult, Optional[VersionNumber]], None]
 
 
 """

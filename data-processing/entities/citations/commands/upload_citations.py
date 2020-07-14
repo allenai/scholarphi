@@ -2,24 +2,20 @@ import ast
 import dataclasses
 import logging
 import os.path
-from dataclasses import dataclass
-from typing import Dict, Iterator, Set
-
-from peewee import IntegrityError
+from typing import Dict, Iterator, List, cast
 
 from common import directories, file_utils
 from common.commands.database import DatabaseUploadCommand
-from common.models import BoundingBox as BoundingBoxModel
-from common.models import (Citation, CitationPaper, Entity, EntityBoundingBox,
-                           Paper, Summary, output_database)
-from common.types import (ArxivId, BibitemMatch, CitationLocation, CitationData,
-                          SerializableReference)
+from common.types import (BibitemMatch, BoundingBox, CitationData,
+                          EntityInformation, SerializableReference)
+from common.upload_entities import upload_entities
 
-from ..utils import load_located_citations, upload_citations
+from ..utils import load_located_citations
 
 CitationKey = str
 LocationIndex = int
 S2Id = str
+
 
 class UploadCitations(DatabaseUploadCommand[CitationData, None]):
     @staticmethod
@@ -95,4 +91,31 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
         yield None
 
     def save(self, item: CitationData, _: None) -> None:
-        upload_citations(item)
+        citation_locations = item.citation_locations
+        key_s2_ids = item.key_s2_ids
+
+        entity_infos = []
+
+        citation_index = 0
+        for citation_key, locations in citation_locations.items():
+
+            if citation_key not in key_s2_ids:
+                logging.warning(  # pylint: disable=logging-not-lazy
+                    "Not uploading bounding box information for citation with key "
+                    + "%s because it was not resolved to a paper S2 ID.",
+                    citation_key,
+                )
+                continue
+
+            for cluster_index, location_set in locations.items():
+                boxes = cast(List[BoundingBox], list(location_set))
+                entity_info = EntityInformation(
+                    id_=f"{citation_key}-{cluster_index}",
+                    type_="citation",
+                    bounding_boxes=boxes,
+                    data={"key": citation_key, "paper_id": key_s2_ids[citation_key]},
+                )
+                entity_infos.append(entity_info)
+                citation_index += 1
+
+        upload_entities(item.s2_id, item.arxiv_id, entity_infos, self.args.data_version)

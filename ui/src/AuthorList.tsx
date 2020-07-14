@@ -2,12 +2,12 @@ import React from "react";
 import S2Link from "./S2Link";
 import { Author } from "./types/api";
 
-interface AuthorListProps {
+interface Props {
   authors: Author[];
   showLinks?: boolean;
 }
 
-class AuthorList extends React.PureComponent<AuthorListProps, {}> {
+class AuthorList extends React.PureComponent<Props, {}> {
   render() {
     return (
       <span className="author-list">

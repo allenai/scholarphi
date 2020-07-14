@@ -1,12 +1,29 @@
 import logging
-from typing import (Callable, Dict, FrozenSet, Iterable, Iterator, List,
-                    Optional, Set, Tuple)
+from typing import (
+    Callable,
+    Dict,
+    FrozenSet,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Set,
+    Tuple,
+)
 
 import cv2
 import numpy as np
 
-from common.types import (BoundingBox, FloatRectangle, Point, Rectangle,
-                          Symbol, SymbolId, TokenId, TokenLocations)
+from common.types import (
+    BoundingBox,
+    FloatRectangle,
+    Point,
+    Rectangle,
+    Symbol,
+    SymbolId,
+    TokenId,
+    TokenLocations,
+)
 
 
 def extract_bounding_boxes(
@@ -222,9 +239,7 @@ def get_symbol_bounding_box(
 ) -> Optional[BoundingBox]:
     boxes = []
     for token_index in symbol.tokens:
-        token_id = TokenId(
-            symbol_id.tex_path, symbol_id.equation_index, token_index
-        )
+        token_id = TokenId(symbol_id.tex_path, symbol_id.equation_index, token_index)
         boxes.extend(token_boxes.get(token_id, []))
 
     if len(boxes) == 0:

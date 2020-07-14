@@ -1,0 +1,45 @@
+/**
+ * Border
+ */
+.find-bar {
+  border: @border;
+  border-radius: @border-radius;
+}
+
+/**
+ * Find-bar is opaque
+ */
+.find-bar {
+  background-color: @white;
+  z-index: @base-annotation-z-index + 1;
+}
+
+/**
+ * Layout of find-bar widgets
+ */
+.find-bar {
+  padding: 0 @padding;
+
+  & > * {
+    display: inline-block;
+    & + * {
+      padding-left: @padding;
+    }
+  }
+}
+
+/**
+ * Find bar fonts
+ */
+.find-bar {
+  color: @s2-text-default;
+}
+
+/**
+ * Symbol search filters
+ */
+.find-bar .symbol-filters {
+  .filter-button + * {
+    margin-left: @padding;
+  }
+}

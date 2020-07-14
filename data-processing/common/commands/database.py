@@ -20,12 +20,18 @@ class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
     def init_parser(parser: ArgumentParser) -> None:
         super(DatabaseUploadCommand, DatabaseUploadCommand).init_parser(parser)
         parser.add_argument(
+            "--data-version",
+            type=int,
+            help=(
+                "Version number to assign to the uploaded data. Defaults to creating a new version "
+                + "number for each paper for each run of the pipeline."
+            ),
+        )
+        parser.add_argument(
             "--schema",
             type=str,
-            help=(
-                "Name of schema to which data will be output. Defaults to the time at which this"
-                + " command object was created."
-            ),
+            default="public",
+            help=("Name of schema to which data will be output. Defaults to 'public'."),
         )
 
 

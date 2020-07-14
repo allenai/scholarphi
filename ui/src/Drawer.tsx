@@ -1,71 +1,80 @@
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import MuiDrawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
+import EntityPropertyEditor from "./EntityPropertyEditor";
 import FeedbackButton from "./FeedbackButton";
 import PaperList from "./PaperList";
 import SearchResults from "./SearchResults";
-import { ScholarReaderContext } from "./state";
+import * as selectors from "./selectors";
+import { Entities, PaperId, Papers, UserLibrary } from "./state";
+import { Entity, EntityUpdateData } from "./types/api";
+import { PDFViewer } from "./types/pdfjs-viewer";
 
 const PDF_VIEWER_DRAWER_OPEN_CLASS = "drawer-open";
-const BLACK_LISTED_CLASS_NAME = "MuiTooltip-tooltip";
 
-export class Drawer extends React.PureComponent {
-  static contextType = ScholarReaderContext;
-  context!: React.ContextType<typeof ScholarReaderContext>;
+export type DrawerMode = "open" | "closed";
 
-  positionPdfForDrawerOpen(pdfViewerContainer: HTMLElement) {
-    // Creating padding for scroll
-    Array.from(pdfViewerContainer.children).forEach(page => {
-      // XXX(zkirby, andrewhead) per our discussion at https://github.com/allenai/scholar-reader/pull/38/files#r388514946
-      // this is 'safe' as pages are not deleted when scrolled out of view (just their inner content).
-      page.classList.add(PDF_VIEWER_DRAWER_OPEN_CLASS);
-    });
+interface Props {
+  paperId: PaperId | undefined;
+  pdfViewer: PDFViewer;
+  pdfDocument: PDFDocumentProxy | null;
+  mode: DrawerMode;
+  papers: Papers | null;
+  entities: Entities | null;
+  userLibrary: UserLibrary | null;
+  selectedEntityId: string | null;
+  entityEditingEnabled: boolean;
+  handleClose: () => void;
+  handleSelectSymbol: (id: string) => void;
+  handleScrollSymbolIntoView: () => void;
+  handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
+  handleUpdateEntity: (entity: EntityUpdateData) => Promise<boolean>;
+  handleDeleteEntity: (id: string) => Promise<boolean>;
+}
 
-    const { drawerState, selectedEntityType } = this.context;
-    if (drawerState === "open" && selectedEntityType === "symbol") {
-      this.context.scrollSymbolIntoView();
-    }
-  }
-
-  removePdfPositioningForDrawerOpen(pdfViewerContainer: HTMLElement) {
-    Array.from(pdfViewerContainer.children).forEach(page => {
-      page.classList.remove(PDF_VIEWER_DRAWER_OPEN_CLASS);
-    });
+export class Drawer extends React.PureComponent<Props> {
+  constructor(props: Props) {
+    super(props);
+    this.closeDrawer = this.closeDrawer.bind(this);
   }
 
   componentWillUnmount() {
-    const { pdfViewer } = this.context;
+    const { pdfViewer } = this.props;
     if (pdfViewer != null) {
       this.removePdfPositioningForDrawerOpen(pdfViewer.viewer);
     }
   }
 
-  /**
-   * XXX(zkirby): Since the clickaway listener listens to *all* clicks outside of the
-   * drawer, if we do not have the code below it will close after a button is clicked that
-   * is meant to open the drawer. The code below simply gets the element that the click that is intending
-   * to close the drawer originated from and traverses the class list and class list of all
-   * parent elements looking for if this click happened from within a tooltip.
-   * Only close the drawer if the click is not within the tooltip.
-   */
-  closeOnClickAway = (e: React.MouseEvent<Document, MouseEvent>) => {
-    let elementTarget = e.target as Element | null;
-    while (elementTarget != null) {
-      if (elementTarget.classList.contains(BLACK_LISTED_CLASS_NAME)) {
-        return;
-      }
-      elementTarget = elementTarget.parentElement;
-    }
+  positionPdfForDrawerOpen(pdfViewerContainer: HTMLElement) {
+    /*
+     * Creating padding for scroll
+     */
+    Array.from(pdfViewerContainer.children).forEach((page) => {
+      // XXX(zkirby, andrewhead) per our discussion at https://github.com/allenai/scholar-reader/pull/38/files#r388514946
+      // this is 'safe' as pages are not deleted when scrolled out of view (just their inner content).
+      page.classList.add(PDF_VIEWER_DRAWER_OPEN_CLASS);
+    });
 
-    this.closeDrawer();
-  };
+    const { mode, selectedEntityId, entities } = this.props;
+    if (
+      mode === "open" &&
+      selectors.selectedEntityType(selectedEntityId, entities) === "symbol"
+    ) {
+      this.props.handleScrollSymbolIntoView();
+    }
+  }
+
+  removePdfPositioningForDrawerOpen(pdfViewerContainer: HTMLElement) {
+    Array.from(pdfViewerContainer.children).forEach((page) => {
+      page.classList.remove(PDF_VIEWER_DRAWER_OPEN_CLASS);
+    });
+  }
 
   closeDrawer() {
-    if (this.context.drawerState !== "closed") {
-      this.context.setDrawerState("closed");
-      this.context.setSelectedEntity(null, null);
+    if (this.props.mode !== "closed") {
+      this.props.handleClose();
     }
   }
 
@@ -75,55 +84,106 @@ export class Drawer extends React.PureComponent {
      * notify the PDF viewer by adding a class, as the PDF viewer otherwise has no knowledge of the
      * state of this React application.
      */
-    const { pdfViewer, drawerState } = this.context;
+    const {
+      paperId,
+      pdfViewer,
+      pdfDocument,
+      mode,
+      entities,
+      selectedEntityId,
+      entityEditingEnabled,
+      handleSelectSymbol,
+    } = this.props;
     if (pdfViewer != null) {
-      if (drawerState === "open") {
+      if (mode === "open") {
         this.positionPdfForDrawerOpen(pdfViewer.viewer);
       } else {
         this.removePdfPositioningForDrawerOpen(pdfViewer.viewer);
       }
     }
 
+    const feedbackContext = {
+      mode,
+      selectedEntityId,
+    };
+
+    let selectedEntity: Entity | null = null;
+    if (entities !== null && selectedEntityId !== null) {
+      selectedEntity = entities.byId[selectedEntityId] || null;
+    }
+
+    /*
+     * Only one type of drawer content can appear at a time. This conditional block determines
+     * which types of drawer content have precedence.
+     */
+    type DrawerContentType =
+      | null
+      | "entity-property-editor"
+      | "symbol-search-results"
+      | "paper-list";
+    let drawerContentType: DrawerContentType = null;
+    if (entityEditingEnabled === true) {
+      drawerContentType = "entity-property-editor";
+    } else if (
+      selectors.selectedEntityType(selectedEntityId, entities) === "symbol" &&
+      pdfDocument !== null
+    ) {
+      drawerContentType = "symbol-search-results";
+    } else if (
+      selectors.selectedEntityType(selectedEntityId, entities) === "citation"
+    ) {
+      drawerContentType = "paper-list";
+    }
+
     return (
-      <ScholarReaderContext.Consumer>
-        {({ selectedEntityType, selectedEntityId }) => {
-          const extraContext = {
-            drawerState,
-            selectedEntityType,
-            selectedEntityId
-          };
-          return (
-            <ClickAwayListener onClickAway={this.closeOnClickAway}>
-              <MuiDrawer
-                className="drawer"
-                variant="persistent"
-                anchor="right"
-                open={drawerState !== "closed"}
-              >
-                <div className="drawer__header">
-                  <div className="drawer__close_icon">
-                    <IconButton
-                      className="MuiButton-contained"
-                      onClick={this.closeDrawer.bind(this)}
-                    >
-                      <ChevronRightIcon />
-                    </IconButton>
-                  </div>
-                  <FeedbackButton extraContext={extraContext} />
-                </div>
-                <div className="drawer__content">
-                  {drawerState === "open" &&
-                    selectedEntityType === "symbol" && (
-                      <SearchResults pageSize={4} />
-                    )}
-                  {drawerState === "open" &&
-                    selectedEntityType === "citation" && <PaperList />}
-                </div>
-              </MuiDrawer>
-            </ClickAwayListener>
-          );
-        }}
-      </ScholarReaderContext.Consumer>
+      <MuiDrawer
+        className="drawer"
+        variant="persistent"
+        anchor="right"
+        /*
+         * If for the drawer has been requested to open but there's nothing to show
+         * in it, don't show it.
+         */
+        open={mode === "open" && drawerContentType !== null}
+      >
+        <div className="drawer__header">
+          <div className="drawer__close_icon">
+            <IconButton size="small" onClick={this.closeDrawer}>
+              <ChevronRightIcon />
+            </IconButton>
+          </div>
+          <FeedbackButton paperId={paperId} extraContext={feedbackContext} />
+        </div>
+        <div className="drawer__content">
+          {drawerContentType === "symbol-search-results" && (
+            <SearchResults
+              pdfDocument={pdfDocument as PDFDocumentProxy}
+              pageSize={4}
+              entities={entities}
+              selectedEntityId={selectedEntityId}
+              handleSelectSymbol={handleSelectSymbol}
+            />
+          )}
+          {drawerContentType === "paper-list" && (
+            <PaperList
+              papers={this.props.papers}
+              userLibrary={this.props.userLibrary}
+              handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
+            />
+          )}
+          {drawerContentType === "entity-property-editor" && (
+            <EntityPropertyEditor
+              /*
+               * When the selected entity changes, clear the property editor.
+               */
+              key={selectedEntityId || undefined}
+              entity={selectedEntity}
+              handleSaveChanges={this.props.handleUpdateEntity}
+              handleDeleteEntity={this.props.handleDeleteEntity}
+            />
+          )}
+        </div>
+      </MuiDrawer>
     );
   }
 }

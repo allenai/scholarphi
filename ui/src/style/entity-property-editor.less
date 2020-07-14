@@ -1,0 +1,90 @@
+/**
+ * Property editor dimensions.
+ */
+.entity-property-editor {
+  width: 250px;
+}
+
+/**
+ * Padding between sections.
+ */
+.entity-property-editor > p {
+  margin-bottom: @padding * 2;
+}
+
+.entity-property-field-container {
+  margin-bottom: @padding * 2;
+
+  .entity-property-field {
+    margin-bottom: @padding / 2;
+  }
+}
+
+/**
+ * Formatting of rows (field + add/delete buttons) for list-type properties.
+ */
+.entity-property-field-row {
+  display: flex;
+  flex-wrap: wrap;
+
+  .entity-property-field {
+    display: flex;
+    flex: 1 1 auto;
+  }
+
+  .action-button {
+    display: flex;
+    flex: 0 0 auto;
+  }
+}
+
+/**
+ * Span formats.
+ */
+.entity-property-field-container {
+  .action-span {
+    color: deepskyblue;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+
+/**
+ * Buttons for entity fields.
+ */
+.entity-property-editor__action-buttons {
+  text-align: center;
+
+  .action-button {
+    margin-bottom: @padding / 2;
+
+    & + .action-button {
+      margin-left: @padding;
+    }
+  }
+}
+
+/**
+ * Error messages.
+ */
+.entity-property-editor {
+  .entity-property-editor__save-error-label {
+    color: @s2-error;
+  }
+}
+
+p.entity-property-input-error {
+  font-size: @small;
+  color: @s2-error;
+}
+
+/**
+ * LaTeX previews.
+ */
+.latex-preview {
+  font-size: @medium;
+  width: 100%;
+  box-sizing: border-box;
+  padding: @padding / 2;
+  margin-bottom: @padding / 2;
+}

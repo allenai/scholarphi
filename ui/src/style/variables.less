@@ -38,12 +38,14 @@
 @highlight-hover-background: rgb(0, 0, 255);
 @highlight-hitbox-padding: 0.1em;
 @highlight-matching-entity-color: rgba(70, 130, 180);
+
 /**
  * TEXT STYLING
  */
 @underline-offset: 5px;
 @underline-width: 1px;
 @underline-color: #333;
+
 /**
  * BORDERS
  */
@@ -55,15 +57,18 @@
 /**
  * FONT SIZES
  */
-@large: 1.6rem;
-@medium: 1.4rem;
+@large: 1.2rem;
+@medium: 1rem;
+@small: 0.8rem;
+@button-font-size: @small;
+@line-height-ratio: 1.2;
 
 /**
  * SPACE
  */
-@padding: @medium;
-@margin: @medium;
-@tooltip-content-vertical-padding: @medium * 0.5;
+@padding: @small;
+@margin: @small;
+@tooltip-content-vertical-padding: @small * 0.5;
 
 /**
  * ELEMENT DIMENSIONS
@@ -82,6 +87,7 @@
 * Z INDEXES
 */
 @drawer-close-button-z-index: 1200;
+@base-annotation-z-index: 1000;
 
 /**
  * PDF VIEWER APPLICATION VARIABLES
@@ -93,3 +99,4 @@
  * ensure that they still match those in the pdf.js style files.
  */
 @pdfjs-toolbarViewer-height: 32px;
+@pdfjs-sidebarContainer-z-index: 100;

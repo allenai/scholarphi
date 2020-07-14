@@ -1,17 +1,57 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import CitationAnnotation from "./CitationAnnotation";
+import EntityCreationCanvas from "./EntityCreationCanvas";
 import PageMask from "./PageMask";
 import * as selectors from "./selectors";
-import { ScholarReaderContext } from "./state";
+import SentenceAnnotation from "./SentenceAnnotation";
+import {
+  Entities,
+  KnownEntityType,
+  PaperId,
+  Papers,
+  UserLibrary,
+} from "./state";
 import SymbolAnnotation from "./SymbolAnnotation";
+import TermAnnotation from "./TermAnnotation";
+import {
+  EntityCreateData,
+  EntityUpdateData,
+  isCitation,
+  isSentence,
+  isSymbol,
+  isTerm,
+} from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
-import { getPageViewDimensions } from "./ui-utils";
-import { UserAnnotationLayer } from "./UserAnnotationLayer";
+import { getPageViewDimensions } from "./utils/ui";
 
-interface PageProps {
+interface Props {
+  paperId?: PaperId;
   pageNumber: number;
   view: PDFPageView;
+  papers: Papers | null;
+  entities: Entities | null;
+  userLibrary: UserLibrary | null;
+  selectedEntityId: string | null;
+  selectedAnnotationId: string | null;
+  selectedAnnotationSpanId: string | null;
+  findMatchedEntityIds: string[] | null;
+  findSelectionEntityId: string | null;
+  showAnnotations: boolean;
+  entityCreationEnabled: boolean;
+  entityCreationType: KnownEntityType | null;
+  entityEditingEnabled: boolean;
+  handleSelectEntityAnnotation: (
+    entityId: string,
+    annotationId: string,
+    spanId: string
+  ) => void;
+  handleShowSnackbarMessage: (message: string) => void;
+  handleStartSymbolSearch: (id: string) => void;
+  handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
+  handleCreateEntity: (entity: EntityCreateData) => Promise<boolean>;
+  handleUpdateEntity: (data: EntityUpdateData) => Promise<boolean>;
+  handleDeleteEntity: (id: string) => Promise<boolean>;
 }
 
 /**
@@ -28,14 +68,11 @@ interface PageProps {
  *
  * The structure of this class is based on the example at https://reactjs.org/docs/portals.html.
  */
-class PageOverlay extends React.PureComponent<PageProps, {}> {
-  static contextType = ScholarReaderContext;
-  context!: React.ContextType<typeof ScholarReaderContext>;
-
-  constructor(props: PageProps) {
+class PageOverlay extends React.PureComponent<Props, {}> {
+  constructor(props: Props) {
     super(props);
     this._element = document.createElement("div");
-    this._element.classList.add("scholar-reader-overlay");
+    this._element.classList.add("scholar-reader-page-overlay");
   }
 
   componentDidMount() {
@@ -43,9 +80,6 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
   }
 
   componentWillUnmount() {
-    /**
-     * XXX(andrewhead): this 'document.body.contains' might be expensive.
-     */
     if (
       document.body.contains(this.props.view.div) &&
       this.props.view.div.contains(this._element)
@@ -55,100 +89,156 @@ class PageOverlay extends React.PureComponent<PageProps, {}> {
   }
 
   render() {
-    /*
-     * If user annotations are enabled, the overlay needs to be set to the full size of the page
-     * so that it can capture mouse events. If not, the overlay should not have any size, as
-     * the layers below (e.g., the text layer) need to capture the mouse events.
-     * TODO: set width and height to 100% only if annotations enabled.
-     */
-    if (this.context.userAnnotationsEnabled) {
-      this._element.classList.add("user-annotations-enabled");
-    } else {
-      this._element.classList.remove("user-annotations-enabled");
-    }
+    const {
+      paperId,
+      view,
+      pageNumber,
+      papers,
+      entities,
+      userLibrary,
+      selectedEntityId,
+      selectedAnnotationId,
+      selectedAnnotationSpanId,
+      findMatchedEntityIds,
+      findSelectionEntityId,
+      showAnnotations,
+      entityCreationEnabled,
+      entityCreationType,
+      entityEditingEnabled,
+      handleAddPaperToLibrary,
+      handleStartSymbolSearch,
+      handleCreateEntity,
+    } = this.props;
 
-    /*
-     * Assemble a list of symbols that should highlighted based on the currently selected entity.
-     */
-    const highlightedSymbols: string[] = [];
-    if (
-      this.context.symbols !== null &&
-      this.context.mathMls !== null &&
-      this.context.selectedEntityType === "symbol" &&
-      this.context.selectedEntityId !== null
-    ) {
-      highlightedSymbols.push(
-        ...selectors.matchingSymbols(
-          this.context.selectedEntityId,
-          this.context.symbols,
-          this.context.mathMls
-        )
-      );
-    }
+    const pageDimensions = getPageViewDimensions(view);
 
-    const pageDimensions = getPageViewDimensions(this.props.view);
     return ReactDOM.createPortal(
-      <ScholarReaderContext.Consumer>
-        {({
-          citations,
-          symbols,
-          annotationsShowing,
-          userAnnotationsEnabled
-        }) => {
-          return (
-            <>
-              <PageMask
-                key="page-mask"
-                pageNumber={this.props.pageNumber}
-                pageWidth={pageDimensions.width}
-                pageHeight={pageDimensions.height}
-              />
-              {/* Add annotations for all citation bounding boxes on this page. */}
-              {citations !== null
-                ? citations.all.map(cId => {
-                    const citation = citations.byId[cId];
-                    const boundingBoxes = citation.bounding_boxes.filter(
-                      b => b.page === this.props.pageNumber - 1
-                    );
-                    return boundingBoxes.length > 0 ? (
-                      <CitationAnnotation
-                        key={cId}
-                        showHint={annotationsShowing}
-                        boundingBoxes={boundingBoxes}
-                        citation={citation}
-                      />
-                    ) : null;
-                  })
-                : null}
-              {/* Add annotations for all symbol bounding boxes on this page. */}
-              {symbols !== null
-                ? symbols.all.map(sId => {
-                    const symbol = symbols.byId[sId];
-                    const boundingBoxes = symbol.bounding_boxes.filter(
-                      b => b.page === this.props.pageNumber - 1
-                    );
-                    return boundingBoxes.length > 0 ? (
-                      <SymbolAnnotation
-                        key={sId}
-                        showHint={annotationsShowing}
-                        boundingBoxes={boundingBoxes}
-                        symbol={symbol}
-                        highlight={highlightedSymbols.indexOf(sId) !== -1}
-                      />
-                    ) : null;
-                  })
-                : null}
-              {/* Add layer for user annotations. */}
-              {userAnnotationsEnabled && (
-                <UserAnnotationLayer
-                  pageView={this.props.view}
-                  pageNumber={this.props.pageNumber}
-                />
-              )}
-            </>
-          );
-        }}
-      </ScholarReaderContext.Consumer>,
+      <>
+        <PageMask
+          key="page-mask"
+          pageNumber={pageNumber}
+          pageWidth={pageDimensions.width}
+          pageHeight={pageDimensions.height}
+          entities={entities}
+          selectedEntityId={selectedEntityId}
+        />
+        {/* Add annotations for all citation bounding boxes on this page. */}
+        {entities !== null
+          ? entities.all.map((entityId) => {
+              const entity = entities.byId[entityId];
+              const annotationId = `entity-${entityId}-page-${pageNumber}-annotation`;
+              const isSelected = annotationId === selectedAnnotationId;
+              const boundingBoxes = entity.attributes.bounding_boxes.filter(
+                (box) => box.page === pageNumber - 1
+              );
+              if (boundingBoxes.length === 0) {
+                return null;
+              }
+              if (isTerm(entity)) {
+                return (
+                  <TermAnnotation
+                    key={annotationId}
+                    id={annotationId}
+                    pageView={view}
+                    pageNumber={pageNumber}
+                    term={entity}
+                    active={showAnnotations}
+                    selected={isSelected}
+                    selectedSpanId={
+                      isSelected ? selectedAnnotationSpanId : null
+                    }
+                    handleSelect={this.props.handleSelectEntityAnnotation}
+                  />
+                );
+              }
+              if (isCitation(entity) && papers !== null) {
+                return (
+                  <CitationAnnotation
+                    key={annotationId}
+                    id={annotationId}
+                    pageView={view}
+                    pageNumber={pageNumber}
+                    userLibrary={userLibrary}
+                    citation={entity}
+                    paper={
+                      entity.attributes.paper_id !== null
+                        ? papers[entity.attributes.paper_id] || null
+                        : null
+                    }
+                    active={showAnnotations}
+                    selected={isSelected}
+                    selectedSpanId={
+                      isSelected ? selectedAnnotationSpanId : null
+                    }
+                    openedPaperId={paperId}
+                    handleSelect={this.props.handleSelectEntityAnnotation}
+                    handleAddPaperToLibrary={handleAddPaperToLibrary}
+                  />
+                );
+              } else if (isSymbol(entity)) {
+                const isFindMatch =
+                  findMatchedEntityIds !== null &&
+                  findMatchedEntityIds.indexOf(entityId) !== -1;
+                return (
+                  <SymbolAnnotation
+                    key={annotationId}
+                    id={annotationId}
+                    pageView={view}
+                    pageNumber={pageNumber}
+                    /*
+                     * Only show interactivity for top-level symbols (i.e., symbols that are
+                     * not children of other symbols).
+                     */
+                    active={
+                      showAnnotations &&
+                      selectors.isSymbolTopLevel(entity, entities)
+                    }
+                    selected={isSelected}
+                    selectedSpanId={
+                      isSelected ? selectedAnnotationSpanId : null
+                    }
+                    isFindSelection={findSelectionEntityId === entityId}
+                    isFindMatch={isFindMatch}
+                    symbol={entity}
+                    handleSelect={this.props.handleSelectEntityAnnotation}
+                    handleStartSymbolSearch={handleStartSymbolSearch}
+                  />
+                );
+              } else if (entityEditingEnabled && isSentence(entity)) {
+                return (
+                  <SentenceAnnotation
+                    key={annotationId}
+                    id={annotationId}
+                    pageView={view}
+                    pageNumber={pageNumber}
+                    sentence={entity}
+                    active={showAnnotations}
+                    selected={isSelected}
+                    selectedSpanId={
+                      isSelected ? selectedAnnotationSpanId : null
+                    }
+                    handleSelect={this.props.handleSelectEntityAnnotation}
+                    handleShowSnackbarMessage={
+                      this.props.handleShowSnackbarMessage
+                    }
+                  />
+                );
+              } else {
+                return null;
+              }
+            })
+          : null}
+        {/* Add layer for user annotations. */}
+        {entityCreationEnabled && entityCreationType !== null ? (
+          <EntityCreationCanvas
+            pageView={view}
+            pageNumber={pageNumber}
+            entityType={entityCreationType}
+            handleShowSnackbarMessage={this.props.handleShowSnackbarMessage}
+            handleCreateEntity={handleCreateEntity}
+          />
+        ) : null}
+      </>,
       this._element
     );
   }

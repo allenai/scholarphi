@@ -1,6 +1,6 @@
 import { BoundingBox } from "../types/api";
 import { PDFPageView } from "../types/pdfjs-viewer";
-import { getPageViewDimensions } from "../ui-utils";
+import { getPageViewDimensions } from "../utils/ui";
 
 /**
  * Get the 'left', 'top', 'width', and 'height' CSS parameters for a paper annotation from a
@@ -22,7 +22,7 @@ export function divDimensionStyles(
     left: box.left * pageDimensions.width * scaleCorrection,
     top: box.top * pageDimensions.height * scaleCorrection,
     width: box.width * pageDimensions.width * scaleCorrection,
-    height: box.height * pageDimensions.height * scaleCorrection
+    height: box.height * pageDimensions.height * scaleCorrection,
   };
 }
 

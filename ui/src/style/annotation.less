@@ -8,50 +8,71 @@
 /**
  * Enlarge the hitbox of an annotation
  */
-.scholar-reader-annotation-span:not(.user-annotation) {
+.scholar-reader-annotation-span {
   margin: -@highlight-hitbox-padding * 2/3 -@highlight-hitbox-padding;
   padding: @highlight-hitbox-padding * 2/3 @highlight-hitbox-padding;
 }
 
-.scholar-reader-annotation-span.active:not(.user-annotation) {
+/**
+ * Make annotations interactive
+ */
+.scholar-reader-annotation-span.active {
   /**
    * Provide an underline as a hint that the annotation is interactive 
    */
-  &.active.annotation-hint {
+  &.underline {
     border-bottom: @underline-width @underline-color dotted;
   }
+
   /**
    * Highlight the area of an annotation on hover
    */
-  &:hover,
-  &.selected,
-  &.annotation-selected {
+  &:hover {
     background: @highlight-hover-background;
     opacity: @highlight-hover-opacity;
     cursor: pointer;
   }
-  /**
-   * Highlight all matching symbols
-   */
-  &.highlight,
-  &.selected,
-  &.annotation-selected {
-    background-color: @highlight-color;
-    opacity: @highlight-opacity;
-  }
 
-  &.sentence-highlight {
-    background-color: rgba(255, 255, 0, 0.3);
+  /**
+   * Deepen the saturation of colors when the annotation is selected
+   */
+  &.selected {
+    &:not(.find-selection) {
+      background-color: @highlight-color;
+      opacity: @highlight-opacity;
+    }
   }
 }
 
 /**
- * Indicate inactive annotations with unclickable transparent bounding boxes.
+ * Highlight matches from search
+ */
+.scholar-reader-annotation-span {
+  &.find-match,
+  &.find-selection {
+    background-color: green;
+
+    &.find-match {
+      opacity: 0.2;
+    }
+
+    &.find-selection {
+      opacity: 0.4;
+    }
+  }
+}
+
+/**
+ * Make inactive annotations non-interactive
  */
 .scholar-reader-annotation-span.inactive {
-  background: none;
   pointer-events: none;
-  border: 1px dotted black;
+
+  .user-annotation {
+    background: none;
+    pointer-events: none;
+    border: 1px dotted black;
+  }
 }
 
 /**
@@ -59,4 +80,19 @@
  */
 .scholar-reader-annotation-span.source-other {
   background-color: rgba(255, 255, 0, 0.3);
+}
+
+/**
+ * Set z-index of annotation spans to minimize occlusion. For example, sentences annotations will
+ * often contain the full area of other annotations. To allow the other annotations to be
+ * clickable, show sentence annotations under other annotations.
+ */
+.scholar-reader-annotation-span {
+  &.sentence-annotation {
+    z-index: @base-annotation-z-index;
+  }
+
+  &:not(.sentence-annotation) {
+    z-index: @base-annotation-z-index + 1;
+  }
 }

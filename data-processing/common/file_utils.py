@@ -3,6 +3,7 @@ Utilities for reading and writing to files. Functions should be placed in here i
 used by multiple scripts or modules.
 """
 
+import ast
 import csv
 import dataclasses
 import logging
@@ -83,14 +84,22 @@ def append_to_csv(csv_path: Path, data_obj: Dataclass, encoding: str = "utf-8") 
         file_empty = True
 
     with open(csv_path, "a", encoding=encoding) as csv_file:
-        data_dict = dataclasses.asdict(data_obj)
-        writer = csv.DictWriter(
-            # QUOTE_NONNUMERIC is used in both the writer and the reader to ensure that numbers
-            # (e.g., indexes, hues, positions) are decoded as numbers.
-            csv_file,
-            fieldnames=data_dict.keys(),
-            quoting=csv.QUOTE_MINIMAL,
-        )
+        try:
+            data_dict = dataclasses.asdict(data_obj)
+        except RecursionError:
+            logging.warning(  # pylint: disable=logging-not-lazy
+                "Couldn't serialize data %s due to recursion error."
+                + "Make sure that there are no cyclic references in data",
+                data_obj,
+            )
+        else:
+            writer = csv.DictWriter(
+                # QUOTE_NONNUMERIC is used in both the writer and the reader to ensure that numbers
+                # (e.g., indexes, hues, positions) are decoded as numbers.
+                csv_file,
+                fieldnames=data_dict.keys(),
+                quoting=csv.QUOTE_MINIMAL,
+            )
 
         # Only write the header the first time a record is added to the file
         try:
@@ -125,7 +134,26 @@ def load_from_csv(
             invalid = False
             for field in dataclasses.fields(D):
                 try:
-                    data[field.name] = field.type(row[field.name])
+                    # Rules for reading Booleans. Support casting of '0' and '1' or the strings
+                    # 'True' and 'False'. 'True' and 'False' are the default output of CSV writer.
+                    if field.type == bool:
+                        data[field.name] = bool(ast.literal_eval(row[field.name]))
+                    # This one general case should handle ints, floats, and strings.
+                    else:
+                        data[field.name] = field.type(row[field.name])
+                # Parse other more complex data types like lists.
+                except TypeError as e:
+                    # XXX(andrewhead): It's not guaranteed that type-checks like this one will work
+                    # as the 'typing' library evolves. At the time of writing, it looked like calls
+                    # to the '__eq__' method of classes that extend GenericMeta (like List, Tuple)
+                    # should work (i.e., comparing a type with '=='). See:
+                    # https://github.com/python/typing/blob/c85016137eab6d0784b76252460235638087f468/src/typing.py#L1093-L1098
+                    # See also this test for equality in the Tuple class.
+                    # https://github.com/python/typing/blob/c85016137eab6d0784b76252460235638087f468/src/test_typing.py#L400
+                    # If at some point this comparison stops working, perhaps we can define a custom
+                    # type for types of interest (like StrList) and compare the ID of the newly defined type.
+                    if field.type == List[str]:
+                        data[field.name] = ast.literal_eval(row[field.name])
                 except ValueError as e:
                     logging.warning(  # pylint: disable=logging-not-lazy
                         "Could not read value '%s' for field '%s' of expected type %s from CSV. "
@@ -254,7 +282,9 @@ def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
     symbols_by_id: Dict[SymbolId, Symbol] = {}
     for s in loaded_symbols:
         symbol_id = SymbolId(s.tex_path, s.equation_index, s.symbol_index)
-        symbols_by_id[symbol_id] = Symbol(tokens=[], mathml=s.mathml, children=[])
+        symbols_by_id[symbol_id] = Symbol(
+            tokens=[], start=s.start, end=s.end, tex=s.tex, mathml=s.mathml, children=[]
+        )
 
     for t in loaded_symbol_tokens:
         symbol_id = SymbolId(t.tex_path, t.equation_index, t.symbol_index)

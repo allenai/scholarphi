@@ -1,94 +1,36 @@
 import * as Hapi from "@hapi/hapi";
 import * as Joi from "@hapi/joi";
-import * as nconf from "nconf";
-import { AnnotationData, Connection } from "./queries";
+import { Connection } from "./db-connection";
 import * as s2Api from "./s2-api";
-import * as validation from "./validation";
+import { EntityCreatePayload, EntityUpdatePayload, Paper } from "./types/api";
+import * as validation from "./types/validation";
 
 interface ApiOptions {
-  config: nconf.Provider;
+  connection: Connection;
 }
 
+/**
+ * For example usages of each route, see the unit tests.
+ */
 export const plugin = {
   name: "API",
-  version: "0.0.1",
-  register: async function(server: Hapi.Server, options: ApiOptions) {
-    const dbConnection = new Connection(options.config);
+  version: "0.0.2",
+  register: async function (server: Hapi.Server, options: ApiOptions) {
+    const { connection: dbConnection } = options;
 
     server.route({
       method: "GET",
-      path: "papers/{s2Id}/citations",
-      handler: request => {
-        const s2Id = request.params.s2Id;
-        return dbConnection.getCitationsForS2Id(s2Id);
+      path: "papers/list",
+      handler: async () => {
+        const papers = await dbConnection.getAllPapers();
+        return papers;
       },
-      options: {
-        validate: {
-          params: validation.s2Id
-        }
-      }
-    });
-
-    server.route({
-      method: "GET",
-      path: "papers/arxiv:{arxivId}/citations",
-      handler: request => {
-        const arxivId = request.params.arxivId;
-        return dbConnection.getCitationsForArxivId(arxivId);
-      },
-      options: {
-        validate: {
-          params: validation.arxivId
-        }
-      }
-    });
-
-    server.route({
-      method: "GET",
-      path: "papers/arxiv:{arxivId}/symbols",
-      handler: request => {
-        const arxivId = request.params.arxivId;
-        return dbConnection.getSymbolsForArxivId(arxivId);
-      },
-      options: {
-        validate: {
-          params: validation.arxivId
-        }
-      }
-    });
-
-    server.route({
-      method: "GET",
-      path: "papers/arxiv:{arxivId}/mathml",
-      handler: request => {
-        const arxivId = request.params.arxivId;
-        return dbConnection.getMathMlForArxivId(arxivId);
-      },
-      options: {
-        validate: {
-          params: validation.arxivId
-        }
-      }
-    });
-
-    server.route({
-      method: "GET",
-      path: "papers/arxiv:{arxivId}/sentences",
-      handler: request => {
-        const arxivId = request.params.arxivId;
-        return dbConnection.getSentencesForArxivId(arxivId);
-      },
-      options: {
-        validate: {
-          params: validation.arxivId
-        }
-      }
     });
 
     server.route({
       method: "GET",
       path: "papers",
-      handler: request => {
+      handler: async (request) => {
         let idString;
         if (typeof request.query.id === "string") {
           idString = request.query.id;
@@ -99,7 +41,15 @@ export const plugin = {
         const uniqueIds = ids.filter((id, index) => {
           return ids.indexOf(id) === index;
         });
-        return s2Api.getPapers(uniqueIds);
+        const data = (await s2Api.getPapers(uniqueIds))
+          .filter((paper) => paper !== undefined)
+          .map((paper) => paper as Paper)
+          .map((paper) => ({
+            id: paper.s2Id,
+            type: "paper",
+            attributes: paper,
+          }));
+        return { data };
       },
       options: {
         validate: {
@@ -110,125 +60,99 @@ export const plugin = {
              */
             id: Joi.string()
               .pattern(/^$|[a-f0-9]{40}(,[a-f0-9]{40}){0,199}/)
-              .required()
-          })
-        }
-      }
+              .required(),
+          }),
+        },
+      },
     });
 
     server.route({
       method: "GET",
-      path: "papers/arxiv:{arxivId}/annotations",
-      handler: request => {
-        const arxivId = request.params.arxivId;
-        return dbConnection.getAnnotationsForArxivId(arxivId);
+      path: "papers/{s2Id}/entities",
+      handler: (request) => {
+        const s2Id = request.params.s2Id;
+        return dbConnection.getEntitiesForPaper({ s2_id: s2Id });
       },
       options: {
         validate: {
-          params: validation.arxivId
-        }
-      }
+          params: validation.s2Id,
+        },
+      },
     });
 
-    /**
-     * Example usage:
-     * requests.post(
-     *   "http://localhost:3000/api/v0/papers/arxiv:1508.07252/annotations",
-     *   json={
-     *     "type": "symbol",
-     *     "page": 0,
-     *     "left": 10,
-     *     "top": 20,
-     *     "width": 100,
-     *     "height": 20
-     *   }
-     * )
-     */
     server.route({
-      method: "POST",
-      path: "papers/arxiv:{arxivId}/annotations",
-      handler: async (request, h) => {
+      method: "GET",
+      path: "papers/arxiv:{arxivId}/entities",
+      handler: async (request) => {
         const arxivId = request.params.arxivId;
-        const id = await dbConnection.postAnnotationForArxivId(
-          arxivId,
-          request.payload as AnnotationData
-        );
-        return h.response(id).code(201);
+        let res;
+        try {
+          res = await dbConnection.getEntitiesForPaper({ arxiv_id: arxivId });
+        } catch (e) {
+          console.log(e);
+        }
+        return { data: res };
       },
       options: {
         validate: {
           params: validation.arxivId,
-          payload: validation.annotation
-        }
-      }
+        },
+      },
     });
 
-    /**
-     * Example usage:
-     * requests.put(
-     *   "http://localhost:3000/api/v0/papers/arxiv:1508.07252/annotation/2",
-     *   json={
-     *     "type": "symbol",
-     *     "page": 0,
-     *     "left": 10,
-     *     "top": 20,
-     *     "width": 100,
-     *     "height": 20
-     *   }
-     * )
-     */
     server.route({
-      method: "PUT",
-      path: "papers/arxiv:{arxivId}/annotation/{id}",
+      method: "POST",
+      path: "papers/arxiv:{arxivId}/entities",
       handler: async (request, h) => {
-        const { arxivId, id } = request.params;
-        const annotation = await dbConnection.putAnnotation(
-          arxivId,
-          id,
-          request.payload as AnnotationData
+        const arxivId = request.params.arxivId;
+        const entity = await dbConnection.createEntity(
+          { arxiv_id: arxivId },
+          (request.payload as EntityCreatePayload).data
         );
-        return h.response(annotation).code(200);
+        return h.response({ data: entity }).code(201);
+      },
+      options: {
+        validate: {
+          params: validation.arxivId,
+          payload: validation.entityPost,
+        },
+      },
+    });
+
+    server.route({
+      method: "PATCH",
+      path: "papers/arxiv:{arxivId}/entities/{id}",
+      handler: async (request, h) => {
+        await dbConnection.updateEntity(
+          (request.payload as EntityUpdatePayload).data
+        );
+        return h.response({}).code(204);
       },
       options: {
         validate: {
           params: validation.arxivId.append({
-            id: Joi.string().required()
+            id: Joi.string().required(),
           }),
-          payload: validation.annotation
-        }
-      }
+          payload: validation.entityPatch,
+        },
+      },
     });
 
-    /**
-     * Example usage:
-     * requests.delete(
-     *   "http://localhost:3000/api/v0/papers/arxiv:1508.07252/annotation/2
-     * ")
-     */
     server.route({
       method: "DELETE",
-      path: "papers/arxiv:{arxivId}/annotation/{id}",
+      path: "papers/arxiv:{arxivId}/entities/{id}",
       handler: async (request, h) => {
-        const { arxivId, id } = request.params;
-        await dbConnection.deleteAnnotation(arxivId, id);
+        const { id } = request.params;
+        await dbConnection.deleteEntity(id);
         return h.response().code(204);
       },
       options: {
         validate: {
           params: validation.arxivId.append({
-            id: Joi.string().required()
-          })
-        }
-      }
+            id: Joi.string().required(),
+          }),
+        },
+      },
     });
-
-    server.route({
-      method: "GET",
-      path: "papers/list",
-      handler: async () => {
-        const papers = await dbConnection.getAllPapers();
-        return papers;
-      }
-    });
-  }
+  },
 };

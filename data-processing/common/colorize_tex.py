@@ -3,32 +3,15 @@ import logging
 import os
 import re
 from dataclasses import dataclass
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Iterator,
-    List,
-    NamedTuple,
-    Optional,
-    Sequence,
-    Set,
-    Tuple,
-)
+from typing import (Any, Callable, Dict, Iterator, List, NamedTuple, Optional,
+                    Sequence, Set, Tuple)
 
 import numpy as np
 
 from common.parse_tex import BeginDocumentExtractor, DocumentclassExtractor
-from common.types import (
-    CharacterRange,
-    ColorizedTokenWithOrigin,
-    EquationId,
-    FileContents,
-    Hue,
-    SerializableEntity,
-    SerializableToken,
-    TexFileName,
-)
+from common.types import (CharacterRange, ColorizedTokenWithOrigin, EquationId,
+                          FileContents, Hue, SerializableEntity,
+                          SerializableToken, TexFileName)
 
 """
 Most TeX coloring operations follow the same process.
