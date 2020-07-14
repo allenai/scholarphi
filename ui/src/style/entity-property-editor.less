@@ -88,3 +88,21 @@ p.entity-property-input-error {
   padding: @padding / 2;
   margin-bottom: @padding / 2;
 }
+
+/**
+ * "Preview" label in LaTeX preview.
+ */
+.latex-preview__container {
+  position: relative;
+  min-height: @small;
+
+  .latex-preview__preview-label {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    background-color: white;
+    border-radius: @border-radius;
+    font-size: @small;
+    color: @s2-text-light;
+  }
+}

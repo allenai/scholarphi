@@ -65,15 +65,16 @@ class LatexPreview extends React.PureComponent<Props> {
   render() {
     return (
       <Card className="latex-preview">
-        <div ref={(ref) => (this._latexContainer = ref)}>
-          <span>
-            <b>Preview</b>:&nbsp;
-          </span>
+        <div
+          className="latex-preview__container"
+          ref={(ref) => (this._latexContainer = ref)}
+        >
           {/*
            * LaTeX has to be in an element of its own for a change in the 'latex' prop to
            * trigger a re-rendering of the component.
            */}
           <span>{this.props.latex}</span>
+          <div className="latex-preview__preview-label">Preview</div>
         </div>
         <div
           /**

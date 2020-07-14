@@ -92,7 +92,7 @@ export class PageMask extends React.PureComponent<Props> {
           width={pageWidth}
           height={pageHeight}
           fill={"white"}
-          opacity={0.5}
+          opacity={0.4}
           mask={`url(#${maskId})`}
         />
         {/* Highlight the first sentence in the document where the symbol appears. */}

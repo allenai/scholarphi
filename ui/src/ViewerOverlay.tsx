@@ -219,6 +219,8 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
   }
 
   render() {
+    const { entityEditingEnabled } = this.props;
+
     const {
       symbol: definitionSymbol,
       definitionSentence,
@@ -227,7 +229,7 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
     /*
      * Show the definition preview if the definition is currently off-screen.
      */
-    let renderDefinitionPreview = false;
+    let isDefinitionOffscreen = false;
     if (definitionSymbol !== null) {
       if (
         definitionSentence !== null &&
@@ -235,19 +237,24 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
           definitionSentence.attributes.bounding_boxes
         )
       ) {
-        renderDefinitionPreview = true;
+        isDefinitionOffscreen = true;
       } else if (
         !this.areBoundingBoxesVisible(
           definitionSymbol.attributes.bounding_boxes
         )
       ) {
-        renderDefinitionPreview = true;
+        isDefinitionOffscreen = true;
       }
     }
 
     return (
+      /*
+       * Hide most assistive overlay widgets during entity editing to reduce clutter.
+       */
       <>
-        {this.props.isFindActive && this.props.findActivationTimeMs !== null ? (
+        {!entityEditingEnabled &&
+        this.props.isFindActive &&
+        this.props.findActivationTimeMs !== null ? (
           <FindBar
             /*
              * Set the key for the widget to the time that the find event was activated
@@ -285,7 +292,8 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
           handleUpdateEntity={this.props.handleUpdateEntity}
           handleDeleteEntity={this.props.handleDeleteEntity}
         />
-        {renderDefinitionPreview &&
+        {!entityEditingEnabled &&
+        isDefinitionOffscreen &&
         this.props.pdfDocument !== null &&
         definitionSymbol !== null ? (
           <DefinitionPreview

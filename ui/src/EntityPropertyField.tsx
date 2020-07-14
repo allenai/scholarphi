@@ -121,8 +121,8 @@ class EntityPropertyField extends React.PureComponent<Props> {
               placeholder="NULL"
               fullWidth={true}
               multiline={multiline}
-              rows={multiline ? 2 : 1}
-              rowsMax={multiline ? 3 : 1}
+              rows={multiline ? 1 : 1}
+              rowsMax={multiline ? 4 : 1}
               onChange={this.onFieldChanged}
             />
             {is_latex ? (
@@ -173,8 +173,8 @@ class EntityPropertyField extends React.PureComponent<Props> {
                       value={v || ""}
                       placeholder={"NULL"}
                       multiline={multiline}
-                      rows={multiline ? 2 : 1}
-                      rowsMax={multiline ? 3 : 1}
+                      rows={multiline ? 1 : 1}
+                      rowsMax={multiline ? 4 : 1}
                       onChange={this.onFieldChanged}
                     />
                     <IconButton
