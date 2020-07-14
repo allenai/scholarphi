@@ -279,6 +279,11 @@ describe("API", () => {
             "<math><mi>x</mi></math>",
             "<math><mi>y</mi></math>",
           ],
+          name: null,
+          tex: null,
+          definition: null,
+          equation: null,
+          passages: [],
         },
         relationships: {
           sentence: { type: "sentence", id: "3" },
