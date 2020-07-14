@@ -19,15 +19,11 @@ export class SymbolPropertiesTooltipBody extends React.PureComponent<Props> {
         </div>
         <div className="tooltip-body__section">
           <b>Definition</b>:{" "}
-          {definition !== null ? (
-            <LatexPreview latex={definition} />
-          ) : (
-            "<Definition>"
-          )}
+          {definition !== null ? <LatexPreview latex={definition} /> : "(none)"}
         </div>
         <div className="tooltip-body__section">
           <b>Equation</b>:{" "}
-          {equation !== null ? <LatexPreview latex={equation} /> : "<Equation>"}
+          {equation !== null ? <LatexPreview latex={equation} /> : "(none)"}
         </div>
         <div className="tooltip-body__section">
           <b>Related passages</b>: {passages.length === 0 ? "(none yet)" : ""}

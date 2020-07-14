@@ -65,6 +65,13 @@
     padding-left: @tooltip-padding;
     padding-right: @tooltip-padding;
   }
+
+  /*
+   * Inset nested list elements
+   */
+  .tooltip-body {
+    list-style-position: inside;
+  }
 }
 
 /**
@@ -89,4 +96,19 @@
   font-size: @medium;
   line-height: @medium * @line-height-ratio;
   font-weight: lighter;
+
+  /*
+   * List element styling
+   */
+
+  li {
+    margin-bottom: @medium * 0.5;
+
+    /*
+     * Show display equations inline
+     */
+    .katex-display {
+      margin: unset;
+    }
+  }
 }
