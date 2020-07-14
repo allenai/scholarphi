@@ -12,9 +12,11 @@ interface Props {
   active: boolean;
   selected: boolean;
   selectedSpanId: string | null;
-  handleSelect: (id: string) => void;
-  handleSelectSpan: (id: string) => void;
-  handleSelectEntity: (id: string) => void;
+  handleSelect: (
+    sentenceId: string,
+    annotationId: string,
+    annotationSpanId: string
+  ) => void;
   handleShowSnackbarMessage: (message: string) => void;
 }
 
@@ -22,7 +24,7 @@ export class SentenceAnnotation extends React.PureComponent<Props, {}> {
   constructor(props: Props) {
     super(props);
     this.onClick = this.onClick.bind(this);
-    this.onSelected = this.onSelected.bind(this);
+    this.handleSelect = this.handleSelect.bind(this);
   }
 
   onClick(e: React.MouseEvent<HTMLDivElement>) {
@@ -42,8 +44,8 @@ export class SentenceAnnotation extends React.PureComponent<Props, {}> {
     }
   }
 
-  onSelected() {
-    this.props.handleSelectEntity(this.props.sentence.id);
+  handleSelect(annotationId: string, spanId: string) {
+    this.props.handleSelect(this.props.sentence.id, annotationId, spanId);
   }
 
   render() {
@@ -63,9 +65,7 @@ export class SentenceAnnotation extends React.PureComponent<Props, {}> {
          * interactable (i.e., hoverable, clickable).
          */
         underline={false}
-        handleSelectAnnotation={this.props.handleSelect}
-        handleSelectAnnotationSpan={this.props.handleSelectSpan}
-        onSelected={this.onSelected}
+        handleSelect={this.handleSelect}
         onClick={this.onClick}
       />
     );

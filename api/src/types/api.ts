@@ -168,6 +168,11 @@ export interface Symbol extends BaseEntity {
 }
 
 export interface SymbolAttributes extends BaseEntityAttributes {
+  tex: string | null;
+  name: string | null;
+  definition: string | null;
+  equation: string | null;
+  passages: string[];
   mathml: string | null;
   mathml_near_matches: string[];
 }

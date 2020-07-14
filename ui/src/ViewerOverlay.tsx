@@ -157,7 +157,7 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
     definitionSymbol = entities.byId[firstMatchingSymbolId] as Symbol;
 
     const sentenceId = definitionSymbol.relationships.sentence.id;
-    if (sentenceId !== null && entities.byId[sentenceId] !== null) {
+    if (sentenceId !== null && entities.byId[sentenceId] !== undefined) {
       const sentence = entities.byId[sentenceId];
       if (isSentence(sentence)) {
         definitionSentence = sentence;

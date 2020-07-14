@@ -12,19 +12,21 @@ interface Props {
   active: boolean;
   selected: boolean;
   selectedSpanId: string | null;
-  handleSelect: (id: string) => void;
-  handleSelectSpan: (id: string) => void;
-  handleSelectEntity: (id: string) => void;
+  handleSelect: (
+    termId: string,
+    annotationId: string,
+    annotationSpanId: string
+  ) => void;
 }
 
 export class TermAnnotation extends React.PureComponent<Props, {}> {
   constructor(props: Props) {
     super(props);
-    this.onSelected = this.onSelected.bind(this);
+    this.handleSelect = this.handleSelect.bind(this);
   }
 
-  onSelected() {
-    this.props.handleSelectEntity(this.props.term.id);
+  handleSelect(annotationId: string, spanId: string) {
+    this.props.handleSelect(this.props.term.id, annotationId, spanId);
   }
 
   render() {
@@ -39,9 +41,7 @@ export class TermAnnotation extends React.PureComponent<Props, {}> {
         boundingBoxes={this.props.boundingBoxes}
         source={this.props.term.attributes.source}
         tooltipContent={<TermTooltipBody term={this.props.term} />}
-        handleSelectAnnotation={this.props.handleSelect}
-        handleSelectAnnotationSpan={this.props.handleSelectSpan}
-        onSelected={this.onSelected}
+        handleSelect={this.handleSelect}
       />
     );
   }

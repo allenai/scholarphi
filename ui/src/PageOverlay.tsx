@@ -41,9 +41,11 @@ interface Props {
   entityCreationEnabled: boolean;
   entityCreationType: KnownEntityType | null;
   entityEditingEnabled: boolean;
-  handleSelectEntity: (id: string) => void;
-  handleSelectAnnotation: (id: string) => void;
-  handleSelectAnnotationSpan: (id: string) => void;
+  handleSelectEntityAnnotation: (
+    entityId: string,
+    annotationId: string,
+    spanId: string
+  ) => void;
   handleShowSnackbarMessage: (message: string) => void;
   handleStartSymbolSearch: (id: string) => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
@@ -105,8 +107,6 @@ class PageOverlay extends React.PureComponent<Props, {}> {
       entityEditingEnabled,
       handleAddPaperToLibrary,
       handleStartSymbolSearch,
-      handleSelectAnnotation,
-      handleSelectAnnotationSpan,
       handleCreateEntity,
     } = this.props;
 
@@ -144,9 +144,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     selectedSpanId={
                       isSelected ? selectedAnnotationSpanId : null
                     }
-                    handleSelect={handleSelectAnnotation}
-                    handleSelectSpan={handleSelectAnnotationSpan}
-                    handleSelectEntity={this.props.handleSelectEntity}
+                    handleSelect={this.props.handleSelectEntityAnnotation}
                   />
                 );
               }
@@ -170,9 +168,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                       isSelected ? selectedAnnotationSpanId : null
                     }
                     openedPaperId={paperId}
-                    handleSelect={handleSelectAnnotation}
-                    handleSelectSpan={handleSelectAnnotationSpan}
-                    handleSelectEntity={this.props.handleSelectEntity}
+                    handleSelect={this.props.handleSelectEntityAnnotation}
                     handleAddPaperToLibrary={handleAddPaperToLibrary}
                   />
                 );
@@ -201,9 +197,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     isFindSelection={findSelectionEntityId === entityId}
                     isFindMatch={isFindMatch}
                     symbol={entity}
-                    handleSelect={handleSelectAnnotation}
-                    handleSelectAnnotationSpan={handleSelectAnnotationSpan}
-                    handleSelectEntity={this.props.handleSelectEntity}
+                    handleSelect={this.props.handleSelectEntityAnnotation}
                     handleStartSymbolSearch={handleStartSymbolSearch}
                   />
                 );
@@ -220,9 +214,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     selectedSpanId={
                       isSelected ? selectedAnnotationSpanId : null
                     }
-                    handleSelect={handleSelectAnnotation}
-                    handleSelectSpan={handleSelectAnnotationSpan}
-                    handleSelectEntity={this.props.handleSelectEntity}
+                    handleSelect={this.props.handleSelectEntityAnnotation}
                     handleShowSnackbarMessage={
                       this.props.handleShowSnackbarMessage
                     }

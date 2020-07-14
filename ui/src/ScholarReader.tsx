@@ -74,8 +74,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.addToLibrary = this.addToLibrary.bind(this);
 
     this.selectEntity = this.selectEntity.bind(this);
-    this.selectAnnotion = this.selectAnnotion.bind(this);
-    this.selectAnnotationSpan = this.selectAnnotationSpan.bind(this);
+    this.selectEntityAnnotation = this.selectEntityAnnotation.bind(this);
     this.deselectSelection = this.deselectSelection.bind(this);
 
     this.hideAnnotations = this.hideAnnotations.bind(this);
@@ -116,12 +115,55 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.setState({ selectedEntityId: id });
   }
 
-  selectAnnotion(id: string | null) {
-    this.setState({ selectedAnnotationId: id });
-  }
+  selectEntityAnnotation(
+    entityId: string | null,
+    annotationId: string | null,
+    annotationSpanId: string | null
+  ) {
+    if (this.state.entities === null) {
+      return;
+    }
 
-  selectAnnotationSpan(id: string | null) {
-    this.setState({ selectedAnnotationSpanId: id });
+    if (
+      entityId === null ||
+      this.state.entities.byId[entityId].type !== "symbol"
+    ) {
+      this.setState({
+        selectedEntityId: entityId,
+        selectedAnnotationId: annotationId,
+        selectedAnnotationSpanId: annotationSpanId,
+      });
+      return;
+    }
+
+    /*
+     * If this is a symbol, start a search for symbols.
+     */
+    const matching = matchingSymbols(entityId, this.state.entities);
+    const matchCount = matching.length;
+    const matchIndex = matching.indexOf(entityId);
+    this.setState({
+      selectedEntityId: entityId,
+      selectedAnnotationId: annotationId,
+      selectedAnnotationSpanId: annotationSpanId,
+      isFindActive: true,
+      findMode: "symbol",
+      findActivationTimeMs: Date.now(),
+      findQuery: {
+        byId: {
+          "exact-match": {
+            key: "exact-match",
+          },
+          "partial-match": {
+            key: "partial-match",
+          },
+        },
+        all: ["exact-match", "partial-match"],
+      },
+      findMatchCount: matchCount,
+      findMatchIndex: matchIndex,
+      findMatchedEntities: matching,
+    });
   }
 
   deselectSelection() {
@@ -338,35 +380,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     });
   }
 
-  startSymbolSearch(symbolId: string) {
-    if (this.state.entities === null) {
-      return;
-    }
-
-    const matching = matchingSymbols(symbolId, this.state.entities);
-    const matchCount = matching.length;
-    const matchIndex = matching.indexOf(symbolId);
-
-    this.setState({
-      isFindActive: true,
-      findMode: "symbol",
-      findActivationTimeMs: Date.now(),
-      findQuery: {
-        byId: {
-          "exact-match": {
-            key: "exact-match",
-          },
-          "partial-match": {
-            key: "partial-match",
-          },
-        },
-        all: ["exact-match", "partial-match"],
-      },
-      findMatchCount: matchCount,
-      findMatchIndex: matchIndex,
-      findMatchedEntities: matching,
-    });
-  }
+  startSymbolSearch(symbolId: string) {}
 
   setFindMatchCount(findMatchCount: number | null) {
     this.setState({ findMatchCount });
@@ -633,9 +647,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                   entityCreationEnabled={this.state.entityCreationEnabled}
                   entityCreationType={this.state.entityCreationType}
                   entityEditingEnabled={this.state.entityEditingEnabled}
-                  handleSelectEntity={this.selectEntity}
-                  handleSelectAnnotation={this.selectAnnotion}
-                  handleSelectAnnotationSpan={this.selectAnnotationSpan}
+                  handleSelectEntityAnnotation={this.selectEntityAnnotation}
                   handleShowSnackbarMessage={this.showSnackbarMessage}
                   handleStartSymbolSearch={this.startSymbolSearch}
                   handleAddPaperToLibrary={this.addToLibrary}

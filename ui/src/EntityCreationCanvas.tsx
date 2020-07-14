@@ -126,6 +126,11 @@ function createCreateEntityDataFromSelection(
     data.attributes = {
       ...data.attributes,
       mathml: null,
+      tex: null,
+      name: null,
+      definition: null,
+      equation: null,
+      passages: [],
       mathml_near_matches: [],
     } as Omit<SymbolAttributes, "version">;
     data.relationships = {

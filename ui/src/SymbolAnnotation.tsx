@@ -13,21 +13,22 @@ interface Props {
   selectedSpanId: string | null;
   isFindMatch?: boolean;
   isFindSelection?: boolean;
-  handleSelectEntity: (id: string) => void;
+  handleSelect: (
+    symbolId: string,
+    annotationId: string,
+    annotationSpanId: string
+  ) => void;
   handleStartSymbolSearch: (id: string) => void;
-  handleSelect: (id: string) => void;
-  handleSelectAnnotationSpan: (id: string) => void;
 }
 
 export class SymbolAnnotation extends React.PureComponent<Props> {
   constructor(props: Props) {
     super(props);
-    this.onSelected = this.onSelected.bind(this);
+    this.handleSelect = this.handleSelect.bind(this);
   }
 
-  onSelected() {
-    this.props.handleSelectEntity(this.props.symbol.id);
-    this.props.handleStartSymbolSearch(this.props.symbol.id);
+  handleSelect(annotationId: string, spanId: string) {
+    this.props.handleSelect(this.props.symbol.id, annotationId, spanId);
   }
 
   render() {
@@ -44,9 +45,7 @@ export class SymbolAnnotation extends React.PureComponent<Props> {
         isFindSelection={this.props.isFindSelection}
         tooltipContent={null}
         source={this.props.symbol.attributes.source}
-        handleSelectAnnotation={this.props.handleSelect}
-        handleSelectAnnotationSpan={this.props.handleSelectAnnotationSpan}
-        onSelected={this.onSelected}
+        handleSelect={this.handleSelect}
       />
     );
   }
