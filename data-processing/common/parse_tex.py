@@ -31,38 +31,6 @@ Default number of characters to include in the context to either side of an enti
 entity's 'context_tex' attribute.
 """
 
-
-# These are 'reserved characters' by the pysbd module and can potentially
-# cause issues if they are present in a string. This list was compiled from the
-# psybd source code as of 3/23/20. locations:
-# ∯: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/abbreviation_replacer.py, https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/lists_item_replacer.py
-# ȸ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/processor.py
-# ♨: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/lists_item_replacer.py
-# ☝: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/lists_item_replacer.py
-# ✂: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/lists_item_replacer.py
-# ⎋: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
-# ᓰ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
-# ᓱ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
-# ᓳ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
-# ᓴ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/processor.py, https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
-# ᓷ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/cleaner.py, https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
-# ᓸ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/processor.py, https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
-PYSBD_RESERVED_CHARACTERS: List[str] = [
-    "∯",
-    "ȸ",
-    "♨",
-    "☝",
-    "✂",
-    "⎋",
-    "ᓰ",
-    "ᓱ",
-    "ᓳ",
-    "ᓴ",
-    "ᓷ",
-    "ᓸ",
-]
-
-
 class EntityExtractor(ABC):
     """
     Interface for a class that extracts entities from TeX. Implement this interface when you
@@ -648,7 +616,38 @@ def parse_soup(tex: str) -> TexSoup:
     except (TypeError, EOFError) as e:
         raise TexSoupParseError(str(e))
 
-def reserved_char_check(tex):
+
+# These are 'reserved characters' by the pysbd module and can potentially
+# cause issues if they are present in a string. This list was compiled from the
+# psybd source code as of 3/23/20. locations:
+# ∯: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/abbreviation_replacer.py, https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/lists_item_replacer.py
+# ȸ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/processor.py
+# ♨: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/lists_item_replacer.py
+# ☝: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/lists_item_replacer.py
+# ✂: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/lists_item_replacer.py
+# ⎋: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
+# ᓰ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
+# ᓱ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
+# ᓳ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
+# ᓴ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/processor.py, https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
+# ᓷ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/cleaner.py, https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
+# ᓸ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/processor.py, https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
+PYSBD_RESERVED_CHARACTERS: List[str] = [
+    "∯",
+    "ȸ",
+    "♨",
+    "☝",
+    "✂",
+    "⎋",
+    "ᓰ",
+    "ᓱ",
+    "ᓳ",
+    "ᓴ",
+    "ᓷ",
+    "ᓸ",
+]
+
+def check_for_reserved_characters(tex):
     for reserved_char in PYSBD_RESERVED_CHARACTERS:
         if reserved_char in tex:
             logging.warning(

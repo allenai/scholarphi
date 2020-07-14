@@ -3,7 +3,7 @@ from typing import Iterator, List
 
 import pysbd
 
-from common.parse_tex import DEFAULT_CONTEXT_SIZE, EntityExtractor, reserved_char_check, plaintext_and_offset
+from common.parse_tex import DEFAULT_CONTEXT_SIZE, EntityExtractor, check_for_reserved_characters, plaintext_and_offset
 
 from .types import Sentence
 
@@ -46,7 +46,7 @@ class SentenceExtractor(EntityExtractor):
     """
 
     def parse(self, tex_path: str, tex: str) -> Iterator[Sentence]:
-        reserved_char_check(tex)
+        check_for_reserved_characters(tex)
         plaintext, plaintext_to_tex_offset_map = plaintext_and_offset(tex_path, tex)
 
         # Segment the plaintext. Return offsets for each setence relative to the TeX input

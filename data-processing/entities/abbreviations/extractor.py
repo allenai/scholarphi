@@ -3,7 +3,7 @@ from typing import Iterator, List
 
 import pysbd
 
-from common.parse_tex import DEFAULT_CONTEXT_SIZE, EntityExtractor, reserved_char_check, plaintext_and_offset
+from common.parse_tex import DEFAULT_CONTEXT_SIZE, EntityExtractor, check_for_reserved_characters, plaintext_and_offset
 
 from .types import Abbreviation
 
@@ -16,13 +16,13 @@ NON_ACRONYM_CHARACTERS = ["%", "^", "{", "}", "[", "]", "\\", "=", "#", "&", "~"
 
 class AbbreviationExtractor(EntityExtractor):
     """
-    Extract plaintext sentences from TeX, with offsets of the characters they correspond to in
-    the input TeX strings. The extracted sentences might include some junk TeX, having the same
-    limitations as the plaintext produced by PlaintextExtractor.
+    Extracts the plaintext from TeX with the PlaintextExtractor then passes this through the scispacy
+    abbreviation detection and expansion pipeline. Parse yields all the abbreviations and their corresponding
+    expansions in the text.
     """
 
     def parse(self, tex_path: str, tex: str) -> Iterator[Abbreviation]:
-        reserved_char_check(tex)
+        check_for_reserved_characters(tex)
         plaintext, plaintext_to_tex_offset_map = plaintext_and_offset(tex_path, tex)
 
         # This is the most basic model and had no real performance difference on our inputs,
