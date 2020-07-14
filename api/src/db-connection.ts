@@ -386,17 +386,17 @@ export class Connection {
       }
       for (const v of values) {
         let item_type: EntityDataRowType | undefined = undefined;
-        if (typeof value === "number") {
+        if (typeof v === "number") {
           /**
            * This check for whether a number is an integer is based on the polyfill from MDN:
            * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger#Polyfill
            */
-          if (isFinite(value) && Math.floor(value) === value) {
+          if (isFinite(v) && Math.floor(v) === v) {
             item_type = "integer";
           } else {
             item_type = "float";
           }
-        } else if (typeof value === "string") {
+        } else if (typeof v === "string") {
           item_type = "string";
         }
         if (item_type !== undefined) {
