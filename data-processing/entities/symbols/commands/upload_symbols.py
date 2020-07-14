@@ -142,7 +142,7 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
                 continue
 
             data: EntityData = {
-                "tex": symbol.tex,
+                "tex": f"${symbol.tex}$",
                 "tex_start": symbol.start,
                 "tex_end": symbol.end,
                 "mathml": symbol.mathml,

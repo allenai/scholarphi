@@ -4,7 +4,7 @@ import os.path
 import subprocess
 from argparse import ArgumentParser
 from dataclasses import dataclass
-from typing import Iterator, List, Optional
+from typing import Iterator, List, Optional, Tuple
 
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
@@ -180,9 +180,35 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                     continue
 
                 # Collect extra information about the symbol.
-                relative_start = min([t.start for t in symbol.tokens])
-                relative_end = max([t.end for t in symbol.tokens])
-                symbol_tex = result.equation[relative_start:relative_end]
+                def get_tex(s: Node, equation: str) -> Tuple[str, int, int]:
+                    """
+                    Extract approximate TeX for the symbol. It's estimated to be the span of TeX
+                    that covers all of the tokens, including extra curly braces needed to close
+                    opened curly braces (which often aren't included in the token start and end
+                    character indexes).
+                    """
+                    start = min([t.start for t in s.tokens])
+                    end = max([t.end for t in s.tokens])
+
+                    # Adjust the end position to after curly braces are closed.
+                    open_brace_count = 0
+                    for i, c in enumerate(equation[start:], start=start):
+                        open_brace_count = (
+                            open_brace_count + 1
+                            if c == "{"
+                            else open_brace_count - 1
+                            if c == "}" and open_brace_count > 0
+                            else open_brace_count
+                        )
+                        if i >= end and open_brace_count == 0:
+                            end = i + 1
+                            break
+
+                    return (equation[start:end], start, end)
+
+                symbol_tex, relative_start, relative_end = get_tex(
+                    symbol, result.equation
+                )
                 start = result.equation_start + relative_start
                 end = result.equation_start + relative_end
 
