@@ -6,8 +6,15 @@ def token_id(token_index: int) -> TokenId:
     return TokenId("tex-path", 0, token_index)
 
 
-def symbol(tokens):
-    return Symbol(tokens=tokens, mathml="<mathml>", children=[])
+def symbol(tokens, start=-1, end=-1):
+    return Symbol(
+        tex="<symbol-tex>",
+        tokens=tokens,
+        mathml="<mathml>",
+        children=[],
+        start=start,
+        end=end,
+    )
 
 
 def symbol_id():
