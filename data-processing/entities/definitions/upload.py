@@ -23,7 +23,7 @@ def upload_definitions(
 
         entity_info = EntityInformation(
             id_=f"{definition.tex_path}-{definition.id_}",
-            type_="termdefinition",
+            type_="definition",
             bounding_boxes=boxes,
             data={
                 "name": definition.term_text,
