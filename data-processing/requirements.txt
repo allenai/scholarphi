@@ -18,6 +18,10 @@ https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.2.4/en_core_sci_s
 
 # dependencies related to  nlp model in entities/definitions
 transformers==2.11.0
+wandb==0.9.1
+pytorch-crf==0.7.2
+coloredlogs==10.0
+torch==1.4.0
 spacy==2.2.4
 scispacy==0.2.4
 tqdm==4.28.0
