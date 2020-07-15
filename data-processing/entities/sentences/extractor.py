@@ -1,10 +1,16 @@
 import logging
-import regex
-from typing import Iterator, List, Dict
+import re
+from typing import Dict, Iterator, List
 
 import pysbd
+import regex
 
-from common.parse_tex import DEFAULT_CONTEXT_SIZE, EntityExtractor, check_for_reserved_characters, plaintext_and_offset
+from common.parse_tex import (
+    DEFAULT_CONTEXT_SIZE,
+    EntityExtractor,
+    PlaintextExtractor,
+    check_for_reserved_characters,
+)
 
 from .types import Sentence
 
@@ -94,9 +100,15 @@ def check_sentence_or_not(tex: str, tex_unit_dict: Dict[str, List[str]]) -> bool
         return False
     # check whether tex is caption in figure/table or not. currently, we remove all text including captions in figure/table
     # TODO @dykang later, distinguish lines in table and lines in captions
-    if "is_sentence_in_figure" in tex_unit_dict and tex_unit_dict["is_sentence_in_figure"]:
+    if (
+        "is_sentence_in_figure" in tex_unit_dict
+        and tex_unit_dict["is_sentence_in_figure"]
+    ):
         return False
-    if "is_sentence_in_table" in tex_unit_dict and tex_unit_dict["is_sentence_in_table"]:
+    if (
+        "is_sentence_in_table" in tex_unit_dict
+        and tex_unit_dict["is_sentence_in_table"]
+    ):
         return False
     # if "is_iffalse" in tex_unit_dict and tex_unit_dict["is_iffalse"]:
     #     return False
@@ -119,19 +131,20 @@ def check_sentence_or_not(tex: str, tex_unit_dict: Dict[str, List[str]]) -> bool
 
     return True
 
+
 # begin{center}, end{center}
 # begin{definition}, end{definition}
 # begin{example}
 
 #     # check whether tex has incomplete nesting structure or not
-    # # There are some cases that the previous section/figure/table filters do not cover. For instance, some lines in section declaration have very noisy lines like "Introduction}" or "-9pt}". Those cases can be simply filtered by checking their nesting structures.
-    # nesting_characters_in_tex = []
-    # for c in tex:
-        # if c in list(NESTING_CHARACTERS_MAPPING.keys()) + list(
-            # NESTING_CHARACTERS_MAPPING.values()
-        # ):
-            # nesting_characters_in_tex.append(c)
-    # return check_nesting_structure(nesting_characters_in_tex)
+# # There are some cases that the previous section/figure/table filters do not cover. For instance, some lines in section declaration have very noisy lines like "Introduction}" or "-9pt}". Those cases can be simply filtered by checking their nesting structures.
+# nesting_characters_in_tex = []
+# for c in tex:
+# if c in list(NESTING_CHARACTERS_MAPPING.keys()) + list(
+# NESTING_CHARACTERS_MAPPING.values()
+# ):
+# nesting_characters_in_tex.append(c)
+# return check_nesting_structure(nesting_characters_in_tex)
 
 
 def extract_richer_tex(context_tex: str, tex: str) -> str:
@@ -164,7 +177,47 @@ class SentenceExtractor(EntityExtractor):
 
     def parse(self, tex_path: str, tex: str) -> Iterator[Sentence]:
         check_for_reserved_characters(tex)
-        plaintext, plaintext_to_tex_offset_map = plaintext_and_offset(tex_path, tex)
+
+        # Extract plaintext segments from TeX
+        plaintext_extractor = PlaintextExtractor()
+        plaintext_segments = plaintext_extractor.parse(tex_path, tex)
+
+        # Build a map from character offsets in the plaintext to TeX offsets. This will let us
+        # map from the character offsets of the sentences returned from the sentence boundary
+        # detector back to positions in the original TeX.
+        plaintext_to_tex_offset_map = {}
+        plaintext = ""
+        last_segment = None
+        for segment in plaintext_segments:
+
+            # Andrew's changes start here
+            segment_text = segment.text
+            math_patterns = list(re.finditer(r"\[\[math\]\]", segment.text))
+            for patt_index in range(len(math_patterns) - 1, -1, -1):
+                patt = math_patterns[patt_index]
+                equation = segment.equations[patt_index]
+                segment_text = (
+                    segment_text[: patt.start()]
+                    + f"[[math:id-{equation.id_}:{equation.content_tex}]]"
+                    + segment_text[patt.end() :]
+                )
+
+            for i in range(len(segment_text)):
+                tex_offset = (
+                    (segment.tex_start + i)
+                    if not segment.transformed
+                    else segment.tex_start
+                )
+                plaintext_to_tex_offset_map[len(plaintext) + i] = tex_offset
+
+            # While building the map, also create a contiguous plaintext string
+            plaintext += segment_text
+            last_segment = segment
+
+        print("Plaintext:", plaintext)
+
+        if last_segment is not None:
+            plaintext_to_tex_offset_map[len(plaintext)] = last_segment.tex_end
 
         # Segment the plaintext. Return offsets for each setence relative to the TeX input
         segmenter = pysbd.Segmenter(language="en", clean=False)
@@ -173,7 +226,11 @@ class SentenceExtractor(EntityExtractor):
 
         current_section = ""
         # is_iffalse = False
-        is_sentence_in_table, is_sentence_in_figure, is_sentence_in_itemize = False, False, False
+        is_sentence_in_table, is_sentence_in_figure, is_sentence_in_itemize = (
+            False,
+            False,
+            False,
+        )
         for i, sentence in enumerate(segmenter.segment(plaintext)):
             # The pysbd module has several open bugs and issues which are addressed below.
             # As of 3/23/20 we know the module will fail in the following ways:
@@ -251,10 +308,10 @@ class SentenceExtractor(EntityExtractor):
                     PATTERN_ITEMIZE_END, extended_tex_sub
                 )
                 # tex_unit_dict["iffalse_begin"] = regex.findall(
-                    # PATTERN_IFFALSE_BEGIN, extended_tex_sub
+                # PATTERN_IFFALSE_BEGIN, extended_tex_sub
                 # )
                 # tex_unit_dict["iffalse_end"] = regex.findall(
-                    # PATTERN_IFFALSE_END, extended_tex_sub
+                # PATTERN_IFFALSE_END, extended_tex_sub
                 # )
                 tex_unit_dict["ref"] = regex.findall(PATTERN_REF, extended_tex_sub)
                 tex_unit_dict["cite"] = regex.findall(PATTERN_CITE, extended_tex_sub)
@@ -287,12 +344,12 @@ class SentenceExtractor(EntityExtractor):
                 if len(tex_unit_dict["abstract_end"]) > 0:
                     current_section = None
                 # if len(tex_unit_dict["iffalse_end"]) > 0:
-                    # is_iffalse = False
+                # is_iffalse = False
                 # if len(tex_unit_dict["iffalse_begin"]) > 0:
                 #     is_iffalse = True
 
                 # if '\\fi' in extended_tex_sub:
-                    # print(extended_tex_sub)
+                # print(extended_tex_sub)
                 #     from pdb import set_trace; set_trace()
 
                 if len(tex_unit_dict["section"]) > 0:
@@ -313,7 +370,6 @@ class SentenceExtractor(EntityExtractor):
                     is_sentence_in_itemize = True
                 if len(tex_unit_dict["itemize_end"]) > 0:
                     is_sentence_in_itemize = False
-
 
             # decide whether current line is in section/figure/table
             if current_section:
@@ -351,7 +407,6 @@ class SentenceExtractor(EntityExtractor):
                     url_text = extract_text_from_tex_group(url)
                     replace_patterns.append((url_text, "URL"))
 
-
                 # replace_patterns from space tokenizer. Current version relies on patterns like \ref{{fig,tab,sec,eq}:XXX} in distinguishing reference types. Also, I keep the token ahead of the reference, although they somewhat duplicate (e.g., Table \reftab:xxx} -> Table TABLE)
                 for reference in tex_unit_dict["ref"]:
                     reference_text = extract_text_from_tex_group(reference)
@@ -385,7 +440,9 @@ class SentenceExtractor(EntityExtractor):
                 # is_iffalse=tex_unit_dict.get("is_iffalse", False),
                 is_sentence_in_figure=tex_unit_dict.get("is_sentence_in_figure", False),
                 is_sentence_in_table=tex_unit_dict.get("is_sentence_in_table", False),
-                is_sentence_in_itemize=tex_unit_dict.get("is_sentence_in_itemize", False),
+                is_sentence_in_itemize=tex_unit_dict.get(
+                    "is_sentence_in_itemize", False
+                ),
                 label=tex_unit_dict.get("label", []),
                 ref=tex_unit_dict.get("ref", []),
                 cite=tex_unit_dict.get("cite", []),
