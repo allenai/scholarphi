@@ -318,6 +318,9 @@ class PlaintextSegment:
     tex_end: int
     " Offset after the last character in the TeX that corresponds to this plaintext. "
 
+    equations: List[Equation]
+    " A list of equations corresponding with one for each [[math]] tag in 'text'. "
+
 
 class PlaintextExtractor:
     """
@@ -371,7 +374,8 @@ class PlaintextExtractor:
         # step, while preserving the equations' character offsets in the TeX.
         tex_without_math = tex
         equation_extractor = EquationExtractor()
-        for equation in equation_extractor.parse(tex_path, tex):
+        equations = list(equation_extractor.parse(tex_path, tex))
+        for equation in equations:
             tex_without_math = (
                 tex_without_math[: equation.start]
                 + "█" * (equation.end - equation.start)
@@ -394,11 +398,18 @@ class PlaintextExtractor:
                 transformed = True
                 text = self.REPLACE_PATTERNS[match.pattern]
 
+            tex_start = match.start
+            tex_end = match.end
+            segment_equations = list(
+                filter(lambda e: e.start >= tex_start and e.end <= tex_end, equations)
+            )
+
             yield PlaintextSegment(
                 text=text,
                 transformed=transformed,
                 tex_start=match.start,
                 tex_end=match.end,
+                equations=segment_equations,
             )
 
 

@@ -1,3 +1,5 @@
+import re
+
 from common.parse_tex import (
     BeginDocumentExtractor,
     BibitemExtractor,
@@ -27,6 +29,26 @@ def test_extract_plaintext_with_newlines():
         plaintext
         == "This sentence is followed by a newline.\nThis is the second sentence."
     )
+
+
+def test_extract_plaintext_with_equations():
+    extractor = PlaintextExtractor()
+    plaintext_segments = list(
+        extractor.parse(
+            "main.tex", "This sentence includes a symbol $x$ and equation $$y = x$$."
+        )
+    )
+
+    expected_equations = [
+        {"start": 32, "content_tex": "x"},
+        {"start": 49, "content_tex": "y = x"},
+    ]
+    for segment in plaintext_segments:
+        equations = segment.equations
+        for i, _ in enumerate(re.findall("\[\[math\]\]", segment.text)):
+            expected_equation = expected_equations.pop(0)
+            assert equations[i].start == expected_equation["start"]
+            assert equations[i].content_tex == expected_equation["content_tex"]
 
 
 def test_extract_sentences():
