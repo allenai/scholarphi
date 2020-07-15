@@ -15,28 +15,38 @@ from common.commands.detect_entities import make_detect_entities_command
 from common.commands.base import Command, CommandList
 from common.commands.upload_entities import make_upload_entities_command
 
+from common.commands.compile_tex import make_compile_tex_command
+from common.commands.diff_images import make_diff_images_command
+from common.commands.locate_hues import make_locate_hues_command
+from common.commands.raster_pages import make_raster_pages_command
+from common.commands.colorize_tex import make_colorize_tex_command
+
 
 # Register directories for output from intermediate pipeline stages.
 #directories.register("sentences-for-definitions")
 directories.register("detected-definitions")
-commands: CommandList = [
-    DetectDefinitions,
-]
-# make_find_entity_sentences_command("definitions"),
+directories.register("sources-with-colorized-definitions")
+directories.register("compiled-sources-with-colorized-definitions")
+directories.register("paper-with-colorized-definitions-images")
+directories.register("diff-images-with-colorized-definitions")
+directories.register("hue-locations-for-definitions")
+
+
 upload_command = make_upload_entities_command(
     "definitions", upload_definitions, DetectedEntityType=Definition
 )
-commands.append(upload_command)
-
-# commands = create_entity_localization_command_sequence(
-        # "definitions",
-        # DetectDefinitions,
-        # DetectedEntityType=Definition,
-        # #get_color_positions=get_term_color_positions,
-        # upload_func=upload_definitions,
-# )
 
 
+commands: CommandList = [
+    DetectDefinitions,
+    # import these...
+    make_colorize_tex_command("definitions"),
+    make_compile_tex_command("definitions"),
+    make_raster_pages_command("definitions"),
+    make_diff_images_command("definitions"),
+    make_locate_hues_command("definitions"),
+    upload_command
+]
 
 
 definitions_pipeline = EntityPipeline("definitions", commands)
