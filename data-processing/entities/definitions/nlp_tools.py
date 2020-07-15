@@ -18,7 +18,6 @@ from transformers import HfArgumentParser, AutoConfig, AutoTokenizer, CONFIG_MAP
 from .nlp_model.model import JointRoberta
 from .nlp_model.trainer import Trainer
 from .nlp_model.utils import (
-    init_logger,
     read_prediction_text,
     set_seed,
     get_intent_labels,
@@ -103,9 +102,8 @@ class DefinitionModel:
                 "--use_entity",
                 "--use_acronym",
                 "--per_device_eval_batch_size",
-                "4",
-                "--max_seq_len",
-                "80",
+                "16",
+                "--max_seq_len", "80",
             ]
         )
 
