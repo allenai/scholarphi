@@ -345,6 +345,8 @@ if __name__ == "__main__":
     elif s3_job_spec and (s3_job_spec.one_entity_at_a_time is not None):
         one_entity_at_a_time = s3_job_spec.one_entity_at_a_time
 
+    print("One entity at a time?", one_entity_at_a_time)
+
     logging.debug("Assembling the list of commands to be run.")
     command_classes = PIPELINE_COMMANDS
 
