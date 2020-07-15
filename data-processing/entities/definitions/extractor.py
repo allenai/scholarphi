@@ -23,7 +23,7 @@ class DetectDefinitionsTask:
 
 
 @dataclass(frozen=True)
-class DefinitionSentencePair:
+class TermDefinitionSentencePair:
     id_: int
     start: int
     end: int
@@ -53,6 +53,51 @@ class DefinitionSentencePair:
     definition_type: str
 
 
+@dataclass(frozen=True)
+class TermSentencePair:
+    id_: int
+    start: int
+    end: int
+    tex_path: str
+    tex: str
+    context_tex: str
+    sentence_index: str
+    text: str
+
+    # whether to include a definition or not
+    intent: bool
+    # term related attributes
+    term_index: int
+    term_start: int
+    term_end: int
+    term_text: str
+    # term_confidence: float
+    term_type: str
+
+
+@dataclass(frozen=True)
+class DefinitionSentencePair:
+    id_: int
+    start: int
+    end: int
+    tex_path: str
+    tex: str
+    context_tex: str
+    sentence_index: str
+    text: str
+
+    # whether to include a definition or not
+    intent: bool
+    # definition related attributes
+    definition_index: int
+    definition_start: int
+    definition_end: int
+    definition_text: str
+    # definition_confidence: float
+    definition_type: str
+
+
+
 # keep this for future
 # @dataclass(frozen=True)
 # class TokenId:
@@ -60,13 +105,22 @@ class DefinitionSentencePair:
 # equation_index: int
 #     token_index: int
 
+#TODO separate csv files for terms and definitions
+#TODO aggregation over terms/definitions (e.g., coreference links)
 
-def create_index_list(text: str, tokens: List[str]) -> List[Tuple[int, int]]:
+#TODO update docker file for dependencies
+#TODO add model location in README.md and config.ini
+
+
+
+def find_start_end_indexes_for_tokens_in_text(text: str, tokens: List[str]) -> List[Tuple[int, int]]:
+    """
+        Extract start and end charcter positions for each token in featurized tokens
+    """
     indexes = []
     current_position = 0
     for token in tokens:
         start_index = text[current_position:].index(token)
-        # assert text[current_position+start_index:current_position+start_index+len(token)] != token:
         indexes.append(
             (
                 current_position + start_index,
@@ -77,25 +131,25 @@ def create_index_list(text: str, tokens: List[str]) -> List[Tuple[int, int]]:
     return indexes
 
 
-def process_term_definition_slot(
+def mapping_slots_with_text(
     text: str,
     featurized_text: Dict[Any,Any],
     slot_preds: List[str],
     verbose: bool = False,
 ) -> List[Dict[Any,Any]]:
     # make index function to original text for each token of featurized text
-    indexes = create_index_list(text, featurized_text["tokens"])
+    indexes = find_start_end_indexes_for_tokens_in_text(text, featurized_text["tokens"])
 
     # extract multiple terms or definitions
     terms, definitions = [], []
     term, definition = [], []
-    for index, (slot, token, index_pair) in enumerate(
+    for index, (slot, token, start_end_index_pair) in enumerate(
         zip(slot_preds, featurized_text["tokens"], indexes)
     ):
         if slot == "TERM":
-            term.append((index_pair, token))
+            term.append(start_end_index_pair)
         if slot == "DEF":
-            definition.append((index_pair, token))
+            definition.append(start_end_index_pair)
         if slot == "O":
             if len(term) > 0:
                 terms.append(term)
@@ -103,71 +157,72 @@ def process_term_definition_slot(
                 definitions.append(definition)
             term, definition = [], []
 
-    # currently, match pairs of term and definitions sequentially
-    # TODO need a better way of mapping multi-term/definitions pairs
+    # Currently, match pairs of term and definitions sequentially ( O T O O D then (T, D))
+    # TODO need to handle multi-term/definitions pairs
     # TODO add confidence scores for term/definition predictions
     # TODO add type classifier for term/definition
-    num_pair = min(len(terms), len(definitions))
+    num_term_definition_pair = min(len(terms), len(definitions))
     slot_dict_list = []
-    for td_pair in range(num_pair):
+    for td_pair in range(num_term_definition_pair):
         if verbose:
-            print(featurized_text["tokens"])
-            print(text)
-            print(slot_preds)
-            print("{} out of {}".format(td_pair, num_pair))
+            logging.info(featurized_text["tokens"])
+            logging.info(text)
+            logging.info(slot_preds)
+            logging.info("{} out of {}".format(td_pair, num_term_definition_pair))
 
-        term_list = [t[1] for t in terms[td_pair]]
-        term_index_list = [t[0] for t in terms[td_pair]]
-        definition_list = [t[1] for t in definitions[td_pair]]
-        definition_index_list = [t[0] for t in definitions[td_pair]]
+        term_index_list = [t for t in terms[td_pair]]
+        definition_index_list = [t for t in definitions[td_pair]]
 
+        # TermDefinition case
         slot_dict = {}
         slot_dict["term_start"] = min([idx[0] for idx in term_index_list])
-        slot_dict["term_end"] = max([idx[1] for idx in term_index_list])
+        slot_dict["term_end"] = max([idx[1] for idx in term_index_list]) + 1
         slot_dict["term_text"] = text[
-            slot_dict["term_start"] : slot_dict["term_end"] + 1
-        ]
+            slot_dict["term_start"] : slot_dict["term_end"]  ]
         slot_dict["term_type"] = None
-        # slot_dict['term_confidence'] = None
+        # slot_dict['term_confidence'] = 0.0
+
         slot_dict["definition_start"] = min([idx[0] for idx in definition_index_list])
-        slot_dict["definition_end"] = max([idx[1] for idx in definition_index_list])
+        slot_dict["definition_end"] = max([idx[1] for idx in definition_index_list]) + 1
         slot_dict["definition_text"] = text[
-            slot_dict["definition_start"] : slot_dict["definition_end"] + 1
-        ]
+            slot_dict["definition_start"] : slot_dict["definition_end"]  ]
         slot_dict["definition_type"] = None
-        # slot_dict['definition_confidence'] = None
+        # slot_dict['definition_confidence'] = 0.0
 
         slot_dict_list.append(slot_dict)
 
+        # # Term and Definition case
+        # term_dict = {}
+        # term_dict["term_start"] = min([idx[0] for idx in term_index_list])
+        # slot_dict["term_end"] = max([idx[1] for idx in term_index_list])
+        # slot_dict["term_text"] = text[
+            # slot_dict["term_start"] : slot_dict["term_end"] + 1 ]
+        # slot_dict["term_type"] = None
+        # slot_dict['term_confidence'] = 0.0
+
+
+        #TODO save term_dict and definition_dict  separately in term_dict_list definition_dict_list
+        #TODO how to store their mappings?
+
         if verbose:
-            print(text[slot_dict["term_start"] : slot_dict["term_end"] + 1])
-            print(text[slot_dict["definition_start"] : slot_dict["definition_end"] + 1])
+            logging.info(text[slot_dict["term_start"] : slot_dict["term_end"] + 1])
+            logging.info(text[slot_dict["definition_start"] : slot_dict["definition_end"] + 1])
             for k, v in slot_dict.items():
-                print("\t{}\t{}".format(k, v))
+                logging.info("\t{}\t{}".format(k, v))
 
     return slot_dict_list
 
 
-class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, DefinitionSentencePair]):
+class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, TermDefinitionSentencePair]):
     """
     Extract definition sentences from Sentence using the pre-trained definition extraction model.
-    Takes as input the sentences
     Basic steps:
         - load cleaned sentences from detected-sentences
         - extract features from each sentence (aka featurization)
-        - load the pre-trained nlp model, load the faetures, and predict term:definition tokens
-        - store detected term:definition pairs in TermDefinition.csv
-    Alternative logics for saving:
-        - (1) (*current version) TermDefinition.csv
-            jRange for Term/Definition
-        - (2) Term.csv, Term_entities.csv, Definition.csv
-            Each term: in multiple places in multiple defniitions
-            Terms.csv - listing of term id and term plaintext
-            Term_entities.csv - ID of term, chac position,
-            Definitions.csv - start/end position, Term ID.
-        - (3) Term_entities.csv, Def_entities.csv
-            Term_entities.csv -  ID, multiple rows for the same word ID
-            Def_entities.csv -  ID for Term,
+        - load the pre-trained nlp model, load the faetures, and predict intent and term:definition slots
+            - intent: whether a sentence includes a definition or not
+            - slots: tag for each token (TERM, DEFINITION, neither)
+        - save detected terms in terms.csv and detected definitions definitions.csv
     """
 
     @staticmethod
@@ -210,7 +265,7 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, DefinitionSente
 
     def process(
         self, item: DetectDefinitionsTask, verbose: bool = False
-    ) -> Iterator[DefinitionSentencePair]:
+    ) -> Iterator[TermDefinitionSentencePair]:
         sentences_ordered = sorted(item.sentences, key=lambda s: s.start)
         num_sentences = len(sentences_ordered)
         sentences_ordered_iterator = iter(sentences_ordered)
@@ -225,16 +280,15 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, DefinitionSente
             return
 
 
-        # Show the number of sentences extracted and definitions predicted
-
-        # load pre-trained DefinitoinModel
+        # load pre-trained definition extraction model
         nlp_model = DefinitionModel()
 
-
-        # start term/definition inference for each sentence
+        # infer terms and definitions for each sentence using the pre-trained definition extraction model
         definitions = []
-        term_index_count, definition_index_count = 0, 0
-        batch_size = 8
+        termdefinition_index_count = 0
+        term_index_count = 0
+        definition_index_count = 0
+        batch_size = 8 #TODO make this as an argument
         features = []
         sentences = []
         with tqdm(total=num_sentences) as sentence_iter:
@@ -250,50 +304,33 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, DefinitionSente
                 features.append(featurized_text)
                 sentences.append(sentence_obj)
 
-
-                if len(features) >= batch_size or sid >= num_sentences-1:
-                    #TODO FIXME missing the current feature/sentence
-
-                    # # predict terms and definitions from the featurized text
-                    # intent_pred, slot_preds = nlp_model.predict_one(featurized_text)
-
+                if len(features) >= batch_size or sid == num_sentences-1:
                     # predict terms and definitions from the featurized text
-                    intent_pred, slot_preds = nlp_model.predict_batch(features)
+                    intent_pred_list, slot_preds_list = nlp_model.predict_batch(features)
 
-                    for sentence, feature, intent_pred_first, slot_preds_first in zip(sentences, features, intent_pred, slot_preds):
-                        # # TODO add batch processing for speed-up
-                        # intent_pred_first = intent_pred[0]
-                        # slot_preds_first = slot_preds[0]
-
+                    for sentence, feature, intent_pred, slot_preds in zip(sentences, features, intent_pred_list, slot_preds_list):
                         # intent prediction whether the sentence includes a definition or not
-                        intent = True if intent_pred_first == 1 else False
-
+                        intent = True if intent_pred == 1 else False
 
                         # we only care when predicted slots include both 'TERM' and 'DEFINITION', otherwise ignore
-                        if "TERM" not in slot_preds_first and "DEF" not in slot_preds_first:
+                        if "TERM" not in slot_preds and "DEF" not in slot_preds:
                             continue
 
-                        slot_dict_list = process_term_definition_slot(
-                            sentence.text, feature, slot_preds_first, verbose=False
+                        slot_dict_list = mapping_slots_with_text(
+                            sentence.text, feature, slot_preds, verbose=False
                         )
 
                         if verbose:
-                            print(sentence.is_sentence)
-                            print(sentence.text)
+                            logging.info('is_sentence={}, text={}'.format(sentence.is_sentence, sentence.text))
                             for k, v in feature.items():
-                                print(k, v)
-                            print(intent_pred_first)
-                            print(slot_preds_first)
-                            print()
-                            #TODO replace print with logging
-                            # logging.warning()
-
-
+                                logging.info('{}\t{}'.format(k,v))
+                            logging.info(intent_pred)
+                            logging.info(slot_preds)
 
 
                         for slot_dict in slot_dict_list:
-                            definitions.append( DefinitionSentencePair(
-                                id_=sid,
+                            definitions.append( TermDefinitionSentencePair(
+                                id_=termdefinition_index_count,
                                 start=sentence.start,
                                 end=sentence.end,
                                 tex_path=sentence.tex_path,
@@ -301,6 +338,9 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, DefinitionSente
                                 text=sentence.text,
                                 tex=sentence.tex,
                                 context_tex=sentence.context_tex,
+                                #TODO logging conflict issue
+                                #TODO plus start_end for {term,definition}_{start,end}
+                                #TODO use gpu/cpu
 
                                 intent=intent,
                                 term_index=term_index_count,
@@ -315,21 +355,26 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, DefinitionSente
                                 definition_type=slot_dict.get("definition_type", None),
                             ))
 
+                            termdefinition_index_count += 1
                             term_index_count += 1
                             definition_index_count += 1
 
                     features = []
                     sentences = []
 
-
         logging.info('Total number of definitions {} out of {} sentences'.format(
             len(definitions), num_sentences))
 
+
+        # aggregate similar terms and assign group IDs for semanticaly similar terms
+
+
+        # yielding the output definition
         for definition in definitions:
             yield definition
 
 
-    def save(self, item: DetectDefinitionsTask, result: DefinitionSentencePair) -> None:
+    def save(self, item: DetectDefinitionsTask, result: TermDefinitionSentencePair) -> None:
         output_dir = directories.arxiv_subdir("detected-definitions", item.arxiv_id)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
@@ -337,7 +382,7 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, DefinitionSente
 
         file_utils.append_to_csv(
             entity_sentences_path,
-            DefinitionSentencePair(
+            TermDefinitionSentencePair(
                 result.id_,
                 result.start,
                 result.end,
