@@ -165,10 +165,10 @@ def mapping_slots_with_text(
     slot_dict_list = []
     for td_pair in range(num_term_definition_pair):
         if verbose:
-            logging.info(featurized_text["tokens"])
-            logging.info(text)
-            logging.info(slot_preds)
-            logging.info("{} out of {}".format(td_pair, num_term_definition_pair))
+            logging.debug(featurized_text["tokens"])
+            logging.debug(text)
+            logging.debug(slot_preds)
+            logging.debug("{} out of {}".format(td_pair, num_term_definition_pair))
 
         term_index_list = [t for t in terms[td_pair]]
         definition_index_list = [t for t in definitions[td_pair]]
@@ -205,10 +205,10 @@ def mapping_slots_with_text(
         #TODO how to store their mappings?
 
         if verbose:
-            logging.info(text[slot_dict["term_start"] : slot_dict["term_end"] + 1])
-            logging.info(text[slot_dict["definition_start"] : slot_dict["definition_end"] + 1])
+            logging.debug(text[slot_dict["term_start"] : slot_dict["term_end"] + 1])
+            logging.debug(text[slot_dict["definition_start"] : slot_dict["definition_end"] + 1])
             for k, v in slot_dict.items():
-                logging.info("\t{}\t{}".format(k, v))
+                logging.debug("\t{}\t{}".format(k, v))
 
     return slot_dict_list
 
@@ -219,7 +219,7 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, TermDefinitionS
     Basic steps:
         - load cleaned sentences from detected-sentences
         - extract features from each sentence (aka featurization)
-        - load the pre-trained nlp model, load the faetures, and predict intent and term:definition slots
+        - load the pre-trained nlp model, load the features, and predict intent and term:definition slots
             - intent: whether a sentence includes a definition or not
             - slots: tag for each token (TERM, DEFINITION, neither)
         - save detected terms in terms.csv and detected definitions definitions.csv
@@ -320,17 +320,17 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, TermDefinitionS
                             sentence.text, feature, slot_preds, verbose=False
                         )
 
-                        if verbose:
-                            logging.info('is_sentence={}, text={}'.format(sentence.is_sentence, sentence.text))
-                            for k, v in feature.items():
-                                logging.info('{}\t{}'.format(k,v))
-                            logging.info(intent_pred)
-                            logging.info(slot_preds)
+                        logging.debug('is_sentence={}, text={}'.format(sentence.is_sentence, sentence.text))
+                        for k, v in feature.items():
+                            logging.debug('{}\t{}'.format(k,v))
+                        logging.debug(intent_pred)
+                        logging.debug(slot_preds)
 
 
                         for slot_dict in slot_dict_list:
                             definitions.append( TermDefinitionSentencePair(
                                 id_=termdefinition_index_count,
+
                                 start=sentence.start,
                                 end=sentence.end,
                                 tex_path=sentence.tex_path,
@@ -339,18 +339,17 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, TermDefinitionS
                                 tex=sentence.tex,
                                 context_tex=sentence.context_tex,
                                 #TODO logging conflict issue
-                                #TODO plus start_end for {term,definition}_{start,end}
                                 #TODO use gpu/cpu
 
                                 intent=intent,
                                 term_index=term_index_count,
-                                term_start=slot_dict.get("term_start", None),
-                                term_end=slot_dict.get("term_end", None),
+                                term_start=slot_dict.get("term_start", None) + sentence.start,
+                                term_end=slot_dict.get("term_end", None) + sentence.start,
                                 term_text=slot_dict.get("term_text", None),
                                 term_type=slot_dict.get("term_type", None),
                                 definition_index=definition_index_count,
-                                definition_start=slot_dict.get("definition_start", None),
-                                definition_end=slot_dict.get("definition_end", None),
+                                definition_start=slot_dict.get("definition_start", None) + sentence.start,
+                                definition_end=slot_dict.get("definition_end", None) + sentence.start,
                                 definition_text=slot_dict.get("definition_text", None),
                                 definition_type=slot_dict.get("definition_type", None),
                             ))

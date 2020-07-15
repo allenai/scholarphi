@@ -42,14 +42,6 @@ def get_pos_labels(args: Any) -> List[str]:
     ]
 
 
-def init_logger() -> None:
-    logging.basicConfig(
-        format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
-        datefmt="%m/%d/%Y %H:%M:%S",
-        level=logging.INFO,
-    )
-
-
 def info(logger: logging.Logger, training_args: Any) -> None:
     logger.info(
         "Process rank: %s, device: %s, n_gpu: %s, distributed training: %s, 16-bits training: %s",
