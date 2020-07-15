@@ -2,7 +2,7 @@ import logging
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Dict, Iterator, List, Optional, Set, Union
+from typing import Dict, Iterator, List, Optional, Set, Tuple, Union
 
 from TexSoup import RArg, TexNode, TexSoup, TokenWithPosition
 
@@ -30,6 +30,7 @@ DEFAULT_CONTEXT_SIZE = 20
 Default number of characters to include in the context to either side of an entity in that
 entity's 'context_tex' attribute.
 """
+
 
 class EntityExtractor(ABC):
     """
@@ -647,7 +648,8 @@ PYSBD_RESERVED_CHARACTERS: List[str] = [
     "ᓸ",
 ]
 
-def check_for_reserved_characters(tex):
+
+def check_for_reserved_characters(tex: str) -> None:
     for reserved_char in PYSBD_RESERVED_CHARACTERS:
         if reserved_char in tex:
             logging.warning(
@@ -655,7 +657,8 @@ def check_for_reserved_characters(tex):
                 reserved_char,
             )
 
-def plaintext_and_offset(tex_path, tex):
+
+def plaintext_and_offset(tex_path: str, tex: str) -> Tuple[str, Dict[int, int]]:
     # Extract plaintext segments from TeX
     plaintext_extractor = PlaintextExtractor()
     plaintext_segments = plaintext_extractor.parse(tex_path, tex)
@@ -683,7 +686,6 @@ def plaintext_and_offset(tex_path, tex):
         plaintext_to_tex_offset_map[len(plaintext)] = last_segment.tex_end
 
     return plaintext, plaintext_to_tex_offset_map
-
 
 
 class TexSoupParseError(Exception):
