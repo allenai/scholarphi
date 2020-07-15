@@ -2,10 +2,18 @@ import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
 import DefinitionPreview from "./DefinitionPreview";
 import Drawer, { DrawerMode } from "./Drawer";
+import EntityCreationToolbar from "./EntityCreationToolbar";
 import FindBar, { FindMode, FindQuery } from "./FindBar";
 import * as selectors from "./selectors";
 import { divDimensionStyles, matchingSymbols } from "./selectors";
-import { Entities, Pages, PaperId, Papers, UserLibrary } from "./state";
+import {
+  Entities,
+  KnownEntityType,
+  Pages,
+  PaperId,
+  Papers,
+  UserLibrary,
+} from "./state";
 import {
   BoundingBox,
   EntityUpdateData,
@@ -26,6 +34,8 @@ interface Props {
   entities: Entities | null;
   userLibrary: UserLibrary | null;
   selectedEntityId: string | null;
+  entityCreationEnabled: boolean;
+  entityCreationType: KnownEntityType | null;
   entityEditingEnabled: boolean;
   isFindActive: boolean;
   findActivationTimeMs: number | null;
@@ -219,7 +229,11 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { entityEditingEnabled } = this.props;
+    const {
+      entityCreationEnabled,
+      entityCreationType,
+      entityEditingEnabled,
+    } = this.props;
 
     const {
       symbol: definitionSymbol,
@@ -252,29 +266,38 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
        * Hide most assistive overlay widgets during entity editing to reduce clutter.
        */
       <>
-        {!entityEditingEnabled &&
-        this.props.isFindActive &&
-        this.props.findActivationTimeMs !== null ? (
-          <FindBar
-            /*
-             * Set the key for the widget to the time that the find event was activated
-             * (i.e., when 'Ctrl+F' was typed). This regenerates the widgets whenever
-             * a new 'find' action is started, which will select and focus the text
-             * in the search widget. See why we use key to regenerate component here:
-             * https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html#recommendation-fully-uncontrolled-component-with-a-key
-             */
-            key={this.props.findActivationTimeMs}
-            matchCount={this.props.findMatchCount}
-            matchIndex={this.props.findMatchIndex}
-            mode={this.props.findMode}
-            pdfViewerApplication={this.props.pdfViewerApplication}
-            query={this.props.findQuery}
-            handleChangeMatchCount={this.props.handleChangeMatchCount}
-            handleChangeMatchIndex={this.props.handleChangeMatchIndex}
-            handleChangeQuery={this.props.handleChangeQuery}
-            handleClose={this.props.handleCloseFindBar}
-          />
-        ) : null}
+        <div className="scholar-reader-toolbar-container">
+          {!entityEditingEnabled &&
+          this.props.isFindActive &&
+          this.props.findActivationTimeMs !== null ? (
+            <FindBar
+              /*
+               * Set the key for the widget to the time that the find event was activated
+               * (i.e., when 'Ctrl+F' was typed). This regenerates the widgets whenever
+               * a new 'find' action is started, which will select and focus the text
+               * in the search widget. See why we use key to regenerate component here:
+               * https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html#recommendation-fully-uncontrolled-component-with-a-key
+               */
+              key={this.props.findActivationTimeMs}
+              matchCount={this.props.findMatchCount}
+              matchIndex={this.props.findMatchIndex}
+              mode={this.props.findMode}
+              pdfViewerApplication={this.props.pdfViewerApplication}
+              query={this.props.findQuery}
+              handleChangeMatchCount={this.props.handleChangeMatchCount}
+              handleChangeMatchIndex={this.props.handleChangeMatchIndex}
+              handleChangeQuery={this.props.handleChangeQuery}
+              handleClose={this.props.handleCloseFindBar}
+            />
+          ) : null}
+          {entityCreationEnabled ? (
+            <EntityCreationToolbar
+              entityType={entityCreationType}
+              handleSelectEntityType={() => {}}
+            />
+          ) : null}
+        </div>
+
         <Drawer
           paperId={this.props.paperId}
           pdfViewer={this.props.pdfViewer}

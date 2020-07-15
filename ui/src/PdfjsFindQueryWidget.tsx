@@ -1,3 +1,4 @@
+import TextField from "@material-ui/core/TextField";
 import React from "react";
 import {
   EventBus,
@@ -42,18 +43,25 @@ export class PdfjsFindQueryWidget extends React.PureComponent<Props> {
 
     pdfViewerApplication.externalServices = {
       ...pdfViewerApplication.externalServices,
-      updateFindControlState: ({ result }) => {
+      updateFindControlState: ({
+        result,
+        matchesCount: { current, total },
+      }) => {
         this.pdfjsFindControllerState = result;
         if (result === PdfJsFindControllerState.NOT_FOUND) {
           this.props.onMatchCountChanged(0);
           this.props.onMatchIndexChanged(0);
-        }
-      },
-      updateFindMatchesCount: ({ current, total }) => {
-        if (this.pdfjsFindControllerState === PdfJsFindControllerState.FOUND) {
+        } else if (
+          result === PdfJsFindControllerState.WRAPPED ||
+          result === PdfJsFindControllerState.FOUND
+        ) {
           this.props.onMatchCountChanged(total);
           this.props.onMatchIndexChanged(current - 1);
         }
+      },
+      updateFindMatchesCount: ({ current, total }) => {
+        this.props.onMatchCountChanged(total);
+        this.props.onMatchIndexChanged(current - 1);
       },
       supportsIntegratedFind: true,
     };
@@ -140,9 +148,9 @@ export class PdfjsFindQueryWidget extends React.PureComponent<Props> {
 
   render() {
     return (
-      <input
+      <TextField
         className="find-bar__query"
-        ref={(ref) => {
+        inputRef={(ref) => {
           this.inputElement = ref;
         }}
         onInput={this.onInputChange}

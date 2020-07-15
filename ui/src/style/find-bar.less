@@ -1,16 +1,11 @@
 /**
- * Border
- */
-.find-bar {
-  border: @border;
-  border-radius: @border-radius;
-}
-
-/**
  * Find-bar is opaque
  */
 .find-bar {
   background-color: @white;
+  /* 
+   * Annotation markers should be hidden behind the find bar
+   */
   z-index: @base-annotation-z-index + 1;
 }
 
@@ -18,13 +13,18 @@
  * Layout of find-bar widgets
  */
 .find-bar {
-  padding: 0 @padding;
+  padding: (@padding / 2) @padding;
 
   & > * {
     display: inline-block;
     & + * {
-      padding-left: @padding;
+      padding-left: @padding !important;
     }
+  }
+
+  &__progress,
+  &__message__span {
+    vertical-align: middle;
   }
 }
 
@@ -33,6 +33,10 @@
  */
 .find-bar {
   color: @s2-text-default;
+
+  &__message__span {
+    font-size: @medium;
+  }
 }
 
 /**

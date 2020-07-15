@@ -595,6 +595,8 @@ class ScholarReader extends React.PureComponent<Props, State> {
               entities={this.state.entities}
               userLibrary={this.state.userLibrary}
               selectedEntityId={this.state.selectedEntityId}
+              entityCreationEnabled={this.state.entityCreationEnabled}
+              entityCreationType={this.state.entityCreationType}
               entityEditingEnabled={this.state.entityEditingEnabled}
               isFindActive={this.state.isFindActive}
               findActivationTimeMs={this.state.findActivationTimeMs}

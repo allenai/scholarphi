@@ -1,11 +1,14 @@
 /**
- * Find bar position
+ * Position of container of toolbars
  */
-.find-bar {
+.scholar-reader-toolbar-container {
   position: absolute;
   top: @pdfjs-toolbarViewer-height + 10;
   left: @padding * 2;
-  z-index: @pdfjs-sidebarContainer-z-index + 1;
+  z-index: max(
+    @pdfjs-sidebarContainer-z-index + 1,
+    @base-annotation-z-index + 1
+  );
 }
 
 /**

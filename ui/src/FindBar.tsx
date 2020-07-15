@@ -1,10 +1,10 @@
+import Card from "@material-ui/core/Card";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import React from "react";
-import ReactDOM from "react-dom";
 import { PdfjsFindQueryWidget } from "./PdfjsFindQueryWidget";
 import { SymbolFilters } from "./state";
 import { SymbolFindQueryWidget } from "./SymbolFindQueryWidget";
@@ -116,7 +116,6 @@ class FindBar extends React.PureComponent<Props> {
   }
 
   render() {
-    const elFindBarContainer = document.getElementById("mainContainer");
     const {
       matchCount,
       matchIndex,
@@ -125,9 +124,9 @@ class FindBar extends React.PureComponent<Props> {
       query,
     } = this.props;
 
-    if (elFindBarContainer && mode !== null) {
-      return ReactDOM.createPortal(
-        <div className="find-bar">
+    if (mode !== null) {
+      return (
+        <Card className="find-bar" raised={true}>
           <div className="find-bar__query">
             {
               /* Custom find widgets, depending on the type of search being performed. */
@@ -167,12 +166,14 @@ class FindBar extends React.PureComponent<Props> {
             <IconButton
               disabled={matchCount === null || matchCount === 0}
               onClick={this.onClickPrevious}
+              size="small"
             >
               <NavigateBeforeIcon />
             </IconButton>
             <IconButton
               disabled={matchCount === null || matchCount === 0}
               onClick={this.onClickNext}
+              size="small"
             >
               <NavigateNextIcon />
             </IconButton>
@@ -183,16 +184,18 @@ class FindBar extends React.PureComponent<Props> {
                 {matchCount !== null && matchIndex !== null ? (
                   this.createMatchCountMessage()
                 ) : (
-                  <CircularProgress size={"1rem"} />
+                  <CircularProgress
+                    className="find-bar__progress"
+                    size={"1rem"}
+                  />
                 )}
               </span>
             </div>
           ) : null}
-          <IconButton onClick={this.close}>
+          <IconButton onClick={this.close} size="small">
             <CloseIcon />
           </IconButton>
-        </div>,
-        elFindBarContainer
+        </Card>
       );
     }
   }
