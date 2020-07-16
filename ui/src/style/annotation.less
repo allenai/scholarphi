@@ -48,17 +48,14 @@
  * Highlight matches from search
  */
 .scholar-reader-annotation-span {
-  &.find-match,
+  &.find-match {
+    background-color: green;
+    opacity: 0.2;
+  }
+
   &.find-selection {
     background-color: green;
-
-    &.find-match {
-      opacity: 0.2;
-    }
-
-    &.find-selection {
-      opacity: 0.4;
-    }
+    opacity: 0.4;
   }
 }
 
@@ -94,5 +91,29 @@
 
   &:not(.sentence-annotation) {
     z-index: @base-annotation-z-index + 1;
+  }
+}
+
+/**
+ * Symbol annotations
+ */
+.symbol-annotation {
+  &.selected {
+    background: none !important;
+    border: 4px solid slategray;
+  }
+
+  &.child-of-selection {
+    background-color: @highlight-color;
+    animation: pulse 0.5s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulse {
+    0% {
+      opacity: 0.1;
+    }
+    100% {
+      opacity: @highlight-opacity;
+    }
   }
 }

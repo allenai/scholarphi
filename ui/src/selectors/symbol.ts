@@ -92,6 +92,13 @@ export function isSymbolTopLevel(symbol: Symbol, entities: Entities) {
 }
 
 /**
+ * Determine whether 'symbol1' is a child of 'symbol2'.
+ */
+export function isChild(symbol1: Symbol, symbol2: Symbol) {
+  return symbol2.relationships.children.some((c) => c.id === symbol1.id);
+}
+
+/**
  * Get a list of the unique MathML equations used in this set of symbols. Guaranteed to match the
  * order they were found when iterating through the list sequentially. Therefore if you sort the
  * the symbols, the MathML returned will match that sort order.

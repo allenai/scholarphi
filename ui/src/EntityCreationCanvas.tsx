@@ -22,6 +22,9 @@ interface State {
   state: "canvas-enabled" | "creating-entity";
 }
 
+/**
+ * Supports the specification of bounding boxes for new entities using rectangular selections.
+ */
 export class EntityCreationCanvas extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);

@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import React from "react";
 import ReactDOM from "react-dom";
 import CitationAnnotation from "./CitationAnnotation";
@@ -16,6 +17,7 @@ import {
 import SymbolAnnotation from "./SymbolAnnotation";
 import TermAnnotation from "./TermAnnotation";
 import {
+  Entity,
   EntityCreateData,
   EntityUpdateData,
   isCitation,
@@ -114,6 +116,10 @@ class PageOverlay extends React.PureComponent<Props, {}> {
     } = this.props;
 
     const pageDimensions = getPageViewDimensions(view);
+    let selectedEntity: Entity | null = null;
+    if (entities !== null && selectedEntityId !== null) {
+      selectedEntity = entities.byId[selectedEntityId];
+    }
 
     return ReactDOM.createPortal(
       <>
@@ -182,20 +188,36 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                 const isFindMatch =
                   findMatchedEntityIds !== null &&
                   findMatchedEntityIds.indexOf(entityId) !== -1;
+                const isTopLevelSymbol = selectors.isSymbolTopLevel(
+                  entity,
+                  entities
+                );
+                const isChildOfSelection =
+                  selectedEntity !== null &&
+                  isSymbol(selectedEntity) &&
+                  selectors.isChild(entity, selectedEntity);
                 return (
                   <SymbolAnnotation
                     key={annotationId}
                     id={annotationId}
+                    className={classNames({
+                      "child-of-selection": isChildOfSelection,
+                    })}
                     pageView={view}
                     pageNumber={pageNumber}
                     symbol={entity}
                     /*
-                     * Only show interactivity for top-level symbols (i.e., symbols that are
-                     * not children of other symbols).
+                     * Support selection of:
+                     * 1. Top-level symbols (i.e., those that aren't children of others)
+                     * 2. The children of a selected symbol, to allow selection refinement
+                     * To allow the children of a selected symbol to be selectable, a selected
+                     * symbol (once selected) should no longer be interactive itself, as
+                     * otherwise it would capture the selection events for its children.
                      */
                     active={
                       showAnnotations &&
-                      selectors.isSymbolTopLevel(entity, entities)
+                      !isSelected &&
+                      (isTopLevelSymbol || isChildOfSelection)
                     }
                     selected={isSelected}
                     selectedSpanId={

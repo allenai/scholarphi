@@ -101,6 +101,10 @@ export function createCreateEntityDataWithBoxes(
   return data;
 }
 
+/**
+ * Toolbar that supports the creation of new entities by annotating the paper. Allows
+ * users to create annotations of papers from text selections.
+ */
 class EntityCreationToolbar extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);

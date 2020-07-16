@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import React from "react";
 import Annotation from "./Annotation";
 import SymbolPropertiesTooltipBody from "./SymbolPropertiesTooltipBody";
@@ -5,10 +6,11 @@ import { Symbol } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
 interface Props {
+  id: string;
+  className?: string;
   pageView: PDFPageView;
   pageNumber: number;
   symbol: Symbol;
-  id: string;
   active: boolean;
   selected: boolean;
   selectedSpanId: string | null;
@@ -40,7 +42,7 @@ export class SymbolAnnotation extends React.PureComponent<Props> {
       <Annotation
         pageView={this.props.pageView}
         id={this.props.id}
-        className="symbol-annotation"
+        className={classNames("symbol-annotation", this.props.className)}
         boundingBoxes={this.props.symbol.attributes.bounding_boxes}
         pageNumber={this.props.pageNumber}
         active={this.props.active}
