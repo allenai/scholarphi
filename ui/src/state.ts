@@ -1,6 +1,7 @@
 import { PDFDocumentProxy } from "pdfjs-dist";
 import { SnackbarMode } from "./AppOverlay";
 import { DrawerMode } from "./Drawer";
+import { AreaSelectionMethod } from "./EntityCreationToolbar";
 import { FindMode, FindQuery, SymbolFilter } from "./FindBar";
 import { Entity, Paper } from "./types/api";
 import {
@@ -115,7 +116,8 @@ export interface State {
    * ~ Human annotations ~
    */
   entityCreationEnabled: boolean;
-  entityCreationType: KnownEntityType | null;
+  entityCreationAreaSelectionMethod: AreaSelectionMethod;
+  entityCreationType: KnownEntityType;
   entityEditingEnabled: boolean;
 }
 
@@ -144,7 +146,7 @@ export interface UserLibrary {
 
 export type Pages = { [pageNumber: number]: PageModel };
 
-interface PageModel {
+export interface PageModel {
   /**
    * Timestamp of 'pagerendered' event that created this page.
    */

@@ -1,9 +1,8 @@
 import Snackbar from "@material-ui/core/Snackbar";
 import React from "react";
 import ReactDOM from "react-dom";
-import EntityCreationTypeSelect from "./EntityCreationTypeSelect";
 import FeedbackButton from "./FeedbackButton";
-import { KnownEntityType, PaperId } from "./state";
+import { PaperId } from "./state";
 import * as uiUtils from "./utils/ui";
 
 interface Props {
@@ -15,7 +14,6 @@ interface Props {
   appContainer: HTMLElement;
   paperId?: PaperId;
   entityCreationEnabled: boolean;
-  entityCreationType: KnownEntityType | null;
   snackbarMode: SnackbarMode;
   snackbarActivationTimeMs: number | null;
   snackbarMessage: string | null;
@@ -27,7 +25,6 @@ interface Props {
   handleTerminateSearch: () => void;
   handleDeselectSelection: () => void;
   handleToggleEntityCreationMode: () => void;
-  handleSelectEntityCreationType: (type: KnownEntityType | null) => void;
   handleToggleEntityEditMode: () => void;
 }
 
@@ -81,7 +78,7 @@ class AppOverlay extends React.PureComponent<Props> {
   }
 
   onKeyDown(event: KeyboardEvent) {
-    if (event.keyCode === 91 || event.key === "Meta") {
+    if (event.keyCode === 17 || event.key === "Control") {
       this.props.handleHideAnnotations();
     }
     /*
@@ -110,7 +107,7 @@ class AppOverlay extends React.PureComponent<Props> {
     if (event.ctrlKey && event.shiftKey && event.key === "E") {
       this.props.handleToggleEntityEditMode();
     }
-    if (event.keyCode === 91 || event.key === "Meta") {
+    if (event.keyCode === 17 || event.key === "Control") {
       this.props.handleShowAnnotations();
     }
   }
@@ -129,9 +126,6 @@ class AppOverlay extends React.PureComponent<Props> {
     const elFeedbackContainer = document.getElementById(
       "scholarReaderGlobalFeedbackButton"
     );
-    const elEntityCreationTypeContainer = document.getElementById(
-      "scholarReaderAnnotationTypeSelect"
-    );
 
     return (
       <>
@@ -140,15 +134,6 @@ class AppOverlay extends React.PureComponent<Props> {
           ? ReactDOM.createPortal(
               <FeedbackButton paperId={this.props.paperId} variant="toolbar" />,
               elFeedbackContainer
-            )
-          : null}
-        {this.props.entityCreationEnabled && elEntityCreationTypeContainer
-          ? ReactDOM.createPortal(
-              <EntityCreationTypeSelect
-                entityType={this.props.entityCreationType}
-                handleSelectType={this.props.handleSelectEntityCreationType}
-              />,
-              elEntityCreationTypeContainer
             )
           : null}
         {/*

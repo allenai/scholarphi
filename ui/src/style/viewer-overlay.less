@@ -5,10 +5,43 @@
   position: absolute;
   top: @pdfjs-toolbarViewer-height + 10;
   left: @padding * 2;
+  /*
+   * Toolbars must appear both above the pdf.js sidebar and annotations
+   */
   z-index: max(
     @pdfjs-sidebarContainer-z-index + 1,
     @base-annotation-z-index + 1
   );
+}
+
+/**
+ * Spacing between toolbars
+ */
+.scholar-reader-toolbar-container {
+  .scholar-reader-toolbar + .scholar-reader-toolbar {
+    margin-top: @padding;
+  }
+}
+
+/**
+ * Show each toolbar on a separate line, and set their widths independently
+ */
+.scholar-reader-toolbar-container {
+  .scholar-reader-toolbar {
+    float: left;
+    clear: left;
+  }
+}
+
+/**
+ * Toolbar contents
+ */
+div.scholar-reader-toolbar {
+  padding: (@padding / 2) @padding;
+
+  > * + * {
+    margin-left: @padding;
+  }
 }
 
 /**

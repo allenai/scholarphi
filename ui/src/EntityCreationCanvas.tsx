@@ -1,15 +1,9 @@
 import React from "react";
+import { createCreateEntityDataWithBoxes } from "./EntityCreationToolbar";
 import { Point } from "./Selection";
 import SelectionCanvas from "./SelectionCanvas";
 import { KnownEntityType } from "./state";
-import {
-  CitationAttributes,
-  EntityCreateData,
-  SentenceAttributes,
-  SymbolAttributes,
-  SymbolRelationships,
-  TermAttributes,
-} from "./types/api";
+import { EntityCreateData } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
 interface Props {
@@ -75,7 +69,7 @@ function createCreateEntityDataFromSelection(
   pageView: PDFPageView,
   anchor: Point,
   active: Point,
-  type?: KnownEntityType
+  type: KnownEntityType
 ): EntityCreateData {
   const viewport = pageView.viewport;
   const [anchorPdfX, anchorPdfY] = [
@@ -96,58 +90,7 @@ function createCreateEntityDataFromSelection(
     height: Math.abs(activePdfY - anchorPdfY),
   };
 
-  let data: EntityCreateData = {
-    type: type as string,
-    attributes: {
-      source: "human-annotation",
-      version: undefined,
-      bounding_boxes: [boundingBox],
-    },
-    relationships: {},
-  };
-
-  /*
-   * Set default values for known entity types. If this step is skipped, the API server might
-   * reject the creation of the entity due to missing properties.
-   */
-  if (type === "term") {
-    data.attributes = {
-      ...data.attributes,
-      name: null,
-      definitions: [],
-      sources: [],
-    } as Omit<TermAttributes, "version">;
-  } else if (type === "citation") {
-    data.attributes = {
-      ...data.attributes,
-      paper_id: null,
-    } as Omit<CitationAttributes, "version">;
-  } else if (type === "symbol") {
-    data.attributes = {
-      ...data.attributes,
-      mathml: null,
-      tex: null,
-      name: null,
-      definition: null,
-      equation: null,
-      passages: [],
-      mathml_near_matches: [],
-    } as Omit<SymbolAttributes, "version">;
-    data.relationships = {
-      sentence: { type: "sentence", id: null },
-      children: [],
-    } as Omit<SymbolRelationships, "version">;
-  } else if (type === "sentence") {
-    data.attributes = {
-      ...data.attributes,
-      text: null,
-      tex: null,
-      tex_start: null,
-      tex_end: null,
-    } as Omit<SentenceAttributes, "version">;
-  }
-
-  return data;
+  return createCreateEntityDataWithBoxes([boundingBox], type);
 }
 
 export default EntityCreationCanvas;

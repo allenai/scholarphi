@@ -2,7 +2,9 @@ import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
 import DefinitionPreview from "./DefinitionPreview";
 import Drawer, { DrawerMode } from "./Drawer";
-import EntityCreationToolbar from "./EntityCreationToolbar";
+import EntityCreationToolbar, {
+  AreaSelectionMethod,
+} from "./EntityCreationToolbar";
 import FindBar, { FindMode, FindQuery } from "./FindBar";
 import * as selectors from "./selectors";
 import { divDimensionStyles, matchingSymbols } from "./selectors";
@@ -16,6 +18,7 @@ import {
 } from "./state";
 import {
   BoundingBox,
+  EntityCreateData,
   EntityUpdateData,
   isSentence,
   Sentence,
@@ -35,7 +38,8 @@ interface Props {
   userLibrary: UserLibrary | null;
   selectedEntityId: string | null;
   entityCreationEnabled: boolean;
-  entityCreationType: KnownEntityType | null;
+  entityCreationType: KnownEntityType;
+  entityCreationAreaSelectionMethod: AreaSelectionMethod;
   entityEditingEnabled: boolean;
   isFindActive: boolean;
   findActivationTimeMs: number | null;
@@ -44,6 +48,7 @@ interface Props {
   findMatchIndex: number | null;
   findMatchCount: number | null;
   drawerMode: DrawerMode;
+  handleShowSnackbarMessage: (message: string) => void;
   handleCloseFindBar: () => void;
   handleCloseDrawer: () => void;
   handleChangeMatchIndex: (matchIndex: number | null) => void;
@@ -53,8 +58,13 @@ interface Props {
   handleSelectEntity: (id: string) => void;
   handleScrollSymbolIntoView: () => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
+  handleCreateEntity: (entity: EntityCreateData) => Promise<boolean>;
   handleUpdateEntity: (entity: EntityUpdateData) => Promise<boolean>;
   handleDeleteEntity: (id: string) => Promise<boolean>;
+  handleSelectEntityCreationType: (type: KnownEntityType) => void;
+  handleSelectEntityCreationAreaSelectionMethod: (
+    method: AreaSelectionMethod
+  ) => void;
 }
 
 interface State {
@@ -232,6 +242,7 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
     const {
       entityCreationEnabled,
       entityCreationType,
+      entityCreationAreaSelectionMethod,
       entityEditingEnabled,
     } = this.props;
 
@@ -271,6 +282,7 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
           this.props.isFindActive &&
           this.props.findActivationTimeMs !== null ? (
             <FindBar
+              className="scholar-reader-toolbar"
               /*
                * Set the key for the widget to the time that the find event was activated
                * (i.e., when 'Ctrl+F' was typed). This regenerates the widgets whenever
@@ -290,10 +302,18 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
               handleClose={this.props.handleCloseFindBar}
             />
           ) : null}
-          {entityCreationEnabled ? (
+          {entityCreationEnabled && this.props.pages !== null ? (
             <EntityCreationToolbar
+              className="scholar-reader-toolbar"
+              pages={this.props.pages}
               entityType={entityCreationType}
-              handleSelectEntityType={() => {}}
+              selectionMethod={entityCreationAreaSelectionMethod}
+              handleShowSnackbarMessage={this.props.handleShowSnackbarMessage}
+              handleSelectEntityType={this.props.handleSelectEntityCreationType}
+              handleSelectSelectionMethod={
+                this.props.handleSelectEntityCreationAreaSelectionMethod
+              }
+              handleCreateEntity={this.props.handleCreateEntity}
             />
           ) : null}
         </div>

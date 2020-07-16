@@ -1,6 +1,7 @@
 import React from "react";
 import * as api from "./api";
 import AppOverlay from "./AppOverlay";
+import { AreaSelectionMethod } from "./EntityCreationToolbar";
 import { FindQuery } from "./FindBar";
 import PageOverlay from "./PageOverlay";
 import * as selectors from "./selectors";
@@ -60,7 +61,8 @@ class ScholarReader extends React.PureComponent<Props, State> {
       snackbarMessage: null,
 
       entityCreationEnabled: false,
-      entityCreationType: null,
+      entityCreationAreaSelectionMethod: "text-selection",
+      entityCreationType: "term",
       entityEditingEnabled: false,
     };
 
@@ -91,6 +93,9 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.closeFindBar = this.closeFindBar.bind(this);
     this.toggleEntityCreationMode = this.toggleEntityCreationMode.bind(this);
     this.setEntityCreationType = this.setEntityCreationType.bind(this);
+    this.setEntityCreationAreaSelectionMethod = this.setEntityCreationAreaSelectionMethod.bind(
+      this
+    );
     this.toggleEntityEditMode = this.toggleEntityEditMode.bind(this);
   }
 
@@ -224,8 +229,12 @@ class ScholarReader extends React.PureComponent<Props, State> {
     }
   }
 
-  setEntityCreationType(type: KnownEntityType | null) {
+  setEntityCreationType(type: KnownEntityType) {
     this.setState({ entityCreationType: type });
+  }
+
+  setEntityCreationAreaSelectionMethod(method: AreaSelectionMethod) {
+    this.setState({ entityCreationAreaSelectionMethod: method });
   }
 
   async createEntity(data: EntityCreateData) {
@@ -570,7 +579,6 @@ class ScholarReader extends React.PureComponent<Props, State> {
               appContainer={document.body}
               paperId={this.props.paperId}
               entityCreationEnabled={this.state.entityCreationEnabled}
-              entityCreationType={this.state.entityCreationType}
               snackbarMode={this.state.snackbarMode}
               snackbarActivationTimeMs={this.state.snackbarActivationTimeMs}
               snackbarMessage={this.state.snackbarMessage}
@@ -582,7 +590,6 @@ class ScholarReader extends React.PureComponent<Props, State> {
               handleCloseSnackbar={this.closeSnackbar}
               handleCloseDrawer={this.closeDrawer}
               handleToggleEntityCreationMode={this.toggleEntityCreationMode}
-              handleSelectEntityCreationType={this.setEntityCreationType}
               handleToggleEntityEditMode={this.toggleEntityEditMode}
             />
             <ViewerOverlay
@@ -597,6 +604,9 @@ class ScholarReader extends React.PureComponent<Props, State> {
               selectedEntityId={this.state.selectedEntityId}
               entityCreationEnabled={this.state.entityCreationEnabled}
               entityCreationType={this.state.entityCreationType}
+              entityCreationAreaSelectionMethod={
+                this.state.entityCreationAreaSelectionMethod
+              }
               entityEditingEnabled={this.state.entityEditingEnabled}
               isFindActive={this.state.isFindActive}
               findActivationTimeMs={this.state.findActivationTimeMs}
@@ -605,6 +615,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
               findMatchIndex={this.state.findMatchIndex}
               findMatchCount={this.state.findMatchCount}
               drawerMode={this.state.drawerMode}
+              handleShowSnackbarMessage={this.showSnackbarMessage}
               handleDeselectSelection={this.deselectSelection}
               handleChangeMatchIndex={this.setFindMatchIndex}
               handleChangeMatchCount={this.setFindMatchCount}
@@ -614,8 +625,13 @@ class ScholarReader extends React.PureComponent<Props, State> {
               handleScrollSymbolIntoView={this.scrollSymbolIntoView}
               handleAddPaperToLibrary={this.addToLibrary}
               handleSelectEntity={this.selectEntity}
+              handleCreateEntity={this.createEntity}
               handleUpdateEntity={this.updateEntity}
               handleDeleteEntity={this.deleteEntity}
+              handleSelectEntityCreationType={this.setEntityCreationType}
+              handleSelectEntityCreationAreaSelectionMethod={
+                this.setEntityCreationAreaSelectionMethod
+              }
             />
           </>
         ) : null}
@@ -648,6 +664,9 @@ class ScholarReader extends React.PureComponent<Props, State> {
                   showAnnotations={this.state.annotationsShowing}
                   entityCreationEnabled={this.state.entityCreationEnabled}
                   entityCreationType={this.state.entityCreationType}
+                  entityCreationAreaSelectionMethod={
+                    this.state.entityCreationAreaSelectionMethod
+                  }
                   entityEditingEnabled={this.state.entityEditingEnabled}
                   handleSelectEntityAnnotation={this.selectEntityAnnotation}
                   handleShowSnackbarMessage={this.showSnackbarMessage}

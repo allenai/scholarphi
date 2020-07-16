@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import CitationAnnotation from "./CitationAnnotation";
 import EntityCreationCanvas from "./EntityCreationCanvas";
+import { AreaSelectionMethod } from "./EntityCreationToolbar";
 import PageMask from "./PageMask";
 import * as selectors from "./selectors";
 import SentenceAnnotation from "./SentenceAnnotation";
@@ -39,7 +40,8 @@ interface Props {
   findSelectionEntityId: string | null;
   showAnnotations: boolean;
   entityCreationEnabled: boolean;
-  entityCreationType: KnownEntityType | null;
+  entityCreationType: KnownEntityType;
+  entityCreationAreaSelectionMethod: AreaSelectionMethod;
   entityEditingEnabled: boolean;
   handleSelectEntityAnnotation: (
     entityId: string,
@@ -104,6 +106,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
       showAnnotations,
       entityCreationEnabled,
       entityCreationType,
+      entityCreationAreaSelectionMethod,
       entityEditingEnabled,
       handleAddPaperToLibrary,
       handleStartSymbolSearch,
@@ -230,7 +233,8 @@ class PageOverlay extends React.PureComponent<Props, {}> {
             })
           : null}
         {/* Add layer for user annotations. */}
-        {entityCreationEnabled && entityCreationType !== null ? (
+        {entityCreationEnabled &&
+        entityCreationAreaSelectionMethod === "rectangular-selection" ? (
           <EntityCreationCanvas
             pageView={view}
             pageNumber={pageNumber}

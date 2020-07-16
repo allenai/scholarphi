@@ -4,6 +4,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
+import classNames from "classnames";
 import React from "react";
 import { PdfjsFindQueryWidget } from "./PdfjsFindQueryWidget";
 import { SymbolFilters } from "./state";
@@ -18,6 +19,7 @@ export interface SymbolFilter {
 }
 
 interface Props {
+  className?: string;
   pdfViewerApplication: PDFViewerApplication;
   mode: FindMode;
   query: FindQuery;
@@ -126,7 +128,10 @@ class FindBar extends React.PureComponent<Props> {
 
     if (mode !== null) {
       return (
-        <Card className="find-bar" raised={true}>
+        <Card
+          className={classNames("find-bar", this.props.className)}
+          raised={true}
+        >
           <div className="find-bar__query">
             {
               /* Custom find widgets, depending on the type of search being performed. */
