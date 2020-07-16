@@ -4,8 +4,7 @@ import string
 from collections import defaultdict
 from typing import Dict, Iterator, List
 
-from common.parse_tex import (DEFAULT_CONTEXT_SIZE, EntityExtractor,
-                              PlaintextExtractor)
+from common.parse_tex import DEFAULT_CONTEXT_SIZE, EntityExtractor, PlaintextExtractor
 
 from .types import GlossaryTerm, Term
 
@@ -87,7 +86,6 @@ class TermExtractor(EntityExtractor):
                                 name=cand,
                                 definitions=definitions,
                                 sources=sources,
-                                val=False,
                             )
                             term_count += 1
                             yield term

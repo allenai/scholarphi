@@ -1,6 +1,7 @@
 import Card from "@material-ui/core/Card";
 import IconButton from "@material-ui/core/IconButton";
 import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
 import Add from "@material-ui/icons/Add";
 import DeleteForever from "@material-ui/icons/DeleteForever";
@@ -43,7 +44,7 @@ class EntityPropertyField extends React.PureComponent<Props> {
   ) {
     const currentValue = this.props.value;
     const property = this.props.property;
-    const newValue = event.currentTarget.value;
+    const newValue = event.target.value;
 
     /*
      * If the property is a list, change the one item and keep the rest the same.
@@ -101,7 +102,7 @@ class EntityPropertyField extends React.PureComponent<Props> {
 
   render() {
     const { property, value, disabled, error } = this.props;
-    const { label, is_list, key } = property;
+    const { label, is_list, key, choices } = property;
 
     const is_latex =
       property.type === "latex" || property.type === "multiline-latex";
@@ -116,6 +117,7 @@ class EntityPropertyField extends React.PureComponent<Props> {
               className="entity-property-field"
               InputProps={{ id: `property-${key}-field` }}
               label={label}
+              select={choices !== undefined}
               disabled={disabled === true}
               error={error !== undefined}
               value={value || ""}
@@ -125,7 +127,21 @@ class EntityPropertyField extends React.PureComponent<Props> {
               rows={multiline ? 1 : 1}
               rowsMax={multiline ? 4 : 1}
               onChange={this.onFieldChanged}
-            />
+            >
+              {choices !== undefined ? (
+                <MenuItem value="">None</MenuItem>
+              ) : null}
+              {choices !== undefined
+                ? choices.map((choice: any) => {
+                    const choiceString = String(choice);
+                    return (
+                      <MenuItem key={choiceString} value={choiceString}>
+                        {choiceString}
+                      </MenuItem>
+                    );
+                  })
+                : null}
+            </TextField>
             {is_latex ? (
               <Card className="latex-preview">
                 <div className="latex-preview__container">
@@ -175,6 +191,7 @@ class EntityPropertyField extends React.PureComponent<Props> {
                       className="entity-property-field"
                       InputProps={{ id: `property-${key}-field-${i}` }}
                       disabled={disabled === true}
+                      select={choices !== undefined}
                       error={error !== undefined}
                       value={v || ""}
                       placeholder={"NULL"}
@@ -182,7 +199,21 @@ class EntityPropertyField extends React.PureComponent<Props> {
                       rows={multiline ? 1 : 1}
                       rowsMax={multiline ? 4 : 1}
                       onChange={this.onFieldChanged}
-                    />
+                    >
+                      {choices !== undefined ? (
+                        <MenuItem value="">None</MenuItem>
+                      ) : null}
+                      {choices !== undefined
+                        ? choices.map((choice: any) => {
+                            const choiceString = String(choice);
+                            return (
+                              <MenuItem key={choiceString} value={choiceString}>
+                                {choiceString}
+                              </MenuItem>
+                            );
+                          })
+                        : null}
+                    </TextField>
                     <IconButton
                       id={`property-${key}-field-${i}-add-button`}
                       className="action-button"

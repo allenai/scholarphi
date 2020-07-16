@@ -65,7 +65,11 @@ export function createCreateEntityDataWithBoxes(
     data.attributes = {
       ...data.attributes,
       name: text || null,
+      term_type: null,
       definitions: [],
+      passages: [],
+      glossary_definitions: [],
+      glossary_sources: [],
       sources: [],
     } as Omit<TermAttributes, "version">;
   } else if (type === "citation") {
@@ -78,9 +82,9 @@ export function createCreateEntityDataWithBoxes(
       ...data.attributes,
       mathml: null,
       tex: text || null,
-      name: null,
-      definition: null,
-      equation: null,
+      nicknames: [],
+      definitions: [],
+      defining_formulas: [],
       passages: [],
       mathml_near_matches: [],
     } as Omit<SymbolAttributes, "version">;

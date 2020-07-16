@@ -6,7 +6,7 @@ import {
   Entity,
   EntityUpdateData,
   GenericAttributes,
-  GenericRelationships,
+  GenericRelationships
 } from "./types/api";
 
 interface Props {
@@ -56,6 +56,7 @@ export interface Property {
   is_list: boolean;
   relation_type: string | null;
   label: string;
+  choices?: any[];
 }
 
 const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
@@ -69,12 +70,29 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
       label: "Name",
     },
     {
+      key: "term_type",
+      parentKey: "attributes",
+      type: "text",
+      is_list: false,
+      relation_type: null,
+      label: "Type of term",
+      choices: ["Nonce", "Protologism", "Neologism"],
+    },
+    {
       key: "definitions",
       parentKey: "attributes",
-      type: "multiline-text",
+      type: "multiline-latex",
       is_list: true,
       relation_type: null,
       label: "Definitions",
+    },
+    {
+      key: "passages",
+      parentKey: "attributes",
+      type: "multiline-latex",
+      is_list: true,
+      relation_type: null,
+      label: "Related passages",
     },
   ],
   sentence: [
@@ -115,28 +133,28 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
       label: "LaTeX",
     },
     {
-      key: "name",
+      key: "nicknames",
       parentKey: "attributes",
       type: "text",
-      is_list: false,
+      is_list: true,
       relation_type: null,
-      label: "Name",
+      label: "Nicknames",
     },
     {
-      key: "definition",
+      key: "definitions",
       parentKey: "attributes",
       type: "multiline-latex",
-      is_list: false,
+      is_list: true,
       relation_type: null,
-      label: "Definition",
+      label: "Definitions",
     },
     {
-      key: "equation",
+      key: "defining_formulas",
       parentKey: "attributes",
       type: "latex",
-      is_list: false,
+      is_list: true,
       relation_type: null,
-      label: "Equation",
+      label: "Defining formulas",
     },
     {
       key: "passages",

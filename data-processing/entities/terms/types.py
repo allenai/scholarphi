@@ -14,7 +14,6 @@ class Term(SerializableEntity):
     List of sources, one per definition. To find the source for a definition, look for the source
     with the same index as the definition.
     """
-    val: bool
 
 
 @dataclass(frozen=True)

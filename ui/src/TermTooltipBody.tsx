@@ -11,7 +11,7 @@ export class TermTooltipBody extends React.PureComponent<Props> {
      * Render the first definition and source.
      */
     const { term } = this.props;
-    const definition = term.attributes.definitions[0];
+    const definition = term.attributes.glossary_definitions[0];
     if (definition === undefined) {
       return null;
     }

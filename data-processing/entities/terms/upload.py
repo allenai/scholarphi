@@ -21,9 +21,8 @@ def upload_terms(
             bounding_boxes=boxes,
             data={
                 "name": term.name,
-                "definitions": term.definitions,
-                "sources": term.sources,
-                "val": term.val,
+                "glossary_definitions": term.definitions,
+                "glossary_sources": term.sources,
             },
         )
         entity_infos.append(entity_info)

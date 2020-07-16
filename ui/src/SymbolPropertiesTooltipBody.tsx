@@ -9,24 +9,38 @@ interface Props {
 export class SymbolPropertiesTooltipBody extends React.PureComponent<Props> {
   render() {
     const { symbol } = this.props;
-    const { tex, name, definition, equation, passages } = symbol.attributes;
+    const {
+      tex,
+      nicknames,
+      definitions,
+      defining_formulas,
+      passages,
+    } = symbol.attributes;
 
     return (
       <div className="tooltip-body symbol-properties-tooltip-body">
         <div className="tooltip-body__section">
           {tex !== null ? <LatexPreview latex={tex} /> : "<Symbol TeX>"}:{" "}
-          {name !== null ? name : "<name>"}
+          {nicknames.length > 0 ? nicknames.join(",") : "(no nicknames)."}
         </div>
         <div className="tooltip-body__section">
           <b>Definition</b>:{" "}
-          {definition !== null ? <LatexPreview latex={definition} /> : "(none)"}
+          {definitions.length > 0
+            ? definitions.map((d) => <LatexPreview latex={d} />).join(",")
+            : "(none)."}
         </div>
         <div className="tooltip-body__section">
-          <b>Equation</b>:{" "}
-          {equation !== null ? <LatexPreview latex={equation} /> : "(none)"}
+          <b>Defining formulas</b>:{" "}
+          {defining_formulas.length > 0
+            ? defining_formulas.map((f) => (
+                <div>
+                  <LatexPreview latex={f} />
+                </div>
+              ))
+            : "(none)."}
         </div>
         <div className="tooltip-body__section">
-          <b>Related passages</b>: {passages.length === 0 ? "(none yet)" : ""}
+          <b>Related passages</b>: {passages.length === 0 ? "(none)." : ""}
           <ul>
             {passages.map((p) => (
               <li>

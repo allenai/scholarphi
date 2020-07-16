@@ -169,12 +169,26 @@ export interface Symbol extends BaseEntity {
 
 export interface SymbolAttributes extends BaseEntityAttributes {
   tex: string | null;
-  name: string | null;
-  definition: string | null;
-  equation: string | null;
-  passages: string[];
   mathml: string | null;
   mathml_near_matches: string[];
+  /**
+   * Nicknames for the symbol extracted from the text, no more than a few words long.
+   */
+  nicknames: string[];
+  /**
+   * A description of what a symbol means, in prose (though can contain formulae). May either
+   * describe the concept that the symbol represents (i.e., 'beta is the bias term') or
+   * analytic assertions (i.e., 'beta takes on values between 0 and 1').
+   */
+  definitions: string[];
+  /**
+   * Formulas from the paper that serve as a formal definition of the symbol.
+   */
+  defining_formulas: string[];
+  /**
+   * Other passages from the paper that help explain what this symbol means.
+   */
+  passages: string[];
 }
 
 export interface SymbolRelationships {
@@ -198,8 +212,26 @@ export interface Term extends BaseEntity {
 
 export interface TermAttributes extends BaseEntityAttributes {
   name: string | null;
+  /**
+   * A description of the type of this term (i.e., is it a protologism? A nonce?)
+   */
+  term_type: string | null;
+  /**
+   * List of prose passages that describe the meaning of the term.
+   */
   definitions: string[];
-  sources: string[];
+  /**
+   * Additional passages that help explain what this term means.
+   */
+  passages: string[];
+  /**
+   * Definitions for the term from external glossaries.
+   */
+  glossary_definitions: string[];
+  /**
+   * Sources for definitions from external glossaries. There is one source per definition.
+   */
+  glossary_sources: string[];
 }
 
 export function isTerm(entity: Entity): entity is Term {
