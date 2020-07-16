@@ -31,11 +31,6 @@
     display: flex;
     flex: 1 1 auto;
   }
-
-  .action-button {
-    display: flex;
-    flex: 0 0 auto;
-  }
 }
 
 /**
@@ -52,15 +47,12 @@
 /**
  * Buttons for entity fields.
  */
-.entity-property-editor__action-buttons {
-  text-align: center;
+div.entity-property-editor__action-form {
+  margin-top: @padding * 4;
 
-  .action-button {
-    margin-bottom: @padding / 2;
-
-    & + .action-button {
-      margin-left: @padding;
-    }
+  > * {
+    width: 100%;
+    margin-bottom: @padding;
   }
 }
 

@@ -78,7 +78,7 @@ export interface State {
    * ~ Snackbar (alert) state ~
    */
   snackbarMode: SnackbarMode;
-  /*
+  /**
    * The time in milliseconds when the latest snackbar message was submitted. A simple way to
    * supply this value is to call `Date.now()` when the message is submitted. This is used to
    * trigger a re-render of the snackbar with a new message when another message is already showing.
@@ -88,12 +88,12 @@ export interface State {
 
   /* 
    * ~ Find bar state ~
-  /*
+  /**
    * When 'isFindActive' is false, the rest of the properties for finding should be set to null.
    */
   isFindActive: boolean;
   findMode: FindMode;
-  /*
+  /**
    * The time in milliseconds that this 'find' action was triggered. A simple way to
    * supply this value is to call `Date.now()` when a find action is triggered. This is used to
    * indicate to the find widget that a new 'find' has started, e.g., if a user types 'Ctrl+F'
@@ -101,12 +101,12 @@ export interface State {
    */
   findActivationTimeMs: number | null;
   findQuery: FindQuery;
-  /*
+  /**
    * Valid values are [0..(findMatchCount - 1)]
    */
   findMatchIndex: number | null;
   findMatchCount: number | null;
-  /*
+  /**
    * A list of IDs of matching entities from the search. This will be defined for some find
    * modes (e.g., 'symbol') and not for others.
    */
@@ -119,6 +119,12 @@ export interface State {
   entityCreationAreaSelectionMethod: AreaSelectionMethod;
   entityCreationType: KnownEntityType;
   entityEditingEnabled: boolean;
+  /**
+   * Whether edits to an entity should apply to other matching entities (e.g., editing a symbol
+   * should also edit other symbols with the same TeX, or editing a term should also edit other
+   * all other appearances of the same term).
+   */
+  propagateEntityEdits: boolean;
 }
 
 export type Entities = RelationalStore<Entity>;

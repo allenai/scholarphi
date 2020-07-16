@@ -18,6 +18,7 @@ import {
 } from "./state";
 import {
   BoundingBox,
+  Entity,
   EntityCreateData,
   EntityUpdateData,
   isSentence,
@@ -41,6 +42,7 @@ interface Props {
   entityCreationType: KnownEntityType;
   entityCreationAreaSelectionMethod: AreaSelectionMethod;
   entityEditingEnabled: boolean;
+  propagateEntityEdits: boolean;
   isFindActive: boolean;
   findActivationTimeMs: number | null;
   findMode: FindMode;
@@ -59,12 +61,16 @@ interface Props {
   handleScrollSymbolIntoView: () => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
   handleCreateEntity: (entity: EntityCreateData) => Promise<boolean>;
-  handleUpdateEntity: (entity: EntityUpdateData) => Promise<boolean>;
+  handleUpdateEntity: (
+    entity: Entity,
+    updates: EntityUpdateData
+  ) => Promise<boolean>;
   handleDeleteEntity: (id: string) => Promise<boolean>;
   handleSelectEntityCreationType: (type: KnownEntityType) => void;
   handleSelectEntityCreationAreaSelectionMethod: (
     method: AreaSelectionMethod
   ) => void;
+  handleSetPropagateEntityEdits: (propagate: boolean) => void;
 }
 
 interface State {
@@ -328,12 +334,16 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
           entities={this.props.entities}
           selectedEntityId={this.props.selectedEntityId}
           entityEditingEnabled={this.props.entityEditingEnabled}
+          propagateEntityEdits={this.props.propagateEntityEdits}
           handleSelectSymbol={this.props.handleSelectEntity}
           handleScrollSymbolIntoView={this.props.handleScrollSymbolIntoView}
           handleClose={this.props.handleCloseDrawer}
           handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
           handleUpdateEntity={this.props.handleUpdateEntity}
           handleDeleteEntity={this.props.handleDeleteEntity}
+          handleSetPropagateEntityEdits={
+            this.props.handleSetPropagateEntityEdits
+          }
         />
         {!entityEditingEnabled &&
         isDefinitionOffscreen &&

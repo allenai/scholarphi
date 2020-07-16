@@ -10,9 +10,12 @@ import { KnownEntityType, Pages, PaperId, State, SymbolFilters } from "./state";
 import "./style/index.less";
 import {
   BoundingBox,
+  Entity,
   EntityCreateData,
   EntityUpdateData,
   isCitation,
+  isSymbol,
+  isTerm,
   Paper,
 } from "./types/api";
 import {
@@ -64,6 +67,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       entityCreationAreaSelectionMethod: "text-selection",
       entityCreationType: "term",
       entityEditingEnabled: false,
+      propagateEntityEdits: true,
     };
 
     /**
@@ -97,6 +101,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       this
     );
     this.toggleEntityEditMode = this.toggleEntityEditMode.bind(this);
+    this.setPropagateEntityEdits = this.setPropagateEntityEdits.bind(this);
   }
 
   async addToLibrary(paperId: string, paperTitle: string) {
@@ -264,31 +269,79 @@ class ScholarReader extends React.PureComponent<Props, State> {
     return false;
   }
 
-  async updateEntity(data: EntityUpdateData): Promise<boolean> {
-    if (this.props.paperId !== undefined) {
-      const result = await api.patchEntity(this.props.paperId.id, data);
-      if (result) {
-        /*
-         * Update the entity in memory.
-         */
-        this.setState((prevState) => {
-          if (prevState.entities !== null) {
-            const entity = prevState.entities.byId[data.id];
-            const updated = {
-              ...entity,
-              attributes: { ...entity.attributes, ...data.attributes },
-              relationships: { ...entity.relationships, ...data.relationships },
-            };
-            return {
-              entities: stateUtils.update(prevState.entities, data.id, updated),
-            };
-          }
-          return { entities: prevState.entities };
-        });
-        return true;
-      }
+  async updateEntity(
+    entity: Entity,
+    updateData: EntityUpdateData
+  ): Promise<boolean> {
+    const { paperId } = this.props;
+    if (paperId === undefined) {
+      return false;
     }
-    return false;
+
+    /*
+     * By default, only update this one entity. If edits are supposed to be
+     * propagated to other matching entities, build a list matching entities to update.
+     */
+    const entitiesToPatch = [entity.id];
+    const entities = this.state.entities;
+    if (this.state.propagateEntityEdits && entities !== null) {
+      entitiesToPatch.push(
+        ...entities.all
+          .map((id) => entities.byId[id])
+          .filter((e) => {
+            if (isSymbol(entity) && isSymbol(e)) {
+              return entity.attributes.tex === e.attributes.tex;
+            } else if (isTerm(entity) && isTerm(e)) {
+              return entity.attributes.name === e.attributes.name;
+            }
+            return false;
+          })
+          .map((e) => e.id)
+      );
+    }
+
+    /*
+     * Patch entities, saving which ones were successfully updated.
+     */
+    const patchedEntities = await Promise.all(
+      entitiesToPatch.map((id) =>
+        api.patchEntity(paperId.id, { ...updateData, id })
+      )
+    ).then((successes) =>
+      successes
+        .map((success, i) => (success ? entitiesToPatch[i] : undefined))
+        .filter((id) => id !== undefined)
+        .map((id) => id as string)
+    );
+
+    /*
+     * Update entities in memory. Only update those that were successfully patched.
+     */
+    this.setState((prevState) => {
+      const prevEntities = prevState.entities;
+      if (prevEntities !== null) {
+        let nextEntities = { ...prevEntities };
+        patchedEntities.forEach((id) => {
+          const prevEntity = prevEntities.byId[id];
+          const updated = {
+            ...prevEntity,
+            attributes: { ...prevEntity.attributes, ...updateData.attributes },
+            relationships: {
+              ...prevEntity.relationships,
+              ...updateData.relationships,
+            },
+          };
+          nextEntities = stateUtils.update(nextEntities, id, updated);
+        });
+        return {
+          entities: nextEntities,
+        };
+      }
+      return { entities: prevState.entities };
+    });
+
+    const completeSuccess = entitiesToPatch.length === patchedEntities.length;
+    return completeSuccess;
   }
 
   async deleteEntity(id: string) {
@@ -378,6 +431,12 @@ class ScholarReader extends React.PureComponent<Props, State> {
         entityEditingEnabled,
         drawerMode,
       };
+    });
+  }
+
+  setPropagateEntityEdits(propagate: boolean) {
+    this.setState({
+      propagateEntityEdits: propagate,
     });
   }
 
@@ -608,6 +667,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                 this.state.entityCreationAreaSelectionMethod
               }
               entityEditingEnabled={this.state.entityEditingEnabled}
+              propagateEntityEdits={this.state.propagateEntityEdits}
               isFindActive={this.state.isFindActive}
               findActivationTimeMs={this.state.findActivationTimeMs}
               findMode={this.state.findMode}
@@ -632,6 +692,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
               handleSelectEntityCreationAreaSelectionMethod={
                 this.setEntityCreationAreaSelectionMethod
               }
+              handleSetPropagateEntityEdits={this.setPropagateEntityEdits}
             />
           </>
         ) : null}
@@ -673,7 +734,6 @@ class ScholarReader extends React.PureComponent<Props, State> {
                   handleStartSymbolSearch={this.startSymbolSearch}
                   handleAddPaperToLibrary={this.addToLibrary}
                   handleCreateEntity={this.createEntity}
-                  handleUpdateEntity={this.updateEntity}
                   handleDeleteEntity={this.deleteEntity}
                 />
               );

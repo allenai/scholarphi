@@ -24,11 +24,16 @@ interface Props {
   userLibrary: UserLibrary | null;
   selectedEntityId: string | null;
   entityEditingEnabled: boolean;
+  propagateEntityEdits: boolean;
   handleClose: () => void;
   handleSelectSymbol: (id: string) => void;
   handleScrollSymbolIntoView: () => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
-  handleUpdateEntity: (entity: EntityUpdateData) => Promise<boolean>;
+  handleSetPropagateEntityEdits: (propagate: boolean) => void;
+  handleUpdateEntity: (
+    entity: Entity,
+    updates: EntityUpdateData
+  ) => Promise<boolean>;
   handleDeleteEntity: (id: string) => Promise<boolean>;
 }
 
@@ -168,6 +173,10 @@ export class Drawer extends React.PureComponent<Props> {
                */
               key={selectedEntityId || undefined}
               entity={selectedEntity}
+              propagateEntityEdits={this.props.propagateEntityEdits}
+              handleSetPropagateEntityEdits={
+                this.props.handleSetPropagateEntityEdits
+              }
               handleSaveChanges={this.props.handleUpdateEntity}
               handleDeleteEntity={this.props.handleDeleteEntity}
             />

@@ -1,4 +1,6 @@
 import Button from "@material-ui/core/Button";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
 import katex from "katex";
 import React from "react";
 import EntityPropertyField from "./EntityPropertyField";
@@ -6,16 +8,21 @@ import {
   Entity,
   EntityUpdateData,
   GenericAttributes,
-  GenericRelationships
+  GenericRelationships,
 } from "./types/api";
 
 interface Props {
   entity: Entity | null;
+  propagateEntityEdits: boolean;
+  handleSetPropagateEntityEdits: (propagate: boolean) => void;
   /**
    * Callback returns a Promise that resolves to 'true' when saving was successful, and 'false'
    * when saving failed.
    */
-  handleSaveChanges: (entity: EntityUpdateData) => Promise<boolean>;
+  handleSaveChanges: (
+    entity: Entity,
+    updates: EntityUpdateData
+  ) => Promise<boolean>;
   handleDeleteEntity: (id: string) => Promise<boolean>;
 }
 
@@ -76,7 +83,7 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
       is_list: false,
       relation_type: null,
       label: "Type of term",
-      choices: ["Nonce", "Protologism", "Neologism"],
+      choices: ["Nonce", "Protologism", "Neologism", "Standard term"],
     },
     {
       key: "definitions",
@@ -182,6 +189,7 @@ class EntityPropertyEditor extends React.PureComponent<Props, State> {
     this.updatePropertyValue = this.updatePropertyValue.bind(this);
     this.handleLatexError = this.handleLatexError.bind(this);
     this.reset = this.reset.bind(this);
+    this.onChangePropagateEdits = this.onChangePropagateEdits.bind(this);
     this.save = this.save.bind(this);
     this.deleteEntity = this.deleteEntity.bind(this);
   }
@@ -337,6 +345,10 @@ class EntityPropertyEditor extends React.PureComponent<Props, State> {
     this.setState(this.createInitialState());
   }
 
+  onChangePropagateEdits(event: React.ChangeEvent<HTMLInputElement>) {
+    this.props.handleSetPropagateEntityEdits(event.target.checked);
+  }
+
   async save() {
     const { entity } = this.props;
     if (entity === null) {
@@ -360,7 +372,10 @@ class EntityPropertyEditor extends React.PureComponent<Props, State> {
       },
     };
 
-    const saveResult = await this.props.handleSaveChanges(entityUpdateData);
+    const saveResult = await this.props.handleSaveChanges(
+      entity,
+      entityUpdateData
+    );
     if (saveResult === true) {
       /*
        * Revert to initial state (i.e., clear all internal records of updates and validation
@@ -408,6 +423,14 @@ class EntityPropertyEditor extends React.PureComponent<Props, State> {
 
     const properties = EDITABLE_PROPERTIES[entity.type] || [];
 
+    /*
+     * Saving is only supported when changes have been made and all fields have passed validation.
+     */
+    const saveAllowed =
+      this.haveValuesChanged() &&
+      !this.areThereErrors() &&
+      this.state.state === "edits-enabled";
+
     return (
       <div className="entity-property-editor">
         {this.state.syncError && (
@@ -434,28 +457,37 @@ class EntityPropertyEditor extends React.PureComponent<Props, State> {
             />
           );
         })}
-        <div className="entity-property-editor__action-buttons">
+        <div className="entity-property-editor__action-form">
           <Button
             className="action-button"
-            disabled={this.state.state === "edits-enabled"}
+            disabled={
+              !this.haveValuesChanged() || this.state.state !== "edits-enabled"
+            }
             onClick={this.reset}
             variant="outlined"
           >
-            Reset
+            Revert changes
           </Button>
-          {/* Save is only enabled when all fields are validated. */}
+          <FormControlLabel
+            control={
+              <Switch
+                checked={this.props.propagateEntityEdits}
+                color="primary"
+                onChange={this.onChangePropagateEdits}
+                disabled={!saveAllowed}
+                name="propagate-edits"
+              />
+            }
+            label={`Apply changes to other appearances of this ${entity.type} when saving changes.`}
+          />
           <Button
             className="action-button"
             onClick={this.save}
-            disabled={
-              !this.haveValuesChanged() ||
-              this.areThereErrors() ||
-              this.state.state !== "edits-enabled"
-            }
+            disabled={!saveAllowed}
             variant="contained"
             color="primary"
           >
-            {this.state.state === "saving" ? "Saving..." : "Save"}
+            {this.state.state === "saving" ? "Saving..." : "Save changes"}
           </Button>
           <Button
             className="action-button"

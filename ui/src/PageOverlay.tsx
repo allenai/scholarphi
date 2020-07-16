@@ -19,7 +19,6 @@ import TermAnnotation from "./TermAnnotation";
 import {
   Entity,
   EntityCreateData,
-  EntityUpdateData,
   isCitation,
   isSentence,
   isSymbol,
@@ -54,7 +53,6 @@ interface Props {
   handleStartSymbolSearch: (id: string) => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
   handleCreateEntity: (entity: EntityCreateData) => Promise<boolean>;
-  handleUpdateEntity: (data: EntityUpdateData) => Promise<boolean>;
   handleDeleteEntity: (id: string) => Promise<boolean>;
 }
 
