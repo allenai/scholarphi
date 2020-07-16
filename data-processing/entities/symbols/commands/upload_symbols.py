@@ -1,6 +1,6 @@
 import logging
 import os.path
-from typing import Dict, Iterator
+from typing import Callable, Dict, Iterator, Optional
 
 from common import directories, file_utils
 from common.commands.database import DatabaseUploadCommand
@@ -151,6 +151,10 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
                 ],
             }
 
+            create_symbol_id_string: Callable[[SymbolId], str] = (
+                lambda sid: f"{sid.tex_path}-{sid.equation_index}-{sid.symbol_index}"
+            )
+
             sentence_key = symbol_sentences.get(symbol_id)
             sentence_id = (
                 f"{sentence_key.tex_path}-{sentence_key.sentence_id}"
@@ -158,13 +162,24 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
                 else None
             )
 
+            parent_id: Optional[str] = None
+            for other_symbol_with_id in symbols_with_ids:
+                other_symbol_id = other_symbol_with_id.symbol_id
+                other_symbol = other_symbol_with_id.symbol
+                try:
+                    other_symbol.children.index(symbol)
+                    parent_id = create_symbol_id_string(other_symbol_id)
+                except ValueError:
+                    continue
+
             child_ids = []
             for child_symbol in symbol.children:
                 child_symbol_id = symbol_ids_by_symbol_object_ids[id(child_symbol)]
-                string_id = f"{child_symbol_id.tex_path}-{child_symbol_id.equation_index}-{child_symbol_id.symbol_index}"
+                string_id = create_symbol_id_string(child_symbol_id)
                 child_ids.append(string_id)
 
             relationships: EntityRelationships = {
+                "parent": EntityReference(type_="symbol", id_=parent_id),
                 "children": [
                     EntityReference(type_="symbol", id_=id_) for id_ in child_ids
                 ],

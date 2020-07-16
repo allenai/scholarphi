@@ -179,6 +179,7 @@ export interface SymbolAttributes extends BaseEntityAttributes {
 
 export interface SymbolRelationships {
   sentence: Relationship;
+  parent: Relationship;
   children: Relationship[];
 }
 

@@ -5,6 +5,7 @@ import {
   BoundingBox,
   isSentence,
   isSymbol,
+  Relationship,
   Sentence,
   Symbol,
 } from "../types/api";
@@ -79,23 +80,31 @@ export const matchingSymbols = defaultMemoize(
 );
 
 /**
- * Determine whether a symbol is a top-level symbol (i.e., is not the child of another symbol).
- */
-export function isSymbolTopLevel(symbol: Symbol, entities: Entities) {
-  return !entities.all
-    .map((e) => entities.byId[e])
-    .some(
-      (e) =>
-        isSymbol(e) &&
-        e.relationships.children.map((c) => c.id).indexOf(symbol.id) !== -1
-    );
-}
-
-/**
- * Determine whether 'symbol1' is a child of 'symbol2'.
+ * Determine if 'symbol1' is a child of 'symbol2'.
  */
 export function isChild(symbol1: Symbol, symbol2: Symbol) {
   return symbol2.relationships.children.some((c) => c.id === symbol1.id);
+}
+
+/**
+ * Determine if 'symbol1' is a descendant of 'symbol2'.
+ */
+export function isDescendant(
+  symbol1: Symbol,
+  symbol2: Symbol,
+  entities: Entities
+) {
+  let parent: Relationship = symbol1.relationships.parent;
+  while (parent.id !== null) {
+    const parentEntity = entities.byId[parent.id];
+    if (parentEntity !== undefined && isSymbol(parentEntity)) {
+      if (parentEntity === symbol2) {
+        return true;
+      }
+      parent = parentEntity.relationships.parent;
+    }
+  }
+  return false;
 }
 
 /**

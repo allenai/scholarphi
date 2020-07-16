@@ -98,9 +98,10 @@
  * Symbol annotations
  */
 .symbol-annotation {
-  &.selected {
+  &.selected:not(.leaf-symbol) {
     background: none !important;
-    border: 4px solid slategray;
+    border: 4px solid @highlight-color;
+    border-radius: @border-radius;
   }
 
   &.child-of-selection {

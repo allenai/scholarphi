@@ -188,20 +188,25 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                 const isFindMatch =
                   findMatchedEntityIds !== null &&
                   findMatchedEntityIds.indexOf(entityId) !== -1;
-                const isTopLevelSymbol = selectors.isSymbolTopLevel(
-                  entity,
-                  entities
-                );
+                const isTopLevelSymbol =
+                  entity.relationships.parent.id === null;
                 const isChildOfSelection =
                   selectedEntity !== null &&
                   isSymbol(selectedEntity) &&
                   selectors.isChild(entity, selectedEntity);
+                const isAncestorOfSelection =
+                  selectedEntity !== null &&
+                  isSymbol(selectedEntity) &&
+                  selectors.isDescendant(selectedEntity, entity, entities);
+                const isLeaf = entity.relationships.children.length === 0;
                 return (
                   <SymbolAnnotation
                     key={annotationId}
                     id={annotationId}
                     className={classNames({
                       "child-of-selection": isChildOfSelection,
+                      "leaf-symbol": isLeaf,
+                      "ancestor-of-selection": isAncestorOfSelection,
                     })}
                     pageView={view}
                     pageNumber={pageNumber}
@@ -210,14 +215,16 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                      * Support selection of:
                      * 1. Top-level symbols (i.e., those that aren't children of others)
                      * 2. The children of a selected symbol, to allow selection refinement
-                     * To allow the children of a selected symbol to be selectable, a selected
-                     * symbol (once selected) should no longer be interactive itself, as
-                     * otherwise it would capture the selection events for its children.
+                     * To allow the descendants of a selected symbol to be selectable, a selected
+                     * symbol (once selected) should no longer be interactive itself.
                      */
                     active={
                       showAnnotations &&
-                      !isSelected &&
-                      (isTopLevelSymbol || isChildOfSelection)
+                      ((isTopLevelSymbol &&
+                        !isAncestorOfSelection &&
+                        !isSelected) ||
+                        isChildOfSelection ||
+                        (isLeaf && isSelected))
                     }
                     selected={isSelected}
                     selectedSpanId={

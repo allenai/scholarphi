@@ -86,6 +86,7 @@ export function createCreateEntityDataWithBoxes(
     } as Omit<SymbolAttributes, "version">;
     data.relationships = {
       sentence: { type: "sentence", id: null },
+      parent: { type: "symbol", id: null },
       children: [],
     } as Omit<SymbolRelationships, "version">;
   } else if (type === "sentence") {

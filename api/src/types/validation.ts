@@ -166,6 +166,7 @@ relationships = relationships
         then: Joi.object().keys({
           sentence: oneToOneRelationship("sentence"),
           children: oneToManyRelationship("symbol"),
+          parent: oneToOneRelationship("symbol"),
         }),
       },
     ],

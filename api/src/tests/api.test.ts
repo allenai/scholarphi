@@ -287,6 +287,7 @@ describe("API", () => {
         },
         relationships: {
           sentence: { type: "sentence", id: "3" },
+          parent: { type: "symbol", id: null },
           children: [
             { type: "symbol", id: "4" },
             { type: "symbol", id: "5" },
