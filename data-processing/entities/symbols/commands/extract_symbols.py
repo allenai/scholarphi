@@ -9,13 +9,8 @@ from typing import Iterator, List, Optional, Tuple
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
 from common.parse_equation import KATEX_ERROR_COLOR, Node, parse_equation
-from common.types import (
-    ArxivId,
-    SerializableChild,
-    SerializableSymbol,
-    SerializableSymbolToken,
-    SerializableToken,
-)
+from common.types import (ArxivId, SerializableChild, SerializableSymbol,
+                          SerializableSymbolToken, SerializableToken)
 
 
 @dataclass(frozen=True)  # pylint: disable=too-many-instance-attributes
@@ -200,7 +195,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                             if c == "}" and open_brace_count > 0
                             else open_brace_count
                         )
-                        if i >= end and open_brace_count == 0:
+                        if (i + 1) >= end and open_brace_count == 0:
                             end = i + 1
                             break
 
