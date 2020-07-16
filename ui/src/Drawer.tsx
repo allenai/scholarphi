@@ -12,8 +12,6 @@ import { Entities, PaperId, Papers, UserLibrary } from "./state";
 import { Entity, EntityUpdateData } from "./types/api";
 import { PDFViewer } from "./types/pdfjs-viewer";
 
-const PDF_VIEWER_DRAWER_OPEN_CLASS = "drawer-open";
-
 export type DrawerMode = "open" | "closed";
 
 interface Props {
@@ -43,32 +41,22 @@ export class Drawer extends React.PureComponent<Props> {
   componentWillUnmount() {
     const { pdfViewer } = this.props;
     if (pdfViewer != null) {
-      this.removePdfPositioningForDrawerOpen(pdfViewer.viewer);
+      this.removePdfPositioningForDrawerOpen(pdfViewer.container);
     }
   }
 
-  positionPdfForDrawerOpen(pdfViewerContainer: HTMLElement) {
-    /*
-     * Creating padding for scroll
-     */
-    Array.from(pdfViewerContainer.children).forEach((page) => {
-      // XXX(zkirby, andrewhead) per our discussion at https://github.com/allenai/scholar-reader/pull/38/files#r388514946
-      // this is 'safe' as pages are not deleted when scrolled out of view (just their inner content).
-      page.classList.add(PDF_VIEWER_DRAWER_OPEN_CLASS);
-    });
-
-    const { mode, selectedEntityId, entities } = this.props;
-    if (
-      mode === "open" &&
-      selectors.selectedEntityType(selectedEntityId, entities) === "symbol"
-    ) {
-      this.props.handleScrollSymbolIntoView();
-    }
+  positionPdfForDrawerOpen(
+    pdfViewerContainer: HTMLElement,
+    drawerContentType: string
+  ) {
+    pdfViewerContainer.classList.add(`drawer-${drawerContentType}`);
   }
 
   removePdfPositioningForDrawerOpen(pdfViewerContainer: HTMLElement) {
-    Array.from(pdfViewerContainer.children).forEach((page) => {
-      page.classList.remove(PDF_VIEWER_DRAWER_OPEN_CLASS);
+    pdfViewerContainer.classList.forEach((c) => {
+      if (c.indexOf("drawer-") !== -1) {
+        pdfViewerContainer.classList.remove(c);
+      }
     });
   }
 
@@ -94,13 +82,6 @@ export class Drawer extends React.PureComponent<Props> {
       entityEditingEnabled,
       handleSelectSymbol,
     } = this.props;
-    if (pdfViewer != null) {
-      if (mode === "open") {
-        this.positionPdfForDrawerOpen(pdfViewer.viewer);
-      } else {
-        this.removePdfPositioningForDrawerOpen(pdfViewer.viewer);
-      }
-    }
 
     const feedbackContext = {
       mode,
@@ -133,6 +114,15 @@ export class Drawer extends React.PureComponent<Props> {
       selectors.selectedEntityType(selectedEntityId, entities) === "citation"
     ) {
       drawerContentType = "paper-list";
+    }
+
+    if (pdfViewer != null) {
+      if (mode === "open" && drawerContentType !== null) {
+        this.removePdfPositioningForDrawerOpen(pdfViewer.container);
+        this.positionPdfForDrawerOpen(pdfViewer.container, drawerContentType);
+      } else {
+        this.removePdfPositioningForDrawerOpen(pdfViewer.container);
+      }
     }
 
     return (
