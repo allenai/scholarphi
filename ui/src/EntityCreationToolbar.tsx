@@ -16,6 +16,7 @@ import {
   SymbolRelationships,
   TermAttributes,
 } from "./types/api";
+import * as uiUtils from "./utils/ui";
 
 interface Props {
   className?: string;
@@ -70,7 +71,6 @@ export function createCreateEntityDataWithBoxes(
       passages: [],
       glossary_definitions: [],
       glossary_sources: [],
-      sources: [],
     } as Omit<TermAttributes, "version">;
   } else if (type === "citation") {
     data.attributes = {
@@ -81,7 +81,7 @@ export function createCreateEntityDataWithBoxes(
     data.attributes = {
       ...data.attributes,
       mathml: null,
-      tex: text || null,
+      tex: text ? `$${text}$` : null,
       nicknames: [],
       definitions: [],
       defining_formulas: [],
@@ -115,8 +115,8 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
     super(props);
     this.state = {
       state: "interaction-enabled",
-      textSelection: null,
-      textSelectionChangeMs: null,
+      textSelection: document.getSelection(),
+      textSelectionChangeMs: Date.now(),
     };
     this.onSelectionChange = this.onSelectionChange.bind(this);
     this.onChangeEntityType = this.onChangeEntityType.bind(this);
@@ -199,17 +199,22 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
        */
       if (page !== undefined) {
         const { pageNumber } = page.view.pdfPage;
-        const rangeRect = range.getBoundingClientRect();
         const pageRect = page.view.div.getBoundingClientRect();
-        const box: BoundingBox = {
-          left: (rangeRect.left - pageRect.left) / pageRect.width,
-          top: (rangeRect.top - pageRect.top) / pageRect.height,
-          width: rangeRect.width / pageRect.width,
-          height: rangeRect.height / pageRect.height,
-          page: pageNumber - 1,
-          source: "human-annotation",
-        };
-        boxes.push(box);
+        const rangeRects = range.getClientRects();
+        for (let i = 0; i < rangeRects.length; i++) {
+          const rangeRect = rangeRects.item(i);
+          if (rangeRect !== null) {
+            const box: BoundingBox = {
+              left: (rangeRect.left - pageRect.left) / pageRect.width,
+              top: (rangeRect.top - pageRect.top) / pageRect.height,
+              width: rangeRect.width / pageRect.width,
+              height: rangeRect.height / pageRect.height,
+              page: pageNumber - 1,
+              source: "human-annotation",
+            };
+            boxes.push(box);
+          }
+        }
       }
     }
 
@@ -293,11 +298,17 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
               : null}
           </Button>
         ) : null}
-        {selectionMethod === "rectangular-selection" ? (
-          <span className="entity-creation-toolbar__selection-message">
-            Select area on page
-          </span>
-        ) : null}
+        <span className="entity-creation-toolbar__selection-message">
+          {selectionMethod === "text-selection" && textSelection !== null
+            ? `Selected text: "${uiUtils.truncateText(
+                textSelection.toString(),
+                40
+              )}"`
+            : null}
+          {selectionMethod === "rectangular-selection"
+            ? "Select area on page"
+            : null}
+        </span>
       </Card>
     );
   }

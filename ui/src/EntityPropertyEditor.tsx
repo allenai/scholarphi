@@ -83,7 +83,7 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
       is_list: false,
       relation_type: null,
       label: "Type of term",
-      choices: ["Nonce", "Protologism", "Neologism", "Standard term"],
+      choices: ["Nonce", "Protologism", "Abbreviation"],
     },
     {
       key: "definitions",
@@ -172,12 +172,20 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
       label: "Related passages",
     },
     {
-      key: "sentence",
+      key: "parent",
       parentKey: "relationships",
       type: "relation-id",
       is_list: false,
-      relation_type: "sentence",
-      label: "Sentence ID",
+      relation_type: "symbol",
+      label: "Parent symbol",
+    },
+    {
+      key: "children",
+      parentKey: "relationships",
+      type: "relation-id",
+      is_list: true,
+      relation_type: "symbol",
+      label: "Child symbols",
     },
   ],
 };
@@ -433,6 +441,9 @@ class EntityPropertyEditor extends React.PureComponent<Props, State> {
 
     return (
       <div className="entity-property-editor">
+        <div className="entity-property-editor__entity-id">
+          <b>Entity ID</b>: {entity.id}
+        </div>
         {this.state.syncError && (
           <p className="entity-property-editor__save-error-label">
             Error{" "}

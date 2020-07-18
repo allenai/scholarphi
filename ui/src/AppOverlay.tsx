@@ -26,6 +26,7 @@ interface Props {
   handleDeselectSelection: () => void;
   handleToggleEntityCreationMode: () => void;
   handleToggleEntityEditMode: () => void;
+  handleToggleCopySentenceOnClick: () => void;
 }
 
 export type SnackbarMode = "open" | "closed";
@@ -101,11 +102,14 @@ class AppOverlay extends React.PureComponent<Props> {
       this.props.handleTerminateSearch();
       this.props.handleCloseDrawer();
     }
-    if (event.ctrlKey && event.shiftKey && event.key === "A") {
+    if (event.ctrlKey && event.shiftKey && event.key === "C") {
       this.props.handleToggleEntityCreationMode();
     }
-    if (event.ctrlKey && event.shiftKey && event.key === "E") {
+    if (event.ctrlKey && event.shiftKey && event.key === "U") {
       this.props.handleToggleEntityEditMode();
+    }
+    if (event.ctrlKey && event.shiftKey && event.key === "S") {
+      this.props.handleToggleCopySentenceOnClick();
     }
     if (event.keyCode === 17 || event.key === "Control") {
       this.props.handleShowAnnotations();

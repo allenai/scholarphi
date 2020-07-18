@@ -144,7 +144,10 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
   }
 
   onClick(event: MouseEvent) {
-    if (!isClickEventInsideSelectable(event)) {
+    if (
+      !isClickEventInsideSelectable(event) &&
+      !this.props.entityEditingEnabled
+    ) {
       this.props.handleDeselectSelection();
     }
   }
@@ -284,8 +287,7 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
        */
       <>
         <div className="scholar-reader-toolbar-container">
-          {!entityEditingEnabled &&
-          this.props.isFindActive &&
+          {this.props.isFindActive &&
           this.props.findActivationTimeMs !== null ? (
             <FindBar
               className="scholar-reader-toolbar"

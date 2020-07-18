@@ -44,6 +44,7 @@ interface Props {
   entityCreationType: KnownEntityType;
   entityCreationAreaSelectionMethod: AreaSelectionMethod;
   entityEditingEnabled: boolean;
+  copySentenceOnClick: boolean;
   handleSelectEntityAnnotation: (
     entityId: string,
     annotationId: string,
@@ -108,6 +109,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
       entityCreationType,
       entityCreationAreaSelectionMethod,
       entityEditingEnabled,
+      copySentenceOnClick,
       handleAddPaperToLibrary,
       handleStartSymbolSearch,
       handleCreateEntity,
@@ -235,7 +237,11 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     handleStartSymbolSearch={handleStartSymbolSearch}
                   />
                 );
-              } else if (entityEditingEnabled && isSentence(entity)) {
+              } else if (
+                entityEditingEnabled &&
+                copySentenceOnClick &&
+                isSentence(entity)
+              ) {
                 return (
                   <SentenceAnnotation
                     key={annotationId}

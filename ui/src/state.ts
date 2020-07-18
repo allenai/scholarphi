@@ -125,6 +125,7 @@ export interface State {
    * all other appearances of the same term).
    */
   propagateEntityEdits: boolean;
+  copySentenceTexOnClick: boolean;
 }
 
 export type Entities = RelationalStore<Entity>;

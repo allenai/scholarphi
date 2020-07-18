@@ -68,6 +68,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       entityCreationType: "term",
       entityEditingEnabled: false,
       propagateEntityEdits: true,
+      copySentenceTexOnClick: false,
     };
 
     /**
@@ -102,6 +103,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     );
     this.toggleEntityEditMode = this.toggleEntityEditMode.bind(this);
     this.setPropagateEntityEdits = this.setPropagateEntityEdits.bind(this);
+    this.toggleCopySentenceOnClick = this.toggleCopySentenceOnClick.bind(this);
   }
 
   async addToLibrary(paperId: string, paperTitle: string) {
@@ -440,6 +442,12 @@ class ScholarReader extends React.PureComponent<Props, State> {
     });
   }
 
+  toggleCopySentenceOnClick() {
+    this.setState((prevState) => ({
+      copySentenceTexOnClick: !prevState.copySentenceTexOnClick,
+    }));
+  }
+
   startTextSearch() {
     this.setState({
       isFindActive: true,
@@ -650,6 +658,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
               handleCloseDrawer={this.closeDrawer}
               handleToggleEntityCreationMode={this.toggleEntityCreationMode}
               handleToggleEntityEditMode={this.toggleEntityEditMode}
+              handleToggleCopySentenceOnClick={this.toggleCopySentenceOnClick}
             />
             <ViewerOverlay
               pdfViewerApplication={this.state.pdfViewerApplication}
@@ -729,6 +738,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                     this.state.entityCreationAreaSelectionMethod
                   }
                   entityEditingEnabled={this.state.entityEditingEnabled}
+                  copySentenceOnClick={this.state.copySentenceTexOnClick}
                   handleSelectEntityAnnotation={this.selectEntityAnnotation}
                   handleShowSnackbarMessage={this.showSnackbarMessage}
                   handleStartSymbolSearch={this.startSymbolSearch}
