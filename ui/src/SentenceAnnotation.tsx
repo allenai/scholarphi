@@ -11,7 +11,7 @@ interface Props {
   id: string;
   active: boolean;
   selected: boolean;
-  selectedSpanId: string | null;
+  selectedSpanIds: string[] | null;
   handleSelect: (
     sentenceId: string,
     annotationId: string,
@@ -56,7 +56,7 @@ export class SentenceAnnotation extends React.PureComponent<Props, {}> {
         className="sentence-annotation"
         active={this.props.active}
         selected={this.props.selected}
-        selectedSpanId={this.props.selectedSpanId}
+        selectedSpanIds={this.props.selectedSpanIds}
         boundingBoxes={this.props.sentence.attributes.bounding_boxes}
         pageNumber={this.props.pageNumber}
         source={this.props.sentence.attributes.source}

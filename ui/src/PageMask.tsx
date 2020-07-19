@@ -8,7 +8,7 @@ interface Props {
   pageWidth: number;
   pageHeight: number;
   entities: Entities | null;
-  selectedEntityId: string | null;
+  selectedEntityIds: string[];
 }
 
 export class PageMask extends React.PureComponent<Props> {
@@ -16,35 +16,39 @@ export class PageMask extends React.PureComponent<Props> {
     /*
      * Only show the mask if a symbol is selected and sentences were detected for the paper.
      */
-    const { selectedEntityId, entities } = this.props;
-    if (entities === null || selectedEntityId === null) {
-      return null;
-    }
-    const selectedEntity = entities.byId[selectedEntityId];
-    if (!isSymbol(selectedEntity)) {
+    const { selectedEntityIds, entities } = this.props;
+    if (entities === null || selectedEntityIds.length === 0) {
       return null;
     }
 
-    const matchingSentenceIds: string[] = [];
-    selectors
-      .matchingSymbols(selectedEntityId, entities)
-      .forEach((matchingSymbolId) => {
-        const sentenceId = (entities.byId[matchingSymbolId] as Symbol)
-          .relationships.sentence.id;
+    const matchingSentences: Sentence[] = [];
+    const firstMatchingSentences: Sentence[] = [];
+    selectedEntityIds.forEach((entityId) => {
+      const entity = entities.byId[entityId];
+      if (!isSymbol(entity)) {
+        return;
+      }
+      let foundFirstSentenceForSymbol = false;
+      selectors.matchingSymbols(entityId, entities).forEach((matchId) => {
+        const sentenceId = (entities.byId[matchId] as Symbol).relationships
+          .sentence.id;
         if (
           sentenceId !== null &&
-          matchingSentenceIds.indexOf(sentenceId) === -1
+          !matchingSentences.some((s) => s.id === sentenceId)
         ) {
-          matchingSentenceIds.push(sentenceId);
+          const sentence = entities.byId[sentenceId];
+          if (sentence !== undefined && isSentence(sentence)) {
+            matchingSentences.push(sentence);
+            if (!foundFirstSentenceForSymbol) {
+              if (!firstMatchingSentences.some((s) => s.id === sentence.id)) {
+                firstMatchingSentences.push(sentence);
+              }
+              foundFirstSentenceForSymbol = true;
+            }
+          }
         }
       });
-    const matchingSentences = matchingSentenceIds
-      .map((sentenceId) => entities.byId[sentenceId])
-      .filter((s) => s !== undefined)
-      .filter(isSentence);
-    const firstMatchingSentence:
-      | Sentence
-      | undefined = matchingSentences[0] as Sentence;
+    });
 
     const maskId = `page-${this.props.pageNumber}-mask`;
     const { pageWidth, pageHeight } = this.props;
@@ -72,7 +76,7 @@ export class PageMask extends React.PureComponent<Props> {
                 .filter((b) => b.page === this.props.pageNumber - 1)
                 .map((b, i) => (
                   <rect
-                    key={`${s.id}-box${i}`}
+                    key={`sentence-${s.id}-box${i}`}
                     x={b.left * pageWidth}
                     y={b.top * pageHeight}
                     width={b.width * pageWidth}
@@ -96,13 +100,13 @@ export class PageMask extends React.PureComponent<Props> {
           mask={`url(#${maskId})`}
         />
         {/* Highlight the first sentence in the document where the symbol appears. */}
-        {firstMatchingSentence !== undefined && (
+        {firstMatchingSentences.map((s) => (
           <>
-            {firstMatchingSentence.attributes.bounding_boxes
+            {s.attributes.bounding_boxes
               .filter((b) => b.page === this.props.pageNumber - 1)
               .map((b, i) => (
                 <rect
-                  key={`${firstMatchingSentence.id}-box${i}`}
+                  key={`definition-sentence-${s.id}-box${i}`}
                   x={b.left * pageWidth}
                   y={b.top * pageHeight}
                   width={b.width * pageWidth}
@@ -112,7 +116,7 @@ export class PageMask extends React.PureComponent<Props> {
                 />
               ))}
           </>
-        )}
+        ))}
       </svg>
     );
   }

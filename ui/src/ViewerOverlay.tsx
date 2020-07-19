@@ -37,7 +37,7 @@ interface Props {
   papers: Papers | null;
   entities: Entities | null;
   userLibrary: UserLibrary | null;
-  selectedEntityId: string | null;
+  selectedEntityIds: string[];
   entityCreationEnabled: boolean;
   entityCreationType: KnownEntityType;
   entityCreationAreaSelectionMethod: AreaSelectionMethod;
@@ -56,7 +56,7 @@ interface Props {
   handleChangeMatchIndex: (matchIndex: number | null) => void;
   handleChangeMatchCount: (matchCount: number | null) => void;
   handleChangeQuery: (query: FindQuery | null) => void;
-  handleDeselectSelection: () => void;
+  handleClearSelection: () => void;
   handleSelectEntity: (id: string) => void;
   handleScrollSymbolIntoView: () => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
@@ -148,13 +148,13 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
       !isClickEventInsideSelectable(event) &&
       !this.props.entityEditingEnabled
     ) {
-      this.props.handleDeselectSelection();
+      this.props.handleClearSelection();
     }
   }
 
   onKeyUp(event: KeyboardEvent) {
     if (uiUtils.isKeypressEscape(event)) {
-      this.props.handleDeselectSelection();
+      this.props.handleClearSelection();
     }
   }
 
@@ -168,16 +168,17 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
     let definitionSymbol: Symbol | null = null,
       definitionSentence: Sentence | null = null;
 
-    const { selectedEntityId, entities } = this.props;
+    const { selectedEntityIds, entities } = this.props;
 
     if (
-      selectedEntityId === null ||
+      selectedEntityIds.length !== 1 ||
       entities === null ||
-      selectors.selectedEntityType(selectedEntityId, entities) !== "symbol"
+      selectors.selectedEntityType(selectedEntityIds[0], entities) !== "symbol"
     ) {
       return { definitionSentence, symbol: definitionSymbol };
     }
 
+    const selectedEntityId = selectedEntityIds[0];
     const matchingSymbolIds = matchingSymbols(selectedEntityId, entities, [
       { key: "exact-match", active: true },
     ]);
@@ -334,7 +335,7 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
           userLibrary={this.props.userLibrary}
           papers={this.props.papers}
           entities={this.props.entities}
-          selectedEntityId={this.props.selectedEntityId}
+          selectedEntityIds={this.props.selectedEntityIds}
           entityEditingEnabled={this.props.entityEditingEnabled}
           propagateEntityEdits={this.props.propagateEntityEdits}
           handleSelectSymbol={this.props.handleSelectEntity}

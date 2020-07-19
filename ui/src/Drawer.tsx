@@ -7,7 +7,6 @@ import EntityPropertyEditor from "./EntityPropertyEditor";
 import FeedbackButton from "./FeedbackButton";
 import PaperList from "./PaperList";
 import SearchResults from "./SearchResults";
-import * as selectors from "./selectors";
 import { Entities, PaperId, Papers, UserLibrary } from "./state";
 import { Entity, EntityUpdateData } from "./types/api";
 import { PDFViewer } from "./types/pdfjs-viewer";
@@ -22,7 +21,7 @@ interface Props {
   papers: Papers | null;
   entities: Entities | null;
   userLibrary: UserLibrary | null;
-  selectedEntityId: string | null;
+  selectedEntityIds: string[];
   entityEditingEnabled: boolean;
   propagateEntityEdits: boolean;
   handleClose: () => void;
@@ -83,19 +82,19 @@ export class Drawer extends React.PureComponent<Props> {
       pdfDocument,
       mode,
       entities,
-      selectedEntityId,
+      selectedEntityIds,
       entityEditingEnabled,
       handleSelectSymbol,
     } = this.props;
 
     const feedbackContext = {
       mode,
-      selectedEntityId,
+      selectedEntityIds,
     };
 
-    let selectedEntity: Entity | null = null;
-    if (entities !== null && selectedEntityId !== null) {
-      selectedEntity = entities.byId[selectedEntityId] || null;
+    let firstSelectedEntity: Entity | null = null;
+    if (entities !== null && selectedEntityIds.length > 0) {
+      firstSelectedEntity = entities.byId[selectedEntityIds[0]] || null;
     }
 
     /*
@@ -110,14 +109,11 @@ export class Drawer extends React.PureComponent<Props> {
     let drawerContentType: DrawerContentType = null;
     if (entityEditingEnabled === true) {
       drawerContentType = "entity-property-editor";
-    } else if (
-      selectors.selectedEntityType(selectedEntityId, entities) === "symbol" &&
-      pdfDocument !== null
-    ) {
+    } else if (firstSelectedEntity === null) {
+      drawerContentType = null;
+    } else if (firstSelectedEntity.type === "symbol" && pdfDocument !== null) {
       drawerContentType = "symbol-search-results";
-    } else if (
-      selectors.selectedEntityType(selectedEntityId, entities) === "citation"
-    ) {
+    } else if (firstSelectedEntity.type === "citation") {
       drawerContentType = "paper-list";
     }
 
@@ -150,15 +146,16 @@ export class Drawer extends React.PureComponent<Props> {
           <FeedbackButton paperId={paperId} extraContext={feedbackContext} />
         </div>
         <div className="drawer__content">
-          {drawerContentType === "symbol-search-results" && (
-            <SearchResults
-              pdfDocument={pdfDocument as PDFDocumentProxy}
-              pageSize={4}
-              entities={entities}
-              selectedEntityId={selectedEntityId}
-              handleSelectSymbol={handleSelectSymbol}
-            />
-          )}
+          {drawerContentType === "symbol-search-results" &&
+            firstSelectedEntity !== null && (
+              <SearchResults
+                pdfDocument={pdfDocument as PDFDocumentProxy}
+                pageSize={4}
+                entities={entities}
+                selectedEntityId={firstSelectedEntity.id}
+                handleSelectSymbol={handleSelectSymbol}
+              />
+            )}
           {drawerContentType === "paper-list" && (
             <PaperList
               papers={this.props.papers}
@@ -166,21 +163,22 @@ export class Drawer extends React.PureComponent<Props> {
               handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
             />
           )}
-          {drawerContentType === "entity-property-editor" && (
-            <EntityPropertyEditor
-              /*
-               * When the selected entity changes, clear the property editor.
-               */
-              key={selectedEntityId || undefined}
-              entity={selectedEntity}
-              propagateEntityEdits={this.props.propagateEntityEdits}
-              handleSetPropagateEntityEdits={
-                this.props.handleSetPropagateEntityEdits
-              }
-              handleSaveChanges={this.props.handleUpdateEntity}
-              handleDeleteEntity={this.props.handleDeleteEntity}
-            />
-          )}
+          {drawerContentType === "entity-property-editor" &&
+            firstSelectedEntity !== null && (
+              <EntityPropertyEditor
+                /*
+                 * When the selected entity changes, clear the property editor.
+                 */
+                key={firstSelectedEntity.id}
+                entity={firstSelectedEntity}
+                propagateEntityEdits={this.props.propagateEntityEdits}
+                handleSetPropagateEntityEdits={
+                  this.props.handleSetPropagateEntityEdits
+                }
+                handleSaveChanges={this.props.handleUpdateEntity}
+                handleDeleteEntity={this.props.handleDeleteEntity}
+              />
+            )}
         </div>
       </MuiDrawer>
     );

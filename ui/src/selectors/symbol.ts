@@ -31,15 +31,38 @@ export function symbolSentence(
   return null;
 }
 
-export const symbolIds = defaultMemoize((entities: Entities) => {
-  return entities.all.filter((eId) => isSymbol(entities.byId[eId]));
-});
+export const symbolIds = defaultMemoize(
+  (entities: Entities, from?: string[]) => {
+    return entities.all
+      .filter((eId) => isSymbol(entities.byId[eId]))
+      .filter((id) => from === undefined || from.indexOf(id) !== -1);
+  }
+);
 
 /**
  * Get a list of IDs of all symbols that with similar MathML. Returned list of symbols will
  * be in the order the symbols appear in the document.
  */
-export const matchingSymbols = defaultMemoize(
+export function matchingSymbols(
+  symbolIdOrIds: string | string[],
+  entities: Entities,
+  symbolFilters?: SymbolFilter[]
+) {
+  if (typeof symbolIdOrIds === "string") {
+    return symbolsMatchingSingleSymbol(symbolIdOrIds, entities, symbolFilters);
+  } else {
+    const matchingSymbolIds = symbolIdOrIds
+      .map((id) => symbolsMatchingSingleSymbol(id, entities, symbolFilters))
+      .flat();
+    const uniqueIds = matchingSymbolIds.reduce((dict, id) => {
+      dict[id] = true;
+      return dict;
+    }, {} as { [id: string]: any });
+    return matchingSymbolIds.filter((id) => uniqueIds[id]);
+  }
+}
+
+const symbolsMatchingSingleSymbol = defaultMemoize(
   (symbolId: string, entities: Entities, symbolFilters?: SymbolFilter[]) => {
     const symbol = entities.byId[symbolId] as Symbol;
 

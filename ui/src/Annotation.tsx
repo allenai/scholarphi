@@ -26,9 +26,10 @@ interface Props {
   selected?: boolean;
   /**
    * If the annotation is selected, this is the ID of the span of the annotation that was selected.
-   * This ensures that the tooltip will show right next to where the user clicked.
+   * This ensures that the tooltip will show right next to where the user clicked. IDs for spans that
+   * do not belong to this annotation are ignored.
    */
-  selectedSpanId?: string | null;
+  selectedSpanIds: string[] | null;
   /**
    * Positions in the paper where this annotation should be drawn. A separate 'AnnotationSpan'
    * will be created for each box.
@@ -129,7 +130,10 @@ export class Annotation extends React.PureComponent<Props> {
                 })}
                 active={this.props.active}
                 location={box}
-                selected={this.props.selectedSpanId === spanId}
+                selected={
+                  this.props.selectedSpanIds !== null &&
+                  this.props.selectedSpanIds.indexOf(spanId) !== -1
+                }
                 tooltipContent={this.props.tooltipContent}
                 underline={this.props.underline}
                 onClick={this.props.onClick}

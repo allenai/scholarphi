@@ -13,7 +13,7 @@ interface Props {
   symbol: Symbol;
   active: boolean;
   selected: boolean;
-  selectedSpanId: string | null;
+  selectedSpanIds: string[] | null;
   isFindMatch?: boolean;
   isFindSelection?: boolean;
   tooltip: TooltipType;
@@ -47,7 +47,7 @@ export class SymbolAnnotation extends React.PureComponent<Props> {
         pageNumber={this.props.pageNumber}
         active={this.props.active}
         selected={this.props.selected}
-        selectedSpanId={this.props.selectedSpanId}
+        selectedSpanIds={this.props.selectedSpanIds}
         isFindMatch={this.props.isFindMatch}
         isFindSelection={this.props.isFindSelection}
         tooltipContent={

@@ -11,7 +11,7 @@ interface Props {
   id: string;
   active: boolean;
   selected: boolean;
-  selectedSpanId: string | null;
+  selectedSpanIds: string[] | null;
   handleSelect: (
     termId: string,
     annotationId: string,
@@ -37,7 +37,7 @@ export class TermAnnotation extends React.PureComponent<Props, {}> {
         className="term-annotation"
         active={this.props.active}
         selected={this.props.selected}
-        selectedSpanId={this.props.selectedSpanId}
+        selectedSpanIds={this.props.selectedSpanIds}
         boundingBoxes={this.props.term.attributes.bounding_boxes}
         pageNumber={this.props.pageNumber}
         source={this.props.term.attributes.source}

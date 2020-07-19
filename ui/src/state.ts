@@ -64,10 +64,11 @@ export interface State {
   /*
    * ~ Selecting annotations and entities ~
    */
+  selectedAnnotationIds: string[];
+  selectedAnnotationSpanIds: string[];
+  selectedEntityIds: string[];
   annotationsShowing: boolean;
-  selectedAnnotationId: string | null;
-  selectedAnnotationSpanId: string | null;
-  selectedEntityId: string | null;
+  multiselectEnabled: boolean;
 
   /*
    * ~ Drawer (sidebar) state ~

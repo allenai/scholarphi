@@ -23,10 +23,10 @@ interface Props {
   handleCloseDrawer: () => void;
   handleStartTextSearch: () => void;
   handleTerminateSearch: () => void;
-  handleDeselectSelection: () => void;
   handleToggleEntityCreationMode: () => void;
   handleToggleEntityEditMode: () => void;
   handleToggleCopySentenceOnClick: () => void;
+  handleSetMultiselectEnabled: (enabled: boolean) => void;
 }
 
 export type SnackbarMode = "open" | "closed";
@@ -82,6 +82,9 @@ class AppOverlay extends React.PureComponent<Props> {
     if (event.keyCode === 17 || event.key === "Control") {
       this.props.handleHideAnnotations();
     }
+    if (event.keyCode === 16 || event.key === "Shift") {
+      this.props.handleSetMultiselectEnabled(true);
+    }
     /*
      * This code for listening for Ctrl+F and for opening the find bar is based on the analogous
      * code in the pdf.js project:
@@ -113,6 +116,9 @@ class AppOverlay extends React.PureComponent<Props> {
     }
     if (event.keyCode === 17 || event.key === "Control") {
       this.props.handleShowAnnotations();
+    }
+    if (event.keyCode === 16 || event.key === "Shift") {
+      this.props.handleSetMultiselectEnabled(false);
     }
   }
 

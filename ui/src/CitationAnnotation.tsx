@@ -14,7 +14,7 @@ interface Props {
   id: string;
   active: boolean;
   selected: boolean;
-  selectedSpanId: string | null;
+  selectedSpanIds: string[] | null;
   /**
    * The ID of the paper that the user is reading.
    */
@@ -45,7 +45,7 @@ export class CitationAnnotation extends React.PureComponent<Props, {}> {
         className="citation-annotation"
         active={this.props.active}
         selected={this.props.selected}
-        selectedSpanId={this.props.selectedSpanId}
+        selectedSpanIds={this.props.selectedSpanIds}
         boundingBoxes={this.props.citation.attributes.bounding_boxes}
         pageNumber={this.props.pageNumber}
         source={this.props.citation.attributes.source}

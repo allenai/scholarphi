@@ -34,9 +34,9 @@ interface Props {
   papers: Papers | null;
   entities: Entities | null;
   userLibrary: UserLibrary | null;
-  selectedEntityId: string | null;
-  selectedAnnotationId: string | null;
-  selectedAnnotationSpanId: string | null;
+  selectedEntityIds: string[];
+  selectedAnnotationIds: string[];
+  selectedAnnotationSpanIds: string[];
   findMatchedEntityIds: string[] | null;
   findSelectionEntityId: string | null;
   showAnnotations: boolean;
@@ -99,9 +99,9 @@ class PageOverlay extends React.PureComponent<Props, {}> {
       papers,
       entities,
       userLibrary,
-      selectedEntityId,
-      selectedAnnotationId,
-      selectedAnnotationSpanId,
+      selectedEntityIds,
+      selectedAnnotationIds,
+      selectedAnnotationSpanIds,
       findMatchedEntityIds,
       findSelectionEntityId,
       showAnnotations,
@@ -116,27 +116,30 @@ class PageOverlay extends React.PureComponent<Props, {}> {
     } = this.props;
 
     const pageDimensions = getPageViewDimensions(view);
-    let selectedEntity: Entity | null = null;
-    if (entities !== null && selectedEntityId !== null) {
-      selectedEntity = entities.byId[selectedEntityId];
+    let selectedEntities: Entity[] = [];
+    if (entities !== null) {
+      selectedEntities = selectedEntityIds.map((id) => entities.byId[id]);
     }
 
     return ReactDOM.createPortal(
       <>
-        <PageMask
-          key="page-mask"
-          pageNumber={pageNumber}
-          pageWidth={pageDimensions.width}
-          pageHeight={pageDimensions.height}
-          entities={entities}
-          selectedEntityId={selectedEntityId}
-        />
+        {!entityCreationEnabled ? (
+          <PageMask
+            key="page-mask"
+            pageNumber={pageNumber}
+            pageWidth={pageDimensions.width}
+            pageHeight={pageDimensions.height}
+            entities={entities}
+            selectedEntityIds={selectedEntityIds}
+          />
+        ) : null}
         {/* Add annotations for all citation bounding boxes on this page. */}
         {entities !== null
           ? entities.all.map((entityId) => {
               const entity = entities.byId[entityId];
               const annotationId = `entity-${entityId}-page-${pageNumber}-annotation`;
-              const isSelected = annotationId === selectedAnnotationId;
+              const isSelected =
+                selectedAnnotationIds.indexOf(annotationId) !== -1;
               const boundingBoxes = entity.attributes.bounding_boxes.filter(
                 (box) => box.page === pageNumber - 1
               );
@@ -153,8 +156,8 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     term={entity}
                     active={showAnnotations}
                     selected={isSelected}
-                    selectedSpanId={
-                      isSelected ? selectedAnnotationSpanId : null
+                    selectedSpanIds={
+                      isSelected ? selectedAnnotationSpanIds : null
                     }
                     handleSelect={this.props.handleSelectEntityAnnotation}
                   />
@@ -176,8 +179,8 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     }
                     active={showAnnotations}
                     selected={isSelected}
-                    selectedSpanId={
-                      isSelected ? selectedAnnotationSpanId : null
+                    selectedSpanIds={
+                      isSelected ? selectedAnnotationSpanIds : null
                     }
                     openedPaperId={paperId}
                     handleSelect={this.props.handleSelectEntityAnnotation}
@@ -190,14 +193,13 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                   findMatchedEntityIds.indexOf(entityId) !== -1;
                 const isTopLevelSymbol =
                   entity.relationships.parent.id === null;
-                const isChildOfSelection =
-                  selectedEntity !== null &&
-                  isSymbol(selectedEntity) &&
-                  selectors.isChild(entity, selectedEntity);
-                const isAncestorOfSelection =
-                  selectedEntity !== null &&
-                  isSymbol(selectedEntity) &&
-                  selectors.isDescendant(selectedEntity, entity, entities);
+                const isChildOfSelection = selectedEntities.some(
+                  (e) => isSymbol(e) && selectors.isChild(entity, e)
+                );
+                const isAncestorOfSelection = selectedEntities.some(
+                  (e) =>
+                    isSymbol(e) && selectors.isDescendant(e, entity, entities)
+                );
                 const isLeaf = entity.relationships.children.length === 0;
                 return (
                   <SymbolAnnotation
@@ -227,8 +229,8 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                         (isLeaf && isSelected))
                     }
                     selected={isSelected}
-                    selectedSpanId={
-                      isSelected ? selectedAnnotationSpanId : null
+                    selectedSpanIds={
+                      isSelected ? selectedAnnotationSpanIds : null
                     }
                     isFindSelection={findSelectionEntityId === entityId}
                     isFindMatch={isFindMatch}
@@ -251,8 +253,8 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     sentence={entity}
                     active={showAnnotations}
                     selected={isSelected}
-                    selectedSpanId={
-                      isSelected ? selectedAnnotationSpanId : null
+                    selectedSpanIds={
+                      isSelected ? selectedAnnotationSpanIds : null
                     }
                     handleSelect={this.props.handleSelectEntityAnnotation}
                     handleShowSnackbarMessage={
