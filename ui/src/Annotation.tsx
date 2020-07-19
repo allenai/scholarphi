@@ -101,7 +101,11 @@ export class Annotation extends React.PureComponent<Props> {
 
   render() {
     return (
-      <>
+      <div
+        className={classNames("scholar-reader-annotation", {
+          selected: this.props.selected,
+        })}
+      >
         {this.props.boundingBoxes
           .filter((b) => {
             /**
@@ -142,7 +146,7 @@ export class Annotation extends React.PureComponent<Props> {
               />
             );
           })}
-      </>
+      </div>
     );
   }
 }

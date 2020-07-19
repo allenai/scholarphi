@@ -16,18 +16,11 @@
 /**
  * Make annotations interactive
  */
-.scholar-reader-annotation-span.active {
+.scholar-reader-annotation {
   /**
-   * Provide an underline as a hint that the annotation is interactive 
+   * Highlight all spans of an annotation when hovering over any one span of the annotation
    */
-  &.underline {
-    border-bottom: @underline-width @underline-color dotted;
-  }
-
-  /**
-   * Highlight the area of an annotation on hover
-   */
-  &:hover {
+  &:hover .scholar-reader-annotation-span {
     background: @highlight-hover-background;
     opacity: @highlight-hover-opacity;
     cursor: pointer;
@@ -36,10 +29,19 @@
   /**
    * Deepen the saturation of colors when the annotation is selected
    */
-  &.selected {
+  &.selected .scholar-reader-annotation-span {
     &:not(.find-selection) {
       background-color: @highlight-color;
       opacity: @highlight-opacity;
+    }
+  }
+
+  .scholar-reader-annotation-span.active {
+    /**
+     * Provide an underline as a hint that the annotation is interactive 
+     */
+    &.underline {
+      border-bottom: @underline-width @underline-color dotted;
     }
   }
 }

@@ -60,7 +60,8 @@ interface Props {
   handleSelectEntity: (id: string) => void;
   handleScrollSymbolIntoView: () => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
-  handleCreateEntity: (entity: EntityCreateData) => Promise<boolean>;
+  handleCreateEntity: (entity: EntityCreateData) => Promise<string | null>;
+  handleCreateParentSymbol: (symbols: Symbol[]) => Promise<boolean>;
   handleUpdateEntity: (
     entity: Entity,
     updates: EntityUpdateData
@@ -250,6 +251,8 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
 
   render() {
     const {
+      entities,
+      selectedEntityIds,
       entityCreationEnabled,
       entityCreationType,
       entityCreationAreaSelectionMethod,
@@ -315,6 +318,8 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
             <EntityCreationToolbar
               className="scholar-reader-toolbar"
               pages={this.props.pages}
+              entities={entities}
+              selectedEntityIds={selectedEntityIds}
               entityType={entityCreationType}
               selectionMethod={entityCreationAreaSelectionMethod}
               handleShowSnackbarMessage={this.props.handleShowSnackbarMessage}
@@ -323,6 +328,7 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
                 this.props.handleSelectEntityCreationAreaSelectionMethod
               }
               handleCreateEntity={this.props.handleCreateEntity}
+              handleCreateParentSymbol={this.props.handleCreateParentSymbol}
             />
           ) : null}
         </div>

@@ -1,7 +1,10 @@
 import React from "react";
 import * as api from "./api";
 import AppOverlay from "./AppOverlay";
-import { AreaSelectionMethod } from "./EntityCreationToolbar";
+import {
+  AreaSelectionMethod,
+  createCreateEntityDataWithBoxes,
+} from "./EntityCreationToolbar";
 import { FindQuery } from "./FindBar";
 import PageOverlay from "./PageOverlay";
 import * as selectors from "./selectors";
@@ -17,6 +20,7 @@ import {
   isSymbol,
   isTerm,
   Paper,
+  Symbol,
 } from "./types/api";
 import {
   DocumentLoadedEvent,
@@ -77,6 +81,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
      * See https://reactjs.org/docs/faq-functions.html#how-do-i-bind-a-function-to-a-component-instance
      */
     this.createEntity = this.createEntity.bind(this);
+    this.createParentSymbol = this.createParentSymbol.bind(this);
     this.updateEntity = this.updateEntity.bind(this);
     this.deleteEntity = this.deleteEntity.bind(this);
     this.addToLibrary = this.addToLibrary.bind(this);
@@ -293,15 +298,95 @@ class ScholarReader extends React.PureComponent<Props, State> {
            */
           selectedEntityIds: [createdEntity.id],
         }));
-        return true;
+        return createdEntity.id;
       }
     }
-    return false;
+    return null;
+  }
+
+  async createParentSymbol(childSymbols: Symbol[]) {
+    /*
+     * Parent bounding box is the union of child bounding boxes.
+     */
+    const childBoxes = childSymbols
+      .map((c) => c.attributes.bounding_boxes)
+      .flat();
+    if (childBoxes.length === 0) {
+      return false;
+    }
+    const left = Math.min(...childBoxes.map((b) => b.left));
+    const top = Math.min(...childBoxes.map((b) => b.top));
+    const right = Math.max(...childBoxes.map((b) => b.left + b.width));
+    const bottom = Math.max(...childBoxes.map((b) => b.top + b.height));
+    const parentBox = {
+      left,
+      top,
+      width: right - left,
+      height: bottom - top,
+      page: childBoxes[0].page,
+      source: "human-annotation",
+    };
+
+    /*
+     * Transfer TeX and sentence references from children to parent. Attempt to create
+     * parent TeX by removing TeX markers (e.g., leading and training '$') from child
+     * TeX and then concatenating all child TeX.
+     */
+    const allChildTex = childSymbols
+      .map((s) => s.attributes.tex || "")
+      .map((tex) => tex.replace(/^\$*/, "").replace(/\$*$/, ""))
+      .join(" ");
+    const createEntityData = createCreateEntityDataWithBoxes(
+      [parentBox],
+      "symbol",
+      allChildTex
+    );
+    const childIds = childSymbols.map((c) => c.id);
+    const sentenceId =
+      childSymbols
+        .map((c) => c.relationships.sentence.id)
+        .filter((id) => id !== undefined)[0] || null;
+    createEntityData.relationships = {
+      ...createEntityData.relationships,
+      children: childIds.map((id) => ({ type: "symbol", id })),
+      sentence: { type: "sentence", id: sentenceId },
+    };
+
+    /*
+     * Create parent symbol.
+     */
+    const parentId = await this.createEntity(createEntityData);
+    if (parentId === null) {
+      return false;
+    }
+
+    /*
+     * Update children to reference the parent.
+     */
+    for (const child of childSymbols) {
+      const updateData = {
+        id: child.id,
+        type: "symbol",
+        attributes: {
+          source: "human-annotation",
+        },
+        relationships: {
+          parent: { type: "symbol", id: parentId },
+        },
+      } as EntityUpdateData;
+      const success = await this.updateEntity(child, updateData, false);
+      if (!success) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   async updateEntity(
     entity: Entity,
-    updateData: EntityUpdateData
+    updateData: EntityUpdateData,
+    propagateEdits?: boolean
   ): Promise<boolean> {
     const { paperId } = this.props;
     if (paperId === undefined) {
@@ -314,7 +399,11 @@ class ScholarReader extends React.PureComponent<Props, State> {
      */
     const entitiesToPatch = [entity.id];
     const entities = this.state.entities;
-    if (this.state.propagateEntityEdits && entities !== null) {
+    if (
+      (propagateEdits === true ||
+        (propagateEdits === undefined && this.state.propagateEntityEdits)) &&
+      entities !== null
+    ) {
       entitiesToPatch.push(
         ...entities.all
           .map((id) => entities.byId[id])
@@ -733,6 +822,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
               handleAddPaperToLibrary={this.addToLibrary}
               handleSelectEntity={this.selectEntity}
               handleCreateEntity={this.createEntity}
+              handleCreateParentSymbol={this.createParentSymbol}
               handleUpdateEntity={this.updateEntity}
               handleDeleteEntity={this.deleteEntity}
               handleSelectEntityCreationType={this.setEntityCreationType}

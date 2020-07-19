@@ -270,6 +270,11 @@ export class Connection {
       )
       .join("entity", { "entitydata.entity_id": "entity.id" })
       .join("paper", { "paper.s2_id": "entity.paper_id" })
+      /*
+       * Order by entity ID to ensure that items from lists are retrieved in
+       * the order they were written to the database.
+       */
+      .orderBy("entitydata.id", "asc")
       .where({ ...paperSelector, version });
 
     /*

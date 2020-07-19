@@ -53,7 +53,7 @@ interface Props {
   handleShowSnackbarMessage: (message: string) => void;
   handleStartSymbolSearch: (id: string) => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
-  handleCreateEntity: (entity: EntityCreateData) => Promise<boolean>;
+  handleCreateEntity: (entity: EntityCreateData) => Promise<string | null>;
   handleDeleteEntity: (id: string) => Promise<boolean>;
 }
 
@@ -191,8 +191,9 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                 const isFindMatch =
                   findMatchedEntityIds !== null &&
                   findMatchedEntityIds.indexOf(entityId) !== -1;
+                const parentId = entity.relationships.parent.id;
                 const isTopLevelSymbol =
-                  entity.relationships.parent.id === null;
+                  parentId === null || entities.byId[parentId] === undefined;
                 const isChildOfSelection = selectedEntities.some(
                   (e) => isSymbol(e) && selectors.isChild(entity, e)
                 );

@@ -6,12 +6,14 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import classNames from "classnames";
 import React from "react";
-import { KnownEntityType, PageModel, Pages } from "./state";
+import { Entities, KnownEntityType, PageModel, Pages } from "./state";
 import {
   BoundingBox,
   CitationAttributes,
   EntityCreateData,
+  isSymbol,
   SentenceAttributes,
+  Symbol,
   SymbolAttributes,
   SymbolRelationships,
   TermAttributes,
@@ -21,12 +23,15 @@ import * as uiUtils from "./utils/ui";
 interface Props {
   className?: string;
   pages: Pages;
+  entities: Entities | null;
+  selectedEntityIds: string[];
   entityType: KnownEntityType;
   selectionMethod: AreaSelectionMethod;
   handleShowSnackbarMessage: (message: string) => void;
   handleSelectEntityType: (entityCreationType: KnownEntityType) => void;
   handleSelectSelectionMethod: (selectionMethod: AreaSelectionMethod) => void;
-  handleCreateEntity: (entity: EntityCreateData) => Promise<boolean>;
+  handleCreateEntity: (entity: EntityCreateData) => Promise<string | null>;
+  handleCreateParentSymbol: (symbols: Symbol[]) => Promise<boolean>;
 }
 
 interface State {
@@ -38,7 +43,7 @@ interface State {
    * triggered on each selection change event.
    */
   textSelectionChangeMs: number | null;
-  state: "interaction-enabled" | "creating-entity";
+  state: "interactive" | "creating-entity" | "creating-parent-symbol";
 }
 
 export type AreaSelectionMethod = "text-selection" | "rectangular-selection";
@@ -114,7 +119,7 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      state: "interaction-enabled",
+      state: "interactive",
       textSelection: document.getSelection(),
       textSelectionChangeMs: Date.now(),
     };
@@ -122,6 +127,7 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
     this.onChangeEntityType = this.onChangeEntityType.bind(this);
     this.onChangeSelectionMethod = this.onChangeSelectionMethod.bind(this);
     this.onClickCreateEntity = this.onClickCreateEntity.bind(this);
+    this.onClickCreateParentSymbol = this.onClickCreateParentSymbol.bind(this);
   }
 
   componentWillMount() {
@@ -194,25 +200,68 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
       }
 
       /*
-       * If a page was found, save a bounding box for the selection, in ratio coordinates
+       * If a page was found, save bounding boxes for the selection, in ratio coordinates
        * relative to the page view 'div'.
        */
       if (page !== undefined) {
         const { pageNumber } = page.view.pdfPage;
         const pageRect = page.view.div.getBoundingClientRect();
         const rangeRects = range.getClientRects();
+        let lastBox = undefined;
+
         for (let i = 0; i < rangeRects.length; i++) {
           const rangeRect = rangeRects.item(i);
           if (rangeRect !== null) {
-            const box: BoundingBox = {
-              left: (rangeRect.left - pageRect.left) / pageRect.width,
-              top: (rangeRect.top - pageRect.top) / pageRect.height,
-              width: rangeRect.width / pageRect.width,
-              height: rangeRect.height / pageRect.height,
-              page: pageNumber - 1,
-              source: "human-annotation",
-            };
-            boxes.push(box);
+            /*
+             * Compute dimensions for a new box.
+             */
+            const left = (rangeRect.left - pageRect.left) / pageRect.width;
+            const top = (rangeRect.top - pageRect.top) / pageRect.height;
+            const width = rangeRect.width / pageRect.width;
+            const height = rangeRect.height / pageRect.height;
+            const right = left + width;
+            const bottom = top + height;
+
+            /*
+             * If this box appears right after the last box and is vertically aligned
+             * with the last box, merge it with the last box. This loop takes advantage of
+             * how getClientRects() iterates over boxes in content order (see
+             * https://drafts.csswg.org/cssom-view/#dom-range-getclientrects).
+             */
+            let boxMergedWithPrevious = false;
+            if (lastBox !== undefined) {
+              const lastBoxRight = lastBox.left + lastBox.width;
+              const lastBoxBottom = lastBox.top + lastBox.height;
+              const SMALL_HORIZONTAL_DELTA = 0.01; // 1% of page width
+              const SMALL_VERTICAL_DElTA = 0.01; // 1% of page height
+
+              if (
+                left - lastBoxRight < SMALL_HORIZONTAL_DELTA &&
+                Math.abs(top - lastBox.top) < SMALL_VERTICAL_DElTA &&
+                Math.abs(bottom - lastBoxBottom) < SMALL_VERTICAL_DElTA
+              ) {
+                lastBox.width = right - lastBox.left;
+                lastBox.top = Math.min(top, lastBox.top);
+                lastBox.height = Math.max(bottom, lastBoxBottom) - lastBox.top;
+                boxMergedWithPrevious = true;
+              }
+            }
+
+            /*
+             * Create a new bounding box if it couldn't be merged with the previous box.
+             */
+            if (!boxMergedWithPrevious) {
+              const box: BoundingBox = {
+                left,
+                top,
+                width,
+                height,
+                page: pageNumber - 1,
+                source: "human-annotation",
+              };
+              boxes.push(box);
+              lastBox = box;
+            }
           }
         }
       }
@@ -229,14 +278,55 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
     this.setState({
       state: "creating-entity",
     });
-    const success = await this.props.handleCreateEntity(createEntityData);
-    if (!success) {
+    const entityId = await this.props.handleCreateEntity(createEntityData);
+    if (entityId === null) {
       this.props.handleShowSnackbarMessage(
         "Entity could not be created. Check that you are connected to the internet."
       );
     }
     this.setState({
-      state: "interaction-enabled",
+      state: "interactive",
+    });
+  }
+
+  _getSelectedSymbols() {
+    const { entities, selectedEntityIds } = this.props;
+    if (entities === null) {
+      return [];
+    }
+    return selectedEntityIds
+      .map((id) => entities.byId[id])
+      .filter((e) => e !== undefined && isSymbol(e))
+      .map((e) => e as Symbol);
+  }
+
+  /**
+   * Entities can be combined if there is more than one and if they are all the same type.
+   */
+  canCreateParentSymbol() {
+    const { selectedEntityIds } = this.props;
+    const selectedSymbols = this._getSelectedSymbols();
+    return (
+      selectedSymbols.length === selectedEntityIds.length &&
+      selectedSymbols.length > 1
+    );
+  }
+
+  async onClickCreateParentSymbol() {
+    this.setState({
+      state: "creating-parent-symbol",
+    });
+    const success = await this.props.handleCreateParentSymbol(
+      this._getSelectedSymbols()
+    );
+    if (!success) {
+      this.props.handleShowSnackbarMessage(
+        "Failed to create parent symbol, or update child symbols to reference parent. " +
+          "Data may now be inconsistent. Check your internet connection."
+      );
+    }
+    this.setState({
+      state: "interactive",
     });
   }
 
@@ -257,7 +347,7 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
             labelId="entity-creation-toolbar__type-select-label"
             value={this.props.entityType}
             onChange={this.onChangeEntityType}
-            disabled={this.state.state !== "interaction-enabled"}
+            disabled={this.state.state !== "interactive"}
           >
             <MenuItem value="term">Term</MenuItem>
             <MenuItem value="symbol">Symbol</MenuItem>
@@ -272,7 +362,7 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
             labelId="entity-creation-toolbar__selection-method-select-label"
             value={selectionMethod}
             onChange={this.onChangeSelectionMethod}
-            disabled={this.state.state !== "interaction-enabled"}
+            disabled={this.state.state !== "interactive"}
           >
             <MenuItem value="text-selection">Text</MenuItem>
             <MenuItem value="rectangular-selection">Rectangular</MenuItem>
@@ -285,12 +375,12 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
             disabled={
               textSelection === null ||
               textSelection.isCollapsed === true ||
-              this.state.state !== "interaction-enabled"
+              this.state.state !== "interactive"
             }
             color="primary"
             variant="contained"
           >
-            {this.state.state === "interaction-enabled"
+            {this.state.state === "interactive"
               ? "Create entity from text selection"
               : null}
             {this.state.state === "creating-entity"
@@ -298,6 +388,18 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
               : null}
           </Button>
         ) : null}
+        {this.props.entityType === "symbol" ? (
+          <Button
+            className="entity-creation-toolbar__action-button"
+            onClick={this.onClickCreateParentSymbol}
+            disabled={!this.canCreateParentSymbol()}
+            color="primary"
+            variant="contained"
+          >
+            Create Parent Symbol
+          </Button>
+        ) : null}
+
         <span className="entity-creation-toolbar__selection-message">
           {selectionMethod === "text-selection" && textSelection !== null
             ? `Selected text: "${uiUtils.truncateText(

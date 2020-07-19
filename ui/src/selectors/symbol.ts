@@ -125,6 +125,8 @@ export function isDescendant(
         return true;
       }
       parent = parentEntity.relationships.parent;
+    } else {
+      break;
     }
   }
   return false;

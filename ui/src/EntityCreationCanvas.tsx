@@ -15,7 +15,7 @@ interface Props {
   pageView: PDFPageView;
   entityType: KnownEntityType;
   handleShowSnackbarMessage: (message: string) => void;
-  handleCreateEntity: (entity: EntityCreateData) => Promise<boolean>;
+  handleCreateEntity: (entity: EntityCreateData) => Promise<string | null>;
 }
 
 interface State {
@@ -37,7 +37,7 @@ export class EntityCreationCanvas extends React.PureComponent<Props, State> {
     this.setState({
       state: "creating-entity",
     });
-    const result = await handleCreateEntity(
+    const entityId = await handleCreateEntity(
       createCreateEntityDataFromSelection(
         this.props.pageView,
         anchor,
@@ -45,7 +45,7 @@ export class EntityCreationCanvas extends React.PureComponent<Props, State> {
         entityType
       )
     );
-    if (result === false) {
+    if (entityId === null) {
       this.props.handleShowSnackbarMessage(
         "Entity could not be created. Check that you are connected to the internet."
       );

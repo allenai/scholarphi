@@ -17,19 +17,21 @@ export class PageMask extends React.PureComponent<Props> {
      * Only show the mask if a symbol is selected and sentences were detected for the paper.
      */
     const { selectedEntityIds, entities } = this.props;
-    if (entities === null || selectedEntityIds.length === 0) {
+    if (entities === null) {
+      return null;
+    }
+    const selectedSymbolIds = selectedEntityIds.filter((entityId) =>
+      isSymbol(entities.byId[entityId])
+    );
+    if (selectedSymbolIds.length === 0) {
       return null;
     }
 
     const matchingSentences: Sentence[] = [];
     const firstMatchingSentences: Sentence[] = [];
-    selectedEntityIds.forEach((entityId) => {
-      const entity = entities.byId[entityId];
-      if (!isSymbol(entity)) {
-        return;
-      }
+    selectedSymbolIds.forEach((symbolId) => {
       let foundFirstSentenceForSymbol = false;
-      selectors.matchingSymbols(entityId, entities).forEach((matchId) => {
+      selectors.matchingSymbols(symbolId, entities).forEach((matchId) => {
         const sentenceId = (entities.byId[matchId] as Symbol).relationships
           .sentence.id;
         if (
@@ -100,9 +102,9 @@ export class PageMask extends React.PureComponent<Props> {
           mask={`url(#${maskId})`}
         />
         {/* Highlight the first sentence in the document where the symbol appears. */}
-        {firstMatchingSentences.map((s) => (
-          <>
-            {s.attributes.bounding_boxes
+        {firstMatchingSentences
+          .map((s) =>
+            s.attributes.bounding_boxes
               .filter((b) => b.page === this.props.pageNumber - 1)
               .map((b, i) => (
                 <rect
@@ -114,9 +116,9 @@ export class PageMask extends React.PureComponent<Props> {
                   fill="green"
                   opacity={0.2}
                 />
-              ))}
-          </>
-        ))}
+              ))
+          )
+          .flat()}
       </svg>
     );
   }
