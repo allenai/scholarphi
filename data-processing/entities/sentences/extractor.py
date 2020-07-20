@@ -214,7 +214,7 @@ class SentenceExtractor(EntityExtractor):
             end = plaintext_to_tex_offset_map[plaintext_end]
             length_so_far_in_plain_text = plaintext_end
             tex_sub = tex[start:end]
-            context_tex = tex[start - DEFAULT_CONTEXT_SIZE : end + DEFAULT_CONTEXT_SIZE]
+            context_tex = tex[ max(start - DEFAULT_CONTEXT_SIZE, 0) : end + DEFAULT_CONTEXT_SIZE]
 
             # extract richer context of tex using '\n\n'
             extended_tex_sub = extract_richer_tex(context_tex, tex_sub)
