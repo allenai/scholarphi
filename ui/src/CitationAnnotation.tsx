@@ -1,6 +1,6 @@
 import React from "react";
 import Annotation from "./Annotation";
-import CitationTooltipBody from "./CitationTooltipBody";
+import CitationGloss from "./CitationGloss";
 import { PaperId, UserLibrary } from "./state";
 import { Citation, Paper } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
@@ -49,9 +49,9 @@ export class CitationAnnotation extends React.PureComponent<Props, {}> {
         boundingBoxes={this.props.citation.attributes.bounding_boxes}
         pageNumber={this.props.pageNumber}
         source={this.props.citation.attributes.source}
-        tooltipContent={
+        glossContent={
           this.props.paper !== null ? (
-            <CitationTooltipBody
+            <CitationGloss
               citation={this.props.citation}
               paper={this.props.paper}
               userLibrary={this.props.userLibrary}

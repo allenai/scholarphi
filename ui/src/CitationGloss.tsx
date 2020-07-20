@@ -11,12 +11,12 @@ interface Props {
   openedPaperId?: PaperId;
 }
 
-export class CitationTooltipBody extends React.PureComponent<Props> {
+export class CitationGloss extends React.PureComponent<Props> {
   render() {
     return (
-      <div className="tooltip-body citation-tooltip-body">
-        <div className="tooltip-body__section">
-          <div className="tooltip-body__citation">
+      <div className="gloss citation-gloss">
+        <div className="gloss__section">
+          <div className="gloss__citation">
             <PaperSummary
               paper={this.props.paper}
               userLibrary={this.props.userLibrary}
@@ -30,4 +30,4 @@ export class CitationTooltipBody extends React.PureComponent<Props> {
   }
 }
 
-export default CitationTooltipBody;
+export default CitationGloss;

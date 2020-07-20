@@ -240,7 +240,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       const symbolBox = symbol.attributes.bounding_boxes[0];
       const pdfLeft = pdfViewer.container.getBoundingClientRect().left;
       if (pages[symbolBox.page + 1].view != null) {
-        const { left, width } = selectors.divDimensionStyles(
+        const { left, width } = uiUtils.getPositionInPageView(
           pages[symbolBox.page + 1].view,
           symbolBox
         );
@@ -345,7 +345,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     const sentenceId =
       childSymbols
         .map((c) => c.relationships.sentence.id)
-        .filter((id) => id !== undefined)[0] || null;
+        .filter((id) => id !== null)[0] || null;
     createEntityData.relationships = {
       ...createEntityData.relationships,
       children: childIds.map((id) => ({ type: "symbol", id })),

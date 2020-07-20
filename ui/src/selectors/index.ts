@@ -4,6 +4,5 @@
  * from 'reselect'. This function creates a copy of the selector function with a cache size of
  * one. See the 'matchingSymbols' function for an example.
  */
-export * from "./annotation";
 export * from "./entity";
 export * from "./symbol";

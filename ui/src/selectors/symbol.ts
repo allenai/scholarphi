@@ -77,6 +77,12 @@ const symbolsMatchingSingleSymbol = defaultMemoize(
       .map((sId) => entities.byId[sId])
       .map((s) => s as Symbol)
       .filter((otherSymbol) => {
+        if (
+          otherSymbol.attributes.mathml === null ||
+          otherSymbol.attributes.mathml === ""
+        ) {
+          return false;
+        }
         /*
          * If no filters were provided, or if no filters activated or deactivated, every match
          * returned by the backend is considered valid.

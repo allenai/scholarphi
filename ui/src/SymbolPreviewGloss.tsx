@@ -16,7 +16,7 @@ interface Props {
   handleSelectSymbol: (id: string) => void;
 }
 
-export class SymbolPreviewTooltipBody extends React.PureComponent<Props> {
+export class SymbolPreviewGloss extends React.PureComponent<Props> {
   onClickJumpButton(symbolId: string | undefined) {
     if (symbolId !== undefined) {
       this.props.handleSelectSymbol(symbolId);
@@ -65,7 +65,7 @@ export class SymbolPreviewTooltipBody extends React.PureComponent<Props> {
     const sentence = selectors.symbolSentence(symbol.id, entities);
 
     return (
-      <div className="tooltip-body symbol-tooltip-body">
+      <div className="gloss symbol-gloss">
         <>
           {(() => {
             if (exactMatchSymbolId === undefined) {
@@ -73,7 +73,7 @@ export class SymbolPreviewTooltipBody extends React.PureComponent<Props> {
             }
             const matchingSymbol = entities.byId[exactMatchSymbolId];
             return (
-              <div className="tooltip-body__section">
+              <div className="gloss__section">
                 <PaperClipping
                   pdfDocument={this.props.pdfDocument}
                   sentence={sentence}
@@ -93,17 +93,17 @@ export class SymbolPreviewTooltipBody extends React.PureComponent<Props> {
             );
           })()}
           {exactMatchSymbolId === undefined && (
-            <div className="tooltip-body__label tooltip-body__section">
+            <div className="gloss__label gloss__section">
               This is the only place this symbol appears.
             </div>
           )}
           {(exactMatchSymbolId !== undefined ||
             partialMatchSymbolId !== undefined) && (
-            <div className="tooltip-body__action-buttons tooltip-body__section">
+            <div className="gloss__action-buttons gloss__section">
               <Button
                 variant="outlined"
                 color="secondary"
-                className="tooltip-body__action-button"
+                className="gloss__action-button"
                 onClick={this.onClickJumpButton.bind(
                   this,
                   exactMatchSymbolId || partialMatchSymbolId
@@ -114,7 +114,7 @@ export class SymbolPreviewTooltipBody extends React.PureComponent<Props> {
               <Button
                 variant="outlined"
                 color="primary"
-                className="tooltip-body__action-button"
+                className="gloss__action-button"
                 onClick={this.props.handleOpenDrawer}
               >
                 View {partialMatchSymbolIds.length} similar references
@@ -127,4 +127,4 @@ export class SymbolPreviewTooltipBody extends React.PureComponent<Props> {
   }
 }
 
-export default SymbolPreviewTooltipBody;
+export default SymbolPreviewGloss;

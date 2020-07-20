@@ -1,6 +1,6 @@
 import React from "react";
 import Annotation from "./Annotation";
-import TermTooltipBody from "./TermTooltipBody";
+import TermGloss from "./TermGloss";
 import { Term } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
@@ -41,7 +41,7 @@ export class TermAnnotation extends React.PureComponent<Props, {}> {
         boundingBoxes={this.props.term.attributes.bounding_boxes}
         pageNumber={this.props.pageNumber}
         source={this.props.term.attributes.source}
-        tooltipContent={<TermTooltipBody term={this.props.term} />}
+        glossContent={<TermGloss term={this.props.term} />}
         handleSelect={this.handleSelect}
       />
     );

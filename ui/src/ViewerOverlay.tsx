@@ -7,7 +7,7 @@ import EntityCreationToolbar, {
 } from "./EntityCreationToolbar";
 import FindBar, { FindMode, FindQuery } from "./FindBar";
 import * as selectors from "./selectors";
-import { divDimensionStyles, matchingSymbols } from "./selectors";
+import { matchingSymbols } from "./selectors";
 import {
   Entities,
   KnownEntityType,
@@ -145,9 +145,11 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
   }
 
   onClick(event: MouseEvent) {
+    const textSelection = document.getSelection();
     if (
       !isClickEventInsideSelectable(event) &&
-      !this.props.entityEditingEnabled
+      textSelection !== null &&
+      textSelection.toString() === ""
     ) {
       this.props.handleClearSelection();
     }
@@ -220,7 +222,7 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
         clientWidth,
         clientHeight,
       } = pdfViewer.container;
-      const boxRelativeToPage = divDimensionStyles(page.view, box);
+      const boxRelativeToPage = uiUtils.getPositionInPageView(page.view, box);
 
       const boxLeft = page.view.div.offsetLeft + boxRelativeToPage.left;
       const boxRight = boxLeft + boxRelativeToPage.width;
@@ -336,7 +338,6 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
         <Drawer
           paperId={this.props.paperId}
           pdfViewer={this.props.pdfViewer}
-          pdfDocument={this.props.pdfDocument}
           mode={this.props.drawerMode}
           userLibrary={this.props.userLibrary}
           papers={this.props.papers}
@@ -344,7 +345,6 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
           selectedEntityIds={this.props.selectedEntityIds}
           entityEditingEnabled={this.props.entityEditingEnabled}
           propagateEntityEdits={this.props.propagateEntityEdits}
-          handleSelectSymbol={this.props.handleSelectEntity}
           handleScrollSymbolIntoView={this.props.handleScrollSymbolIntoView}
           handleClose={this.props.handleCloseDrawer}
           handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}

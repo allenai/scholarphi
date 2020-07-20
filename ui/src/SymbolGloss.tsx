@@ -6,7 +6,7 @@ interface Props {
   symbol: Symbol;
 }
 
-export class SymbolPropertiesTooltipBody extends React.PureComponent<Props> {
+export class SymbolGloss extends React.PureComponent<Props> {
   render() {
     const { symbol } = this.props;
     const {
@@ -18,18 +18,18 @@ export class SymbolPropertiesTooltipBody extends React.PureComponent<Props> {
     } = symbol.attributes;
 
     return (
-      <div className="tooltip-body symbol-properties-tooltip-body">
-        <div className="tooltip-body__section">
+      <div className="gloss symbol-properties-gloss">
+        <div className="gloss__section">
           {tex !== null ? <LatexPreview latex={tex} /> : "<Symbol TeX>"}:{" "}
-          {nicknames.length > 0 ? nicknames.join(",") : "(no nicknames)."}
+          {nicknames.length > 0 ? nicknames.join(", ") : "(no nicknames)."}
         </div>
-        <div className="tooltip-body__section">
+        <div className="gloss__section">
           <b>Definition</b>:{" "}
           {definitions.length > 0
-            ? definitions.map((d) => <LatexPreview latex={d} />).join(",")
+            ? definitions.map((d) => <LatexPreview latex={d} />).join(", ")
             : "(none)."}
         </div>
-        <div className="tooltip-body__section">
+        <div className="gloss__section">
           <b>Defining formulas</b>:{" "}
           {defining_formulas.length > 0
             ? defining_formulas.map((f) => (
@@ -39,7 +39,7 @@ export class SymbolPropertiesTooltipBody extends React.PureComponent<Props> {
               ))
             : "(none)."}
         </div>
-        <div className="tooltip-body__section">
+        <div className="gloss__section">
           <b>Related passages</b>: {passages.length === 0 ? "(none)." : ""}
           <ul>
             {passages.map((p) => (
@@ -54,4 +54,4 @@ export class SymbolPropertiesTooltipBody extends React.PureComponent<Props> {
   }
 }
 
-export default SymbolPropertiesTooltipBody;
+export default SymbolGloss;

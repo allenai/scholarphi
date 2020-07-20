@@ -1,0 +1,93 @@
+/**
+ * Gloss dimensions
+ */
+.gloss {
+  min-width: 200px;
+
+  /*
+   * Hard-code the width of some glosses.
+   */
+  .citation-gloss,
+  .symbol-properties-gloss,
+  .term-gloss {
+    max-width: 400px;
+  }
+}
+
+/**
+ * Gloss contents.
+ */
+.gloss {
+  background-color: @white;
+  padding: @medium * 0.5;
+
+  .gloss__section {
+    padding-left: @tooltip-padding;
+    padding-right: @tooltip-padding;
+
+    & + .gloss__section {
+      padding-top: @medium * 0.5;
+    }
+  }
+
+  .gloss__header {
+    display: grid;
+    grid-template-columns: auto min-content;
+    grid-gap: @medium * 0.5;
+    align-items: center;
+  }
+
+  /*
+   * Inset nested list elements
+   */
+  list-style-position: inside;
+}
+
+/*
+   * Adding a small amount of horizontal padding to citations so that there's
+   * some separation between the hover state background color and the left and
+   * right edges of the text.
+   */
+.gloss__citation {
+  padding-left: @tooltip-padding;
+  padding-right: @tooltip-padding;
+}
+
+/**
+ * Align buttons to the right
+ */
+.gloss__action-buttons {
+  text-align: right;
+}
+
+/**
+ * Space out the action buttons
+ */
+.gloss__action-buttons .gloss__action-button {
+  margin-left: @padding;
+}
+
+/**
+ * Gloss text
+ */
+.gloss {
+  color: @black;
+  font-size: @medium;
+  line-height: @medium * @line-height-ratio;
+  font-weight: lighter;
+
+  /*
+   * List element styling
+   */
+
+  li {
+    margin-bottom: @medium * 0.5;
+
+    /*
+     * Show display equations inline
+     */
+    .katex-display {
+      margin: unset;
+    }
+  }
+}

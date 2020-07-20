@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React from "react";
 import Annotation from "./Annotation";
-import SymbolPropertiesTooltipBody from "./SymbolPropertiesTooltipBody";
+import SymbolGloss from "./SymbolGloss";
 import { Symbol } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
@@ -50,9 +50,9 @@ export class SymbolAnnotation extends React.PureComponent<Props> {
         selectedSpanIds={this.props.selectedSpanIds}
         isFindMatch={this.props.isFindMatch}
         isFindSelection={this.props.isFindSelection}
-        tooltipContent={
+        glossContent={
           this.props.tooltip === "property-viewer" ? (
-            <SymbolPropertiesTooltipBody symbol={this.props.symbol} />
+            <SymbolGloss symbol={this.props.symbol} />
           ) : null
         }
         source={this.props.symbol.attributes.source}

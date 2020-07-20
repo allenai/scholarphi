@@ -60,7 +60,7 @@ export class SentenceAnnotation extends React.PureComponent<Props, {}> {
         boundingBoxes={this.props.sentence.attributes.bounding_boxes}
         pageNumber={this.props.pageNumber}
         source={this.props.sentence.attributes.source}
-        tooltipContent={null}
+        glossContent={null}
         /*
          * To avoid visual clutter, do not underline sentences. However, they should still be
          * interactable (i.e., hoverable, clickable).

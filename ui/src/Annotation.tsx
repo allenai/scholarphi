@@ -55,9 +55,9 @@ interface Props {
    */
   isFindSelection?: boolean;
   /**
-   * Component to show in the tooltip when the annotation is activated.
+   * Component to show in a gloss when the annotation is activated.
    */
-  tooltipContent: React.ReactNode | null;
+  glossContent: React.ReactNode | null;
   /**
    * Whether to show an underline hint beneath the annotation. Defaults to true.
    */
@@ -138,7 +138,7 @@ export class Annotation extends React.PureComponent<Props> {
                   this.props.selectedSpanIds !== null &&
                   this.props.selectedSpanIds.indexOf(spanId) !== -1
                 }
-                tooltipContent={this.props.tooltipContent}
+                glossContent={this.props.glossContent}
                 underline={this.props.underline}
                 onClick={this.props.onClick}
                 onKeyDown={this.props.onKeyDown}

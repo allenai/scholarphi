@@ -235,7 +235,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     }
                     isFindSelection={findSelectionEntityId === entityId}
                     isFindMatch={isFindMatch}
-                    tooltip={entityEditingEnabled ? null : "property-viewer"}
+                    tooltip={"property-viewer"}
                     handleSelect={this.props.handleSelectEntityAnnotation}
                     handleStartSymbolSearch={handleStartSymbolSearch}
                   />

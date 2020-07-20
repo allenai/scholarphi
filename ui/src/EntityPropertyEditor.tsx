@@ -8,7 +8,7 @@ import {
   Entity,
   EntityUpdateData,
   GenericAttributes,
-  GenericRelationships,
+  GenericRelationships
 } from "./types/api";
 
 interface Props {
@@ -138,6 +138,14 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
       is_list: false,
       relation_type: null,
       label: "LaTeX",
+    },
+    {
+      key: "mathml",
+      parentKey: "attributes",
+      type: "text",
+      is_list: false,
+      relation_type: null,
+      label: "MathML"
     },
     {
       key: "nicknames",
