@@ -104,10 +104,12 @@ def check_sentence_or_not(tex: str, tex_unit_dict: Dict[str, List[str]]) -> bool
         "is_sentence_in_figure" in tex_unit_dict
         and tex_unit_dict["is_sentence_in_figure"]
     ):
+        return False
     if (
         "is_sentence_in_table" in tex_unit_dict
         and tex_unit_dict["is_sentence_in_table"]
     ):
+        return False
 
     # if "is_iffalse" in tex_unit_dict and tex_unit_dict["is_iffalse"]:
     #     return False
