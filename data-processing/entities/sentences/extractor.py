@@ -372,7 +372,8 @@ class SentenceExtractor(EntityExtractor):
                     )
 
             yield Sentence(
-                text=cleaned_sentence,
+                text=sentence,
+                cleaned_text = cleaned_sentence,
                 start=start,
                 end=end,
                 id_=str(i),
