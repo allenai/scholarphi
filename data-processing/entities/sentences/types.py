@@ -7,6 +7,7 @@ from common.types import SerializableEntity
 @dataclass(frozen=True)
 class Sentence(SerializableEntity):
     text: str
+    cleaned_text: str
     extended_tex: str
     is_sentence: bool # TODO @dykang this field should be deleted once we have a stable extractor
     current_section: str
