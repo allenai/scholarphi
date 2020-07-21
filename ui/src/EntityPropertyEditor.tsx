@@ -8,7 +8,7 @@ import {
   Entity,
   EntityUpdateData,
   GenericAttributes,
-  GenericRelationships
+  GenericRelationships,
 } from "./types/api";
 
 interface Props {
@@ -145,7 +145,7 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
       type: "text",
       is_list: false,
       relation_type: null,
-      label: "MathML"
+      label: "MathML",
     },
     {
       key: "nicknames",
@@ -194,6 +194,14 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
       is_list: true,
       relation_type: "symbol",
       label: "Child symbols",
+    },
+    {
+      key: "sentence",
+      parentKey: "relationships",
+      type: "relation-id",
+      is_list: false,
+      relation_type: "sentence",
+      label: "Sentence",
     },
   ],
 };

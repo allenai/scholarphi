@@ -408,7 +408,9 @@ class ScholarReader extends React.PureComponent<Props, State> {
         ...entities.all
           .map((id) => entities.byId[id])
           .filter((e) => {
-            if (isSymbol(entity) && isSymbol(e)) {
+            if (e.id === entity.id) {
+              return false;
+            } else if (isSymbol(entity) && isSymbol(e)) {
               return entity.attributes.tex === e.attributes.tex;
             } else if (isTerm(entity) && isTerm(e)) {
               return entity.attributes.name === e.attributes.name;
@@ -593,7 +595,9 @@ class ScholarReader extends React.PureComponent<Props, State> {
       ) {
         const symbolId = state.findMatchedEntities[findMatchIndex];
         const symbol = state.entities.byId[symbolId];
-        this.jumpToBoundingBox(symbol.attributes.bounding_boxes[0]);
+        if (symbol !== undefined) {
+          this.jumpToBoundingBox(symbol.attributes.bounding_boxes[0]);
+        }
       }
       return { findMatchIndex };
     });
