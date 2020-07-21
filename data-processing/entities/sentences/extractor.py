@@ -68,6 +68,9 @@ PATTERN_ANY = r"\\[A-Za-z0-9\\\[\]_.,:-]*[\{[A-Za-z0-9 \\_.,:-]*\}]*"
 PATTERN_BEGIN = r"\\begin\{[A-Za-z0-9 \{\}\\_.,:-]*\}"
 PATTERN_END = r"\\end\{[A-Za-z0-9 \{\}\\_.,:-]*\}"
 
+
+PATTERN_MATH = r"\[\[math:[A-Za-z0-9 \\\{\}\(\)\[\]\^&\*_.,\+:;\-=#]*\]\]"
+
 # objects for detecting nesting structures from the extended tex
 NESTING_CHARACTERS_MAPPING = {"{": "}", "[": "]"}
 
@@ -382,13 +385,20 @@ class SentenceExtractor(EntityExtractor):
 
             # clean sentence
             cleaned_sentence = sentence if is_sentence else ""
+            maths = []
             if is_sentence:
+                if "math" in sentence:
+                    maths = regex.findall(
+                        PATTERN_MATH, sentence, overlapped=False
+                    )
+
                 # substitute entities detected with placeholders
                 replace_patterns = []
 
                 # patterns for symbols
                 # TODO @dykang replace [[math]] with SYMBOL in PlaintextExtractor
-                replace_patterns.append(("[[math]]", "SYMBOL"))
+                for math in maths:
+                    replace_patterns.append((math, "SYMBOL"))
 
                 # patterns for citations
                 for citation in tex_unit_dict["cite"]:
@@ -421,6 +431,7 @@ class SentenceExtractor(EntityExtractor):
                         substitution[0], substitution[1]
                     )
 
+
             yield Sentence(
                 text=sentence,
                 cleaned_text = cleaned_sentence,
@@ -442,7 +453,7 @@ class SentenceExtractor(EntityExtractor):
                 label=tex_unit_dict.get("label", []),
                 ref=tex_unit_dict.get("ref", []),
                 cite=tex_unit_dict.get("cite", []),
-                symbol=tex_unit_dict.get("symbol", []),
+                symbol=maths,
                 url=tex_unit_dict.get("url", []),
                 others=tex_unit_dict.get("others", []),
             )
