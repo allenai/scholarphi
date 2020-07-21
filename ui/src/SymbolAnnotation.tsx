@@ -1,7 +1,8 @@
 import classNames from "classnames";
 import React from "react";
 import Annotation from "./Annotation";
-import SymbolGloss from "./SymbolGloss";
+import SymbolDefinitionGloss from "./SymbolDefinitionGloss";
+import SymbolPropertyEvaluationGloss from "./SymbolPropertyEvaluationGloss";
 import { Symbol } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
@@ -16,7 +17,7 @@ interface Props {
   selectedSpanIds: string[] | null;
   isFindMatch?: boolean;
   isFindSelection?: boolean;
-  tooltip: TooltipType;
+  glossType: GlossType;
   handleSelect: (
     symbolId: string,
     annotationId: string,
@@ -25,7 +26,7 @@ interface Props {
   handleStartSymbolSearch: (id: string) => void;
 }
 
-type TooltipType = "property-viewer" | null;
+type GlossType = "definition" | "property-evaluation" | null;
 
 export class SymbolAnnotation extends React.PureComponent<Props> {
   constructor(props: Props) {
@@ -51,8 +52,13 @@ export class SymbolAnnotation extends React.PureComponent<Props> {
         isFindMatch={this.props.isFindMatch}
         isFindSelection={this.props.isFindSelection}
         glossContent={
-          this.props.tooltip === "property-viewer" ? (
-            <SymbolGloss symbol={this.props.symbol} />
+          this.props.glossType === "definition" ? (
+            <SymbolDefinitionGloss symbol={this.props.symbol} />
+          ) : this.props.glossType === "property-evaluation" ? (
+            <SymbolPropertyEvaluationGloss
+              id={this.props.id}
+              symbol={this.props.symbol}
+            />
           ) : null
         }
         source={this.props.symbol.attributes.source}

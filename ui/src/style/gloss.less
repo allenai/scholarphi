@@ -3,14 +3,15 @@
  */
 .gloss {
   min-width: 200px;
+  max-width: 400px;
 
   /*
    * Hard-code the width of some glosses.
    */
-  .citation-gloss,
-  .symbol-properties-gloss,
-  .term-gloss {
-    max-width: 400px;
+  &.term-property-evaluation-gloss,
+  &.symbol-property-evaluation-gloss {
+    min-width: 300px;
+    max-width: 350px;
   }
 }
 

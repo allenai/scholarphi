@@ -94,6 +94,23 @@ function isClickEventInsideSelectable(event: MouseEvent) {
 }
 
 /**
+ * Determine whether a click event targets a gloss.
+ */
+function isClickEventInsideGloss(event: MouseEvent) {
+  if (!(event.target instanceof HTMLElement)) {
+    return false;
+  }
+  let parent: HTMLElement | null = event.target;
+  while (parent !== null) {
+    if (parent.classList.contains("gloss")) {
+      return true;
+    }
+    parent = parent.parentElement;
+  }
+  return false;
+}
+
+/**
  * An overlay on top of the PDF Viewer containing widgets to be shown on top of the viewer, and
  * event handlers that trigger state changes based on click and keyboard
  * events. This overlay currently operates by adding event handlers to the container of
@@ -148,6 +165,7 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
     const textSelection = document.getSelection();
     if (
       !isClickEventInsideSelectable(event) &&
+      !isClickEventInsideGloss(event) &&
       textSelection !== null &&
       textSelection.toString() === ""
     ) {

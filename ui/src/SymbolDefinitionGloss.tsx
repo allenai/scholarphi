@@ -6,7 +6,7 @@ interface Props {
   symbol: Symbol;
 }
 
-export class SymbolGloss extends React.PureComponent<Props> {
+class SymbolDefinitionGloss extends React.PureComponent<Props> {
   render() {
     const { symbol } = this.props;
     const {
@@ -18,7 +18,7 @@ export class SymbolGloss extends React.PureComponent<Props> {
     } = symbol.attributes;
 
     return (
-      <div className="gloss symbol-properties-gloss">
+      <div className="gloss symbol-definition-gloss">
         <div className="gloss__section">
           {tex !== null ? <LatexPreview latex={tex} /> : "<Symbol TeX>"}:{" "}
           {nicknames.length > 0 ? nicknames.join(", ") : "(no nicknames)."}
@@ -60,4 +60,4 @@ export class SymbolGloss extends React.PureComponent<Props> {
   }
 }
 
-export default SymbolGloss;
+export default SymbolDefinitionGloss;

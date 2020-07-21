@@ -6,7 +6,7 @@ interface Props {
   term: Term;
 }
 
-export class TermGloss extends React.PureComponent<Props> {
+export class TermDefinitionGloss extends React.PureComponent<Props> {
   render() {
     /*
      * Render the first definition and source.
@@ -16,7 +16,7 @@ export class TermGloss extends React.PureComponent<Props> {
       term.attributes.definitions[0] || term.attributes.glossary_definitions[0];
 
     return (
-      <div className="gloss term-gloss">
+      <div className="gloss term-definition-gloss">
         <div className="gloss__section">
           <p>
             <b>{term.attributes.name}</b>
@@ -32,4 +32,4 @@ export class TermGloss extends React.PureComponent<Props> {
   }
 }
 
-export default TermGloss;
+export default TermDefinitionGloss;

@@ -159,6 +159,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     selectedSpanIds={
                       isSelected ? selectedAnnotationSpanIds : null
                     }
+                    glossType="property-evaluation"
                     handleSelect={this.props.handleSelectEntityAnnotation}
                   />
                 );
@@ -235,7 +236,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     }
                     isFindSelection={findSelectionEntityId === entityId}
                     isFindMatch={isFindMatch}
-                    tooltip={"property-viewer"}
+                    glossType={"property-evaluation"}
                     handleSelect={this.props.handleSelectEntityAnnotation}
                     handleStartSymbolSearch={handleStartSymbolSearch}
                   />
