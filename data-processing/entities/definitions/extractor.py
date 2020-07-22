@@ -299,7 +299,7 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, TermDefinitionS
                     continue
 
                 # extract nlp features from raw text
-                featurized_text = nlp_model.featurize(sentence_obj.text)
+                featurized_text = nlp_model.featurize(sentence_obj.cleaned_text)
 
                 features.append(featurized_text)
                 sentences.append(sentence_obj)
@@ -317,10 +317,10 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, TermDefinitionS
                             continue
 
                         slot_dict_list = mapping_slots_with_text(
-                            sentence.text, feature, slot_preds, verbose=False
+                            sentence.cleaned_text, feature, slot_preds, verbose=False
                         )
 
-                        logging.debug('is_sentence={}, text={}'.format(sentence.is_sentence, sentence.text))
+                        logging.debug('is_sentence={}, text={}'.format(sentence.is_sentence, sentence.cleaned_text))
                         for k, v in feature.items():
                             logging.debug('{}\t{}'.format(k,v))
                         logging.debug(intent_pred)
@@ -335,7 +335,7 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, TermDefinitionS
                                 end=sentence.end,
                                 tex_path=sentence.tex_path,
                                 sentence_index=sentence.id_,
-                                text=sentence.text,
+                                text=sentence.cleaned_text,
                                 tex=sentence.tex,
                                 context_tex=sentence.context_tex,
                                 #TODO logging conflict issue
