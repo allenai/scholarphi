@@ -69,7 +69,7 @@ PATTERN_BEGIN = r"\\begin\{[A-Za-z0-9 \{\}\\_.,:-]*\}"
 PATTERN_END = r"\\end\{[A-Za-z0-9 \{\}\\_.,:-]*\}"
 
 
-PATTERN_MATH = r"\[\[math:[A-Za-z0-9 \\\{\}\(\)\[\]\^&\*_.,\+:;\-=#]*\]\]"
+PATTERN_MATH = r"\[\[math:id-[0-9]*:[A-Za-z0-9 \\\{\}\(\)\^&\*_.,\+:;\-=#]*\]\]"
 
 # objects for detecting nesting structures from the extended tex
 NESTING_CHARACTERS_MAPPING = {"{": "}", "[": "]"}
