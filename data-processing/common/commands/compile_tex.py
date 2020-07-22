@@ -120,7 +120,7 @@ class CompileTexCommand(ArxivBatchCommand[CompilationTask, CompilationResult], A
                 outcome="SUCCESS" if success else "FAILURE",
                 source_path=source_path,
                 missing_driver=missing_driver,
-                errors=[e.decode("utf-8") for e in errors],
+                errors=[e.decode("utf-8", "ignore") for e in errors],
             ),
         )
 
