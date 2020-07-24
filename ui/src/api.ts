@@ -132,7 +132,8 @@ export async function getUserLibraryInfo() {
     const userLibrary: UserLibrary = {
       paperIds: data.entriesWithPaperIds.map((entry) => entry[1]),
     };
-    return userLibrary;
+    const email = data.user.email;
+    return { email, userLibrary };
   }
 }
 

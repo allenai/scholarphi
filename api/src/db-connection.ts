@@ -73,6 +73,10 @@ export class Connection {
     await this._knex.destroy();
   }
 
+  async insertLogEntry(logEntry: LogEntryRow) {
+    return await this._knex("logentry").insert(logEntry);
+  }
+
   async getAllPapers() {
     const response = await this._knex.raw<{ rows: PaperWithEntityCounts[] }>(`
       SELECT paper.*,

@@ -147,6 +147,7 @@ export type SymbolFilters = RelationalStore<SymbolFilter>;
 export interface UserInfo {
   user: {
     id: number;
+    email: string | null;
   };
   entriesWithPaperIds: [number, string][];
 }

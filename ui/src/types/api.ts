@@ -307,3 +307,13 @@ export interface PaperWithEntityCounts {
   citations: string;
   symbols: string;
 }
+
+/**
+ * Data for a logging event.
+ */
+export interface LogEntryCreatePayload {
+  username: string | null;
+  level: string;
+  event_type: string | null;
+  data: any;
+}

@@ -1,5 +1,6 @@
 import Checkbox from "@material-ui/core/Checkbox";
 import React from "react";
+import { getRemoteLogger } from "./logging";
 
 interface Props {
   /**
@@ -9,6 +10,8 @@ interface Props {
   context: any;
 }
 
+const logger = getRemoteLogger();
+
 class VoteButton extends React.PureComponent<Props> {
   constructor(props: Props) {
     super(props);
@@ -16,13 +19,17 @@ class VoteButton extends React.PureComponent<Props> {
     this.onChange = this.onChange.bind(this);
   }
 
+  componentDidMount() {
+    logger.log("debug", "property-vote-rendered", {
+      ...this.props.context,
+    });
+  }
+
   onChange(event: React.ChangeEvent<HTMLInputElement>) {
-    console.log(
-      "Checked?",
-      event.target.checked,
-      "Context",
-      JSON.stringify(this.props.context)
-    );
+    logger.log("debug", "property-vote-changed", {
+      ...this.props.context,
+      checked: event.target.checked,
+    });
   }
 
   render() {

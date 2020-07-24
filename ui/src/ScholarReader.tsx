@@ -11,6 +11,7 @@ import EntityCreationToolbar, {
   createCreateEntityDataWithBoxes,
 } from "./EntityCreationToolbar";
 import FindBar, { FindQuery } from "./FindBar";
+import { getRemoteLogger } from "./logging";
 import PageOverlay from "./PageOverlay";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
@@ -706,9 +707,13 @@ class ScholarReader extends React.PureComponent<Props, State> {
           this.setState({ papers });
         }
 
-        const userLibrary = await api.getUserLibraryInfo();
-        if (userLibrary) {
-          this.setState({ userLibrary });
+        const userData = await api.getUserLibraryInfo();
+        if (userData) {
+          this.setState({ userLibrary: userData.userLibrary });
+          if (userData.email) {
+            const remoteLogger = getRemoteLogger();
+            remoteLogger.setUsername(userData.email);
+          }
         }
       }
     }

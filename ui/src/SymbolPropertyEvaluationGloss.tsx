@@ -39,7 +39,9 @@ class SymbolPropertyEvaluationGloss extends React.PureComponent<Props> {
                 <TableRow key={`nickname-${i}`}>
                   <TableCell>{nickname}</TableCell>
                   <TableCell>
-                    <VoteButton context={{ ...context, type: "nickname", i }} />
+                    <VoteButton
+                      context={{ ...context, type: "nickname", i, nickname }}
+                    />
                   </TableCell>
                 </TableRow>
               ))}
@@ -50,7 +52,12 @@ class SymbolPropertyEvaluationGloss extends React.PureComponent<Props> {
                   </TableCell>
                   <TableCell>
                     <VoteButton
-                      context={{ ...context, type: "definition", i }}
+                      context={{
+                        ...context,
+                        type: "definition",
+                        i,
+                        definition,
+                      }}
                     />
                   </TableCell>
                 </TableRow>
@@ -61,7 +68,9 @@ class SymbolPropertyEvaluationGloss extends React.PureComponent<Props> {
                     <LatexPreview latex={formula} />
                   </TableCell>
                   <TableCell>
-                    <VoteButton context={{ ...context, type: "formula", i }} />
+                    <VoteButton
+                      context={{ ...context, type: "formula", i, formula }}
+                    />
                   </TableCell>
                 </TableRow>
               ))}
@@ -71,7 +80,9 @@ class SymbolPropertyEvaluationGloss extends React.PureComponent<Props> {
                     <LatexPreview latex={passage} />
                   </TableCell>
                   <TableCell>
-                    <VoteButton context={{ ...context, type: "passage", i }} />
+                    <VoteButton
+                      context={{ ...context, type: "passage", i, passage }}
+                    />
                   </TableCell>
                 </TableRow>
               ))}

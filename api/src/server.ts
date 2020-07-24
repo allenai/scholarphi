@@ -2,6 +2,8 @@ import { Server, ServerInjectOptions } from "@hapi/hapi";
 import * as nconf from "nconf";
 import * as api from "./api";
 import { Connection, extractConnectionParams } from "./db-connection";
+import { LogEntryCreatePayload } from "./types/api";
+import * as validation from "./types/validation";
 import { debugFailAction } from "./types/validation";
 
 /**
@@ -33,20 +35,47 @@ class ApiServer {
      * so that the connection can be closed when the server is shut down.
      */
     const connectionParams = extractConnectionParams(this._config);
-    this._dbConnection = new Connection(connectionParams);
+    const dbConnection = new Connection(connectionParams);
+    this._dbConnection = dbConnection;
 
     /**
      * Register API endpoints.
      */
     await this._server.register({
       plugin: api.plugin,
-      options: { connection: this._dbConnection, debug: this._debug },
+      options: { connection: dbConnection, debug: this._debug },
       routes: {
         prefix: "/api/v0/",
       },
     });
 
     this._server.route({ method: "GET", path: "/health", handler: () => "👍" });
+
+    this._server.route({
+      method: "POST",
+      path: "/log",
+      handler: async (request, h) => {
+        const ipAddress = request.info.remoteAddress;
+        const payload = request.payload as LogEntryCreatePayload;
+        try {
+          await dbConnection.insertLogEntry({
+            ip_address: ipAddress,
+            username: payload.username,
+            level: payload.level,
+            event_type: payload.event_type,
+            data: payload.data,
+          });
+          return h.response().code(200);
+        } catch (e) {
+          return h.response().code(500);
+        }
+      },
+      options: {
+        validate: {
+          payload: validation.logEntry,
+        },
+      },
+    });
   }
 
   async start() {

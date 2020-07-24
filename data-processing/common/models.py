@@ -18,7 +18,7 @@ from peewee import (
     PostgresqlDatabase,
     TextField,
 )
-from playhouse.postgres_ext import DateTimeTZField
+from playhouse.postgres_ext import BinaryJSONField, DateTimeTZField
 
 from scripts.pipelines import entity_pipelines
 
@@ -206,6 +206,30 @@ class EntityData(TimestampsMixin, OutputModel):
     """
 
 
+class LogEntry(TimestampsMixin, OutputModel):
+    """
+    Log data from the user interface. Only intended to be written to by the user interface code.
+    """
+
+    ip_address = TextField()
+    " IP address of client that logged the event. "
+
+    username = TextField(null=True, index=True)
+    """
+    S2 username of the user using the app when the event was triggered. May be undefined if user
+    was not logged in or user name was not available.
+    """
+
+    level = TextField(index=True)
+    " Level of the log event. See user interface code for expected levels. "
+
+    event_type = TextField(index=True, null=True)
+    " Optional tag used to define the type of event that is being logged. "
+
+    data = BinaryJSONField(null=True)
+    " Arbitrary data associated with this event. "
+
+
 def init_database(
     conf: configparser.ConfigParser, config_section: str, schema: Optional[str] = None
 ) -> PostgresqlDatabase:
@@ -264,6 +288,7 @@ def init_database_connections(
             Entity,
             BoundingBox,
             EntityData,
+            LogEntry,
         ]
         for pipeline in entity_pipelines:
             models_to_create.extend(pipeline.database_models)

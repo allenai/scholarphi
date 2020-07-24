@@ -52,3 +52,11 @@ type EntityDataRowType =
   | "float"
   | "string"
   | "relation-id";
+
+interface LogEntryRow {
+  ip_address: string;
+  username: string | null;
+  level: string;
+  event_type: string | null;
+  data: any;
+}

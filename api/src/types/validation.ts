@@ -10,6 +10,13 @@ export async function debugFailAction(_: any, __: any, err: any) {
   throw err;
 }
 
+export const logEntry = Joi.object({
+  username: Joi.string().default(null),
+  level: Joi.string().required(),
+  event_type: Joi.string().default(null),
+  data: Joi.object().unknown(true).default(null),
+});
+
 export const s2Id = Joi.object({
   s2Id: Joi.string().pattern(/[a-f0-9]{40}/),
 });
