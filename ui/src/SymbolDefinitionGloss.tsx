@@ -26,8 +26,8 @@ class SymbolDefinitionGloss extends React.PureComponent<Props> {
         {definitions.length > 0 ? (
           <div className="gloss__section">
             <b>Definition</b>:{" "}
-            {definitions.map((d) => (
-              <div>
+            {definitions.map((d, i) => (
+              <div key={`definition-${i}`}>
                 <LatexPreview latex={d} />
               </div>
             ))}
@@ -36,8 +36,8 @@ class SymbolDefinitionGloss extends React.PureComponent<Props> {
         {defining_formulas.length > 0 ? (
           <div className="gloss__section">
             <b>Defining formulas</b>:{" "}
-            {defining_formulas.map((f) => (
-              <div>
+            {defining_formulas.map((f, i) => (
+              <div key={`formula-${i}`}>
                 <LatexPreview latex={f} />
               </div>
             ))}
@@ -47,8 +47,8 @@ class SymbolDefinitionGloss extends React.PureComponent<Props> {
           <div className="gloss__section">
             <b>Related passages</b>:
             <ul>
-              {passages.map((p) => (
-                <li>
+              {passages.map((p, i) => (
+                <li key={`passage-${i}`}>
                   <LatexPreview latex={p} />
                 </li>
               ))}

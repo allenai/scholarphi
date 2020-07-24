@@ -17,15 +17,11 @@ interface Props {
   snackbarMode: SnackbarMode;
   snackbarActivationTimeMs: number | null;
   snackbarMessage: string | null;
-  handleHideAnnotations: () => void;
-  handleShowAnnotations: () => void;
+  handleToggleControlPanelShowing: () => void;
   handleCloseSnackbar: () => void;
   handleCloseDrawer: () => void;
   handleStartTextSearch: () => void;
   handleTerminateSearch: () => void;
-  handleToggleEntityCreationMode: () => void;
-  handleToggleEntityEditMode: () => void;
-  handleToggleCopySentenceOnClick: () => void;
   handleSetMultiselectEnabled: (enabled: boolean) => void;
 }
 
@@ -79,9 +75,6 @@ class AppOverlay extends React.PureComponent<Props> {
   }
 
   onKeyDown(event: KeyboardEvent) {
-    if (event.keyCode === 17 || event.key === "Control") {
-      this.props.handleHideAnnotations();
-    }
     if (event.keyCode === 16 || event.key === "Shift") {
       this.props.handleSetMultiselectEnabled(true);
     }
@@ -106,16 +99,7 @@ class AppOverlay extends React.PureComponent<Props> {
       this.props.handleCloseDrawer();
     }
     if (event.ctrlKey && event.shiftKey && event.key === "C") {
-      this.props.handleToggleEntityCreationMode();
-    }
-    if (event.ctrlKey && event.shiftKey && event.key === "U") {
-      this.props.handleToggleEntityEditMode();
-    }
-    if (event.ctrlKey && event.shiftKey && event.key === "S") {
-      this.props.handleToggleCopySentenceOnClick();
-    }
-    if (event.keyCode === 17 || event.key === "Control") {
-      this.props.handleShowAnnotations();
+      this.props.handleToggleControlPanelShowing();
     }
     if (event.keyCode === 16 || event.key === "Shift") {
       this.props.handleSetMultiselectEnabled(false);

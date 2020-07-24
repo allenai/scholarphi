@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import React from "react";
 import AnnotationSpan from "./AnnotationSpan";
+import { GlossStyle } from "./settings";
 import { BoundingBox } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
@@ -57,7 +58,12 @@ interface Props {
   /**
    * Component to show in a gloss when the annotation is activated.
    */
-  glossContent: React.ReactNode | null;
+  glossContent?: React.ReactNode | null;
+  /**
+   * Style of glossary to show (e.g., tooltip, sidenote, etc.). Set to null if no glosses should
+   * be shown for this annotation.
+   */
+  glossStyle?: GlossStyle | null;
   /**
    * Whether to show an underline hint beneath the annotation. Defaults to true.
    */
@@ -88,6 +94,8 @@ export class Annotation extends React.PureComponent<Props> {
     isFindMatch: false,
     isFindSelection: false,
     underline: true,
+    glossStyle: null,
+    glossContent: null,
   };
 
   constructor(props: Props) {
@@ -139,6 +147,7 @@ export class Annotation extends React.PureComponent<Props> {
                   this.props.selectedSpanIds.indexOf(spanId) !== -1
                 }
                 glossContent={this.props.glossContent}
+                glossStyle={this.props.glossStyle}
                 underline={this.props.underline}
                 onClick={this.props.onClick}
                 onKeyDown={this.props.onKeyDown}

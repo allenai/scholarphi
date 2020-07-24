@@ -18,14 +18,12 @@ export class TermDefinitionGloss extends React.PureComponent<Props> {
     return (
       <div className="gloss term-definition-gloss">
         <div className="gloss__section">
-          <p>
-            <b>{term.attributes.name}</b>
-            {definition !== undefined ? (
-              <>
-                : <LatexPreview latex={definition} />
-              </>
-            ) : null}
-          </p>
+          <b>{term.attributes.name}</b>
+          {definition !== undefined ? (
+            <>
+              : <LatexPreview latex={definition} />
+            </>
+          ) : null}
         </div>
       </div>
     );

@@ -1,5 +1,6 @@
 import React from "react";
 import Annotation from "./Annotation";
+import { GlossStyle } from "./settings";
 import TermDefinitionGloss from "./TermDefinitionGloss";
 import TermPropertyEvaluationGloss from "./TermPropertyEvaluationGloss";
 import { Term } from "./types/api";
@@ -13,15 +14,14 @@ interface Props {
   active: boolean;
   selected: boolean;
   selectedSpanIds: string[] | null;
-  glossType: GlossType;
+  glossStyle: GlossStyle;
+  glossEvaluationEnabled: boolean;
   handleSelect: (
     termId: string,
     annotationId: string,
     annotationSpanId: string
   ) => void;
 }
-
-type GlossType = "definition" | "property-evaluation" | null;
 
 export class TermAnnotation extends React.PureComponent<Props, {}> {
   constructor(props: Props) {
@@ -45,15 +45,16 @@ export class TermAnnotation extends React.PureComponent<Props, {}> {
         boundingBoxes={this.props.term.attributes.bounding_boxes}
         pageNumber={this.props.pageNumber}
         source={this.props.term.attributes.source}
+        glossStyle={this.props.glossStyle}
         glossContent={
-          this.props.glossType === "definition" ? (
+          !this.props.glossEvaluationEnabled ? (
             <TermDefinitionGloss term={this.props.term} />
-          ) : this.props.glossType === "property-evaluation" ? (
+          ) : (
             <TermPropertyEvaluationGloss
               id={this.props.id}
               term={this.props.term}
             />
-          ) : null
+          )
         }
         handleSelect={this.handleSelect}
       />

@@ -1,14 +1,20 @@
+import classNames from "classnames";
 import React from "react";
 import * as api from "./api";
 import AppOverlay from "./AppOverlay";
-import {
+import Control from "./Control";
+import ControlPanel from "./ControlPanel";
+import DefinitionPreview from "./DefinitionPreview";
+import { Drawer } from "./Drawer";
+import EntityCreationToolbar, {
   AreaSelectionMethod,
   createCreateEntityDataWithBoxes,
 } from "./EntityCreationToolbar";
-import { FindQuery } from "./FindBar";
+import FindBar, { FindQuery } from "./FindBar";
 import PageOverlay from "./PageOverlay";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
+import { ConfigurableSetting, CONFIGURABLE_SETTINGS } from "./settings";
 import { KnownEntityType, Pages, PaperId, State, SymbolFilters } from "./state";
 import "./style/index.less";
 import {
@@ -50,7 +56,8 @@ class ScholarReader extends React.PureComponent<Props, State> {
       pdfDocument: null,
       pdfViewer: null,
 
-      annotationsShowing: true,
+      controlPanelShowing: false,
+
       selectedAnnotationIds: [],
       selectedAnnotationSpanIds: [],
       selectedEntityIds: [],
@@ -68,18 +75,27 @@ class ScholarReader extends React.PureComponent<Props, State> {
       snackbarActivationTimeMs: null,
       snackbarMessage: null,
 
-      entityCreationEnabled: false,
       entityCreationAreaSelectionMethod: "text-selection",
       entityCreationType: "term",
-      entityEditingEnabled: false,
       propagateEntityEdits: true,
-      copySentenceTexOnClick: false,
+
+      annotationHintsEnabled: true,
+      declutterEnabled: false,
+      definitionPreviewEnabled: false,
+      entityCreationEnabled: false,
+      entityEditingEnabled: false,
+      glossStyle: "sidenote",
+      glossEvaluationEnabled: false,
+      sentenceTexCopyOnOptionClickEnabled: false,
     };
 
     /**
      * Bind state-changing handlers so that they will be called with 'this' as its context.
      * See https://reactjs.org/docs/faq-functions.html#how-do-i-bind-a-function-to-a-component-instance
      */
+    this.toggleControlPanelShowing = this.toggleControlPanelShowing.bind(this);
+    this.handleChangeSetting = this.handleChangeSetting.bind(this);
+
     this.createEntity = this.createEntity.bind(this);
     this.createParentSymbol = this.createParentSymbol.bind(this);
     this.updateEntity = this.updateEntity.bind(this);
@@ -91,8 +107,6 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.clearSelection = this.clearSelection.bind(this);
 
     this.setMultiselectEnabled = this.setMultiselectEnabled.bind(this);
-    this.hideAnnotations = this.hideAnnotations.bind(this);
-    this.showAnnotations = this.showAnnotations.bind(this);
     this.scrollSymbolIntoView = this.scrollSymbolIntoView.bind(this);
     this.showSnackbarMessage = this.showSnackbarMessage.bind(this);
     this.closeSnackbar = this.closeSnackbar.bind(this);
@@ -103,14 +117,23 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.setFindMatchIndex = this.setFindMatchIndex.bind(this);
     this.setFindQuery = this.setFindQuery.bind(this);
     this.closeFindBar = this.closeFindBar.bind(this);
-    this.toggleEntityCreationMode = this.toggleEntityCreationMode.bind(this);
     this.setEntityCreationType = this.setEntityCreationType.bind(this);
     this.setEntityCreationAreaSelectionMethod = this.setEntityCreationAreaSelectionMethod.bind(
       this
     );
-    this.toggleEntityEditMode = this.toggleEntityEditMode.bind(this);
     this.setPropagateEntityEdits = this.setPropagateEntityEdits.bind(this);
-    this.toggleCopySentenceOnClick = this.toggleCopySentenceOnClick.bind(this);
+  }
+
+  toggleControlPanelShowing() {
+    this.setState((state) => ({
+      controlPanelShowing: !state.controlPanelShowing,
+    }));
+  }
+
+  handleChangeSetting(setting: ConfigurableSetting, value: any) {
+    this.setState({
+      [setting.key]: value,
+    } as State);
   }
 
   async addToLibrary(paperId: string, paperTitle: string) {
@@ -528,47 +551,10 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.setState({ multiselectEnabled: enabled });
   }
 
-  hideAnnotations() {
-    this.setState({ annotationsShowing: false });
-  }
-
-  showAnnotations() {
-    this.setState({ annotationsShowing: true });
-  }
-
-  toggleEntityCreationMode() {
-    this.setState((prevState) => ({
-      entityCreationEnabled: !prevState.entityCreationEnabled,
-    }));
-  }
-
-  toggleEntityEditMode() {
-    this.setState((prevState) => {
-      const entityEditingEnabled = !prevState.entityEditingEnabled;
-      /*
-       * Open drawer if editing just enabled and drawer was closed.
-       */
-      const drawerMode =
-        entityEditingEnabled && prevState.drawerMode !== "open"
-          ? "open"
-          : prevState.drawerMode;
-      return {
-        entityEditingEnabled,
-        drawerMode,
-      };
-    });
-  }
-
   setPropagateEntityEdits(propagate: boolean) {
     this.setState({
       propagateEntityEdits: propagate,
     });
-  }
-
-  toggleCopySentenceOnClick() {
-    this.setState((prevState) => ({
-      copySentenceTexOnClick: !prevState.copySentenceTexOnClick,
-    }));
   }
 
   startTextSearch() {
@@ -780,61 +766,113 @@ class ScholarReader extends React.PureComponent<Props, State> {
               snackbarMode={this.state.snackbarMode}
               snackbarActivationTimeMs={this.state.snackbarActivationTimeMs}
               snackbarMessage={this.state.snackbarMessage}
+              handleToggleControlPanelShowing={this.toggleControlPanelShowing}
               handleSetMultiselectEnabled={this.setMultiselectEnabled}
-              handleHideAnnotations={this.hideAnnotations}
-              handleShowAnnotations={this.showAnnotations}
               handleStartTextSearch={this.startTextSearch}
               handleTerminateSearch={this.closeFindBar}
               handleCloseSnackbar={this.closeSnackbar}
               handleCloseDrawer={this.closeDrawer}
-              handleToggleEntityCreationMode={this.toggleEntityCreationMode}
-              handleToggleEntityEditMode={this.toggleEntityEditMode}
-              handleToggleCopySentenceOnClick={this.toggleCopySentenceOnClick}
             />
             <ViewerOverlay
-              pdfViewerApplication={this.state.pdfViewerApplication}
               pdfViewer={this.state.pdfViewer}
-              pdfDocument={this.state.pdfDocument}
-              pages={this.state.pages}
-              paperId={this.props.paperId}
-              papers={this.state.papers}
-              entities={this.state.entities}
-              userLibrary={this.state.userLibrary}
-              selectedEntityIds={this.state.selectedEntityIds}
-              entityCreationEnabled={this.state.entityCreationEnabled}
-              entityCreationType={this.state.entityCreationType}
-              entityCreationAreaSelectionMethod={
-                this.state.entityCreationAreaSelectionMethod
-              }
-              entityEditingEnabled={this.state.entityEditingEnabled}
-              propagateEntityEdits={this.state.propagateEntityEdits}
-              isFindActive={this.state.isFindActive}
-              findActivationTimeMs={this.state.findActivationTimeMs}
-              findMode={this.state.findMode}
-              findQuery={this.state.findQuery}
-              findMatchIndex={this.state.findMatchIndex}
-              findMatchCount={this.state.findMatchCount}
-              drawerMode={this.state.drawerMode}
-              handleShowSnackbarMessage={this.showSnackbarMessage}
               handleClearSelection={this.clearSelection}
-              handleChangeMatchIndex={this.setFindMatchIndex}
-              handleChangeMatchCount={this.setFindMatchCount}
-              handleChangeQuery={this.setFindQuery}
-              handleCloseFindBar={this.closeFindBar}
-              handleCloseDrawer={this.closeDrawer}
-              handleScrollSymbolIntoView={this.scrollSymbolIntoView}
-              handleAddPaperToLibrary={this.addToLibrary}
-              handleSelectEntity={this.selectEntity}
-              handleCreateEntity={this.createEntity}
-              handleCreateParentSymbol={this.createParentSymbol}
-              handleUpdateEntity={this.updateEntity}
-              handleDeleteEntity={this.deleteEntity}
-              handleSelectEntityCreationType={this.setEntityCreationType}
-              handleSelectEntityCreationAreaSelectionMethod={
-                this.setEntityCreationAreaSelectionMethod
-              }
-              handleSetPropagateEntityEdits={this.setPropagateEntityEdits}
-            />
+            >
+              <div
+                className={classNames("scholar-reader-toolbar-container", {
+                  "snackbar-showing": this.state.snackbarMode === "open",
+                })}
+              >
+                {this.state.controlPanelShowing ? (
+                  <ControlPanel className="scholar-reader-toolbar">
+                    {CONFIGURABLE_SETTINGS.map((setting) => (
+                      <Control
+                        key={setting.label}
+                        setting={setting}
+                        value={this.state[setting.key]}
+                        handleChange={this.handleChangeSetting}
+                      />
+                    ))}
+                  </ControlPanel>
+                ) : null}
+                {this.state.isFindActive &&
+                this.state.findActivationTimeMs !== null ? (
+                  <FindBar
+                    className="scholar-reader-toolbar"
+                    /*
+                     * Set the key for the widget to the time that the find event was activated
+                     * (i.e., when 'Ctrl+F' was typed). This regenerates the widgets whenever
+                     * a new 'find' action is started, which will select and focus the text
+                     * in the search widget. See why we use key to regenerate component here:
+                     * https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html#recommendation-fully-uncontrolled-component-with-a-key
+                     */
+                    key={this.state.findActivationTimeMs}
+                    matchCount={this.state.findMatchCount}
+                    matchIndex={this.state.findMatchIndex}
+                    mode={this.state.findMode}
+                    pdfViewerApplication={this.state.pdfViewerApplication}
+                    query={this.state.findQuery}
+                    handleChangeMatchCount={this.setFindMatchCount}
+                    handleChangeMatchIndex={this.setFindMatchIndex}
+                    handleChangeQuery={this.setFindQuery}
+                    handleClose={this.closeFindBar}
+                  />
+                ) : null}
+                {this.state.entityCreationEnabled &&
+                this.state.pages !== null ? (
+                  <EntityCreationToolbar
+                    className="scholar-reader-toolbar"
+                    pages={this.state.pages}
+                    entities={this.state.entities}
+                    selectedEntityIds={this.state.selectedEntityIds}
+                    entityType={this.state.entityCreationType}
+                    selectionMethod={
+                      this.state.entityCreationAreaSelectionMethod
+                    }
+                    handleShowSnackbarMessage={this.showSnackbarMessage}
+                    handleSelectEntityType={this.setEntityCreationType}
+                    handleSelectSelectionMethod={
+                      this.setEntityCreationAreaSelectionMethod
+                    }
+                    handleCreateEntity={this.createEntity}
+                    handleCreateParentSymbol={this.createParentSymbol}
+                  />
+                ) : null}
+                {this.props.children}
+              </div>
+              <Drawer
+                paperId={this.props.paperId}
+                pdfViewer={this.state.pdfViewer}
+                mode={
+                  this.state.entityEditingEnabled
+                    ? "open"
+                    : this.state.drawerMode
+                }
+                userLibrary={this.state.userLibrary}
+                papers={this.state.papers}
+                entities={this.state.entities}
+                selectedEntityIds={this.state.selectedEntityIds}
+                entityEditingEnabled={this.state.entityEditingEnabled}
+                propagateEntityEdits={this.state.propagateEntityEdits}
+                handleScrollSymbolIntoView={this.scrollSymbolIntoView}
+                handleClose={this.closeDrawer}
+                handleAddPaperToLibrary={this.addToLibrary}
+                handleUpdateEntity={this.updateEntity}
+                handleDeleteEntity={this.deleteEntity}
+                handleSetPropagateEntityEdits={this.setPropagateEntityEdits}
+              />
+              {this.state.definitionPreviewEnabled &&
+              this.state.pages !== null &&
+              this.state.pdfDocument !== null &&
+              this.state.entities !== null ? (
+                <DefinitionPreview
+                  pdfViewer={this.state.pdfViewer}
+                  pdfDocument={this.state.pdfDocument}
+                  pages={this.state.pages}
+                  entities={this.state.entities}
+                  selectedEntityIds={this.state.selectedEntityIds}
+                />
+              ) : null}
+            </ViewerOverlay>
           </>
         ) : null}
         {this.state.pages !== null ? (
@@ -865,14 +903,18 @@ class ScholarReader extends React.PureComponent<Props, State> {
                   }
                   findMatchedEntityIds={this.state.findMatchedEntities}
                   findSelectionEntityId={findMatchEntityId}
-                  showAnnotations={this.state.annotationsShowing}
+                  showAnnotations={this.state.annotationHintsEnabled}
+                  pageMaskShowing={this.state.declutterEnabled}
+                  glossStyle={this.state.glossStyle}
+                  glossEvaluationEnabled={this.state.glossEvaluationEnabled}
                   entityCreationEnabled={this.state.entityCreationEnabled}
                   entityCreationType={this.state.entityCreationType}
                   entityCreationAreaSelectionMethod={
                     this.state.entityCreationAreaSelectionMethod
                   }
-                  entityEditingEnabled={this.state.entityEditingEnabled}
-                  copySentenceOnClick={this.state.copySentenceTexOnClick}
+                  copySentenceOnClick={
+                    this.state.sentenceTexCopyOnOptionClickEnabled
+                  }
                   handleSelectEntityAnnotation={this.selectEntityAnnotation}
                   handleShowSnackbarMessage={this.showSnackbarMessage}
                   handleStartSymbolSearch={this.startSymbolSearch}

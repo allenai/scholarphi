@@ -3,8 +3,13 @@
  */
 .scholar-reader-toolbar-container {
   position: absolute;
-  bottom: @pdfjs-toolbarViewer-height + 10;
   left: @padding * 2;
+
+  bottom: @pdfjs-toolbarViewer-height + 10;
+  &.snackbar-showing {
+    bottom: @pdfjs-toolbarViewer-height + 50;
+  }
+
   /*
    * Toolbars must appear both above the pdf.js sidebar and annotations
    */

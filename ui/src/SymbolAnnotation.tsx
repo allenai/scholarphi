@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import React from "react";
 import Annotation from "./Annotation";
+import { GlossStyle } from "./settings";
 import SymbolDefinitionGloss from "./SymbolDefinitionGloss";
 import SymbolPropertyEvaluationGloss from "./SymbolPropertyEvaluationGloss";
 import { Symbol } from "./types/api";
@@ -17,7 +18,8 @@ interface Props {
   selectedSpanIds: string[] | null;
   isFindMatch?: boolean;
   isFindSelection?: boolean;
-  glossType: GlossType;
+  glossStyle: GlossStyle;
+  glossEvaluationEnabled: boolean;
   handleSelect: (
     symbolId: string,
     annotationId: string,
@@ -51,15 +53,16 @@ export class SymbolAnnotation extends React.PureComponent<Props> {
         selectedSpanIds={this.props.selectedSpanIds}
         isFindMatch={this.props.isFindMatch}
         isFindSelection={this.props.isFindSelection}
+        glossStyle={this.props.glossStyle}
         glossContent={
-          this.props.glossType === "definition" ? (
+          !this.props.glossEvaluationEnabled ? (
             <SymbolDefinitionGloss symbol={this.props.symbol} />
-          ) : this.props.glossType === "property-evaluation" ? (
+          ) : (
             <SymbolPropertyEvaluationGloss
               id={this.props.id}
               symbol={this.props.symbol}
             />
-          ) : null
+          )
         }
         source={this.props.symbol.attributes.source}
         handleSelect={this.handleSelect}

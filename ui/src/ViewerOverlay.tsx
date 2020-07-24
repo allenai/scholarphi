@@ -1,86 +1,10 @@
-import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
-import DefinitionPreview from "./DefinitionPreview";
-import Drawer, { DrawerMode } from "./Drawer";
-import EntityCreationToolbar, {
-  AreaSelectionMethod,
-} from "./EntityCreationToolbar";
-import FindBar, { FindMode, FindQuery } from "./FindBar";
-import * as selectors from "./selectors";
-import { matchingSymbols } from "./selectors";
-import {
-  Entities,
-  KnownEntityType,
-  Pages,
-  PaperId,
-  Papers,
-  UserLibrary,
-} from "./state";
-import {
-  BoundingBox,
-  Entity,
-  EntityCreateData,
-  EntityUpdateData,
-  isSentence,
-  Sentence,
-  Symbol,
-} from "./types/api";
-import { PDFViewer, PDFViewerApplication } from "./types/pdfjs-viewer";
+import { PDFViewer } from "./types/pdfjs-viewer";
 import * as uiUtils from "./utils/ui";
 
 interface Props {
-  pdfViewerApplication: PDFViewerApplication;
   pdfViewer: PDFViewer;
-  pdfDocument: PDFDocumentProxy | null;
-  pages: Pages | null;
-  paperId?: PaperId;
-  papers: Papers | null;
-  entities: Entities | null;
-  userLibrary: UserLibrary | null;
-  selectedEntityIds: string[];
-  entityCreationEnabled: boolean;
-  entityCreationType: KnownEntityType;
-  entityCreationAreaSelectionMethod: AreaSelectionMethod;
-  entityEditingEnabled: boolean;
-  propagateEntityEdits: boolean;
-  isFindActive: boolean;
-  findActivationTimeMs: number | null;
-  findMode: FindMode;
-  findQuery: FindQuery;
-  findMatchIndex: number | null;
-  findMatchCount: number | null;
-  drawerMode: DrawerMode;
-  handleShowSnackbarMessage: (message: string) => void;
-  handleCloseFindBar: () => void;
-  handleCloseDrawer: () => void;
-  handleChangeMatchIndex: (matchIndex: number | null) => void;
-  handleChangeMatchCount: (matchCount: number | null) => void;
-  handleChangeQuery: (query: FindQuery | null) => void;
   handleClearSelection: () => void;
-  handleSelectEntity: (id: string) => void;
-  handleScrollSymbolIntoView: () => void;
-  handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
-  handleCreateEntity: (entity: EntityCreateData) => Promise<string | null>;
-  handleCreateParentSymbol: (symbols: Symbol[]) => Promise<boolean>;
-  handleUpdateEntity: (
-    entity: Entity,
-    updates: EntityUpdateData
-  ) => Promise<boolean>;
-  handleDeleteEntity: (id: string) => Promise<boolean>;
-  handleSelectEntityCreationType: (type: KnownEntityType) => void;
-  handleSelectEntityCreationAreaSelectionMethod: (
-    method: AreaSelectionMethod
-  ) => void;
-  handleSetPropagateEntityEdits: (propagate: boolean) => void;
-}
-
-interface State {
-  /**
-   * Time of the last update to the viewport of the viewer. Set this variable to a new value
-   * (e.g., using using Date.now()) to trigger components of the overlay to re-render that
-   * depend on the scroll position of the viewer (e.g., the 'DefinitionPreview').
-   */
-  viewerViewportUpdateTimeMs: number;
 }
 
 /**
@@ -123,7 +47,7 @@ function isClickEventInsideGloss(event: MouseEvent) {
  * *and* processed by this overlay, as in this overlay, event handlers are attached to a
  * parent element of all pages and annotations.
  */
-class ViewerOverlay extends React.PureComponent<Props, State> {
+class ViewerOverlay extends React.PureComponent<Props> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -131,7 +55,6 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
     };
     this.onClick = this.onClick.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
-    this.onScroll = this.onScroll.bind(this);
   }
 
   componentDidMount() {
@@ -152,13 +75,11 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
   addEventListenersToViewer(pdfViewer: PDFViewer) {
     pdfViewer.container.addEventListener("click", this.onClick);
     pdfViewer.container.addEventListener("keyup", this.onKeyUp);
-    pdfViewer.container.addEventListener("scroll", this.onScroll);
   }
 
   removeEventListenersForViewer(pdfViewer: PDFViewer) {
     pdfViewer.container.removeEventListener("click", this.onClick);
     pdfViewer.container.removeEventListener("keyup", this.onKeyUp);
-    pdfViewer.container.removeEventListener("scroll", this.onScroll);
   }
 
   onClick(event: MouseEvent) {
@@ -179,211 +100,8 @@ class ViewerOverlay extends React.PureComponent<Props, State> {
     }
   }
 
-  onScroll() {
-    this.setState({
-      viewerViewportUpdateTimeMs: Date.now(),
-    });
-  }
-
-  getDefinitionSentenceAndSymbol() {
-    let definitionSymbol: Symbol | null = null,
-      definitionSentence: Sentence | null = null;
-
-    const { selectedEntityIds, entities } = this.props;
-
-    if (
-      selectedEntityIds.length !== 1 ||
-      entities === null ||
-      selectors.selectedEntityType(selectedEntityIds[0], entities) !== "symbol"
-    ) {
-      return { definitionSentence, symbol: definitionSymbol };
-    }
-
-    const selectedEntityId = selectedEntityIds[0];
-    const matchingSymbolIds = matchingSymbols(selectedEntityId, entities, [
-      { key: "exact-match", active: true },
-    ]);
-    const firstMatchingSymbolId =
-      matchingSymbolIds.length > 0 ? matchingSymbolIds[0] : selectedEntityId;
-    definitionSymbol = entities.byId[firstMatchingSymbolId] as Symbol;
-
-    const sentenceId = definitionSymbol.relationships.sentence.id;
-    if (sentenceId !== null && entities.byId[sentenceId] !== undefined) {
-      const sentence = entities.byId[sentenceId];
-      if (isSentence(sentence)) {
-        definitionSentence = sentence;
-      }
-    }
-    return { definitionSentence, symbol: definitionSymbol };
-  }
-
-  areBoundingBoxesVisible(boundingBoxes: BoundingBox[]) {
-    const { pdfViewer, pages } = this.props;
-
-    let visible = false;
-    for (const box of boundingBoxes) {
-      /*
-       * If the page for this box has not yet been loaded into memory, then it is has not yet
-       * been rendered, and therefore is not visible.
-       */
-      if (pages === null) {
-        continue;
-      }
-      const page = pages[box.page + 1];
-      if (page === undefined || page === null) {
-        continue;
-      }
-
-      const {
-        scrollLeft,
-        scrollTop,
-        clientWidth,
-        clientHeight,
-      } = pdfViewer.container;
-      const boxRelativeToPage = uiUtils.getPositionInPageView(page.view, box);
-
-      const boxLeft = page.view.div.offsetLeft + boxRelativeToPage.left;
-      const boxRight = boxLeft + boxRelativeToPage.width;
-      const boxTop = page.view.div.offsetTop + boxRelativeToPage.top;
-      const boxBottom = boxTop + boxRelativeToPage.height;
-
-      /*
-       * If the box is not in the scrolled region of the viewer, then it is not visible.
-       */
-      if (
-        boxRight < scrollLeft ||
-        boxLeft > scrollLeft + clientWidth ||
-        boxTop > scrollTop + clientHeight ||
-        boxBottom < scrollTop
-      ) {
-        continue;
-      }
-
-      /*
-       * If all of the checks above failed, the box is visible in the viewer.
-       */
-      visible = true;
-      break;
-    }
-
-    return visible;
-  }
-
   render() {
-    const {
-      entities,
-      selectedEntityIds,
-      entityCreationEnabled,
-      entityCreationType,
-      entityCreationAreaSelectionMethod,
-      entityEditingEnabled,
-    } = this.props;
-
-    const {
-      symbol: definitionSymbol,
-      definitionSentence,
-    } = this.getDefinitionSentenceAndSymbol();
-
-    /*
-     * Show the definition preview if the definition is currently off-screen.
-     */
-    let isDefinitionOffscreen = false;
-    if (definitionSymbol !== null) {
-      if (
-        definitionSentence !== null &&
-        !this.areBoundingBoxesVisible(
-          definitionSentence.attributes.bounding_boxes
-        )
-      ) {
-        isDefinitionOffscreen = true;
-      } else if (
-        !this.areBoundingBoxesVisible(
-          definitionSymbol.attributes.bounding_boxes
-        )
-      ) {
-        isDefinitionOffscreen = true;
-      }
-    }
-
-    return (
-      /*
-       * Hide most assistive overlay widgets during entity editing to reduce clutter.
-       */
-      <>
-        <div className="scholar-reader-toolbar-container">
-          {this.props.isFindActive &&
-          this.props.findActivationTimeMs !== null ? (
-            <FindBar
-              className="scholar-reader-toolbar"
-              /*
-               * Set the key for the widget to the time that the find event was activated
-               * (i.e., when 'Ctrl+F' was typed). This regenerates the widgets whenever
-               * a new 'find' action is started, which will select and focus the text
-               * in the search widget. See why we use key to regenerate component here:
-               * https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html#recommendation-fully-uncontrolled-component-with-a-key
-               */
-              key={this.props.findActivationTimeMs}
-              matchCount={this.props.findMatchCount}
-              matchIndex={this.props.findMatchIndex}
-              mode={this.props.findMode}
-              pdfViewerApplication={this.props.pdfViewerApplication}
-              query={this.props.findQuery}
-              handleChangeMatchCount={this.props.handleChangeMatchCount}
-              handleChangeMatchIndex={this.props.handleChangeMatchIndex}
-              handleChangeQuery={this.props.handleChangeQuery}
-              handleClose={this.props.handleCloseFindBar}
-            />
-          ) : null}
-          {entityCreationEnabled && this.props.pages !== null ? (
-            <EntityCreationToolbar
-              className="scholar-reader-toolbar"
-              pages={this.props.pages}
-              entities={entities}
-              selectedEntityIds={selectedEntityIds}
-              entityType={entityCreationType}
-              selectionMethod={entityCreationAreaSelectionMethod}
-              handleShowSnackbarMessage={this.props.handleShowSnackbarMessage}
-              handleSelectEntityType={this.props.handleSelectEntityCreationType}
-              handleSelectSelectionMethod={
-                this.props.handleSelectEntityCreationAreaSelectionMethod
-              }
-              handleCreateEntity={this.props.handleCreateEntity}
-              handleCreateParentSymbol={this.props.handleCreateParentSymbol}
-            />
-          ) : null}
-        </div>
-
-        <Drawer
-          paperId={this.props.paperId}
-          pdfViewer={this.props.pdfViewer}
-          mode={this.props.drawerMode}
-          userLibrary={this.props.userLibrary}
-          papers={this.props.papers}
-          entities={this.props.entities}
-          selectedEntityIds={this.props.selectedEntityIds}
-          entityEditingEnabled={this.props.entityEditingEnabled}
-          propagateEntityEdits={this.props.propagateEntityEdits}
-          handleScrollSymbolIntoView={this.props.handleScrollSymbolIntoView}
-          handleClose={this.props.handleCloseDrawer}
-          handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
-          handleUpdateEntity={this.props.handleUpdateEntity}
-          handleDeleteEntity={this.props.handleDeleteEntity}
-          handleSetPropagateEntityEdits={
-            this.props.handleSetPropagateEntityEdits
-          }
-        />
-        {!entityEditingEnabled &&
-        isDefinitionOffscreen &&
-        this.props.pdfDocument !== null &&
-        definitionSymbol !== null ? (
-          <DefinitionPreview
-            pdfDocument={this.props.pdfDocument}
-            symbol={definitionSymbol}
-            sentence={definitionSentence}
-          />
-        ) : null}
-      </>
-    );
+    return <>{this.props.children}</>;
   }
 }
 

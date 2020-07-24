@@ -7,6 +7,7 @@ import { AreaSelectionMethod } from "./EntityCreationToolbar";
 import PageMask from "./PageMask";
 import * as selectors from "./selectors";
 import SentenceAnnotation from "./SentenceAnnotation";
+import { GlossStyle } from "./settings";
 import {
   Entities,
   KnownEntityType,
@@ -40,10 +41,12 @@ interface Props {
   findMatchedEntityIds: string[] | null;
   findSelectionEntityId: string | null;
   showAnnotations: boolean;
+  pageMaskShowing: boolean;
+  glossStyle: GlossStyle;
+  glossEvaluationEnabled: boolean;
   entityCreationEnabled: boolean;
   entityCreationType: KnownEntityType;
   entityCreationAreaSelectionMethod: AreaSelectionMethod;
-  entityEditingEnabled: boolean;
   copySentenceOnClick: boolean;
   handleSelectEntityAnnotation: (
     entityId: string,
@@ -104,15 +107,18 @@ class PageOverlay extends React.PureComponent<Props, {}> {
       selectedAnnotationSpanIds,
       findMatchedEntityIds,
       findSelectionEntityId,
+      pageMaskShowing,
       showAnnotations,
+      glossStyle,
+      glossEvaluationEnabled,
       entityCreationEnabled,
       entityCreationType,
       entityCreationAreaSelectionMethod,
-      entityEditingEnabled,
-      copySentenceOnClick,
+      copySentenceOnClick: copySentenceOnOptionClick,
       handleAddPaperToLibrary,
       handleStartSymbolSearch,
       handleCreateEntity,
+      handleSelectEntityAnnotation,
     } = this.props;
 
     const pageDimensions = getPageViewDimensions(view);
@@ -123,7 +129,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
 
     return ReactDOM.createPortal(
       <>
-        {!entityCreationEnabled ? (
+        {!entityCreationEnabled && pageMaskShowing ? (
           <PageMask
             key="page-mask"
             pageNumber={pageNumber}
@@ -146,6 +152,9 @@ class PageOverlay extends React.PureComponent<Props, {}> {
               if (boundingBoxes.length === 0) {
                 return null;
               }
+              const selectedSpanIds = isSelected
+                ? selectedAnnotationSpanIds
+                : null;
               if (isTerm(entity)) {
                 return (
                   <TermAnnotation
@@ -156,11 +165,10 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     term={entity}
                     active={showAnnotations}
                     selected={isSelected}
-                    selectedSpanIds={
-                      isSelected ? selectedAnnotationSpanIds : null
-                    }
-                    glossType="property-evaluation"
-                    handleSelect={this.props.handleSelectEntityAnnotation}
+                    selectedSpanIds={selectedSpanIds}
+                    glossStyle={glossStyle}
+                    glossEvaluationEnabled={glossEvaluationEnabled}
+                    handleSelect={handleSelectEntityAnnotation}
                   />
                 );
               }
@@ -180,11 +188,10 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     }
                     active={showAnnotations}
                     selected={isSelected}
-                    selectedSpanIds={
-                      isSelected ? selectedAnnotationSpanIds : null
-                    }
+                    selectedSpanIds={selectedSpanIds}
+                    glossStyle={glossStyle}
                     openedPaperId={paperId}
-                    handleSelect={this.props.handleSelectEntityAnnotation}
+                    handleSelect={handleSelectEntityAnnotation}
                     handleAddPaperToLibrary={handleAddPaperToLibrary}
                   />
                 );
@@ -231,21 +238,16 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                         (isLeaf && isSelected))
                     }
                     selected={isSelected}
-                    selectedSpanIds={
-                      isSelected ? selectedAnnotationSpanIds : null
-                    }
+                    selectedSpanIds={selectedSpanIds}
                     isFindSelection={findSelectionEntityId === entityId}
                     isFindMatch={isFindMatch}
-                    glossType={"property-evaluation"}
+                    glossStyle={glossStyle}
+                    glossEvaluationEnabled={glossEvaluationEnabled}
                     handleSelect={this.props.handleSelectEntityAnnotation}
                     handleStartSymbolSearch={handleStartSymbolSearch}
                   />
                 );
-              } else if (
-                entityEditingEnabled &&
-                copySentenceOnClick &&
-                isSentence(entity)
-              ) {
+              } else if (copySentenceOnOptionClick && isSentence(entity)) {
                 return (
                   <SentenceAnnotation
                     key={annotationId}
@@ -255,9 +257,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     sentence={entity}
                     active={showAnnotations}
                     selected={isSelected}
-                    selectedSpanIds={
-                      isSelected ? selectedAnnotationSpanIds : null
-                    }
+                    selectedSpanIds={selectedSpanIds}
                     handleSelect={this.props.handleSelectEntityAnnotation}
                     handleShowSnackbarMessage={
                       this.props.handleShowSnackbarMessage

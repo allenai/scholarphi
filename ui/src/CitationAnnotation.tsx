@@ -1,6 +1,7 @@
 import React from "react";
 import Annotation from "./Annotation";
 import CitationGloss from "./CitationGloss";
+import { GlossStyle } from "./settings";
 import { PaperId, UserLibrary } from "./state";
 import { Citation, Paper } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
@@ -15,6 +16,7 @@ interface Props {
   active: boolean;
   selected: boolean;
   selectedSpanIds: string[] | null;
+  glossStyle: GlossStyle;
   /**
    * The ID of the paper that the user is reading.
    */

@@ -1,5 +1,7 @@
+import Tooltip from "@material-ui/core/Tooltip";
 import classNames from "classnames";
 import React from "react";
+import { GlossStyle } from "./settings";
 import Sidenote from "./Sidenote";
 import { BoundingBox } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
@@ -23,6 +25,7 @@ interface Props {
    */
   location: BoundingBox;
   glossContent: React.ReactNode | null;
+  glossStyle: GlossStyle | null;
   underline: boolean;
   /**
    * Correction factor to apply to bounding box coordinates before rendering the annotation.
@@ -67,41 +70,64 @@ export class AnnotationSpan extends React.PureComponent<Props> {
   }
 
   render() {
-    return (
-      <>
-        <div
-          ref={this.focusIfSelected}
-          className={classNames(
-            "scholar-reader-annotation-span",
-            this.props.className,
-            {
-              selected: this.props.selected,
-              active: this.props.active === true,
-              inactive: this.props.active !== true,
-              underline: this.props.active === true && this.props.underline,
-            }
-          )}
-          style={uiUtils.getPositionInPageView(
-            this.props.pageView,
-            this.props.location,
-            this.props.scaleCorrection
-          )}
-          /*
-           * Span should only be able to capture focus and key events if it is active.
-           */
-          tabIndex={this.props.active === true ? 0 : undefined}
-          onClick={this.onClick}
-          onKeyDown={this.props.onKeyDown}
-        />
-        {this.props.glossContent !== null && this.props.selected === true ? (
-          <Sidenote
-            pageView={this.props.pageView}
-            anchor={this.props.location}
-            content={this.props.glossContent}
-          />
-        ) : null}
-      </>
+    let span = (
+      <div
+        ref={this.focusIfSelected}
+        className={classNames(
+          "scholar-reader-annotation-span",
+          this.props.className,
+          {
+            selected: this.props.selected,
+            active: this.props.active === true,
+            inactive: this.props.active !== true,
+            underline: this.props.active === true && this.props.underline,
+          }
+        )}
+        style={uiUtils.getPositionInPageView(
+          this.props.pageView,
+          this.props.location,
+          this.props.scaleCorrection
+        )}
+        /*
+         * Span should only be able to capture focus and key events if it is active.
+         */
+        tabIndex={this.props.active === true ? 0 : undefined}
+        onClick={this.onClick}
+        onKeyDown={this.props.onKeyDown}
+      ></div>
     );
+
+    if (this.props.glossContent !== null) {
+      if (this.props.glossStyle === "tooltip") {
+        return (
+          <Tooltip
+            className="tooltip"
+            open={this.props.selected}
+            interactive
+            disableHoverListener
+            title={this.props.glossContent}
+          >
+            {span}
+          </Tooltip>
+        );
+      } else if (
+        this.props.glossStyle === "sidenote" &&
+        this.props.selected === true
+      ) {
+        return (
+          <>
+            {span}
+            <Sidenote
+              pageView={this.props.pageView}
+              anchor={this.props.location}
+              content={this.props.glossContent}
+            />
+          </>
+        );
+      }
+    }
+
+    return span;
   }
 }
 

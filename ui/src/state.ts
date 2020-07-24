@@ -3,6 +3,7 @@ import { SnackbarMode } from "./AppOverlay";
 import { DrawerMode } from "./Drawer";
 import { AreaSelectionMethod } from "./EntityCreationToolbar";
 import { FindMode, FindQuery, SymbolFilter } from "./FindBar";
+import { Settings } from "./settings";
 import { Entity, Paper } from "./types/api";
 import {
   PDFPageView,
@@ -38,7 +39,7 @@ import {
  *    more verbose code is worth the trade-off for improving our ability to optimize speed by
  *    having careful control over how global state will trigger re-renders.
  */
-export interface State {
+export interface State extends Settings {
   /*
    * *** PAPER DATA ***
    */
@@ -62,12 +63,16 @@ export interface State {
    * *** USER INTERFACE STATE ***
    */
   /*
+   * ~ App control panel ~
+   */
+  controlPanelShowing: boolean;
+
+  /*
    * ~ Selecting annotations and entities ~
    */
   selectedAnnotationIds: string[];
   selectedAnnotationSpanIds: string[];
   selectedEntityIds: string[];
-  annotationsShowing: boolean;
   multiselectEnabled: boolean;
 
   /*
@@ -116,17 +121,15 @@ export interface State {
   /*
    * ~ Human annotations ~
    */
-  entityCreationEnabled: boolean;
   entityCreationAreaSelectionMethod: AreaSelectionMethod;
   entityCreationType: KnownEntityType;
-  entityEditingEnabled: boolean;
+
   /**
    * Whether edits to an entity should apply to other matching entities (e.g., editing a symbol
    * should also edit other symbols with the same TeX, or editing a term should also edit other
    * all other appearances of the same term).
    */
   propagateEntityEdits: boolean;
-  copySentenceTexOnClick: boolean;
 }
 
 export type Entities = RelationalStore<Entity>;
