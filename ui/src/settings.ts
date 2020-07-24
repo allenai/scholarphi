@@ -21,6 +21,10 @@ export interface Settings {
    */
   definitionPreviewEnabled: boolean;
   /**
+   * Show menu of actions when text is selected.
+   */
+  textSelectionMenuEnabled: boolean;
+  /**
    * Enable the annotation of new entities in the paper.
    */
   entityCreationEnabled: boolean;
@@ -70,6 +74,22 @@ export type GlossStyle = typeof GLOSS_STYLES[number];
 export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
   { key: "annotationHintsEnabled", type: "flag", label: "Annotation hints" },
   {
+    key: "glossStyle",
+    type: "choice",
+    label: "Gloss style",
+    choices: [...GLOSS_STYLES],
+  },
+  {
+    key: "glossEvaluationEnabled",
+    type: "flag",
+    label: "Gloss evaluation interface",
+  },
+  {
+    key: "textSelectionMenuEnabled",
+    type: "flag",
+    label: "Text selection menu",
+  },
+  {
     key: "declutterEnabled",
     type: "flag",
     label: "Declutter interaction",
@@ -93,16 +113,5 @@ export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
     key: "sentenceTexCopyOnOptionClickEnabled",
     type: "flag",
     label: "Copy sentence TeX on Opt+Click",
-  },
-  {
-    key: "glossEvaluationEnabled",
-    type: "flag",
-    label: "Gloss evaluation interface",
-  },
-  {
-    key: "glossStyle",
-    type: "choice",
-    label: "Gloss style",
-    choices: [...GLOSS_STYLES],
   },
 ];

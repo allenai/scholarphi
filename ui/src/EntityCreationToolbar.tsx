@@ -6,7 +6,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import classNames from "classnames";
 import React from "react";
-import { Entities, KnownEntityType, PageModel, Pages } from "./state";
+import { Entities, KnownEntityType, Pages } from "./state";
 import {
   BoundingBox,
   CitationAttributes,
@@ -171,105 +171,12 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
     /*
      * Get bounding boxes of all selected ranges.
      */
-    const boxes: BoundingBox[] = [];
-    const selectedText = selection.toString();
-    for (let i = 0; i < selection.rangeCount; i++) {
-      const range = selection.getRangeAt(i);
-
-      /*
-       * Find the page that contains this range.
-       */
-      let parent: Node | HTMLElement | null = range.commonAncestorContainer;
-      let page: PageModel | undefined = undefined;
-      while (parent !== null) {
-        parent = parent.parentElement;
-        if (
-          parent instanceof HTMLDivElement &&
-          parent.classList.contains("page")
-        ) {
-          for (const p of Object.values(pages)) {
-            if (p.view.div === parent) {
-              page = p;
-              break;
-            }
-          }
-          if (page !== undefined) {
-            break;
-          }
-        }
-      }
-
-      /*
-       * If a page was found, save bounding boxes for the selection, in ratio coordinates
-       * relative to the page view 'div'.
-       */
-      if (page !== undefined) {
-        const { pageNumber } = page.view.pdfPage;
-        const pageRect = page.view.div.getBoundingClientRect();
-        const rangeRects = range.getClientRects();
-        let lastBox = undefined;
-
-        for (let i = 0; i < rangeRects.length; i++) {
-          const rangeRect = rangeRects.item(i);
-          if (rangeRect !== null) {
-            /*
-             * Compute dimensions for a new box.
-             */
-            const left = (rangeRect.left - pageRect.left) / pageRect.width;
-            const top = (rangeRect.top - pageRect.top) / pageRect.height;
-            const width = rangeRect.width / pageRect.width;
-            const height = rangeRect.height / pageRect.height;
-            const right = left + width;
-            const bottom = top + height;
-
-            /*
-             * If this box appears right after the last box and is vertically aligned
-             * with the last box, merge it with the last box. This loop takes advantage of
-             * how getClientRects() iterates over boxes in content order (see
-             * https://drafts.csswg.org/cssom-view/#dom-range-getclientrects).
-             */
-            let boxMergedWithPrevious = false;
-            if (lastBox !== undefined) {
-              const lastBoxRight = lastBox.left + lastBox.width;
-              const lastBoxBottom = lastBox.top + lastBox.height;
-              const SMALL_HORIZONTAL_DELTA = 0.01; // 1% of page width
-              const SMALL_VERTICAL_DElTA = 0.01; // 1% of page height
-
-              if (
-                left - lastBoxRight < SMALL_HORIZONTAL_DELTA &&
-                Math.abs(top - lastBox.top) < SMALL_VERTICAL_DElTA &&
-                Math.abs(bottom - lastBoxBottom) < SMALL_VERTICAL_DElTA
-              ) {
-                lastBox.width = right - lastBox.left;
-                lastBox.top = Math.min(top, lastBox.top);
-                lastBox.height = Math.max(bottom, lastBoxBottom) - lastBox.top;
-                boxMergedWithPrevious = true;
-              }
-            }
-
-            /*
-             * Create a new bounding box if it couldn't be merged with the previous box.
-             */
-            if (!boxMergedWithPrevious) {
-              const box: BoundingBox = {
-                left,
-                top,
-                width,
-                height,
-                page: pageNumber - 1,
-                source: "human-annotation",
-              };
-              boxes.push(box);
-              lastBox = box;
-            }
-          }
-        }
-      }
-    }
+    const boxes = uiUtils.getBoundingBoxesForSelection(selection, pages);
 
     /*
      * Create entity with bounding boxes.
      */
+    const selectedText = selection.toString();
     const createEntityData = createCreateEntityDataWithBoxes(
       boxes,
       this.props.entityType,

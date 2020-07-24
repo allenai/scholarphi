@@ -4,7 +4,8 @@ import * as uiUtils from "./utils/ui";
 
 interface Props {
   pdfViewer: PDFViewer;
-  handleClearSelection: () => void;
+  handleSetTextSelection: (selection: Selection | null) => void;
+  handleClearEntitySelection: () => void;
 }
 
 /**
@@ -15,23 +16,6 @@ function isClickEventInsideSelectable(event: MouseEvent) {
     event.target instanceof HTMLDivElement &&
     event.target.classList.contains("scholar-reader-annotation-span")
   );
-}
-
-/**
- * Determine whether a click event targets a gloss.
- */
-function isClickEventInsideGloss(event: MouseEvent) {
-  if (!(event.target instanceof HTMLElement)) {
-    return false;
-  }
-  let parent: HTMLElement | null = event.target;
-  while (parent !== null) {
-    if (parent.classList.contains("gloss")) {
-      return true;
-    }
-    parent = parent.parentElement;
-  }
-  return false;
 }
 
 /**
@@ -55,6 +39,7 @@ class ViewerOverlay extends React.PureComponent<Props> {
     };
     this.onClick = this.onClick.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
+    this.onSelectionChange = this.onSelectionChange.bind(this);
   }
 
   componentDidMount() {
@@ -75,29 +60,69 @@ class ViewerOverlay extends React.PureComponent<Props> {
   addEventListenersToViewer(pdfViewer: PDFViewer) {
     pdfViewer.container.addEventListener("click", this.onClick);
     pdfViewer.container.addEventListener("keyup", this.onKeyUp);
+    /*
+     * To capture changes in the selection within the document, there is no option other than
+     * to listen to changes within the entire document. The W3C standards offer no way of listening
+     * for selection changes within specific elements. See
+     * https://w3c.github.io/selection-api/#user-interactions).
+     */
+    document.addEventListener("selectionchange", this.onSelectionChange);
   }
 
   removeEventListenersForViewer(pdfViewer: PDFViewer) {
     pdfViewer.container.removeEventListener("click", this.onClick);
     pdfViewer.container.removeEventListener("keyup", this.onKeyUp);
+    document.removeEventListener("selectionchange", this.onSelectionChange);
   }
 
   onClick(event: MouseEvent) {
     const textSelection = document.getSelection();
+    const clickIsInsideSelectable = isClickEventInsideSelectable(event);
+    const clickIsInsideGloss =
+      event.target instanceof HTMLElement &&
+      uiUtils.findParentElement(event.target, (e) =>
+        e.classList.contains("gloss")
+      );
+
     if (
-      !isClickEventInsideSelectable(event) &&
-      !isClickEventInsideGloss(event) &&
+      !clickIsInsideSelectable &&
+      !clickIsInsideGloss &&
       textSelection !== null &&
       textSelection.toString() === ""
     ) {
-      this.props.handleClearSelection();
+      this.props.handleClearEntitySelection();
     }
   }
 
   onKeyUp(event: KeyboardEvent) {
     if (uiUtils.isKeypressEscape(event)) {
-      this.props.handleClearSelection();
+      this.props.handleClearEntitySelection();
     }
+  }
+
+  onSelectionChange() {
+    const selection = document.getSelection();
+    if (selection === null) {
+      this.props.handleSetTextSelection(null);
+      return;
+    }
+
+    /**
+     * Only set selection to non-null value if all selected ranges are of page text.
+     */
+    for (let i = 0; i < selection.rangeCount; i++) {
+      const range = selection.getRangeAt(i);
+      const textLayer = uiUtils.findParentElement(
+        range.commonAncestorContainer,
+        (e) => e.classList.contains("textLayer")
+      );
+      if (textLayer === null) {
+        this.props.handleSetTextSelection(null);
+        return;
+      }
+    }
+
+    this.props.handleSetTextSelection(selection);
   }
 
   render() {

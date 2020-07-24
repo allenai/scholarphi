@@ -58,3 +58,19 @@ div.scholar-reader-toolbar {
   right: @padding * 2;
   z-index: @base-annotation-z-index + 1;
 }
+
+/**
+ * Text selection menu
+ */
+.text-selection-menu {
+  position: absolute;
+  z-index: @base-annotation-z-index + 1;
+  padding: @padding;
+
+  /*
+   * Button text in sentence case
+   */
+  button {
+    text-transform: none;
+  }
+}

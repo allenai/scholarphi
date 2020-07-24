@@ -18,6 +18,7 @@ import { matchingSymbols } from "./selectors";
 import { ConfigurableSetting, CONFIGURABLE_SETTINGS } from "./settings";
 import { KnownEntityType, Pages, PaperId, State, SymbolFilters } from "./state";
 import "./style/index.less";
+import TextSelectionMenu from "./TextSelectionMenu";
 import {
   BoundingBox,
   Entity,
@@ -64,6 +65,9 @@ class ScholarReader extends React.PureComponent<Props, State> {
       selectedEntityIds: [],
       multiselectEnabled: false,
 
+      textSelection: null,
+      textSelectionChangeMs: null,
+
       isFindActive: false,
       findMode: null,
       findActivationTimeMs: null,
@@ -81,12 +85,13 @@ class ScholarReader extends React.PureComponent<Props, State> {
       propagateEntityEdits: true,
 
       annotationHintsEnabled: true,
+      glossStyle: "sidenote",
+      glossEvaluationEnabled: false,
+      textSelectionMenuEnabled: false,
       declutterEnabled: false,
       definitionPreviewEnabled: false,
       entityCreationEnabled: false,
       entityEditingEnabled: false,
-      glossStyle: "sidenote",
-      glossEvaluationEnabled: false,
       sentenceTexCopyOnOptionClickEnabled: false,
     };
 
@@ -103,9 +108,10 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.deleteEntity = this.deleteEntity.bind(this);
     this.addToLibrary = this.addToLibrary.bind(this);
 
+    this.setTextSelection = this.setTextSelection.bind(this);
     this.selectEntity = this.selectEntity.bind(this);
     this.selectEntityAnnotation = this.selectEntityAnnotation.bind(this);
-    this.clearSelection = this.clearSelection.bind(this);
+    this.clearEntitySelection = this.clearEntitySelection.bind(this);
 
     this.setMultiselectEnabled = this.setMultiselectEnabled.bind(this);
     this.scrollSymbolIntoView = this.scrollSymbolIntoView.bind(this);
@@ -152,6 +158,13 @@ class ScholarReader extends React.PureComponent<Props, State> {
         this.setState({ userLibrary: { ...userLibrary, paperIds } });
       }
     }
+  }
+
+  setTextSelection(selection: Selection | null) {
+    this.setState({
+      textSelection: selection,
+      textSelectionChangeMs: Date.now(),
+    });
   }
 
   selectEntity(id: string) {
@@ -233,7 +246,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     });
   }
 
-  clearSelection() {
+  clearEntitySelection() {
     if (this.state.findMode === "symbol") {
       this.closeFindBar();
     }
@@ -780,7 +793,8 @@ class ScholarReader extends React.PureComponent<Props, State> {
             />
             <ViewerOverlay
               pdfViewer={this.state.pdfViewer}
-              handleClearSelection={this.clearSelection}
+              handleSetTextSelection={this.setTextSelection}
+              handleClearEntitySelection={this.clearEntitySelection}
             >
               <div
                 className={classNames("scholar-reader-toolbar-container", {
@@ -844,6 +858,15 @@ class ScholarReader extends React.PureComponent<Props, State> {
                 ) : null}
                 {this.props.children}
               </div>
+              {this.state.textSelectionMenuEnabled &&
+              this.state.pages !== null ? (
+                <TextSelectionMenu
+                  key={this.state.textSelectionChangeMs || undefined}
+                  pages={this.state.pages}
+                  textSelection={this.state.textSelection}
+                  handleShowSnackbarMessage={this.showSnackbarMessage}
+                />
+              ) : null}
               <Drawer
                 paperId={this.props.paperId}
                 pdfViewer={this.state.pdfViewer}

@@ -1,6 +1,14 @@
 import React from "react";
+import { PageModel, Pages } from "../state";
 import { BoundingBox } from "../types/api";
 import { PDFPageView } from "../types/pdfjs-viewer";
+
+interface Rectangle {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
 
 export function getMouseXY(event: React.MouseEvent) {
   const rect = event.currentTarget.getBoundingClientRect();
@@ -73,13 +81,53 @@ export function truncateText(
 }
 
 /**
+ * Find the parent element of a node matching a filter.
+ */
+export function findParentElement(
+  node: Node,
+  filter: (element: HTMLElement) => boolean
+): HTMLElement | null {
+  let parent: HTMLElement | null =
+    node instanceof HTMLElement ? node : node.parentElement;
+  while (parent !== null) {
+    if (filter(parent)) {
+      return parent;
+    }
+    parent = parent.parentElement;
+  }
+  return null;
+}
+
+/**
+ * Get the page model (if any) that contains this node.
+ */
+export function getPageContainingNode(
+  node: Node,
+  pages: Pages
+): PageModel | null {
+  const pageElement = findParentElement(
+    node,
+    (e) => e instanceof HTMLDivElement && e.classList.contains("page")
+  );
+
+  if (pageElement === null) {
+    return null;
+  }
+
+  for (const page of Object.values(pages)) {
+    if (page.view.div === pageElement) {
+      return page;
+    }
+  }
+
+  return null;
+}
+
+/**
  * Convert a bounding box in ratio coordinates to PDF coordinates (i.e., in points). In the PDF
  * coordinate system, 'top' is the number of points from the bottom of the page.
  */
-export function convertBoxToPdfCoordinates(
-  view: PDFPageView,
-  box: BoundingBox
-) {
+export function convertBoxToPdfCoordinates(view: PDFPageView, box: Rectangle) {
   /*
    * Dimensions of the page in PDF coordinates are stored in a page's 'view' property.
    * To see how these coordinates get loaded from PDF metadata (specifically, the "ViewArea"
@@ -110,7 +158,7 @@ export function convertBoxToPdfCoordinates(
  */
 export function getPositionInPageView(
   pageView: PDFPageView,
-  box: BoundingBox,
+  box: Rectangle,
   scaleCorrection?: number
 ) {
   scaleCorrection = scaleCorrection || 1;
@@ -122,6 +170,97 @@ export function getPositionInPageView(
     width: box.width * pageDimensions.width * scaleCorrection,
     height: box.height * pageDimensions.height * scaleCorrection,
   };
+}
+
+/**
+ * Get bounding boxes for all ranges in a text selection. Consecutive bounding boxes within a
+ * range are merged together, if sufficiently close to each other.
+ */
+export function getBoundingBoxesForSelection(
+  selection: Selection,
+  pages: Pages
+) {
+  /*
+   * Get bounding boxes of all selected ranges.
+   */
+  const boxes: BoundingBox[] = [];
+  for (let i = 0; i < selection.rangeCount; i++) {
+    const range = selection.getRangeAt(i);
+
+    /*
+     * Find the page that contains this range.
+     */
+    const page = getPageContainingNode(range.commonAncestorContainer, pages);
+
+    /*
+     * If a page was found, save bounding boxes for the selection, in ratio coordinates
+     * relative to the page view 'div'.
+     */
+    if (page !== null) {
+      const { pageNumber } = page.view.pdfPage;
+      const pageRect = page.view.div.getBoundingClientRect();
+      const rangeRects = range.getClientRects();
+      let lastBox = undefined;
+
+      for (let i = 0; i < rangeRects.length; i++) {
+        const rangeRect = rangeRects.item(i);
+        if (rangeRect !== null) {
+          /*
+           * Compute dimensions for a new box.
+           */
+          const left = (rangeRect.left - pageRect.left) / pageRect.width;
+          const top = (rangeRect.top - pageRect.top) / pageRect.height;
+          const width = rangeRect.width / pageRect.width;
+          const height = rangeRect.height / pageRect.height;
+          const right = left + width;
+          const bottom = top + height;
+
+          /*
+           * If this box appears right after the last box and is vertically aligned
+           * with the last box, merge it with the last box. This loop takes advantage of
+           * how getClientRects() iterates over boxes in content order (see
+           * https://drafts.csswg.org/cssom-view/#dom-range-getclientrects).
+           */
+          let boxMergedWithPrevious = false;
+          if (lastBox !== undefined) {
+            const lastBoxRight = lastBox.left + lastBox.width;
+            const lastBoxBottom = lastBox.top + lastBox.height;
+            const SMALL_HORIZONTAL_DELTA = 0.01; // 1% of page width
+            const SMALL_VERTICAL_DElTA = 0.01; // 1% of page height
+
+            if (
+              left - lastBoxRight < SMALL_HORIZONTAL_DELTA &&
+              Math.abs(top - lastBox.top) < SMALL_VERTICAL_DElTA &&
+              Math.abs(bottom - lastBoxBottom) < SMALL_VERTICAL_DElTA
+            ) {
+              lastBox.width = right - lastBox.left;
+              lastBox.top = Math.min(top, lastBox.top);
+              lastBox.height = Math.max(bottom, lastBoxBottom) - lastBox.top;
+              boxMergedWithPrevious = true;
+            }
+          }
+
+          /*
+           * Create a new bounding box if it couldn't be merged with the previous box.
+           */
+          if (!boxMergedWithPrevious) {
+            const box: BoundingBox = {
+              left,
+              top,
+              width,
+              height,
+              page: pageNumber - 1,
+              source: "human-annotation",
+            };
+            boxes.push(box);
+            lastBox = box;
+          }
+        }
+      }
+    }
+  }
+
+  return boxes;
 }
 
 /**

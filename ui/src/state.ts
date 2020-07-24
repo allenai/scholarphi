@@ -76,6 +76,18 @@ export interface State extends Settings {
   multiselectEnabled: boolean;
 
   /*
+   * ~ Text selection ~
+   */
+  textSelection: Selection | null;
+  /**
+   * Time in milliseconds that the selection changed last. Stored in state because
+   * textSelection may be the same object whenever a 'selectionchange' event is
+   * triggered. By storing the milliseconds of the last change, a re-render can
+   * be triggered on each selection change event.
+   */
+  textSelectionChangeMs: number | null;
+
+  /*
    * ~ Drawer (sidebar) state ~
    */
   drawerMode: DrawerMode;
