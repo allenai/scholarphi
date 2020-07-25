@@ -23,7 +23,7 @@ export class TermPropertyEvaluationGloss extends React.PureComponent<Props> {
     };
 
     return (
-      <div className="gloss term-property-evaluation-gloss">
+      <div className="gloss property-evaluation-gloss term-property-evaluation-gloss">
         <div className="gloss__section">
           <Table size="small">
             <TableBody>
@@ -32,7 +32,7 @@ export class TermPropertyEvaluationGloss extends React.PureComponent<Props> {
                   <TableCell>
                     <LatexPreview latex={definition} />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="vote-button">
                     <VoteButton
                       context={{ ...context, type: "definition", i }}
                     />
@@ -44,7 +44,7 @@ export class TermPropertyEvaluationGloss extends React.PureComponent<Props> {
                   <TableCell>
                     <LatexPreview latex={passage} />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="vote-button">
                     <VoteButton context={{ ...context, type: "passage", i }} />
                   </TableCell>
                 </TableRow>

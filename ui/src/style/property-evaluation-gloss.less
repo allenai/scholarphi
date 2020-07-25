@@ -1,0 +1,55 @@
+/**
+ * Gloss dimensions
+ */
+.gloss {
+  &.term-property-evaluation-gloss,
+  &.symbol-property-evaluation-gloss {
+    min-width: 300px;
+    max-width: 350px;
+  }
+}
+
+/**
+ * Placeholder message
+ */
+.property-evaluation-gloss__message {
+  color: @s2-text-light;
+  margin-top: @padding;
+  margin-bottom: @padding;
+}
+
+/**
+ * Property evaluation tables
+ */
+.property-evaluation-gloss table {
+  table-layout: fixed;
+
+  td.symbol {
+    width: 30px;
+    padding-left: @padding / 2;
+    padding-right: @padding / 2;
+  }
+
+  .property-evaluation-gloss__property {
+    /*
+     * Scroll display equations
+     */
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  td.vote-button {
+    width: 24px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/**
+ * Symbol tabs
+ */
+@{mui-tab}.symbol-property-evaluation-gloss__tab {
+  min-width: 50px;
+  width: 50px;
+  text-transform: none;
+}

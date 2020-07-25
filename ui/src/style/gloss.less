@@ -1,18 +1,9 @@
 /**
- * Gloss dimensions
+ * Default gloss dimensions
  */
 .gloss {
   min-width: 200px;
   max-width: 400px;
-
-  /*
-   * Hard-code the width of some glosses.
-   */
-  &.term-property-evaluation-gloss,
-  &.symbol-property-evaluation-gloss {
-    min-width: 300px;
-    max-width: 350px;
-  }
 }
 
 /**
@@ -90,29 +81,5 @@
     .katex-display {
       margin: unset;
     }
-  }
-}
-
-/**
- * Property evaluation tables
- */
-.property-evaluation-gloss table {
-  table-layout: fixed;
-
-  .property-evaluation-gloss__property {
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
-
-  td.symbol {
-    width: 30px;
-    padding-left: @padding / 2;
-    padding-right: @padding / 2;
-  }
-
-  td.vote-button {
-    width: 24px;
-    padding-left: 0;
-    padding-right: 0;
   }
 }
