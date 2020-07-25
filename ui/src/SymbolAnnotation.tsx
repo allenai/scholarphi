@@ -13,6 +13,7 @@ interface Props {
   pageView: PDFPageView;
   pageNumber: number;
   symbol: Symbol;
+  descendants: Symbol[];
   active: boolean;
   selected: boolean;
   selectedSpanIds: string[] | null;
@@ -61,6 +62,7 @@ export class SymbolAnnotation extends React.PureComponent<Props> {
             <SymbolPropertyEvaluationGloss
               id={this.props.id}
               symbol={this.props.symbol}
+              descendants={this.props.descendants}
             />
           )
         }

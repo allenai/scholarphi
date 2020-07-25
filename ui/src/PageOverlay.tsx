@@ -210,6 +210,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     isSymbol(e) && selectors.isDescendant(e, entity, entities)
                 );
                 const isLeaf = entity.relationships.children.length === 0;
+                const descendants = selectors.descendants(entity.id, entities);
                 return (
                   <SymbolAnnotation
                     key={annotationId}
@@ -222,6 +223,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     pageView={view}
                     pageNumber={pageNumber}
                     symbol={entity}
+                    descendants={descendants}
                     /*
                      * Support selection of:
                      * 1. Top-level symbols (i.e., those that aren't children of others)

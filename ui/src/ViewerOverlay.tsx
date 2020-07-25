@@ -79,7 +79,7 @@ class ViewerOverlay extends React.PureComponent<Props> {
     const textSelection = document.getSelection();
     const clickIsInsideSelectable = isClickEventInsideSelectable(event);
     const clickIsInsideGloss =
-      event.target instanceof HTMLElement &&
+      event.target instanceof Node &&
       uiUtils.findParentElement(event.target, (e) =>
         e.classList.contains("gloss")
       );

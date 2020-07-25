@@ -11,6 +11,35 @@ import {
 } from "../types/api";
 
 /**
+ * Get the descendants of this symbol. Descendants are returned in breadth-first order. For
+ * example, the subscripts of the symbol will be returned before the subscripts of the subscripts.
+ */
+export function descendants(symbolId: string, entities: Entities): Symbol[] {
+  const descendantsList: Symbol[] = [];
+  const entity = entities.byId[symbolId];
+  const visit: Symbol[] = [];
+
+  if (entity !== undefined && isSymbol(entity)) {
+    visit.push(entity);
+  }
+
+  while (visit.length > 0) {
+    const descendant = visit.shift() as Symbol;
+    descendant.relationships.children
+      .filter((c) => c.id !== null)
+      .map((c) => entities.byId[c.id as string])
+      .filter((e) => e !== undefined)
+      .filter(isSymbol)
+      .forEach((s) => {
+        descendantsList.push(s);
+        visit.push(s);
+      });
+  }
+
+  return descendantsList;
+}
+
+/**
  * Return the sentence for this symbol if one exists, otherwise null.
  */
 export function symbolSentence(

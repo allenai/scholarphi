@@ -1,4 +1,5 @@
-import Checkbox from "@material-ui/core/Checkbox";
+import IconButton from "@material-ui/core/IconButton";
+import ThumbsUp from "@material-ui/icons/ThumbUpSharp";
 import React from "react";
 import { getRemoteLogger } from "./logging";
 
@@ -10,13 +11,17 @@ interface Props {
   context: any;
 }
 
+interface State {
+  checked: boolean;
+}
+
 const logger = getRemoteLogger();
 
-class VoteButton extends React.PureComponent<Props> {
+class VoteButton extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { creationTime: Date.now() };
-    this.onChange = this.onChange.bind(this);
+    this.state = { checked: false };
+    this.onClick = this.onClick.bind(this);
   }
 
   componentDidMount() {
@@ -25,15 +30,23 @@ class VoteButton extends React.PureComponent<Props> {
     });
   }
 
-  onChange(event: React.ChangeEvent<HTMLInputElement>) {
-    logger.log("debug", "property-vote-changed", {
-      ...this.props.context,
-      checked: event.target.checked,
+  onClick() {
+    this.setState((prevState) => {
+      const checked = !prevState.checked;
+      logger.log("debug", "property-vote-changed", {
+        ...this.props.context,
+        checked,
+      });
+      return { checked };
     });
   }
 
   render() {
-    return <Checkbox onChange={this.onChange} />;
+    return (
+      <IconButton size="small" onClick={this.onClick}>
+        <ThumbsUp color={this.state.checked ? "primary" : undefined} />
+      </IconButton>
+    );
   }
 }
 
