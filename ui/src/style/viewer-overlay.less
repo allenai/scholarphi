@@ -20,6 +20,18 @@
 }
 
 /**
+ * Toolbars should receive pointer events, but the empty space surrounding them in the toolbar
+ * container should not. If 'pointer-events' is not 'none' for the container, some annotations
+ * may appear unclickable.
+ */
+.scholar-reader-toolbar-container {
+  pointer-events: none;
+  div.scholar-reader-toolbar {
+    pointer-events: all;
+  }
+}
+
+/**
  * Spacing between toolbars
  */
 .scholar-reader-toolbar-container {
@@ -44,8 +56,10 @@
 div.scholar-reader-toolbar {
   padding: (@padding / 2) @padding;
 
-  > * + * {
-    margin-left: @padding;
+  &:not(.vertical) {
+    > * + * {
+      margin-left: @padding;
+    }
   }
 }
 

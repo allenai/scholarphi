@@ -28,13 +28,15 @@ class Row extends React.PureComponent<RowProps> {
 
     return (
       <TableRow>
-        <TableCell>
+        <TableCell className="symbol">
           <LatexPreview latex={symbol.attributes.tex || "?"} />
         </TableCell>
         <TableCell>
-          <LatexPreview latex={this.props.content} />
+          <div className="property-evaluation-gloss__property">
+            <LatexPreview latex={this.props.content} />
+          </div>
         </TableCell>
-        <TableCell>
+        <TableCell className="vote-button">
           <VoteButton context={context} />
         </TableCell>
       </TableRow>
@@ -56,7 +58,7 @@ class SymbolPropertyEvaluationGloss extends React.PureComponent<Props> {
     const symbols = [this.props.symbol, ...this.props.descendants];
 
     return (
-      <div className="gloss symbol-property-evaluation-gloss">
+      <div className="gloss property-evaluation-gloss symbol-property-evaluation-gloss">
         <div className="gloss__section">
           <Table size="small">
             <TableBody>

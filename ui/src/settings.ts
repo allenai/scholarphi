@@ -72,7 +72,11 @@ export type GlossStyle = typeof GLOSS_STYLES[number];
  * Any setting that should be editable from the settings editor should have a spec in this list.
  */
 export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
-  { key: "annotationHintsEnabled", type: "flag", label: "Annotation hints" },
+  {
+    key: "annotationHintsEnabled",
+    type: "flag",
+    label: "Underline annotations",
+  },
   {
     key: "glossStyle",
     type: "choice",
@@ -82,12 +86,12 @@ export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
   {
     key: "glossEvaluationEnabled",
     type: "flag",
-    label: "Gloss evaluation interface",
+    label: "Evaluate glosses",
   },
   {
     key: "textSelectionMenuEnabled",
     type: "flag",
-    label: "Text selection menu",
+    label: "Show text selection menu",
   },
   {
     key: "declutterEnabled",
@@ -102,16 +106,16 @@ export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
   {
     key: "entityCreationEnabled",
     type: "flag",
-    label: "Entity creation toolbar",
+    label: "Create entities",
   },
   {
     key: "entityEditingEnabled",
     type: "flag",
-    label: "Entity property editor",
+    label: "Edit entity properties",
   },
   {
     key: "sentenceTexCopyOnOptionClickEnabled",
     type: "flag",
-    label: "Copy sentence TeX on Opt+Click",
+    label: "<Opt> + <Click> to copy sentence TeX",
   },
 ];

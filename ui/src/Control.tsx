@@ -36,6 +36,7 @@ class Control extends React.PureComponent<Props> {
     if (type === "flag") {
       return (
         <FormControlLabel
+          className="control-panel-toolbar__switch-label"
           control={
             <Switch
               checked={this.props.value as boolean}

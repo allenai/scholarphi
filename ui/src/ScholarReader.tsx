@@ -100,6 +100,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
      * See https://reactjs.org/docs/faq-functions.html#how-do-i-bind-a-function-to-a-component-instance
      */
     this.toggleControlPanelShowing = this.toggleControlPanelShowing.bind(this);
+    this.closeControlPanel = this.closeControlPanel.bind(this);
     this.handleChangeSetting = this.handleChangeSetting.bind(this);
 
     this.createEntity = this.createEntity.bind(this);
@@ -135,6 +136,10 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.setState((state) => ({
       controlPanelShowing: !state.controlPanelShowing,
     }));
+  }
+
+  closeControlPanel() {
+    this.setState({ controlPanelShowing: false });
   }
 
   handleChangeSetting(setting: ConfigurableSetting, value: any) {
@@ -802,7 +807,10 @@ class ScholarReader extends React.PureComponent<Props, State> {
                 })}
               >
                 {this.state.controlPanelShowing ? (
-                  <ControlPanel className="scholar-reader-toolbar">
+                  <ControlPanel
+                    className="scholar-reader-toolbar"
+                    handleClose={this.closeControlPanel}
+                  >
                     {CONFIGURABLE_SETTINGS.map((setting) => (
                       <Control
                         key={setting.label}
