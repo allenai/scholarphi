@@ -6,8 +6,11 @@ import TableRow from "@material-ui/core/TableRow";
 import Tabs from "@material-ui/core/Tabs";
 import React from "react";
 import LatexPreview from "./LatexPreview";
+import { getRemoteLogger } from "./logging";
 import { Symbol } from "./types/api";
 import VoteButton from "./VoteButton";
+
+const logger = getRemoteLogger();
 
 interface RowProps {
   id: string;
@@ -138,6 +141,15 @@ interface State {
   tabIndex: number;
 }
 
+function countProperties(symbol: Symbol) {
+  return (
+    symbol.attributes.nicknames.length +
+    symbol.attributes.definitions.length +
+    symbol.attributes.defining_formulas.length +
+    symbol.attributes.passages.length
+  );
+}
+
 /**
  * A gloss showing a table of all properties extracted for a symbol.
  */
@@ -148,8 +160,32 @@ class SymbolPropertyEvaluationGloss extends React.PureComponent<Props, State> {
     this.onChangeTab = this.onChangeTab.bind(this);
   }
 
+  componentDidMount() {
+    logger.log("debug", "open-symbol-property-evaluation-gloss", {
+      symbolId: this.props.symbol.id,
+      symbolTex: this.props.symbol.attributes.tex,
+      propertyCount: countProperties(this.props.symbol),
+    });
+  }
+
+  componentWillUnmount() {
+    logger.log("debug", "close-symbol-property-evaluation-gloss", {
+      symbolId: this.props.symbol.id,
+      symbolTex: this.props.symbol.attributes.tex,
+    });
+  }
+
   onChangeTab(_: React.ChangeEvent<{}>, tabIndex: number) {
     this.setState({ tabIndex });
+    const symbols = [this.props.symbol, ...this.props.descendants];
+    logger.log("debug", "open-tab-for-symbol", {
+      tabIndex,
+      symbolId: symbols[0].id,
+      symbolTex: symbols[0].attributes.tex,
+      selectedSymbolId: symbols[this.state.tabIndex],
+      selectedSymbolTex: symbols[this.state.tabIndex].attributes.tex,
+      propertyCount: countProperties(symbols[this.state.tabIndex]),
+    });
   }
 
   render() {
