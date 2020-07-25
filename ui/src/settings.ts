@@ -11,6 +11,10 @@ export interface Settings {
    */
   annotationHintsEnabled: boolean;
   /**
+   * Start a within-paper symbol search when a symbol is selected.
+   */
+  symbolSearchEnabled: boolean;
+  /**
    * Enable the 'declutter' interaction which masks pages to show only those sentences that
    * contain an entity that the user selected.
    */
@@ -92,6 +96,11 @@ export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
     key: "textSelectionMenuEnabled",
     type: "flag",
     label: "Show text selection menu",
+  },
+  {
+    key: "symbolSearchEnabled",
+    type: "flag",
+    label: "Symbol search",
   },
   {
     key: "declutterEnabled",

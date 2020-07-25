@@ -88,6 +88,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       glossStyle: "sidenote",
       glossEvaluationEnabled: false,
       textSelectionMenuEnabled: false,
+      symbolSearchEnabled: false,
       declutterEnabled: false,
       definitionPreviewEnabled: false,
       entityCreationEnabled: false,
@@ -207,7 +208,8 @@ class ScholarReader extends React.PureComponent<Props, State> {
       }
 
       /*
-       * If this isn't a symbol, just update the selection.
+       * The default behavior is to just update the selection. If the selection is a symbol,
+       * however, start a symbol search.
        */
       if (prevEntities.byId[entityId].type !== "symbol") {
         return {
@@ -822,7 +824,9 @@ class ScholarReader extends React.PureComponent<Props, State> {
                   </ControlPanel>
                 ) : null}
                 {this.state.isFindActive &&
-                this.state.findActivationTimeMs !== null ? (
+                this.state.findActivationTimeMs !== null &&
+                (this.state.findMode !== "symbol" ||
+                  this.state.symbolSearchEnabled) ? (
                   <FindBar
                     className="scholar-reader-toolbar"
                     /*
@@ -937,8 +941,14 @@ class ScholarReader extends React.PureComponent<Props, State> {
                   selectedAnnotationSpanIds={
                     this.state.selectedAnnotationSpanIds
                   }
-                  findMatchedEntityIds={this.state.findMatchedEntities}
-                  findSelectionEntityId={findMatchEntityId}
+                  findMatchedEntityIds={
+                    this.state.symbolSearchEnabled
+                      ? this.state.findMatchedEntities
+                      : null
+                  }
+                  findSelectionEntityId={
+                    this.state.symbolSearchEnabled ? findMatchEntityId : null
+                  }
                   showAnnotations={this.state.annotationHintsEnabled}
                   pageMaskShowing={this.state.declutterEnabled}
                   glossStyle={this.state.glossStyle}
