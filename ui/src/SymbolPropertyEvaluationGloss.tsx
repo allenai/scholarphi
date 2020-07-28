@@ -7,6 +7,7 @@ import Tabs from "@material-ui/core/Tabs";
 import React from "react";
 import LatexPreview from "./LatexPreview";
 import { getRemoteLogger } from "./logging";
+import RichText from "./RichText";
 import { Symbol } from "./types/api";
 import VoteButton from "./VoteButton";
 
@@ -34,11 +35,11 @@ class Row extends React.PureComponent<RowProps> {
     return (
       <TableRow>
         <TableCell className="symbol">
-          <LatexPreview latex={symbol.attributes.tex || "?"} />
+          <LatexPreview>{symbol.attributes.tex || "?"}</LatexPreview>
         </TableCell>
         <TableCell>
           <div className="property-evaluation-gloss__property">
-            <LatexPreview latex={this.props.content} />
+            <RichText>{this.props.content}</RichText>
           </div>
         </TableCell>
         <TableCell className="vote-button">
@@ -204,7 +205,7 @@ class SymbolPropertyEvaluationGloss extends React.PureComponent<Props, State> {
               <Tab
                 className="symbol-property-evaluation-gloss__tab"
                 key={s.id}
-                label={<LatexPreview latex={s.attributes.tex || "??"} />}
+                label={<LatexPreview>{s.attributes.tex || "??"}</LatexPreview>}
               />
             ))}
           </Tabs>

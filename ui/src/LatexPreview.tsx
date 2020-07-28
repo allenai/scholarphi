@@ -10,7 +10,10 @@ import "katex/dist/katex.min.css"; // KaTeX styles necessary for styling formula
 import React from "react";
 
 interface Props {
-  latex: string;
+  /**
+   * Text to render is passed in as a child. Should be either a string or a single span.
+   */
+  children: React.ReactNode;
   handleParseError?: (message: string, error: katex.ParseError) => void;
 }
 
@@ -53,6 +56,9 @@ class LatexPreview extends React.PureComponent<Props> {
             this.props.handleParseError(message, error);
           }
         },
+        macros: {
+          "\\hl": "\\colorbox{yellow}{$#1$}",
+        },
       });
     }
     /*
@@ -71,7 +77,7 @@ class LatexPreview extends React.PureComponent<Props> {
          * trigger a re-rendering of the component.
          */}
         <span ref={(ref) => (this._latexContainer = ref)}>
-          <span>{this.props.latex}</span>
+          {this.props.children}
         </span>
         <span
           /**

@@ -1,5 +1,5 @@
 import React from "react";
-import LatexPreview from "./LatexPreview";
+import RichText from "./RichText";
 import { Term } from "./types/api";
 
 interface Props {
@@ -21,7 +21,7 @@ export class TermDefinitionGloss extends React.PureComponent<Props> {
           <b>{term.attributes.name}</b>
           {definition !== undefined ? (
             <>
-              : <LatexPreview latex={definition} />
+              : <RichText>{definition}</RichText>
             </>
           ) : null}
         </div>

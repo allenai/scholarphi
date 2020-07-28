@@ -31,6 +31,11 @@ declare module "katex/dist/contrib/auto-render" {
      * Callback to preprocess math LaTeX before rendering it.
      */
     preProcess?: (math: string) => string;
+    /**
+     * A mapping from macros to expansions. See example here:
+     * https://github.com/KaTeX/KaTeX/issues/1801#issuecomment-445813146
+     */
+    macros?: { [macro: string]: string };
   }
 
   interface DelimiterSpec {

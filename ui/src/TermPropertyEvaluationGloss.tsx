@@ -3,7 +3,7 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import React from "react";
-import LatexPreview from "./LatexPreview";
+import RichText from "./RichText";
 import { Term } from "./types/api";
 import VoteButton from "./VoteButton";
 
@@ -30,7 +30,7 @@ export class TermPropertyEvaluationGloss extends React.PureComponent<Props> {
               {definitions.map((definition, i) => (
                 <TableRow key={`definition-${i}`}>
                   <TableCell>
-                    <LatexPreview latex={definition} />
+                    <RichText>{definition}</RichText>
                   </TableCell>
                   <TableCell className="vote-button">
                     <VoteButton
@@ -42,7 +42,7 @@ export class TermPropertyEvaluationGloss extends React.PureComponent<Props> {
               {passages.map((passage, i) => (
                 <TableRow key={`passage-${i}`}>
                   <TableCell>
-                    <LatexPreview latex={passage} />
+                    <RichText>{passage}</RichText>
                   </TableCell>
                   <TableCell className="vote-button">
                     <VoteButton context={{ ...context, type: "passage", i }} />

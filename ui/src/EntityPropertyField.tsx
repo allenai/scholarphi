@@ -8,7 +8,27 @@ import DeleteForever from "@material-ui/icons/DeleteForever";
 import katex from "katex";
 import React from "react";
 import { Property } from "./EntityPropertyEditor";
-import LatexPreview from "./LatexPreview";
+import RichText from "./RichText";
+
+interface RichTextPreviewProps {
+  children: string;
+  handleLatexError: (message: string, error: katex.ParseError) => void;
+}
+
+class RichTextPreview extends React.PureComponent<RichTextPreviewProps> {
+  render() {
+    return (
+      <Card className="rich-text-preview">
+        <div className="rich-text-preview__container">
+          <RichText handleLatexParseError={this.props.handleLatexError}>
+            {this.props.children}
+          </RichText>
+        </div>
+        <div className="rich-text-preview__preview-label">Preview</div>
+      </Card>
+    );
+  }
+}
 
 interface Props {
   property: Property;
@@ -143,15 +163,9 @@ class EntityPropertyField extends React.PureComponent<Props> {
                 : null}
             </TextField>
             {is_latex ? (
-              <Card className="latex-preview">
-                <div className="latex-preview__container">
-                  <LatexPreview
-                    latex={value}
-                    handleParseError={this.handleLatexError}
-                  />
-                </div>
-                <div className="latex-preview__preview-label">Preview</div>
-              </Card>
+              <RichTextPreview handleLatexError={this.handleLatexError}>
+                {value as string}
+              </RichTextPreview>
             ) : null}
           </>
         ) : null}
@@ -231,17 +245,9 @@ class EntityPropertyField extends React.PureComponent<Props> {
                       <DeleteForever />
                     </IconButton>
                     {is_latex ? (
-                      <Card className="latex-preview">
-                        <div className="latex-preview__container">
-                          <LatexPreview
-                            latex={v}
-                            handleParseError={this.handleLatexError}
-                          />
-                        </div>
-                        <div className="latex-preview__preview-label">
-                          Preview
-                        </div>
-                      </Card>
+                      <RichTextPreview handleLatexError={this.handleLatexError}>
+                        {v}
+                      </RichTextPreview>
                     ) : null}
                   </div>
                 ))}

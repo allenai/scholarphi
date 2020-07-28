@@ -1,5 +1,6 @@
 import React from "react";
 import LatexPreview from "./LatexPreview";
+import RichText from "./RichText";
 import { Symbol } from "./types/api";
 
 interface Props {
@@ -20,7 +21,7 @@ class SymbolDefinitionGloss extends React.PureComponent<Props> {
     return (
       <div className="gloss symbol-definition-gloss">
         <div className="gloss__section">
-          {tex !== null ? <LatexPreview latex={tex} /> : "<Symbol TeX>"}:{" "}
+          {tex !== null ? <LatexPreview>{tex}</LatexPreview> : "<Symbol TeX>"}:{" "}
           {nicknames.length > 0 ? nicknames.join(", ") : "(no nicknames)."}
         </div>
         {definitions.length > 0 ? (
@@ -28,7 +29,7 @@ class SymbolDefinitionGloss extends React.PureComponent<Props> {
             <b>Definition</b>:{" "}
             {definitions.map((d, i) => (
               <div key={`definition-${i}`}>
-                <LatexPreview latex={d} />
+                <RichText>{d}</RichText>
               </div>
             ))}
           </div>
@@ -38,7 +39,7 @@ class SymbolDefinitionGloss extends React.PureComponent<Props> {
             <b>Defining formulas</b>:{" "}
             {defining_formulas.map((f, i) => (
               <div key={`formula-${i}`}>
-                <LatexPreview latex={f} />
+                <RichText>{f}</RichText>
               </div>
             ))}
           </div>
@@ -49,7 +50,7 @@ class SymbolDefinitionGloss extends React.PureComponent<Props> {
             <ul>
               {passages.map((p, i) => (
                 <li key={`passage-${i}`}>
-                  <LatexPreview latex={p} />
+                  <RichText>{p}</RichText>
                 </li>
               ))}
             </ul>
