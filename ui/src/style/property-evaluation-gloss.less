@@ -4,18 +4,21 @@
 .gloss {
   &.term-property-evaluation-gloss,
   &.symbol-property-evaluation-gloss {
-    min-width: 300px;
-    max-width: 350px;
+    max-width: 400px;
   }
 }
 
 /**
- * Placeholder message
+ * Fonts
  */
-.property-evaluation-gloss__message {
-  color: @s2-text-light;
-  margin-top: @padding;
-  margin-bottom: @padding;
+.property-evaluation-gloss {
+  &__clickable-link {
+    color: @s2-link-default;
+  }
+
+  .property-evaluation-gloss__not-defined {
+    color: @s2-text-light;
+  }
 }
 
 /**
@@ -23,25 +26,39 @@
  */
 .property-evaluation-gloss table {
   table-layout: fixed;
+  width: 300px;
 
-  td.symbol {
-    width: 30px;
+  /**
+   * Section headers
+   */
+  .property-evaluation-gloss__header {
+    background-color: lightgrey;
+
+    td {
+      font-weight: bold;
+    }
+  }
+
+  /**
+   * Cell dimensions
+   */
+  td {
     padding-left: @padding / 2;
-    padding-right: @padding / 2;
-  }
 
-  .property-evaluation-gloss__property {
-    /*
-     * Scroll display equations
-     */
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
+    &:first-of-type {
+      /*
+       * Scroll display equations
+       */
+      width: 85%;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
 
-  td.vote-button {
-    width: 24px;
-    padding-left: 0;
-    padding-right: 0;
+    &.vote-button {
+      width: 24px;
+      padding-left: @padding;
+      padding-right: @padding;
+    }
   }
 }
 

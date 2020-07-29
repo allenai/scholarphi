@@ -13,51 +13,90 @@ import VoteButton from "./VoteButton";
 
 const logger = getRemoteLogger();
 
-interface RowProps {
-  id: string;
-  content: string;
-  symbol: Symbol;
-  isDescendant: boolean;
-  glossId: string;
+interface SectionProps {
+  header: string;
+  data: string[];
+  context: any;
 }
 
-class Row extends React.PureComponent<RowProps> {
-  render() {
-    const { symbol } = this.props;
-    const context = {
-      glossId: this.props.glossId,
-      symbolId: symbol.id,
-      symbolTex: symbol.attributes.tex,
-      symbolMathMl: symbol.attributes.mathml,
-      isDescendant: this.props.isDescendant,
-    };
+interface SectionState {
+  visibleRows: number;
+}
 
+class Section extends React.PureComponent<SectionProps, SectionState> {
+  constructor(props: SectionProps) {
+    super(props);
+    this.state = {
+      visibleRows: 2,
+    };
+    this.onClickShowMore = this.onClickShowMore.bind(this);
+  }
+
+  onClickShowMore() {
+    this.setState((prevState) => ({
+      visibleRows: prevState.visibleRows + 2,
+    }));
+  }
+
+  render() {
     return (
-      <TableRow>
-        <TableCell className="symbol">
-          <LatexPreview>{symbol.attributes.tex || "?"}</LatexPreview>
-        </TableCell>
-        <TableCell>
-          <div className="property-evaluation-gloss__property">
-            <RichText>{this.props.content}</RichText>
-          </div>
-        </TableCell>
-        <TableCell className="vote-button">
-          <VoteButton context={context} />
-        </TableCell>
-      </TableRow>
+      <>
+        <TableRow className="property-evaluation-gloss__header">
+          <TableCell>{this.props.header}</TableCell>
+          <TableCell></TableCell>
+        </TableRow>
+        {this.props.data.length === 0 ? (
+          <TableRow>
+            <TableCell className="property-evaluation-gloss__not-defined">
+              Not explicitly defined in this paper.
+            </TableCell>
+            <TableCell className="vote-button">
+              <VoteButton
+                context={{ ...this.props.context, tag: "not-defined-message" }}
+              />
+            </TableCell>
+          </TableRow>
+        ) : (
+          <>
+            {this.props.data.slice(0, this.state.visibleRows).map((d, i) => (
+              <TableRow key={i}>
+                <TableCell>
+                  <div className="property-evaluation-gloss__property">
+                    <RichText>{d}</RichText>
+                  </div>
+                </TableCell>
+                <TableCell className="vote-button">
+                  <VoteButton
+                    context={{ ...this.props.context, row: i, data: d }}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+            {this.state.visibleRows < this.props.data.length ? (
+              <TableRow>
+                <TableCell>
+                  <span
+                    className="property-evaluation-gloss__clickable-link"
+                    onClick={this.onClickShowMore}
+                  >
+                    Show more
+                  </span>
+                </TableCell>
+                <TableCell />
+              </TableRow>
+            ) : null}
+          </>
+        )}
+      </>
     );
   }
 }
 
-interface TabProps {
-  symbol: Symbol;
-  isDescendant: boolean;
-  glossId: string;
+class TabPanel extends React.PureComponent<{
   hidden: boolean;
-}
-
-class SymbolTabPanel extends React.PureComponent<TabProps> {
+  symbol: Symbol;
+  context: any;
+}> {
   render() {
     const { symbol } = this.props;
     const {
@@ -67,65 +106,29 @@ class SymbolTabPanel extends React.PureComponent<TabProps> {
       passages,
     } = symbol.attributes;
 
-    if (
-      nicknames.length === 0 &&
-      definitions.length === 0 &&
-      defining_formulas.length === 0 &&
-      passages.length === 0
-    ) {
-      return (
-        <p
-          className="property-evaluation-gloss__message"
-          hidden={this.props.hidden}
-        >
-          (Nothing to show)
-        </p>
-      );
-    }
-
     return (
       <Table hidden={this.props.hidden} size="small">
         <TableBody>
-          {nicknames.map((nickname, i) => (
-            <Row
-              key={`symbol-${symbol.id}-nickname-${i}`}
-              id={`symbol-${symbol.id}-nickname-${i}`}
-              content={nickname}
-              glossId={this.props.glossId}
-              isDescendant={this.props.isDescendant}
-              symbol={symbol}
-            />
-          ))}
-          {definitions.map((definition, i) => (
-            <Row
-              key={`symbol-${symbol.id}-definition-${i}`}
-              id={`symbol-${symbol.id}-definition-${i}`}
-              content={definition}
-              glossId={this.props.glossId}
-              isDescendant={this.props.isDescendant}
-              symbol={symbol}
-            />
-          ))}
-          {defining_formulas.map((formula, i) => (
-            <Row
-              key={`symbol-${symbol.id}-formula-${i}`}
-              id={`symbol-${symbol.id}-formula-${i}`}
-              content={formula}
-              glossId={this.props.glossId}
-              isDescendant={this.props.isDescendant}
-              symbol={symbol}
-            />
-          ))}
-          {passages.map((passage, i) => (
-            <Row
-              key={`symbol-${symbol.id}-passage-${i}`}
-              id={`symbol-${symbol.id}-passage-${i}`}
-              content={passage}
-              glossId={this.props.glossId}
-              isDescendant={this.props.isDescendant}
-              symbol={symbol}
-            />
-          ))}
+          <Section
+            header="Nicknames"
+            data={nicknames}
+            context={{ ...this.props.context, dataType: "nickname" }}
+          />
+          <Section
+            header="Definitions"
+            data={definitions}
+            context={{ ...this.props.context, dataType: "definition" }}
+          />
+          <Section
+            header="Defining formulas"
+            data={defining_formulas}
+            context={{ ...this.props.context, dataType: "defining-formulas" }}
+          />
+          <Section
+            header="Example usages"
+            data={passages}
+            context={{ ...this.props.context, dataType: "usages" }}
+          />
         </TableBody>
       </Table>
     );
@@ -142,15 +145,6 @@ interface State {
   tabIndex: number;
 }
 
-function countProperties(symbol: Symbol) {
-  return (
-    symbol.attributes.nicknames.length +
-    symbol.attributes.definitions.length +
-    symbol.attributes.defining_formulas.length +
-    symbol.attributes.passages.length
-  );
-}
-
 /**
  * A gloss showing a table of all properties extracted for a symbol.
  */
@@ -165,7 +159,6 @@ class SymbolPropertyEvaluationGloss extends React.PureComponent<Props, State> {
     logger.log("debug", "open-symbol-property-evaluation-gloss", {
       symbolId: this.props.symbol.id,
       symbolTex: this.props.symbol.attributes.tex,
-      propertyCount: countProperties(this.props.symbol),
     });
   }
 
@@ -185,7 +178,6 @@ class SymbolPropertyEvaluationGloss extends React.PureComponent<Props, State> {
       symbolTex: symbols[0].attributes.tex,
       selectedSymbolId: symbols[this.state.tabIndex],
       selectedSymbolTex: symbols[this.state.tabIndex].attributes.tex,
-      propertyCount: countProperties(symbols[this.state.tabIndex]),
     });
   }
 
@@ -209,13 +201,15 @@ class SymbolPropertyEvaluationGloss extends React.PureComponent<Props, State> {
               />
             ))}
           </Tabs>
-          {symbols.map((s, symbolIndex) => (
-            <SymbolTabPanel
+          {symbols.map((s, i) => (
+            <TabPanel
               key={s.id}
+              hidden={i !== this.state.tabIndex}
               symbol={s}
-              isDescendant={symbolIndex === 0}
-              glossId={this.props.id}
-              hidden={symbolIndex !== this.state.tabIndex}
+              context={{
+                isDescendant: i === 0,
+                glossId: this.props.id,
+              }}
             />
           ))}
         </div>

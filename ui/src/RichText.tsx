@@ -13,7 +13,7 @@ interface Props {
  */
 class RichText extends React.PureComponent<Props> {
   render() {
-    return (
+    return this.props.children === null ? null : (
       <LatexPreview handleParseError={this.props.handleLatexParseError}>
         <FormattedText>{this.props.children}</FormattedText>
       </LatexPreview>

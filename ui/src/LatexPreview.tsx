@@ -57,6 +57,11 @@ class LatexPreview extends React.PureComponent<Props> {
           }
         },
         macros: {
+          /*
+           * When using colorbox inside a math environment, the second argument must be in
+           * LaTeX delimiters. See:
+           * https://github.com/KaTeX/KaTeX/issues/2300
+           */
           "\\hl": "\\colorbox{yellow}{$#1$}",
         },
       });
