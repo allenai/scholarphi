@@ -59,6 +59,7 @@ def run_commands_for_arxiv_ids(
         command_args.log_names = [log_filename]
         command_args.one_entity_at_a_time = process_one_entity_at_a_time
         command_args.schema = pipeline_args.database_schema
+        command_args.data_version = pipeline_args.data_version
         if CommandCls == FetchArxivSources:
             command_args.s3_bucket = pipeline_args.s3_arxiv_sources_bucket
         if CommandCls in [StorePipelineLog, StoreResults]:
@@ -266,6 +267,14 @@ if __name__ == "__main__":
             + "needs to be launched pointing to the 'dev' schema. Schema names must "
             + "follow the naming rules for Postgres identifiers "
             + "(see https://www.postgresql.org/docs/9.2/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS)."
+        ),
+    )
+    parser.add_argument(
+        "--data-version",
+        type=int,
+        help=(
+            "Version number to assign to the uploaded data. Defaults to creating a new version "
+            + "number for each paper for each run of the pipeline."
         ),
     )
     args = parser.parse_args()

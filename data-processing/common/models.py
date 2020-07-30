@@ -201,7 +201,7 @@ class EntityData(TimestampsMixin, OutputModel):
         ],
     )
     """
-    The type of entity referred to by a relation-id. Will be defined if the item type is 
+    The type of entity referred to by a relation-id. Will be defined if the item type is
     'relation-id'. Otherwise, will be undefined.
     """
 
