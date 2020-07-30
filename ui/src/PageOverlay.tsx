@@ -1,12 +1,12 @@
 import classNames from "classnames";
 import React from "react";
 import ReactDOM from "react-dom";
-import CitationAnnotation from "./CitationAnnotation";
+import CitationGloss from "./CitationGloss";
+import EntityAnnotation from "./EntityAnnotation";
 import EntityCreationCanvas from "./EntityCreationCanvas";
 import { AreaSelectionMethod } from "./EntityCreationToolbar";
 import PageMask from "./PageMask";
 import * as selectors from "./selectors";
-import SentenceAnnotation from "./SentenceAnnotation";
 import { GlossStyle } from "./settings";
 import {
   Entities,
@@ -15,8 +15,10 @@ import {
   Papers,
   UserLibrary,
 } from "./state";
-import SymbolAnnotation from "./SymbolAnnotation";
-import TermAnnotation from "./TermAnnotation";
+import SymbolDefinitionGloss from "./SymbolDefinitionGloss";
+import SymbolPropertyEvaluationGloss from "./SymbolPropertyEvaluationGloss";
+import TermDefinitionGloss from "./TermDefinitionGloss";
+import TermPropertyEvaluationGloss from "./TermPropertyEvaluationGloss";
 import {
   Entity,
   EntityCreateData,
@@ -26,7 +28,7 @@ import {
   isTerm,
 } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
-import { getPageViewDimensions } from "./utils/ui";
+import * as uiUtils from "./utils/ui";
 
 interface Props {
   paperId?: PaperId;
@@ -54,7 +56,6 @@ interface Props {
     spanId: string
   ) => void;
   handleShowSnackbarMessage: (message: string) => void;
-  handleStartSymbolSearch: (id: string) => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
   handleCreateEntity: (entity: EntityCreateData) => Promise<string | null>;
   handleDeleteEntity: (id: string) => Promise<boolean>;
@@ -79,6 +80,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
     super(props);
     this._element = document.createElement("div");
     this._element.classList.add("scholar-reader-page-overlay");
+    this.onClickSentence = this.onClickSentence.bind(this);
   }
 
   componentDidMount() {
@@ -91,6 +93,26 @@ class PageOverlay extends React.PureComponent<Props, {}> {
       this.props.view.div.contains(this._element)
     ) {
       this.props.view.div.removeChild(this._element);
+    }
+  }
+
+  onClickSentence(
+    event: React.MouseEvent<HTMLDivElement>,
+    sentenceEntity: Entity
+  ) {
+    if (event.altKey && isSentence(sentenceEntity)) {
+      const { tex } = sentenceEntity.attributes;
+      if (tex !== null) {
+        navigator.clipboard.writeText(tex);
+        const texPreview = uiUtils.truncateText(tex, 30, true);
+        this.props.handleShowSnackbarMessage(
+          `Copied LaTeX for sentence to clipboard: "${texPreview}"`
+        );
+      }
+      /*
+       * Tell the Annotation that the click event has been handled; don't select this sentence.
+       */
+      return true;
     }
   }
 
@@ -116,12 +138,11 @@ class PageOverlay extends React.PureComponent<Props, {}> {
       entityCreationAreaSelectionMethod,
       copySentenceOnClick: copySentenceOnOptionClick,
       handleAddPaperToLibrary,
-      handleStartSymbolSearch,
       handleCreateEntity,
       handleSelectEntityAnnotation,
     } = this.props;
 
-    const pageDimensions = getPageViewDimensions(view);
+    const pageDimensions = uiUtils.getPageViewDimensions(view);
     let selectedEntities: Entity[] = [];
     if (entities !== null) {
       selectedEntities = selectedEntityIds.map((id) => entities.byId[id]);
@@ -157,73 +178,88 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                 : null;
               if (isTerm(entity)) {
                 return (
-                  <TermAnnotation
+                  <EntityAnnotation
                     key={annotationId}
                     id={annotationId}
+                    entity={entity}
+                    className="term-annotation"
                     pageView={view}
                     pageNumber={pageNumber}
-                    term={entity}
-                    active={showAnnotations}
+                    underline={showAnnotations}
+                    glossStyle={glossStyle}
+                    glossContent={
+                      glossEvaluationEnabled ? (
+                        <TermPropertyEvaluationGloss
+                          id={annotationId}
+                          term={entity}
+                        />
+                      ) : (
+                        <TermDefinitionGloss term={entity} />
+                      )
+                    }
                     selected={isSelected}
                     selectedSpanIds={selectedSpanIds}
-                    glossStyle={glossStyle}
-                    glossEvaluationEnabled={glossEvaluationEnabled}
                     handleSelect={handleSelectEntityAnnotation}
                   />
                 );
-              }
-              if (isCitation(entity) && papers !== null) {
+              } else if (
+                isCitation(entity) &&
+                papers !== null &&
+                entity.attributes.paper_id !== null &&
+                papers[entity.attributes.paper_id] !== undefined
+              ) {
                 return (
-                  <CitationAnnotation
+                  <EntityAnnotation
                     key={annotationId}
                     id={annotationId}
+                    entity={entity}
+                    className="citation-annotation"
                     pageView={view}
                     pageNumber={pageNumber}
-                    userLibrary={userLibrary}
-                    citation={entity}
-                    paper={
-                      entity.attributes.paper_id !== null
-                        ? papers[entity.attributes.paper_id] || null
-                        : null
+                    underline={showAnnotations}
+                    glossStyle="tooltip"
+                    glossContent={
+                      <CitationGloss
+                        citation={entity}
+                        paper={papers[entity.attributes.paper_id]}
+                        userLibrary={userLibrary}
+                        handleAddPaperToLibrary={handleAddPaperToLibrary}
+                        openedPaperId={paperId}
+                      />
                     }
-                    active={showAnnotations}
                     selected={isSelected}
                     selectedSpanIds={selectedSpanIds}
-                    glossStyle={glossStyle}
-                    openedPaperId={paperId}
                     handleSelect={handleSelectEntityAnnotation}
-                    handleAddPaperToLibrary={handleAddPaperToLibrary}
                   />
                 );
               } else if (isSymbol(entity)) {
-                const isFindMatch =
+                const isMatch =
                   findMatchedEntityIds !== null &&
                   findMatchedEntityIds.indexOf(entityId) !== -1;
                 const parentId = entity.relationships.parent.id;
                 const isTopLevelSymbol =
                   parentId === null || entities.byId[parentId] === undefined;
-                const isChildOfSelection = selectedEntities.some(
+                const isSelectionChild = selectedEntities.some(
                   (e) => isSymbol(e) && selectors.isChild(entity, e)
                 );
-                const isAncestorOfSelection = selectedEntities.some(
+                const isSelectionAncestor = selectedEntities.some(
                   (e) =>
                     isSymbol(e) && selectors.isDescendant(e, entity, entities)
                 );
                 const isLeaf = entity.relationships.children.length === 0;
                 const descendants = selectors.descendants(entity.id, entities);
                 return (
-                  <SymbolAnnotation
+                  <EntityAnnotation
                     key={annotationId}
                     id={annotationId}
-                    className={classNames({
-                      "child-of-selection": isChildOfSelection,
+                    className={classNames("symbol-annotation", {
+                      "child-of-selection": isSelectionChild,
                       "leaf-symbol": isLeaf,
-                      "ancestor-of-selection": isAncestorOfSelection,
+                      "ancestor-of-selection": isSelectionAncestor,
                     })}
                     pageView={view}
                     pageNumber={pageNumber}
-                    symbol={entity}
-                    descendants={descendants}
+                    entity={entity}
                     /*
                      * Support selection of:
                      * 1. Top-level symbols (i.e., those that aren't children of others)
@@ -232,38 +268,46 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                      * symbol (once selected) should no longer be interactive itself.
                      */
                     active={
-                      showAnnotations &&
-                      ((isTopLevelSymbol &&
-                        !isAncestorOfSelection &&
+                      (isTopLevelSymbol &&
+                        !isSelectionAncestor &&
                         !isSelected) ||
-                        isChildOfSelection ||
-                        (isLeaf && isSelected))
+                      isSelectionChild ||
+                      (isLeaf && isSelected)
                     }
+                    underline={showAnnotations}
                     selected={isSelected}
                     selectedSpanIds={selectedSpanIds}
                     isFindSelection={findSelectionEntityId === entityId}
-                    isFindMatch={isFindMatch}
+                    isFindMatch={isMatch}
                     glossStyle={glossStyle}
-                    glossEvaluationEnabled={glossEvaluationEnabled}
+                    glossContent={
+                      glossEvaluationEnabled ? (
+                        <SymbolPropertyEvaluationGloss
+                          id={annotationId}
+                          symbol={entity}
+                          descendants={descendants}
+                        />
+                      ) : (
+                        <SymbolDefinitionGloss symbol={entity} />
+                      )
+                    }
                     handleSelect={this.props.handleSelectEntityAnnotation}
-                    handleStartSymbolSearch={handleStartSymbolSearch}
                   />
                 );
-              } else if (copySentenceOnOptionClick && isSentence(entity)) {
+              } else if (isSentence(entity)) {
                 return (
-                  <SentenceAnnotation
+                  <EntityAnnotation
                     key={annotationId}
+                    className="sentence-annotation"
                     id={annotationId}
                     pageView={view}
                     pageNumber={pageNumber}
-                    sentence={entity}
-                    active={showAnnotations}
-                    selected={isSelected}
-                    selectedSpanIds={selectedSpanIds}
-                    handleSelect={this.props.handleSelectEntityAnnotation}
-                    handleShowSnackbarMessage={
-                      this.props.handleShowSnackbarMessage
-                    }
+                    entity={entity}
+                    active={copySentenceOnOptionClick}
+                    underline={false}
+                    selected={false}
+                    selectedSpanIds={null}
+                    onClick={this.onClickSentence}
                   />
                 );
               } else {

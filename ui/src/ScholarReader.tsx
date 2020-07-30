@@ -121,7 +121,6 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.closeSnackbar = this.closeSnackbar.bind(this);
     this.closeDrawer = this.closeDrawer.bind(this);
     this.startTextSearch = this.startTextSearch.bind(this);
-    this.startSymbolSearch = this.startSymbolSearch.bind(this);
     this.setFindMatchCount = this.setFindMatchCount.bind(this);
     this.setFindMatchIndex = this.setFindMatchIndex.bind(this);
     this.setFindQuery = this.setFindQuery.bind(this);
@@ -586,8 +585,6 @@ class ScholarReader extends React.PureComponent<Props, State> {
     });
   }
 
-  startSymbolSearch(symbolId: string) {}
-
   setFindMatchCount(findMatchCount: number | null) {
     this.setState({ findMatchCount });
   }
@@ -963,7 +960,6 @@ class ScholarReader extends React.PureComponent<Props, State> {
                   }
                   handleSelectEntityAnnotation={this.selectEntityAnnotation}
                   handleShowSnackbarMessage={this.showSnackbarMessage}
-                  handleStartSymbolSearch={this.startSymbolSearch}
                   handleAddPaperToLibrary={this.addToLibrary}
                   handleCreateEntity={this.createEntity}
                   handleDeleteEntity={this.deleteEntity}

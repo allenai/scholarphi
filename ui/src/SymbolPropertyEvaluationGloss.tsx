@@ -33,6 +33,10 @@ class Section extends React.PureComponent<SectionProps, SectionState> {
   }
 
   onClickShowMore() {
+    logger.log("debug", "Clicked on show more", {
+      ...this.props.context,
+      currentVisibleRows: this.state.visibleRows,
+    });
     this.setState((prevState) => ({
       visibleRows: prevState.visibleRows + 2,
     }));
@@ -61,7 +65,16 @@ class Section extends React.PureComponent<SectionProps, SectionState> {
             {this.props.data.slice(0, this.state.visibleRows).map((d, i) => (
               <TableRow key={i}>
                 <TableCell>
-                  <div className="property-evaluation-gloss__property">
+                  <div
+                    ref={(ref) => {
+                      logger.log("debug", "render-property", {
+                        ...this.props.context,
+                        row: i,
+                        data: d,
+                      });
+                    }}
+                    className="property-evaluation-gloss__property"
+                  >
                     <RichText>{d}</RichText>
                   </div>
                 </TableCell>
