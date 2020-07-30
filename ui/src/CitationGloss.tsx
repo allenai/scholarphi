@@ -2,6 +2,7 @@ import React from "react";
 import PaperSummary from "./PaperSummary";
 import { PaperId, UserLibrary } from "./state";
 import { Citation, Paper } from "./types/api";
+import VoteButton from "./VoteButton";
 
 interface Props {
   paper: Paper;
@@ -9,6 +10,7 @@ interface Props {
   userLibrary: UserLibrary | null;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
   openedPaperId?: PaperId;
+  evaluationEnabled?: boolean;
 }
 
 export class CitationGloss extends React.PureComponent<Props> {
@@ -16,15 +18,22 @@ export class CitationGloss extends React.PureComponent<Props> {
     return (
       <div className="gloss citation-gloss">
         <div className="gloss__section">
-          <div className="gloss__citation">
-            <PaperSummary
-              paper={this.props.paper}
-              userLibrary={this.props.userLibrary}
-              handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
-              openedPaperId={this.props.openedPaperId}
+          <PaperSummary
+            paper={this.props.paper}
+            userLibrary={this.props.userLibrary}
+            handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
+            openedPaperId={this.props.openedPaperId}
+          />
+        </div>
+        {this.props.evaluationEnabled ? (
+          <div className="citation-gloss__vote-button">
+            <VoteButton
+              context={{
+                citation: this.props.citation,
+              }}
             />
           </div>
-        </div>
+        ) : null}
       </div>
     );
   }

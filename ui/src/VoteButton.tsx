@@ -25,7 +25,7 @@ class VoteButton extends React.PureComponent<Props, State> {
   }
 
   componentDidMount() {
-    logger.log("debug", "property-vote-rendered", {
+    logger.log("debug", "vote-button-rendered", {
       ...this.props.context,
     });
   }
@@ -33,7 +33,7 @@ class VoteButton extends React.PureComponent<Props, State> {
   onClick() {
     this.setState((prevState) => {
       const checked = !prevState.checked;
-      logger.log("debug", "property-vote-changed", {
+      logger.log("debug", "vote-button-changed", {
         ...this.props.context,
         checked,
       });

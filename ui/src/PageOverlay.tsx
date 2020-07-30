@@ -225,6 +225,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                         userLibrary={userLibrary}
                         handleAddPaperToLibrary={handleAddPaperToLibrary}
                         openedPaperId={paperId}
+                        evaluationEnabled={glossEvaluationEnabled}
                       />
                     }
                     selected={isSelected}
