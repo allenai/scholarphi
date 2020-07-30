@@ -1,8 +1,5 @@
 import Snackbar from "@material-ui/core/Snackbar";
 import React from "react";
-import ReactDOM from "react-dom";
-import FeedbackButton from "./FeedbackButton";
-import { PaperId } from "./state";
 import * as uiUtils from "./utils/ui";
 
 interface Props {
@@ -12,8 +9,6 @@ interface Props {
    * 'document.body' element is provided for this property.
    */
   appContainer: HTMLElement;
-  paperId?: PaperId;
-  entityCreationEnabled: boolean;
   snackbarMode: SnackbarMode;
   snackbarActivationTimeMs: number | null;
   snackbarMessage: string | null;
@@ -117,19 +112,8 @@ class AppOverlay extends React.PureComponent<Props> {
   }
 
   render() {
-    const elFeedbackContainer = document.getElementById(
-      "scholarReaderGlobalFeedbackButton"
-    );
-
     return (
       <>
-        {/* Add widgets to the toolbar */}
-        {elFeedbackContainer
-          ? ReactDOM.createPortal(
-              <FeedbackButton paperId={this.props.paperId} variant="toolbar" />,
-              elFeedbackContainer
-            )
-          : null}
         {/*
          * Add other overlays that are appropriate to show over the entire app. For overlays that
          * should be shown over the PDF viewer, add them to 'ViewerOverlay'.

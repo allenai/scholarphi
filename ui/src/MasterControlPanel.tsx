@@ -10,7 +10,11 @@ interface Props {
   handleClose: () => void;
 }
 
-class ControlPanel extends React.PureComponent<Props> {
+/**
+ * Control panel for turning turn on or off features of the user interface. Meant for use by
+ * developers, or by participants in usability studies.
+ */
+class MasterControlPanel extends React.PureComponent<Props> {
   render() {
     return (
       <Card
@@ -37,4 +41,4 @@ class ControlPanel extends React.PureComponent<Props> {
   }
 }
 
-export default ControlPanel;
+export default MasterControlPanel;

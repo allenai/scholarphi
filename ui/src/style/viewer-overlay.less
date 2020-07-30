@@ -4,11 +4,16 @@
 .scholar-reader-toolbar-container {
   position: absolute;
   left: @padding * 2;
+  top: @pdfjs-toolbarViewer-height + 10;
 
-  bottom: @pdfjs-toolbarViewer-height + 10;
-  &.snackbar-showing {
-    bottom: @pdfjs-toolbarViewer-height + 50;
-  }
+  /*
+   * Uncomment these lines if the toolbars should appear at the bottom of the viewer instead of
+   * the top.
+   */
+  // bottom: @pdfjs-toolbarViewer-height + 10;
+  // &.snackbar-showing {
+  //   bottom: @pdfjs-toolbarViewer-height + 50;
+  // }
 
   /*
    * Toolbars must appear both above the pdf.js sidebar and annotations

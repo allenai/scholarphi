@@ -3,7 +3,6 @@ import React from "react";
 import * as api from "./api";
 import AppOverlay from "./AppOverlay";
 import Control from "./Control";
-import ControlPanel from "./ControlPanel";
 import DefinitionPreview from "./DefinitionPreview";
 import { Drawer } from "./Drawer";
 import EntityCreationToolbar, {
@@ -12,7 +11,9 @@ import EntityCreationToolbar, {
 } from "./EntityCreationToolbar";
 import FindBar, { FindQuery } from "./FindBar";
 import { getRemoteLogger } from "./logging";
+import MasterControlPanel from "./MasterControlPanel";
 import PageOverlay from "./PageOverlay";
+import PdfjsToolbar from "./PdfjsToolbar";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
 import { ConfigurableSetting, CONFIGURABLE_SETTINGS } from "./settings";
@@ -84,7 +85,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       entityCreationType: "term",
       propagateEntityEdits: true,
 
-      annotationHintsEnabled: true,
+      annotationHintsEnabled: false,
       glossStyle: "sidenote",
       glossEvaluationEnabled: false,
       textSelectionMenuEnabled: false,
@@ -101,6 +102,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
      * See https://reactjs.org/docs/faq-functions.html#how-do-i-bind-a-function-to-a-component-instance
      */
     this.toggleControlPanelShowing = this.toggleControlPanelShowing.bind(this);
+    this.toggleAnnotationHints = this.toggleAnnotationHints.bind(this);
     this.closeControlPanel = this.closeControlPanel.bind(this);
     this.handleChangeSetting = this.handleChangeSetting.bind(this);
 
@@ -133,8 +135,14 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   toggleControlPanelShowing() {
-    this.setState((state) => ({
-      controlPanelShowing: !state.controlPanelShowing,
+    this.setState((prevState) => ({
+      controlPanelShowing: !prevState.controlPanelShowing,
+    }));
+  }
+
+  toggleAnnotationHints() {
+    this.setState((prevState) => ({
+      annotationHintsEnabled: !prevState.annotationHintsEnabled,
     }));
   }
 
@@ -783,8 +791,6 @@ class ScholarReader extends React.PureComponent<Props, State> {
             {/* Render the widgets and event handlers for the entire app and viewer containers. */}
             <AppOverlay
               appContainer={document.body}
-              paperId={this.props.paperId}
-              entityCreationEnabled={this.state.entityCreationEnabled}
               snackbarMode={this.state.snackbarMode}
               snackbarActivationTimeMs={this.state.snackbarActivationTimeMs}
               snackbarMessage={this.state.snackbarMessage}
@@ -795,6 +801,18 @@ class ScholarReader extends React.PureComponent<Props, State> {
               handleCloseSnackbar={this.closeSnackbar}
               handleCloseDrawer={this.closeDrawer}
             />
+            <PdfjsToolbar>
+              <button
+                onClick={this.toggleAnnotationHints}
+                className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
+              >
+                <span>
+                  {this.state.annotationHintsEnabled
+                    ? "Hide Underlines"
+                    : "Show Underlines"}
+                </span>
+              </button>
+            </PdfjsToolbar>
             <ViewerOverlay
               pdfViewer={this.state.pdfViewer}
               handleSetTextSelection={this.setTextSelection}
@@ -806,7 +824,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                 })}
               >
                 {this.state.controlPanelShowing ? (
-                  <ControlPanel
+                  <MasterControlPanel
                     className="scholar-reader-toolbar"
                     handleClose={this.closeControlPanel}
                   >
@@ -818,7 +836,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                         handleChange={this.handleChangeSetting}
                       />
                     ))}
-                  </ControlPanel>
+                  </MasterControlPanel>
                 ) : null}
                 {this.state.isFindActive &&
                 this.state.findActivationTimeMs !== null &&
