@@ -902,15 +902,12 @@ class ScholarReader extends React.PureComponent<Props, State> {
                     ? "open"
                     : this.state.drawerMode
                 }
-                userLibrary={this.state.userLibrary}
-                papers={this.state.papers}
                 entities={this.state.entities}
                 selectedEntityIds={this.state.selectedEntityIds}
                 entityEditingEnabled={this.state.entityEditingEnabled}
                 propagateEntityEdits={this.state.propagateEntityEdits}
                 handleScrollSymbolIntoView={this.scrollSymbolIntoView}
                 handleClose={this.closeDrawer}
-                handleAddPaperToLibrary={this.addToLibrary}
                 handleUpdateEntity={this.updateEntity}
                 handleDeleteEntity={this.deleteEntity}
                 handleSetPropagateEntityEdits={this.setPropagateEntityEdits}

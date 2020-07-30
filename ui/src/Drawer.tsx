@@ -4,8 +4,7 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import React from "react";
 import EntityPropertyEditor from "./EntityPropertyEditor";
 import FeedbackButton from "./FeedbackButton";
-import PaperList from "./PaperList";
-import { Entities, PaperId, Papers, UserLibrary } from "./state";
+import { Entities, PaperId } from "./state";
 import { Entity, EntityUpdateData } from "./types/api";
 import { PDFViewer } from "./types/pdfjs-viewer";
 
@@ -15,15 +14,12 @@ interface Props {
   paperId: PaperId | undefined;
   pdfViewer: PDFViewer;
   mode: DrawerMode;
-  papers: Papers | null;
   entities: Entities | null;
-  userLibrary: UserLibrary | null;
   selectedEntityIds: string[];
   entityEditingEnabled: boolean;
   propagateEntityEdits: boolean;
   handleClose: () => void;
   handleScrollSymbolIntoView: () => void;
-  handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
   handleSetPropagateEntityEdits: (propagate: boolean) => void;
   handleUpdateEntity: (
     entity: Entity,
@@ -98,15 +94,12 @@ export class Drawer extends React.PureComponent<Props> {
     type DrawerContentType =
       | null
       | "entity-property-editor"
-      | "symbol-search-results"
-      | "paper-list";
+      | "symbol-search-results";
     let drawerContentType: DrawerContentType = null;
     if (entityEditingEnabled === true) {
       drawerContentType = "entity-property-editor";
     } else if (firstSelectedEntity === null) {
       drawerContentType = null;
-    } else if (firstSelectedEntity.type === "citation") {
-      drawerContentType = "paper-list";
     }
 
     if (pdfViewer != null) {
@@ -138,13 +131,6 @@ export class Drawer extends React.PureComponent<Props> {
           <FeedbackButton paperId={paperId} extraContext={feedbackContext} />
         </div>
         <div className="drawer__content">
-          {drawerContentType === "paper-list" && (
-            <PaperList
-              papers={this.props.papers}
-              userLibrary={this.props.userLibrary}
-              handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
-            />
-          )}
           {drawerContentType === "entity-property-editor" && (
             <EntityPropertyEditor
               /*

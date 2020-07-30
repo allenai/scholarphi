@@ -11,22 +11,19 @@
  */
 .gloss {
   background-color: @white;
-  padding: @medium * 0.5;
+  padding: @medium / 2;
 
   .gloss__section {
     padding-left: @tooltip-padding;
     padding-right: @tooltip-padding;
 
     & + .gloss__section {
-      padding-top: @medium * 0.5;
+      padding-top: @medium / 2;
     }
   }
 
   .gloss__header {
-    display: grid;
-    grid-template-columns: auto min-content;
-    grid-gap: @medium * 0.5;
-    align-items: center;
+    padding-top: @padding / 2;
   }
 
   /*
@@ -63,7 +60,8 @@
  * Gloss text
  */
 .gloss {
-  color: @black;
+  color: @s2-text-default;
+  font-family: @s2-font-family;
   font-size: @medium;
   line-height: @medium * @line-height-ratio;
   font-weight: lighter;

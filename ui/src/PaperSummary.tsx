@@ -119,11 +119,15 @@ export class PaperSummary extends React.PureComponent<Props, State> {
           <p className="paper-summary__title">
             <S2Link url={paper.url}>{paper.title}</S2Link>
           </p>
+        </div>
+        <div className="paper-summary__section">
           <p>
             {paper.authors.length > 0 && (
               <AuthorList showLinks authors={paper.authors} />
             )}
           </p>
+        </div>
+        <div className="paper-summary__section">
           {paper.year !== null && (
             <p className="paper-summary__year">{paper.year}</p>
           )}

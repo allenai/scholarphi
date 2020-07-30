@@ -1,109 +1,14 @@
 import Tab from "@material-ui/core/Tab";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableRow from "@material-ui/core/TableRow";
 import Tabs from "@material-ui/core/Tabs";
 import React from "react";
 import LatexPreview from "./LatexPreview";
 import { getRemoteLogger } from "./logging";
-import RichText from "./RichText";
+import TableSection from "./PropertyTableSection";
 import { Symbol } from "./types/api";
-import VoteButton from "./VoteButton";
 
 const logger = getRemoteLogger();
-
-interface SectionProps {
-  header: string;
-  data: string[];
-  context: any;
-}
-
-interface SectionState {
-  visibleRows: number;
-}
-
-class Section extends React.PureComponent<SectionProps, SectionState> {
-  constructor(props: SectionProps) {
-    super(props);
-    this.state = {
-      visibleRows: 2,
-    };
-    this.onClickShowMore = this.onClickShowMore.bind(this);
-  }
-
-  onClickShowMore() {
-    logger.log("debug", "Clicked on show more", {
-      ...this.props.context,
-      currentVisibleRows: this.state.visibleRows,
-    });
-    this.setState((prevState) => ({
-      visibleRows: prevState.visibleRows + 2,
-    }));
-  }
-
-  render() {
-    return (
-      <>
-        <TableRow className="property-evaluation-gloss__header">
-          <TableCell>{this.props.header}</TableCell>
-          <TableCell></TableCell>
-        </TableRow>
-        {this.props.data.length === 0 ? (
-          <TableRow>
-            <TableCell className="property-evaluation-gloss__not-defined">
-              Not explicitly defined in this paper.
-            </TableCell>
-            <TableCell className="vote-button">
-              <VoteButton
-                context={{ ...this.props.context, tag: "not-defined-message" }}
-              />
-            </TableCell>
-          </TableRow>
-        ) : (
-          <>
-            {this.props.data.slice(0, this.state.visibleRows).map((d, i) => (
-              <TableRow key={i}>
-                <TableCell>
-                  <div
-                    ref={(ref) => {
-                      logger.log("debug", "render-property", {
-                        ...this.props.context,
-                        row: i,
-                        data: d,
-                      });
-                    }}
-                    className="property-evaluation-gloss__property"
-                  >
-                    <RichText>{d}</RichText>
-                  </div>
-                </TableCell>
-                <TableCell className="vote-button">
-                  <VoteButton
-                    context={{ ...this.props.context, row: i, data: d }}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-            {this.state.visibleRows < this.props.data.length ? (
-              <TableRow>
-                <TableCell>
-                  <span
-                    className="property-evaluation-gloss__clickable-link"
-                    onClick={this.onClickShowMore}
-                  >
-                    Show more
-                  </span>
-                </TableCell>
-                <TableCell />
-              </TableRow>
-            ) : null}
-          </>
-        )}
-      </>
-    );
-  }
-}
 
 class TabPanel extends React.PureComponent<{
   hidden: boolean;
@@ -122,22 +27,22 @@ class TabPanel extends React.PureComponent<{
     return (
       <Table hidden={this.props.hidden} size="small">
         <TableBody>
-          <Section
+          <TableSection
             header="Nicknames"
             data={nicknames}
             context={{ ...this.props.context, dataType: "nickname" }}
           />
-          <Section
+          <TableSection
             header="Definitions"
             data={definitions}
             context={{ ...this.props.context, dataType: "definition" }}
           />
-          <Section
+          <TableSection
             header="Defining formulas"
             data={defining_formulas}
             context={{ ...this.props.context, dataType: "defining-formulas" }}
           />
-          <Section
+          <TableSection
             header="Example usages"
             data={passages}
             context={{ ...this.props.context, dataType: "usages" }}

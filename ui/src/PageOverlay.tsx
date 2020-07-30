@@ -217,7 +217,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     pageView={view}
                     pageNumber={pageNumber}
                     underline={showAnnotations}
-                    glossStyle="tooltip"
+                    glossStyle={glossStyle}
                     glossContent={
                       <CitationGloss
                         citation={entity}
