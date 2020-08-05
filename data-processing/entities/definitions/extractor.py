@@ -15,6 +15,13 @@ from .types import Definition
 from .nlp_tools import DefinitionModel
 
 
+#TODO separate csv files for terms and definitions
+#TODO aggregation over terms/definitions (e.g., coreference links)
+#TODO update docker file for dependencies
+#TODO add model location in README.md and config.ini
+#TODO logging conflict issue
+
+
 @dataclass(frozen=True)
 class DetectDefinitionsTask:
     arxiv_id: ArxivId
@@ -97,22 +104,6 @@ class DefinitionSentencePair:
     definition_type: str
 
 
-
-# keep this for future
-# @dataclass(frozen=True)
-# class TokenId:
-# tex_path: str
-# equation_index: int
-#     token_index: int
-
-#TODO separate csv files for terms and definitions
-#TODO aggregation over terms/definitions (e.g., coreference links)
-
-#TODO update docker file for dependencies
-#TODO add model location in README.md and config.ini
-
-
-
 def find_start_end_indexes_for_tokens_in_text(text: str, tokens: List[str]) -> List[Tuple[int, int]]:
     """
         Extract start and end charcter positions for each token in featurized tokens
@@ -190,19 +181,6 @@ def mapping_slots_with_text(
         # slot_dict['definition_confidence'] = 0.0
 
         slot_dict_list.append(slot_dict)
-
-        # # Term and Definition case
-        # term_dict = {}
-        # term_dict["term_start"] = min([idx[0] for idx in term_index_list])
-        # slot_dict["term_end"] = max([idx[1] for idx in term_index_list])
-        # slot_dict["term_text"] = text[
-            # slot_dict["term_start"] : slot_dict["term_end"] + 1 ]
-        # slot_dict["term_type"] = None
-        # slot_dict['term_confidence'] = 0.0
-
-
-        #TODO save term_dict and definition_dict  separately in term_dict_list definition_dict_list
-        #TODO how to store their mappings?
 
         if verbose:
             logging.debug(text[slot_dict["term_start"] : slot_dict["term_end"] + 1])
@@ -338,9 +316,6 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, TermDefinitionS
                                 text=sentence.cleaned_text,
                                 tex=sentence.tex,
                                 context_tex=sentence.context_tex,
-                                #TODO logging conflict issue
-                                #TODO use gpu/cpu
-
                                 intent=intent,
                                 term_index=term_index_count,
                                 term_start=slot_dict.get("term_start", None) + sentence.start,
