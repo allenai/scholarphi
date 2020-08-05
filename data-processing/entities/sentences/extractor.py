@@ -155,6 +155,9 @@ def extract_richer_tex(context_tex: str, tex: str) -> str:
     """
     if context_tex is "":
         return ""
+    if tex is "":
+        return context_tex
+
     surrounding_tex = context_tex.split(tex)
     if len(surrounding_tex) > 2:
         surrounding_tex = [tex.join(surrounding_tex[:-1]), surrounding_tex[-1]]
