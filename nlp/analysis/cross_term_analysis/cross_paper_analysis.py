@@ -32,7 +32,7 @@ summarizer_model = BartForConditionalGeneration.from_pretrained('facebook/bart-l
 summarizer_tokenizer = BartTokenizer.from_pretrained('facebook/bart-large-xsum')
 
 
-def merge_papers(papers, sort=False):
+def merge_papers(papers, sort=False, samples=False):
     if sort:
         papers.sort(key=lambda x: x.arxiv_id, reverse=True)
 
@@ -41,8 +41,11 @@ def merge_papers(papers, sort=False):
     merged_papers = []
     for pid, paper in enumerate(papers):
         definitions = paper.definitions
-        definitions['arxiv_id'] = paper.arxiv_id
+        if samples:
+            if paper.arxiv_id not in samples:
+                continue
 
+        definitions['arxiv_id'] = paper.arxiv_id
         merged_papers.append( definitions[columns_interest] )
         #from pdb import set_trace; set_trace()
     merged_papers = pd.concat(merged_papers)
@@ -249,6 +252,20 @@ def get_embeddings(papers):
 
 
 
+def sample_papers(papers, num_sample=50):
+    # if sort:
+    #     papers.sort(key=lambda x: x.arxiv_id, reverse=True)
+
+    # merged tab
+    sampled_papers = []
+    for pid, paper in enumerate(papers):
+        sampled_papers.append(paper.arxiv_id)
+
+    sampled_papers = random.sample(sampled_papers, num_sample)
+
+    return sampled_papers
+
+
 #TODO extract all mentions -> usages
 #TODO Neoligsm detection
 #TODO Term type classification (Symbol, Term, neologism)
@@ -280,10 +297,13 @@ def main(arxiv_ids, args):
         pkl.dump((term_emb_dict, def_emb_dict), open(embedding_filename, 'wb'))
         print('Saved papers to cached',embedding_filename)
 
+    # sample papers randomly from years of arxiv publication
+    papers_samples=False
+    if args.num_sample > 0:
+        papers_sampled = sample_papers(papers, num_sample=args.num_sample)
 
     # merge papers
-    merged_papers = merge_papers(papers, sort=True)
-
+    merged_papers = merge_papers(papers, sort=False, samples=papers_sampled)
 
     # merge papers by term
     term_def_dict = aggregate_papers_for_cross_paper_analysis(args, papers, def_emb_dict, limit_term=False, plot_cluster=False)
@@ -370,7 +390,7 @@ def main(arxiv_ids, args):
         writer = pd.ExcelWriter(filename, engine='xlsxwriter')
 
         # merged tab for cross analysis
-        merged_papers.to_excel(writer, sheet_name = "merged", index=False)
+        merged_papers.to_excel(writer, sheet_name = "merged{}".format(str(args.num_sample) if args.num_sample>0 else ''), index=False)
 
         # cluster tab for unique term
         df = pd.DataFrame([def_dict for term,def_dict in term_def_dict.items()])
@@ -395,6 +415,9 @@ if __name__ == '__main__':
     parser.add_argument('--plot_tsne', action='store_true')
     parser.add_argument('--use_cache', action='store_true')
     parser.add_argument('--no_cuda', action='store_true')
+
+    parser.add_argument('--num_sample', type=int, default=-1, help='')
+
     parser.add_argument('--limit', type=int, default=-1, help='')
     args = parser.parse_args()
 
