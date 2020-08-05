@@ -11,9 +11,9 @@ export async function debugFailAction(_: any, __: any, err: any) {
 }
 
 export const logEntry = Joi.object({
-  username: Joi.string().default(null),
+  username: Joi.string().allow(null).default(null),
   level: Joi.string().required(),
-  event_type: Joi.string().default(null),
+  event_type: Joi.string().allow(null).default(null),
   data: Joi.object().unknown(true).default(null),
 });
 
