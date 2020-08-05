@@ -41,7 +41,7 @@ class PropertyTableSection extends React.PureComponent<Props, State> {
       <>
         <TableRow className="property-evaluation-gloss__header">
           <TableCell>{this.props.header}</TableCell>
-          <TableCell></TableCell>
+          <TableCell className="vote-button"></TableCell>
         </TableRow>
         {this.props.data.length === 0 ? (
           <TableRow>
