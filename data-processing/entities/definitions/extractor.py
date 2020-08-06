@@ -1,206 +1,172 @@
 import logging
 import os.path
+from argparse import ArgumentParser
 from dataclasses import dataclass
-from typing import Iterator, List, Tuple, DefaultDict, Dict, Any
-from collections import defaultdict
-
-from common import directories, file_utils
-from common.commands.base import ArxivBatchCommand
-from common.types import ArxivId, RelativePath, SerializableEntity
-from entities.sentences.types import Sentence
+from typing import Any, Dict, Iterator, List, Optional, Union, cast
 
 from tqdm import tqdm
 
-from .types import Definition
-from .nlp_tools import DefinitionModel
+from common import directories, file_utils
+from common.commands.base import ArxivBatchCommand
+from common.types import ArxivId, CharacterRange, SerializableEntity
+from entities.sentences.types import Sentence
+
+from .nlp_tools import DefinitionDetectionModel
 
 
-#TODO separate csv files for terms and definitions
-#TODO aggregation over terms/definitions (e.g., coreference links)
-#TODO update docker file for dependencies
-#TODO add model location in README.md and config.ini
-#TODO logging conflict issue
+"""
+Merging TODOs (urgent):
+* TODO(dykang): don't let NLP depedencies overwrite logging configuration
+
+Deployment TODOs:
+* TODO(dykang): add dependencies to Dockerfile
+* TODO(dykang): document model download instructions in README
+* TODO(dykang): make model location configurable in config.ini
+
+Detection improvement TODOs:
+* TODO(dykang): aggregation over terms / definitions (e.g., coreference links)
+* TODO(dykang): add confidence scores
+* TODO(dykang): classify definitions and terms into types
+"""
 
 
 @dataclass(frozen=True)
 class DetectDefinitionsTask:
     arxiv_id: ArxivId
     sentences: List[Sentence]
-    # tex_path: RelativePath
 
 
 @dataclass(frozen=True)
-class TermDefinitionSentencePair:
-    id_: int
-    start: int
-    end: int
-    tex_path: str
-    tex: str
-    context_tex: str
-    sentence_index: str
+class Term(SerializableEntity):
     text: str
+    sentence_id: str
 
-    # whether to include a definition or not
+    type_: Optional[str]
+    " Type of term (e.g., symbol, protologism, abbreviation). "
+
+    confidence: Optional[float]
+
+
+@dataclass(frozen=True)
+class Definition(SerializableEntity):
+    text: str
+    sentence_id: str
+
+    term_id: str
+    " ID of the term this definition explains. "
+
+    type_: Optional[str]
+    " Type of definition (e.g., nickname, expansion, definition). "
+
     intent: bool
+    " Whether this definition is high enough quality to extract. "
 
-    # term related attributes
-    term_index: int
+    confidence: Optional[float]
+
+
+@dataclass(frozen=True)
+class TermDefinitionPair:
     term_start: int
     term_end: int
     term_text: str
-    # term_confidence: float
-    term_type: str
-
-    # definition related attributes
-    definition_index: int
     definition_start: int
     definition_end: int
     definition_text: str
-    # definition_confidence: float
-    definition_type: str
 
 
-@dataclass(frozen=True)
-class TermSentencePair:
-    id_: int
-    start: int
-    end: int
-    tex_path: str
-    tex: str
-    context_tex: str
-    sentence_index: str
-    text: str
-
-    # whether to include a definition or not
-    intent: bool
-    # term related attributes
-    term_index: int
-    term_start: int
-    term_end: int
-    term_text: str
-    # term_confidence: float
-    term_type: str
-
-
-@dataclass(frozen=True)
-class DefinitionSentencePair:
-    id_: int
-    start: int
-    end: int
-    tex_path: str
-    tex: str
-    context_tex: str
-    sentence_index: str
-    text: str
-
-    # whether to include a definition or not
-    intent: bool
-    # definition related attributes
-    definition_index: int
-    definition_start: int
-    definition_end: int
-    definition_text: str
-    # definition_confidence: float
-    definition_type: str
-
-
-def find_start_end_indexes_for_tokens_in_text(text: str, tokens: List[str]) -> List[Tuple[int, int]]:
+def get_token_character_ranges(text: str, tokens: List[str]) -> List[CharacterRange]:
     """
-        Extract start and end charcter positions for each token in featurized tokens
+    Extract start and end charcter positions for each token in featurized tokens
     """
-    indexes = []
+    ranges = []
     current_position = 0
     for token in tokens:
         start_index = text[current_position:].index(token)
-        indexes.append(
-            (
+        ranges.append(
+            CharacterRange(
                 current_position + start_index,
                 current_position + start_index + len(token) - 1,
             )
         )
         current_position += len(token)
-    return indexes
+    return ranges
 
 
-def mapping_slots_with_text(
-    text: str,
-    featurized_text: Dict[Any,Any],
-    slot_preds: List[str],
-    verbose: bool = False,
-) -> List[Dict[Any,Any]]:
-    # make index function to original text for each token of featurized text
-    indexes = find_start_end_indexes_for_tokens_in_text(text, featurized_text["tokens"])
+def get_term_definition_pairs(
+    text: str, featurized_text: Dict[Any, Any], slot_preds: List[str],
+) -> List[TermDefinitionPair]:
 
-    # extract multiple terms or definitions
-    terms, definitions = [], []
-    term, definition = [], []
-    for index, (slot, token, start_end_index_pair) in enumerate(
-        zip(slot_preds, featurized_text["tokens"], indexes)
-    ):
-        if slot == "TERM":
-            term.append(start_end_index_pair)
-        if slot == "DEF":
-            definition.append(start_end_index_pair)
-        if slot == "O":
-            if len(term) > 0:
-                terms.append(term)
-            if len(definition) > 0:
-                definitions.append(definition)
-            term, definition = [], []
+    # Make index from tokens to their character positions.
+    ranges = get_token_character_ranges(text, featurized_text["tokens"])
 
-    # Currently, match pairs of term and definitions sequentially ( O T O O D then (T, D))
-    # TODO need to handle multi-term/definitions pairs
-    # TODO add confidence scores for term/definition predictions
-    # TODO add type classifier for term/definition
-    num_term_definition_pair = min(len(terms), len(definitions))
-    slot_dict_list = []
-    for td_pair in range(num_term_definition_pair):
-        if verbose:
-            logging.debug(featurized_text["tokens"])
-            logging.debug(text)
-            logging.debug(slot_preds)
-            logging.debug("{} out of {}".format(td_pair, num_term_definition_pair))
+    # Extract ranges for all terms and definitions.
+    terms: List[List[CharacterRange]] = []
+    definitions: List[List[CharacterRange]] = []
+    term_ranges, definition_ranges = [], []
 
-        term_index_list = [t for t in terms[td_pair]]
-        definition_index_list = [t for t in definitions[td_pair]]
+    for (slot_label, r) in zip(slot_preds, ranges):
+        if slot_label == "TERM":
+            term_ranges.append(r)
+        if slot_label == "DEF":
+            definition_ranges.append(r)
+        if slot_label == "O":
+            if len(term_ranges) > 0:
+                terms.append(term_ranges)
+            if len(definition_ranges) > 0:
+                definitions.append(definition_ranges)
+            term_ranges, definition_ranges = [], []
 
-        # TermDefinition case
-        slot_dict = {}
-        slot_dict["term_start"] = min([idx[0] for idx in term_index_list])
-        slot_dict["term_end"] = max([idx[1] for idx in term_index_list]) + 1
-        slot_dict["term_text"] = text[
-            slot_dict["term_start"] : slot_dict["term_end"]  ]
-        slot_dict["term_type"] = None
-        # slot_dict['term_confidence'] = 0.0
+    # Match pairs of term and definitions sequentially ( O T O O D then (T, D)). This
+    # does not handle multi-term / definitions pairs
+    num_term_definition_pairs = min(len(terms), len(definitions))
+    pairs: List[TermDefinitionPair] = []
+    for pair_index in range(num_term_definition_pairs):
+        logging.debug(
+            "Found slot predictions for tokens: (tokens: %s), (slots: %s)",
+            featurized_text["tokens"],
+            slot_preds,
+        )
+        logging.debug(
+            "Processing term-definition pair %d of %d",
+            pair_index,
+            num_term_definition_pairs,
+        )
 
-        slot_dict["definition_start"] = min([idx[0] for idx in definition_index_list])
-        slot_dict["definition_end"] = max([idx[1] for idx in definition_index_list]) + 1
-        slot_dict["definition_text"] = text[
-            slot_dict["definition_start"] : slot_dict["definition_end"]  ]
-        slot_dict["definition_type"] = None
-        # slot_dict['definition_confidence'] = 0.0
+        term_range_list = terms[pair_index]
+        definition_range_list = definitions[pair_index]
 
-        slot_dict_list.append(slot_dict)
+        term_start = min([r.start for r in term_range_list])
+        term_end = max([r.end for r in term_range_list]) + 1
+        definition_start = min([r.start for r in definition_range_list])
+        definition_end = max([r.end for r in definition_range_list]) + 1
 
-        if verbose:
-            logging.debug(text[slot_dict["term_start"] : slot_dict["term_end"] + 1])
-            logging.debug(text[slot_dict["definition_start"] : slot_dict["definition_end"] + 1])
-            for k, v in slot_dict.items():
-                logging.debug("\t{}\t{}".format(k, v))
+        pair = TermDefinitionPair(
+            term_start=term_start,
+            term_end=term_end,
+            term_text=text[term_start:term_end],
+            definition_start=definition_start,
+            definition_end=definition_end,
+            definition_text=text[definition_start:definition_end],
+        )
+        logging.debug("Found definition-term pair %s", pair)
+        pairs.append(pair)
 
-    return slot_dict_list
+    return pairs
 
 
-class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, TermDefinitionSentencePair]):
+class DetectDefinitions(
+    ArxivBatchCommand[DetectDefinitionsTask, Union[Term, Definition]]
+):
     """
-    Extract definition sentences from Sentence using the pre-trained definition extraction model.
-    Basic steps:
-        - load cleaned sentences from detected-sentences
-        - extract features from each sentence (aka featurization)
-        - load the pre-trained nlp model, load the features, and predict intent and term:definition slots
-            - intent: whether a sentence includes a definition or not
-            - slots: tag for each token (TERM, DEFINITION, neither)
-        - save detected terms in terms.csv and detected definitions definitions.csv
+    Extract definitions from sentences using a pre-trained definition extraction model.
+    It performs the following stpes:
+    1. Load cleaned sentences from the 'detected-sentences' data directory
+    2. Extract features from each sentence (aka featurization)
+    3. Load the pre-trained NLP model, load the features, and predict intent and term:definition
+       slots. More specifically:
+        * Intent: whether a sentence is detected as including a definition or not
+        * Slot: a tag for each token indicating it is one of (TERM, DEFINITION, neither)
+    4. Save detected terms in terms.csv and detected definitions definitions.csv
     """
 
     @staticmethod
@@ -209,7 +175,25 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, TermDefinitionS
 
     @staticmethod
     def get_description() -> str:
-        return "Predict term and definition pairs from extracted sentences"
+        return "Extract term and definition pairs from LaTeX."
+
+    @staticmethod
+    def init_parser(parser: ArgumentParser) -> None:
+        super(DetectDefinitions, DetectDefinitions).init_parser(parser)
+        parser.add_argument(
+            "--show-progress",
+            action="store_true",
+            help=(
+                "Whether to show progress bar during definition extraction. "
+                + "Interferes with log messages shown on the command line."
+            ),
+        )
+        parser.add_argument(
+            "--batch-size",
+            type=int,
+            default=8,
+            help=("Number of sentences to process at a time to detect definitions."),
+        )
 
     def get_arxiv_ids_dirkey(self) -> str:
         return "detected-sentences"
@@ -225,7 +209,6 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, TermDefinitionS
                 "entities.csv",
             )
 
-            # from pdb import set_trace; set_trace()
             try:
                 sentences = list(
                     file_utils.load_from_csv(detected_sentences_path, Sentence)
@@ -241,140 +224,106 @@ class DetectDefinitions(ArxivBatchCommand[DetectDefinitionsTask, TermDefinitionS
 
             yield DetectDefinitionsTask(arxiv_id, sentences)
 
-    def process(
-        self, item: DetectDefinitionsTask, verbose: bool = False
-    ) -> Iterator[TermDefinitionSentencePair]:
+    def process(self, item: DetectDefinitionsTask) -> Iterator[Union[Term, Definition]]:
         sentences_ordered = sorted(item.sentences, key=lambda s: s.start)
         num_sentences = len(sentences_ordered)
-        sentences_ordered_iterator = iter(sentences_ordered)
 
         if len(item.sentences) == 0:
             logging.warning(  # pylint: disable=logging-not-lazy
                 "No sentences found for arXiv ID %s. Skipping detection of sentences "
                 + "that contain entities.",
-                # item.tex_path,
                 item.arxiv_id,
             )
             return
 
+        # Load the pre-trained definition detection model.
+        model = DefinitionDetectionModel()
 
-        # load pre-trained definition extraction model
-        nlp_model = DefinitionModel()
-
-        # infer terms and definitions for each sentence using the pre-trained definition extraction model
-        definitions = []
-        termdefinition_index_count = 0
-        term_index_count = 0
-        definition_index_count = 0
-        batch_size = 8 #TODO make this as an argument
+        term_index = 0
         features = []
         sentences = []
-        with tqdm(total=num_sentences) as sentence_iter:
-            for sid, sentence_obj in enumerate(sentences_ordered_iterator):
-                sentence_iter.update(1)
 
-                if not sentence_obj.is_sentence or sentence_obj.text == "":
+        with tqdm(
+            total=num_sentences, disable=(not self.args.show_progress)
+        ) as progress:
+
+            for si, sentence in enumerate(sentences_ordered):
+                progress.update(1)
+
+                # Skip sentences that contain junk.
+                if not sentence.is_sentence or sentence.text == "":
                     continue
 
-                # extract nlp features from raw text
-                featurized_text = nlp_model.featurize(sentence_obj.cleaned_text)
-
+                # Extract features from raw text.
+                featurized_text = model.featurize(sentence.cleaned_text)
                 features.append(featurized_text)
-                sentences.append(sentence_obj)
+                sentences.append(sentence)
 
-                if len(features) >= batch_size or sid == num_sentences-1:
-                    # predict terms and definitions from the featurized text
-                    intent_pred_list, slot_preds_list = nlp_model.predict_batch(features)
+                # Process sentences in batches.
+                if len(features) >= self.args.batch_size or si == num_sentences - 1:
 
-                    for sentence, feature, intent_pred, slot_preds in zip(sentences, features, intent_pred_list, slot_preds_list):
-                        # intent prediction whether the sentence includes a definition or not
-                        intent = True if intent_pred == 1 else False
+                    # Detect terms and definitions in each sentence with a pre-trained definition
+                    # extraction model, from the featurized text.
+                    intents, slots = model.predict_batch(
+                        cast(List[Dict[Any, Any]], features)
+                    )
 
-                        # we only care when predicted slots include both 'TERM' and 'DEFINITION', otherwise ignore
-                        if "TERM" not in slot_preds and "DEF" not in slot_preds:
+                    for s, sentence_features, intent, sentence_slots in zip(
+                        sentences, features, intents, slots
+                    ):
+                        # Only process slots when they includ both 'TERM' and 'DEFINITION'.
+                        if "TERM" not in sentence_slots or "DEF" not in sentence_slots:
                             continue
 
-                        slot_dict_list = mapping_slots_with_text(
-                            sentence.cleaned_text, feature, slot_preds, verbose=False
+                        pairs = get_term_definition_pairs(
+                            s.cleaned_text, sentence_features, sentence_slots
                         )
-
-                        logging.debug('is_sentence={}, text={}'.format(sentence.is_sentence, sentence.cleaned_text))
-                        for k, v in feature.items():
-                            logging.debug('{}\t{}'.format(k,v))
-                        logging.debug(intent_pred)
-                        logging.debug(slot_preds)
-
-
-                        for slot_dict in slot_dict_list:
-                            definitions.append( TermDefinitionSentencePair(
-                                id_=termdefinition_index_count,
-
-                                start=sentence.start,
-                                end=sentence.end,
-                                tex_path=sentence.tex_path,
-                                sentence_index=sentence.id_,
-                                text=sentence.cleaned_text,
-                                tex=sentence.tex,
-                                context_tex=sentence.context_tex,
-                                intent=intent,
-                                term_index=term_index_count,
-                                term_start=slot_dict.get("term_start", None) + sentence.start,
-                                term_end=slot_dict.get("term_end", None) + sentence.start,
-                                term_text=slot_dict.get("term_text", None),
-                                term_type=slot_dict.get("term_type", None),
-                                definition_index=definition_index_count,
-                                definition_start=slot_dict.get("definition_start", None) + sentence.start,
-                                definition_end=slot_dict.get("definition_end", None) + sentence.start,
-                                definition_text=slot_dict.get("definition_text", None),
-                                definition_type=slot_dict.get("definition_type", None),
-                            ))
-
-                            termdefinition_index_count += 1
-                            term_index_count += 1
-                            definition_index_count += 1
+                        for pair in pairs:
+                            term_id = f"term-{term_index}"
+                            definition_id = f"definition-{term_index}"
+                            yield Term(
+                                id_=term_id,
+                                start=s.start + pair.term_start,
+                                end=s.start + pair.term_end,
+                                text=pair.term_text,
+                                type_=None,
+                                confidence=None,
+                                tex_path=s.tex_path,
+                                tex="NOT AVAILABLE",
+                                context_tex=s.context_tex,
+                                sentence_id=s.id_,
+                            )
+                            yield Definition(
+                                id_=definition_id,
+                                start=s.start + pair.definition_start,
+                                end=s.start + pair.definition_end,
+                                term_id=term_id,
+                                type_=None,
+                                tex_path=s.tex_path,
+                                tex="NOT AVAILABLE",
+                                text=pair.definition_text,
+                                context_tex=s.context_tex,
+                                sentence_id=s.id_,
+                                intent=bool(intent),
+                                confidence=None,
+                            )
+                            term_index += 1
 
                     features = []
                     sentences = []
 
-        logging.info('Total number of definitions {} out of {} sentences'.format(
-            len(definitions), num_sentences))
+    def save(
+        self, item: DetectDefinitionsTask, result: Union[Term, Definition]
+    ) -> None:
 
-
-        # aggregate similar terms and assign group IDs for semanticaly similar terms
-
-
-        # yielding the output definition
-        for definition in definitions:
-            yield definition
-
-
-    def save(self, item: DetectDefinitionsTask, result: TermDefinitionSentencePair) -> None:
         output_dir = directories.arxiv_subdir("detected-definitions", item.arxiv_id)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-        entity_sentences_path = os.path.join(output_dir, "entities.csv",)
 
-        file_utils.append_to_csv(
-            entity_sentences_path,
-            TermDefinitionSentencePair(
-                result.id_,
-                result.start,
-                result.end,
-                result.tex_path,
-                result.tex,
-                result.context_tex,
-                result.sentence_index,
-                result.text,
-                result.intent,
-                result.term_index,
-                result.term_start,
-                result.term_end,
-                result.term_text,
-                result.term_type,
-                result.definition_index,
-                result.definition_start,
-                result.definition_end,
-                result.definition_text,
-                result.definition_type,
-            ),
-        )
+        terms_path = os.path.join(output_dir, "entities-terms.csv")
+        definitions_path = os.path.join(output_dir, "entities-definitions.csv")
+
+        if isinstance(result, Term):
+            file_utils.append_to_csv(terms_path, result)
+        elif isinstance(result, Definition):
+            file_utils.append_to_csv(definitions_path, result)

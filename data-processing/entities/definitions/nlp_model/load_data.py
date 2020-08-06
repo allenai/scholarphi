@@ -1,25 +1,27 @@
-import os
+# Disable 'not-callable' warnings in this file, which flag all of the calls to
+# torch.tensor() for reasons that  have not yet been discovered.
+# pylint: disable=not-callable
 import copy
 import json
 import logging
+import os.path
+from typing import Any, Dict, List
+
 import torch
-from typing import DefaultDict, List, Any, Dict
 from torch.utils.data import TensorDataset
 from transformers import AutoTokenizer
-from .utils import get_intent_labels, get_slot_labels, get_pos_labels
+
+from .utils import get_intent_labels, get_pos_labels, get_slot_labels
 
 
-logger = logging.getLogger(__name__)
-
-
-class InputExample(object):
+class InputExample:
     """
     A single training/test example
     Args:
-        guid: Unique id for the example.
-        words: list. The words of the sequence.
-        intent_label: string. The intent label of the example.
-        slot_labels: list. The slot labels of the example.
+    * guid: Unique id for the example.
+    * words: list. The words of the sequence.
+    * intent_label: string. The intent label of the example.
+    * slot_labels: list. The slot labels of the example.
     """
 
     def __init__(
@@ -47,7 +49,7 @@ class InputExample(object):
     def __repr__(self) -> str:
         return str(self.to_json_string())
 
-    def to_dict(self) -> Dict[Any,Any]:
+    def to_dict(self) -> Dict[Any, Any]:
         """Serializes this instance to a Python dictionary."""
         output = copy.deepcopy(self.__dict__)
         return output
@@ -87,7 +89,7 @@ class InputFeatures(object):
     def __repr__(self) -> str:
         return str(self.to_json_string())
 
-    def to_dict(self) -> Dict[Any,Any]:
+    def to_dict(self) -> Dict[Any, Any]:
         """Serializes this instance to a Python dictionary."""
         output = copy.deepcopy(self.__dict__)
         return output
@@ -97,9 +99,8 @@ class InputFeatures(object):
         return json.dumps(self.to_dict(), indent=2, sort_keys=True) + "\n"
 
 
-
 class DefProcessor(object):
-    """Processor for the DefMiner data set """
+    """ Processor for the DefMiner data set. """
 
     def __init__(self, args: Any) -> None:
         self.args = args
@@ -107,27 +108,30 @@ class DefProcessor(object):
         self.slot_labels = get_slot_labels(args)
         self.pos_labels = get_pos_labels(args)
 
-    # @classmethod
     def _read_file(self, input_file: str) -> Any:
         """Reads a tab separated value file."""
         with open(input_file, encoding="utf-8") as infile:
             data = json.load(infile)
         return data
 
-    def _create_examples(self, data: Any, set_type:str) -> List[InputExample]:  # intents, slots,
-        """Creates examples for the training and dev sets."""
+    def _create_examples(self, data: Any, set_type: str) -> List[InputExample]:
+        """ Create examples for the training and dev sets. """
+
         examples = []
         for i, d in enumerate(data):
             guid = "%s-%s" % (set_type, i)
-            # 1. input_text
-            words = d["tokens"]  # text.split()  # Some are spaced twice
-            # 2. intent
+
+            # 1. Get input text.
+            words = d["tokens"]  # Some are spaced twice
+
+            # 2. Get intent label.
             intent_label = (
                 self.intent_labels.index(d["label"])
                 if d["label"] in self.intent_labels
                 else self.intent_labels.index("UNK")
             )
-            # 3. slot
+
+            # 3. Get slots.
             slot_labels = []
             for s in d["labels"]:
                 assert s in self.slot_labels
@@ -143,7 +147,7 @@ class DefProcessor(object):
             np_labels = d["np"]
             vp_labels = d["vp"]
             entity_labels = d["entities"]
-            acronym_labels = d["acronym"]
+            acronym_labels = d["abbreviation"]
 
             examples.append(
                 InputExample(
@@ -158,18 +162,20 @@ class DefProcessor(object):
                     acronym_labels=acronym_labels,
                 )
             )
+
         return examples
 
-    def get_examples(self, mode: str) ->  List[InputExample]:
+    def get_examples(self, mode: str) -> List[InputExample]:
         """
         Args:
-            mode: train, dev, test
+        * mode: train, dev, test
         """
+
         kfold_dir = str(self.args.kfold) if self.args.kfold >= 0 else ""
         data_path = os.path.join(self.args.data_dir, self.args.task, kfold_dir)
-        logger.info("LOOKING AT {}".format(data_path))
+        logging.info("Loading data for DefMiner from %s", data_path)
         return self._create_examples(
-            data=self._read_file(os.path.join(data_path, "{}.json".format(mode))),
+            data=self._read_file(os.path.join(data_path, f"{mode}.json")),
             set_type=mode,
         )
 
@@ -178,12 +184,11 @@ def convert_examples_to_features(
     examples: List[InputExample],
     max_seq_len: int,
     tokenizer: AutoTokenizer,
-    pad_token_label_id: int=-100,
-    cls_token_segment_id: int=0,
-    pad_token_segment_id: int =0,
-    sequence_a_segment_id: int =0,
-    mask_padding_with_zero: bool=True,
-    verbose: bool=False,
+    pad_token_label_id: int = -100,
+    cls_token_segment_id: int = 0,
+    pad_token_segment_id: int = 0,
+    sequence_a_segment_id: int = 0,
+    mask_padding_with_zero: bool = True,
 ) -> List[InputFeatures]:
     # Setting based on the current model type
     cls_token = tokenizer.cls_token
@@ -193,11 +198,11 @@ def convert_examples_to_features(
 
     features = []
     for (ex_index, example) in enumerate(examples):
-        if verbose and ex_index % 5000 == 0:
-            logger.info("Writing example %d of %d" % (ex_index, len(examples)))
+        if ex_index % 5000 == 0:
+            logging.debug("Processing example %d of %d", ex_index, len(examples))
 
         # Tokenize word by word (for NER)
-        tokens = []
+        tokens: List[str] = []
         slot_labels_ids = []
         pos_labels_ids = []
         np_labels_ids, vp_labels_ids, entity_labels_ids, acronym_labels_ids = (
@@ -226,16 +231,18 @@ def convert_examples_to_features(
         ):
             word_tokens = tokenizer.tokenize(word)
             if not word_tokens:
-                word_tokens = [unk_token]  # For handling the bad-encoded word
+                # For handling the bad-encoded word
+                word_tokens = [unk_token]
             tokens.extend(word_tokens)
-            # Use the real label id for the first token of the word, and padding ids for the remaining tokens
+
+            # Use the real label ID for the first token of the word, and padding IDs for the
+            # remaining tokens.
             slot_labels_ids.extend(
                 [int(slot_label)] + [pad_token_label_id] * (len(word_tokens) - 1)
             )
             pos_labels_ids.extend(
                 [int(pos_label)] + [pad_token_label_id] * (len(word_tokens) - 1)
             )
-
             np_labels_ids.extend(
                 [int(np_label)] + [pad_token_label_id] * (len(word_tokens) - 1)
             )
@@ -249,7 +256,7 @@ def convert_examples_to_features(
                 [int(acronym_label)] + [pad_token_label_id] * (len(word_tokens) - 1)
             )
 
-        # Account for [CLS] and [SEP]
+        # Account for [CLS] and [SEP].
         special_tokens_count = 2
         if len(tokens) > max_seq_len - special_tokens_count:
             tokens = tokens[: (max_seq_len - special_tokens_count)]
@@ -265,7 +272,7 @@ def convert_examples_to_features(
                 : (max_seq_len - special_tokens_count)
             ]
 
-        # Add [SEP] token
+        # Add [SEP] token.
         tokens += [sep_token]
         slot_labels_ids += [pad_token_label_id]
         pos_labels_ids += [pad_token_label_id]
@@ -275,7 +282,7 @@ def convert_examples_to_features(
         acronym_labels_ids += [pad_token_label_id]
         token_type_ids = [sequence_a_segment_id] * len(tokens)
 
-        # Add [CLS] token
+        # Add [CLS] token.
         tokens = [cls_token] + tokens
         slot_labels_ids = [pad_token_label_id] + slot_labels_ids
         pos_labels_ids = [pad_token_label_id] + pos_labels_ids
@@ -354,30 +361,25 @@ def convert_examples_to_features(
 
         intent_label_id = int(example.intent_label)
 
-        if verbose and ex_index < 3:
-            logger.info("*** Example ***")
-            logger.info("guid: %s" % example.guid)
-            logger.info("tokens: %s" % " ".join([str(x) for x in tokens]))
-            logger.info("input_ids: %s" % " ".join([str(x) for x in input_ids]))
-            logger.info(
-                "attention_mask: %s" % " ".join([str(x) for x in attention_mask])
-            )
-            logger.info(
-                "token_type_ids: %s" % " ".join([str(x) for x in token_type_ids])
-            )
-            logger.info(
-                "intent_label: %s (id = %d)" % (example.intent_label, intent_label_id)
-            )
-            logger.info("slot_labels: %s" % " ".join([str(x) for x in slot_labels_ids]))
-            logger.info("POS_labels: %s" % " ".join([str(x) for x in pos_labels_ids]))
-
-            logger.info("NP_labels: %s" % " ".join([str(x) for x in np_labels_ids]))
-            logger.info("VP_labels: %s" % " ".join([str(x) for x in vp_labels_ids]))
-            logger.info(
-                "entity_labels: %s" % " ".join([str(x) for x in entity_labels_ids])
-            )
-            logger.info(
-                "acronym_labels: %s" % " ".join([str(x) for x in acronym_labels_ids])
+        if ex_index < 3:
+            logging.debug(  # pylint: disable=logging-not-lazy
+                "Example created. guid: %s, tokens: %s, input_ids: %s, "
+                + "attention_mask: %s, token_type_ids: %s, intent_label: %s (id = %d), "
+                + "slot_labels: %s, POS_labels: %s, NP_labels: %s"
+                + "VP_labels: %s, entity_labels, %s acronym_labels: %s",
+                example.guid,
+                " ".join([str(x) for x in tokens]),
+                " ".join([str(x) for x in input_ids]),
+                " ".join([str(x) for x in attention_mask]),
+                " ".join([str(x) for x in token_type_ids]),
+                example.intent_label,
+                intent_label_id,
+                " ".join([str(x) for x in slot_labels_ids]),
+                " ".join([str(x) for x in pos_labels_ids]),
+                " ".join([str(x) for x in np_labels_ids]),
+                " ".join([str(x) for x in vp_labels_ids]),
+                " ".join([str(x) for x in entity_labels_ids]),
+                " ".join([str(x) for x in acronym_labels_ids]),
             )
 
         features.append(
@@ -397,7 +399,9 @@ def convert_examples_to_features(
     return features
 
 
-def load_and_cache_examples(args: Any, tokenizer: AutoTokenizer, mode: str, model_name: str) -> TensorDataset:
+def load_and_cache_examples(
+    args: Any, tokenizer: AutoTokenizer, mode: str, model_name: str
+) -> TensorDataset:
     processor = DefProcessor(args)
 
     # Load data features from cache or dataset file
@@ -412,11 +416,11 @@ def load_and_cache_examples(args: Any, tokenizer: AutoTokenizer, mode: str, mode
     )
 
     if os.path.exists(cached_features_file) and not args.overwrite_cache:
-        logger.info("Loading features from cached file %s", cached_features_file)
-        features = torch.load(cached_features_file)
+        logging.debug("Loading features from cached file %s", cached_features_file)
+        features = torch.load(cached_features_file)  # type: ignore
     else:
-        # Load data features from dataset file
-        logger.info("Creating features from dataset file at %s", args.data_dir)
+        # Load data features from dataset file.
+        logging.debug("Creating features from dataset file at %s", args.data_dir)
         if mode == "train":
             examples = processor.get_examples("train")
         elif mode == "dev":
@@ -426,15 +430,16 @@ def load_and_cache_examples(args: Any, tokenizer: AutoTokenizer, mode: str, mode
         else:
             raise Exception("For mode, Only train, dev, test is available")
 
-        # Use cross entropy ignore index as padding label id so that only real label ids contribute to the loss later
+        # Use cross entropy ignore index as padding label id so that only
+        # real label ids contribute to the loss later.
         pad_token_label_id = args.ignore_index
         features = convert_examples_to_features(
             examples, args.max_seq_len, tokenizer, pad_token_label_id=pad_token_label_id
         )
-        logger.info("Saving features into cached file %s", cached_features_file)
-        torch.save(features, cached_features_file)
+        logging.debug("Saving features into cached file %s", cached_features_file)
+        torch.save(features, cached_features_file)  # type: ignore
 
-    # Convert to Tensors and build dataset
+    # Convert to Tensors and build dataset.
     all_input_ids = torch.tensor([f.input_ids for f in features], dtype=torch.long)
     all_attention_mask = torch.tensor(
         [f.attention_mask for f in features], dtype=torch.long
@@ -477,10 +482,13 @@ def load_and_cache_examples(args: Any, tokenizer: AutoTokenizer, mode: str, mode
         all_entity_labels_ids,
         all_acronym_labels_ids,
     )
+
     return dataset
 
 
-def load_and_cache_examples_one(args: Any, tokenizer: AutoTokenizer, data: Dict[Any,Any], model_name: str) -> TensorDataset:
+def load_and_cache_example(
+    args: Any, tokenizer: AutoTokenizer, data: Dict[Any, Any]
+) -> TensorDataset:
     processor = DefProcessor(args)
     example = InputExample(
         guid="one",
@@ -494,7 +502,7 @@ def load_and_cache_examples_one(args: Any, tokenizer: AutoTokenizer, data: Dict[
         np_labels=data["np"],
         vp_labels=data["vp"],
         entity_labels=data["entities"],
-        acronym_labels=data["acronym"],
+        acronym_labels=data["abbreviation"],
     )
 
     # Use cross entropy ignore index as padding label id so that only real label ids contribute to the loss later
@@ -548,7 +556,9 @@ def load_and_cache_examples_one(args: Any, tokenizer: AutoTokenizer, data: Dict[
     return dataset
 
 
-def load_and_cache_examples_batch(args: Any, tokenizer: AutoTokenizer, data: List[Dict[Any,Any]], model_name: str) -> TensorDataset:
+def load_and_cache_example_batch(
+    args: Any, tokenizer: AutoTokenizer, data: List[Dict[Any, Any]]
+) -> TensorDataset:
     processor = DefProcessor(args)
 
     examples = []
@@ -560,11 +570,12 @@ def load_and_cache_examples_batch(args: Any, tokenizer: AutoTokenizer, data: Lis
             slot_labels=[1] * len(d["tokens"]),  # fake slot labels
             pos_labels=[
                 processor.pos_labels.index(s) if s in processor.pos_labels else 0
-                for s in d["pos"]],
+                for s in d["pos"]
+            ],
             np_labels=d["np"],
             vp_labels=d["vp"],
             entity_labels=d["entities"],
-            acronym_labels=d["acronym"],
+            acronym_labels=d["abbreviation"],
         )
         examples.append(example)
 
@@ -617,4 +628,3 @@ def load_and_cache_examples_batch(args: Any, tokenizer: AutoTokenizer, data: Lis
         all_acronym_labels_ids,
     )
     return dataset
-

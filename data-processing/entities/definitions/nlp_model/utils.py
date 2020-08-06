@@ -1,18 +1,18 @@
 import os
 import random
-import logging
-from typing import Any, List, Dict
-from pprint import pprint
-from colorama import Fore, Style
-import torch
+from typing import Any, Dict, List, Union
+
 import numpy as np
-from sklearn.metrics import f1_score, precision_score, recall_score, confusion_matrix
+import torch
+from colorama import Fore, Style
+from sklearn.metrics import f1_score
 from sklearn.metrics import precision_recall_fscore_support as score
+from sklearn.metrics import precision_score, recall_score
 
 
-def highlight(input: Any) -> str:
-    input = str(input)
-    return str(Fore.YELLOW + str(input) + Style.RESET_ALL)
+def highlight(input_: Any) -> str:
+    input_ = str(input_)
+    return str(Fore.YELLOW + str(input_) + Style.RESET_ALL)
 
 
 def get_intent_labels(args: Any) -> List[str]:
@@ -42,37 +42,31 @@ def get_pos_labels(args: Any) -> List[str]:
     ]
 
 
-def info(logger: logging.Logger, training_args: Any) -> None:
-    logger.info(
-        "Process rank: %s, device: %s, n_gpu: %s, distributed training: %s, 16-bits training: %s",
-        highlight(training_args.local_rank),
-        highlight(training_args.device),
-        highlight(training_args.n_gpu),
-        highlight(bool(training_args.local_rank != -1)),
-        highlight(training_args.fp16),
-    )
-    logger.info("Training/evaluation parameters %s", highlight(training_args))
+def set_torch_seed(seed: Any, no_cuda: bool) -> None:
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)  # type: ignore
+    if not no_cuda and torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)  # type: ignore
 
 
-def set_seed(args: Any) -> None:
-    random.seed(args.seed)
-    np.random.seed(args.seed)
-    torch.manual_seed(args.seed)
-    if not args.no_cuda and torch.cuda.is_available():
-        torch.cuda.manual_seed_all(args.seed)
-
-
-def compute_metrics(intent_preds: List[str], intent_labels: List[str], slot_preds: List[List[str]], slot_labels: List[List[str]]) -> Dict[Any,Any]:
+def compute_metrics(
+    intent_preds: List[str],
+    intent_labels: List[str],
+    slot_preds: List[List[str]],
+    slot_labels: List[List[str]],
+) -> Dict[Any, Any]:
     assert (
         len(intent_preds) == len(intent_labels) == len(slot_preds) == len(slot_labels)
     )
-    results: Dict[Any, Any]= {}
+    results: Dict[Any, Any] = {}
     intent_result = get_intent_acc(intent_preds, intent_labels)
     slot_result = get_slot_metrics(slot_preds, slot_labels)
     sementic_result = get_sentence_frame_acc(
         intent_preds, intent_labels, slot_preds, slot_labels
     )
-    # new metrics added following Dan's suggestion
+
+    # New metrics added following Dan's request.
     slot_simple_result = get_slot_simple_metrics(slot_preds, slot_labels)
     partial_match_result = get_partial_match_metrics(slot_preds, slot_labels)
 
@@ -96,7 +90,9 @@ def simplify_tokens(preds: List[str]) -> List[str]:
     return simple_preds
 
 
-def get_partial_match_metrics(preds: List[List[str]], labels: List[List[str]]) -> Dict[Any,Any]:
+def get_partial_match_metrics(
+    preds: List[List[str]], labels: List[List[str]]
+) -> Dict[Any, Any]:
     """
     Suppose there are N such pairs in the gold data and the system predicts M such pairs. Say a ‘partial match’ happens when the system predicts a pair <term,defn> and there is some overlap (at least one token) between the predicted and gold term spans AND there is some overlap between the predicted and gold definition spans. Let X be the number of partial matches. What are
     Partial match precision = P/M
@@ -111,23 +107,15 @@ def get_partial_match_metrics(preds: List[List[str]], labels: List[List[str]]) -
         simple_label_sent = simplify_tokens(label_sent)
 
         # check whether term/def exist together
-        both_in_pred = (
-            True
-            if ("TERM" in simple_pred_sent and "DEF" in simple_pred_sent)
-            else False
-        )
-        both_in_label = (
-            True
-            if ("TERM" in simple_label_sent and "DEF" in simple_label_sent)
-            else False
-        )
+        both_in_pred = "TERM" in simple_pred_sent and "DEF" in simple_pred_sent
+        both_in_label = "TERM" in simple_label_sent and "DEF" in simple_label_sent
 
         both_in_preds.append(both_in_pred)
         both_in_labels.append(both_in_label)
 
         partial_match = False
         exact_match = False
-        match = []
+        match: List[Union[str, bool]] = []
         if both_in_pred and both_in_label:
             for p, l in zip(simple_pred_sent, simple_label_sent):
                 if p == l:
@@ -167,7 +155,9 @@ def get_partial_match_metrics(preds: List[List[str]], labels: List[List[str]]) -
     }
 
 
-def get_slot_simple_metrics(preds: List[List[str]], labels: List[List[str]]) -> Dict[Any,Any]:
+def get_slot_simple_metrics(
+    preds: List[List[str]], labels: List[List[str]]
+) -> Dict[Any, Any]:
     """
     Conceptually, define the following new types of ‘virtual tags’
     TERM = B-term OR I-Term (ie the union of those two tags)
@@ -204,7 +194,7 @@ def get_slot_simple_metrics(preds: List[List[str]], labels: List[List[str]]) -> 
     }
 
 
-def get_slot_metrics(preds: List[List[str]], labels: List[List[str]]) -> Dict[Any,Any]:
+def get_slot_metrics(preds: List[List[str]], labels: List[List[str]]) -> Dict[Any, Any]:
     assert len(preds) == len(labels)
 
     # flatten
@@ -219,7 +209,9 @@ def get_slot_metrics(preds: List[List[str]], labels: List[List[str]]) -> Dict[An
     micro_r = recall_score(labels_flattened, preds_flattened, average="micro")
 
     label_names = ["O", "B-TERM", "I-TERM", "B-DEF", "I-DEF"]
-    p, r, f, s = score(labels_flattened, preds_flattened, average=None, labels=label_names)
+    p, r, f, s = score(
+        labels_flattened, preds_flattened, average=None, labels=label_names
+    )
     s = [int(si) for si in s]
     p = [round(float(pi), 3) for pi in p]
     r = [round(float(pi), 3) for pi in r]
@@ -241,7 +233,7 @@ def get_slot_metrics(preds: List[List[str]], labels: List[List[str]]) -> Dict[An
     }
 
 
-def get_intent_acc(preds: List[str], labels: List[str]) -> Dict[Any,Any]:
+def get_intent_acc(preds: List[str], labels: List[str]) -> Dict[Any, Any]:
     acc = (preds == labels).mean()
     return {"intent_acc": acc}
 
@@ -255,7 +247,12 @@ def read_prediction_text(args: Any) -> List[str]:
     ]
 
 
-def get_sentence_frame_acc(intent_preds: List[str], intent_labels: List[str], slot_preds: List[List[str]], slot_labels: List[List[str]]) -> Dict[Any,Any]:
+def get_sentence_frame_acc(
+    intent_preds: List[str],
+    intent_labels: List[str],
+    slot_preds: List[List[str]],
+    slot_labels: List[List[str]],
+) -> Dict[Any, Any]:
     """For the cases that intent and all the slots are correct (in one sentence)"""
     # Get the intent comparison result
     intent_result = intent_preds == intent_labels

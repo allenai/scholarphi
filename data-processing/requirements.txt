@@ -10,11 +10,11 @@ reportlab
 requests
 TexSoup==0.2.0
 nltk==3.4.5
-spacy==2.2.3
 scispacy==0.2.4
 
 # SciSpacy models. See other model URLs at https://allenai.github.io/scispacy/
 https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.2.4/en_core_sci_sm-0.2.4.tar.gz
+https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.2.4/en_core_sci_md-0.2.4.tar.gz
 
 # dependencies related to  nlp model in entities/definitions
 transformers==2.11.0
@@ -25,7 +25,6 @@ torch==1.4.0
 spacy==2.2.4
 scispacy==0.2.4
 tqdm==4.28.0
-
 
 # Development dependencies
 black
