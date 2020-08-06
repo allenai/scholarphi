@@ -4,7 +4,8 @@
   "python.testing.pytestArgs": ["tests"],
   "python.linting.pylintArgs": [
     "--extension-pkg-whitelist=cv2",
-    "--disable=missing-docstring,len-as-condition,fixme,invalid-name,anomalous-backslash-in-string,line-too-long,bad-continuation,no-self-use,too-many-locals,too-few-public-methods,ungrouped-imports,pointless-string-statement,too-many-arguments"
+    "--disable=missing-docstring,len-as-condition,fixme,invalid-name,anomalous-backslash-in-string,line-too-long,bad-continuation,no-self-use,too-many-locals,too-few-public-methods,ungrouped-imports,pointless-string-statement,too-many-arguments",
+    "--generated-members=torch.*"
   ],
   "python.testing.unittestEnabled": false,
   "python.testing.nosetestsEnabled": false,

@@ -1,84 +1,89 @@
-import os
-import sys
-import json
 import logging
-import argparse
+import os
 import urllib.request
-
 import zipfile
 from collections import defaultdict
-from typing import DefaultDict,List,Any,Tuple
-import scispacy
+from typing import Any, DefaultDict, Dict, List, Tuple, Union
+
 import spacy
+from scispacy.abbreviation import AbbreviationDetector
 from spacy.matcher import Matcher
 from spacy.util import filter_spans
-from scispacy.abbreviation import AbbreviationDetector
-from transformers import HfArgumentParser, AutoConfig, AutoTokenizer, CONFIG_MAPPING
+from transformers import CONFIG_MAPPING, AutoConfig, AutoTokenizer, HfArgumentParser
 
+from .nlp_model.configuration import (
+    DataTrainingArguments,
+    ModelArguments,
+    TrainingArguments,
+)
+from .nlp_model.load_data import load_and_cache_example, load_and_cache_example_batch
 from .nlp_model.model import JointRoberta
 from .nlp_model.trainer import Trainer
 from .nlp_model.utils import (
-    read_prediction_text,
-    set_seed,
     get_intent_labels,
-    get_slot_labels,
     get_pos_labels,
-    highlight,
-    info,
+    get_slot_labels,
+    set_torch_seed,
 )
-from .nlp_model.data_loader import load_and_cache_examples, load_and_cache_examples_one, load_and_cache_examples_batch
-from .nlp_model.configuration import (
-    ModelArguments,
-    DataTrainingArguments,
-    TrainingArguments,
-)
-
-logger = logging.getLogger(__name__)
-
 
 MODEL_CLASSES = {
     "roberta": JointRoberta,
 }
 
 
-class DefinitionModel:
+class DefinitionDetectionModel:
     def __init__(self) -> None:
-        # (1) initialize modules for featurization
-        self.nlp = spacy.load("en_core_sci_md")  # sm")
+
+        # Initialize modules for featurization.
+        # To use a smaller model, swap out the parameter with "en_core_sci_sm"
+        self.nlp = spacy.load("en_core_sci_md")
         abbreviation_pipe = AbbreviationDetector(self.nlp)
         self.nlp.add_pipe(abbreviation_pipe)
 
-        # a Matcher instance for detecting verb phrases
+        # Create a detector for verb phrases.
         verb_pattern = [
             {"POS": "VERB", "OP": "?"},
             {"POS": "ADV", "OP": "*"},
             {"POS": "AUX", "OP": "*"},
             {"POS": "VERB", "OP": "+"},
         ]
-        self.matcher = Matcher(self.nlp.vocab)
-        self.matcher.add("Verb phrase", None, verb_pattern)
+        self.verb_matcher = Matcher(self.nlp.vocab)
+        self.verb_matcher.add("Verb phrase", None, verb_pattern)
 
-        # (2) initialize modules for transformer-based definition inference
-        self.cache_directory = "./cache/nlp_model/"
-        self.cache_file = "model_v1.0_best.zip"
-        # make a directory storing model files (./data/)
-        if not os.path.exists(self.cache_directory):
-            os.makedirs(self.cache_directory)
-            logger.info(highlight("Created directory {}".format(self.cache_directory)))
+        # Initialize modules for transformer-ased definition inference
+        cache_directory = "./cache/nlp_model"
 
-            # donwload the best model files in ./data/
-            urllib.request.urlretrieve(
-                "http://dongtae.lti.cs.cmu.edu/data/joint_bert/model_v1.0_best.zip",
-                os.path.join("{}/{}".format(self.cache_directory, self.cache_file)),
+        # Make a directory storing model files (./data/)
+        if not os.path.exists(cache_directory):
+            os.makedirs(cache_directory)
+            logging.debug("Created cache directory for models at %s", cache_directory)
+
+            # Download the best model files in ./data/
+            MODEL_URL = (
+                "http://dongtae.lti.cs.cmu.edu/data/joint_bert/model_v1.0_best.zip"
             )
+            logging.debug(
+                "Downloading model from %s. Warning: this will take a long time.",
+                MODEL_URL,
+            )
+            cache_file = "model_v1.0_best.zip"
+            urllib.request.urlretrieve(
+                MODEL_URL, os.path.join("{}/{}".format(cache_directory, cache_file)),
+            )
+
             with zipfile.ZipFile(
-                "{}/{}".format(self.cache_directory, self.cache_file), "r"
+                "{}/{}".format(cache_directory, cache_file), "r"
             ) as zip_ref:
-                zip_ref.extractall(self.cache_directory)
-            logger.info(highlight("Model downloaded in {}".format(self.cache_file)))
+                zip_ref.extractall(cache_directory)
+            logging.debug(
+                "Downloaded and unpacked model data in directory %s", cache_file
+            )
+
         else:
-            logger.info(
-                highlight("Model directory exists {}".format(self.cache_directory))
+            logging.debug(  # pylint: disable=logging-not-lazy
+                "Cache directory for models already exists at %s. "
+                + "Skipping creation of directory and download of data.",
+                cache_directory,
             )
 
         parser = HfArgumentParser(
@@ -89,9 +94,9 @@ class DefinitionModel:
                 "--model_name_or_path",
                 "roberta-large",
                 "--data_dir",
-                self.cache_directory,
+                cache_directory,
                 "--output_dir",
-                "{}/roberta-large".format(self.cache_directory),
+                os.path.join(cache_directory, "roberta-large"),
                 "--do_eval",
                 "--overwrite_cache",
                 "--use_crf",
@@ -103,22 +108,33 @@ class DefinitionModel:
                 "--use_acronym",
                 "--per_device_eval_batch_size",
                 "16",
-                "--max_seq_len", "80",
+                "--max_seq_len",
+                "80",
             ]
         )
 
-        # set seed
-        set_seed(training_args)
+        # Set seed for model.
+        set_torch_seed(training_args.seed, training_args.no_cuda)
 
-        # logging information
-        info(logger, training_args)
+        # Log basic debugging information about model and arguments.
+        logging.info(  # pylint: disable=logging-not-lazy
+            "Arguments for NLP model. Process rank: %s, device: %s, "
+            + "n_gpu: %s, distributed training: %s, 16-bits training: %s. Training / evaluation "
+            + "parameters: %s",
+            training_args.local_rank,
+            training_args.device,
+            training_args.n_gpu,
+            bool(training_args.local_rank != -1),
+            training_args.fp16,
+            training_args,
+        )
 
-        # set model_type
+        # Set model type from arguments.
         model_args.model_type = model_args.model_name_or_path.split("-")[0].split("_")[
             0
         ]
 
-        # Load config
+        # Load model configuration.
         if model_args.config_name:
             config = AutoConfig.from_pretrained(
                 model_args.config_name, cache_dir=model_args.cache_dir
@@ -129,9 +145,9 @@ class DefinitionModel:
             )
         else:
             config = CONFIG_MAPPING[model_args.model_type]()
-            logger.warning("You are instantiating a new config instance from scratch.")
+            logging.warning("You are instantiating a new config instance from scratch.")
 
-        # Load tokenizer
+        # Load tokenizer.
         if model_args.tokenizer_name:
             tokenizer = AutoTokenizer.from_pretrained(
                 model_args.tokenizer_name, cache_dir=model_args.cache_dir
@@ -142,10 +158,12 @@ class DefinitionModel:
             )
         else:
             raise ValueError(
-                "You are instantiating a new tokenizer from scratch. This is not supported, but you can do it from another script, save it, and load it from here, using --tokenizer_name"
+                "You are instantiating a new tokenizer from scratch. "
+                + "This is not supported, but you can do it from another script, "
+                + "save it, and load it from here, using --tokenizer_name."
             )
 
-        # renaming output_dir with conditions
+        # Rename output directory to reflect model parameters.
         training_args.output_dir = "{}{}{}{}{}{}".format(
             training_args.output_dir,
             "_pos={}".format(training_args.use_pos) if training_args.use_pos else "",
@@ -158,9 +176,12 @@ class DefinitionModel:
             if training_args.use_acronym
             else "",
         )
-        logger.info(highlight(" Output_dir {}".format(training_args.output_dir)))
+        logging.info(
+            "The output directory for the model has been set to %s",
+            training_args.output_dir,
+        )
 
-        # Load model
+        # Load the model.
         model_class = MODEL_CLASSES[model_args.model_type]
         if (
             os.path.exists(training_args.output_dir)
@@ -173,83 +194,110 @@ class DefinitionModel:
                 slot_label_lst=get_slot_labels(data_args),
                 pos_label_lst=get_pos_labels(data_args),
             )
-            logger.info(
-                highlight(
-                    " ***** Model loaded **** {}".format(training_args.output_dir)
-                )
-            )
+            logging.info("Model loaded from %s", training_args.output_dir)
         else:
-            logger.info(highlight("Model not exist"))
-            raise ValueError(
-                "The pre-trained model should be ready in the directory {}".format(
-                    training_args.output_dir
-                )
+            logging.error(  # pylint: disable=logging-not-lazy
+                "Could not load model from %s. A pre-trained model could "
+                + "not be found in the directory. This can occur if the download of the model was "
+                + "terminated. Try deleting %s and running this script again.",
+                training_args.output_dir,
+                cache_directory,
             )
+            raise ValueError(f"Could not load model from {training_args.output_dir}")
+
         model.resize_token_embeddings(len(tokenizer))
 
         data_args.ignore_index = training_args.ignore_index
-        self.training_args = training_args
         self.data_args = data_args
         self.model_args = model_args
 
         self.tokenizer = tokenizer
         self.model = model
         self.trainer = Trainer(
-            [self.training_args, self.model_args, self.data_args], self.model
+            [training_args, self.model_args, self.data_args], self.model
         )
 
-    def featurize(self, text: str, limit: bool=False) -> DefaultDict[Any,Any]:
+    def featurize(self, text: str, limit: bool = False) -> DefaultDict[Any, Any]:
+
         doc = self.nlp(text)
 
-        # (1) add acronym  [1 0 0 0 0 0 1 1 ..]
-        abbrevs_tokens = []
+        # Extract tokens containing...
+        # (1) Abbreviations
+        abbrev_tokens = []
         for abrv in doc._.abbreviations:
-            # print(f"{abrv} \t ({abrv.start}, {abrv.end}) {abrv._.long_form}")
-            abbrevs_tokens.append(str(abrv._.long_form).split())
-        abbrevs_tokens_flattened = [t for et in abbrevs_tokens for t in et]
+            abbrev_tokens.append(str(abrv._.long_form).split())
+        abbrev_tokens_flattened = [t for at in abbrev_tokens for t in at]
 
-        # (2) add entities [1 0 0 1 1 1 0 0 ..]
+        # (2 Entities
         entities = [str(e) for e in doc.ents]
-        entities_tokens = [e.split() for e in entities]
-        entities_tokens_flattened = [t for et in entities_tokens for t in et]
-        # print(entities)
+        entity_tokens = [e.split() for e in entities]
+        entity_tokens_flattened = [t for et in entity_tokens for t in et]
 
-        # (3) NPs [ 1 1 1 0 0 0 ...]
+        # (3) Noun phrases
         np_tokens = []
         for chunk in doc.noun_chunks:
             np_tokens.append(str(chunk.text).split())
         np_tokens_flattened = [t for et in np_tokens for t in et]
 
-        # (3) VPs [ 1 1 1 0 0 0 ...]
-        matches = self.matcher(doc)
-        spans = [doc[start:end] for _, start, end in matches]
+        # (4) Verb phrases
+        verb_matches = self.verb_matcher(doc)
+        spans = [doc[start:end] for _, start, end in verb_matches]
         vp_tokens = filter_spans(spans)
         vp_tokens_flattened = [str(t) for et in vp_tokens for t in et]
 
-        # limite samples
+        # Limit the samples.
         if limit:
             doc = doc[:limit]
 
-        # aggregate
-        data = defaultdict(list)
+        # Aggregate all features together.
+        features: DefaultDict[str, List[Union[int, str]]] = defaultdict(list)
         for token in doc:
-            data["tokens"].append(str(token.text))
-            data["pos"].append(str(token.tag_))  # previously token.pos_
-            data["head"].append(str(token.head))
-            data["entities"].append(1 if token.text in entities_tokens_flattened else 0)
-            data["np"].append(1 if token.text in np_tokens_flattened else 0)
-            data["vp"].append(1 if token.text in vp_tokens_flattened else 0)
-            data["acronym"].append(1 if token.text in abbrevs_tokens_flattened else 0)
-        return data
+            features["tokens"].append(str(token.text))
+            features["pos"].append(str(token.tag_))  # previously token.pos_
+            features["head"].append(str(token.head))
+            # (Note: the following features are binary lists indicating the presence of a
+            # feature or not per token, like "[1 0 0 1 1 1 0 0 ...]")
+            features["entities"].append(
+                1 if token.text in entity_tokens_flattened else 0
+            )
+            features["np"].append(1 if token.text in np_tokens_flattened else 0)
+            features["vp"].append(1 if token.text in vp_tokens_flattened else 0)
+            features["abbreviation"].append(
+                1 if token.text in abbrev_tokens_flattened else 0
+            )
 
+        return features
 
-    def predict_one(self, data: DefaultDict[Any,Any]) -> Tuple[List[int], List[List[str]]]:
-        # get dataset
-        test_dataset = load_and_cache_examples_one(
-            self.data_args,
-            self.tokenizer,
-            data,
-            model_name=self.model_args.model_name_or_path,
+    def predict_one(self, data: Dict[Any, Any]) -> Tuple[List[int], List[List[str]]]:
+
+        # Load data.
+        test_dataset = load_and_cache_example(self.data_args, self.tokenizer, data,)
+
+        # Perform inference.
+        intent_pred, slot_preds = self.trainer.evaluate_one(test_dataset)
+
+        # simplify prediction tokens for slot_preds
+        simplified_slot_preds = []
+        for slot_pred in slot_preds:
+            simplified_slot_pred = []
+            for s in slot_pred:
+                if s.endswith("TERM"):
+                    simplified_slot_pred.append("TERM")
+                elif s.endswith("DEF"):
+                    simplified_slot_pred.append("DEF")
+                else:
+                    simplified_slot_pred.append("O")
+            simplified_slot_preds.append(simplified_slot_pred)
+
+        return intent_pred, simplified_slot_preds
+
+    def predict_batch(
+        self, data: List[Dict[Any, Any]]
+    ) -> Tuple[List[int], List[List[str]]]:
+
+        # Load data.
+        test_dataset = load_and_cache_example_batch(
+            self.data_args, self.tokenizer, data,
         )
 
         # inference
@@ -269,32 +317,3 @@ class DefinitionModel:
             simplified_slot_preds.append(simplified_slot_pred)
 
         return intent_pred, simplified_slot_preds
-
-
-    def predict_batch(self, data: List[DefaultDict[Any,Any]]) -> Tuple[List[int], List[List[str]]]:
-        # get dataset
-        test_dataset = load_and_cache_examples_batch(
-            self.data_args,
-            self.tokenizer,
-            data,
-            model_name=self.model_args.model_name_or_path,
-        )
-
-        # inference
-        intent_pred, slot_preds = self.trainer.evaluate_one(test_dataset)
-
-        # simplify prediction tokens for slot_preds
-        simplified_slot_preds = []
-        for slot_pred in slot_preds:
-            simplified_slot_pred = []
-            for s in slot_pred:
-                if s.endswith("TERM"):
-                    simplified_slot_pred.append("TERM")
-                elif s.endswith("DEF"):
-                    simplified_slot_pred.append("DEF")
-                else:
-                    simplified_slot_pred.append("O")
-            simplified_slot_preds.append(simplified_slot_pred)
-
-        return intent_pred, simplified_slot_preds
-
