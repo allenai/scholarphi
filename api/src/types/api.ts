@@ -192,6 +192,7 @@ export interface SymbolAttributes extends BaseEntityAttributes {
 }
 
 export interface SymbolRelationships {
+  equation: Relationship;
   sentence: Relationship;
   parent: Relationship;
   children: Relationship[];
@@ -250,6 +251,16 @@ export interface CitationAttributes extends BaseEntityAttributes {
 
 export function isCitation(entity: Entity): entity is Citation {
   return entity.type === "citation";
+}
+
+export interface Equation extends BaseEntity {
+  type: "equation";
+  attributes: BaseEntityAttributes;
+  relationships: {};
+}
+
+export function isEquation(entity: Entity): entity is Equation {
+  return entity.type === "equation";
 }
 
 export interface Sentence extends BaseEntity {

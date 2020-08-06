@@ -95,6 +95,7 @@ export function createCreateEntityDataWithBoxes(
     } as Omit<SymbolAttributes, "version">;
     data.relationships = {
       sentence: { type: "sentence", id: null },
+      equation: { type: "equation", id: null },
       parent: { type: "symbol", id: null },
       children: [],
     } as Omit<SymbolRelationships, "version">;
@@ -259,6 +260,7 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
             <MenuItem value="term">Term</MenuItem>
             <MenuItem value="symbol">Symbol</MenuItem>
             <MenuItem value="citation">Citation</MenuItem>
+            <MenuItem value="equation">Equation</MenuItem>
           </Select>
         </FormControl>
         <FormControl style={{ minWidth: "8em" }}>

@@ -186,8 +186,6 @@ export interface PaperId {
   type: "s2" | "arxiv";
 }
 
-export type SelectableEntityType = "citation" | "symbol" | null;
-
 /**
  * Collections of data objects are stored in relational stores, comprising two properties:
  * * all:  an ordered list of IDs of the objects

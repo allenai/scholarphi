@@ -135,6 +135,10 @@ attributes = attributes
           glossary_sources: stringListAttribute,
         }),
       },
+      {
+        is: "equation",
+        then: Joi.object().keys(),
+      },
     ],
   })
   .unknown(false);
@@ -175,6 +179,7 @@ relationships = relationships
         is: "symbol",
         then: Joi.object().keys({
           sentence: oneToOneRelationship("sentence"),
+          equation: oneToOneRelationship("equation"),
           children: oneToManyRelationship("symbol"),
           parent: oneToOneRelationship("symbol"),
         }),
