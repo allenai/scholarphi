@@ -6,6 +6,9 @@ __pycache__
 .mypy_cache
 .pytest_cache
 
+# Model output
+cache
+
 # VSCode settings shouldn't be committed by default
 .vscode/settings.json
 .vscode/.ropeproject
@@ -28,3 +31,4 @@ venv
 
 # Files hidden for some other reason
 .hidden
+.protected
