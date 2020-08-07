@@ -36,6 +36,7 @@ class DefinitionDetectionModel:
 
         # Initialize modules for featurization.
         # To use a smaller model, swap out the parameter with "en_core_sci_sm"
+        logging.debug("Loading Spacy models (this may take some time).")
         self.nlp = spacy.load("en_core_sci_md")
         abbreviation_pipe = AbbreviationDetector(self.nlp)
         self.nlp.add_pipe(abbreviation_pipe)
