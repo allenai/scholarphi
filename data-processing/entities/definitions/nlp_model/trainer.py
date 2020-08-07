@@ -1,17 +1,16 @@
+import logging
 import os
 import shutil
-import coloredlogs, logging
-from colorama import Fore, Style
-from tqdm import tqdm, trange
 from collections import Counter
-from typing import Any, List, Dict, Tuple, Optional
+from typing import Any, Dict, List, Optional, Tuple
+
 import numpy as np
 import torch
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler, TensorDataset
-from transformers import BertConfig, AdamW, get_linear_schedule_with_warmup
-from .utils import compute_metrics, highlight
+from tqdm import tqdm, trange
+from transformers import AdamW, get_linear_schedule_with_warmup
 
-logger = logging.getLogger(__name__)
+from .utils import compute_metrics
 
 
 class Trainer(object):
@@ -22,20 +21,18 @@ class Trainer(object):
         train_dataset: Optional[TensorDataset] = None,
         dev_dataset: Optional[TensorDataset] = None,
         test_dataset: Optional[TensorDataset] = None,
-        slot_label_lst: Optional[Dict[Any,Any]] = None,
     ) -> None:
         self.args, self.model_args, self.data_args = args
         self.train_dataset = train_dataset
         self.dev_dataset = dev_dataset
         self.test_dataset = test_dataset
-        # Use cross entropy ignore index as padding label id so that only real label ids contribute to the loss later
-        self.pad_token_label_id = self.args.ignore_index  # 0 #tokenizer.pad_token_id #
 
+        # Use cross entropy ignore index as padding label id so that only real label IDs contribute to the loss later.
+        self.pad_token_label_id = self.args.ignore_index
         self.slot_label_lst = model.slot_label_lst
-
         self.model = model
 
-        # GPU or CPU
+        # Determine whether to use GPU or CPU.
         self.device = (
             "cuda" if torch.cuda.is_available() and not self.args.no_cuda else "cpu"
         )
@@ -94,23 +91,19 @@ class Trainer(object):
             num_training_steps=t_total,
         )
 
-        # Train!
-        logger.info("***** Running training *****")
-        logger.info("  Num examples = {}".format(highlight(len(self.train_dataset))))
-        logger.info("  Num Epochs = {}".format(highlight(self.args.num_train_epochs)))
-        logger.info(
-            "  Total train batch size = {}".format(
-                highlight(self.args.train_batch_size)
-            )
+        # Train the model
+        logging.info(  # pylint: disable=logging-not-lazy
+            "Running training, with number examples = %d, "
+            + "number of epochs = %d, gradient accumulation steps = %d, "
+            + "train batch size = %d, optimization steps = %d, "
+            + "logging steps = %d, save steps = %d",
+            len(self.train_dataset),
+            self.args.num_train_epochs,
+            self.args.gradient_accumulation_steps,
+            t_total,
+            self.args.logging_steps,
+            self.args.save_steps,
         )
-        logger.info(
-            "  Gradient Accumulation steps = {}".format(
-                highlight(self.args.gradient_accumulation_steps)
-            )
-        )
-        logger.info("  Total optimization steps = {}".format(highlight(t_total)))
-        logger.info("  Logging steps = {}".format(highlight(self.args.logging_steps)))
-        logger.info("  Save steps = {}".format(highlight(self.args.save_steps)))
 
         global_step = 0
         tr_loss = 0.0
@@ -167,8 +160,9 @@ class Trainer(object):
                         self.model.parameters(), self.args.max_grad_norm
                     )
 
+                    # Update learning rate schedule.
                     optimizer.step()
-                    scheduler.step()  # Update learning rate schedule
+                    scheduler.step()
                     self.model.zero_grad()
                     global_step += 1
 
@@ -194,18 +188,17 @@ class Trainer(object):
                             else:
                                 result_dict[k] = v
 
-                        # save model
+                        # Save model.
                         dev_score = result_dict["slot_f1_macro"]
 
-                        if global_step == self.args.logging_steps or float(dev_score) > max(
-                            dev_score_history
-                        ):
+                        if global_step == self.args.logging_steps or float(
+                            dev_score
+                        ) > max(dev_score_history):
                             self.save_model()
-                            # self.copy_best_model()
-                            logger.info(
-                                " ******* new best model saved at step {}: {}".format(
-                                    highlight(global_step), highlight(dev_score)
-                                )
+                            logging.info(
+                                "New best model saved at step %d: %f",
+                                global_step,
+                                dev_score,
                             )
 
                         dev_score_history += [dev_score]
@@ -216,8 +209,11 @@ class Trainer(object):
                         ]
 
                         # save log
-                        filename = "logs/logs_train_{}_{}.txt".format(
-                            self.data_args.kfold, self.model_args.model_name_or_path
+                        filename = os.path.join(
+                            "logs",
+                            "logs_train_{}_{}.txt".format(
+                                self.data_args.kfold, self.model_args.model_name_or_path
+                            ),
                         )
                         if not os.path.exists(os.path.dirname(filename)):
                             os.makedirs(os.path.dirname(filename))
@@ -230,9 +226,6 @@ class Trainer(object):
                                 )
                             )
 
-                    # if not (self.args.save_steps > 0 and global_step % self.args.save_steps == 0):
-                    #     self.save_model()
-
                 if 0 < self.args.max_steps < global_step:
                     epoch_iterator.close()
                     break
@@ -244,7 +237,11 @@ class Trainer(object):
         return global_step, tr_loss / global_step
 
     def heuristic_filters(
-        self, intent_preds: List[int], intent_labels: List[int], slot_preds: List[List[str]], slot_labels: List[List[str]], verbose: bool=False
+        self,
+        intent_preds: List[int],
+        intent_labels: List[int],
+        slot_preds: List[List[str]],
+        slot_labels: List[List[str]],
     ) -> Tuple[List[int], List[List[str]]]:
         """
         filter out term/definition only cases
@@ -253,14 +250,15 @@ class Trainer(object):
         """
         new_intent_preds, new_slot_preds = [], []
 
-        # never use {intent,slot}_label in heuristic filtering, but they are only used for sanity checking
+        # Never use {intent,slot}_label in heuristic filtering, but they are
+        # only used for sanity checking.
         for intent_pred, intent_label, slot_pred, slot_label in zip(
             intent_preds, intent_labels, slot_preds, slot_labels
         ):
             new_slot_pred = slot_pred
             new_intent_pred = intent_pred
 
-            # (1) [slot] filter out term/definition only cases
+            # 1. [slot] Filter out term / definition only cases.
             pred_counter = dict(Counter(slot_pred))
             term_exist, def_exist = False, False
             for c in pred_counter:
@@ -271,16 +269,14 @@ class Trainer(object):
             if not term_exist and def_exist:
                 new_slot_pred = ["O" for p in slot_pred]
 
-            # (2) [intent] change intent label if no term+def detected
+            # 2. [intent] Change intent label if no term + def detected.
             if (not term_exist and not def_exist) or (term_exist and not def_exist):
                 new_intent_pred = 0
 
-            # (3) [slot] replace UNK to O
+            # 3. [slot] Replace UNK with O.
             new_slot_pred = ["O" if sp == "UNK" else sp for sp in new_slot_pred]
 
-            # (4) [slot] fill out missing term/def within threshold
-            # threshold_missing_term = 1
-            # threshold_missing_def = 1
+            # 4. [slot] Fill out missing term/def within threshold
             temp_new_slot_pred = new_slot_pred.copy()
             for sid, sp in enumerate(temp_new_slot_pred):
                 if sid < len(new_slot_pred) - 2 and sp.endswith("TERM"):
@@ -306,7 +302,7 @@ class Trainer(object):
                         new_slot_pred[sid + 1] = "I-DEF"
                         new_slot_pred[sid + 2] = "I-DEF"
 
-            # (5) change I-TERM I-DEF starting cases
+            # 5. Change I-TERM I-DEF starting cases.
             temp_new_slot_pred = new_slot_pred.copy()
             term_start, def_start = False, False
             for sid, sp in enumerate(temp_new_slot_pred):
@@ -324,12 +320,15 @@ class Trainer(object):
                 else:
                     def_start = False
 
-            if verbose:
-                print(intent_pred, "->", new_intent_pred, intent_label)
-
-                print(" ".join(slot_pred))
-                print("-> ", " ".join(new_slot_pred))
-                print("-> ", " ".join(slot_label))
+            logging.debug(
+                "Prediction: %s -> %s %s %s -> %s -> %s",
+                intent_pred,
+                new_intent_pred,
+                intent_label,
+                " ".join(slot_pred),
+                " ".join(new_slot_pred),
+                " ".join(slot_label),
+            )
 
             new_intent_preds.append(new_intent_pred)
             new_slot_preds.append(new_slot_pred)
@@ -342,7 +341,7 @@ class Trainer(object):
             dataset, sampler=eval_sampler, batch_size=self.args.eval_batch_size
         )
 
-        # Eval!
+        # Rune valuation.
         eval_loss = 0.0
         nb_eval_steps = 0
         intent_preds = None
@@ -379,9 +378,10 @@ class Trainer(object):
                 tmp_eval_loss, (intent_logits, slot_logits) = outputs[:2]
 
                 eval_loss += tmp_eval_loss.mean().item()
+
             nb_eval_steps += 1
 
-            # Intent prediction
+            # Predict intent.
             if intent_preds is None:
                 intent_preds = intent_logits.detach().cpu().numpy()
                 gold_intent_label_ids = (
@@ -397,10 +397,10 @@ class Trainer(object):
                     axis=0,
                 )
 
-            # Slot prediction
+            # Predict slots.
             if slot_preds is None:
                 if self.args.use_crf:
-                    # decode() in `torchcrf` returns list with best index directly
+                    # decode() in `torchcrf` returns list with best index directly.
                     slot_preds = np.array(self.model.crf.decode(slot_logits))
                 else:
                     slot_preds = slot_logits.detach().cpu().numpy()
@@ -423,12 +423,11 @@ class Trainer(object):
                 )
 
         eval_loss = eval_loss / nb_eval_steps
-        results = {"loss": eval_loss}
 
-        # Intent result
+        # Finall compute the intent.
         intent_preds = np.argmax(intent_preds, axis=1)
 
-        # Slot result
+        # Finally compute the slots.
         if not self.args.use_crf:
             slot_preds = np.argmax(slot_preds, axis=2)
 
@@ -445,10 +444,8 @@ class Trainer(object):
                         slot_label_map[gold_slot_labels_ids[i][j]]
                     )
                     slot_preds_list[i].append(slot_label_map[slot_preds[i][j]])
-            #     gold_slot_label_list[i].append(gold_slot_labels_ids[i][j])
-            #     slot_preds_list[i].append(slot_preds[i][j])
 
-        # heuristics
+        # Apply heuristic filters.
         if self.args.use_heuristic:
             intent_preds, slot_preds_list = self.heuristic_filters(
                 intent_preds,
@@ -459,15 +456,6 @@ class Trainer(object):
 
         return intent_preds, slot_preds_list
 
-        # total_result = compute_metrics(intent_preds, gold_intent_label_ids, slot_preds_list, gold_slot_label_list)
-        # results.update(total_result)
-
-        # logger.info("***** Eval results *****")
-        # for key in sorted(results.keys()):
-        #     logger.info("  %s = %s", key, str(highlight(results[key])))
-
-        # return results
-
     def evaluate(self, mode: str) -> Dict[Any, Any]:
         if mode == "test":
             dataset = self.test_dataset
@@ -476,17 +464,23 @@ class Trainer(object):
         elif type(mode) != str:
             dataset = mode
         else:
-            raise Exception("Only dev and test dataset available")
+            raise Exception(
+                "Invalid dataset requested for evaluation. Must be either 'dev' or 'test'"
+            )
 
         eval_sampler = SequentialSampler(dataset)
         eval_dataloader = DataLoader(
             dataset, sampler=eval_sampler, batch_size=self.args.eval_batch_size
         )
 
-        # Eval!
-        logger.info("***** Running evaluation on %s dataset *****", mode)
-        logger.info("  Num examples = {}".format(highlight(len(dataset))))
-        logger.info("  Batch size = {}".format(highlight(self.args.eval_batch_size)))
+        # Run evaluation.
+        logging.info(  # pylint: disable=logging-not-lazy
+            "Running evaluation on %s dataset, with number of examples = %d, "
+            + " batch size = %d",
+            mode,
+            len(dataset),
+            self.args.eval_batch_size,
+        )
         eval_loss = 0.0
         nb_eval_steps = 0
         intent_preds = None
@@ -523,6 +517,7 @@ class Trainer(object):
                 tmp_eval_loss, (intent_logits, slot_logits) = outputs[:2]
 
                 eval_loss += tmp_eval_loss.mean().item()
+
             nb_eval_steps += 1
 
             # Intent prediction
@@ -541,10 +536,11 @@ class Trainer(object):
                     axis=0,
                 )
 
-            # Slot prediction
+            # Predict slots.
             if slot_preds is None:
                 if self.args.use_crf:
-                    # decode() in `torchcrf` returns list with best index directly
+
+                    # decode() in `torchcrf` returns list with best index directly.
                     slot_preds = np.array(self.model.crf.decode(slot_logits))
                 else:
                     slot_preds = slot_logits.detach().cpu().numpy()
@@ -589,8 +585,6 @@ class Trainer(object):
                         slot_label_map[gold_slot_labels_ids[i][j]]
                     )
                     slot_preds_list[i].append(slot_label_map[slot_preds[i][j]])
-            #     gold_slot_label_list[i].append(gold_slot_labels_ids[i][j])
-            #     slot_preds_list[i].append(slot_preds[i][j])
 
         # heuristics
         if self.args.use_heuristic:
@@ -606,9 +600,8 @@ class Trainer(object):
         )
         results.update(total_result)
 
-        logger.info("***** Eval results *****")
         for key in sorted(results.keys()):
-            logger.info("  %s = %s", key, str(highlight(results[key])))
+            logging.debug("Evaluation result: %s = %s", key, str(results[key]))
 
         return results
 
@@ -623,10 +616,10 @@ class Trainer(object):
         model_to_save.save_pretrained(output_dir)
 
         # Save training arguments together with the trained model
-        torch.save(self.args, os.path.join(output_dir, "training_args.bin"))
-        logger.info("Saving model checkpoint to %s", highlight(output_dir))
+        torch.save(self.args, os.path.join(output_dir, "training_args.bin"))  # type: ignore
+        logging.info("Saving model checkpoint to %s", output_dir)
 
-    def copy_best_model(self, best_dir_name: str="checkpoint_best") -> None:
+    def copy_best_model(self, best_dir_name: str = "checkpoint_best") -> None:
         output_dir = self.args.output_dir
         best_dir = os.path.join(self.args.output_dir, best_dir_name)
         if os.path.exists(best_dir):

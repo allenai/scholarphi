@@ -276,7 +276,7 @@ class DefinitionDetectionModel:
         # Perform inference.
         intent_pred, slot_preds = self.trainer.evaluate_one(test_dataset)
 
-        # simplify prediction tokens for slot_preds
+        # Process predictions.
         simplified_slot_preds = []
         for slot_pred in slot_preds:
             simplified_slot_pred = []
@@ -300,10 +300,10 @@ class DefinitionDetectionModel:
             self.data_args, self.tokenizer, data,
         )
 
-        # inference
+        # Perform inference.
         intent_pred, slot_preds = self.trainer.evaluate_one(test_dataset)
 
-        # simplify prediction tokens for slot_preds
+        # Process predictions.
         simplified_slot_preds = []
         for slot_pred in slot_preds:
             simplified_slot_pred = []

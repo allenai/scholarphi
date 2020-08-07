@@ -15,9 +15,6 @@ from .nlp_tools import DefinitionDetectionModel
 
 
 """
-Merging TODOs (urgent):
-* TODO(dykang): don't let NLP depedencies overwrite logging configuration
-
 Deployment TODOs:
 * TODO(dykang): add dependencies to Dockerfile
 * TODO(dykang): document model download instructions in README
