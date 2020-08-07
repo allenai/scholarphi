@@ -1,3 +1,4 @@
+import glob
 import logging
 import os.path
 from abc import ABC, abstractmethod
@@ -87,13 +88,21 @@ class ColorizeTexCommand(ArxivBatchCommand[ColorizationTask, ColorizationResult]
             )
             file_utils.clean_directory(output_root)
 
-            entities_path = os.path.join(
-                directories.arxiv_subdir(self.get_detected_entities_dirkey(), arxiv_id),
-                "entities.csv",
+            # A directory of entities may contain files for each of multiple types of entities.
+            # One example is that the definition detector detects both terms and definitions.
+            # In that case, the colorizer colorize all entities from all of these files.
+            # Earlier entity extractor commands should include enough information in the entity IDs
+            # so that the type of entities can be inferred from the entity ID in later commands.
+            entities_dir = directories.arxiv_subdir(
+                self.get_detected_entities_dirkey(), arxiv_id
             )
-            entities = list(
-                file_utils.load_from_csv(entities_path, self.get_detected_entity_type())
-            )
+            entities: List[SerializableEntity] = []
+            for entities_path in glob.glob(os.path.join(entities_dir, "entities*.csv")):
+                entities.extend(
+                    file_utils.load_from_csv(
+                        entities_path, self.get_detected_entity_type()
+                    )
+                )
 
             original_sources_path = directories.arxiv_subdir("sources", arxiv_id)
             for tex_path in file_utils.find_files(
