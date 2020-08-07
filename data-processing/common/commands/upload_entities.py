@@ -1,7 +1,8 @@
+import glob
 import logging
 import os.path
 from abc import abstractmethod
-from typing import Iterator, Optional, Type
+from typing import Dict, Iterator, List, Optional, Type, Union
 
 from common import directories, file_utils
 from common.commands.database import DatabaseUploadCommand
@@ -28,7 +29,9 @@ class UploadEntitiesCommand(DatabaseUploadCommand[PaperProcessingResult, None]):
         """
 
     @staticmethod
-    def get_detected_entity_type() -> Type[SerializableEntity]:
+    def get_detected_entity_type(
+        entity_filename: Optional[str] = None,  # pylint: disable=unused-argument
+    ) -> Type[SerializableEntity]:
         """
         Override this method if you need access to entity data that are present on a subclass of
         'SerializableEntity'. For example, if you need to access the text for an extracted text when
@@ -49,14 +52,20 @@ class UploadEntitiesCommand(DatabaseUploadCommand[PaperProcessingResult, None]):
             with open(s2_id_path) as s2_id_file:
                 s2_id = s2_id_file.read()
 
-            # Load in all extracted entities.
-            entities_path = os.path.join(
-                directories.arxiv_subdir(self.get_detected_entities_dirkey(), arxiv_id),
-                "entities.csv",
+            # Load in all extracted entities. See note in 'colorize_tex.py' for why entities
+            # might be saved in multiple files. If they are, for this upload function to work,
+            # each of the entities need to have a unique pair of 'ID' and 'tex_path'.
+            entities_dir = directories.arxiv_subdir(
+                self.get_detected_entities_dirkey(), arxiv_id
             )
-            entities = list(
-                file_utils.load_from_csv(entities_path, self.get_detected_entity_type())
-            )
+            entities: List[SerializableEntity] = []
+            for entities_path in glob.glob(os.path.join(entities_dir, "entities*.csv")):
+                entities.extend(
+                    file_utils.load_from_csv(
+                        entities_path,
+                        self.get_detected_entity_type(os.path.basename(entities_path)),
+                    )
+                )
 
             # Load in locations of all detected hues.
             hue_locations_path = os.path.join(
@@ -86,14 +95,27 @@ class UploadEntitiesCommand(DatabaseUploadCommand[PaperProcessingResult, None]):
         yield None
 
 
+DetectedEntityTypeArg = Union[
+    Dict[str, Type[SerializableEntity]], Optional[Type[SerializableEntity]]
+]
+
+
 def make_upload_entities_command(
     entity_name: str,
     upload_func: EntityUploadCallable,
-    DetectedEntityType: Optional[Type[SerializableEntity]] = None,
+    DetectedEntityType: DetectedEntityTypeArg = None,
 ) -> Type[UploadEntitiesCommand]:
     """
     'upload_func' takes an entire batch of all entities processed for a paper at once. The designer
-    of the 'upload_func' is encouraged to optimize uploads to the database by batching uploads.
+    of the 'upload_func' is encouraged to either use the 'upload_entities' convenience function
+    to optimize uploads, as that function batches uploads of database rows.
+
+    The upload command needs to know what type of entities it is loading from file if you plan to
+    upload data specific to a type of entity (i.e., the name of a term, instead of just its
+    bounding boxes and TeX character positions). Specify the type of the entity that should be loaded
+    using 'DetectedEntityType'. This can either be a single type or, if the detector produced
+    multiple types of entities, a dictionary mapping file names to entity types
+    (for example: {'entities-terms.csv': Term}).
     """
 
     class C(UploadEntitiesCommand):
@@ -109,9 +131,22 @@ def make_upload_entities_command(
             return self.get_hue_locations_dirkey()
 
         @staticmethod
-        def get_detected_entity_type() -> Type[SerializableEntity]:
-            if DetectedEntityType is None:
-                return super(C, C).get_detected_entity_type()
+        def get_detected_entity_type(
+            entity_filename: Optional[str] = None,
+        ) -> Type[SerializableEntity]:
+            if entity_filename is None or DetectedEntityType is None:
+                return super(C, C).get_detected_entity_type(entity_filename)
+            if isinstance(DetectedEntityType, dict):
+                try:
+                    return DetectedEntityType[entity_filename]
+                except KeyError:
+                    logging.warning(  # pylint: disable=logging-not-lazy
+                        "No entity type specified for file %s. Only generic entity properties "
+                        + "will be loaded for entities from file %s.",
+                        entity_filename,
+                        entity_filename,
+                    )
+                    return super(C, C).get_detected_entity_type(entity_filename)
             return DetectedEntityType
 
         def get_detected_entities_dirkey(self) -> str:

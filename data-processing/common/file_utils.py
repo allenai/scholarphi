@@ -8,9 +8,8 @@ import csv
 import dataclasses
 import logging
 import os
-import ast
 import shutil
-from typing import Dict, Iterator, List, Optional, Type, TypeVar
+from typing import Any, Dict, Iterator, List, Optional, Type, TypeVar
 
 from common import directories
 from common.types import (
@@ -94,6 +93,12 @@ def append_to_csv(csv_path: Path, data_obj: Dataclass, encoding: str = "utf-8") 
                 data_obj,
             )
         else:
+            # Because the CSV writer outputs null values as empty strings, all 'None's need to be
+            # replaced with a unique string indicating the value is null, so that the string can
+            # be replaced with 'None' again when the data is loaded back in.
+            for k, v in data_dict.items():
+                if v is None:
+                    data_dict[k] = "<!NULL!>"
             writer = csv.DictWriter(
                 # QUOTE_NONNUMERIC is used in both the writer and the reader to ensure that numbers
                 # (e.g., indexes, hues, positions) are decoded as numbers.
@@ -128,13 +133,16 @@ def load_from_csv(
     with open(csv_path, encoding=encoding, newline="") as csv_file:
         reader = csv.DictReader(csv_file, quoting=csv.QUOTE_MINIMAL)
         for row in reader:
-            data = {}
+            data: Dict[str, Any] = {}
             # Transfer data from the row into a dictionary of arguments. By only including the
             # fields for D, we skip over columns that can't be used to initialize D. At the
             # same time, cast each column to the intended data type.
             invalid = False
             for field in dataclasses.fields(D):
                 try:
+                    # Load 'None's back in by checking for special null string.
+                    if row[field.name] == "<!NULL!>":
+                        data[field.name] = None
                     # Rules for reading Booleans. Support casting of '0' and '1' or the strings
                     # 'True' and 'False'. 'True' and 'False' are the default output of CSV writer.
                     if field.type == bool:

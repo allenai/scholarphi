@@ -2,16 +2,17 @@ import logging
 import os.path
 from argparse import ArgumentParser
 from dataclasses import dataclass
-from typing import Any, Dict, Iterator, List, Optional, Union, cast
+from typing import Any, Dict, Iterator, List, Union, cast
 
 from tqdm import tqdm
 
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
-from common.types import ArxivId, CharacterRange, SerializableEntity
+from common.types import ArxivId, CharacterRange
 from entities.sentences.types import Sentence
 
 from .nlp_tools import DefinitionDetectionModel
+from .types import Definition, Term
 
 
 """
@@ -31,34 +32,6 @@ Detection improvement TODOs:
 class DetectDefinitionsTask:
     arxiv_id: ArxivId
     sentences: List[Sentence]
-
-
-@dataclass(frozen=True)
-class Term(SerializableEntity):
-    text: str
-    sentence_id: str
-
-    type_: Optional[str]
-    " Type of term (e.g., symbol, protologism, abbreviation). "
-
-    confidence: Optional[float]
-
-
-@dataclass(frozen=True)
-class Definition(SerializableEntity):
-    text: str
-    sentence_id: str
-
-    term_id: str
-    " ID of the term this definition explains. "
-
-    type_: Optional[str]
-    " Type of definition (e.g., nickname, expansion, definition). "
-
-    intent: bool
-    " Whether this definition is high enough quality to extract. "
-
-    confidence: Optional[float]
 
 
 @dataclass(frozen=True)
@@ -294,6 +267,7 @@ class DetectDefinitions(
                                 id_=definition_id,
                                 start=s.start + pair.definition_start,
                                 end=s.start + pair.definition_end,
+                                definiendum=pair.term_text,
                                 term_id=term_id,
                                 type_=None,
                                 tex_path=s.tex_path,
