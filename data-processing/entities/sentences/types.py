@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from common.types import SerializableEntity
 
@@ -7,15 +7,11 @@ from common.types import SerializableEntity
 @dataclass(frozen=True)
 class Sentence(SerializableEntity):
     text: str
-    cleaned_text: str
-    extended_tex: str
-    is_sentence: bool # TODO @dykang this field should be deleted once we have a stable extractor
-    current_section: str
-    # is_iffalse: bool
-    is_sentence_in_figure: str
-    is_sentence_in_table: str
-    is_sentence_in_itemize: str
-    #commented below for errors in cast typing in line 128 in common/file_utils.py
+    sanitized_text: str
+    section_name: Optional[str]
+    in_figure: bool
+    in_table: bool
+    in_itemize: bool
     label: List[str]
     ref: List[str]
     cite: List[str]

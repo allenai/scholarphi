@@ -207,7 +207,7 @@ def load_from_csv(
                     else:
                         logging.warning(  # pylint: disable=logging-not-lazy
                             "Could not decode data for field %s of type %s . "
-                            + "This may mean that the rules for reading CSV files need to " 
+                            + "This may mean that the rules for reading CSV files need to "
                             + "be extended to support this data type.",
                             field.name,
                             field.type,
