@@ -1,29 +1,17 @@
 import logging
 import re
+import string
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Dict, Iterator, List, Optional, Set, Tuple, Union
 
 from TexSoup import RArg, TexNode, TexSoup, TokenWithPosition
 
-from common.scan_tex import (
-    EndOfInput,
-    Match,
-    Pattern,
-    TexScanner,
-    has_balanced_braces,
-    scan_tex,
-)
-from common.types import (
-    BeginDocument,
-    Bibitem,
-    Documentclass,
-    Equation,
-    LengthAssignment,
-    Macro,
-    MacroDefinition,
-    SerializableEntity,
-)
+from common.scan_tex import (EndOfInput, Match, Pattern, TexScanner,
+                             has_balanced_braces, scan_tex)
+from common.types import (BeginDocument, Bibitem, Documentclass, Equation,
+                          LengthAssignment, Macro, MacroDefinition, Phrase,
+                          SerializableEntity)
 
 DEFAULT_CONTEXT_SIZE = 20
 """
@@ -413,6 +401,64 @@ class PlaintextExtractor:
             )
 
 
+class PhraseExtractor(EntityExtractor):
+    """
+    Extracts known phrases from TeX.
+    """
+
+    def __init__(self, phrases: List[str], max_phrase_len: int = 5) -> None:
+        self.phrases = phrases
+        self.max_phrase_len = max_phrase_len
+
+    @staticmethod
+    def get_shingles(text: str, size: int) -> Iterator[str]:
+        split_text = text.split()
+        for i in range(0, len(split_text) - size + 1):
+            yield " ".join(split_text[i : i + size])
+
+    def parse(self, tex_path: str, tex: str) -> Iterator[Phrase]:
+        plaintext_extractor = PlaintextExtractor()
+        plaintext_segments = plaintext_extractor.parse(tex_path, tex)
+
+        phrase_count = 0
+        for text_segment in plaintext_segments:
+            text_segment_string = text_segment.text.strip()
+            if not text_segment_string:
+                continue
+
+            for size in range(1, self.max_phrase_len + 1):
+                for shingle in PhraseExtractor.get_shingles(text_segment_string, size):
+                    cands = [shingle, shingle.strip(string.punctuation)]
+                    for cand in list(cands):
+                        cands.append(cand.lower())
+                    for cand in list(cands):
+                        if cand.endswith("s"):
+                            cands.append(cand[:-1])
+                    final_cands = set(cands)
+                    for cand in final_cands:
+                        if cand in self.phrases:
+                            start_in_segment = text_segment.text.find(shingle)
+                            end_in_segment = start_in_segment + len(shingle)
+                            start = text_segment.tex_start + start_in_segment
+                            end = text_segment.tex_start + end_in_segment
+
+                            yield Phrase(
+                                id_=str(phrase_count),
+                                start=start,
+                                end=end,
+                                tex_path=tex_path,
+                                tex=tex[start:end],
+                                context_tex=tex[
+                                    start
+                                    - DEFAULT_CONTEXT_SIZE : end
+                                    + DEFAULT_CONTEXT_SIZE
+                                ],
+                                text=cand,
+                            )
+                            phrase_count += 1
+                            break
+
+
 class BeginDocumentExtractor:
     def parse(self, tex: str) -> Optional[BeginDocument]:
         pattern = Pattern("begin_document", r"\\begin{document}")
@@ -697,6 +743,34 @@ def plaintext_and_offset(tex_path: str, tex: str) -> Tuple[str, Dict[int, int]]:
         plaintext_to_tex_offset_map[len(plaintext)] = last_segment.tex_end
 
     return plaintext, plaintext_to_tex_offset_map
+
+
+def get_containing_entity(
+    entity: SerializableEntity, entities: List[SerializableEntity]
+) -> Optional[SerializableEntity]:
+    """
+    Find the first entity from 'entities' that fully contains 'entity' (i.e., the TeX character
+    range of 'entity' falls within the range of the returned entity). Performs brute force search.
+    """
+    for e in entities:
+        if (
+            e.tex_path == entity.tex_path
+            and e.start <= entity.start
+            and e.end >= entity.end
+        ):
+            return e
+    return None
+
+
+def overlaps(entity1: SerializableEntity, entity2: SerializableEntity) -> bool:
+    """
+    Determine whether two entities overlap in TeX.
+    """
+    if not entity1.tex_path == entity2.tex_path:
+        return False
+    intersection_left = max(entity1.start, entity2.start)
+    intersection_right = min(entity1.end, entity2.end)
+    return intersection_right - intersection_left > 0
 
 
 class TexSoupParseError(Exception):

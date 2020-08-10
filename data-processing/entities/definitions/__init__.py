@@ -16,7 +16,7 @@ from ..sentences.commands.find_entity_sentences import (
 
 # from .colorize import get_definition_color_positions
 from .extractor import DetectDefinitions
-from .types import Definition, Term
+from .types import Definiendum, Definition, TermReference
 from .upload import upload_definitions
 
 # Register directories for output from intermediate pipeline stages.
@@ -32,8 +32,9 @@ upload_command = make_upload_entities_command(
     "definitions",
     upload_definitions,
     DetectedEntityType={
-        "entities-terms.csv": Term,
+        "entities-definiendums.csv": Definiendum,
         "entities-definitions.csv": Definition,
+        "entities-term-references.csv": TermReference,
     },
 )
 
@@ -49,5 +50,7 @@ commands: CommandList = [
 ]
 
 
-definitions_pipeline = EntityPipeline("definitions", commands)
+definitions_pipeline = EntityPipeline(
+    "definitions", commands, optional_depends_on=["sentences"],
+)
 register_entity_pipeline(definitions_pipeline)

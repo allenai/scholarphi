@@ -1,9 +1,8 @@
 from typing import Optional, cast
 
 from common.types import BoundingBox, EntityInformation, PaperProcessingResult
+from common.types import Term as TermEntity
 from common.upload_entities import upload_entities
-
-from .types import Term as TermEntity
 
 
 def upload_terms(
@@ -20,7 +19,7 @@ def upload_terms(
             type_="term",
             bounding_boxes=boxes,
             data={
-                "name": term.name,
+                "name": term.text,
                 "glossary_definitions": term.definitions,
                 "glossary_sources": term.sources,
             },
