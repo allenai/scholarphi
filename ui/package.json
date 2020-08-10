@@ -4,9 +4,9 @@
   "private": true,
   "proxy": "https://s2-reader.apps.allenai.org",
   "dependencies": {
-    "@material-ui/core": "^4.11.0",
-    "@material-ui/icons": "^4.9.1",
-    "axios": "^0.19.2",
+    "@material-ui/core": "^4.5.2",
+    "@material-ui/icons": "^4.5.1",
+    "axios": "^0.19.0",
     "classnames": "^2.2.6",
 <<<<<<< HEAD
     "dompurify": "^2.0.7",
@@ -15,12 +15,12 @@
     "dompurify": "^2.0.12",
 >>>>>>> ca4fcbe... update
     "lodash": "^4.17.15",
-    "mathjax": "^3.0.5",
-    "mathjax-full": "^3.0.5",
-    "pdfjs-dist": "^2.4.456",
-    "query-string": "^6.13.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "mathjax": "^3.0.0",
+    "mathjax-full": "^3.0.0",
+    "pdfjs-dist": "^2.2.228",
+    "query-string": "^6.8.1",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
     "reselect": "^4.0.0"
   },
   "scripts": {
@@ -94,20 +94,20 @@
     ]
   },
   "devDependencies": {
-    "@types/classnames": "^2.2.10",
-    "@types/dompurify": "^2.0.2",
-    "@types/lodash": "^4.14.157",
-    "@types/node": "^12.12.47",
-    "@types/pdfjs-dist": "^2.1.4",
-    "@types/react": "^16.9.41",
-    "@types/react-dom": "^16.9.8",
-    "less": "^3.11.3",
+    "@types/classnames": "^2.2.9",
+    "@types/dompurify": "^2.0.0",
+    "@types/lodash": "^4.14.136",
+    "@types/node": "^12.12.9",
+    "@types/pdfjs-dist": "^2.1.2",
+    "@types/react": "^16.8.23",
+    "@types/react-dom": "^16.8.5",
+    "less": "^3.10.3",
     "less-loader": "^5.0.0",
-    "node-sass": "^4.14.1",
-    "react-scripts": "^3.4.0",
+    "node-sass": "^4.13.1",
+    "react-scripts": "^3.3.0",
     "rewire": "^4.0.1",
-    "tslint": "^5.20.1",
-    "tslint-react": "^4.1.0",
-    "typescript": "^3.9.6"
+    "tslint": "^5.18.0",
+    "tslint-react": "^4.0.0",
+    "typescript": "^3.5.3"
   }
 }
