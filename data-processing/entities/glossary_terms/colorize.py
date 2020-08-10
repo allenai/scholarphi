@@ -2,9 +2,7 @@ import re
 from typing import cast
 
 from common.parse_tex import EquationExtractor
-from common.types import CharacterRange, SerializableEntity
-
-from .types import Term
+from common.types import CharacterRange, SerializableEntity, Term
 
 
 def get_term_color_positions(entity: SerializableEntity) -> CharacterRange:

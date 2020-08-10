@@ -53,6 +53,23 @@ def read_file_tolerant(path: str) -> Optional[FileContents]:
     return None
 
 
+def read_tex(arxiv_id: str) -> Dict[str, FileContents]:
+    """
+    Read the contents of all TeX files for this arXiv paper.
+    """
+    contents_by_file = {}
+    sources_path = directories.arxiv_subdir("sources", arxiv_id)
+    for tex_path in find_files(sources_path, [".tex"], relative=True):
+        absolute_tex_path = os.path.join(
+            directories.arxiv_subdir("sources", arxiv_id), tex_path
+        )
+        file_contents = read_file_tolerant(absolute_tex_path)
+        if file_contents is not None:
+            contents_by_file[tex_path] = file_contents
+
+    return contents_by_file
+
+
 Dataclass = TypeVar("Dataclass")
 
 
@@ -139,19 +156,43 @@ def load_from_csv(
             # same time, cast each column to the intended data type.
             invalid = False
             for field in dataclasses.fields(D):
+
                 try:
-                    # Load 'None's back in by checking for special null string.
-                    if row[field.name] == "<!NULL!>":
+                    type_ = field.type
+                    is_optional = False
+
+                    # If the field is optional, check for the special null value. If it's not
+                    # present, determine which primitive type the value should be cast to. See
+                    # note for List[str] for cautions about using dynamic type-checks like this
+                    # for mypy types like Optional types.
+                    if type_ in [
+                        Optional[bool],
+                        Optional[int],
+                        Optional[float],
+                        Optional[str],
+                    ]:
+                        is_optional = True
+                        type_ = (
+                            bool
+                            if type_ == Optional[bool]
+                            else int
+                            if type_ == Optional[int]
+                            else float
+                            if type_ == Optional[float]
+                            else str
+                            if type_ == Optional[str]
+                            else Type[Any]
+                        )
+                    if is_optional and row[field.name] == "<!NULL!>":
                         data[field.name] = None
+
                     # Rules for reading Booleans. Support casting of '0' and '1' or the strings
                     # 'True' and 'False'. 'True' and 'False' are the default output of CSV writer.
-                    if field.type == bool:
+                    elif type_ == bool:
                         data[field.name] = bool(ast.literal_eval(row[field.name]))
-                    # This one general case should handle ints, floats, and strings.
-                    else:
-                        data[field.name] = field.type(row[field.name])
-                # Parse other more complex data types like lists.
-                except TypeError as e:
+                    # Handle other primitive values.
+                    elif type_ in [int, float, str]:
+                        data[field.name] = type_(row[field.name])
                     # XXX(andrewhead): It's not guaranteed that type-checks like this one will work
                     # as the 'typing' library evolves. At the time of writing, it looked like calls
                     # to the '__eq__' method of classes that extend GenericMeta (like List, Tuple)
@@ -161,12 +202,21 @@ def load_from_csv(
                     # https://github.com/python/typing/blob/c85016137eab6d0784b76252460235638087f468/src/test_typing.py#L400
                     # If at some point this comparison stops working, perhaps we can define a custom
                     # type for types of interest (like StrList) and compare the ID of the newly defined type.
-                    if field.type == List[str]:
+                    elif field.type == List[str]:
                         data[field.name] = ast.literal_eval(row[field.name])
+                    else:
+                        logging.warning(  # pylint: disable=logging-not-lazy
+                            "Could not decode data for field %s of type %s . "
+                            + "This may mean that the rules for reading CSV files need to " 
+                            + "be extended to support this data type.",
+                            field.name,
+                            field.type,
+                        )
                 except ValueError as e:
                     logging.warning(  # pylint: disable=logging-not-lazy
                         "Could not read value '%s' for field '%s' of expected type %s from CSV. "
-                        + "ValueError: %s. This row will be skipped.",
+                        + "ValueError: %s. This row will be skipped. This value probably had an "
+                        + "invalid type when the data for the row was created.",
                         row[field.name],
                         field.name,
                         field.type,

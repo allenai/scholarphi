@@ -1,6 +1,7 @@
 import logging
 import os.path
 from argparse import ArgumentParser
+from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, Dict, Iterator, List, Union, cast
 
@@ -8,12 +9,12 @@ from tqdm import tqdm
 
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
-from common.types import ArxivId, CharacterRange
+from common.parse_tex import PhraseExtractor, get_containing_entity, overlaps
+from common.types import ArxivId, CharacterRange, FileContents, SerializableEntity
 from entities.sentences.types import Sentence
 
 from .nlp_tools import DefinitionDetectionModel
-from .types import Definition, Term
-
+from .types import Definiendum, Definition, TermReference
 
 """
 Deployment TODOs:
@@ -27,11 +28,15 @@ Detection improvement TODOs:
 * TODO(dykang): classify definitions and terms into types
 """
 
+TermName = str
+DefinitionId = str
+
 
 @dataclass(frozen=True)
 class DetectDefinitionsTask:
     arxiv_id: ArxivId
     sentences: List[Sentence]
+    tex_by_file: Dict[str, FileContents]
 
 
 @dataclass(frozen=True)
@@ -125,18 +130,22 @@ def get_term_definition_pairs(
 
 
 class DetectDefinitions(
-    ArxivBatchCommand[DetectDefinitionsTask, Union[Term, Definition]]
+    ArxivBatchCommand[
+        DetectDefinitionsTask, Union[Definiendum, Definition, TermReference]
+    ]
 ):
     """
-    Extract definitions from sentences using a pre-trained definition extraction model.
-    It performs the following stpes:
+    Extract terms and definitions of those terms from sentences using a pre-trained definition
+    extraction model. Performs the following stpes:
     1. Load cleaned sentences from the 'detected-sentences' data directory
     2. Extract features from each sentence (aka featurization)
     3. Load the pre-trained NLP model, load the features, and predict intent and term:definition
-       slots. More specifically:
+       slots. The model predicts intents and slots:
         * Intent: whether a sentence is detected as including a definition or not
         * Slot: a tag for each token indicating it is one of (TERM, DEFINITION, neither)
-    4. Save detected terms in terms.csv and detected definitions definitions.csv
+    4. Find all references to terms in the text
+    5. Save detected terms to 'entities-terms.csv' and detected definitions to
+       'entities-definitions.csv'
     """
 
     @staticmethod
@@ -174,11 +183,11 @@ class DetectDefinitions(
             output_dir = directories.arxiv_subdir("detected-definitions", arxiv_id)
             file_utils.clean_directory(output_dir)
 
+            # Load cleaned sentences for definition detection.
             detected_sentences_path = os.path.join(
                 directories.arxiv_subdir("detected-sentences", arxiv_id),
                 "entities.csv",
             )
-
             try:
                 sentences = list(
                     file_utils.load_from_csv(detected_sentences_path, Sentence)
@@ -192,9 +201,15 @@ class DetectDefinitions(
                 )
                 continue
 
-            yield DetectDefinitionsTask(arxiv_id, sentences)
+            # Read in all TeX. Once definition detection is finished, all the TeX will be searched
+            # for references to the defined terms.
+            tex_by_file = file_utils.read_tex(arxiv_id)
 
-    def process(self, item: DetectDefinitionsTask) -> Iterator[Union[Term, Definition]]:
+            yield DetectDefinitionsTask(arxiv_id, sentences, tex_by_file)
+
+    def process(
+        self, item: DetectDefinitionsTask
+    ) -> Iterator[Union[Definiendum, Definition, TermReference]]:
         sentences_ordered = sorted(item.sentences, key=lambda s: s.start)
         num_sentences = len(sentences_ordered)
 
@@ -209,9 +224,12 @@ class DetectDefinitions(
         # Load the pre-trained definition detection model.
         model = DefinitionDetectionModel()
 
-        term_index = 0
+        definition_index = 0
         features = []
         sentences = []
+
+        definiendums: Dict[TermName, List[Definiendum]] = defaultdict(list)
+        definitions: Dict[DefinitionId, Definition] = {}
 
         with tqdm(
             total=num_sentences, disable=(not self.args.show_progress)
@@ -249,52 +267,173 @@ class DetectDefinitions(
                             s.cleaned_text, sentence_features, sentence_slots
                         )
                         for pair in pairs:
-                            term_id = f"term-{term_index}"
-                            definition_id = f"definition-{term_index}"
-                            yield Term(
-                                id_=term_id,
-                                start=s.start + pair.term_start,
-                                end=s.start + pair.term_end,
-                                text=pair.term_text,
-                                type_=None,
-                                confidence=None,
-                                tex_path=s.tex_path,
-                                tex="NOT AVAILABLE",
-                                context_tex=s.context_tex,
-                                sentence_id=s.id_,
+
+                            tex_path = s.tex_path
+                            definiendum_id = (
+                                f"definiendum-{tex_path}-{definition_index}"
                             )
-                            yield Definition(
+                            definiendum_text = pair.term_text
+                            definiendum_start = s.start + pair.term_start
+                            definiendum_end = s.start + pair.term_end
+
+                            definition_id = f"definition-{tex_path}-{definition_index}"
+                            definition_start = s.start + pair.definition_start
+                            definition_end = s.start + pair.definition_end
+
+                            try:
+                                tex = item.tex_by_file[tex_path]
+                            except KeyError:
+                                logging.warning(  # pylint: disable=logging-not-lazy
+                                    "Could not find TeX for %s. TeX will not be included in "
+                                    + "the output data for definition '%s' for term '%s'",
+                                    tex_path,
+                                    pair.definition_text,
+                                    definiendum_text,
+                                )
+                                definiendum_tex = "NOT AVAILABLE"
+                                definition_tex = "NOT AVAILABLE"
+                            else:
+                                definiendum_tex = tex.contents[
+                                    definiendum_start:definiendum_end
+                                ]
+                                definition_tex = tex.contents[
+                                    definition_start:definition_end
+                                ]
+
+                            # Save the definition to file.
+                            definition = Definition(
                                 id_=definition_id,
-                                start=s.start + pair.definition_start,
-                                end=s.start + pair.definition_end,
-                                definiendum=pair.term_text,
-                                term_id=term_id,
+                                start=definition_start,
+                                end=definition_end,
+                                definiendum=definiendum_text,
                                 type_=None,
-                                tex_path=s.tex_path,
-                                tex="NOT AVAILABLE",
+                                tex_path=tex_path,
+                                tex=definition_tex,
                                 text=pair.definition_text,
                                 context_tex=s.context_tex,
                                 sentence_id=s.id_,
                                 intent=bool(intent),
                                 confidence=None,
                             )
-                            term_index += 1
+                            definitions[definition_id] = definition
+                            yield definition
+
+                            # Don't save the definiendum to file yet. Save it in memory first, and then
+                            # save it to file once it's done being processed. It will need
+                            # to be associated with other definitions. Also, other references
+                            # to the term will be detected before this method is over.
+                            definiendums[definiendum_text].append(
+                                Definiendum(
+                                    id_=definiendum_id,
+                                    text=definiendum_text,
+                                    type_=None,
+                                    confidence=None,
+                                    # Link the definiendum to the text that defined it.
+                                    definition_id=definition_id,
+                                    # Because a term can be defined multiple places in the paper, these
+                                    # three lists of definition data will be filled out once all of the
+                                    # definitions have been found.
+                                    definition_ids=[],
+                                    definitions=[],
+                                    sources=[],
+                                    start=definiendum_start,
+                                    end=definiendum_end,
+                                    tex_path=tex_path,
+                                    tex=definiendum_tex,
+                                    context_tex=s.context_tex,
+                                    sentence_id=s.id_,
+                                )
+                            )
+                            definition_index += 1
 
                     features = []
                     sentences = []
 
+        logging.debug(
+            "Finished detecting definitions for paper %s. Now finding references to defined terms.",
+            item.arxiv_id,
+        )
+
+        all_definiendums: List[Definiendum] = []
+        for _, definiendum_list in definiendums.items():
+            all_definiendums.extend(definiendum_list)
+        term_phrases: List[TermName] = list(definiendums.keys())
+        definition_ids: Dict[TermName, List[DefinitionId]] = {}
+        definition_texts: Dict[TermName, List[str]] = {}
+        sources: Dict[TermName, List[str]] = {}
+
+        # Associate terms with all definitions that apply to them.
+        for term, definiendum_list in definiendums.items():
+            definition_ids[term] = [d.definition_id for d in definiendum_list]
+            definition_texts[term] = [
+                definitions[d.definition_id].text for d in definiendum_list
+            ]
+            sources[term] = ["model"] * len(definition_ids[term])
+
+        # Associate each definiendum with all applicable definitions, and save them to file.
+        for _, definiendum_list in definiendums.items():
+            for d in definiendum_list:
+                d.definition_ids.extend(definition_ids[d.text])
+                d.definitions.extend(definition_texts[d.text])
+                d.sources.extend(sources[d.text])
+                yield d
+
+        # Detect all other references to the defined terms.
+        term_index = 0
+        sentence_entities: List[SerializableEntity] = cast(
+            List[SerializableEntity], item.sentences
+        )
+
+        for tex_path, file_contents in item.tex_by_file.items():
+            term_extractor = PhraseExtractor(term_phrases)
+            for t in term_extractor.parse(tex_path, file_contents.contents):
+                t_sentence = get_containing_entity(t, sentence_entities)
+
+                # Don't save term references if they are already in the definiendums
+                if any([overlaps(d, t) for d in all_definiendums]):
+                    continue
+
+                logging.debug(
+                    "Found reference to term %s at (%d, %d) in %s for arXiv ID %s",
+                    t.text,
+                    t.start,
+                    t.end,
+                    t.tex_path,
+                    item.arxiv_id,
+                )
+                yield TermReference(
+                    id_=f"term-{t.tex_path}-{term_index}",
+                    text=t.text,
+                    type_=None,
+                    definition_ids=definition_ids[t.text],
+                    definitions=definition_texts[t.text],
+                    sources=sources[t.text],
+                    start=t.start,
+                    end=t.end,
+                    tex_path=t.tex_path,
+                    tex=t.tex,
+                    context_tex=t.context_tex,
+                    sentence_id=t_sentence.id_ if t_sentence is not None else None,
+                )
+                term_index += 1
+
     def save(
-        self, item: DetectDefinitionsTask, result: Union[Term, Definition]
+        self,
+        item: DetectDefinitionsTask,
+        result: Union[Definiendum, Definition, TermReference],
     ) -> None:
 
         output_dir = directories.arxiv_subdir("detected-definitions", item.arxiv_id)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        terms_path = os.path.join(output_dir, "entities-terms.csv")
+        definiendums_path = os.path.join(output_dir, "entities-definiendums.csv")
         definitions_path = os.path.join(output_dir, "entities-definitions.csv")
+        term_references_path = os.path.join(output_dir, "entities-term-references.csv")
 
-        if isinstance(result, Term):
-            file_utils.append_to_csv(terms_path, result)
+        if isinstance(result, Definiendum):
+            file_utils.append_to_csv(definiendums_path, result)
         elif isinstance(result, Definition):
             file_utils.append_to_csv(definitions_path, result)
+        elif isinstance(result, TermReference):
+            file_utils.append_to_csv(term_references_path, result)

@@ -1,20 +1,19 @@
 from common import directories
-from common.types import SerializableEntity
+from common.types import SerializableEntity, Term
 from entities.common import create_entity_localization_command_sequence
 from scripts.pipelines import EntityPipeline, register_entity_pipeline
 
 from .colorize import get_term_color_positions
-from .extractor import TermExtractor
-from .types import Term
+from .extractor import GlossaryTermExtractor
 from .upload import upload_terms
 
 commands = create_entity_localization_command_sequence(
-    "terms",
-    TermExtractor,
+    "glossary-terms",
+    GlossaryTermExtractor,
     DetectedEntityType=Term,
     get_color_positions=get_term_color_positions,
     upload_func=upload_terms,
 )
 
-terms_pipeline = EntityPipeline("terms", commands)
+terms_pipeline = EntityPipeline("glossary-terms", commands)
 register_entity_pipeline(terms_pipeline)

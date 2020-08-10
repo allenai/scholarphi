@@ -224,6 +224,30 @@ class LengthAssignment(Entity):
 
 
 @dataclass(frozen=True)
+class Phrase(SerializableEntity):
+    text: str
+
+
+@dataclass(frozen=True)
+class Term(SerializableEntity):
+    text: str
+    sentence_id: Optional[str]
+
+    type_: Optional[str]
+    " Type of term (e.g., symbol, protologism, abbreviation). "
+
+    definitions: List[str]
+    " List of definitions that describe this term. "
+
+    sources: List[str]
+    """
+    List of sources that describe where each definition came from. One per definition.
+    To find the source for a definition, look for the source with the same index as
+    the definition.
+    """
+
+
+@dataclass(frozen=True)
 class BeginDocument(Entity):
     pass
 
