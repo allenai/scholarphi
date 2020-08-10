@@ -1,4 +1,19 @@
+import pytest
+
 from entities.abbreviations.extractor import AbbreviationExtractor
+
+
+extractor = None
+
+
+@pytest.fixture(scope="module", autouse=True)
+def setup_extractor():
+    """
+    Only set up the extractor once, as it requires the time-consuming initialization
+    of an NLP model.
+    """
+    global extractor  # pylint: disable=global-statement
+    extractor = AbbreviationExtractor()
 
 
 def assert_abbreviation(abb, id_, text, start, end, expansion, tex):
@@ -13,9 +28,8 @@ def assert_abbreviation(abb, id_, text, start, end, expansion, tex):
 
 def test_basic():
     # tests the most basic plaintext version
-    a = AbbreviationExtractor()
     abbs = list(
-        a.parse(
+        extractor.parse(
             "",
             "Natural Language Processing (NLP) is a sub-field of artificial "
             + "intelligence (AI).",
@@ -59,9 +73,8 @@ def test_basic():
 
 def test_multiple():
     # slightly more involved example, fail-safe to catch additional bugs anywhere
-    a = AbbreviationExtractor()
     abbs = list(
-        a.parse(
+        extractor.parse(
             "",
             "Natural Language Processing (NLP) is a sub-field of artificial intelligence (AI).\n"
             + " AI can also be applied to other areas that are not NLP.",
@@ -85,10 +98,9 @@ def test_multiple():
 
 
 def test_latex():
-    # more realistic example, latex formatting included
-    a = AbbreviationExtractor()
+    # More realistic example, latex formatting included.
     abbs = list(
-        a.parse(
+        extractor.parse(
             "",
             "Natural Language Processing \\textbf{(NLP)} is a sub-field of artificial intelligence (AI).\n"
             + " Here's a random equation: $E=mc^2$ to throw you off. AI can also be applied to \\textbf{c}omputer \\textbf{v}ision (CV).",

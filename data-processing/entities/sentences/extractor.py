@@ -90,8 +90,12 @@ class EquationFormat(Enum):
 
 
 class SentenceExtractor(EntityExtractor):
-
-    def __init__(self, equation_format: EquationFormat = EquationFormat.OMIT, symbols: Optional[List[Symbol]] = None) -> None:
+    def __init__(
+        self,
+        equation_format: EquationFormat = EquationFormat.OMIT,
+        symbols: Optional[List[Symbol]] = None,
+        from_named_sections_only: bool = True,
+    ) -> None:
         """
         Initialize sentence extractor. Optionally a format for the equations that are in the
         sentence can be specified with 'equation_format'. If the equation format is set to
@@ -99,6 +103,7 @@ class SentenceExtractor(EntityExtractor):
         """
         self.equation_format = equation_format
         self.symbols = symbols
+        self.from_named_sections_only = from_named_sections_only
 
     """
     Extract plaintext sentences from TeX, with offsets of the characters they correspond to in
@@ -286,7 +291,7 @@ class SentenceExtractor(EntityExtractor):
             is_valid_sentence = all(
                 [
                     # Sentence should appear in a named section.
-                    section_name,
+                    (not self.from_named_sections_only) or section_name,
                     # Sentence should not appear in a figure or table.
                     # TODO(dykang, andrewhead): eventually, this should be rewritten to permit the
                     # extraction of sentences from captions.
