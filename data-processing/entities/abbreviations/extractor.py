@@ -40,22 +40,24 @@ class AbbreviationExtractor(EntityExtractor):
     expansions in the text.
     """
 
+    def __init__(self) -> None:
+        # This is the most basic model and had no real performance difference on our inputs,
+        # other options include NER models and models with pretrained word vectors.
+        self.nlp = spacy.load("en_core_sci_sm")
+
+        abbreviation_pipe = AbbreviationDetector(self.nlp)
+        self.nlp.add_pipe(abbreviation_pipe)
+
     def parse(self, tex_path: str, tex: str) -> Iterator[Abbreviation]:
         check_for_reserved_characters(tex)
         plaintext, plaintext_to_tex_offset_map = plaintext_and_offset(tex_path, tex)
-
-        # This is the most basic model and had no real performance difference on our inputs,
-        # other options include NER models and models with pretrained word vectors.
-        nlp = spacy.load("en_core_sci_sm")
-        abbreviation_pipe = AbbreviationDetector(nlp)
-        nlp.add_pipe(abbreviation_pipe)
 
         # These dictionaries hold abbreviated forms, their expansions, and the location of the expansions.
         # All of them use the abbreviated form as keys.
         abb_short_forms = {}
         abb_expansions = {}
         expanded_locations = {}
-        doc = nlp(plaintext)
+        doc = self.nlp(plaintext)
 
         # This extracts the abbreviations from the scispacy model.
         for abrv in doc._.abbreviations:
