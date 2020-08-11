@@ -2,6 +2,20 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from common.types import SerializableEntity, Term
+from entities.sentences.types import Sentence
+
+
+@dataclass(frozen=True)
+class EmbellishedSentence(Sentence):
+    """
+    A sentence embellished with additional text to make it easier to detect definitions. For
+    example, one embellishment is including bags of words for the symbols used in definitions.
+    Should share the same 'tex_path' and 'id_' as the sentence it was derived from.
+    """
+    with_symbol_and_formula_tags: str
+    with_equation_tex: str
+    with_symbol_tex: str
+    with_bag_of_symbols: str
 
 
 @dataclass(frozen=True)

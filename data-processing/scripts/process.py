@@ -17,12 +17,14 @@ from common.commands.unpack_sources import UnpackSources
 # Force the importing of modules for entity processing. This forces a call from each of the entity
 # modules to register pipelines for processing each entity. If these aren't imported,
 # 'entity_pipelines' will be empty and all of the commands for processing entities will be missing.
+# The order that these packages are imported will determine the indexes assigned to the output
+# data directories. Earlier imports will have lower indexes for the data directories.
 from entities import citations  # pylint: disable=unused-import
-from entities import definitions  # pylint: disable=unused-import
-from entities import equations  # pylint: disable=unused-import
-from entities import glossary_terms  # pylint: disable=unused-import
 from entities import sentences  # pylint: disable=unused-import
+from entities import equations  # pylint: disable=unused-import
 from entities import symbols  # pylint: disable=unused-import
+from entities import definitions  # pylint: disable=unused-import
+from entities import glossary_terms  # pylint: disable=unused-import
 from scripts.pipelines import EntityPipeline, entity_pipelines
 
 PAPER_DISCOVERY_COMMANDS: CommandList = [FetchNewArxivIds]

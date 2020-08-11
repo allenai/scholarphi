@@ -15,6 +15,5 @@ class Sentence(SerializableEntity):
     label: List[str]
     ref: List[str]
     cite: List[str]
-    symbol: List[str]
     url: List[str]
     others: List[str]
