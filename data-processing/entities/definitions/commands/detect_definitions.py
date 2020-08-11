@@ -11,10 +11,9 @@ from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
 from common.parse_tex import PhraseExtractor, get_containing_entity, overlaps
 from common.types import ArxivId, CharacterRange, FileContents, SerializableEntity
-from entities.sentences.types import Sentence
 
 from ..nlp import DefinitionDetectionModel
-from ..types import Definiendum, Definition, TermReference
+from ..types import Definiendum, Definition, EmbellishedSentence, TermReference
 
 """
 Deployment TODOs:
@@ -35,7 +34,7 @@ DefinitionId = str
 @dataclass(frozen=True)
 class DetectDefinitionsTask:
     arxiv_id: ArxivId
-    sentences: List[Sentence]
+    sentences: List[EmbellishedSentence]
     tex_by_file: Dict[str, FileContents]
 
 
@@ -185,12 +184,14 @@ class DetectDefinitions(
 
             # Load cleaned sentences for definition detection.
             detected_sentences_path = os.path.join(
-                directories.arxiv_subdir("detected-sentences", arxiv_id),
-                "entities.csv",
+                directories.arxiv_subdir("embellished-sentences", arxiv_id),
+                "sentences.csv",
             )
             try:
                 sentences = list(
-                    file_utils.load_from_csv(detected_sentences_path, Sentence)
+                    file_utils.load_from_csv(
+                        detected_sentences_path, EmbellishedSentence
+                    )
                 )
             except FileNotFoundError:
                 logging.warning(  # pylint: disable=logging-not-lazy
@@ -239,7 +240,7 @@ class DetectDefinitions(
                 progress.update(1)
 
                 # Extract features from raw text.
-                featurized_text = model.featurize(sentence.sanitized_text)
+                featurized_text = model.featurize(sentence.legacy_definition_input)
                 features.append(featurized_text)
                 sentences.append(sentence)
 
@@ -260,7 +261,9 @@ class DetectDefinitions(
                             continue
 
                         pairs = get_term_definition_pairs(
-                            s.sanitized_text, sentence_features, sentence_slots
+                            s.legacy_definition_input,
+                            sentence_features,
+                            sentence_slots,
                         )
                         for pair in pairs:
 
