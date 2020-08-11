@@ -3,15 +3,30 @@ import re
 import string
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Dict, Iterator, List, Optional, Set, Tuple, Union
+from typing import Dict, Iterator, List, Optional, Set, Union
 
 from TexSoup import RArg, TexNode, TexSoup, TokenWithPosition
 
-from common.scan_tex import (EndOfInput, Match, Pattern, TexScanner,
-                             has_balanced_braces, scan_tex)
-from common.types import (BeginDocument, Bibitem, Documentclass, Equation,
-                          LengthAssignment, Macro, MacroDefinition, Phrase,
-                          SerializableEntity)
+from common.scan_tex import (
+    EndOfInput,
+    Match,
+    Pattern,
+    TexScanner,
+    has_balanced_braces,
+    scan_tex,
+)
+from common.string import JournaledString
+from common.types import (
+    BeginDocument,
+    Bibitem,
+    Documentclass,
+    Equation,
+    LengthAssignment,
+    Macro,
+    MacroDefinition,
+    Phrase,
+    SerializableEntity,
+)
 
 DEFAULT_CONTEXT_SIZE = 20
 """
@@ -293,112 +308,80 @@ def _replace_substring_with_space(s: str, start: int, end: int) -> str:
     return s[:start] + (" " * (end - start)) + s[end:]
 
 
-@dataclass(frozen=True)
-class PlaintextSegment:
-    text: str
-
-    transformed: bool
-    " Whether the TeX was transformed at all to make this plaintext. "
-
-    tex_start: int
-    " Offset of first character in the TeX that corresponds to this plaintext. "
-
-    tex_end: int
-    " Offset after the last character in the TeX that corresponds to this plaintext. "
-
-    equations: List[Equation]
-    " A list of equations corresponding with one for each [[math]] tag in 'text'. "
-
-
-class PlaintextExtractor:
+def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
     """
-    Extracts plaintext from TeX. It's definitely not perfect: this extracted text will include
-    text extracted from many command arguments, because we knew sometimes it would be wanted, and
+    Extracts plaintext from TeX. Some TeX will be replaced (e.g., "\\\\" with "\n",
+    equations with "<<equation-{id}>>"). Other TeX will be skipped (e.g., macros, braces, and brackets).
+
+    The returned string is a 'JournaledString', which contains helper functions that allows
+    the client to map from character offsets in the plaintext string back to character offsets in
+    the original 'tex' string provided as input to this function.
+
+    It's definitely not perfect: this extracted text will include text extracted from many
+    command arguments, because we knew sometimes it would be wanted, and
     other times it wouldn't. Without more sophisticated macro processing, it's not possible to
     tell which arguments would be rendered as text and which wouldn't.
 
-    For the anticipated use case of sentence boundary detection, spurious macro arguments are often
+    For the use case of sentence boundary detection, spurious macro arguments are often
     okay to keep in the text as they only infrequently influence the detected boundaries. To
     support other natural language processing tasks, this extractor may need to be further refined.
     """
+    # Patterns of text that should be replaced with other plaintext.
+    REPLACE_PATTERNS = {
+        Pattern("backslash_newline", r"\\\\"): "\n",
+        Pattern("space_macro", r"\\[ ,]"): " ",
+        Pattern("tilde", r"~"): " ",
+    }
 
-    def __init__(self) -> None:
+    # Patterns of text the extractor should skip.
+    SKIP_PATTERNS = [
+        # Many patterns below were written with reference to the LaTeX tokenizer in Python's
+        # 'doctools' sources at:
+        # http://svn.python.org/projects/doctools/converter/converter/tokenizer.py
+        Pattern("macro", r"\\[a-zA-Z]+\*?[ \t]*"),
+        RIGHT_BRACE,
+        LEFT_BRACE,
+        Pattern("left_bracket", r"\["),
+        Pattern("right_bracket", r"\]"),
+        # The following macros are a backslash followed by an ASCII symbol. This pattern was
+        # written with reference to the command list at:
+        # http://www.public.asu.edu/~rjansen/latexdoc/ltx-2.html
+        # Pattern("symbol_macro", r"\\[@=><+'`-]"),
+    ]
 
-        # Patterns of text that should be replaced with other plaintext.
-        self.REPLACE_PATTERNS = {
-            Pattern("backslash_newline", r"\\\\"): "\n",
-            Pattern("space_macro", r"\\[ ,]"): " ",
-            Pattern("tilde", r"~"): " ",
-            # See why we use this strange character for equations in the 'parse' method.
-            Pattern("math", r"█+"): "[[math]]",
-        }
+    # All math equations will be replaced in plaintext with the text "<<equation-{id}>>".
+    # This ID should be the same as the one output by the equation pipeline.
+    plaintext = JournaledString(tex)
+    equation_extractor = EquationExtractor()
+    equations = list(equation_extractor.parse(tex_path, tex))
+    for equation in reversed(equations):
+        plaintext = plaintext.edit(
+            equation.start, equation.end, f"<<equation-{equation.id_}>>"
+        )
 
-        # Patterns of text the extractor should skip.
-        self.SKIP_PATTERNS = [
-            # Many patterns below were written with reference to the LaTeX tokenizer in Python's
-            # 'doctools' sources at:
-            # http://svn.python.org/projects/doctools/converter/converter/tokenizer.py
-            Pattern("macro", r"\\[a-zA-Z]+\*?[ \t]*"),
-            RIGHT_BRACE,
-            LEFT_BRACE,
-            Pattern("left_bracket", r"\["),
-            Pattern("right_bracket", r"\]"),
-            # The following macros are a backslash followed by an ASCII symbol. This pattern was
-            # written with reference to the command list at:
-            # http://www.public.asu.edu/~rjansen/latexdoc/ltx-2.html
-            # Pattern("symbol_macro", r"\\[@=><+'`-]"),
-        ]
+    patterns = list(REPLACE_PATTERNS.keys()) + SKIP_PATTERNS
+    scanner = scan_tex(str(plaintext), patterns, include_unmatched=True)
 
-    def parse(self, tex_path: str, tex: str) -> Iterator[PlaintextSegment]:
-        """
-        Extract plaintext segments from the TeX. Some TeX will be replaced (e.g., "\\\\" with "\n",
-        equations with "[[math]]"). Other TeX will be skipped (e.g., macros, braces, and brackets).
-        The 'text' property of the returned segments can be appended to form a string of plaintext.
-        """
-        # All math equations will be replaced in plaintext with the text "[[math]]". However,
-        # returned segments also need to be labeled with their character positions from the
-        # original TeX. In a first step, equations are detected using EquationExtractor, and then
-        # replaced with a Unicode character (█) so that they can be easily detected in a second
-        # step, while preserving the equations' character offsets in the TeX.
-        tex_without_math = tex
-        equation_extractor = EquationExtractor()
-        equations = list(equation_extractor.parse(tex_path, tex))
-        for equation in equations:
-            tex_without_math = (
-                tex_without_math[: equation.start]
-                + "█" * (equation.end - equation.start)
-                + tex_without_math[equation.end :]
+    # Iterate over all TeX. If a token is supposed to be replaced, replace it and yield the
+    # span with the replaced text. If it's supposed to be ignored, discard it. Otherwise, yield
+    # a new span with the TeX as plaintext.
+    for match in reversed(list(scanner)):
+        if match.pattern in SKIP_PATTERNS:
+            plaintext = plaintext.edit(match.start, match.end, "")
+        if match.pattern in REPLACE_PATTERNS:
+            plaintext = plaintext.edit(
+                match.start, match.end, REPLACE_PATTERNS[match.pattern]
             )
 
-        patterns = list(self.REPLACE_PATTERNS.keys()) + self.SKIP_PATTERNS
-        scanner = scan_tex(tex_without_math, patterns, include_unmatched=True)
+    return plaintext
 
-        # Iterate over all TeX. If a token is supposed to be replaced, replace it and yield the
-        # span with the replaced text. If it's supposed to be ignored, discard it. Otherwise, yield
-        # a new span with the TeX as plaintext.
-        for match in scanner:
-            if match.pattern in self.SKIP_PATTERNS:
-                continue
 
-            transformed = False
-            text = match.text
-            if match.pattern in self.REPLACE_PATTERNS:
-                transformed = True
-                text = self.REPLACE_PATTERNS[match.pattern]
-
-            tex_start = match.start
-            tex_end = match.end
-            segment_equations = list(
-                filter(lambda e: e.start >= tex_start and e.end <= tex_end, equations)
-            )
-
-            yield PlaintextSegment(
-                text=text,
-                transformed=transformed,
-                tex_start=match.start,
-                tex_end=match.end,
-                equations=segment_equations,
-            )
+@dataclass(frozen=True)
+class Shingle:
+    " A shingle, with a start and end offset of where it's from in the text. "
+    text: str
+    start: int
+    end: int
 
 
 class PhraseExtractor(EntityExtractor):
@@ -411,37 +394,40 @@ class PhraseExtractor(EntityExtractor):
         self.max_phrase_len = max_phrase_len
 
     @staticmethod
-    def get_shingles(text: str, size: int) -> Iterator[str]:
-        split_text = text.split()
-        for i in range(0, len(split_text) - size + 1):
-            yield " ".join(split_text[i : i + size])
+    def get_shingles(text: str, size: int) -> Iterator[Shingle]:
+        tokens = []
+        for match in re.finditer(r"\S+", text):
+            tokens.append((match.group(0), match.start(), match.end()))
+        for i in range(0, len(tokens) - size + 1):
+            shingle_tokens = tokens[i : i + size]
+            yield Shingle(
+                text=" ".join([t[0] for t in shingle_tokens]),
+                start=min([t[1] for t in shingle_tokens]),
+                end=max([t[2] for t in shingle_tokens]),
+            )
 
     def parse(self, tex_path: str, tex: str) -> Iterator[Phrase]:
-        plaintext_extractor = PlaintextExtractor()
-        plaintext_segments = plaintext_extractor.parse(tex_path, tex)
-
+        plaintext = extract_plaintext(tex_path, tex)
         phrase_count = 0
-        for text_segment in plaintext_segments:
-            text_segment_string = text_segment.text.strip()
-            if not text_segment_string:
-                continue
-
-            for size in range(1, self.max_phrase_len + 1):
-                for shingle in PhraseExtractor.get_shingles(text_segment_string, size):
-                    cands = [shingle, shingle.strip(string.punctuation)]
-                    for cand in list(cands):
-                        cands.append(cand.lower())
-                    for cand in list(cands):
-                        if cand.endswith("s"):
-                            cands.append(cand[:-1])
-                    final_cands = set(cands)
-                    for cand in final_cands:
-                        if cand in self.phrases:
-                            start_in_segment = text_segment.text.find(shingle)
-                            end_in_segment = start_in_segment + len(shingle)
-                            start = text_segment.tex_start + start_in_segment
-                            end = text_segment.tex_start + end_in_segment
-
+        for size in range(1, self.max_phrase_len + 1):
+            for shingle in PhraseExtractor.get_shingles(str(plaintext), size):
+                cands = [shingle]
+                for cand in list(cands):
+                    cands.append(
+                        Shingle(
+                            cand.text.strip(string.punctuation), cand.start, cand.end
+                        )
+                    )
+                for cand in list(cands):
+                    cands.append(Shingle(cand.text.lower(), cand.start, cand.end))
+                for cand in list(cands):
+                    if cand.text.endswith("s"):
+                        cands.append(Shingle(cand.text[:-1], cand.start, cand.end))
+                final_cands = set(cands)
+                for cand in final_cands:
+                    if cand in self.phrases:
+                        start, end = plaintext.initial_offsets(cand.start, cand.end)
+                        if start is not None and end is not None:
                             yield Phrase(
                                 id_=str(phrase_count),
                                 start=start,
@@ -453,7 +439,7 @@ class PhraseExtractor(EntityExtractor):
                                     - DEFAULT_CONTEXT_SIZE : end
                                     + DEFAULT_CONTEXT_SIZE
                                 ],
-                                text=cand,
+                                text=cand.text,
                             )
                             phrase_count += 1
                             break
@@ -706,43 +692,13 @@ PYSBD_RESERVED_CHARACTERS: List[str] = [
 ]
 
 
-def check_for_reserved_characters(tex: str) -> None:
+def check_for_pysbd_reserved_characters(tex: str) -> None:
     for reserved_char in PYSBD_RESERVED_CHARACTERS:
         if reserved_char in tex:
             logging.warning(
                 'Reserved character from pysbd "%s" found in tex string, this might break the sentence extractor.',
                 reserved_char,
             )
-
-
-def plaintext_and_offset(tex_path: str, tex: str) -> Tuple[str, Dict[int, int]]:
-    # Extract plaintext segments from TeX
-    plaintext_extractor = PlaintextExtractor()
-    plaintext_segments = plaintext_extractor.parse(tex_path, tex)
-
-    # Build a map from character offsets in the plaintext to TeX offsets. This will let us
-    # map from the character offsets of the sentences returned from the sentence boundary
-    # detector back to positions in the original TeX.
-    plaintext_to_tex_offset_map = {}
-    plaintext = ""
-    last_segment = None
-    for segment in plaintext_segments:
-        for i in range(len(segment.text)):
-            tex_offset = (
-                (segment.tex_start + i)
-                if not segment.transformed
-                else segment.tex_start
-            )
-            plaintext_to_tex_offset_map[len(plaintext) + i] = tex_offset
-
-        # While building the map, also create a contiguous plaintext string
-        plaintext += segment.text
-        last_segment = segment
-
-    if last_segment is not None:
-        plaintext_to_tex_offset_map[len(plaintext)] = last_segment.tex_end
-
-    return plaintext, plaintext_to_tex_offset_map
 
 
 def get_containing_entity(

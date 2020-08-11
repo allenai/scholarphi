@@ -1,5 +1,4 @@
 import logging
-import re
 from enum import Enum
 from typing import Iterator, List, Tuple, Optional
 
@@ -8,42 +7,12 @@ import regex
 
 from common.parse_tex import (
     EntityExtractor,
-    PlaintextExtractor,
-    check_for_reserved_characters,
+    extract_plaintext,
+    check_for_pysbd_reserved_characters,
 )
 
 from common.types import Symbol
 from .types import Sentence
-
-# These are 'reserved characters' by the pysbd module and can potentially
-# cause issues if they are present in a string. This list was compiled from the
-# psybd source code as of 3/23/20. locations:
-# ∯: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/abbreviation_replacer.py, https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/lists_item_replacer.py
-# ȸ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/processor.py
-# ♨: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/lists_item_replacer.py
-# ☝: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/lists_item_replacer.py
-# ✂: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/lists_item_replacer.py
-# ⎋: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
-# ᓰ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
-# ᓱ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
-# ᓳ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
-# ᓴ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/processor.py, https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
-# ᓷ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/cleaner.py, https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
-# ᓸ: https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/processor.py, https://github.com/nipunsadvilkar/pySBD/blob/master/pysbd/punctuation_replacer.py
-PYSBD_RESERVED_CHARACTERS: List[str] = [
-    "∯",
-    "ȸ",
-    "♨",
-    "☝",
-    "✂",
-    "⎋",
-    "ᓰ",
-    "ᓱ",
-    "ᓳ",
-    "ᓴ",
-    "ᓷ",
-    "ᓸ",
-]
 
 
 def get_context(tex: str, before: int, after: int) -> str:
@@ -112,48 +81,10 @@ class SentenceExtractor(EntityExtractor):
     """
 
     def parse(self, tex_path: str, tex: str) -> Iterator[Sentence]:
-        check_for_reserved_characters(tex)
+        check_for_pysbd_reserved_characters(tex)
 
-        # Extract plaintext segments from TeX
-        plaintext_extractor = PlaintextExtractor()
-        plaintext_segments = plaintext_extractor.parse(tex_path, tex)
-
-        # Build a map from character offsets in the plaintext to TeX offsets. This will let us
-        # map from the character offsets of the sentences returned from the sentence boundary
-        # detector back to positions in the original TeX.
-        plaintext_to_tex_offset_map = {}
-        plaintext = ""
-        last_segment = None
-        equations = {}
-        for segment in plaintext_segments:
-
-            # Replace each equation with its unique ID.
-            segment_text = segment.text
-            math_patterns = list(re.finditer(r"\[\[math\]\]", segment.text))
-            for patt_index in range(len(math_patterns) - 1, -1, -1):
-                patt = math_patterns[patt_index]
-                equation = segment.equations[patt_index]
-                segment_text = (
-                    segment_text[: patt.start()]
-                    + f"[[equation-{equation.id_}]]"
-                    + segment_text[patt.end() :]
-                )
-                equations[equation.id_] = equation.content_tex
-
-            for i in range(len(segment_text)):
-                tex_offset = (
-                    (segment.tex_start + i)
-                    if not segment.transformed
-                    else segment.tex_start
-                )
-                plaintext_to_tex_offset_map[len(plaintext) + i] = tex_offset
-
-            # While building the map, also create a contiguous plaintext string
-            plaintext += segment_text
-            last_segment = segment
-
-        if last_segment is not None:
-            plaintext_to_tex_offset_map[len(plaintext)] = last_segment.tex_end
+        # Extract plaintext from TeX.
+        plaintext = extract_plaintext(tex_path, tex)
 
         # Segment the plaintext. Return offsets for each setence relative to the TeX input
         segmenter = pysbd.Segmenter(language="en", clean=False, char_span=True)
@@ -165,7 +96,7 @@ class SentenceExtractor(EntityExtractor):
         in_table = False
         in_itemize = False
 
-        for i, span in enumerate(segmenter.segment(plaintext)):
+        for i, span in enumerate(segmenter.segment(str(plaintext))):
             # The pysbd module has several open bugs and issues which are addressed below.
             # As of 3/23/20 we know the module will fail in the following ways:
             # 1. pysbd will not break up the sentence when it starts with a punctuation mark or space.
@@ -174,7 +105,7 @@ class SentenceExtractor(EntityExtractor):
             # 2. pysbd uses reserved characters for splitting sentences
             #    ex: see PYSBD_RESERVED_CHARACTERS list.
             #    sol: throw a warning if the sentence contains any of these characters.
-            sentence = span.sent
+            sentence = span.sent.rstrip()
             if len(sentence) > 1000:
                 logging.warning(  # pylint: disable=logging-not-lazy
                     "Exceptionally long sentence (length %d). This might indicate the sentence "
@@ -182,21 +113,15 @@ class SentenceExtractor(EntityExtractor):
                     len(sentence),
                 )
 
-            plaintext_start = span.start
-            plaintext_end = span.end
-            if (
-                plaintext_start not in plaintext_to_tex_offset_map
-                or plaintext_end not in plaintext_to_tex_offset_map
-            ):
+            start, end = plaintext.initial_offsets(span.start, span.end)
+            if start is None or end is None:
                 logging.warning(  # pylint: disable=logging-not-lazy
-                    "A sentence boundary was incorrect for sentence %s. This is probably "
-                    + "an issue with pysbd. Skipping sentence in extractor.",
-                    sentence,
+                    "The span bounds (%d, %d) from pysbd for a sentence could not be mapped " +
+                    "back to character offsets in the LaTeX for an unknown reason.",
+                    span.start, span.end
                 )
                 continue
 
-            start = plaintext_to_tex_offset_map[plaintext_start]
-            end = plaintext_to_tex_offset_map[plaintext_end]
             sentence_tex = tex[start:end]
 
             # Extract TeX around sentence to understand the environment in which it appears

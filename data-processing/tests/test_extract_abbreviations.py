@@ -2,7 +2,6 @@ import pytest
 
 from entities.abbreviations.extractor import AbbreviationExtractor
 
-
 extractor = None
 
 
@@ -143,10 +142,10 @@ def test_latex():
         abbs[5],
         "expansion-2",
         "CV",
-        179,
+        171,
         204,
         "computer vision",
-        "c}omputer \\textbf{v}ision",
+        "\\textbf{c}omputer \\textbf{v}ision",
     )
     assert_abbreviation(
         abbs[6], "abbreviation-2-0", "CV", 206, 208, "computer vision", "CV"
