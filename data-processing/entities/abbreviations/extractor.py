@@ -1,5 +1,6 @@
+from collections import defaultdict
 import re
-from typing import Iterator
+from typing import Dict, Iterator, List, Tuple
 
 import spacy
 from scispacy.abbreviation import AbbreviationDetector
@@ -7,8 +8,8 @@ from scispacy.abbreviation import AbbreviationDetector
 from common.parse_tex import (
     DEFAULT_CONTEXT_SIZE,
     EntityExtractor,
-    check_for_reserved_characters,
-    plaintext_and_offset,
+    check_for_pysbd_reserved_characters,
+    extract_plaintext,
 )
 
 from .types import Abbreviation
@@ -35,9 +36,8 @@ NON_ACRONYM_CHARACTERS = [
 
 class AbbreviationExtractor(EntityExtractor):
     """
-    Extracts the plaintext from TeX with the PlaintextExtractor then passes this through the scispacy
-    abbreviation detection and expansion pipeline. Parse yields all the abbreviations and their corresponding
-    expansions in the text.
+    Abbreviation detection using SciSpacy abbreviation detection and expansion pipeline.
+    Parse yields all the abbreviations and their corresponding expansions in the text.
     """
 
     def __init__(self) -> None:
@@ -49,36 +49,41 @@ class AbbreviationExtractor(EntityExtractor):
         self.nlp.add_pipe(abbreviation_pipe)
 
     def parse(self, tex_path: str, tex: str) -> Iterator[Abbreviation]:
-        check_for_reserved_characters(tex)
-        plaintext, plaintext_to_tex_offset_map = plaintext_and_offset(tex_path, tex)
+        check_for_pysbd_reserved_characters(tex)
+        plaintext = extract_plaintext(tex_path, tex)
 
         # These dictionaries hold abbreviated forms, their expansions, and the location of the expansions.
         # All of them use the abbreviated form as keys.
-        abb_short_forms = {}
+        abb_short_forms: Dict[str, List[Tuple[int, int]]] = defaultdict(list)
         abb_expansions = {}
         expanded_locations = {}
-        doc = self.nlp(plaintext)
+        doc = self.nlp(str(plaintext))
 
         # This extracts the abbreviations from the scispacy model.
         for abrv in doc._.abbreviations:
             count = 0
             for s in NON_ACRONYM_CHARACTERS:
                 count += str(abrv).count(s)
-            # count makes sure that we don't accidentally include symbols or variables.
+            # Count makes sure that we don't accidentally include symbols or variables.
             if count == 0:
-                abb_short_forms[str(abrv)] = [
-                    [
-                        plaintext_to_tex_offset_map[m.start()],
-                        plaintext_to_tex_offset_map[m.start() + len(str(abrv))],
-                    ]
-                    for m in re.finditer(str(abrv), plaintext)
-                ]
+                for m in re.finditer(str(abrv), str(plaintext)):
+                    start, end = plaintext.initial_offsets(
+                        m.start(), m.start() + len(str(abrv))
+                    )
+                    if (
+                        start is not None
+                        and end is not None
+                        and (start, end) not in abb_short_forms[str(abrv)]
+                    ):
+                        abb_short_forms[str(abrv)].append((start, end,))
+
                 abb_expansions[str(abrv)] = str(abrv._.long_form)
                 x = plaintext.find(str(abrv._.long_form))
-                expanded_locations[str(abrv)] = [
-                    plaintext_to_tex_offset_map[x],
-                    plaintext_to_tex_offset_map[x + len(str(abrv._.long_form))],
-                ]
+                start, end = plaintext.initial_offsets(
+                    x, x + len(str(abrv._.long_form))
+                )
+                if start is not None and end is not None:
+                    expanded_locations[str(abrv)] = [start, end]
 
         # If you want to use another abbreviation detection method in addition to scispacy
         # you may implement it here and add its results to the three dictionaries.

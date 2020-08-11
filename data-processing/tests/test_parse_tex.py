@@ -6,25 +6,20 @@ from common.parse_tex import (
     DocumentclassExtractor,
     EquationExtractor,
     MacroExtractor,
-    PlaintextExtractor,
+    extract_plaintext,
 )
 from common.types import MacroDefinition
 from entities.sentences.extractor import SentenceExtractor
 
 
 def test_extract_plaintext_with_newlines():
-    extractor = PlaintextExtractor()
-    plaintext_segments = list(
-        extractor.parse(
-            "main.tex",
-            "This sentence is followed by a newline.\nThis is the second sentence.",
-        )
+    plaintext = extract_plaintext(
+        "main.tex",
+        "This sentence is followed by a newline.\nThis is the second sentence.",
     )
-
     # Earlier versions of the plaintext extractor inadvertently removed newlines, which are needed
     # to accurately perform downstream tasks like sentence boundary detection. This test makes sure
     # that the newlines are preserved.
-    plaintext = "".join([segment.text for segment in plaintext_segments])
     assert (
         plaintext
         == "This sentence is followed by a newline.\nThis is the second sentence."
@@ -32,23 +27,13 @@ def test_extract_plaintext_with_newlines():
 
 
 def test_extract_plaintext_with_equations():
-    extractor = PlaintextExtractor()
-    plaintext_segments = list(
-        extractor.parse(
-            "main.tex", "This sentence includes a symbol $x$ and equation $$y = x$$."
-        )
+    plaintext = extract_plaintext(
+        "main.tex", "This sentence includes a symbol $x$ and equation $$y = x$$."
     )
-
-    expected_equations = [
-        {"start": 32, "content_tex": "x"},
-        {"start": 49, "content_tex": "y = x"},
-    ]
-    for segment in plaintext_segments:
-        equations = segment.equations
-        for i, _ in enumerate(re.findall("\[\[math\]\]", segment.text)):
-            expected_equation = expected_equations.pop(0)
-            assert equations[i].start == expected_equation["start"]
-            assert equations[i].content_tex == expected_equation["content_tex"]
+    assert (
+        plaintext
+        == "This sentence includes a symbol <<equation-0>> and equation <<equation-1>>."
+    )
 
 
 def test_extract_sentences():
@@ -68,7 +53,7 @@ def test_extract_sentences():
 
     sentence2 = sentences[1]
     assert sentence2.start == 41
-    assert sentence2.end == 70
+    assert sentence2.end == 69
     assert sentences[1].text == "This is the second sentence."
 
 
@@ -78,7 +63,7 @@ def test_ignore_periods_in_equations():
         extractor.parse("main.tex", "This sentence has an $ equation. In $ the middle.")
     )
     assert len(sentences) == 1
-    assert sentences[0].text == "This sentence has an [[equation-0]] the middle."
+    assert sentences[0].text == "This sentence has an <<equation-0>> the middle."
 
 
 def test_sentence_splitting_end_points():
