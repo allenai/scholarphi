@@ -5,7 +5,7 @@ numpy
 opencv-python==3.4.8.29
 peewee
 psycopg2-binary
-pysbd
+pysbd==0.3.0
 reportlab
 requests
 TexSoup==0.2.0

@@ -156,10 +156,7 @@ class SentenceExtractor(EntityExtractor):
             plaintext_to_tex_offset_map[len(plaintext)] = last_segment.tex_end
 
         # Segment the plaintext. Return offsets for each setence relative to the TeX input
-        segmenter = pysbd.Segmenter(language="en", clean=False)
-
-        # Record the current length of the plain text to account for the extractor bug.
-        length_so_far_in_plain_text = 0
+        segmenter = pysbd.Segmenter(language="en", clean=False, char_span=True)
 
         # As each sentence is scanned, keep track of what sections and environments the
         # sentence appears within.
@@ -168,18 +165,16 @@ class SentenceExtractor(EntityExtractor):
         in_table = False
         in_itemize = False
 
-        for i, sentence in enumerate(segmenter.segment(plaintext)):
+        for i, span in enumerate(segmenter.segment(plaintext)):
             # The pysbd module has several open bugs and issues which are addressed below.
             # As of 3/23/20 we know the module will fail in the following ways:
             # 1. pysbd will not break up the sentence when it starts with a punctuation mark or space.
             #    ex: ". hello. world. hi."
             #    sol: check for sentences being longer than 1000 characters.
-            # 2. pysbd indexes are sometimes incorrectly set
-            #    ex: "hello. world. 1) item one. 2) item two. 3) item three" or "hello!!! world."
-            #    sol: set indexes manually using string search + sentence length
-            # 3. pysbd uses reserved characters for splitting sentences
+            # 2. pysbd uses reserved characters for splitting sentences
             #    ex: see PYSBD_RESERVED_CHARACTERS list.
             #    sol: throw a warning if the sentence contains any of these characters.
+            sentence = span.sent
             if len(sentence) > 1000:
                 logging.warning(  # pylint: disable=logging-not-lazy
                     "Exceptionally long sentence (length %d). This might indicate the sentence "
@@ -187,8 +182,8 @@ class SentenceExtractor(EntityExtractor):
                     len(sentence),
                 )
 
-            plaintext_start = plaintext.find(sentence, length_so_far_in_plain_text)
-            plaintext_end = plaintext_start + len(sentence)
+            plaintext_start = span.start
+            plaintext_end = span.end
             if (
                 plaintext_start not in plaintext_to_tex_offset_map
                 or plaintext_end not in plaintext_to_tex_offset_map
@@ -199,18 +194,9 @@ class SentenceExtractor(EntityExtractor):
                     sentence,
                 )
                 continue
-            if plaintext_start - 500 > length_so_far_in_plain_text:
-                logging.warning(  # pylint: disable=logging-not-lazy
-                    "Sentence boundary start for sentence %s was %d characters ahead of "
-                    + "the previous sentence, this might indicate the sentence extractor "
-                    + "failed to properly split text.",
-                    sentence,
-                    plaintext_start - length_so_far_in_plain_text,
-                )
 
             start = plaintext_to_tex_offset_map[plaintext_start]
             end = plaintext_to_tex_offset_map[plaintext_end]
-            length_so_far_in_plain_text = plaintext_end
             sentence_tex = tex[start:end]
 
             # Extract TeX around sentence to understand the environment in which it appears

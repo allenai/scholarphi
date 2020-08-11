@@ -1,16 +1,12 @@
 import re
 
-from common.colorize_tex import (
-    COLOR_MACROS,
-    COLOR_MACROS_BASE_MACROS,
-    COLOR_MACROS_LATEX_IMPORTS,
-    COLOR_MACROS_TEX_IMPORTS,
-    add_color_macros,
-    colorize_citations,
-    colorize_entities,
-    colorize_equation_tokens,
-)
-from common.types import Equation, FileContents, SerializableEntity, SerializableToken
+from common.colorize_tex import (COLOR_MACROS, COLOR_MACROS_BASE_MACROS,
+                                 COLOR_MACROS_LATEX_IMPORTS,
+                                 COLOR_MACROS_TEX_IMPORTS, add_color_macros,
+                                 colorize_citations, colorize_entities,
+                                 colorize_equation_tokens)
+from common.types import (Equation, FileContents, SerializableEntity,
+                          SerializableToken)
 
 COLOR_PATTERN = (
     r"\\scholarsetcolor\[rgb\]{[0-9.]+,[0-9.]+,[0-9.]+}"

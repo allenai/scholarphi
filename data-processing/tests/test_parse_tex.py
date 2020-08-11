@@ -63,12 +63,12 @@ def test_extract_sentences():
 
     sentence1 = sentences[0]
     assert sentence1.start == 0
-    assert sentence1.end == 40
+    assert sentence1.end == 41
     assert sentences[0].text == "This is the first argsentence."
 
     sentence2 = sentences[1]
     assert sentence2.start == 41
-    assert sentence2.end == 69
+    assert sentence2.end == 70
     assert sentences[1].text == "This is the second sentence."
 
 
@@ -91,7 +91,7 @@ def test_sentence_splitting_end_points():
     )
 
     assert len(sentences) == 4
-    sentence_end_points = [[0, 19], [20, 47], [48, 66], [67, 86]]
+    sentence_end_points = [[0, 20], [20, 48], [48, 67], [67, 86]]
     for i, [start, end] in enumerate(sentence_end_points):
         assert sentences[i].start == start
         assert sentences[i].end == end
@@ -107,13 +107,13 @@ def test_sentence_splitting_end_points_and_more_text():
     )
     assert len(sentences) == 8
     sentence_end_points = [
-        [0, 14],
-        [15, 25],
-        [26, 31],
-        [32, 40],
-        [41, 50],
-        [51, 60],
-        [61, 76],
+        [0, 15],
+        [15, 26],
+        [26, 32],
+        [32, 41],
+        [41, 51],
+        [51, 61],
+        [61, 77],
         [77, 83],
     ]
     for i, [start, end] in enumerate(sentence_end_points):
