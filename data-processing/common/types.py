@@ -161,6 +161,11 @@ class SerializableEntity(Entity):
     their contents (tex, content_tex). The unique identifier will be key in later stages of
     the pipeline for linking information about the entity with its hue from colorization and the
     bounding boxes detected for the entitiy.
+
+    To be serializable to CSV, an entity should generally only have fields of primitive types.
+    That said, the 'load_csv' method of the 'file_utils' module also provides utilities for
+    loading more complex data types, like optional fields, lists of strings, and mutable
+    strings. For a full list of permissible data types, see the 'load_csv' method.
     """
 
     tex_path: str

@@ -12,6 +12,7 @@ import shutil
 from typing import Any, Dict, Iterator, List, Optional, Type, TypeVar
 
 from common import directories
+from common.string import JournaledString
 from common.types import (
     ArxivId,
     BoundingBox,
@@ -116,6 +117,8 @@ def append_to_csv(csv_path: Path, data_obj: Dataclass, encoding: str = "utf-8") 
             for k, v in data_dict.items():
                 if v is None:
                     data_dict[k] = "<!NULL!>"
+                if isinstance(v, JournaledString):
+                    data_dict[k] = v.to_json()
             writer = csv.DictWriter(
                 # QUOTE_NONNUMERIC is used in both the writer and the reader to ensure that numbers
                 # (e.g., indexes, hues, positions) are decoded as numbers.

@@ -1,7 +1,8 @@
 from collections import UserString
 import dataclasses
 from dataclasses import dataclass
-from typing import Any, Dict, Optional, Tuple
+import logging
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 
 @dataclass
@@ -11,31 +12,42 @@ class Segment:
     changed: bool
 
 
-class MutableString(UserString):
+class JournaledString(UserString):  # pylint: disable=too-many-ancestors
     """
-    A string that can be transformed by replacing spans in that string. It preserves a record
-    of which spans have been replaced, supporting the mapping of character offsets in the
-    mutated version of the string to character offsets in the original string. This class was
+    A string that keeps a record of the edits made to it. It preserves a record
+    of which spans have been replaced. This allows the mapping of character offsets in a
+    changed copy of the string to character offsets in the original string. This class was
     created to help with finding locations in a string of TeX corresponding to entities that
     were found in a transformed version of that TeX.
 
     By subclassing 'UserString', the typical methods of a string (e.g., 'split', 'lower',
     equality comparisons, etc.) are all exposed to the client, who can use this as if it was
-    a typical immutable string. When the client want to make changes to this string that
+    a typical Python string. When the client want to make changes to this string that
     are tracked by the string, they should use the special methods defined on this class
-    (e.g., "edit").
+    (e.g., "edit"). Like Python strings, this one is also immutable (i.e., the special
+    methods return copies of the string, not the original string).
     """
 
-    def __init__(self, string: str) -> None:
-        self.segments = [Segment(string, string, False)]
-        """
-        Segments of the mutable string, each of which includes information about its initial
-        value, its current value, and marker indicating whether the segment has changed.
-        """
+    def __init__(self, data: Union[str, List[Segment]]) -> None:
+
+        if isinstance(data, str):
+            self.segments = [Segment(data, data, False)]
+            """
+            Segments of the mutable string, each of which includes information about its initial
+            value, its current value, and marker indicating whether the segment has changed.
+            """
+        elif isinstance(data, list) and all([isinstance(s, Segment) for s in data]):
+            self.segments = data
+        else:
+            logging.warning(  # pylint: disable=logging-not-lazy
+                "Could not create JournaledString from input data %s. "
+                + "Check that the input data has one of the supported types.",
+                data,
+            )
 
         # Set the initial internal contents of the UserString superclass to empty;
         # the string value will be computed dynamically from the segments (see below).
-        super(MutableString, MutableString).__init__(self, "")
+        super(JournaledString, JournaledString).__init__(self, "")
 
     @property  # type: ignore
     def data(self) -> str:  # type: ignore
@@ -56,8 +68,11 @@ class MutableString(UserString):
         " Get the initial value of the string, before it was mutated. "
         return "".join([s.initial for s in self.segments])
 
-    def edit(self, start: int, end: int, replacement: str) -> str:
-        " Replace a substring of the string (from 'start' to 'end') with a new substring. "
+    def edit(self, start: int, end: int, replacement: str) -> "JournaledString":
+        """
+        Replace a substring of the string (from 'start' to 'end') with a new substring.
+        Return a changed copy (do not modify this object).
+        """
 
         new_segments = []
         s_start = 0
@@ -126,8 +141,59 @@ class MutableString(UserString):
                 merged.append(s)
                 last_segment = s
 
-        self.segments = merged
-        return str(self)
+        return JournaledString(merged)
+
+    def substring(self, start: int, end: int) -> "JournaledString":
+        """
+        Get a substring of the journaled string, with pointers back to only the parts of the
+        initial substring that correspond to the substringed part of the string.
+        """
+
+        new_segments: List[Segment] = []
+        s_start = 0
+        for s in self.segments:
+
+            s_end = s_start + len(s.current)
+
+            # Simplest case: 'start' and 'end' surround a segment, so that entire segment
+            # will be included in the new string.
+            if start <= s_start and end >= s_end:
+                new_segments.append(s)
+
+            # Trickier cases: look for when 'start' and 'end' appear within a segment. In that
+            # case, the a new segment needs to be added with the initial and current strings truncated.
+            else:
+                initial = s.initial
+                current = s.current
+                overlaps = False
+
+                # Truncate right side if the end is within this segment.
+                if s_start < end < s_end:
+                    overlaps = True
+                    end_in_s = end - s_start
+                    current = current[:end_in_s]
+                    # Only truncate the initial string if it has not been changed. If it has
+                    # been changed, then it isn't clear which characters in the initial string the
+                    # truncated characters in the updated string correspond to, so conservatively
+                    # assume that the segment maps to the same initial segment.
+                    if not s.changed:
+                        initial = initial[:end_in_s]
+                # Truncate left side if the start is within this segment. Note that it might be
+                # possible for both the start ane end to lie within this segment, hence the shared
+                # 'current' and 'initial' variables.
+                if s_start < start < s_end:
+                    overlaps = True
+                    start_in_s = start - s_start
+                    current = current[start_in_s:]
+                    if not s.changed:
+                        initial = initial[start_in_s:]
+
+                if overlaps:
+                    new_segments.append(Segment(initial, current, s.changed))
+
+            s_start = s_end
+
+        return JournaledString(new_segments)
 
     def initial_offsets(
         self, start: int, end: int
@@ -180,7 +246,9 @@ class MutableString(UserString):
 
         return (None, None)
 
-    def current_offsets(self, start: int, end: int) -> Tuple[Optional[int], Optional[int]]:
+    def current_offsets(
+        self, start: int, end: int
+    ) -> Tuple[Optional[int], Optional[int]]:
         """
         Convert offsets expressed relative to the initial value of the string to offsets in the
         updated (current value of the) string. See the note in 'to_initial_offsets' about the
@@ -228,7 +296,6 @@ class MutableString(UserString):
 
         return (None, None)
 
-
     def to_json(self) -> Dict[str, Any]:
         return {
             "value": str(self),
@@ -236,13 +303,14 @@ class MutableString(UserString):
         }
 
     @staticmethod
-    def from_json(json: Dict[str, Any]) -> "MutableString":
+    def from_json(json: Dict[str, Any]) -> "JournaledString":
         try:
-            string = MutableString("invalid")
-            string.segments = [
-                Segment(str(s["initial"]), str(s["current"]), bool(s["changed"]))
-                for s in json["segments"]
-            ]
+            string = JournaledString(
+                [
+                    Segment(str(s["initial"]), str(s["current"]), bool(s["changed"]))
+                    for s in json["segments"]
+                ]
+            )
             return string
         except (KeyError, TypeError) as e:
             raise ValueError(
