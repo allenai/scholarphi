@@ -127,6 +127,7 @@ class EmbellishSentences(ArxivBatchCommand[Task, EmbellishedSentence]):
         with_equation_tex = sentence.sanitized_text
         with_symbol_tex = sentence.sanitized_text
         with_bag_of_symbols = sentence.sanitized_text
+        legacy_definition_input = sentence.sanitized_text
 
         for ei in equation_indexes_reversed:
 
@@ -172,6 +173,9 @@ class EmbellishSentences(ArxivBatchCommand[Task, EmbellishedSentence]):
                 f"[[FORMULA:{bag_of_symbols}]]",
             )
 
+            # Replace each equation with 'SYMBOL'.
+            legacy_definition_input = replace(legacy_definition_input, span.start, span.end, "SYMBOL")
+
         yield EmbellishedSentence(
             id_=sentence.id_,
             tex_path=sentence.tex_path,
@@ -193,7 +197,8 @@ class EmbellishSentences(ArxivBatchCommand[Task, EmbellishedSentence]):
             with_symbol_and_formula_tags=with_symbol_and_formula_tags,
             with_equation_tex=with_equation_tex,
             with_symbol_tex=with_symbol_tex,
-            with_bag_of_symbols=with_bag_of_symbols
+            with_bag_of_symbols=with_bag_of_symbols,
+            legacy_definition_input=legacy_definition_input
         )
 
     def save(self, item: Task, result: EmbellishedSentence) -> None:

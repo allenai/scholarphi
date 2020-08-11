@@ -13,9 +13,22 @@ class EmbellishedSentence(Sentence):
     Should share the same 'tex_path' and 'id_' as the sentence it was derived from.
     """
     with_symbol_and_formula_tags: str
+    " Symbols replaced with [[SYMBOL]], formulas replaced with [[FORMULA]]. "
+
     with_equation_tex: str
+    " All equations (including simple symbols) replaced with [[FORMULA:(<TeX>)]]. "
+
     with_symbol_tex: str
+    " All symbols replaced with [[SYMBOL:(<TeX>)]], all formulas replaced with [[FORMULA]]. "
+
     with_bag_of_symbols: str
+    """
+    All equations (including simple symbols) replaced with
+    [[FORMULA:(<set of TeX, one for each symbol found in the formula>)]]".
+    """
+
+    legacy_definition_input: str
+    " All equations replaced with 'SYMBOL'. "
 
 
 @dataclass(frozen=True)
