@@ -11,15 +11,15 @@ from spacy.matcher import Matcher
 from spacy.util import filter_spans
 from transformers import CONFIG_MAPPING, AutoConfig, AutoTokenizer, HfArgumentParser
 
-from .nlp_model.configuration import (
+from .model.configuration import (
     DataTrainingArguments,
     ModelArguments,
     TrainingArguments,
 )
-from .nlp_model.load_data import load_and_cache_example, load_and_cache_example_batch
-from .nlp_model.model import JointRoberta
-from .nlp_model.trainer import Trainer
-from .nlp_model.utils import (
+from .model.load_data import load_and_cache_example, load_and_cache_example_batch
+from .model.model import JointRoberta
+from .model.trainer import Trainer
+from .model.utils import (
     get_intent_labels,
     get_pos_labels,
     get_slot_labels,

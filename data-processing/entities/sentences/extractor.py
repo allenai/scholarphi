@@ -317,16 +317,6 @@ class SentenceExtractor(EntityExtractor):
             sanitized = sentence
             replace_patterns: List[Tuple[str, str]] = []
 
-            # Replace all formulas each with a single word "SYMBOL".
-            maths = []
-            for math in regex.findall(
-                r"\[\[math:id-[0-9]*:[A-Za-z0-9 \\\{\}\(\)\^&\*_.,\+:;\-=#]*\]\]",
-                sentence,
-                overlapped=False,
-            ):
-                replace_patterns.append((math, "SYMBOL"))
-                maths.append(math)
-
             # Replace citations with "CITATION".
             for citation in cite:
                 citation_text = extract_text_from_tex_group(citation)
@@ -376,7 +366,6 @@ class SentenceExtractor(EntityExtractor):
                 label=label,
                 ref=ref,
                 cite=cite,
-                symbol=maths,
                 url=url,
                 others=other_tex_macros,
             )

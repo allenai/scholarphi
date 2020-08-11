@@ -10,16 +10,14 @@ from common.commands.upload_entities import make_upload_entities_command
 from entities.common import create_entity_localization_command_sequence
 from scripts.pipelines import EntityPipeline, register_entity_pipeline
 
-from ..sentences.commands.find_entity_sentences import (
-    make_find_entity_sentences_command,
-)
-
 # from .colorize import get_definition_color_positions
-from .extractor import DetectDefinitions
+from .commands.detect_definitions import DetectDefinitions
+from .commands.embellish_sentences import EmbellishSentences
 from .types import Definiendum, Definition, TermReference
 from .upload import upload_definitions
 
 # Register directories for output from intermediate pipeline stages.
+directories.register("embellished-sentences")
 directories.register("detected-definitions")
 directories.register("sources-with-colorized-definitions")
 directories.register("compiled-sources-with-colorized-definitions")
@@ -40,6 +38,7 @@ upload_command = make_upload_entities_command(
 
 
 commands: CommandList = [
+    EmbellishSentences,
     DetectDefinitions,
     make_colorize_tex_command("definitions"),
     make_compile_tex_command("definitions"),
@@ -51,6 +50,6 @@ commands: CommandList = [
 
 
 definitions_pipeline = EntityPipeline(
-    "definitions", commands, optional_depends_on=["sentences"],
+    "definitions", commands, depends_on=["symbols", "sentences"],
 )
 register_entity_pipeline(definitions_pipeline)

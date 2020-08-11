@@ -13,8 +13,8 @@ from common.parse_tex import PhraseExtractor, get_containing_entity, overlaps
 from common.types import ArxivId, CharacterRange, FileContents, SerializableEntity
 from entities.sentences.types import Sentence
 
-from .nlp_tools import DefinitionDetectionModel
-from .types import Definiendum, Definition, TermReference
+from ..nlp import DefinitionDetectionModel
+from ..types import Definiendum, Definition, TermReference
 
 """
 Deployment TODOs:
@@ -238,12 +238,8 @@ class DetectDefinitions(
             for si, sentence in enumerate(sentences_ordered):
                 progress.update(1)
 
-                # Skip sentences that contain junk.
-                if not sentence.is_sentence or sentence.text == "":
-                    continue
-
                 # Extract features from raw text.
-                featurized_text = model.featurize(sentence.cleaned_text)
+                featurized_text = model.featurize(sentence.sanitized_text)
                 features.append(featurized_text)
                 sentences.append(sentence)
 
@@ -264,7 +260,7 @@ class DetectDefinitions(
                             continue
 
                         pairs = get_term_definition_pairs(
-                            s.cleaned_text, sentence_features, sentence_slots
+                            s.sanitized_text, sentence_features, sentence_slots
                         )
                         for pair in pairs:
 
