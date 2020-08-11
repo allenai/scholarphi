@@ -9,8 +9,18 @@ def create_sentence(tex: str, start: int) -> Sentence:
         tex_path="main.tex",
         id_=0,
         tex=tex,
-        context_tex="<extracted text>",
+        context_tex="<extracted tex>",
         text="<plaintext>",
+        sanitized_text="<sanitized>",
+        section_name="<current section>",
+        in_figure=False,
+        in_table=False,
+        in_itemize=False,
+        label=[],
+        ref=[],
+        cite=[],
+        url=[],
+        others=[],
     )
 
 
