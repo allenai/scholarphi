@@ -1,6 +1,6 @@
+from collections import UserString
 import dataclasses
 from dataclasses import dataclass
-import logging
 from typing import Any, Dict, Optional, Tuple
 
 
@@ -11,31 +11,57 @@ class Segment:
     changed: bool
 
 
-class MutableString:
+class MutableString(UserString):
     """
     A string that can be transformed by replacing spans in that string. It preserves a record
     of which spans have been replaced, supporting the mapping of character offsets in the
     mutated version of the string to character offsets in the original string. This class was
     created to help with finding locations in a string of TeX corresponding to entities that
     were found in a transformed version of that TeX.
+
+    By subclassing 'UserString', the typical methods of a string (e.g., 'split', 'lower',
+    equality comparisons, etc.) are all exposed to the client, who can use this as if it was
+    a typical immutable string. When the client want to make changes to this string that
+    are tracked by the string, they should use the special methods defined on this class
+    (e.g., "edit").
     """
 
     def __init__(self, string: str) -> None:
         self.segments = [Segment(string, string, False)]
+        """
+        Segments of the mutable string, each of which includes information about its initial
+        value, its current value, and marker indicating whether the segment has changed.
+        """
 
-    def __str__(self) -> str:
+        # Set the initial internal contents of the UserString superclass to empty;
+        # the string value will be computed dynamically from the segments (see below).
+        super(MutableString, MutableString).__init__(self, "")
+
+    @property  # type: ignore
+    def data(self) -> str:  # type: ignore
+        # 'UserString''s underlying representation of the string is in the 'data' attribute.
+        # To avoid having two sources of truth for the value of the string, the 'data'
+        # attribute is overwritten, so that the value of 'data' is always dynamically determined
+        # from the contents of the 'segments'.
         return "".join([s.current for s in self.segments])
 
+    @data.setter
+    def data(self, _: Any) -> None:
+        # This method prevents other methods in UserString from accidentally changing the
+        # data of the string in an unexpected way.
+        return
+
     @property
-    def initial_value(self) -> str:
+    def initial(self) -> str:
+        " Get the initial value of the string, before it was mutated. "
         return "".join([s.initial for s in self.segments])
 
-    def replace(self, start: int, end: int, string: str) -> str:
+    def edit(self, start: int, end: int, replacement: str) -> str:
         " Replace a substring of the string (from 'start' to 'end') with a new substring. "
 
         new_segments = []
         s_start = 0
-        replacement_inserted = False
+        edit_inserted = False
 
         for s in self.segments:
 
@@ -56,7 +82,7 @@ class MutableString:
                     s.initial[start_in_s:end_in_s],
                     s.initial[end_in_s:],
                 ]
-            # If the segment has been changed by a past call to 'replace', then assign
+            # If the segment has been changed by a past call to 'edit', then assign
             # 'initial' to the first split segment. While not semantically correct, it will
             # work out: these segments will be recombined into one at the end of this method.
             else:
@@ -68,10 +94,10 @@ class MutableString:
                 # Insert the updated string in the first segment where the replacement
                 # span overlaps. Other overlapping segments will be cleared out, and then
                 # merged into this one in a later step.
-                string if not replacement_inserted else "",
+                replacement if not edit_inserted else "",
                 s.current[end_in_s:],
             ]
-            replacement_inserted = True
+            edit_inserted = True
 
             # Save a new list of segments comprised of the sub-segments.
             new_segments.extend(
@@ -103,7 +129,7 @@ class MutableString:
         self.segments = merged
         return str(self)
 
-    def to_initial_offsets(
+    def initial_offsets(
         self, start: int, end: int
     ) -> Tuple[Optional[int], Optional[int]]:
         """
@@ -154,7 +180,7 @@ class MutableString:
 
         return (None, None)
 
-    def from_initial_offsets(self, start: int, end: int) -> Tuple[int, int]:
+    def current_offsets(self, start: int, end: int) -> Tuple[Optional[int], Optional[int]]:
         """
         Convert offsets expressed relative to the initial value of the string to offsets in the
         updated (current value of the) string. See the note in 'to_initial_offsets' about the
