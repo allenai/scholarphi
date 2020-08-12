@@ -13,7 +13,7 @@ requests
 scispacy==0.2.4
 spacy==2.2.4
 TexSoup==0.2.0
-torch==1.4.0
+torch==1.5.1
 tqdm==4.28.0
 transformers==2.11.0
 wandb==0.9.1
