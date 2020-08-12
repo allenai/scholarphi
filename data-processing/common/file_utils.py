@@ -192,7 +192,9 @@ def load_from_csv(
 
                     # Journaled strings should be loaded from JSON.
                     elif type_ == JournaledString:
-                        data[field.name] = JournaledString.from_json(json.loads(row[field.name]))
+                        data[field.name] = JournaledString.from_json(
+                            json.loads(row[field.name])
+                        )
                     # Rules for reading Booleans. Support casting of '0' and '1' or the strings
                     # 'True' and 'False'. 'True' and 'False' are the default output of CSV writer.
                     elif type_ == bool:
@@ -359,8 +361,18 @@ def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
     for c in loaded_symbol_children:
         parent_id = SymbolId(c.tex_path, c.equation_index, c.symbol_index)
         child_id = SymbolId(c.tex_path, c.equation_index, c.child_index)
-        child_symbol = symbols_by_id[child_id]
-        symbols_by_id[parent_id].children.append(child_symbol)
+        try:
+            child_symbol = symbols_by_id[child_id]
+            symbols_by_id[parent_id].children.append(child_symbol)
+        except KeyError:
+            logging.warning(  # pylint: disable=logging-not-lazy
+                "Could not load child symbol %s for symbol %s for paper %s. "
+                + "There may have been an error in the equation parser, like a failure to "
+                + "find tokens for the child symbol.",
+                child_id,
+                parent_id,
+                arxiv_id,
+            )
 
     return [
         SymbolWithId(symbol_id, symbol) for symbol_id, symbol in symbols_by_id.items()

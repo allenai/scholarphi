@@ -330,7 +330,7 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
     REPLACE_PATTERNS = {
         Pattern("backslash_newline", r"\\\\"): "\n",
         Pattern("space_macro", r"\\[ ,]"): " ",
-        Pattern("tilde", r"~"): " ",
+        Pattern("tilde", r"~"): " "
     }
 
     # Patterns of text the extractor should skip.
@@ -386,6 +386,11 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
     if keep_after > 0:
         plaintext = plaintext.edit(0, keep_after, "")
 
+    # Finally, remove adjacent periods (which interfere with the pysbd sentence
+    # segmenter), which may only be adjacent because the TeX grouping has been removed.
+    for match in reversed(list(re.finditer(r"[\s\.]*\.", str(plaintext)))):
+        plaintext = plaintext.edit(match.start(), match.end(), ".")
+
     return plaintext
 
 
@@ -409,7 +414,7 @@ class PhraseExtractor(EntityExtractor):
     @staticmethod
     def get_shingles(text: str, size: int) -> Iterator[Shingle]:
         tokens = []
-        for match in re.finditer(r"[\w-]+", text):
+        for match in re.finditer(r"[^\.!,?()\[\]{}\s]+", text):
             tokens.append((match.group(0), match.start(), match.end()))
         for i in range(0, len(tokens) - size + 1):
             shingle_tokens = tokens[i : i + size]

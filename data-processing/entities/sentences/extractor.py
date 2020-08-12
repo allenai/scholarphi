@@ -23,20 +23,8 @@ def get_context(tex: str, before: int, after: int) -> str:
     Given an original `tex` with `labelInTOC]{Convolutional layer}`, its corresponding
     context might be ` \caption[labelInTOC]{Convolutional layer}`.
     """
-    try:
-        context_before = " ".join(
-            regex.search(r"([^\n\r]*)(?:\n|\r|\r\n)([^\n\r]*?)$", tex[:before]).groups()
-        )
-    except AttributeError:
-        context_before = tex[:before]
-
-    try:
-        context_after = " ".join(
-            regex.search(r"^([^\n\r]*?)(?:\n|\r|\r\n)([^\n\r]*)", tex[after:]).groups()
-        )
-    except AttributeError:
-        context_after = tex[after:]
-
+    context_before = " ".join(tex[:before].splitlines()[-2:])
+    context_after = " ".join(tex[after:].splitlines()[:2])
     return context_before + tex[before:after] + context_after
 
 
@@ -80,7 +68,9 @@ class SentenceExtractor(EntityExtractor):
             # As of 3/23/20 we know the module will fail in the following ways:
             # 1. pysbd will not break up the sentence when it starts with a punctuation mark or space.
             #    ex: ". hello. world. hi."
-            #    sol: check for sentences being longer than 1000 characters.
+            #    sol: check for sentences being longer than 1000 characters. Also, see the
+            #         plaintext extraction function, which attempts to clean up the text so that
+            #         consecutive periods are removed before segmentation.
             # 2. pysbd uses reserved characters for splitting sentences
             #    ex: see PYSBD_RESERVED_CHARACTERS list.
             #    sol: throw a warning if the sentence contains any of these characters.
@@ -244,14 +234,17 @@ class SentenceExtractor(EntityExtractor):
 
             # Substitute patterns with replacements.
             for pattern, replacement in replace_patterns:
-                last_match_offset = 0
-                while last_match_offset != -1:
-                    match_offset = sanitized.find(pattern, last_match_offset)
-                    if match_offset != -1:
-                        sanitized = sanitized.edit(
-                            match_offset, match_offset + len(pattern), replacement
-                        )
-                    last_match_offset = match_offset
+                if pattern == "":
+                    continue
+                match_start = 0
+                while True:
+                    match_offset = sanitized.find(pattern, match_start)
+                    if match_offset == -1:
+                        break
+                    sanitized = sanitized.edit(
+                        match_offset, match_offset + len(pattern), replacement
+                    )
+                    match_start = match_offset + len(pattern)
 
             yield Sentence(
                 id_=str(i),
