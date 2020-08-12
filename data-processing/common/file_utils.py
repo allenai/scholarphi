@@ -6,6 +6,7 @@ used by multiple scripts or modules.
 import ast
 import csv
 import dataclasses
+import json
 import logging
 import os
 import shutil
@@ -118,7 +119,7 @@ def append_to_csv(csv_path: Path, data_obj: Dataclass, encoding: str = "utf-8") 
                 if v is None:
                     data_dict[k] = "<!NULL!>"
                 if isinstance(v, JournaledString):
-                    data_dict[k] = v.to_json()
+                    data_dict[k] = json.dumps(v.to_json())
             writer = csv.DictWriter(
                 # QUOTE_NONNUMERIC is used in both the writer and the reader to ensure that numbers
                 # (e.g., indexes, hues, positions) are decoded as numbers.
@@ -189,6 +190,9 @@ def load_from_csv(
                     if is_optional and row[field.name] == "<!NULL!>":
                         data[field.name] = None
 
+                    # Journaled strings should be loaded from JSON.
+                    elif type_ == JournaledString:
+                        data[field.name] = JournaledString.from_json(json.loads(row[field.name]))
                     # Rules for reading Booleans. Support casting of '0' and '1' or the strings
                     # 'True' and 'False'. 'True' and 'False' are the default output of CSV writer.
                     elif type_ == bool:
@@ -215,10 +219,10 @@ def load_from_csv(
                             field.name,
                             field.type,
                         )
-                except ValueError as e:
+                except (ValueError, json.JSONDecodeError) as e:
                     logging.warning(  # pylint: disable=logging-not-lazy
                         "Could not read value '%s' for field '%s' of expected type %s from CSV. "
-                        + "ValueError: %s. This row will be skipped. This value probably had an "
+                        + "Error: %s. This row will be skipped. This value probably had an "
                         + "invalid type when the data for the row was created.",
                         row[field.name],
                         field.name,

@@ -45,10 +45,7 @@ def extract_text_from_tex_group(tex_unit: str) -> str:
 
 
 class SentenceExtractor(EntityExtractor):
-    def __init__(
-        self,
-        from_named_sections_only: bool = True,
-    ) -> None:
+    def __init__(self, from_named_sections_only: bool = True,) -> None:
         """
         Initialize sentence extractor. Optionally a format for the equations that are in the
         sentence can be specified with 'equation_format'. If the equation format is set to
@@ -90,9 +87,10 @@ class SentenceExtractor(EntityExtractor):
             start, end = plaintext.initial_offsets(span.start, span.end)
             if start is None or end is None:
                 logging.warning(  # pylint: disable=logging-not-lazy
-                    "The span bounds (%d, %d) from pysbd for a sentence could not be mapped " +
-                    "back to character offsets in the LaTeX for an unknown reason.",
-                    span.start, span.end
+                    "The span bounds (%d, %d) from pysbd for a sentence could not be mapped "
+                    + "back to character offsets in the LaTeX for an unknown reason.",
+                    span.start,
+                    span.end,
                 )
                 continue
             sentence_tex = tex[start:end]
@@ -248,18 +246,22 @@ class SentenceExtractor(EntityExtractor):
             for pattern, replacement in replace_patterns:
                 last_match_offset = 0
                 while last_match_offset != -1:
-                    i = sanitized.find(pattern, last_match_offset)
-                    if i != -1:
-                        sanitized = sanitized.edit(i, i + len(pattern), replacement)
-                    last_match_offset = i
+                    match_offset = sanitized.find(pattern, last_match_offset)
+                    if match_offset != -1:
+                        sanitized = sanitized.edit(
+                            match_offset, match_offset + len(pattern), replacement
+                        )
+                    last_match_offset = match_offset
 
             yield Sentence(
                 id_=str(i),
                 tex_path=tex_path,
                 start=start,
                 end=end,
-                text=sentence,
-                sanitized_text=sanitized,
+                text=str(sentence),
+                text_journal=sentence,
+                sanitized=str(sanitized),
+                sanitized_journal=sanitized,
                 tex=sentence_tex,
                 context_tex=context_tex,
                 section_name=section_name,

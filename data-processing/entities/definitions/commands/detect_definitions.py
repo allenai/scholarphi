@@ -271,13 +271,42 @@ class DetectDefinitions(
                             definiendum_id = (
                                 f"definiendum-{tex_path}-{definition_index}"
                             )
-                            definiendum_text = pair.term_text
-                            definiendum_start = s.start + pair.term_start
-                            definiendum_end = s.start + pair.term_end
-
                             definition_id = f"definition-{tex_path}-{definition_index}"
-                            definition_start = s.start + pair.definition_start
-                            definition_end = s.start + pair.definition_end
+                            definiendum_text = pair.term_text
+
+                            # Map definiendum and definition start and end positions back to
+                            # their original positions in the TeX.
+                            offsets = s.legacy_definition_input_journal.initial_offsets(
+                                pair.term_start, pair.term_end
+                            )
+                            if offsets[0] is None or offsets[1] is None:
+                                logging.warning(  # pylint: disable=logging-not-lazy
+                                    "Could not find offsets of definiendum %s in original TeX "
+                                    + "(from sentence %s, file %s, arXiv ID %s). Definiendum will not be saved.",
+                                    pair.term_text,
+                                    s.id_,
+                                    s.tex_path,
+                                    item.arxiv_id,
+                                )
+                                continue
+                            definiendum_start = s.start + offsets[0]
+                            definiendum_end = s.start + offsets[1]
+
+                            offsets = s.legacy_definition_input_journal.initial_offsets(
+                                pair.definition_start, pair.definition_end
+                            )
+                            if offsets[0] is None or offsets[1] is None:
+                                logging.warning(  # pylint: disable=logging-not-lazy
+                                    "Could not find offsets of definition %s in original TeX "
+                                    + "(from sentence %s, file %s, arXiv ID %s). Definiendum will not be saved.",
+                                    pair.definition_text,
+                                    s.id_,
+                                    s.tex_path,
+                                    item.arxiv_id,
+                                )
+                                continue
+                            definition_start = s.start + offsets[0]
+                            definition_end = s.start + offsets[1]
 
                             try:
                                 tex = item.tex_by_file[tex_path]

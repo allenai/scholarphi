@@ -1,17 +1,16 @@
-from collections import defaultdict
-from dataclasses import dataclass
 import logging
 import os.path
 import re
+from collections import defaultdict
+from dataclasses import dataclass
 from typing import Dict, Iterator, List, Tuple
 
-from common.commands.base import ArxivBatchCommand
 from common import directories, file_utils
+from common.commands.base import ArxivBatchCommand
 from common.types import ArxivId, CharacterRange, Equation, Symbol
 from entities.sentences.types import Sentence
 
 from ..types import EmbellishedSentence
-
 
 TexPath = str
 EquationIndex = int
@@ -103,14 +102,14 @@ class EmbellishSentences(ArxivBatchCommand[Task, EmbellishedSentence]):
         equations = item.equations
         symbols = item.symbols
 
-        pattern = r"\[\[equation-(\d+)\]\]"
+        pattern = r"<<equation-(\d+)>>"
         regex = re.compile(pattern)
 
         equation_spans: Dict[int, CharacterRange] = {}
         equation_indexes_reversed: List[int] = []
         start = 0
         while True:
-            match = regex.search(sentence.sanitized_text, start)
+            match = regex.search(sentence.sanitized, start)
             if match is None:
                 break
             start = match.end()
@@ -123,11 +122,11 @@ class EmbellishSentences(ArxivBatchCommand[Task, EmbellishedSentence]):
         # Replace equations with more helpful representations.
         # Replace equations in reverse so that earlier replacements don't affect the character
         # offsets for the later replacements.
-        with_symbol_and_formula_tags = sentence.sanitized_text
-        with_equation_tex = sentence.sanitized_text
-        with_symbol_tex = sentence.sanitized_text
-        with_bag_of_symbols = sentence.sanitized_text
-        legacy_definition_input = sentence.sanitized_text
+        with_symbol_and_formula_tags = sentence.sanitized_journal
+        with_equation_tex = sentence.sanitized_journal
+        with_symbol_tex = sentence.sanitized_journal
+        with_bag_of_symbols = sentence.sanitized_journal
+        legacy_definition_input = sentence.sanitized_journal
 
         for ei in equation_indexes_reversed:
 
@@ -136,45 +135,38 @@ class EmbellishSentences(ArxivBatchCommand[Task, EmbellishedSentence]):
             span = equation_spans[ei]
 
             # Replace equation with its TeX
-            with_equation_tex = replace(
-                with_equation_tex,
-                span.start,
-                span.end,
-                f"[[FORMULA:{equation.content_tex}]]",
+            with_equation_tex = with_equation_tex.edit(
+                span.start, span.end, f"[[FORMULA:{equation.content_tex}]]",
             )
 
             # Replace equations with tags indicating whether each equation is
             # a symbol or a formula, and additionally with values for the symbols.
             is_symbol = count_top_level_symbols(equation_symbols) == 1
             if is_symbol:
-                with_symbol_and_formula_tags = replace(
-                    with_symbol_and_formula_tags, span.start, span.end, "[[SYMBOL]]"
+                with_symbol_and_formula_tags = with_symbol_and_formula_tags.edit(
+                    span.start, span.end, "[[SYMBOL]]"
                 )
-                with_symbol_tex = replace(
-                    with_symbol_tex,
-                    span.start,
-                    span.end,
-                    f"[[SYMBOL({equation.tex.strip()})]]",
+                with_symbol_tex = with_symbol_tex.edit(
+                    span.start, span.end, f"[[SYMBOL({equation.tex.strip()})]]",
                 )
             else:
-                with_symbol_and_formula_tags = replace(
-                    with_symbol_and_formula_tags, span.start, span.end, "[[FORMULA]]"
+                with_symbol_and_formula_tags = with_symbol_and_formula_tags.edit(
+                    span.start, span.end, "[[FORMULA]]"
                 )
-                with_symbol_tex = replace(
-                    with_symbol_tex, span.start, span.end, f"[[FORMULA]]"
+                with_symbol_tex = with_symbol_tex.edit(
+                    span.start, span.end, f"[[FORMULA]]"
                 )
 
             # Replace each equation with a bag of the symbols that it contains.
             bag_of_symbols = {s.tex.strip() for s in equation_symbols}
-            with_bag_of_symbols = replace(
-                with_bag_of_symbols,
-                span.start,
-                span.end,
-                f"[[FORMULA:{bag_of_symbols}]]",
+            with_bag_of_symbols = with_bag_of_symbols.edit(
+                span.start, span.end, f"[[FORMULA:{bag_of_symbols}]]",
             )
 
             # Replace each equation with 'SYMBOL'.
-            legacy_definition_input = replace(legacy_definition_input, span.start, span.end, "SYMBOL")
+            legacy_definition_input = legacy_definition_input.edit(
+                span.start, span.end, "SYMBOL"
+            )
 
         yield EmbellishedSentence(
             id_=sentence.id_,
@@ -184,7 +176,9 @@ class EmbellishSentences(ArxivBatchCommand[Task, EmbellishedSentence]):
             tex=sentence.tex,
             context_tex=sentence.context_tex,
             text=sentence.text,
-            sanitized_text=sentence.sanitized_text,
+            text_journal=sentence.text_journal,
+            sanitized=sentence.sanitized,
+            sanitized_journal=sentence.sanitized_journal,
             section_name=sentence.section_name,
             in_figure=sentence.in_figure,
             in_table=sentence.in_table,
@@ -194,11 +188,16 @@ class EmbellishSentences(ArxivBatchCommand[Task, EmbellishedSentence]):
             cite=sentence.cite,
             url=sentence.url,
             others=sentence.others,
-            with_symbol_and_formula_tags=with_symbol_and_formula_tags,
-            with_equation_tex=with_equation_tex,
-            with_symbol_tex=with_symbol_tex,
-            with_bag_of_symbols=with_bag_of_symbols,
-            legacy_definition_input=legacy_definition_input
+            with_symbol_and_formula_tags=str(with_symbol_and_formula_tags),
+            with_symbol_and_formula_tags_journal=with_symbol_and_formula_tags,
+            with_equation_tex=str(with_equation_tex),
+            with_equation_tex_journal=with_equation_tex,
+            with_symbol_tex=str(with_symbol_tex),
+            with_symbol_tex_journal=with_symbol_tex,
+            with_bag_of_symbols=str(with_bag_of_symbols),
+            with_bag_of_symbols_journal=with_bag_of_symbols,
+            legacy_definition_input=str(legacy_definition_input),
+            legacy_definition_input_journal=legacy_definition_input,
         )
 
     def save(self, item: Task, result: EmbellishedSentence) -> None:
