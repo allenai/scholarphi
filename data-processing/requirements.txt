@@ -1,29 +1,26 @@
 awscli
 beautifulsoup4==4.8.0
 lxml
+nltk==3.4.5
 numpy
 opencv-python==3.4.8.29
 peewee
 psycopg2-binary
 pysbd==0.3.0
+pytorch-crf==0.7.2
 reportlab
 requests
-TexSoup==0.2.0
-nltk==3.4.5
 scispacy==0.2.4
-
-# SciSpacy models. See other model URLs at https://allenai.github.io/scispacy/
-https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.2.4/en_core_sci_sm-0.2.4.tar.gz
-https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.2.4/en_core_sci_md-0.2.4.tar.gz
-
-# dependencies related to  nlp model in entities/definitions
+spacy==2.2.4
+TexSoup==0.2.0
+torch==1.4.0
+tqdm==4.28.0
 transformers==2.11.0
 wandb==0.9.1
-pytorch-crf==0.7.2
-torch==1.4.0
-spacy==2.2.4
-scispacy==0.2.4
-tqdm==4.28.0
+
+# SciSpacy models. See URLs for all available models at https://allenai.github.io/scispacy/.
+https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.2.4/en_core_sci_sm-0.2.4.tar.gz
+https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.2.4/en_core_sci_md-0.2.4.tar.gz
 
 # Development dependencies
 black
