@@ -137,7 +137,6 @@ if __name__ == "__main__":
             + "If specifying multiple entity types, use the format '--entities <type1> <type2> "
             + "without an equal sign after '--entities'."
         ),
-        default=["citations", "sentences", "symbols"],
         choices=ENTITY_NAMES,
         nargs="+",
     )
