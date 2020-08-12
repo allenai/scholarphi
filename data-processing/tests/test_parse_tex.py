@@ -4,6 +4,7 @@ from common.parse_tex import (
     DocumentclassExtractor,
     EquationExtractor,
     MacroExtractor,
+    PhraseExtractor,
     extract_plaintext,
 )
 from common.types import MacroDefinition
@@ -39,6 +40,25 @@ def test_extract_plaintext_remove_comments():
     assert plaintext == "Text"
 
 
+def test_extract_phrases():
+    extractor = PhraseExtractor(["word", "two-token phrase"])
+    phrases = list(
+        extractor.parse(
+            "main.tex", "This sentence contains word and a two-token phrase."
+        )
+    )
+
+    phrase1 = phrases[0]
+    assert phrase1.start == 23
+    assert phrase1.end == 27
+    assert phrase1.text == "word"
+
+    phrase2 = phrases[1]
+    assert phrase2.start == 34
+    assert phrase2.end == 50
+    assert phrase2.text == "two-token phrase"
+
+
 def test_extract_sentences():
     extractor = SentenceExtractor(from_named_sections_only=False)
     sentences = list(
@@ -52,12 +72,12 @@ def test_extract_sentences():
     sentence1 = sentences[0]
     assert sentence1.start == 0
     assert sentence1.end == 41
-    assert sentences[0].text == "This is the first argsentence."
+    assert sentence1.text == "This is the first argsentence."
 
     sentence2 = sentences[1]
     assert sentence2.start == 41
     assert sentence2.end == 69
-    assert sentences[1].text == "This is the second sentence."
+    assert sentence2.text == "This is the second sentence."
 
 
 def test_ignore_periods_in_equations():

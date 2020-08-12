@@ -409,7 +409,7 @@ class PhraseExtractor(EntityExtractor):
     @staticmethod
     def get_shingles(text: str, size: int) -> Iterator[Shingle]:
         tokens = []
-        for match in re.finditer(r"\S+", text):
+        for match in re.finditer(r"[\w-]+", text):
             tokens.append((match.group(0), match.start(), match.end()))
         for i in range(0, len(tokens) - size + 1):
             shingle_tokens = tokens[i : i + size]
@@ -438,7 +438,7 @@ class PhraseExtractor(EntityExtractor):
                         cands.append(Shingle(cand.text[:-1], cand.start, cand.end))
                 final_cands = set(cands)
                 for cand in final_cands:
-                    if cand in self.phrases:
+                    if cand.text in self.phrases:
                         start, end = plaintext.initial_offsets(cand.start, cand.end)
                         if start is not None and end is not None:
                             yield Phrase(
