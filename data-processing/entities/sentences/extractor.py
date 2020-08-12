@@ -1,6 +1,5 @@
 import logging
-from enum import Enum
-from typing import Iterator, List, Tuple, Optional
+from typing import Iterator, List, Tuple
 
 import pysbd
 import regex
@@ -11,7 +10,6 @@ from common.parse_tex import (
     check_for_pysbd_reserved_characters,
 )
 
-from common.types import Symbol
 from .types import Sentence
 
 
@@ -46,23 +44,9 @@ def extract_text_from_tex_group(tex_unit: str) -> str:
     return tex_unit[tex_unit.find("{") + 1 : tex_unit.find("}")]
 
 
-class EquationFormat(Enum):
-    " Format of equation information to include in the extracted sentences. "
-    OMIT = 1
-    " Replace the equation with a placeholder. "
-    ID = 2
-    " Include the equation ID. "
-    BAG_OF_SYMBOLS = 3
-    " List all symbols used in the equation. "
-    LITERAL = 4
-    " Include the literal text of the equation."
-
-
 class SentenceExtractor(EntityExtractor):
     def __init__(
         self,
-        equation_format: EquationFormat = EquationFormat.OMIT,
-        symbols: Optional[List[Symbol]] = None,
         from_named_sections_only: bool = True,
     ) -> None:
         """
@@ -70,8 +54,6 @@ class SentenceExtractor(EntityExtractor):
         sentence can be specified with 'equation_format'. If the equation format is set to
         a bag of symbols, then a list of all symbols used must be passed in as 'symbols'.
         """
-        self.equation_format = equation_format
-        self.symbols = symbols
         self.from_named_sections_only = from_named_sections_only
 
     """
@@ -268,7 +250,7 @@ class SentenceExtractor(EntityExtractor):
                 while last_match_offset != -1:
                     i = sanitized.find(pattern, last_match_offset)
                     if i != -1:
-                        sanitized = sanitized.edit(i, len(pattern), replacement)
+                        sanitized = sanitized.edit(i, i + len(pattern), replacement)
                     last_match_offset = i
 
             yield Sentence(
