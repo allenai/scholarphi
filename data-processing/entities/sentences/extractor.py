@@ -105,14 +105,6 @@ class SentenceExtractor(EntityExtractor):
             # 2. pysbd uses reserved characters for splitting sentences
             #    ex: see PYSBD_RESERVED_CHARACTERS list.
             #    sol: throw a warning if the sentence contains any of these characters.
-            sentence = span.sent.rstrip()
-            if len(sentence) > 1000:
-                logging.warning(  # pylint: disable=logging-not-lazy
-                    "Exceptionally long sentence (length %d). This might indicate the sentence "
-                    + "extractor failed to properly split text into sentences.",
-                    len(sentence),
-                )
-
             start, end = plaintext.initial_offsets(span.start, span.end)
             if start is None or end is None:
                 logging.warning(  # pylint: disable=logging-not-lazy
@@ -121,8 +113,21 @@ class SentenceExtractor(EntityExtractor):
                     span.start, span.end
                 )
                 continue
-
             sentence_tex = tex[start:end]
+
+            # Save the sentence as a journaled string, which will allow the mapping of the cleaned
+            # sentence text to the original TeX.
+            sentence = plaintext.substring(span.start, span.end)
+            if len(sentence) > 1000:
+                logging.warning(  # pylint: disable=logging-not-lazy
+                    "Exceptionally long sentence (length %d). This might indicate the sentence "
+                    + "extractor failed to properly split text into sentences.",
+                    len(sentence),
+                )
+            # Strip whitespace from the end of the sentence.
+            space = regex.search(r"\s+$", str(sentence))
+            if space is not None:
+                sentence = sentence.edit(space.start(), len(sentence), "")
 
             # Extract TeX around sentence to understand the environment in which it appears
             context_tex = get_context(tex, start, end)
@@ -257,9 +262,14 @@ class SentenceExtractor(EntityExtractor):
                     if reference.lower().startswith("eq"):
                         replace_patterns.append((r, "EQUATION"))
 
-            # substtitue with detected patterns
+            # Substitute patterns with replacements.
             for pattern, replacement in replace_patterns:
-                sanitized = sanitized.replace(pattern, replacement)
+                last_match_offset = 0
+                while last_match_offset != -1:
+                    i = sanitized.find(pattern, last_match_offset)
+                    if i != -1:
+                        sanitized = sanitized.edit(i, len(pattern), replacement)
+                    last_match_offset = i
 
             yield Sentence(
                 id_=str(i),

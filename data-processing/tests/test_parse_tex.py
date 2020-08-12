@@ -1,5 +1,3 @@
-import re
-
 from common.parse_tex import (
     BeginDocumentExtractor,
     BibitemExtractor,
@@ -34,6 +32,11 @@ def test_extract_plaintext_with_equations():
         plaintext
         == "This sentence includes a symbol <<equation-0>> and equation <<equation-1>>."
     )
+
+
+def test_extract_plaintext_remove_comments():
+    plaintext = extract_plaintext("main.tex", "% comment\nText% comment\n% comment")
+    assert plaintext == "Text"
 
 
 def test_extract_sentences():
