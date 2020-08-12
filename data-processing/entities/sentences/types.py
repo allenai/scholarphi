@@ -7,14 +7,17 @@ from common.types import SerializableEntity
 
 @dataclass(frozen=True)
 class Sentence(SerializableEntity):
-    text: JournaledString
+    text: str
+    text_journal: JournaledString
+    sanitized: str
+    sanitized_journal: JournaledString
     """
-    'text' is specified as a journaled string rather than a string so that the history of how
-    the TeX has been mutated into the text can be saved with the string. This is important
-    for mapping back entities found in the sentence text back to locations in the original TeX.
+    Both 'text' and 'sanitized' are stored in plaintext format, and as a journal that tracks the
+    transformations applied to the TeX to turn it into the sentence. This allows later consumers
+    of sentences to map back character offsets in each to precise character offsets in the original
+    TeX, even if they appear in the middle of the string.
     """
 
-    sanitized_text: JournaledString
     section_name: Optional[str]
     in_figure: bool
     in_table: bool
