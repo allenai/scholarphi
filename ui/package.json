@@ -8,12 +8,8 @@
     "@material-ui/icons": "^4.5.1",
     "axios": "^0.19.0",
     "classnames": "^2.2.6",
-<<<<<<< HEAD
     "dompurify": "^2.0.7",
     "katex": "^0.11.1",
-=======
-    "dompurify": "^2.0.12",
->>>>>>> ca4fcbe... update
     "lodash": "^4.17.15",
     "mathjax": "^3.0.0",
     "mathjax-full": "^3.0.0",
