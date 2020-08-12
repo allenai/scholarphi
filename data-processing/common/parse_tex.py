@@ -362,16 +362,29 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
     patterns = list(REPLACE_PATTERNS.keys()) + SKIP_PATTERNS
     scanner = scan_tex(str(plaintext), patterns, include_unmatched=True)
 
-    # Iterate over all TeX. If a token is supposed to be replaced, replace it and yield the
-    # span with the replaced text. If it's supposed to be ignored, discard it. Otherwise, yield
-    # a new span with the TeX as plaintext.
+    # If the scanner yields a span of text, the span is either:
+    # 1. a pattern to skip
+    # 2. a pattern to replace
+    # 3. some other uncommented text
+    # If some span of text is not returned by the scanner, then it is a comment,
+    # or some other text that the scanner ignores. That text should be removed from the
+    # plain text as if it was a pattern to skip.
+    # Iterate over matches in reverse so as not to mess up character offsets for
+    # earlier matches when replacing TeX in the string.
+    keep_after = len(plaintext)
     for match in reversed(list(scanner)):
-        if match.pattern in SKIP_PATTERNS:
-            plaintext = plaintext.edit(match.start, match.end, "")
+        if match.end < keep_after:
+            plaintext = plaintext.edit(match.end, keep_after, "")
+            keep_after = match.end
         if match.pattern in REPLACE_PATTERNS:
             plaintext = plaintext.edit(
                 match.start, match.end, REPLACE_PATTERNS[match.pattern]
             )
+        if match.pattern not in SKIP_PATTERNS:
+            keep_after = match.start
+
+    if keep_after > 0:
+        plaintext = plaintext.edit(0, keep_after, "")
 
     return plaintext
 

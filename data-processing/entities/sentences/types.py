@@ -9,7 +9,7 @@ from common.types import SerializableEntity
 class Sentence(SerializableEntity):
     text: JournaledString
     """
-    'text' is specified as a mutable string rather than a string so that the history of how
+    'text' is specified as a journaled string rather than a string so that the history of how
     the TeX has been mutated into the text can be saved with the string. This is important
     for mapping back entities found in the sentence text back to locations in the original TeX.
     """
