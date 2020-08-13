@@ -10,6 +10,7 @@
     "classnames": "^2.2.6",
     "dompurify": "^2.0.7",
     "katex": "^0.11.1",
+    "labella": "^1.1.4",
     "lodash": "^4.17.15",
     "mathjax": "^3.0.0",
     "mathjax-full": "^3.0.0",

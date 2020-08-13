@@ -6,6 +6,7 @@ import EntityAnnotation from "./EntityAnnotation";
 import EntityCreationCanvas from "./EntityCreationCanvas";
 import { AreaSelectionMethod } from "./EntityCreationToolbar";
 import EntityPageMask from "./EntityPageMask";
+import EquationDiagram from "./EquationDiagram";
 import SearchPageMask from "./SearchPageMask";
 import * as selectors from "./selectors";
 import { GlossStyle } from "./settings";
@@ -50,7 +51,7 @@ interface Props {
   entityCreationEnabled: boolean;
   entityCreationType: KnownEntityType;
   entityCreationAreaSelectionMethod: AreaSelectionMethod;
-  formulaDiagramsEnabled: boolean;
+  equationDiagramsEnabled: boolean;
   copySentenceOnClick: boolean;
   handleSelectEntityAnnotation: (
     entityId: string,
@@ -64,9 +65,13 @@ interface Props {
 }
 
 /**
- * This component is an overlay, mounted on top PDF pages, which are *not* under the control of
- * React. Because the parent page elements may appear or disappear at any time, this component
- * has a unique structure. Its life cycle is:
+ * This component is an overlay, mounted on top PDF pages. If a component needs to be
+ * placed on a page in such a way that it scrolls with that page, it might be a good
+ * idea to add it to this component.
+ *
+ * It should be noted that the PDF pages that this component renders into are *not* under
+ * the control of React. Because the parent page elements may appear or disappear at any
+ * time, this component has a unique life cycle:
  *
  * 1. Constructor: create element
  * 2. componentDidMount: append element to PDF page (which is not controlled by React).
@@ -137,7 +142,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
       entityCreationEnabled,
       entityCreationType,
       entityCreationAreaSelectionMethod,
-      formulaDiagramsEnabled,
+      equationDiagramsEnabled: formulaDiagramsEnabled,
       copySentenceOnClick,
       handleAddPaperToLibrary,
       handleCreateEntity,
@@ -370,6 +375,18 @@ class PageOverlay extends React.PureComponent<Props, {}> {
             handleCreateEntity={handleCreateEntity}
           />
         ) : null}
+        {formulaDiagramsEnabled &&
+          entities !== null &&
+          selectedEntities
+            .filter(isEquation)
+            .map((e) => (
+              <EquationDiagram
+                key={e.id}
+                pageView={pageView}
+                entities={entities}
+                equation={e}
+              />
+            ))}
       </>,
       this._element
     );
