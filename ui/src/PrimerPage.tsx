@@ -1,4 +1,4 @@
-import CircularProgress from "@material-ui/core/CircularProgress";
+import LinearProgress from "@material-ui/core/LinearProgress";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Entities, Pages } from "./state";
@@ -77,11 +77,17 @@ class PrimerPage extends React.PureComponent<Props> {
           explanations of them. To see what can be clicked, press the "Show
           Underlines" button on the top-right side of the toolbar.
         </p>
-        <p>Here's an overview of the terms and explanations from this paper:</p>
+
         {entities === null ? (
-          <CircularProgress />
+          <>
+            <p>Assembling a list of explanations...</p>
+            <LinearProgress />
+          </>
         ) : (
           <>
+            <p>
+              Here's an overview of terms from this paper and their definitions:
+            </p>
             {terms.length > 0 ? (
               <>
                 <p className="primer-page__header">
