@@ -1,9 +1,17 @@
 /**
+ * Equation diagram.
+ */
+.equation-diagram {
+  z-index: @base-annotation-z-index + 1;
+}
+
+/**
  * Features (areas of interest) in diagrams.
  */
 rect.equation-diagram__feature {
-  stroke: none;
-  fill: blue;
+  stroke: black;
+  stroke-width: 1;
+  fill: none;
   opacity: 0;
 }
 
@@ -53,12 +61,12 @@ g.equation-diagram__labeled-feature {
     cursor: default;
 
     rect.diagram-label__background {
-      fill: yellow;
-      stroke: goldenrod;
+      fill: lighten(yellow, 30%);
+      stroke: salmon;
     }
 
     rect.equation-diagram__feature {
-      opacity: 0.2;
+      opacity: 1;
     }
 
     g.equation-diagram__leader {

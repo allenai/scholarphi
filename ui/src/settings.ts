@@ -119,7 +119,7 @@ export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
   {
     key: "equationDiagramsEnabled",
     type: "flag",
-    label: "Formula diagrams",
+    label: "Equation diagrams",
   },
   {
     key: "entityCreationEnabled",

@@ -218,10 +218,10 @@ class EquationDiagram extends React.PureComponent<Props, State> {
           <g key={l.feature.id} className="equation-diagram__labeled-feature">
             <rect
               className="equation-diagram__feature"
-              x={l.feature.location.left}
-              y={l.feature.location.top}
-              width={l.feature.location.width}
-              height={l.feature.location.height}
+              x={l.feature.location.left - FEATURE_MARGIN}
+              y={l.feature.location.top - FEATURE_MARGIN}
+              width={l.feature.location.width + FEATURE_MARGIN * 2}
+              height={l.feature.location.height + FEATURE_MARGIN * 2}
             />
             <DiagramLabel
               textClassname="equation-diagram__label__text"

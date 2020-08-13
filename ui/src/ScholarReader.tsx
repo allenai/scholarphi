@@ -970,7 +970,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                   entityCreationAreaSelectionMethod={
                     this.state.entityCreationAreaSelectionMethod
                   }
-                  formulaDiagramsEnabled={this.state.equationDiagramsEnabled}
+                  equationDiagramsEnabled={this.state.equationDiagramsEnabled}
                   copySentenceOnClick={
                     this.state.sentenceTexCopyOnOptionClickEnabled
                   }
