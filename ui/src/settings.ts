@@ -25,6 +25,10 @@ export interface Settings {
    */
   definitionPreviewEnabled: boolean;
   /**
+   * Show callouts over formula when an formula is selected.
+   */
+  formulaDiagramsEnabled: boolean;
+  /**
    * Show menu of actions when text is selected.
    */
   textSelectionMenuEnabled: boolean;
@@ -111,6 +115,11 @@ export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
     key: "definitionPreviewEnabled",
     type: "flag",
     label: "Definition preview",
+  },
+  {
+    key: "formulaDiagramsEnabled",
+    type: "flag",
+    label: "Formula diagrams",
   },
   {
     key: "entityCreationEnabled",

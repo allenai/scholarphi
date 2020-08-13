@@ -23,6 +23,7 @@ import {
   Entity,
   EntityCreateData,
   isCitation,
+  isEquation,
   isSentence,
   isSymbol,
   isTerm,
@@ -49,6 +50,7 @@ interface Props {
   entityCreationEnabled: boolean;
   entityCreationType: KnownEntityType;
   entityCreationAreaSelectionMethod: AreaSelectionMethod;
+  formulaDiagramsEnabled: boolean;
   copySentenceOnClick: boolean;
   handleSelectEntityAnnotation: (
     entityId: string,
@@ -136,7 +138,8 @@ class PageOverlay extends React.PureComponent<Props, {}> {
       entityCreationEnabled,
       entityCreationType,
       entityCreationAreaSelectionMethod,
-      copySentenceOnClick: copySentenceOnOptionClick,
+      formulaDiagramsEnabled,
+      copySentenceOnClick,
       handleAddPaperToLibrary,
       handleCreateEntity,
       handleSelectEntityAnnotation,
@@ -238,25 +241,55 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                   findMatchedEntityIds !== null &&
                   findMatchedEntityIds.indexOf(entityId) !== -1;
                 const parentId = entity.relationships.parent.id;
+
+                /*
+                 * Determine what selection hints to show to indicate to the user that the
+                 * symbol can be selected.
+                 */
                 const isTopLevelSymbol =
                   parentId === null || entities.byId[parentId] === undefined;
-                const isSelectionChild = selectedEntities.some(
+                const isChildOfSelection = selectedEntities.some(
                   (e) => isSymbol(e) && selectors.isChild(entity, e)
                 );
-                const isSelectionAncestor = selectedEntities.some(
+                const isEquationSelected = selectedEntityIds
+                  .map((id) => entities.byId[id])
+                  .filter((e) => e !== undefined)
+                  .filter((e) => isEquation(e))
+                  .some((e) => e.id === entity.relationships.equation.id);
+                const isSelectable =
+                  isChildOfSelection ||
+                  (formulaDiagramsEnabled &&
+                    isTopLevelSymbol &&
+                    isEquationSelected);
+                const isAncestorOfSelection = selectedEntities.some(
                   (e) =>
                     isSymbol(e) && selectors.isDescendant(e, entity, entities)
                 );
                 const isLeaf = entity.relationships.children.length === 0;
+
+                /*
+                 * A symbol is interactive when it's a member of a selected equation (if equation
+                 * diagrams are enabled), or otherwise when it's a top-level symbol, or a child of
+                 * a currently-selected symbol.
+                 */
+                const active =
+                  isSelectable ||
+                  (!formulaDiagramsEnabled &&
+                    isTopLevelSymbol &&
+                    !isAncestorOfSelection &&
+                    !isSelected) ||
+                  (isLeaf && isSelected);
+
                 const descendants = selectors.descendants(entity.id, entities);
+
                 return (
                   <EntityAnnotation
                     key={annotationId}
                     id={annotationId}
                     className={classNames("symbol-annotation", {
-                      "child-of-selection": isSelectionChild,
+                      "selection-hint": isSelectable,
                       "leaf-symbol": isLeaf,
-                      "ancestor-of-selection": isSelectionAncestor,
+                      "ancestor-of-selection": isAncestorOfSelection,
                     })}
                     pageView={view}
                     pageNumber={pageNumber}
@@ -268,13 +301,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                      * To allow the descendants of a selected symbol to be selectable, a selected
                      * symbol (once selected) should no longer be interactive itself.
                      */
-                    active={
-                      (isTopLevelSymbol &&
-                        !isSelectionAncestor &&
-                        !isSelected) ||
-                      isSelectionChild ||
-                      (isLeaf && isSelected)
-                    }
+                    active={active}
                     underline={showAnnotations}
                     selected={isSelected}
                     selectedSpanIds={selectedSpanIds}
@@ -304,11 +331,26 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     pageView={view}
                     pageNumber={pageNumber}
                     entity={entity}
-                    active={copySentenceOnOptionClick}
+                    active={copySentenceOnClick}
                     underline={false}
                     selected={false}
                     selectedSpanIds={null}
                     onClick={this.onClickSentence}
+                  />
+                );
+              } else if (isEquation(entity) && formulaDiagramsEnabled) {
+                return (
+                  <EntityAnnotation
+                    key={annotationId}
+                    className="equation-annotation"
+                    id={annotationId}
+                    pageView={view}
+                    pageNumber={pageNumber}
+                    entity={entity}
+                    underline={false}
+                    selected={isSelected}
+                    selectedSpanIds={selectedSpanIds}
+                    handleSelect={this.props.handleSelectEntityAnnotation}
                   />
                 );
               } else {
