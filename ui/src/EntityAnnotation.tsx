@@ -8,7 +8,6 @@ interface Props {
   className?: string;
   id: string;
   pageView: PDFPageView;
-  pageNumber: number;
   entity: Entity;
   active?: boolean;
   underline?: boolean;
@@ -56,7 +55,6 @@ class EntityAnnotation extends React.PureComponent<Props> {
         selected={this.props.selected}
         selectedSpanIds={this.props.selectedSpanIds}
         boundingBoxes={this.props.entity.attributes.bounding_boxes}
-        pageNumber={this.props.pageNumber}
         source={this.props.entity.attributes.source}
         glossStyle={this.props.glossStyle}
         glossContent={this.props.glossContent}

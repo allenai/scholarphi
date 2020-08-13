@@ -5,7 +5,8 @@ import CitationGloss from "./CitationGloss";
 import EntityAnnotation from "./EntityAnnotation";
 import EntityCreationCanvas from "./EntityCreationCanvas";
 import { AreaSelectionMethod } from "./EntityCreationToolbar";
-import PageMask from "./PageMask";
+import EntityPageMask from "./EntityPageMask";
+import SearchPageMask from "./SearchPageMask";
 import * as selectors from "./selectors";
 import { GlossStyle } from "./settings";
 import {
@@ -33,8 +34,7 @@ import * as uiUtils from "./utils/ui";
 
 interface Props {
   paperId?: PaperId;
-  pageNumber: number;
-  view: PDFPageView;
+  pageView: PDFPageView;
   papers: Papers | null;
   entities: Entities | null;
   userLibrary: UserLibrary | null;
@@ -44,7 +44,7 @@ interface Props {
   findMatchedEntityIds: string[] | null;
   findSelectionEntityId: string | null;
   showAnnotations: boolean;
-  pageMaskShowing: boolean;
+  searchMaskEnabled: boolean;
   glossStyle: GlossStyle;
   glossEvaluationEnabled: boolean;
   entityCreationEnabled: boolean;
@@ -86,15 +86,15 @@ class PageOverlay extends React.PureComponent<Props, {}> {
   }
 
   componentDidMount() {
-    this.props.view.div.appendChild(this._element);
+    this.props.pageView.div.appendChild(this._element);
   }
 
   componentWillUnmount() {
     if (
-      document.body.contains(this.props.view.div) &&
-      this.props.view.div.contains(this._element)
+      document.body.contains(this.props.pageView.div) &&
+      this.props.pageView.div.contains(this._element)
     ) {
-      this.props.view.div.removeChild(this._element);
+      this.props.pageView.div.removeChild(this._element);
     }
   }
 
@@ -121,8 +121,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
   render() {
     const {
       paperId,
-      view,
-      pageNumber,
+      pageView,
       papers,
       entities,
       userLibrary,
@@ -131,7 +130,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
       selectedAnnotationSpanIds,
       findMatchedEntityIds,
       findSelectionEntityId,
-      pageMaskShowing,
+      searchMaskEnabled,
       showAnnotations,
       glossStyle,
       glossEvaluationEnabled,
@@ -145,7 +144,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
       handleSelectEntityAnnotation,
     } = this.props;
 
-    const pageDimensions = uiUtils.getPageViewDimensions(view);
+    const pageNumber = uiUtils.getPageNumber(pageView);
     let selectedEntities: Entity[] = [];
     if (entities !== null) {
       selectedEntities = selectedEntityIds.map((id) => entities.byId[id]);
@@ -153,12 +152,19 @@ class PageOverlay extends React.PureComponent<Props, {}> {
 
     return ReactDOM.createPortal(
       <>
-        {!entityCreationEnabled && pageMaskShowing ? (
-          <PageMask
-            key="page-mask"
-            pageNumber={pageNumber}
-            pageWidth={pageDimensions.width}
-            pageHeight={pageDimensions.height}
+        {!entityCreationEnabled && searchMaskEnabled ? (
+          <SearchPageMask
+            pageView={pageView}
+            entities={entities}
+            selectedEntityIds={selectedEntityIds}
+          />
+        ) : null}
+        {!entityCreationEnabled &&
+        formulaDiagramsEnabled &&
+        entities !== null &&
+        selectedEntities.some((e) => e.type === "equation") ? (
+          <EntityPageMask
+            pageView={pageView}
             entities={entities}
             selectedEntityIds={selectedEntityIds}
           />
@@ -171,7 +177,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
               const isSelected =
                 selectedAnnotationIds.indexOf(annotationId) !== -1;
               const boundingBoxes = entity.attributes.bounding_boxes.filter(
-                (box) => box.page === pageNumber - 1
+                (box) => box.page === pageNumber
               );
               if (boundingBoxes.length === 0) {
                 return null;
@@ -186,8 +192,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     id={annotationId}
                     entity={entity}
                     className="term-annotation"
-                    pageView={view}
-                    pageNumber={pageNumber}
+                    pageView={pageView}
                     underline={showAnnotations}
                     glossStyle={glossStyle}
                     glossContent={
@@ -217,8 +222,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     id={annotationId}
                     entity={entity}
                     className="citation-annotation"
-                    pageView={view}
-                    pageNumber={pageNumber}
+                    pageView={pageView}
                     underline={showAnnotations}
                     glossStyle={glossStyle}
                     glossContent={
@@ -291,8 +295,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                       "leaf-symbol": isLeaf,
                       "ancestor-of-selection": isAncestorOfSelection,
                     })}
-                    pageView={view}
-                    pageNumber={pageNumber}
+                    pageView={pageView}
                     entity={entity}
                     /*
                      * Support selection of:
@@ -328,8 +331,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     key={annotationId}
                     className="sentence-annotation"
                     id={annotationId}
-                    pageView={view}
-                    pageNumber={pageNumber}
+                    pageView={pageView}
                     entity={entity}
                     active={copySentenceOnClick}
                     underline={false}
@@ -344,8 +346,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
                     key={annotationId}
                     className="equation-annotation"
                     id={annotationId}
-                    pageView={view}
-                    pageNumber={pageNumber}
+                    pageView={pageView}
                     entity={entity}
                     underline={false}
                     selected={isSelected}
@@ -362,7 +363,7 @@ class PageOverlay extends React.PureComponent<Props, {}> {
         {entityCreationEnabled &&
         entityCreationAreaSelectionMethod === "rectangular-selection" ? (
           <EntityCreationCanvas
-            pageView={view}
+            pageView={pageView}
             pageNumber={pageNumber}
             entityType={entityCreationType}
             handleShowSnackbarMessage={this.props.handleShowSnackbarMessage}
