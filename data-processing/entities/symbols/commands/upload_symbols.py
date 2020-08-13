@@ -183,6 +183,12 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
                 "children": [
                     EntityReference(type_="symbol", id_=id_) for id_ in child_ids
                 ],
+                "equation": [
+                    EntityReference(
+                        type_="equation",
+                        id_=f"{symbol_id.tex_path}-{symbol_id.equation_index}",
+                    )
+                ],
                 "sentence": EntityReference(type_="sentence", id_=None)
                 if sentence_id is None
                 else EntityReference(type_="sentence", id_=sentence_id),

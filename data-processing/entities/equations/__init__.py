@@ -6,6 +6,8 @@ from common.types import CharacterRange, Equation, SerializableEntity
 from entities.common import create_entity_localization_command_sequence
 from scripts.pipelines import EntityPipeline, register_entity_pipeline
 
+from .upload import upload_equations
+
 
 def colorize_equation_when(entity: SerializableEntity) -> bool:
     equation = cast(Equation, entity)
@@ -23,6 +25,7 @@ commands = create_entity_localization_command_sequence(
     Equation,
     colorize_entity_when=colorize_equation_when,
     get_color_positions=get_equation_color_positions,
+    upload_func=upload_equations
 )
 
 equations_pipeline = EntityPipeline("equations", commands)

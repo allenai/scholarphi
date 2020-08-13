@@ -1,9 +1,10 @@
 import logging
 import os.path
+import re
 from argparse import ArgumentParser
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, Dict, Iterator, List, Union, cast
+from typing import Any, Dict, Iterator, List, Optional, Union, cast
 
 from tqdm import tqdm
 
@@ -126,6 +127,41 @@ def get_term_definition_pairs(
         pairs.append(pair)
 
     return pairs
+
+
+StringOffset = int
+
+
+def get_symbol_texs(
+    sentence_with_symbol_tags: str, sentence_with_formula_contents: str
+) -> Optional[Dict[StringOffset, str]]:
+    """
+    Get a map from the character offsets of the word 'SYMBOL' in the first input string
+    to the TeX for that symbol, found from the second input string.  Example:
+
+    Input: get_symbol_texs("Add SYMBOL to SYMBOL.", "Add [[FORMULA:x]] to [[FORMULA:y]]")
+    Output: { 4: "x", 14: "y" }
+
+    Returns None if there was an error establishing a mapping, for instance if there are
+    a different number of 'SYMBOL' and 'FORMULA' tags between the two versions of the sentence.
+    """
+    symbol_starts = [
+        m.start() for m in re.finditer(r"SYMBOL", sentence_with_symbol_tags)
+    ]
+    symbol_texs = [
+        m.group(1)
+        for m in re.finditer(r"\[\[FORMULA:(.*?)\]\]", sentence_with_formula_contents)
+    ]
+    if len(symbol_starts) != len(symbol_texs):
+        logging.warning(  # pylint: disable=logging-not-lazy
+            "The two representations of a sentence %s and %s were detected as having differing "
+            + "numbers of symbols. A lookup table for symbol TeX cannot be built. The TeX for "
+            + "symbols in these equations may not be correct in the output.",
+            sentence_with_symbol_tags,
+            sentence_with_formula_contents,
+        )
+
+    return dict(zip(symbol_starts, symbol_texs))
 
 
 class DetectDefinitions(
@@ -260,11 +296,20 @@ class DetectDefinitions(
                         if "TERM" not in sentence_slots or "DEF" not in sentence_slots:
                             continue
 
+                        # Package extracted terms and definitions into a representation that's
+                        # easier to process.
                         pairs = get_term_definition_pairs(
                             s.legacy_definition_input,
                             sentence_features,
                             sentence_slots,
                         )
+
+                        # Extract TeX for each symbol from a parallel representation of the
+                        # sentence, so that the TeX for symbols can be saved.
+                        symbol_texs = get_symbol_texs(
+                            s.legacy_definition_input, s.with_equation_tex
+                        )
+
                         for pair in pairs:
 
                             tex_path = s.tex_path
@@ -273,6 +318,9 @@ class DetectDefinitions(
                             )
                             definition_id = f"definition-{tex_path}-{definition_index}"
                             definiendum_text = pair.term_text
+                            definiendum_type = (
+                                "symbol" if definiendum_text == "SYMBOL" else "term"
+                            )
 
                             # Map definiendum and definition start and end positions back to
                             # their original positions in the TeX.
@@ -321,9 +369,17 @@ class DetectDefinitions(
                                 definiendum_tex = "NOT AVAILABLE"
                                 definition_tex = "NOT AVAILABLE"
                             else:
-                                definiendum_tex = tex.contents[
-                                    definiendum_start:definiendum_end
-                                ]
+                                if (
+                                    definiendum_type == "symbol"
+                                    and symbol_texs is not None
+                                    and pair.term_start in symbol_texs
+                                ):
+                                    definiendum_tex = symbol_texs[pair.term_start]
+                                    definiendum_text = definiendum_tex
+                                else:
+                                    definiendum_tex = tex.contents[
+                                        definiendum_start:definiendum_end
+                                    ]
                                 definition_tex = tex.contents[
                                     definition_start:definition_end
                                 ]
@@ -354,7 +410,7 @@ class DetectDefinitions(
                                 Definiendum(
                                     id_=definiendum_id,
                                     text=definiendum_text,
-                                    type_=None,
+                                    type_=definiendum_type,
                                     confidence=None,
                                     # Link the definiendum to the text that defined it.
                                     definition_id=definition_id,
@@ -363,6 +419,7 @@ class DetectDefinitions(
                                     # definitions have been found.
                                     definition_ids=[],
                                     definitions=[],
+                                    definition_texs=[],
                                     sources=[],
                                     start=definiendum_start,
                                     end=definiendum_end,
@@ -387,12 +444,16 @@ class DetectDefinitions(
             all_definiendums.extend(definiendum_list)
         term_phrases: List[TermName] = list(definiendums.keys())
         definition_ids: Dict[TermName, List[DefinitionId]] = {}
+        definition_texs: Dict[TermName, List[str]] = {}
         definition_texts: Dict[TermName, List[str]] = {}
         sources: Dict[TermName, List[str]] = {}
 
         # Associate terms with all definitions that apply to them.
         for term, definiendum_list in definiendums.items():
             definition_ids[term] = [d.definition_id for d in definiendum_list]
+            definition_texs[term] = [
+                definitions[d.definition_id].tex for d in definiendum_list
+            ]
             definition_texts[term] = [
                 definitions[d.definition_id].text for d in definiendum_list
             ]
@@ -402,6 +463,7 @@ class DetectDefinitions(
         for _, definiendum_list in definiendums.items():
             for d in definiendum_list:
                 d.definition_ids.extend(definition_ids[d.text])
+                d.definition_texs.extend(definition_texs[d.text])
                 d.definitions.extend(definition_texts[d.text])
                 d.sources.extend(sources[d.text])
                 yield d
@@ -435,6 +497,7 @@ class DetectDefinitions(
                     type_=None,
                     definition_ids=definition_ids[t.text],
                     definitions=definition_texts[t.text],
+                    definition_texs=definition_texs[t.text],
                     sources=sources[t.text],
                     start=t.start,
                     end=t.end,

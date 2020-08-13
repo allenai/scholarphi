@@ -73,6 +73,9 @@ class TermReference(Term):
     definition_ids: List[str]
     " A list of IDs of definitions found in the text that define this term. "
 
+    definition_texs: List[str]
+    " The original TeX for each definition in 'definitions'. "
+
 
 @dataclass(frozen=True)
 class Definiendum(TermReference):
