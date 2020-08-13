@@ -1,0 +1,71 @@
+/**
+ * Features (areas of interest) in diagrams.
+ */
+rect.equation-diagram__feature {
+  stroke: none;
+  fill: blue;
+  opacity: 0;
+}
+
+/**
+ * Labels.
+ */
+rect.diagram-label__background {
+  fill: lightyellow;
+  stroke: lightsalmon;
+}
+
+.equation-diagram__label__text {
+  fill: @s2-text-default;
+  font-family: @s2-font-family;
+  font-size: 16px;
+}
+
+/**
+ * Leader lines.
+ */
+g.equation-diagram__leader {
+  opacity: 0.5;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  path.leader-background {
+    stroke: white;
+    stroke-width: 4;
+    fill: none;
+  }
+
+  path.leader-foreground {
+    stroke: darkblue;
+    stroke-dasharray: 1pt;
+    stroke-width: 2;
+    fill: none;
+  }
+}
+
+/**
+ * Hover behavior.
+ */
+g.equation-diagram__labeled-feature {
+  &:hover {
+    cursor: default;
+
+    rect.diagram-label__background {
+      fill: yellow;
+      stroke: goldenrod;
+    }
+
+    rect.equation-diagram__feature {
+      opacity: 0.2;
+    }
+
+    g.equation-diagram__leader {
+      opacity: 1;
+      path.leader-foreground {
+        stroke-dasharray: unset;
+      }
+    }
+  }
+}

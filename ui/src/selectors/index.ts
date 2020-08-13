@@ -5,4 +5,5 @@
  * one. See the 'matchingSymbols' function for an example.
  */
 export * from "./entity";
+export * from "./equation";
 export * from "./symbol";

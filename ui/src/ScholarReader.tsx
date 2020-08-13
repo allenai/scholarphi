@@ -92,7 +92,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       symbolSearchEnabled: false,
       declutterEnabled: false,
       definitionPreviewEnabled: false,
-      formulaDiagramsEnabled: true,
+      equationDiagramsEnabled: false,
       entityCreationEnabled: false,
       entityEditingEnabled: false,
       sentenceTexCopyOnOptionClickEnabled: false,
@@ -970,7 +970,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                   entityCreationAreaSelectionMethod={
                     this.state.entityCreationAreaSelectionMethod
                   }
-                  formulaDiagramsEnabled={this.state.formulaDiagramsEnabled}
+                  formulaDiagramsEnabled={this.state.equationDiagramsEnabled}
                   copySentenceOnClick={
                     this.state.sentenceTexCopyOnOptionClickEnabled
                   }

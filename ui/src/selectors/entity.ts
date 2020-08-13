@@ -1,4 +1,6 @@
 import { Entities } from "../state";
+import { Entity } from "../types/api";
+import { Rectangle } from "../types/ui";
 
 export function selectedEntityType(
   selectedEntityId: string | null,
@@ -12,4 +14,34 @@ export function selectedEntityType(
     return null;
   }
   return entities.byId[selectedEntityId].type;
+}
+
+/**
+ * If page is not specified, an outer bounding boxes is returned for the all bounding boxes
+ * for the symbol on the same page as the first bounding box.
+ */
+export function outerBoundingBox(
+  entity: Entity,
+  page?: number
+): Rectangle | null {
+  if (entity.attributes.bounding_boxes.length === 0) {
+    return null;
+  }
+
+  page = entity.attributes.bounding_boxes[0].page;
+  const boxes = entity.attributes.bounding_boxes.filter((b) => b.page === page);
+  if (boxes.length === 0) {
+    return null;
+  }
+
+  const left = Math.min(...boxes.map((b) => b.left));
+  const top = Math.min(...boxes.map((b) => b.top));
+  const right = Math.max(...boxes.map((b) => b.left + b.width));
+  const bottom = Math.max(...boxes.map((b) => b.top + b.height));
+  return {
+    left,
+    top,
+    width: right - left,
+    height: bottom - top,
+  };
 }

@@ -10,6 +10,10 @@ import {
   Symbol,
 } from "../types/api";
 
+export function nickname(symbol: Symbol): string | null {
+  return symbol.attributes.nicknames[0] || null;
+}
+
 /**
  * Get the descendants of this symbol. Descendants are returned in breadth-first order. For
  * example, the subscripts of the symbol will be returned before the subscripts of the subscripts.
@@ -188,7 +192,7 @@ export function symbolMathMls(symbolIds: string[], entities: Entities) {
  * See https://github.com/allenai/scholar-reader/issues/115 for a discussion for how we might
  * be able to sort symbols by their order in the prose instead of their position.
  */
-function compareBoxes(box1: BoundingBox, box2: BoundingBox) {
+export function compareBoxes(box1: BoundingBox, box2: BoundingBox) {
   if (box1.page !== box2.page) {
     return box1.page - box2.page;
   }

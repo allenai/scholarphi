@@ -3,13 +3,7 @@ import React from "react";
 import { PageModel, Pages } from "../state";
 import { BoundingBox } from "../types/api";
 import { PDFPageView } from "../types/pdfjs-viewer";
-
-interface Rectangle {
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-}
+import { Dimensions, Rectangle } from "../types/ui";
 
 export function getMouseXY(event: React.MouseEvent) {
   const rect = event.currentTarget.getBoundingClientRect();
@@ -269,7 +263,7 @@ export function getBoundingBoxesForSelection(
  * PDF.js. This function avoids gotchas in computing the size of the page view. Width and
  * height are returned in pixels.
  */
-export function getPageViewDimensions(pageView: PDFPageView) {
+export function getPageViewDimensions(pageView: PDFPageView): Dimensions {
   /*
    * Use the viewport width and height here, instead of the scroll width and height of the
    * pageView's <div/>. The reason is that the <div/> might increase in its width and height as
@@ -282,7 +276,7 @@ export function getPageViewDimensions(pageView: PDFPageView) {
 /**
  * Get the page number for a PDFPageView of PDFPageProxy. While the page number used internally
  * by pdf.js starts at 1, the numbers used by this application start at 0, so this function
- * converts the pdf.js number to a 0-based one that can be used elsewhere in our application.
+ * converts the pdf.js number to a 0-based number.
  */
 export function getPageNumber(p: PDFPageView | PDFPageProxy) {
   if ((p as any).pdfPage !== undefined) {
