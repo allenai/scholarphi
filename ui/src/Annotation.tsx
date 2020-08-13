@@ -4,8 +4,19 @@ import AnnotationSpan from "./AnnotationSpan";
 import { GlossStyle } from "./settings";
 import { BoundingBox } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
+import * as uiUtils from "./utils/ui";
 
 interface Props {
+  /*
+   * This component will render only those bounding boxes for the specified page. The parent
+   * component is encouraged *not* to filter bounding boxes before passing them as properties to
+   * this component, instead letting this component do the filtering of boxes. This is for
+   * performance reasons. If a parent is required to filter the bounding
+   * boxes for an annotation, the annotation will get passed a new set of bounding boxes each time
+   * the parent re-renders, which would trigger an unwanted re-render of this component. Instead,
+   * this filter lets the annotation take in the same list of bounding boxes every time,
+   * preventing an unnecessary re-render of what will be hundreds of annotations.
+   */
   pageView: PDFPageView;
   /**
    * A unique ID that distinguishes this annotation from all other annotations.
@@ -36,17 +47,6 @@ interface Props {
    * will be created for each box.
    */
   boundingBoxes: BoundingBox[];
-  /**
-   * Filter the bounding boxes for which the annotation is rendered to those on this page number.
-   * Keeping convention with pdf.js, page numbers start at 1 (while those for the bounding
-   * boxes start at 0). This component will render only those bounding boxes for the specified page.
-   * This property is important for performance reasons. If a is required to filter the bounding
-   * boxes for an annotation, the annotation will get passed a new set of bounding boxes each time
-   * the parent re-renders, which would trigger an unwanted re-render of this component. Instead,
-   * this filter lets the annotation take in the same list of bounding boxes every time,
-   * preventing an unnecessary re-render of what will be hundreds of annotations.
-   */
-  pageNumber: number;
   /**
    * Whether this annotation represents a matched entity in a Ctrl+F search.
    */
@@ -123,7 +123,7 @@ export class Annotation extends React.PureComponent<Props> {
             return (
               (b.height < MAXIMUM_ANNOTATION_HEIGHT ||
                 this.props.source === "other") &&
-              b.page === this.props.pageNumber - 1
+              b.page === uiUtils.getPageNumber(this.props.pageView)
             );
           })
           .map((box, i) => {

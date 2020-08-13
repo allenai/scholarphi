@@ -700,7 +700,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
         pdfDocument: pdfViewerApplication.pdfDocument,
         pages: {
           ...this.state.pages,
-          [eventData.pageNumber]: {
+          [uiUtils.getPageNumber(eventData.source)]: {
             timeOfLastRender: eventData.timestamp,
             view: eventData.source,
           },
@@ -944,8 +944,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                 <PageOverlay
                   key={key}
                   paperId={this.props.paperId}
-                  view={pageModel.view}
-                  pageNumber={pageNumber}
+                  pageView={pageModel.view}
                   papers={this.state.papers}
                   entities={this.state.entities}
                   userLibrary={this.state.userLibrary}
@@ -963,7 +962,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                     this.state.symbolSearchEnabled ? findMatchEntityId : null
                   }
                   showAnnotations={this.state.annotationHintsEnabled}
-                  pageMaskShowing={this.state.declutterEnabled}
+                  searchMaskEnabled={this.state.declutterEnabled}
                   glossStyle={this.state.glossStyle}
                   glossEvaluationEnabled={this.state.glossEvaluationEnabled}
                   entityCreationEnabled={this.state.entityCreationEnabled}

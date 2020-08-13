@@ -5,6 +5,7 @@ import SelectionCanvas from "./SelectionCanvas";
 import { KnownEntityType } from "./state";
 import { EntityCreateData } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
+import * as uiUtils from "./utils/ui";
 
 interface Props {
   pageNumber: number;
@@ -85,7 +86,7 @@ function createCreateEntityDataFromSelection(
   ];
 
   const boundingBox = {
-    page: pageView.pdfPage.pageNumber - 1,
+    page: uiUtils.getPageNumber(pageView),
     source: "human-annotation",
     left: Math.min(anchorPdfX, activePdfX),
     top: Math.min(anchorPdfY, activePdfY),

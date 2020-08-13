@@ -1,3 +1,4 @@
+import { PDFPageProxy } from "pdfjs-dist";
 import React from "react";
 import { PageModel, Pages } from "../state";
 import { BoundingBox } from "../types/api";
@@ -276,4 +277,17 @@ export function getPageViewDimensions(pageView: PDFPageView) {
    * time that the page is rendered.
    */
   return { width: pageView.viewport.width, height: pageView.viewport.height };
+}
+
+/**
+ * Get the page number for a PDFPageView of PDFPageProxy. While the page number used internally
+ * by pdf.js starts at 1, the numbers used by this application start at 0, so this function
+ * converts the pdf.js number to a 0-based one that can be used elsewhere in our application.
+ */
+export function getPageNumber(p: PDFPageView | PDFPageProxy) {
+  if ((p as any).pdfPage !== undefined) {
+    return (p as PDFPageView).pdfPage.pageNumber - 1;
+  } else {
+    return (p as PDFPageProxy).pageNumber - 1;
+  }
 }
