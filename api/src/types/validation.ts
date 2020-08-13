@@ -130,6 +130,7 @@ attributes = attributes
           name: stringAttribute,
           term_type: stringAttribute,
           definitions: stringListAttribute,
+          definition_texs: stringListAttribute,
           passages: stringListAttribute,
           glossary_definitions: stringListAttribute,
           glossary_sources: stringListAttribute,

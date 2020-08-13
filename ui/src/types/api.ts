@@ -222,6 +222,10 @@ export interface TermAttributes extends BaseEntityAttributes {
    */
   definitions: string[];
   /**
+   * List of passages of TeX, one for each of the 'definitions'.
+   */
+  definition_texs: string[];
+  /**
    * Additional passages that help explain what this term means.
    */
   passages: string[];

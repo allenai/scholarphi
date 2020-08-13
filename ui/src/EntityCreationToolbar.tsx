@@ -73,6 +73,7 @@ export function createCreateEntityDataWithBoxes(
       name: text || null,
       term_type: null,
       definitions: [],
+      definition_texs: [],
       passages: [],
       glossary_definitions: [],
       glossary_sources: [],

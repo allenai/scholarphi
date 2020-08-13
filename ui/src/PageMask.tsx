@@ -15,6 +15,9 @@ interface Props {
   highlight?: BoundingBox[];
 }
 
+/**
+ * A mask overlaid on a page of a PDF that shows some of the content and hides the rest.
+ */
 class PageMask extends React.PureComponent<Props> {
   render() {
     const { pageView, show, highlight } = this.props;
@@ -59,7 +62,7 @@ class PageMask extends React.PureComponent<Props> {
           width={width}
           height={height}
           fill="white"
-          opacity={0.4}
+          opacity={0.5}
           mask={`url(#${maskId})`}
         />
         {highlight !== undefined

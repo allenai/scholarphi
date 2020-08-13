@@ -14,6 +14,7 @@ import { getRemoteLogger } from "./logging";
 import MasterControlPanel from "./MasterControlPanel";
 import PageOverlay from "./PageOverlay";
 import PdfjsToolbar from "./PdfjsToolbar";
+import PrimerPage from "./PrimerPage";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
 import { ConfigurableSetting, CONFIGURABLE_SETTINGS } from "./settings";
@@ -85,6 +86,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       entityCreationType: "term",
       propagateEntityEdits: true,
 
+      primerPageEnabled: true,
       annotationHintsEnabled: false,
       glossStyle: "sidenote",
       glossEvaluationEnabled: false,
@@ -928,62 +930,73 @@ class ScholarReader extends React.PureComponent<Props, State> {
             </ViewerOverlay>
           </>
         ) : null}
-        {this.state.pages !== null ? (
-          <>
-            {/* Add overlays (e.g., annotations, etc.) atop each page. */}
-            {Object.keys(this.state.pages).map((pageNumberKey) => {
-              const pages = this.state.pages as Pages;
-              const pageNumber = Number(pageNumberKey);
-              const pageModel = pages[pageNumber];
-              /*
-               * By setting the key to the page number *and* the timestamp it was rendered, React will
-               * know to replace a page overlay when a pdf.js re-renders a page.
-               */
-              const key = `${pageNumber}-${pageModel.timeOfLastRender}`;
-              return (
-                <PageOverlay
-                  key={key}
-                  paperId={this.props.paperId}
-                  pageView={pageModel.view}
-                  papers={this.state.papers}
-                  entities={this.state.entities}
-                  userLibrary={this.state.userLibrary}
-                  selectedEntityIds={this.state.selectedEntityIds}
-                  selectedAnnotationIds={this.state.selectedAnnotationIds}
-                  selectedAnnotationSpanIds={
-                    this.state.selectedAnnotationSpanIds
-                  }
-                  findMatchedEntityIds={
-                    this.state.symbolSearchEnabled
-                      ? this.state.findMatchedEntities
-                      : null
-                  }
-                  findSelectionEntityId={
-                    this.state.symbolSearchEnabled ? findMatchEntityId : null
-                  }
-                  showAnnotations={this.state.annotationHintsEnabled}
-                  searchMaskEnabled={this.state.declutterEnabled}
-                  glossStyle={this.state.glossStyle}
-                  glossEvaluationEnabled={this.state.glossEvaluationEnabled}
-                  entityCreationEnabled={this.state.entityCreationEnabled}
-                  entityCreationType={this.state.entityCreationType}
-                  entityCreationAreaSelectionMethod={
-                    this.state.entityCreationAreaSelectionMethod
-                  }
-                  equationDiagramsEnabled={this.state.equationDiagramsEnabled}
-                  copySentenceOnClick={
-                    this.state.sentenceTexCopyOnOptionClickEnabled
-                  }
-                  handleSelectEntityAnnotation={this.selectEntityAnnotation}
-                  handleShowSnackbarMessage={this.showSnackbarMessage}
-                  handleAddPaperToLibrary={this.addToLibrary}
-                  handleCreateEntity={this.createEntity}
-                  handleDeleteEntity={this.deleteEntity}
-                />
-              );
-            })}
-          </>
+        {this.state.primerPageEnabled &&
+        this.state.pdfViewer !== null &&
+        this.state.pages !== null ? (
+          <PrimerPage
+            pdfViewer={this.state.pdfViewer}
+            pages={this.state.pages}
+            entities={this.state.entities}
+          />
         ) : null}
+        {
+          /* Add overlays (e.g., annotations, etc.) atop each page. */
+          this.state.pages !== null ? (
+            <>
+              {Object.keys(this.state.pages).map((pageNumberKey) => {
+                const pages = this.state.pages as Pages;
+                const pageNumber = Number(pageNumberKey);
+                const pageModel = pages[pageNumber];
+                /*
+                 * By setting the key to the page number *and* the timestamp it was rendered, React will
+                 * know to replace a page overlay when a pdf.js re-renders a page.
+                 */
+                const key = `${pageNumber}-${pageModel.timeOfLastRender}`;
+                return (
+                  <PageOverlay
+                    key={key}
+                    paperId={this.props.paperId}
+                    pageView={pageModel.view}
+                    papers={this.state.papers}
+                    entities={this.state.entities}
+                    userLibrary={this.state.userLibrary}
+                    selectedEntityIds={this.state.selectedEntityIds}
+                    selectedAnnotationIds={this.state.selectedAnnotationIds}
+                    selectedAnnotationSpanIds={
+                      this.state.selectedAnnotationSpanIds
+                    }
+                    findMatchedEntityIds={
+                      this.state.symbolSearchEnabled
+                        ? this.state.findMatchedEntities
+                        : null
+                    }
+                    findSelectionEntityId={
+                      this.state.symbolSearchEnabled ? findMatchEntityId : null
+                    }
+                    showAnnotations={this.state.annotationHintsEnabled}
+                    searchMaskEnabled={this.state.declutterEnabled}
+                    glossStyle={this.state.glossStyle}
+                    glossEvaluationEnabled={this.state.glossEvaluationEnabled}
+                    entityCreationEnabled={this.state.entityCreationEnabled}
+                    entityCreationType={this.state.entityCreationType}
+                    entityCreationAreaSelectionMethod={
+                      this.state.entityCreationAreaSelectionMethod
+                    }
+                    equationDiagramsEnabled={this.state.equationDiagramsEnabled}
+                    copySentenceOnClick={
+                      this.state.sentenceTexCopyOnOptionClickEnabled
+                    }
+                    handleSelectEntityAnnotation={this.selectEntityAnnotation}
+                    handleShowSnackbarMessage={this.showSnackbarMessage}
+                    handleAddPaperToLibrary={this.addToLibrary}
+                    handleCreateEntity={this.createEntity}
+                    handleDeleteEntity={this.deleteEntity}
+                  />
+                );
+              })}
+            </>
+          ) : null
+        }
       </>
     );
   }

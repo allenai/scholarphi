@@ -30,6 +30,7 @@ def upload_definitions(
                 data={
                     "definiendum": definition.definiendum,
                     "definition": definition.text,
+                    "tex": definition.tex,
                 },
                 relationships={
                     "sentence": EntityReference(
@@ -53,7 +54,9 @@ def upload_definitions(
                 data={
                     "name": term.text,
                     "definitions": term.definitions,
+                    "definition_texs": term.definition_texs,
                     "sources": term.sources,
+                    "term_type": term.type_ or "unknown"
                 },
                 relationships={
                     "sentence": EntityReference(

@@ -7,6 +7,10 @@
  */
 export interface Settings {
   /**
+   * Show a primer at the start of the document introducing the tool and definitions.
+   */
+  primerPageEnabled: boolean;
+  /**
    * Style annotations to show hints that they're there (e.g., underlines).
    */
   annotationHintsEnabled: boolean;
@@ -80,6 +84,11 @@ export type GlossStyle = typeof GLOSS_STYLES[number];
  * Any setting that should be editable from the settings editor should have a spec in this list.
  */
 export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
+  {
+    key: "primerPageEnabled",
+    type: "flag",
+    label: "Primer page",
+  },
   {
     key: "annotationHintsEnabled",
     type: "flag",
