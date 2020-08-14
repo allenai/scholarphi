@@ -172,9 +172,12 @@ class SentenceExtractor(EntityExtractor):
             if itemize_end:
                 in_itemize = False
 
-            # Filter sentences to those for which further text processing would be appropriate.
-            # A number of heuristics are used (commented below).
-            is_valid_sentence = all(
+            # Use heuristics about the surrounding text to determine whether or not this
+            # sentence is valid. These heuristics have a number of limitations, and should be
+            # replaced with more mature rules for detecting whether the sentence is indeed in
+            # names section, the abstract, a figure, a table, etc. See documentation of its
+            # limitations here: https://github.com/allenai/scholar-reader/issues/138#issue-678432430
+            validity_guess = all(
                 [
                     # Sentence should appear in a named section.
                     (not self.from_named_sections_only) or section_name,
@@ -194,9 +197,6 @@ class SentenceExtractor(EntityExtractor):
                     not itemize_end,
                 ]
             )
-
-            if not is_valid_sentence:
-                continue
 
             # Sanitize the text, replacing macros and unwanted TeX with text that will be easier
             # for the text processing algorithms to process.
@@ -257,6 +257,7 @@ class SentenceExtractor(EntityExtractor):
                 sanitized_journal=sanitized,
                 tex=sentence_tex,
                 context_tex=context_tex,
+                validity_guess=validity_guess,
                 section_name=section_name,
                 in_figure=in_figure,
                 in_table=in_table,

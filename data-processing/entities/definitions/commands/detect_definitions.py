@@ -275,6 +275,12 @@ class DetectDefinitions(
             for si, sentence in enumerate(sentences_ordered):
                 progress.update(1)
 
+                # Only attempt to process sentences that have been marked as likely to be proper
+                # plaintext. Note that this means some sentences may be skipped that didn't pass
+                # heuristics in the sentence extractor.
+                if not sentence.validity_guess:
+                    continue
+
                 # Extract features from raw text.
                 featurized_text = model.featurize(sentence.legacy_definition_input)
                 features.append(featurized_text)

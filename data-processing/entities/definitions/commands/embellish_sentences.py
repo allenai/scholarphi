@@ -154,7 +154,7 @@ class EmbellishSentences(ArxivBatchCommand[Task, EmbellishedSentence]):
                     span.start, span.end, "[[FORMULA]]"
                 )
                 with_symbol_tex = with_symbol_tex.edit(
-                    span.start, span.end, f"[[FORMULA]]"
+                    span.start, span.end, "[[FORMULA]]"
                 )
 
             # Replace each equation with a bag of the symbols that it contains.
@@ -179,6 +179,7 @@ class EmbellishSentences(ArxivBatchCommand[Task, EmbellishedSentence]):
             text_journal=sentence.text_journal,
             sanitized=sentence.sanitized,
             sanitized_journal=sentence.sanitized_journal,
+            validity_guess=sentence.validity_guess,
             section_name=sentence.section_name,
             in_figure=sentence.in_figure,
             in_table=sentence.in_table,

@@ -388,8 +388,12 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
 
     # Finally, remove adjacent periods (which interfere with the pysbd sentence
     # segmenter), which may only be adjacent because the TeX grouping has been removed.
-    for m in reversed(list(re.finditer(r"[\s\.]*\.", str(plaintext)))):
-        plaintext = plaintext.edit(m.start(), m.end(), ".")
+    # Do a lookahead for the last period (don't include it in the match) in order
+    # to change as little of the original TeX as possible, to make it easier to map
+    # back from the original period position (which will often occur at the end of
+    # an extracted sentence) to its precise position in the original TeX.
+    for m in reversed(list(re.finditer(r"[\s\.]+(?:\.)", str(plaintext)))):
+        plaintext = plaintext.edit(m.start(), m.end(), "")
 
     return plaintext
 

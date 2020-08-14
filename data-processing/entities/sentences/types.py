@@ -18,6 +18,12 @@ class Sentence(SerializableEntity):
     TeX, even if they appear in the middle of the string.
     """
 
+    validity_guess: bool
+    """
+    A guess as to whether this sentence is really a text sentence. It's a guess, because the
+    current heuristics used are not always accurate.
+    """
+
     section_name: Optional[str]
     in_figure: bool
     in_table: bool
