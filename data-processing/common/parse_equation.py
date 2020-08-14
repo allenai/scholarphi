@@ -157,10 +157,14 @@ def clean_row(elements: List[Tag]) -> List[Tag]:
         e for e in elements if not (isinstance(e, str) and e.isspace())
     ]
 
+    # Remove quantifiers and double bars.
+    quantifiers_removed = [e for e in whitespace_removed if e.text not in ["∀", "∃"]]
+    double_bars_removed = [e for e in quantifiers_removed if e.text not in ["|"]]
+
     # Remove 'd's and 'δ's used as signs for derivatives.
     derivatives_cleaned = []
     is_derivative = True
-    elements_iter = iter(whitespace_removed)
+    elements_iter = iter(double_bars_removed)
     while True:
         try:
             first = next(elements_iter)
@@ -178,7 +182,7 @@ def clean_row(elements: List[Tag]) -> List[Tag]:
             break
 
     if not is_derivative:
-        derivatives_cleaned = elements
+        derivatives_cleaned = double_bars_removed
 
     return derivatives_cleaned
 

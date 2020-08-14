@@ -103,6 +103,12 @@ def test_ignore_derivative_tokens():
     assert str(result.symbols[1].element) == "<mi>b</mi>"
 
 
+def test_ignore_quantifiers():
+    result = parse_element(load_fragment_tag("forall.xml"))
+    assert len(result.symbols) == 1
+    assert str(result.symbols[0].element) == "<mi>x</mi>"
+
+
 def test_parse_prime():
     result = parse_element(load_fragment_tag("x_prime.xml"))
     assert len(result.symbols) == 1
