@@ -25,7 +25,7 @@ export class TermDefinitionGloss extends React.PureComponent<Props> {
       <div className="gloss term-definition-gloss">
         <div className="gloss__section">
           {term.attributes.term_type === "symbol" ? (
-            <RichText>{`\$${term.attributes.name}\$`}</RichText>
+            <RichText>{`$${term.attributes.name}$`}</RichText>
           ) : (
             <b>{term.attributes.name}</b>
           )}
