@@ -16,7 +16,7 @@ class RemoteLogger {
 
   async log(level: LogLevel, eventType?: any, data?: any) {
     return axios
-      .post("/log", {
+      .post("/api/log", {
         username: this._username,
         level,
         event_type: eventType,

@@ -53,7 +53,7 @@ class ApiServer {
 
     this._server.route({
       method: "POST",
-      path: "/log",
+      path: "/api/log",
       handler: async (request, h) => {
         const ipAddress = request.info.remoteAddress;
         const payload = request.payload as LogEntryCreatePayload;
