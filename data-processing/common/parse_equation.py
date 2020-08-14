@@ -149,9 +149,18 @@ def parse_element(element: Tag) -> ParseResult:
 def _is_symbol(element: Tag) -> bool:
     " Determine whether an element should be parsed as a symbol. "
 
-    SYMBOL_TAGS = ["msubsup", "msub", "msup", "mi"]
-    if element.name in SYMBOL_TAGS:
+    if element.name == "mi":
         return True
+    # Composite symbols like subscripts and superscripts must have multiple children to be
+    # considered a symbol, and their base (i.e., first argument) must be a symbol. In most cases,
+    # this means that the base is an identifier. This rules out operators like summations.
+    if element.name in ["msubsup", "msub", "msup"]:
+        child_elements = list(element.children)
+        return (
+            len(child_elements) >= 1
+            and isinstance(child_elements[0], Tag)
+            and _is_symbol(child_elements[0])
+        )
     if element.name == "mtext" and re.match(r"\w+", element.text):
         return True
 

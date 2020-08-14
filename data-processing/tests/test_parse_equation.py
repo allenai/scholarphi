@@ -83,29 +83,26 @@ def test_number_is_not_a_symbol():
     assert result.tokens == [Token(0, 1, "1", 0)]
 
 
-def test_number_with_subscript_is_a_symbol():
-    result = parse_element(load_fragment_tag("1_sub_2.xml"))
-    symbol = result.symbols[0]
-    assert str(symbol.element) == "<msub><mn>1</mn><mn>2</mn></msub>"
-    assert symbol.children == []
-
-
 def test_parse_prime():
     result = parse_element(load_fragment_tag("x_prime.xml"))
     assert len(result.symbols) == 1
     symbol = result.symbols[0]
     assert len(symbol.children) == 1
     assert str(symbol.children[0].element) == "<mi>x</mi>"
-    assert symbol.tokens == [
-        Token(0, 1, "x", 0),
-        Token(1, 2, "′", 2)
-    ]
+    assert symbol.tokens == [Token(0, 1, "x", 0), Token(1, 2, "′", 2)]
 
 
 def test_parse_text_as_symbol():
     result = parse_element(load_fragment_tag("text.xml"))
     assert len(result.symbols) == 1
     assert str(result.element) == "<mtext>text</mtext>"
+
+
+def test_summation_is_not_symbol():
+    result = parse_element(load_fragment_tag("sum.xml"))
+    assert len(result.symbols) == 2
+    assert str(result.symbols[0].element) == "<mi>i</mi>"
+    assert str(result.symbols[1].element) == "<mi>N</mi>"
 
 
 def test_parse_equation():
