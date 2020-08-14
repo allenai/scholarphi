@@ -153,38 +153,34 @@ def clean_row(elements: List[Tag]) -> List[Tag]:
     """
 
     # Remove whitespace between elements.
-    whitespace_removed = [
-        e for e in elements if not (isinstance(e, str) and e.isspace())
-    ]
+    elements = [e for e in elements if not (isinstance(e, str) and e.isspace())]
 
     # Remove quantifiers and double bars.
-    quantifiers_removed = [e for e in whitespace_removed if e.text not in ["∀", "∃"]]
-    double_bars_removed = [e for e in quantifiers_removed if e.text not in ["|"]]
+    elements = [e for e in elements if e.text not in ["∀", "∃"]]
+    elements = [e for e in elements if e.text not in ["|", "∥"]]
 
     # Remove 'd's and 'δ's used as signs for derivatives.
     derivatives_cleaned = []
-    is_derivative = True
-    elements_iter = iter(double_bars_removed)
-    while True:
-        try:
-            first = next(elements_iter)
-        except StopIteration:
-            break
-        try:
-            second = next(elements_iter)
-        except StopIteration:
-            is_derivative = False
-            break
-        if first.name == "mi" and first.text in ["d", "δ", "∂"]:
-            derivatives_cleaned.append(second)
-        else:
-            is_derivative = False
-            break
+    DERIVATIVE_GLYPHS = ["d", "δ", "∂"]
+    for i, e in enumerate(elements):
+        is_derivative_symbol = (
+            # Is the glyph a derivative sign?
+            e.name == "mi"
+            and e.text in DERIVATIVE_GLYPHS
+            # Is the next element a symbol?
+            and (i < len(elements) - 1 and _is_symbol(elements[i + 1]))
+            # Is the element after that either not a symbol, or another derivative sign?
+            and (
+                i == len(elements) - 2
+                or not _is_symbol(elements[i + 2])
+                or elements[i + 2].text in DERIVATIVE_GLYPHS
+            )
+        )
+        if not is_derivative_symbol:
+            derivatives_cleaned.append(e)
 
-    if not is_derivative:
-        derivatives_cleaned = double_bars_removed
-
-    return derivatives_cleaned
+    elements = derivatives_cleaned
+    return elements
 
 
 def _is_symbol(element: Tag) -> bool:
