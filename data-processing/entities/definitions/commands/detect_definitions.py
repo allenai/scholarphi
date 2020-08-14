@@ -325,7 +325,7 @@ class DetectDefinitions(
                             definition_id = f"definition-{tex_path}-{definition_index}"
                             definiendum_text = pair.term_text
                             definiendum_type = (
-                                "symbol" if definiendum_text == "SYMBOL" else "term"
+                                "symbol" if "SYMBOL" in definiendum_text else "term"
                             )
 
                             # Map definiendum and definition start and end positions back to

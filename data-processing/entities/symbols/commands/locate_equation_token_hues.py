@@ -1,6 +1,6 @@
 import os
 from dataclasses import dataclass
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from common import directories, file_utils
 from common.commands.locate_hues import (
@@ -29,6 +29,10 @@ BoundingBoxesByFile = Dict[Path, List[BoundingBox]]
 
 
 class LocateEquationTokenHues(LocateHuesCommand):
+    """
+    While this class isn't currently used, it is necessary when batch-coloring symbols.
+    """
+
     @staticmethod
     def get_name() -> str:
         return "locate-hues-for-equation-tokens"
@@ -39,6 +43,15 @@ class LocateEquationTokenHues(LocateHuesCommand):
             "Find bounding boxes of token equations using hues. Before running this command,"
             + "bounding boxes must be detected for all equations.'"
         )
+
+    @staticmethod
+    def should_sanity_check_images() -> Optional[bool]:
+        """
+        Symbol tokens are small enough that they tend to rarely cause a shift in the document when
+        colorized. When visual artifacts are found in the image differences, they're usually not
+        indicative of a noticeable shift in symbol position that a user would notice.
+        """
+        return False
 
     def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
 

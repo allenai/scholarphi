@@ -39,7 +39,7 @@ commands = [
     make_compile_tex_command("equation-tokens"),
     make_raster_pages_command("equation-tokens"),
     make_diff_images_command("equation-tokens"),
-    make_locate_hues_command("equation-tokens"),
+    make_locate_hues_command("equation-tokens", False),
     LocateSymbols,
     UploadSymbols,
 ]

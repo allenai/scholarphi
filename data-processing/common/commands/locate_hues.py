@@ -85,6 +85,13 @@ class LocateHuesCommand(ArxivBatchCommand[SearchTask, HueLocation], ABC):
         Key for the data directory where hue bounding boxes should be output.
         """
 
+    @staticmethod
+    @abstractmethod
+    def should_sanity_check_images() -> Optional[bool]:
+        """
+        Force visual validation of images before locating hues, or force skipping of validation.
+        """
+
     @abstractmethod
     def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
         """
@@ -149,7 +156,10 @@ class LocateHuesCommand(ArxivBatchCommand[SearchTask, HueLocation], ABC):
                         img_path = os.path.join(diff_images_file_path, img_name)
                         page_image = cv2.imread(img_path)
 
-                        if not self.args.skip_visual_validation:
+                        if self.should_sanity_check_images() or (
+                            self.should_sanity_check_images() is None
+                            and not self.args.skip_visual_validation
+                        ):
                             if contains_black_pixels(page_image):
                                 logging.warning(
                                     "Black pixels found in image diff %s", img_path
@@ -223,7 +233,16 @@ class LocateHuesCommand(ArxivBatchCommand[SearchTask, HueLocation], ABC):
         )
 
 
-def make_locate_hues_command(entity_name: str) -> Type[LocateHuesCommand]:
+def make_locate_hues_command(
+    entity_name: str, sanity_check_images: Optional[bool] = None
+) -> Type[LocateHuesCommand]:
+    """
+    Specify 'sanity_check_images' to force visual validation of image differences, skipping them
+    if unexpected visual artifacts are found.  If set to 'False', visual validation will never
+    take place. If not specified or set to 'None', visual validation will be controlled by
+    command line parameters for the command.
+    """
+
     class C(LocateHuesCommand):
         @staticmethod
         def get_name() -> str:
@@ -232,6 +251,10 @@ def make_locate_hues_command(entity_name: str) -> Type[LocateHuesCommand]:
         @staticmethod
         def get_description() -> str:
             return f"Find bounding boxes of {entity_name} by hue."
+
+        @staticmethod
+        def should_sanity_check_images() -> Optional[bool]:
+            return sanity_check_images
 
         def load_hues(self, arxiv_id: ArxivId, iteration: str) -> List[HueSearchRegion]:
             hues_path = os.path.join(
