@@ -49,6 +49,7 @@ def test_extract_plaintext_consolidate_periods_across_groups():
     plaintext = extract_plaintext("main.tex", "\\footnote{Sentence.}. Next sentence.")
     assert plaintext == "Sentence. Next sentence."
 
+
 def test_extract_phrases():
     extractor = PhraseExtractor(["word", "two-token phrase"])
     phrases = list(

@@ -392,7 +392,7 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
     # to change as little of the original TeX as possible, to make it easier to map
     # back from the original period position (which will often occur at the end of
     # an extracted sentence) to its precise position in the original TeX.
-    for m in reversed(list(re.finditer(r"[\s\.]+(?:\.)", str(plaintext)))):
+    for m in reversed(list(re.finditer(r"[\s\.]+(?=\.)", str(plaintext)))):
         plaintext = plaintext.edit(m.start(), m.end(), "")
 
     return plaintext

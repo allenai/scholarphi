@@ -14,6 +14,7 @@ def create_sentence(tex: str, start: int) -> Sentence:
         text_journal=None,
         sanitized="<sanitized>",
         sanitized_journal=None,
+        validity_guess=True,
         section_name="<current section>",
         in_figure=False,
         in_table=False,
