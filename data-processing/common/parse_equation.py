@@ -14,8 +14,6 @@ misdetecting colored equations as errors---anything that's set to 'white' in a p
 invisible and we wouldn't want to detect it anyway.
 """
 
-TOKEN_TAGS = ["mn", "mi"]
-
 
 @dataclass(frozen=True)
 class Node:
@@ -93,9 +91,10 @@ def parse_element(element: Tag) -> ParseResult:
     # If this is an 'mrow' produced by KaTeX, its children are probably needlessly fragmented. For
     # instance, the word 'true' will contain four '<mi>' elements, one for 't', 'r', 'u', and 'e'
     # each. Merge such elements into single elements.
-    soup_children = element.children
+    soup_children = list(element.children)
     if element.name == "mrow":
-        merged_children = merge_mathml_elements(soup_children)
+        cleaned_children = clean_row(soup_children)
+        merged_children = merge_mathml_elements(cleaned_children)
 
         # If the 'mrow' only contains one element after its children are merged, simplify the
         # MathML tree replacing this node with its merged child.
@@ -146,10 +145,51 @@ def parse_element(element: Tag) -> ParseResult:
     return ParseResult(return_symbols, clean_element, tokens)
 
 
+def clean_row(elements: List[Tag]) -> List[Tag]:
+    """
+    Clean MathML row, removing children that should not be considered tokens or child symbols.
+    One example of cleaning that should take place here is removing 'd' and 'δ' signs that are
+    used as derivatives, instead of as identifiers.
+    """
+
+    # Remove whitespace between elements.
+    whitespace_removed = [
+        e for e in elements if not (isinstance(e, str) and e.isspace())
+    ]
+
+    # Remove 'd's and 'δ's used as signs for derivatives.
+    derivatives_cleaned = []
+    is_derivative = True
+    elements_iter = iter(whitespace_removed)
+    while True:
+        try:
+            first = next(elements_iter)
+        except StopIteration:
+            break
+        try:
+            second = next(elements_iter)
+        except StopIteration:
+            is_derivative = False
+            break
+        if first.name == "mi" and first.text in ["d", "δ", "∂"]:
+            derivatives_cleaned.append(second)
+        else:
+            is_derivative = False
+            break
+
+    if not is_derivative:
+        derivatives_cleaned = elements
+
+    return derivatives_cleaned
+
+
 def _is_symbol(element: Tag) -> bool:
     " Determine whether an element should be parsed as a symbol. "
 
     if element.name == "mi":
+        # Exclude special math symbols typically used as constants.
+        if element.text in ["e"]:
+            return False
         return True
     # Composite symbols like subscripts and superscripts must have multiple children to be
     # considered a symbol, and their base (i.e., first argument) must be a symbol. In most cases,
@@ -202,6 +242,7 @@ def _is_token(element: Tag) -> bool:
         return False
 
     # Some tags always contain tokens.
+    TOKEN_TAGS = ["mn", "mi"]
     if element.name in TOKEN_TAGS:
         return True
     # The prime symbol (e.g., "x'").

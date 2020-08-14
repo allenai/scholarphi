@@ -83,6 +83,26 @@ def test_number_is_not_a_symbol():
     assert result.tokens == [Token(0, 1, "1", 0)]
 
 
+def test_e_is_not_a_symbol_as_exponent_base():
+    result = parse_element(load_fragment_tag("e_sup_x.xml"))
+    assert len(result.symbols) == 1
+    assert str(result.symbols[0].element) == "<mi>x</mi>"
+
+
+def test_d_is_symbol_on_its_own():
+    result = parse_element(load_fragment_tag("d.xml"))
+    assert len(result.symbols) == 1
+    assert str(result.symbols[0].element) == "<mi>d</mi>"
+    assert result.symbols[0].tokens == [Token(0, 1, "d", 0)]
+
+
+def test_ignore_derivative_tokens():
+    result = parse_element(load_fragment_tag("delta_a_d_b.xml"))
+    assert len(result.symbols) == 2
+    assert str(result.symbols[0].element) == "<mi>a</mi>"
+    assert str(result.symbols[1].element) == "<mi>b</mi>"
+
+
 def test_parse_prime():
     result = parse_element(load_fragment_tag("x_prime.xml"))
     assert len(result.symbols) == 1
