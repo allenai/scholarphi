@@ -117,7 +117,16 @@ class FindEntitySentencesCommand(
         entity = next(entities_ordered)
         while True:
             try:
-                if entity.start >= sentence.start and entity.end <= sentence.end:
+                if entity.start < sentence.start:
+                    logging.warning(  # pylint: disable=logging-not-lazy
+                        "Could not find sentence for entity from character %d to %d for arXiv "
+                        + "paper %s.",
+                        entity.start,
+                        entity.end,
+                        item.arxiv_id,
+                    )
+                    entity = next(entities_ordered)
+                elif entity.start >= sentence.start and entity.end <= sentence.end:
                     yield EntitySentencePair(entity, sentence)
                     entity = next(entities_ordered)
                 else:

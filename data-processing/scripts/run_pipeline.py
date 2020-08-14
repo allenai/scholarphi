@@ -272,7 +272,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--database-schema",
         type=str,
-        default=f"dev",
+        default="dev",
         help=(
             "Name of the Postgres schema into which to upload results. To upload into the live "
             + "database, set this to 'public'. The default 'dev' database is recommended for "
