@@ -1,4 +1,5 @@
 import copy
+import re
 from dataclasses import dataclass
 from typing import List, Optional
 
@@ -13,9 +14,7 @@ misdetecting colored equations as errors---anything that's set to 'white' in a p
 invisible and we wouldn't want to detect it anyway.
 """
 
-SYMBOL_TAGS = ["msubsup", "msub", "msup", "mi"]
 TOKEN_TAGS = ["mn", "mi"]
-MERGEABLE_TOKEN_TAGS = ["mn", "mi"]
 
 
 @dataclass(frozen=True)
@@ -136,7 +135,7 @@ def parse_element(element: Tag) -> ParseResult:
 
     # If the element's tag indicates the element is a symbol, return a new symbol node, setting its
     # children to the symbols found in the children.
-    if element.name in SYMBOL_TAGS:
+    if _is_symbol(clean_element):
         return_symbols = [
             Node(children=child_symbols, element=clean_element, tokens=tokens)
         ]
@@ -147,6 +146,18 @@ def parse_element(element: Tag) -> ParseResult:
     return ParseResult(return_symbols, clean_element, tokens)
 
 
+def _is_symbol(element: Tag) -> bool:
+    " Determine whether an element should be parsed as a symbol. "
+
+    SYMBOL_TAGS = ["msubsup", "msub", "msup", "mi"]
+    if element.name in SYMBOL_TAGS:
+        return True
+    if element.name == "mtext" and re.match(r"\w+", element.text):
+        return True
+
+    return False
+
+
 def _extract_tokens(element: Tag) -> List[Token]:
     """
     Get the tokens defined in this element. Tokens are only found in low-level elements like
@@ -155,7 +166,8 @@ def _extract_tokens(element: Tag) -> List[Token]:
     """
 
     tokens = []
-    if element.name in TOKEN_TAGS and _has_s2_token_annotations(element):
+
+    if _is_token(element):
         tokens.append(
             Token(
                 # Convert text to a primitive type. 'element.string' is a NavigableString,
@@ -168,6 +180,29 @@ def _extract_tokens(element: Tag) -> List[Token]:
         )
 
     return tokens
+
+
+def _is_token(element: Tag) -> bool:
+    """
+    Determine whether an element contains a token. Tokens are characters or spans of text that
+    make up symbols. There should be a token returned for each glyph in a symbol that needs
+    to be detected separately (e.g., a symbol's base and its subscript are different tokens).
+    """
+
+    if not _has_s2_token_annotations(element):
+        return False
+
+    # Some tags always contain tokens.
+    if element.name in TOKEN_TAGS:
+        return True
+    # The prime symbol (e.g., "x'").
+    if element.name == "mo" and element.text == "′":
+        return True
+    # Text spans comprising only a single word.
+    if element.name == "mtext" and re.match(r"\w+", element.text):
+        return True
+
+    return False
 
 
 def _is_error_element(element: Tag) -> bool:
@@ -233,6 +268,7 @@ class MathMlElementMerger:
 
     def _is_mergeable_type(self, element: Tag) -> bool:
         " Determine if a element is a type that is mergeable with other elements. "
+        MERGEABLE_TOKEN_TAGS = ["mn", "mi"]
         return element.name in MERGEABLE_TOKEN_TAGS and _has_s2_token_annotations(
             element
         )
