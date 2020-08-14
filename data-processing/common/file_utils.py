@@ -107,8 +107,8 @@ def append_to_csv(csv_path: Path, data_obj: Dataclass, encoding: str = "utf-8") 
             data_dict = dataclasses.asdict(data_obj)
         except RecursionError:
             logging.warning(  # pylint: disable=logging-not-lazy
-                "Couldn't serialize data %s due to recursion error."
-                + "Make sure that there are no cyclic references in data",
+                "Couldn't serialize data %s due to recursion error. "
+                + "Make sure that there are no cyclic references in data. ",
                 data_obj,
             )
         else:
@@ -128,17 +128,17 @@ def append_to_csv(csv_path: Path, data_obj: Dataclass, encoding: str = "utf-8") 
                 quoting=csv.QUOTE_MINIMAL,
             )
 
-        # Only write the header the first time a record is added to the file
-        try:
-            if file_empty:
-                writer.writeheader()
-            writer.writerow(data_dict)
-        except Exception as exception:  # pylint: disable=broad-except
-            logging.warning(
-                "Couldn't write row containing data %s to CSV file. Reason: %s.",
-                data_obj,
-                exception,
-            )
+            # Only write the header the first time a record is added to the file
+            try:
+                if file_empty:
+                    writer.writeheader()
+                writer.writerow(data_dict)
+            except Exception as exception:  # pylint: disable=broad-except
+                logging.warning(
+                    "Couldn't write row containing data %s to CSV file. Reason: %s.",
+                    data_obj,
+                    exception,
+                )
 
 
 def load_from_csv(

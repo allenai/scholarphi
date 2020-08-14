@@ -158,7 +158,9 @@ def _extract_tokens(element: Tag) -> List[Token]:
     if element.name in TOKEN_TAGS and _has_s2_token_annotations(element):
         tokens.append(
             Token(
-                text=element.string,
+                # Convert text to a primitive type. 'element.string' is a NavigableString,
+                # which causes recursion errors when serialized.
+                text=str(element.string),
                 token_index=int(element["s2:index"]),
                 start=int(element["s2:start"]),
                 end=int(element["s2:end"]),
@@ -231,7 +233,9 @@ class MathMlElementMerger:
 
     def _is_mergeable_type(self, element: Tag) -> bool:
         " Determine if a element is a type that is mergeable with other elements. "
-        return element.name in MERGEABLE_TOKEN_TAGS and _has_s2_token_annotations(element)
+        return element.name in MERGEABLE_TOKEN_TAGS and _has_s2_token_annotations(
+            element
+        )
 
     def _can_merge_with_prior_elements(self, element: Tag) -> bool:
         """
