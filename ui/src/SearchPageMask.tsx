@@ -65,17 +65,35 @@ export class SearchPageMask extends React.PureComponent<Props> {
         highlight={highlight}
       >
         {lastHighlight !== undefined ? (
-          <text
-            className="page-mask__highlight-label"
-            x={lastHighlight.left * width}
-            y={
-              (lastHighlight.top + lastHighlight.height) * height +
-              LABEL_PADDING_TOP
-            }
-            dominantBaseline="hanging"
-          >
-            First appearance of symbol
-          </text>
+          <>
+            <rect
+              className="page-mask__highlight-label__background"
+              x={lastHighlight.left * width}
+              y={
+                (lastHighlight.top + lastHighlight.height) * height +
+                LABEL_PADDING_TOP
+              }
+              /*
+               * XXX(andrewhead): set to correspond to the width and height of the label given what
+               * was known at the time about its font family and font size. If the font family or size
+               * of the text changes, this width and height will need to as well.
+               */
+              width={210}
+              height={25}
+            />
+            <text
+              className="page-mask__highlight-label"
+              x={lastHighlight.left * width + 6}
+              y={
+                (lastHighlight.top + lastHighlight.height) * height +
+                LABEL_PADDING_TOP +
+                6
+              }
+              dominantBaseline="hanging"
+            >
+              First appearance of symbol
+            </text>
+          </>
         ) : null}
       </PageMask>
     );
