@@ -45,3 +45,19 @@ export function outerBoundingBox(
     height: bottom - top,
   };
 }
+
+/**
+ * Determine whether an entity appears within a specific page.
+ */
+export function isEntityInPage(
+  entityId: string,
+  entities: Entities | null,
+  page: number
+) {
+  if (entities === null || entities.byId[entityId] === undefined) {
+    return false;
+  }
+  return entities.byId[entityId].attributes.bounding_boxes.some(
+    (b) => b.page === page
+  );
+}

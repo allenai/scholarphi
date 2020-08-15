@@ -965,7 +965,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
         ) : null}
         {
           /* Add overlays (e.g., annotations, etc.) atop each page. */
-          this.state.pages !== null ? (
+          this.state.pages !== null && this.state.entities !== null ? (
             <>
               {Object.keys(this.state.pages).map((pageNumberKey) => {
                 const pages = this.state.pages as Pages;
@@ -995,7 +995,15 @@ class ScholarReader extends React.PureComponent<Props, State> {
                         : null
                     }
                     findSelectionEntityId={
-                      this.state.symbolSearchEnabled ? findMatchEntityId : null
+                      this.state.symbolSearchEnabled &&
+                      findMatchEntityId !== null &&
+                      selectors.isEntityInPage(
+                        findMatchEntityId,
+                        this.state.entities,
+                        pageNumber
+                      )
+                        ? findMatchEntityId
+                        : null
                     }
                     showAnnotations={this.state.annotationHintsEnabled}
                     searchMaskEnabled={this.state.declutterEnabled}
