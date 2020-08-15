@@ -246,7 +246,7 @@ def _is_token(element: Tag) -> bool:
     if element.name in TOKEN_TAGS:
         return True
     # The prime symbol (e.g., "x'").
-    if element.name == "mo" and element.text == "′":
+    if element.name == "mo" and element.text in ["′", "'"]:
         return True
     # Text spans comprising only a single word.
     if element.name == "mtext" and re.match(r"\w+", element.text):
