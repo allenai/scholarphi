@@ -22,7 +22,6 @@ import { KnownEntityType, Pages, PaperId, State, SymbolFilters } from "./state";
 import "./style/index.less";
 import TextSelectionMenu from "./TextSelectionMenu";
 import {
-  BoundingBox,
   Entity,
   EntityCreateData,
   EntityUpdateData,
@@ -609,10 +608,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
         state.entities !== null
       ) {
         const symbolId = state.findMatchedEntities[findMatchIndex];
-        const symbol = state.entities.byId[symbolId];
-        if (symbol !== undefined) {
-          this.jumpToBoundingBox(symbol.attributes.bounding_boxes[0]);
-        }
+        this.jumpToEntity(symbolId);
       }
       return { findMatchIndex };
     });
@@ -747,7 +743,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     }
   }
 
-  jumpToBoundingBox(box: BoundingBox) {
+  jumpToEntity(id: string) {
     /*
      * In a past version, these offsets were based roughly off those in the pdf.js "find" functionality:
      * https://github.com/mozilla/pdf.js/blob/16ae7c6960c1296370c1600312f283a68e82b137/web/pdf_find_controller.js#L28-L29
@@ -755,23 +751,51 @@ class ScholarReader extends React.PureComponent<Props, State> {
     const SCROLL_OFFSET_X = -200;
     const SCROLL_OFFSET_Y = +100;
 
+    const { pdfViewerApplication, pdfViewer, pages, entities } = this.state;
+
     if (
-      this.state.pdfViewer !== null &&
-      this.state.pages !== null &&
-      this.state.pages[box.page + 1] !== undefined
+      entities === null ||
+      entities.byId[id] === undefined ||
+      entities.byId[id].attributes.bounding_boxes.length === 0 ||
+      pdfViewerApplication === null ||
+      pdfViewer === null ||
+      pages === null ||
+      Object.values(pages).length === 0
     ) {
-      const page = this.state.pages[box.page + 1];
-      const { left, top } = uiUtils.convertBoxToPdfCoordinates(page.view, box);
-      this.state.pdfViewer.scrollPageIntoView({
-        pageNumber: box.page + 1,
-        destArray: [
-          undefined,
-          { name: "XYZ" },
-          left + SCROLL_OFFSET_X,
-          top + SCROLL_OFFSET_Y,
-        ],
-      });
+      return;
     }
+
+    const dest = entities.byId[id].attributes.bounding_boxes[0];
+
+    /*
+     * Use the size of the first loaded page to map from ratio-based entity
+     * dimensions and absolute positions on the page. Note that this mapping will not work
+     * if pages in a PDF have different dimensions.
+     */
+    const page = Object.values(pages)[0];
+    const { left, top } = uiUtils.convertBoxToPdfCoordinates(page.view, dest);
+
+    /*
+     * Save the current location to history so that when a user clicks the 'Back' button, it takes
+     * them back to where they were before.
+     */
+    pdfViewerApplication.pdfHistory.pushCurrentPosition();
+
+    /*
+     * Scroll to the destination.
+     */
+    pdfViewer.scrollPageIntoView({
+      /*
+       * pdf.js page indexes are one more than the page indexes used by this application's bounding boxes.
+       */
+      pageNumber: dest.page + 1,
+      destArray: [
+        undefined,
+        { name: "XYZ" },
+        left + SCROLL_OFFSET_X,
+        top + SCROLL_OFFSET_Y,
+      ],
+    });
   }
 
   render() {

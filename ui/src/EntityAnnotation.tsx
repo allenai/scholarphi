@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import React from "react";
 import Annotation from "./Annotation";
 import { GlossStyle } from "./settings";
@@ -49,7 +50,10 @@ class EntityAnnotation extends React.PureComponent<Props> {
       <Annotation
         pageView={this.props.pageView}
         id={this.props.id}
-        className={this.props.className}
+        className={classNames(this.props.className, {
+          "find-match": this.props.isFindMatch,
+          "find-selection": this.props.isFindSelection,
+        })}
         active={this.props.active}
         underline={this.props.underline}
         selected={this.props.selected}

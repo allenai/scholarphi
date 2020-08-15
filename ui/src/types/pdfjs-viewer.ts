@@ -20,6 +20,7 @@ export interface PDFViewerApplication {
   externalServices: ExternalServices;
   pdfViewer: PDFViewer;
   pdfDocument: PDFDocumentProxy;
+  pdfHistory: PDFHistory;
 }
 
 export interface AppConfig {
@@ -125,4 +126,8 @@ export interface PDFPageView {
   div: HTMLDivElement;
   scale: number;
   viewport: PDFPageViewport;
+}
+
+export interface PDFHistory {
+  pushCurrentPosition: () => void;
 }
