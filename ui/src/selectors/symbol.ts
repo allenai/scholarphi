@@ -14,6 +14,13 @@ export function nickname(symbol: Symbol): string | null {
   return symbol.attributes.nicknames[0] || null;
 }
 
+export function isTopLevelSymbol(symbol: Symbol, entities: Entities) {
+  return (
+    symbol.relationships.parent.id === null ||
+    entities.byId[symbol.relationships.parent.id] === undefined
+  );
+}
+
 /**
  * Get the descendants of this symbol. Descendants are returned in breadth-first order. For
  * example, the subscripts of the symbol will be returned before the subscripts of the subscripts.

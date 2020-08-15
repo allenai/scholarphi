@@ -133,6 +133,19 @@ class PageOverlay extends React.Component<Props, {}> {
     }
   }
 
+  /**
+   * Only show an annotation for an equation if equation diagrams are enabled, and if
+   * the symbol has more than 1 top-level symbol.
+   */
+  shouldShowEquation(equationId: string) {
+    const { entities, equationDiagramsEnabled } = this.props;
+    return (
+      entities !== null &&
+      equationDiagramsEnabled &&
+      selectors.equationTopLevelSymbols(equationId, entities).length > 1
+    );
+  }
+
   onClickSentence(
     event: React.MouseEvent<HTMLDivElement>,
     sentenceEntity: Entity
@@ -172,7 +185,7 @@ class PageOverlay extends React.Component<Props, {}> {
       entityCreationEnabled,
       entityCreationType,
       entityCreationAreaSelectionMethod,
-      equationDiagramsEnabled: formulaDiagramsEnabled,
+      equationDiagramsEnabled,
       copySentenceOnClick,
       handleAddPaperToLibrary,
       handleCreateEntity,
@@ -195,7 +208,7 @@ class PageOverlay extends React.Component<Props, {}> {
           />
         ) : null}
         {!entityCreationEnabled &&
-        formulaDiagramsEnabled &&
+        equationDiagramsEnabled &&
         entities !== null &&
         selectedEntities.some((e) => e.type === "equation") ? (
           <EntityPageMask
@@ -276,59 +289,63 @@ class PageOverlay extends React.Component<Props, {}> {
                   />
                 );
               } else if (isSymbol(entity)) {
+                /*
+                 * A symbol should be shown as clickable in any of the conditions:
+                 * 1. It is the child of a selected symbol
+                 * 2. It is a top-level symbol in a selected equation
+                 * 3. Equation annotations are disabled and it's a top-level symbol
+                 */
+                const isSelectionChild = selectedEntities.some(
+                  (e) => isSymbol(e) && selectors.isChild(entity, e)
+                );
+                const isTopLevel = selectors.isTopLevelSymbol(entity, entities);
+                const equationId = entity.relationships.equation.id;
+                const isTopLevelInSelectedEquation =
+                  isTopLevel &&
+                  selectedEntities.some(
+                    (e) => isEquation(e) && equationId === e.id
+                  );
+                const isSelectable =
+                  isSelectionChild ||
+                  isTopLevelInSelectedEquation ||
+                  equationId === null ||
+                  (!this.shouldShowEquation(equationId) && isTopLevel);
+
+                /*
+                 * Show a more prominent selection hint than an underline when the symbol is
+                 * child of something else that's already selected.
+                 */
+                const showSelectionHint =
+                  isSelectionChild || isTopLevelInSelectedEquation;
+
+                /*
+                 * Compute attributes of symbols to use for styling, like whether it
+                 * is a search result, and how it relates to the current selections.
+                 */
                 const isMatch =
                   findMatchedEntityIds !== null &&
                   findMatchedEntityIds.indexOf(entityId) !== -1;
-                const parentId = entity.relationships.parent.id;
-
-                /*
-                 * Determine what selection hints to show to indicate to the user that the
-                 * symbol can be selected.
-                 */
-                const isTopLevelSymbol =
-                  parentId === null || entities.byId[parentId] === undefined;
-                const isChildOfSelection = selectedEntities.some(
-                  (e) => isSymbol(e) && selectors.isChild(entity, e)
-                );
-                const isEquationSelected = selectedEntityIds
-                  .map((id) => entities.byId[id])
-                  .filter((e) => e !== undefined)
-                  .filter((e) => isEquation(e))
-                  .some((e) => e.id === entity.relationships.equation.id);
-                const isSelectable =
-                  isChildOfSelection ||
-                  (formulaDiagramsEnabled &&
-                    isTopLevelSymbol &&
-                    isEquationSelected);
-                const isAncestorOfSelection = selectedEntities.some(
+                const isSelectionAncestor = selectedEntities.some(
                   (e) =>
                     isSymbol(e) && selectors.isDescendant(e, entity, entities)
                 );
                 const isLeaf = entity.relationships.children.length === 0;
+                const descendants = selectors.descendants(entity.id, entities);
 
                 /*
-                 * A symbol is interactive when it's a member of a selected equation (if equation
-                 * diagrams are enabled), or otherwise when it's a top-level symbol, or a child of
-                 * a currently-selected symbol.
+                 * A symbol will be shown if it's either selectable, or if it's selected and
+                 * it doesn't have any children to be selected.
                  */
-                const active =
-                  isSelectable ||
-                  (!formulaDiagramsEnabled &&
-                    isTopLevelSymbol &&
-                    !isAncestorOfSelection &&
-                    !isSelected) ||
-                  (isLeaf && isSelected);
-
-                const descendants = selectors.descendants(entity.id, entities);
+                const active = isSelectable || (isLeaf && isSelected);
 
                 return (
                   <EntityAnnotation
                     key={annotationId}
                     id={annotationId}
                     className={classNames("symbol-annotation", {
-                      "selection-hint": isSelectable,
+                      "selection-hint": showSelectionHint,
                       "leaf-symbol": isLeaf,
-                      "ancestor-of-selection": isAncestorOfSelection,
+                      "ancestor-of-selection": isSelectionAncestor,
                     })}
                     pageView={pageView}
                     entity={entity}
@@ -375,7 +392,10 @@ class PageOverlay extends React.Component<Props, {}> {
                     onClick={this.onClickSentence}
                   />
                 );
-              } else if (isEquation(entity) && formulaDiagramsEnabled) {
+              } else if (
+                isEquation(entity) &&
+                this.shouldShowEquation(entity.id)
+              ) {
                 return (
                   <EntityAnnotation
                     key={annotationId}
@@ -383,7 +403,7 @@ class PageOverlay extends React.Component<Props, {}> {
                     id={annotationId}
                     pageView={pageView}
                     entity={entity}
-                    underline={false}
+                    underline={showAnnotations}
                     selected={isSelected}
                     selectedSpanIds={selectedSpanIds}
                     handleSelect={this.props.handleSelectEntityAnnotation}
@@ -405,7 +425,7 @@ class PageOverlay extends React.Component<Props, {}> {
             handleCreateEntity={handleCreateEntity}
           />
         ) : null}
-        {formulaDiagramsEnabled &&
+        {equationDiagramsEnabled &&
           entities !== null &&
           selectedEntities
             .filter(isEquation)
