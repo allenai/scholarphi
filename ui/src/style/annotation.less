@@ -52,12 +52,12 @@
 .scholar-reader-annotation-span {
   &.find-match {
     background-color: green;
-    opacity: 0.2;
+    opacity: 0.3;
   }
 
   &.find-selection {
     background-color: green;
-    opacity: 0.4;
+    opacity: 0.5;
   }
 }
 
@@ -66,12 +66,6 @@
  */
 .scholar-reader-annotation-span.inactive {
   pointer-events: none;
-
-  .user-annotation {
-    background: none;
-    pointer-events: none;
-    border: 1px dotted black;
-  }
 }
 
 /**
@@ -101,6 +95,7 @@
  */
 .symbol-annotation {
   &.selected:not(.leaf-symbol) {
+    pointer-events: none;
     background: none !important;
     padding: @padding / 2;
     margin: -@padding / 2;
@@ -109,7 +104,8 @@
   }
 
   &.selection-hint {
-    background-color: @highlight-color;
+    background-color: rgba(255, 255, 0, 1);
+    border-radius: 10px;
     animation: pulse 0.5s ease-in-out infinite alternate;
   }
 
@@ -120,5 +116,15 @@
     100% {
       opacity: @highlight-opacity;
     }
+  }
+}
+
+/**
+ * Equation annotations
+ */
+.equation-annotation {
+  &.selected {
+    pointer-events: none;
+    background: none !important;
   }
 }

@@ -44,7 +44,7 @@ export class SymbolFindQueryWidget extends React.PureComponent<Props> {
           if (!toggleEnabled) {
             return (
               <span key={symbol.id} className="find-bar__message__span">
-                Search results for <RichText>{tex}</RichText>
+                Find other appearances of <RichText>{tex}</RichText>
               </span>
             );
           } else {

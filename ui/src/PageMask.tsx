@@ -26,7 +26,7 @@ class PageMask extends React.PureComponent<Props> {
 
     const maskId = `page-${pageNumber}-mask`;
     return (
-      <svg width={width} height={height}>
+      <svg className="page-mask" width={width} height={height}>
         <mask id={maskId}>
           {/*
            * Where the SVG mask is white, the overlay mask will show. Start by showing the
@@ -69,17 +69,25 @@ class PageMask extends React.PureComponent<Props> {
           ? highlight
               .filter((b) => b.page === pageNumber)
               .map((b, i) => (
-                <rect
-                  key={`highlight-${i}`}
-                  x={b.left * width}
-                  y={b.top * height}
-                  width={b.width * width}
-                  height={b.height * height}
-                  fill="green"
-                  opacity={0.2}
-                />
+                <React.Fragment key={`highlight-${i}`}>
+                  <rect
+                    className="page-mask__highlight"
+                    x={b.left * width}
+                    y={b.top * height}
+                    width={b.width * width}
+                    height={b.height * height}
+                  />
+                  <line
+                    className="page-mask__underline"
+                    x1={b.left * width}
+                    x2={(b.left + b.width) * width}
+                    y1={(b.top + b.height) * height + 4}
+                    y2={(b.top + b.height) * height + 4}
+                  />
+                </React.Fragment>
               ))
           : null}
+        {this.props.children}
       </svg>
     );
   }

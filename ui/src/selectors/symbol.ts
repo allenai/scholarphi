@@ -51,24 +51,21 @@ export function descendants(symbolId: string, entities: Entities): Symbol[] {
 }
 
 /**
- * Return the sentence for this symbol if one exists, otherwise null.
+ * Return all sentences containing a list of symbols.
  */
-export function symbolSentence(
-  symbolId: string,
+export function symbolSentences(
+  entityIds: string[],
   entities: Entities
-): Sentence | null {
-  const symbol = entities.byId[symbolId];
-  if (!isSymbol(symbol)) {
-    return null;
-  }
-  const sentenceId = symbol.relationships.sentence.id;
-  if (sentenceId !== null && entities.byId[sentenceId] !== undefined) {
-    const sentence = entities.byId[sentenceId];
-    if (isSentence(sentence)) {
-      return sentence;
-    }
-  }
-  return null;
+): Sentence[] {
+  return entityIds
+    .map((id) => entities.byId[id])
+    .filter((e) => e !== undefined)
+    .filter(isSymbol)
+    .map((s) => s.relationships.sentence.id)
+    .filter((sentId) => sentId !== null)
+    .map((sentId) => entities.byId[sentId as string])
+    .filter((sent) => sent !== undefined)
+    .filter(isSentence);
 }
 
 export const symbolIds = defaultMemoize(

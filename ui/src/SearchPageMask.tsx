@@ -2,14 +2,15 @@ import React from "react";
 import PageMask from "./PageMask";
 import * as selectors from "./selectors";
 import { Entities } from "./state";
-import { isSentence, isSymbol, Sentence, Symbol } from "./types/api";
+import { BoundingBox } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 import * as uiUtils from "./utils/ui";
 
 interface Props {
   pageView: PDFPageView;
   entities: Entities | null;
-  selectedEntityIds: string[];
+  firstMatchingEntityId: string | null;
+  matchingEntityIds: string[];
 }
 
 /**
@@ -18,60 +19,65 @@ interface Props {
 export class SearchPageMask extends React.PureComponent<Props> {
   render() {
     /*
-     * Only show the mask if a symbol is selected and sentences were detected for the paper.
+     * Show the sentences containing all matching symbols.
      */
-    const { selectedEntityIds, entities } = this.props;
+    const { matchingEntityIds, firstMatchingEntityId, entities } = this.props;
     if (entities === null) {
       return null;
     }
-    const selectedSymbolIds = selectedEntityIds.filter((entityId) =>
-      isSymbol(entities.byId[entityId])
+    const sentencesToShow = selectors.symbolSentences(
+      matchingEntityIds,
+      entities
     );
-    if (selectedSymbolIds.length === 0) {
-      return null;
+    const pageNumber = uiUtils.getPageNumber(this.props.pageView);
+    const show = sentencesToShow
+      .map((s) => s.attributes.bounding_boxes)
+      .flat()
+      .filter((b) => b.page === pageNumber);
+
+    /*
+     * Highlight a sentence that contains the first matching symbol.
+     */
+    let highlight: BoundingBox[] = [];
+    if (firstMatchingEntityId !== null) {
+      const firstMatchingSentence = selectors.symbolSentences(
+        [firstMatchingEntityId],
+        entities
+      )[0];
+      if (firstMatchingSentence !== undefined) {
+        highlight = firstMatchingSentence.attributes.bounding_boxes;
+      }
     }
 
-    const matchingSentences: Sentence[] = [];
-    const firstMatchingSentences: Sentence[] = [];
-    selectedSymbolIds.forEach((symbolId) => {
-      let foundFirstSentenceForSymbol = false;
-      selectors.matchingSymbols(symbolId, entities).forEach((matchId) => {
-        const sentenceId = (entities.byId[matchId] as Symbol).relationships
-          .sentence.id;
-        if (
-          sentenceId !== null &&
-          !matchingSentences.some((s) => s.id === sentenceId)
-        ) {
-          const sentence = entities.byId[sentenceId];
-          if (sentence !== undefined && isSentence(sentence)) {
-            matchingSentences.push(sentence);
-            if (!foundFirstSentenceForSymbol) {
-              if (!firstMatchingSentences.some((s) => s.id === sentence.id)) {
-                firstMatchingSentences.push(sentence);
-              }
-              foundFirstSentenceForSymbol = true;
-            }
-          }
-        }
-      });
-    });
-
-    const pageNumber = uiUtils.getPageNumber(this.props.pageView);
-    const show = matchingSentences
-      .map((s) => s.attributes.bounding_boxes)
-      .flat()
-      .filter((b) => b.page === pageNumber);
-    const highlight = firstMatchingSentences
-      .map((s) => s.attributes.bounding_boxes)
-      .flat()
-      .filter((b) => b.page === pageNumber);
+    /*
+     * Place a label right below the last bounding box of the highlight.
+     */
+    const lastHighlight = highlight[highlight.length - 1];
+    const LABEL_PADDING_TOP = 12;
+    const { width, height } = uiUtils.getPageViewDimensions(
+      this.props.pageView
+    );
 
     return (
       <PageMask
         pageView={this.props.pageView}
         show={show}
         highlight={highlight}
-      />
+      >
+        {lastHighlight !== undefined ? (
+          <text
+            className="page-mask__highlight-label"
+            x={lastHighlight.left * width}
+            y={
+              (lastHighlight.top + lastHighlight.height) * height +
+              LABEL_PADDING_TOP
+            }
+            dominantBaseline="hanging"
+          >
+            First appearance of symbol
+          </text>
+        ) : null}
+      </PageMask>
     );
   }
 }

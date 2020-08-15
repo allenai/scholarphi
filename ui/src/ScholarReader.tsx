@@ -1000,10 +1000,23 @@ class ScholarReader extends React.PureComponent<Props, State> {
                       this.state.selectedAnnotationSpanIds,
                       pageNumber
                     )}
+                    findFirstMatchEntityId={
+                      this.state.symbolSearchEnabled &&
+                      this.state.findMatchedEntities !== null &&
+                      this.state.findMatchedEntities.length > 0 &&
+                      selectors.entityIdsInPage(
+                        [this.state.findMatchedEntities[0]],
+                        this.state.entities,
+                        pageNumber
+                      ).length > 0
+                        ? this.state.findMatchedEntities[0]
+                        : null
+                    }
                     findMatchedEntityIds={
-                      this.state.symbolSearchEnabled
+                      this.state.symbolSearchEnabled &&
+                      this.state.findMatchedEntities !== null
                         ? selectors.entityIdsInPage(
-                            this.state.findMatchedEntities || [],
+                            this.state.findMatchedEntities,
                             this.state.entities,
                             pageNumber
                           )

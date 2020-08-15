@@ -122,7 +122,8 @@ export class SearchResults extends React.PureComponent<Props, State> {
                 if (!isSymbol(symbol)) {
                   return null;
                 }
-                const sentence = selectors.symbolSentence(symbol.id, entities);
+                const sentence =
+                  selectors.symbolSentences([symbol.id], entities)[0] || null;
 
                 return (
                   <div className="search-results__result" key={sId}>

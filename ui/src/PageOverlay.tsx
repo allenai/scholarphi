@@ -42,6 +42,7 @@ interface Props {
   selectedEntityIds: string[];
   selectedAnnotationIds: string[];
   selectedAnnotationSpanIds: string[];
+  findFirstMatchEntityId: string | null;
   findMatchedEntityIds: string[] | null;
   findSelectionEntityId: string | null;
   showAnnotations: boolean;
@@ -134,15 +135,22 @@ class PageOverlay extends React.Component<Props, {}> {
   }
 
   /**
-   * Only show an annotation for an equation if equation diagrams are enabled, and if
-   * the symbol has more than 1 top-level symbol.
+   * Only show an annotation for an equation if:
+   * 1. equation diagrams are enabled
+   * 2. the symbol has more than 1 top-level symbol
+   * 3. a symbol isn't already selected in the equation
    */
   shouldShowEquation(equationId: string) {
-    const { entities, equationDiagramsEnabled } = this.props;
+    const { entities, equationDiagramsEnabled, selectedEntityIds } = this.props;
     return (
       entities !== null &&
       equationDiagramsEnabled &&
-      selectors.equationTopLevelSymbols(equationId, entities).length > 1
+      selectors.equationTopLevelSymbols(equationId, entities).length > 1 &&
+      !selectedEntityIds
+        .map((id) => entities.byId[id])
+        .filter((e) => e !== undefined)
+        .filter(isSymbol)
+        .some((s) => s.relationships.equation.id === equationId)
     );
   }
 
@@ -176,6 +184,7 @@ class PageOverlay extends React.Component<Props, {}> {
       selectedEntityIds,
       selectedAnnotationIds,
       selectedAnnotationSpanIds,
+      findFirstMatchEntityId,
       findMatchedEntityIds,
       findSelectionEntityId,
       searchMaskEnabled,
@@ -200,11 +209,14 @@ class PageOverlay extends React.Component<Props, {}> {
 
     return ReactDOM.createPortal(
       <>
-        {!entityCreationEnabled && searchMaskEnabled ? (
+        {!entityCreationEnabled &&
+        searchMaskEnabled &&
+        findMatchedEntityIds !== null ? (
           <SearchPageMask
             pageView={pageView}
             entities={entities}
-            selectedEntityIds={selectedEntityIds}
+            firstMatchingEntityId={findFirstMatchEntityId}
+            matchingEntityIds={findMatchedEntityIds}
           />
         ) : null}
         {!entityCreationEnabled &&
@@ -286,6 +298,23 @@ class PageOverlay extends React.Component<Props, {}> {
                     selected={isSelected}
                     selectedSpanIds={selectedSpanIds}
                     handleSelect={handleSelectEntityAnnotation}
+                  />
+                );
+              } else if (
+                isEquation(entity) &&
+                this.shouldShowEquation(entity.id)
+              ) {
+                return (
+                  <EntityAnnotation
+                    key={annotationId}
+                    className="equation-annotation"
+                    id={annotationId}
+                    pageView={pageView}
+                    entity={entity}
+                    underline={showAnnotations}
+                    selected={isSelected}
+                    selectedSpanIds={selectedSpanIds}
+                    handleSelect={this.props.handleSelectEntityAnnotation}
                   />
                 );
               } else if (isSymbol(entity)) {
@@ -390,23 +419,6 @@ class PageOverlay extends React.Component<Props, {}> {
                     selected={false}
                     selectedSpanIds={null}
                     onClick={this.onClickSentence}
-                  />
-                );
-              } else if (
-                isEquation(entity) &&
-                this.shouldShowEquation(entity.id)
-              ) {
-                return (
-                  <EntityAnnotation
-                    key={annotationId}
-                    className="equation-annotation"
-                    id={annotationId}
-                    pageView={pageView}
-                    entity={entity}
-                    underline={showAnnotations}
-                    selected={isSelected}
-                    selectedSpanIds={selectedSpanIds}
-                    handleSelect={this.props.handleSelectEntityAnnotation}
                   />
                 );
               } else {
