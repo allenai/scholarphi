@@ -18,10 +18,7 @@
   /*
    * Toolbars must appear both above the pdf.js sidebar and annotations
    */
-  z-index: max(
-    @pdfjs-sidebarContainer-z-index + 1,
-    @base-annotation-z-index + 1
-  );
+  z-index: max(@pdfjs-sidebarContainer-z-index + 1, @toolbar-z-index + 1);
 }
 
 /**
@@ -75,7 +72,7 @@ div.scholar-reader-toolbar {
   position: absolute;
   bottom: @padding * 2;
   right: @padding * 2;
-  z-index: @base-annotation-z-index + 1;
+  z-index: @toolbar-z-index;
 }
 
 /**
@@ -83,7 +80,7 @@ div.scholar-reader-toolbar {
  */
 .text-selection-menu {
   position: absolute;
-  z-index: @base-annotation-z-index + 1;
+  z-index: @toolbar-z-index;
   padding: @padding;
 
   /*

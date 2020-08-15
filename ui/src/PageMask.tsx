@@ -56,7 +56,7 @@ class PageMask extends React.PureComponent<Props> {
               />
             ))}
         </mask>
-        {/* Show a white mask over the page a 'show' region doesn't appear. */}
+        {/* Show a white mask over the page where a 'show' region doesn't appear. */}
         <rect
           key="white-overlay"
           width={width}

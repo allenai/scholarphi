@@ -92,8 +92,15 @@
 /**
 * Z INDEXES
 */
-@drawer-close-button-z-index: 1200;
 @base-annotation-z-index: 1000;
+@sentence-annotation-z-index: @base-annotation-z-index;
+@other-annotation-z-index: @sentence-annotation-z-index + 1;
+@max-annotation-z-index: @other-annotation-z-index;
+
+@page-mask-z-index: @max-annotation-z-index + 1;
+@equation-diagram-z-index: @max-annotation-z-index + 1;
+@toolbar-z-index: @equation-diagram-z-index + 1;
+@drawer-close-button-z-index: 1200;
 
 /**
  * PDF VIEWER APPLICATION VARIABLES

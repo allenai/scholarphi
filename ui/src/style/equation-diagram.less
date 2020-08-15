@@ -2,7 +2,7 @@
  * Equation diagram.
  */
 .equation-diagram {
-  z-index: @base-annotation-z-index + 1;
+  z-index: @equation-diagram-z-index;
 }
 
 /**
@@ -19,8 +19,9 @@ rect.equation-diagram__feature {
  * Labels.
  */
 rect.diagram-label__background {
-  fill: lightyellow;
-  stroke: lightsalmon;
+  fill: @label-color;
+  stroke: @label-border-color;
+  stroke-width: @label-border-width;
 }
 
 .equation-diagram__label__text {
@@ -61,8 +62,7 @@ g.equation-diagram__labeled-feature {
     cursor: default;
 
     rect.diagram-label__background {
-      fill: lighten(yellow, 30%);
-      stroke: salmon;
+      stroke-width: @label-border-width * 2;
     }
 
     rect.equation-diagram__feature {

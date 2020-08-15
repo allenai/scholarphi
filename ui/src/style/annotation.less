@@ -82,11 +82,11 @@
  */
 .scholar-reader-annotation-span {
   &.sentence-annotation {
-    z-index: @base-annotation-z-index;
+    z-index: @sentence-annotation-z-index;
   }
 
   &:not(.sentence-annotation) {
-    z-index: @base-annotation-z-index + 1;
+    z-index: @other-annotation-z-index;
   }
 }
 
