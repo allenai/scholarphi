@@ -19,7 +19,10 @@ interface Props {
    */
   pageView: PDFPageView;
   /**
-   * A unique ID that distinguishes this annotation from all other annotations.
+   * A unique ID that distinguishes this annotation from all other annotations. This ID
+   * should include the substring (page-<pageNumber>) to support the filtering of annotations by
+   * page and hence speed up rendering when the selected annotation ID changes. See the selectors
+   * in 'selectors/annotation.tsx' for context.
    */
   id: string;
   /**

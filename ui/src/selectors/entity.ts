@@ -47,17 +47,19 @@ export function outerBoundingBox(
 }
 
 /**
- * Determine whether an entity appears within a specific page.
+ * Filter a list of entity IDs to just those in a specified page.
  */
-export function isEntityInPage(
-  entityId: string,
+export function entityIdsInPage(
+  entityIds: string[],
   entities: Entities | null,
   page: number
 ) {
-  if (entities === null || entities.byId[entityId] === undefined) {
-    return false;
+  if (entities === null) {
+    return [];
   }
-  return entities.byId[entityId].attributes.bounding_boxes.some(
-    (b) => b.page === page
-  );
+  return entityIds
+    .map((e) => entities.byId[e])
+    .filter((e) => e !== undefined)
+    .filter((e) => e.attributes.bounding_boxes.some((b) => b.page === page))
+    .map((e) => e.id);
 }

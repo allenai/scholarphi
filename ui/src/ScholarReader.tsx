@@ -984,26 +984,39 @@ class ScholarReader extends React.PureComponent<Props, State> {
                     papers={this.state.papers}
                     entities={this.state.entities}
                     userLibrary={this.state.userLibrary}
-                    selectedEntityIds={this.state.selectedEntityIds}
-                    selectedAnnotationIds={this.state.selectedAnnotationIds}
-                    selectedAnnotationSpanIds={
-                      this.state.selectedAnnotationSpanIds
-                    }
+                    /*
+                     * Prevent unnecessary renders by only passing in the subset of selected entity and
+                     * annotation IDs for this page. The PageOverlay performs a deep comparison of the
+                     * lists of IDs to determine whether to re-render.
+                     */
+                    selectedEntityIds={selectors.entityIdsInPage(
+                      this.state.selectedEntityIds,
+                      this.state.entities,
+                      pageNumber
+                    )}
+                    selectedAnnotationIds={selectors.annotationsInPage(
+                      this.state.selectedAnnotationIds,
+                      pageNumber
+                    )}
+                    selectedAnnotationSpanIds={selectors.annotationSpansInPage(
+                      this.state.selectedAnnotationSpanIds,
+                      pageNumber
+                    )}
                     findMatchedEntityIds={
                       this.state.symbolSearchEnabled
-                        ? this.state.findMatchedEntities
+                        ? selectors.entityIdsInPage(
+                            this.state.findMatchedEntities || [],
+                            this.state.entities,
+                            pageNumber
+                          )
                         : null
                     }
                     findSelectionEntityId={
-                      this.state.symbolSearchEnabled &&
-                      findMatchEntityId !== null &&
-                      selectors.isEntityInPage(
-                        findMatchEntityId,
+                      selectors.entityIdsInPage(
+                        findMatchEntityId ? [findMatchEntityId] : [],
                         this.state.entities,
                         pageNumber
-                      )
-                        ? findMatchEntityId
-                        : null
+                      )[0] || null
                     }
                     showAnnotations={this.state.annotationHintsEnabled}
                     searchMaskEnabled={this.state.declutterEnabled}

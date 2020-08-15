@@ -82,12 +82,42 @@ interface Props {
  *
  * The structure of this class is based on the example at https://reactjs.org/docs/portals.html.
  */
-class PageOverlay extends React.PureComponent<Props, {}> {
+class PageOverlay extends React.Component<Props, {}> {
   constructor(props: Props) {
     super(props);
     this._element = document.createElement("div");
     this._element.classList.add("scholar-reader-page-overlay");
     this.onClickSentence = this.onClickSentence.bind(this);
+  }
+
+  /**
+   * Update this component using shallow comparison for most properties, and deep comparison
+   * for lists of IDs (e.g., entity or annotation IDs). This is because it's expected that the
+   * parent component of the PageOverlay will continuously recompute filtered lists of IDs
+   * specific to this page as selections change on other pages. New filtered lists of IDs with
+   * equivalent members should not trigger this page to update.
+   */
+  shouldComponentUpdate(nextProps: Props) {
+    const ID_LIST_PROPS: (keyof Props)[] = [
+      "selectedEntityIds",
+      "selectedAnnotationIds",
+      "selectedAnnotationSpanIds",
+      "findMatchedEntityIds",
+    ];
+    return Object.keys(this.props).some((key) => {
+      const name = key as keyof Props;
+      if (ID_LIST_PROPS.indexOf(name) !== -1) {
+        const list = (this.props[name] || []) as string;
+        const nextList = (nextProps[name] || []) as string;
+        for (let i = 0; i < Math.max(list.length, nextList.length); i++) {
+          if (list[i] !== nextList[i]) {
+            return true;
+          }
+        }
+        return false;
+      }
+      return this.props[name] !== nextProps[name];
+    });
   }
 
   componentDidMount() {
