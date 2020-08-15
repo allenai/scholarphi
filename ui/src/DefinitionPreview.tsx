@@ -90,8 +90,7 @@ class DefinitionPreview extends React.PureComponent<Props, State> {
     const selectedEntityId = selectedEntityIds[0];
     const matchingSymbolIds = selectors.matchingSymbols(
       selectedEntityId,
-      entities,
-      [{ key: "exact-match", active: true }]
+      entities
     );
     const firstMatchingSymbolId =
       matchingSymbolIds.length > 0 ? matchingSymbolIds[0] : selectedEntityId;

@@ -88,10 +88,10 @@ class ScholarReader extends React.PureComponent<Props, State> {
       primerPageEnabled: true,
       annotationHintsEnabled: false,
       glossStyle: "sidenote",
-      glossEvaluationEnabled: false,
+      glossEvaluationEnabled: true,
       textSelectionMenuEnabled: false,
-      symbolSearchEnabled: false,
-      declutterEnabled: false,
+      symbolSearchEnabled: true,
+      declutterEnabled: true,
       definitionPreviewEnabled: false,
       equationDiagramsEnabled: false,
       entityCreationEnabled: false,
@@ -246,14 +246,12 @@ class ScholarReader extends React.PureComponent<Props, State> {
         findActivationTimeMs: Date.now(),
         findQuery: {
           byId: {
-            "exact-match": {
-              key: "exact-match",
-            },
-            "partial-match": {
-              key: "partial-match",
+            [entityId]: {
+              symbol: prevEntities.byId[entityId],
+              active: true,
             },
           },
-          all: ["exact-match", "partial-match"],
+          all: [entityId],
         } as FindQuery,
         findMatchCount: matchCount,
         findMatchIndex: matchIndex,

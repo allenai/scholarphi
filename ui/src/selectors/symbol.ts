@@ -74,7 +74,8 @@ export const symbolIds = defaultMemoize(
 
 /**
  * Get a list of IDs of all symbols that with similar MathML. Returned list of symbols will
- * be in the order the symbols appear in the document.
+ * be in the order the symbols appear in the document. MathML is used for matching rather than
+ * TeX as MathML is more likely to yield precise matches, having been normalized by the backend.
  */
 export function matchingSymbols(
   symbolIdOrIds: string | string[],
@@ -126,15 +127,8 @@ const symbolsMatchingSingleSymbol = defaultMemoize(
         ) {
           return otherSymbol.attributes.mathml === symbol.attributes.mathml;
         }
-        if (symbolFilters.some((f) => f.key === "exact-match" && f.active)) {
-          return otherSymbol.attributes.mathml === symbol.attributes.mathml;
-        }
-        return (
-          symbolFilters.some((f) => f.key === "partial-match" && f.active) &&
-          otherSymbol.attributes.mathml !== null &&
-          symbol.attributes.mathml_near_matches.indexOf(
-            otherSymbol.attributes.mathml
-          ) !== -1
+        return symbolFilters.some(
+          (f) => otherSymbol.attributes.mathml === f.symbol.attributes.mathml
         );
       })
       .map((s) => s.id);

@@ -9,12 +9,13 @@ import React from "react";
 import { PdfjsFindQueryWidget } from "./PdfjsFindQueryWidget";
 import { SymbolFilters } from "./state";
 import { SymbolFindQueryWidget } from "./SymbolFindQueryWidget";
+import { Symbol } from "./types/api";
 import { PDFViewerApplication } from "./types/pdfjs-viewer";
 
 export type FindMode = null | "pdfjs-builtin-find" | "symbol";
 export type FindQuery = null | string | SymbolFilters;
 export interface SymbolFilter {
-  key: "exact-match" | "partial-match";
+  symbol: Symbol;
   active?: boolean;
 }
 
