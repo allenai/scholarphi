@@ -55,7 +55,8 @@ class ApiServer {
       method: "POST",
       path: "/api/log",
       handler: async (request, h) => {
-        const ipAddress = request.info.remoteAddress;
+        const ipAddress =
+          request.headers["x-real-ip"] || request.info.remoteAddress;
         const payload = request.payload as LogEntryCreatePayload;
         try {
           await dbConnection.insertLogEntry({
