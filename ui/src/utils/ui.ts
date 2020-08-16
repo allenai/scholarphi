@@ -285,3 +285,35 @@ export function getPageNumber(p: PDFPageView | PDFPageProxy) {
     return (p as PDFPageProxy).pageNumber - 1;
   }
 }
+
+/**
+ * Programmatically trigger a click of a Material-UI button that makes it look like the button has
+ * actually been clicked. This requires simulating a 'mousedown' event, which starts a background
+ * 'ripple', followed by a 'mouseup' event. The ripple appears to last from the 'mousedown' event
+ * until the 'mouseup' event, and must have some duration. The 'click' event, however, is dispatched
+ * immediately so that the button click can be processed as soon as possible.
+ */
+export function simulateMaterialUiButtonClick(element: HTMLButtonElement) {
+  const MOUSE_EVENT_OPTIONS = { cancelable: true, bubbles: true };
+  const mouseDownEvent = new MouseEvent("mousedown", MOUSE_EVENT_OPTIONS);
+  const mouseUpEvent = new MouseEvent("mouseup", MOUSE_EVENT_OPTIONS);
+  const clickEvent = new MouseEvent("click", MOUSE_EVENT_OPTIONS);
+
+  /*
+   * Start the ripple effect.
+   */
+  element.dispatchEvent(mouseDownEvent);
+  /*
+   * Trigger the click as soon as possible.
+   */
+  element.dispatchEvent(clickEvent);
+  /*
+   * The ripple will continue to expand until the 'mouseup' event is dispatched. For it to look
+   * like the button has been pressed to a user, 'RIPPLE_TIME_MS' needs to be greater than 0,
+   * and is most visually salient if it is more than 100 ms.
+   */
+  const RIPPLE_TIME_MS = 200;
+  setTimeout(() => {
+    element.dispatchEvent(mouseUpEvent);
+  }, RIPPLE_TIME_MS);
+}

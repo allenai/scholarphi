@@ -11,6 +11,7 @@ import { SymbolFilters } from "./state";
 import { SymbolFindQueryWidget } from "./SymbolFindQueryWidget";
 import { Symbol } from "./types/api";
 import { PDFViewerApplication } from "./types/pdfjs-viewer";
+import * as uiUtils from "./utils/ui";
 
 export type FindMode = null | "pdfjs-builtin-find" | "symbol";
 export type FindQuery = null | string | SymbolFilters;
@@ -38,6 +39,7 @@ class FindBar extends React.PureComponent<Props> {
     this.onPdfjsQueryChanged = this.onPdfjsQueryChanged.bind(this);
     this.onClickNext = this.onClickNext.bind(this);
     this.onClickPrevious = this.onClickPrevious.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
     this.close = this.close.bind(this);
   }
 
@@ -104,6 +106,23 @@ class FindBar extends React.PureComponent<Props> {
     }
   }
 
+  onKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+    const { previousButton, nextButton } = this;
+    if (
+      previousButton !== null &&
+      (event.key === "ArrowLeft" || (event.shiftKey && event.key === "Enter"))
+    ) {
+      uiUtils.simulateMaterialUiButtonClick(previousButton);
+      event.stopPropagation();
+    } else if (
+      nextButton !== null &&
+      (event.key === "ArrowRight" || event.key === "Enter")
+    ) {
+      uiUtils.simulateMaterialUiButtonClick(nextButton);
+      event.stopPropagation();
+    }
+  }
+
   onPdfjsQueryChanged(query: string | null) {
     this.props.handleChangeQuery(query);
     /*
@@ -132,6 +151,17 @@ class FindBar extends React.PureComponent<Props> {
         <Card
           className={classNames("find-bar", this.props.className)}
           raised={true}
+          /*
+           * Find next / previous when hot keys are pressed. Assign the find-bar focus whenever it
+           * is rendered so that it will automatically process hot keys until user clicks out of it.
+           */
+          ref={(ref) => {
+            if (ref instanceof HTMLDivElement) {
+              ref.focus();
+            }
+          }}
+          tabIndex={0}
+          onKeyDown={this.onKeyDown}
         >
           <div className="find-bar__query">
             {
@@ -170,6 +200,7 @@ class FindBar extends React.PureComponent<Props> {
           {/* Common components for finding: next, back, and close. */}
           <div className="find-bar__navigation">
             <IconButton
+              ref={(ref) => (this.previousButton = ref)}
               disabled={matchCount === null || matchCount === 0}
               onClick={this.onClickPrevious}
               size="small"
@@ -177,6 +208,7 @@ class FindBar extends React.PureComponent<Props> {
               <NavigateBeforeIcon />
             </IconButton>
             <IconButton
+              ref={(ref) => (this.nextButton = ref)}
               disabled={matchCount === null || matchCount === 0}
               onClick={this.onClickNext}
               size="small"
@@ -207,6 +239,8 @@ class FindBar extends React.PureComponent<Props> {
   }
 
   pdfjsFindQueryWidget: PdfjsFindQueryWidget | null = null;
+  nextButton: HTMLButtonElement | null = null;
+  previousButton: HTMLButtonElement | null = null;
 }
 
 export default FindBar;

@@ -158,14 +158,26 @@ class PageOverlay extends React.Component<Props, {}> {
     event: React.MouseEvent<HTMLDivElement>,
     sentenceEntity: Entity
   ) {
-    if (event.altKey && isSentence(sentenceEntity)) {
-      const { tex } = sentenceEntity.attributes;
-      if (tex !== null) {
-        navigator.clipboard.writeText(tex);
-        const texPreview = uiUtils.truncateText(tex, 30, true);
+    if (!isSentence(sentenceEntity)) {
+      return;
+    }
+    if (event.altKey) {
+      if (event.shiftKey) {
+        const { id } = sentenceEntity;
+        navigator.clipboard.writeText(id);
         this.props.handleShowSnackbarMessage(
-          `Copied LaTeX for sentence to clipboard: "${texPreview}"`
+          `Copied sentence ID to clipboard: ${id}.`
         );
+        return true;
+      } else {
+        const { tex } = sentenceEntity.attributes;
+        if (tex !== null) {
+          navigator.clipboard.writeText(tex);
+          const texPreview = uiUtils.truncateText(tex, 30, true);
+          this.props.handleShowSnackbarMessage(
+            `Copied LaTeX for sentence to clipboard: "${texPreview}"`
+          );
+        }
       }
       /*
        * Tell the Annotation that the click event has been handled; don't select this sentence.
@@ -419,6 +431,7 @@ class PageOverlay extends React.Component<Props, {}> {
                     selected={false}
                     selectedSpanIds={null}
                     onClick={this.onClickSentence}
+                    handleSelect={this.props.handleSelectEntityAnnotation}
                   />
                 );
               } else {
