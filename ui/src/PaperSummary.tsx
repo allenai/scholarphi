@@ -80,10 +80,10 @@ export class PaperSummary extends React.PureComponent<Props, State> {
   ) {
     if (!userLibrary) {
       warnOfUnimplementedActionAndTrack(
-        "save",
-        "Before you can save papers to your library, you must be logged " +
-          "into Semantic Scholar. Visit https://semanticscholar.org to log in. " +
-          "Then refresh this page and try again."
+        "save"
+        // "Before you can save papers to your library, you must be logged " +
+        //   "into Semantic Scholar. Visit https://semanticscholar.org to log in. " +
+        //   "Then refresh this page and try again."
       );
     } else {
       try {

@@ -5,6 +5,7 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import Switch from "@material-ui/core/Switch";
+import ThumbsUp from "@material-ui/icons/ThumbUpSharp";
 import React from "react";
 import ReactDOM from "react-dom";
 import { GlossStyle } from "./settings";
@@ -104,10 +105,38 @@ class PrimerPage extends React.PureComponent<Props> {
           can be clicked to access an explanation.
         </p>
         <p>
+          The main features are:
+          <ul className="feature-list">
+            <li>Click a citation to see the abstract for that citation</li>
+            <li>Click a term to see a definition of that term</li>
+            <li>
+              Click a symbol to see its definitions <i>and</i> search for that
+              symbol elsewhere in the paper
+            </li>
+          </ul>
+        </p>
+        <p>
+          Subsymbols of big, complex symbols can be selected by clicking first
+          on the complex symbol, and then on its subsymbol. If you want to hide
+          the explanations, just click anywhere on the page that isn't
+          underlined.
+        </p>
+        <p>
           Before reading this paper, please open{" "}
-          <a href="https://forms.gle/7SUx72xEaPCRb5NLA">this form</a> and take a
-          look at it. We'd like if you could provide feedback about what's
-          working in the tool as you use it, and what isn't.
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://forms.gle/7SUx72xEaPCRb5NLA"
+          >
+            this form
+          </a>{" "}
+          and take a look at it. We'd like if you could provide feedback about
+          what's working in the tool as you use it, and what isn't.
+        </p>
+        <p>
+          We also ask that you click the thumbs-up button (which looks like{" "}
+          <ThumbsUp />) whenever you see a useful explanation. This helps us
+          know what explanations to keep in future versions of the application.
         </p>
         <p>
           Your use of this application is entirely voluntary and you may exit it
@@ -119,11 +148,8 @@ class PrimerPage extends React.PureComponent<Props> {
           <a href="mailto:hears@berkeley.edu">Marti Hearst</a> at UC Berkeley.
           Contact the researchers if you have any questions.
         </p>
-
         <hr />
-
         <p className="primer-page__header">Reading settings</p>
-
         <div>
           <FormControl>
             <FormControlLabel
@@ -146,7 +172,6 @@ class PrimerPage extends React.PureComponent<Props> {
             />
           </FormControl>
         </div>
-
         <div>
           <FormControl component="fieldset">
             <FormLabel component="legend">
@@ -170,9 +195,7 @@ class PrimerPage extends React.PureComponent<Props> {
             </RadioGroup>
           </FormControl>
         </div>
-
         <hr />
-
         {entities === null ? (
           <>
             <p>Assembling a list of explanations...</p>
