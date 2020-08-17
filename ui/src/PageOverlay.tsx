@@ -108,8 +108,17 @@ class PageOverlay extends React.Component<Props, {}> {
     return Object.keys(this.props).some((key) => {
       const name = key as keyof Props;
       if (ID_LIST_PROPS.indexOf(name) !== -1) {
-        const list = (this.props[name] || []) as string;
-        const nextList = (nextProps[name] || []) as string;
+        const list = this.props[name] as string | null;
+        const nextList = nextProps[name] as string | null;
+        /*
+         * Detect a change when a list has gone from null to non-null, or vice versa.
+         */
+        if (list === null || nextList === null) {
+          return list !== nextList;
+        }
+        /*
+         * Detect changes to entries within lists of IDs.
+         */
         for (let i = 0; i < Math.max(list.length, nextList.length); i++) {
           if (list[i] !== nextList[i]) {
             return true;

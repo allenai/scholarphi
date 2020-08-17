@@ -1014,6 +1014,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                     }
                     findMatchedEntityIds={
                       this.state.symbolSearchEnabled &&
+                      this.state.isFindActive &&
                       this.state.findMatchedEntities !== null
                         ? selectors.entityIdsInPage(
                             this.state.findMatchedEntities,
