@@ -8,12 +8,15 @@ import Switch from "@material-ui/core/Switch";
 import ThumbsUp from "@material-ui/icons/ThumbUpSharp";
 import React from "react";
 import ReactDOM from "react-dom";
+import { getRemoteLogger } from "./logging";
 import { GlossStyle } from "./settings";
 import { Entities, Pages } from "./state";
 import SymbolDefinitionGloss from "./SymbolDefinitionGloss";
 import TermDefinitionGloss from "./TermDefinitionGloss";
 import { isSymbol, isTerm, Symbol, Term } from "./types/api";
 import { PDFViewer } from "./types/pdfjs-viewer";
+
+const logger = getRemoteLogger();
 
 interface Props {
   pdfViewer: PDFViewer;
@@ -60,10 +63,12 @@ class PrimerPage extends React.PureComponent<Props> {
   }
 
   onAnnotationHintsEnabledChanged(event: React.ChangeEvent<HTMLInputElement>) {
+    logger.log("debug", "set-hints-enabled", { enabled: event.target.checked });
     this.props.handleSetAnnotationHintsEnabled(event.target.checked);
   }
 
   onGlossStyleChanged(event: React.ChangeEvent<HTMLInputElement>) {
+    logger.log("debug", "set-gloss-style", { style: event.target.value });
     this.props.handleSetGlossStyle(
       (event.target as HTMLInputElement).value as GlossStyle
     );
@@ -104,17 +109,15 @@ class PrimerPage extends React.PureComponent<Props> {
           <span style={{ borderBottom: "1px dotted" }}>dotted underline</span>{" "}
           can be clicked to access an explanation.
         </p>
-        <p>
-          The main features are:
-          <ul className="feature-list">
-            <li>Click a citation to see the abstract for that citation</li>
-            <li>Click a term to see a definition of that term</li>
-            <li>
-              Click a symbol to see its definitions <i>and</i> search for that
-              symbol elsewhere in the paper
-            </li>
-          </ul>
-        </p>
+        <p>The main features are:</p>
+        <ul className="feature-list">
+          <li>Click a citation to see the abstract for that citation</li>
+          <li>Click a term to see a definition of that term</li>
+          <li>
+            Click a symbol to see its definitions <i>and</i> search for that
+            symbol elsewhere in the paper
+          </li>
+        </ul>
         <p>
           Subsymbols of big, complex symbols can be selected by clicking first
           on the complex symbol, and then on its subsymbol. If you want to hide

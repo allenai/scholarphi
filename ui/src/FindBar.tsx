@@ -6,12 +6,15 @@ import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import classNames from "classnames";
 import React from "react";
+import { getRemoteLogger } from "./logging";
 import { PdfjsFindQueryWidget } from "./PdfjsFindQueryWidget";
 import { SymbolFilters } from "./state";
 import { SymbolFindQueryWidget } from "./SymbolFindQueryWidget";
 import { Symbol } from "./types/api";
 import { PDFViewerApplication } from "./types/pdfjs-viewer";
 import * as uiUtils from "./utils/ui";
+
+const logger = getRemoteLogger();
 
 export type FindMode = null | "pdfjs-builtin-find" | "symbol";
 export type FindQuery = null | string | SymbolFilters;
@@ -68,7 +71,20 @@ class FindBar extends React.PureComponent<Props> {
   }
 
   onClickNext() {
-    const { mode, matchIndex, matchCount, handleChangeMatchIndex } = this.props;
+    const {
+      mode,
+      matchIndex,
+      matchCount,
+      query,
+      handleChangeMatchIndex,
+    } = this.props;
+
+    logger.log("debug", "find-next", {
+      mode,
+      matchIndexBefore: matchIndex,
+      matchCount,
+      query,
+    });
 
     /*
      * The default behavior when the find widget is controlled is to change which entity is
@@ -93,7 +109,20 @@ class FindBar extends React.PureComponent<Props> {
    * See 'onClickNext' for implementation notes.
    */
   onClickPrevious() {
-    const { mode, matchIndex, matchCount, handleChangeMatchIndex } = this.props;
+    const {
+      mode,
+      matchIndex,
+      matchCount,
+      query,
+      handleChangeMatchIndex,
+    } = this.props;
+
+    logger.log("debug", "find-previous", {
+      mode,
+      matchIndexBefore: matchIndex,
+      matchCount,
+      query,
+    });
 
     if (mode !== "pdfjs-builtin-find") {
       if (matchIndex !== null && matchCount !== null) {

@@ -57,6 +57,8 @@ import * as stateUtils from "./utils/state";
 import * as uiUtils from "./utils/ui";
 import ViewerOverlay from "./ViewerOverlay";
 
+const logger = getRemoteLogger();
+
 interface Props {
   paperId?: PaperId;
 }
@@ -218,6 +220,12 @@ class ScholarReader extends React.PureComponent<Props, State> {
     annotationId: string,
     annotationSpanId: string
   ) {
+    logger.log("debug", "select-entity", {
+      entityId,
+      annotationId,
+      annotationSpanId,
+    });
+
     this.setState((prevState) => {
       const prevEntities = prevState.entities;
       if (prevEntities === null) {
@@ -288,6 +296,8 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   clearEntitySelection() {
+    logger.log("debug", "clear-entity-selection");
+
     if (this.state.findMode === "symbol") {
       this.closeFindBar();
     }
