@@ -81,8 +81,8 @@ class PageMask extends React.PureComponent<Props> {
                     className="page-mask__underline"
                     x1={b.left * width}
                     x2={(b.left + b.width) * width}
-                    y1={(b.top + b.height) * height + 4}
-                    y2={(b.top + b.height) * height + 4}
+                    y1={(b.top + b.height) * height + 2}
+                    y2={(b.top + b.height) * height + 2}
                   />
                 </React.Fragment>
               ))

@@ -5,10 +5,14 @@ import AppOverlay from "./AppOverlay";
 import Control from "./Control";
 import DefinitionPreview from "./DefinitionPreview";
 import { Drawer } from "./Drawer";
+import EntityAnnotationLayer from "./EntityAnnotationLayer";
+import EntityCreationCanvas from "./EntityCreationCanvas";
 import EntityCreationToolbar, {
   AreaSelectionMethod,
   createCreateEntityDataWithBoxes,
 } from "./EntityCreationToolbar";
+import EntityPageMask from "./EntityPageMask";
+import EquationDiagram from "./EquationDiagram";
 import FindBar, { FindQuery } from "./FindBar";
 import { getRemoteLogger } from "./logging";
 import MasterControlPanel from "./MasterControlPanel";
@@ -19,7 +23,14 @@ import SearchPageMask from "./SearchPageMask";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
 import { ConfigurableSetting, CONFIGURABLE_SETTINGS } from "./settings";
-import { KnownEntityType, Pages, PaperId, State, SymbolFilters } from "./state";
+import {
+  Entities,
+  KnownEntityType,
+  Pages,
+  PaperId,
+  State,
+  SymbolFilters,
+} from "./state";
 import "./style/index.less";
 import TextSelectionMenu from "./TextSelectionMenu";
 import {
@@ -27,6 +38,7 @@ import {
   EntityCreateData,
   EntityUpdateData,
   isCitation,
+  isEquation,
   isSymbol,
   isTerm,
   Paper,
@@ -87,7 +99,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       propagateEntityEdits: true,
 
       primerPageEnabled: true,
-      annotationHintsEnabled: false,
+      annotationHintsEnabled: true,
       glossStyle: "sidenote",
       glossEvaluationEnabled: true,
       textSelectionMenuEnabled: false,
@@ -968,14 +980,23 @@ class ScholarReader extends React.PureComponent<Props, State> {
             <>
               {Object.keys(this.state.pages).map((pageNumberKey) => {
                 const pages = this.state.pages as Pages;
+                const entities = this.state.entities as Entities;
+
                 const pageNumber = Number(pageNumberKey);
                 const pageModel = pages[pageNumber];
+                const pageView = pageModel.view;
+
                 /*
                  * By setting the key to the page number *and* the timestamp it was rendered, React will
                  * know to replace a page overlay when a pdf.js re-renders a page.
                  */
                 const key = `${pageNumber}-${pageModel.timeOfLastRender}`;
 
+                /*
+                 * Prevent unnecessary renders by only passing in the subset of selected entity and
+                 * annotation IDs for this page. The PageOverlay performs a deep comparison of the
+                 * lists of IDs to determine whether to re-render.
+                 */
                 const selectedEntityIds = selectors.entityIdsInPage(
                   this.state.selectedEntityIds,
                   this.state.entities,
@@ -989,19 +1010,13 @@ class ScholarReader extends React.PureComponent<Props, State> {
                   this.state.selectedAnnotationSpanIds,
                   pageNumber
                 );
-
-                /*
-                 * Prevent unnecessary renders by only passing in the subset of selected entity and
-                 * annotation IDs for this page. The PageOverlay performs a deep comparison of the
-                 * lists of IDs to determine whether to re-render.
-                 */
                 const findFirstMatchEntityId =
                   this.state.symbolSearchEnabled &&
                   this.state.findMatchedEntities !== null &&
                   this.state.findMatchedEntities.length > 0 &&
                   selectors.entityIdsInPage(
                     [this.state.findMatchedEntities[0]],
-                    this.state.entities,
+                    entities,
                     pageNumber
                   ).length > 0
                     ? this.state.findMatchedEntities[0]
@@ -1012,59 +1027,102 @@ class ScholarReader extends React.PureComponent<Props, State> {
                   this.state.findMatchedEntities !== null
                     ? selectors.entityIdsInPage(
                         this.state.findMatchedEntities,
-                        this.state.entities,
+                        entities,
                         pageNumber
                       )
                     : null;
                 const findSelectionEntityId =
                   selectors.entityIdsInPage(
                     findMatchEntityId ? [findMatchEntityId] : [],
-                    this.state.entities,
+                    entities,
                     pageNumber
                   )[0] || null;
 
                 return (
-                  <PageOverlay
-                    key={key}
-                    paperId={this.props.paperId}
-                    pageView={pageModel.view}
-                    papers={this.state.papers}
-                    entities={this.state.entities}
-                    userLibrary={this.state.userLibrary}
-                    selectedEntityIds={selectedEntityIds}
-                    selectedAnnotationIds={selectedAnnotationIds}
-                    selectedAnnotationSpanIds={selectedAnnotationSpanIds}
-                    findMatchedEntityIds={findMatchedEntityIds}
-                    findSelectionEntityId={findSelectionEntityId}
-                    showAnnotations={this.state.annotationHintsEnabled}
-                    glossStyle={this.state.glossStyle}
-                    glossEvaluationEnabled={this.state.glossEvaluationEnabled}
-                    entityCreationEnabled={this.state.entityCreationEnabled}
-                    entityCreationType={this.state.entityCreationType}
-                    entityCreationAreaSelectionMethod={
-                      this.state.entityCreationAreaSelectionMethod
-                    }
-                    equationDiagramsEnabled={this.state.equationDiagramsEnabled}
-                    copySentenceOnClick={
-                      this.state.sentenceTexCopyOnOptionClickEnabled
-                    }
-                    handleSelectEntityAnnotation={this.selectEntityAnnotation}
-                    handleShowSnackbarMessage={this.showSnackbarMessage}
-                    handleAddPaperToLibrary={this.addToLibrary}
-                    handleCreateEntity={this.createEntity}
-                    handleDeleteEntity={this.deleteEntity}
-                  >
+                  <PageOverlay key={key} pageView={pageView}>
+                    {/* Mask for highlighting results from in-situ search. */}
                     {!this.state.entityCreationEnabled &&
                     this.state.declutterEnabled &&
                     this.state.findMode === "symbol" &&
                     findMatchedEntityIds !== null ? (
                       <SearchPageMask
-                        pageView={pageModel.view}
-                        entities={this.state.entities}
+                        pageView={pageView}
+                        entities={entities}
                         firstMatchingEntityId={findFirstMatchEntityId}
                         matchingEntityIds={findMatchedEntityIds}
+                        highlightFirstMatch={false}
                       />
                     ) : null}
+                    {/* Mask for highlighting selected entities. */}
+                    {!this.state.entityCreationEnabled &&
+                    this.state.equationDiagramsEnabled &&
+                    selectedEntityIds
+                      .map((id) => entities.byId[id])
+                      .filter((e) => e !== undefined)
+                      .some(isEquation) ? (
+                      <EntityPageMask
+                        pageView={pageView}
+                        entities={entities}
+                        selectedEntityIds={selectedEntityIds}
+                      />
+                    ) : null}
+                    {/* Interactive annotations on entities. */}
+                    {this.state.entities !== null && (
+                      <EntityAnnotationLayer
+                        paperId={this.props.paperId}
+                        pageView={pageView}
+                        papers={this.state.papers}
+                        entities={entities}
+                        userLibrary={this.state.userLibrary}
+                        selectedEntityIds={selectedEntityIds}
+                        selectedAnnotationIds={selectedAnnotationIds}
+                        selectedAnnotationSpanIds={selectedAnnotationSpanIds}
+                        findMatchedEntityIds={findMatchedEntityIds}
+                        findSelectionEntityId={findSelectionEntityId}
+                        showAnnotations={this.state.annotationHintsEnabled}
+                        glossStyle={this.state.glossStyle}
+                        glossEvaluationEnabled={
+                          this.state.glossEvaluationEnabled
+                        }
+                        equationDiagramsEnabled={
+                          this.state.equationDiagramsEnabled
+                        }
+                        copySentenceOnClick={
+                          this.state.sentenceTexCopyOnOptionClickEnabled
+                        }
+                        handleSelectEntityAnnotation={
+                          this.selectEntityAnnotation
+                        }
+                        handleShowSnackbarMessage={this.showSnackbarMessage}
+                        handleAddPaperToLibrary={this.addToLibrary}
+                      />
+                    )}
+                    {/* Equation diagram overlays. */}
+                    {this.state.equationDiagramsEnabled &&
+                      selectedEntityIds
+                        .map((id) => entities.byId[id])
+                        .filter((e) => e !== undefined)
+                        .filter(isEquation)
+                        .map((e) => (
+                          <EquationDiagram
+                            key={e.id}
+                            pageView={pageView}
+                            entities={entities}
+                            equation={e}
+                          />
+                        ))}
+                    {/* Canvas for annotating entities. */}
+                    {this.state.entityCreationEnabled &&
+                      this.state.entityCreationAreaSelectionMethod ===
+                        "rectangular-selection" && (
+                        <EntityCreationCanvas
+                          pageView={pageView}
+                          pageNumber={pageNumber}
+                          entityType={this.state.entityCreationType}
+                          handleShowSnackbarMessage={this.showSnackbarMessage}
+                          handleCreateEntity={this.createEntity}
+                        />
+                      )}
                   </PageOverlay>
                 );
               })}

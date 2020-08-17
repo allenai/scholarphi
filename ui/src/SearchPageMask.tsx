@@ -11,6 +11,7 @@ interface Props {
   entities: Entities | null;
   firstMatchingEntityId: string | null;
   matchingEntityIds: string[];
+  highlightFirstMatch?: boolean;
 }
 
 /**
@@ -21,7 +22,12 @@ export class SearchPageMask extends React.PureComponent<Props> {
     /*
      * Show the sentences containing all matching symbols.
      */
-    const { matchingEntityIds, firstMatchingEntityId, entities } = this.props;
+    const {
+      matchingEntityIds,
+      firstMatchingEntityId,
+      entities,
+      highlightFirstMatch,
+    } = this.props;
     if (entities === null) {
       return null;
     }
@@ -39,7 +45,7 @@ export class SearchPageMask extends React.PureComponent<Props> {
      * Highlight a sentence that contains the first matching symbol.
      */
     let highlight: BoundingBox[] = [];
-    if (firstMatchingEntityId !== null) {
+    if (highlightFirstMatch && firstMatchingEntityId !== null) {
       const firstMatchingSentence = selectors.symbolSentences(
         [firstMatchingEntityId],
         entities
@@ -52,11 +58,19 @@ export class SearchPageMask extends React.PureComponent<Props> {
     /*
      * Place a label right below the last bounding box of the highlight.
      */
-    const lastHighlight = highlight[highlight.length - 1];
-    const LABEL_PADDING_TOP = 12;
+    const firstHighlight = highlight[0];
     const { width, height } = uiUtils.getPageViewDimensions(
       this.props.pageView
     );
+
+    const LABEL_MARGIN_BOTTOM = 6;
+    /*
+     * XXX(andrewhead): set to correspond to the width and height of the label given what
+     * was known at the time about its font family and font size. If the font family or size
+     * of the text changes, this width and height will need to as well.
+     */
+    const EXPECTED_LABEL_WIDTH = 210;
+    const EXPECTED_LABEL_HEIGHT = 25;
 
     return (
       <PageMask
@@ -64,32 +78,23 @@ export class SearchPageMask extends React.PureComponent<Props> {
         show={show}
         highlight={highlight}
       >
-        {lastHighlight !== undefined ? (
+        {firstHighlight !== undefined ? (
           <>
             <rect
               className="page-mask__highlight-label__background"
-              x={lastHighlight.left * width}
+              x={firstHighlight.left * width}
               y={
-                (lastHighlight.top + lastHighlight.height) * height +
-                LABEL_PADDING_TOP
+                firstHighlight.top * height -
+                LABEL_MARGIN_BOTTOM -
+                EXPECTED_LABEL_HEIGHT
               }
-              /*
-               * XXX(andrewhead): set to correspond to the width and height of the label given what
-               * was known at the time about its font family and font size. If the font family or size
-               * of the text changes, this width and height will need to as well.
-               */
-              width={210}
-              height={25}
+              width={EXPECTED_LABEL_WIDTH}
+              height={EXPECTED_LABEL_HEIGHT}
             />
             <text
               className="page-mask__highlight-label"
-              x={lastHighlight.left * width + 6}
-              y={
-                (lastHighlight.top + lastHighlight.height) * height +
-                LABEL_PADDING_TOP +
-                6
-              }
-              dominantBaseline="hanging"
+              x={firstHighlight.left * width + 6}
+              y={firstHighlight.top * height - LABEL_MARGIN_BOTTOM - 6}
             >
               First appearance of symbol
             </text>
