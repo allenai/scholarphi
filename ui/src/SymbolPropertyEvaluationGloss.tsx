@@ -44,7 +44,7 @@ class TabPanel extends React.PureComponent<{
             context={{ ...this.props.context, dataType: "defining-formulas" }}
           />
           <TableSection
-            header="Example usages"
+            header="Selected example usages"
             data={passages}
             context={{ ...this.props.context, dataType: "usages" }}
           />
