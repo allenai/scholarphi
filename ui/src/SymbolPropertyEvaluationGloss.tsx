@@ -7,6 +7,7 @@ import LatexPreview from "./LatexPreview";
 import { getRemoteLogger } from "./logging";
 import TableSection from "./PropertyTableSection";
 import { Symbol } from "./types/api";
+import * as uiUtils from "./utils/ui";
 
 const logger = getRemoteLogger();
 
@@ -29,7 +30,7 @@ class TabPanel extends React.PureComponent<{
         <TableBody>
           <TableSection
             header="Nicknames"
-            data={nicknames}
+            data={uiUtils.sortByFrequency(nicknames)}
             context={{ ...this.props.context, dataType: "nickname" }}
           />
           <TableSection

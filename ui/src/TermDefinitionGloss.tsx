@@ -31,7 +31,7 @@ export class TermDefinitionGloss extends React.PureComponent<Props> {
           )}
           {definition !== undefined ? (
             <>
-              : <RichText>{definition}</RichText>
+              : <RichText>{definition + "."}</RichText>
             </>
           ) : null}
         </div>

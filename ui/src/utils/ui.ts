@@ -317,3 +317,26 @@ export function simulateMaterialUiButtonClick(element: HTMLButtonElement) {
     element.dispatchEvent(mouseUpEvent);
   }, RIPPLE_TIME_MS);
 }
+
+export function sortByFrequency(strings: string[]) {
+  /*
+   * Count up frequency of each item.
+   */
+  const counts = strings.reduce((c, s) => {
+    c[s] = (c[s] || 0) + 1;
+    return c;
+  }, {} as { [s: string]: number });
+
+  /*
+   * Sort items by their frequency.
+   */
+  const countsKeys = Object.keys(counts);
+  const indexes = countsKeys.map((_, i) => i);
+  indexes.sort((i1, i2) => {
+    const s1 = countsKeys[i1];
+    const s2 = countsKeys[i2];
+    return counts[s1] - counts[s2];
+  });
+
+  return indexes.map((i) => countsKeys[i]);
+}

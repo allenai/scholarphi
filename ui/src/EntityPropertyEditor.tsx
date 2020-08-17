@@ -94,6 +94,14 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
       label: "Definitions",
     },
     {
+      key: "definition_texs",
+      parentKey: "attributes",
+      type: "multiline-latex",
+      is_list: true,
+      relation_type: null,
+      label: "TeX for definitions",
+    },
+    {
       key: "passages",
       parentKey: "attributes",
       type: "multiline-latex",

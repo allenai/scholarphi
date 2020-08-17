@@ -99,7 +99,7 @@ class PrimerPage extends React.PureComponent<Props> {
         <p>
           This reading application, called <b>ScholarPhi</b>, explains confusing
           things in papers. You can click on citations, symbols, and terms to
-          look up explanations of them. Anything that has an{" "}
+          look up explanations of them. Anything that has a{" "}
           <span style={{ borderBottom: "1px dotted" }}>dotted underline</span>{" "}
           can be clicked to access an explanation.
         </p>
@@ -110,11 +110,11 @@ class PrimerPage extends React.PureComponent<Props> {
           working in the tool as you use it, and what isn't.
         </p>
         <p>
-          Your use of this application is entirely voluntary and you may exit
-          import any time.. By using this tool, you consent to have your
-          interactions with the tool logged with your IP address. Your
-          interactions and responses to the form will be analyzed as part of
-          on-going research conducted by post-doc{" "}
+          Your use of this application is entirely voluntary and you may exit it
+          at any time. By using this tool, you consent to have your interactions
+          with the tool logged with your IP address. Your interactions and
+          responses to the form will be analyzed as part of on-going research
+          conducted by post-doc{" "}
           <a href="mailto:andrewhead@berkeley.edu">Andrew Head</a> and PI{" "}
           <a href="mailto:hears@berkeley.edu">Marti Hearst</a> at UC Berkeley.
           Contact the researchers if you have any questions.
@@ -187,7 +187,7 @@ class PrimerPage extends React.PureComponent<Props> {
             {terms.length > 0 ? (
               <>
                 <p className="primer-page__header">
-                  Glossary of selected terms
+                  Glossary of selected terms (by order of appearance)
                 </p>
                 <div className="primer-page__glossary">
                   <ul>
@@ -205,7 +205,7 @@ class PrimerPage extends React.PureComponent<Props> {
             {symbols.length > 0 ? (
               <>
                 <p className="primer-page__header">
-                  Glossary of selected symbols
+                  Glossary of selected symbols (by order of appearance)
                 </p>
                 <div className="primer-page__glossary">
                   <ul>
@@ -270,6 +270,7 @@ function glossaryTerms(entities: Entities) {
     .filter(isTerm)
     .filter((t) => t.attributes.definitions.length > 0)
     .filter((t) => t.attributes.name !== null)
+    .filter((t) => (t.attributes.name as string).indexOf("SKIP") === -1)
     .forEach((t) => {
       const name = t.attributes.name as string;
       if (termsByName[name] === undefined) {

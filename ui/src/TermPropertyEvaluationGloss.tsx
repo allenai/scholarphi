@@ -12,7 +12,7 @@ interface Props {
 export class TermPropertyEvaluationGloss extends React.PureComponent<Props> {
   render() {
     const { term } = this.props;
-    const { term_type, definitions } = term.attributes;
+    const { term_type, definition_texs } = term.attributes;
 
     const context = {
       glossId: this.props.id,
@@ -32,7 +32,7 @@ export class TermPropertyEvaluationGloss extends React.PureComponent<Props> {
                   term_type === "Abbreviation" ? "Expansion" : "Definitions"
                 }
                 context={context}
-                data={definitions}
+                data={definition_texs}
               />
             </TableBody>
           </Table>
