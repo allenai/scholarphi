@@ -91,12 +91,12 @@ class ScholarReader extends React.PureComponent<Props, State> {
       glossEvaluationEnabled: true,
       textSelectionMenuEnabled: false,
       symbolSearchEnabled: true,
-      declutterEnabled: false,
+      declutterEnabled: true,
       definitionPreviewEnabled: false,
       equationDiagramsEnabled: false,
       entityCreationEnabled: false,
       entityEditingEnabled: false,
-      sentenceTexCopyOnOptionClickEnabled: true,
+      sentenceTexCopyOnOptionClickEnabled: false,
     };
 
     /**

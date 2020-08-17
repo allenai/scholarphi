@@ -46,7 +46,7 @@ class PropertyTableSection extends React.PureComponent<Props, State> {
         {this.props.data.length === 0 ? (
           <TableRow>
             <TableCell className="property-evaluation-gloss__not-defined">
-              Not explicitly defined in this paper.
+              None explicitly given in this paper.
             </TableCell>
             <TableCell className="vote-button">
               <VoteButton

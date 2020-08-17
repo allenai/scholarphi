@@ -108,6 +108,10 @@ class FindBar extends React.PureComponent<Props> {
 
   onKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
     const { previousButton, nextButton } = this;
+    const { mode } = this.props;
+    if (mode === "pdfjs-builtin-find" && event.key.startsWith("Arrow")) {
+      return;
+    }
     if (
       previousButton !== null &&
       (event.key === "ArrowLeft" || (event.shiftKey && event.key === "Enter"))
@@ -154,10 +158,15 @@ class FindBar extends React.PureComponent<Props> {
           /*
            * Find next / previous when hot keys are pressed. Assign the find-bar focus whenever it
            * is rendered so that it will automatically process hot keys until user clicks out of it.
+           * The one exception is when a widget with text input is rendered (as is the case when
+           * the widget for pdf.js builtin find functionality is rendered); in that case,
+           * don't auto-focus this parent widget, as the text input will need the focus.
            */
           ref={(ref) => {
             if (ref instanceof HTMLDivElement) {
-              ref.focus();
+              if (mode !== "pdfjs-builtin-find") {
+                ref.focus();
+              }
             }
           }}
           tabIndex={0}

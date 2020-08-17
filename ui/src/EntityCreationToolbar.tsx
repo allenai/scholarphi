@@ -99,6 +99,10 @@ export function createCreateEntityDataWithBoxes(
       equation: { type: "equation", id: null },
       parent: { type: "symbol", id: null },
       children: [],
+      nickname_sentences: [],
+      definition_sentences: [],
+      defining_formula_sentences: [],
+      passage_sentences: [],
     } as Omit<SymbolRelationships, "version">;
   } else if (type === "sentence") {
     data.attributes = {

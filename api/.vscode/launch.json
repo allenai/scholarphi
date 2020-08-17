@@ -34,6 +34,7 @@
          * schema, instead of the default 'public' database schema, for instance 'dev'.
          */
         "--database:schema=public"
+        // "--database:schema=dev"
       ],
       "protocol": "inspector",
       "internalConsoleOptions": "openOnSessionStart",

@@ -157,6 +157,7 @@ export class PdfjsFindQueryWidget extends React.PureComponent<Props> {
         defaultValue={this.props.query || ""}
         placeholder="Find in document…"
         tabIndex={0}
+        autoFocus
       />
     );
   }

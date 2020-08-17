@@ -196,6 +196,17 @@ export interface SymbolRelationships {
   sentence: Relationship;
   parent: Relationship;
   children: Relationship[];
+  /**
+   * Experimental feature: link to the sentences that contain each type of definition. For each
+   * list of definitions in the symbol attributes (i.e., nicknames, definitions, defining
+   * formulas, etc.), there should be one relationship to a the sentence containing that definition.
+   * Therefore, each of these relationship lists should have the same length as the corresponding
+   * list of definitions in the attributes.
+   */
+  nickname_sentences: Relationship[];
+  definition_sentences: Relationship[];
+  defining_formula_sentences: Relationship[];
+  passage_sentences: Relationship[];
 }
 
 /**

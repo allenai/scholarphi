@@ -50,6 +50,11 @@ class LatexPreview extends React.PureComponent<Props> {
           { left: "\\(", right: "\\)", display: false },
           { left: "\\[", right: "\\]", display: true },
           { left: "\\begin{align}", right: "\\end{align}", display: true },
+          {
+            left: "\\begin{equation}",
+            right: "\\end{equation}",
+            display: true,
+          },
         ],
         errorCallback: (message: string, error: katex.ParseError) => {
           if (this.props.handleParseError !== undefined) {

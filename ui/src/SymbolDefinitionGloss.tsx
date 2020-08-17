@@ -1,6 +1,5 @@
 import React from "react";
 import LatexPreview from "./LatexPreview";
-import RichText from "./RichText";
 import { Symbol } from "./types/api";
 
 interface Props {
@@ -24,7 +23,7 @@ class SymbolDefinitionGloss extends React.PureComponent<Props> {
           {tex !== null ? <LatexPreview>{tex}</LatexPreview> : "<Symbol TeX>"}:{" "}
           {nicknames.length > 0 ? nicknames.join(", ") : "(no nicknames)."}
         </div>
-        {definitions.length > 0 ? (
+        {/* {definitions.length > 0 ? (
           <div className="gloss__section">
             <b>Definition</b>:{" "}
             {definitions.map((d, i) => (
@@ -55,7 +54,7 @@ class SymbolDefinitionGloss extends React.PureComponent<Props> {
               ))}
             </ul>
           </div>
-        ) : null}
+        ) : null} */}
       </div>
     );
   }
