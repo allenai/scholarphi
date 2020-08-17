@@ -1,60 +1,51 @@
 import React from "react";
 import LatexPreview from "./LatexPreview";
+import RichText from "./RichText";
 import { Symbol } from "./types/api";
 
 interface Props {
   symbol: Symbol;
 }
 
+function sortByFrequency(strings: string[]) {
+  /*
+   * Count up frequency of each item.
+   */
+  const counts = strings.reduce((c, s) => {
+    c[s] = (c[s] || 0) + 1;
+    return c;
+  }, {} as { [s: string]: number });
+
+  /*
+   * Sort items by their frequency.
+   */
+  const countsKeys = Object.keys(counts);
+  const indexes = countsKeys.map((_, i) => i);
+  indexes.sort((i1, i2) => {
+    const s1 = countsKeys[i1];
+    const s2 = countsKeys[i2];
+    return counts[s1] - counts[s2];
+  });
+
+  return indexes.map((i) => countsKeys[i]);
+}
+
 class SymbolDefinitionGloss extends React.PureComponent<Props> {
   render() {
     const { symbol } = this.props;
-    const {
-      tex,
-      nicknames,
-      definitions,
-      defining_formulas,
-      passages,
-    } = symbol.attributes;
+    const { tex, nicknames, definitions } = symbol.attributes;
 
     return (
       <div className="gloss symbol-definition-gloss">
         <div className="gloss__section">
           {tex !== null ? <LatexPreview>{tex}</LatexPreview> : "<Symbol TeX>"}:{" "}
-          {nicknames.length > 0 ? nicknames.join(", ") : "(no nicknames)."}
+          {definitions.length > 0 && (
+            <RichText>{definitions[0] + "."}</RichText>
+          )}
+          {definitions.length === 0 &&
+            nicknames.length > 0 &&
+            sortByFrequency(nicknames).join("; ") + "."}
         </div>
-        {/* {definitions.length > 0 ? (
-          <div className="gloss__section">
-            <b>Definition</b>:{" "}
-            {definitions.map((d, i) => (
-              <div key={`definition-${i}`}>
-                <RichText>{d}</RichText>
-              </div>
-            ))}
-          </div>
-        ) : null}
-        {defining_formulas.length > 0 ? (
-          <div className="gloss__section">
-            <b>Defining formulas</b>:{" "}
-            {defining_formulas.map((f, i) => (
-              <div key={`formula-${i}`}>
-                <RichText>{f}</RichText>
-              </div>
-            ))}
-          </div>
-        ) : null}
-        {passages.length > 0 ? (
-          <div className="gloss__section">
-            <b>Related passages</b>:
-            <ul>
-              {passages.map((p, i) => (
-                <li key={`passage-${i}`}>
-                  <RichText>{p}</RichText>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null} */}
       </div>
     );
   }

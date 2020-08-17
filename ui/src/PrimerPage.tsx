@@ -209,11 +209,17 @@ class PrimerPage extends React.PureComponent<Props> {
                 </p>
                 <div className="primer-page__glossary">
                   <ul>
-                    {glossarySymbols(entities).map((s) => (
-                      <li key={s.id}>
-                        <SymbolDefinitionGloss symbol={s} />
-                      </li>
-                    ))}
+                    {glossarySymbols(entities)
+                      .filter(
+                        (s) =>
+                          s.attributes.definitions.length > 0 ||
+                          s.attributes.nicknames.length > 0
+                      )
+                      .map((s) => (
+                        <li key={s.id}>
+                          <SymbolDefinitionGloss symbol={s} />
+                        </li>
+                      ))}
                   </ul>
                 </div>
               </>
