@@ -72,11 +72,25 @@ class PrimerPage extends React.PureComponent<Props> {
           if your reading application helped explain these parts of a paper?
         </p>
         <p>
-          This is a prototype of a tool for explaining confusing things in
-          papers. You can click on citations, symbols, and terms to look up
-          explanations of them. To see what can be clicked, press the "Show
-          Underlines" button on the top-right side of the toolbar.
+          This is a prototype tool called <i>ScholarPhi</i>. It explains
+          confusing things in papers. You can click on citations, symbols, and
+          terms to look up explanations of them. Anything that has an{" "}
+          <u>dotted underline</u> can be clicked to access an explanation. If
+          you find these underlines distracting, you can turn them off by
+          clicking on "Hide Annotations" in the toolbar in the top right of the
+          application.
         </p>
+        <p>
+          Help us improve the tool for future users by opening{" "}
+          <a href="https://forms.gle/7SUx72xEaPCRb5NLA">this form</a>, and
+          providing feedback as you read. There is a text field for minor
+          suggestions which we suggest you fill out while reading.
+        </p>
+        <p>
+          By using this tool, you consent to have your interactions with the
+          tool logged with your IP address.
+        </p>
+        <hr />
 
         {entities === null ? (
           <>
@@ -86,7 +100,8 @@ class PrimerPage extends React.PureComponent<Props> {
         ) : (
           <>
             <p>
-              Here's an overview of terms from this paper and their definitions:
+              To start, here is an an overview of terms from this paper and
+              their definitions:
             </p>
             {terms.length > 0 ? (
               <>
