@@ -15,6 +15,7 @@ import MasterControlPanel from "./MasterControlPanel";
 import PageOverlay from "./PageOverlay";
 import PdfjsToolbar from "./PdfjsToolbar";
 import PrimerPage from "./PrimerPage";
+import SearchPageMask from "./SearchPageMask";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
 import { ConfigurableSetting, CONFIGURABLE_SETTINGS } from "./settings";
@@ -974,6 +975,54 @@ class ScholarReader extends React.PureComponent<Props, State> {
                  * know to replace a page overlay when a pdf.js re-renders a page.
                  */
                 const key = `${pageNumber}-${pageModel.timeOfLastRender}`;
+
+                const selectedEntityIds = selectors.entityIdsInPage(
+                  this.state.selectedEntityIds,
+                  this.state.entities,
+                  pageNumber
+                );
+                const selectedAnnotationIds = selectors.annotationsInPage(
+                  this.state.selectedAnnotationIds,
+                  pageNumber
+                );
+                const selectedAnnotationSpanIds = selectors.annotationSpansInPage(
+                  this.state.selectedAnnotationSpanIds,
+                  pageNumber
+                );
+
+                /*
+                 * Prevent unnecessary renders by only passing in the subset of selected entity and
+                 * annotation IDs for this page. The PageOverlay performs a deep comparison of the
+                 * lists of IDs to determine whether to re-render.
+                 */
+                const findFirstMatchEntityId =
+                  this.state.symbolSearchEnabled &&
+                  this.state.findMatchedEntities !== null &&
+                  this.state.findMatchedEntities.length > 0 &&
+                  selectors.entityIdsInPage(
+                    [this.state.findMatchedEntities[0]],
+                    this.state.entities,
+                    pageNumber
+                  ).length > 0
+                    ? this.state.findMatchedEntities[0]
+                    : null;
+                const findMatchedEntityIds =
+                  this.state.symbolSearchEnabled &&
+                  this.state.isFindActive &&
+                  this.state.findMatchedEntities !== null
+                    ? selectors.entityIdsInPage(
+                        this.state.findMatchedEntities,
+                        this.state.entities,
+                        pageNumber
+                      )
+                    : null;
+                const findSelectionEntityId =
+                  selectors.entityIdsInPage(
+                    findMatchEntityId ? [findMatchEntityId] : [],
+                    this.state.entities,
+                    pageNumber
+                  )[0] || null;
+
                 return (
                   <PageOverlay
                     key={key}
@@ -982,56 +1031,12 @@ class ScholarReader extends React.PureComponent<Props, State> {
                     papers={this.state.papers}
                     entities={this.state.entities}
                     userLibrary={this.state.userLibrary}
-                    /*
-                     * Prevent unnecessary renders by only passing in the subset of selected entity and
-                     * annotation IDs for this page. The PageOverlay performs a deep comparison of the
-                     * lists of IDs to determine whether to re-render.
-                     */
-                    selectedEntityIds={selectors.entityIdsInPage(
-                      this.state.selectedEntityIds,
-                      this.state.entities,
-                      pageNumber
-                    )}
-                    selectedAnnotationIds={selectors.annotationsInPage(
-                      this.state.selectedAnnotationIds,
-                      pageNumber
-                    )}
-                    selectedAnnotationSpanIds={selectors.annotationSpansInPage(
-                      this.state.selectedAnnotationSpanIds,
-                      pageNumber
-                    )}
-                    findFirstMatchEntityId={
-                      this.state.symbolSearchEnabled &&
-                      this.state.findMatchedEntities !== null &&
-                      this.state.findMatchedEntities.length > 0 &&
-                      selectors.entityIdsInPage(
-                        [this.state.findMatchedEntities[0]],
-                        this.state.entities,
-                        pageNumber
-                      ).length > 0
-                        ? this.state.findMatchedEntities[0]
-                        : null
-                    }
-                    findMatchedEntityIds={
-                      this.state.symbolSearchEnabled &&
-                      this.state.isFindActive &&
-                      this.state.findMatchedEntities !== null
-                        ? selectors.entityIdsInPage(
-                            this.state.findMatchedEntities,
-                            this.state.entities,
-                            pageNumber
-                          )
-                        : null
-                    }
-                    findSelectionEntityId={
-                      selectors.entityIdsInPage(
-                        findMatchEntityId ? [findMatchEntityId] : [],
-                        this.state.entities,
-                        pageNumber
-                      )[0] || null
-                    }
+                    selectedEntityIds={selectedEntityIds}
+                    selectedAnnotationIds={selectedAnnotationIds}
+                    selectedAnnotationSpanIds={selectedAnnotationSpanIds}
+                    findMatchedEntityIds={findMatchedEntityIds}
+                    findSelectionEntityId={findSelectionEntityId}
                     showAnnotations={this.state.annotationHintsEnabled}
-                    searchMaskEnabled={this.state.declutterEnabled}
                     glossStyle={this.state.glossStyle}
                     glossEvaluationEnabled={this.state.glossEvaluationEnabled}
                     entityCreationEnabled={this.state.entityCreationEnabled}
@@ -1048,7 +1053,19 @@ class ScholarReader extends React.PureComponent<Props, State> {
                     handleAddPaperToLibrary={this.addToLibrary}
                     handleCreateEntity={this.createEntity}
                     handleDeleteEntity={this.deleteEntity}
-                  />
+                  >
+                    {!this.state.entityCreationEnabled &&
+                    this.state.declutterEnabled &&
+                    this.state.findMode === "symbol" &&
+                    findMatchedEntityIds !== null ? (
+                      <SearchPageMask
+                        pageView={pageModel.view}
+                        entities={this.state.entities}
+                        firstMatchingEntityId={findFirstMatchEntityId}
+                        matchingEntityIds={findMatchedEntityIds}
+                      />
+                    ) : null}
+                  </PageOverlay>
                 );
               })}
             </>

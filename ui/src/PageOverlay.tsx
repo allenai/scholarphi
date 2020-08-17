@@ -7,7 +7,6 @@ import EntityCreationCanvas from "./EntityCreationCanvas";
 import { AreaSelectionMethod } from "./EntityCreationToolbar";
 import EntityPageMask from "./EntityPageMask";
 import EquationDiagram from "./EquationDiagram";
-import SearchPageMask from "./SearchPageMask";
 import * as selectors from "./selectors";
 import { GlossStyle } from "./settings";
 import {
@@ -42,11 +41,9 @@ interface Props {
   selectedEntityIds: string[];
   selectedAnnotationIds: string[];
   selectedAnnotationSpanIds: string[];
-  findFirstMatchEntityId: string | null;
   findMatchedEntityIds: string[] | null;
   findSelectionEntityId: string | null;
   showAnnotations: boolean;
-  searchMaskEnabled: boolean;
   glossStyle: GlossStyle;
   glossEvaluationEnabled: boolean;
   entityCreationEnabled: boolean;
@@ -108,17 +105,8 @@ class PageOverlay extends React.Component<Props, {}> {
     return Object.keys(this.props).some((key) => {
       const name = key as keyof Props;
       if (ID_LIST_PROPS.indexOf(name) !== -1) {
-        const list = this.props[name] as string | null;
-        const nextList = nextProps[name] as string | null;
-        /*
-         * Detect a change when a list has gone from null to non-null, or vice versa.
-         */
-        if (list === null || nextList === null) {
-          return list !== nextList;
-        }
-        /*
-         * Detect changes to entries within lists of IDs.
-         */
+        const list = (this.props[name] || []) as string;
+        const nextList = (nextProps[name] || []) as string;
         for (let i = 0; i < Math.max(list.length, nextList.length); i++) {
           if (list[i] !== nextList[i]) {
             return true;
@@ -205,10 +193,8 @@ class PageOverlay extends React.Component<Props, {}> {
       selectedEntityIds,
       selectedAnnotationIds,
       selectedAnnotationSpanIds,
-      findFirstMatchEntityId,
       findMatchedEntityIds,
       findSelectionEntityId,
-      searchMaskEnabled,
       showAnnotations,
       glossStyle,
       glossEvaluationEnabled,
@@ -230,16 +216,7 @@ class PageOverlay extends React.Component<Props, {}> {
 
     return ReactDOM.createPortal(
       <>
-        {!entityCreationEnabled &&
-        searchMaskEnabled &&
-        findMatchedEntityIds !== null ? (
-          <SearchPageMask
-            pageView={pageView}
-            entities={entities}
-            firstMatchingEntityId={findFirstMatchEntityId}
-            matchingEntityIds={findMatchedEntityIds}
-          />
-        ) : null}
+        {this.props.children}
         {!entityCreationEnabled &&
         equationDiagramsEnabled &&
         entities !== null &&
