@@ -275,6 +275,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
             const isMatch =
               findMatchedEntityIds !== null &&
               findMatchedEntityIds.indexOf(entityId) !== -1;
+            const isFindSelection = findSelectionEntityId === entityId;
             const isSelectionAncestor = selectedEntities.some(
               (e) => isSymbol(e) && selectors.isDescendant(e, entity, entities)
             );
@@ -309,19 +310,21 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 underline={showAnnotations}
                 selected={isSelected}
                 selectedSpanIds={selectedSpanIds}
-                isFindSelection={findSelectionEntityId === entityId}
+                isFindSelection={isFindSelection}
                 isFindMatch={isMatch}
                 glossStyle={glossStyle}
                 glossContent={
-                  glossEvaluationEnabled ? (
-                    <SymbolPropertyEvaluationGloss
-                      id={annotationId}
-                      symbol={entity}
-                      descendants={descendants}
-                    />
-                  ) : (
-                    <SymbolDefinitionGloss symbol={entity} />
-                  )
+                  !(this.props.glossStyle === "tooltip" && !isFindSelection) ? (
+                    glossEvaluationEnabled ? (
+                      <SymbolPropertyEvaluationGloss
+                        id={annotationId}
+                        symbol={entity}
+                        descendants={descendants}
+                      />
+                    ) : (
+                      <SymbolDefinitionGloss symbol={entity} />
+                    )
+                  ) : null
                 }
                 handleSelect={this.props.handleSelectEntityAnnotation}
               />

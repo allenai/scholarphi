@@ -22,7 +22,11 @@ import PrimerPage from "./PrimerPage";
 import SearchPageMask from "./SearchPageMask";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
-import { ConfigurableSetting, CONFIGURABLE_SETTINGS } from "./settings";
+import {
+  ConfigurableSetting,
+  CONFIGURABLE_SETTINGS,
+  GlossStyle,
+} from "./settings";
 import {
   Entities,
   KnownEntityType,
@@ -100,7 +104,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
 
       primerPageEnabled: true,
       annotationHintsEnabled: true,
-      glossStyle: "sidenote",
+      glossStyle: "tooltip",
       glossEvaluationEnabled: true,
       textSelectionMenuEnabled: false,
       symbolSearchEnabled: true,
@@ -120,6 +124,8 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.toggleAnnotationHints = this.toggleAnnotationHints.bind(this);
     this.closeControlPanel = this.closeControlPanel.bind(this);
     this.handleChangeSetting = this.handleChangeSetting.bind(this);
+    this.setAnnotationHintsEnabled = this.setAnnotationHintsEnabled.bind(this);
+    this.setGlossStyle = this.setGlossStyle.bind(this);
 
     this.createEntity = this.createEntity.bind(this);
     this.createParentSymbol = this.createParentSymbol.bind(this);
@@ -159,6 +165,14 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.setState((prevState) => ({
       annotationHintsEnabled: !prevState.annotationHintsEnabled,
     }));
+  }
+
+  setAnnotationHintsEnabled(enabled: boolean) {
+    this.setState({ annotationHintsEnabled: enabled });
+  }
+
+  setGlossStyle(style: GlossStyle) {
+    this.setState({ glossStyle: style });
   }
 
   closeControlPanel() {
@@ -972,6 +986,10 @@ class ScholarReader extends React.PureComponent<Props, State> {
             pdfViewer={this.state.pdfViewer}
             pages={this.state.pages}
             entities={this.state.entities}
+            annotationHintsEnabled={this.state.annotationHintsEnabled}
+            glossStyle={this.state.glossStyle}
+            handleSetAnnotationHintsEnabled={this.setAnnotationHintsEnabled}
+            handleSetGlossStyle={this.setGlossStyle}
           />
         ) : null}
         {

@@ -1,6 +1,13 @@
+import FormControl from "@material-ui/core/FormControl";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormLabel from "@material-ui/core/FormLabel";
 import LinearProgress from "@material-ui/core/LinearProgress";
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import Switch from "@material-ui/core/Switch";
 import React from "react";
 import ReactDOM from "react-dom";
+import { GlossStyle } from "./settings";
 import { Entities, Pages } from "./state";
 import SymbolDefinitionGloss from "./SymbolDefinitionGloss";
 import TermDefinitionGloss from "./TermDefinitionGloss";
@@ -11,6 +18,10 @@ interface Props {
   pdfViewer: PDFViewer;
   pages: Pages;
   entities: Entities | null;
+  annotationHintsEnabled: boolean;
+  glossStyle: GlossStyle;
+  handleSetGlossStyle: (style: GlossStyle) => void;
+  handleSetAnnotationHintsEnabled: (enabled: boolean) => void;
 }
 
 /**
@@ -25,6 +36,10 @@ class PrimerPage extends React.PureComponent<Props> {
     super(props);
     this._element = document.createElement("div");
     this._element.classList.add("primer-page");
+    this.onAnnotationHintsEnabledChanged = this.onAnnotationHintsEnabledChanged.bind(
+      this
+    );
+    this.onGlossStyleChanged = this.onGlossStyleChanged.bind(this);
   }
 
   componentDidMount() {
@@ -41,6 +56,16 @@ class PrimerPage extends React.PureComponent<Props> {
     if (document.body.contains(viewer) && viewer.contains(this._element)) {
       viewer.removeChild(this._element);
     }
+  }
+
+  onAnnotationHintsEnabledChanged(event: React.ChangeEvent<HTMLInputElement>) {
+    this.props.handleSetAnnotationHintsEnabled(event.target.checked);
+  }
+
+  onGlossStyleChanged(event: React.ChangeEvent<HTMLInputElement>) {
+    this.props.handleSetGlossStyle(
+      (event.target as HTMLInputElement).value as GlossStyle
+    );
   }
 
   render() {
@@ -72,24 +97,80 @@ class PrimerPage extends React.PureComponent<Props> {
           if your reading application helped explain these parts of a paper?
         </p>
         <p>
-          This is a prototype tool called <i>ScholarPhi</i>. It explains
-          confusing things in papers. You can click on citations, symbols, and
-          terms to look up explanations of them. Anything that has an{" "}
-          <u>dotted underline</u> can be clicked to access an explanation. If
-          you find these underlines distracting, you can turn them off by
-          clicking on "Hide Annotations" in the toolbar in the top right of the
-          application.
+          This reading application, called <b>ScholarPhi</b>, explains confusing
+          things in papers. You can click on citations, symbols, and terms to
+          look up explanations of them. Anything that has an{" "}
+          <span style={{ borderBottom: "1px dotted" }}>dotted underline</span>{" "}
+          can be clicked to access an explanation.
         </p>
         <p>
-          Help us improve the tool for future users by opening{" "}
-          <a href="https://forms.gle/7SUx72xEaPCRb5NLA">this form</a>, and
-          providing feedback as you read. There is a text field for minor
-          suggestions which we suggest you fill out while reading.
+          Before reading this paper, please open{" "}
+          <a href="https://forms.gle/7SUx72xEaPCRb5NLA">this form</a> and take a
+          look at it. We'd like if you could provide feedback about what's
+          working in the tool as you use it, and what isn't.
         </p>
         <p>
-          By using this tool, you consent to have your interactions with the
-          tool logged with your IP address.
+          Your use of this application is entirely voluntary and you may exit
+          import any time.. By using this tool, you consent to have your
+          interactions with the tool logged with your IP address. Your
+          interactions and responses to the form will be analyzed as part of
+          on-going research conducted by post-doc{" "}
+          <a href="mailto:andrewhead@berkeley.edu">Andrew Head</a> and PI{" "}
+          <a href="mailto:hears@berkeley.edu">Marti Hearst</a> at UC Berkeley.
+          Contact the researchers if you have any questions.
         </p>
+
+        <hr />
+
+        <p className="primer-page__header">Reading settings</p>
+
+        <div>
+          <FormControl>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={this.props.annotationHintsEnabled}
+                  color="primary"
+                  onChange={this.onAnnotationHintsEnabledChanged}
+                />
+              }
+              label={
+                <>
+                  Mark explainable things with a{" "}
+                  <span style={{ borderBottom: "1px dotted" }}>
+                    dotted underline
+                  </span>
+                  (recommended).
+                </>
+              }
+            />
+          </FormControl>
+        </div>
+
+        <div>
+          <FormControl component="fieldset">
+            <FormLabel component="legend">
+              How would you like to view explanations?
+            </FormLabel>
+            <RadioGroup
+              defaultValue="tooltip"
+              value={this.props.glossStyle}
+              onChange={this.onGlossStyleChanged}
+            >
+              <FormControlLabel
+                value="tooltip"
+                control={<Radio color="primary" size="small" />}
+                label="Tooltips (Recommended for laptops and small displays)"
+              />
+              <FormControlLabel
+                value="sidenote"
+                control={<Radio color="primary" size="small" />}
+                label="Sidenotes (Recommended for large displays)"
+              />
+            </RadioGroup>
+          </FormControl>
+        </div>
+
         <hr />
 
         {entities === null ? (
@@ -110,11 +191,13 @@ class PrimerPage extends React.PureComponent<Props> {
                 </p>
                 <div className="primer-page__glossary">
                   <ul>
-                    {terms.map((t) => (
-                      <li key={t.id}>
-                        <TermDefinitionGloss term={t} />
-                      </li>
-                    ))}
+                    {terms
+                      .filter((t) => t.attributes.term_type !== "symbol")
+                      .map((t) => (
+                        <li key={t.id}>
+                          <TermDefinitionGloss term={t} />
+                        </li>
+                      ))}
                   </ul>
                 </div>
               </>
