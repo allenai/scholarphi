@@ -1,7 +1,15 @@
 /**
+ * Tooltip position
+ */
+.scholar-reader-tooltip {
+  position: absolute;
+  z-index: @tooltip-z-index;
+}
+
+/**
  * Tooltip background
  */
-@{mui-tooltip} {
+.scholar-reader-tooltip {
   background-color: @white;
   color: @s2-text-default;
 
@@ -13,6 +21,6 @@
 /**
  * Tooltip shadow
  */
-@{mui-tooltip} {
+.scholar-reader-tooltip {
   border: @border;
 }

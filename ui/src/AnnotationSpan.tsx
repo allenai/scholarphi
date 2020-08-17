@@ -1,8 +1,8 @@
-import Tooltip from "@material-ui/core/Tooltip";
 import classNames from "classnames";
 import React from "react";
 import { GlossStyle } from "./settings";
 import Sidenote from "./Sidenote";
+import Tooltip from "./Tooltip";
 import { BoundingBox } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 import * as uiUtils from "./utils/ui";
@@ -98,17 +98,13 @@ export class AnnotationSpan extends React.PureComponent<Props> {
     );
 
     if (this.props.glossContent !== null) {
-      if (this.props.glossStyle === "tooltip") {
+      if (this.props.glossStyle === "tooltip" && this.props.selected === true) {
         return (
           <Tooltip
-            className="tooltip"
-            open={this.props.selected}
-            interactive
-            disableHoverListener
-            title={this.props.glossContent}
-          >
-            {span}
-          </Tooltip>
+            pageView={this.props.pageView}
+            anchor={this.props.location}
+            content={this.props.glossContent}
+          />
         );
       } else if (
         this.props.glossStyle === "sidenote" &&
