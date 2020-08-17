@@ -169,7 +169,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
             return null;
           }
           const selectedSpanIds = isSelected ? selectedAnnotationSpanIds : null;
-          if (isTerm(entity)) {
+          if (isTerm(entity) && entity.attributes.term_type !== "symbol") {
             return (
               <EntityAnnotation
                 key={annotationId}
