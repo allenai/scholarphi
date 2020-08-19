@@ -11,7 +11,6 @@ from common import directories, email, file_utils
 from common.commands.base import (
     CommandList,
     add_arxiv_id_filter_args,
-    add_one_entity_at_a_time_arg,
     create_args,
     load_arxiv_ids_using_args,
     read_arxiv_ids_from_file,
@@ -38,10 +37,7 @@ from scripts.process import (
 
 
 def run_commands_for_arxiv_ids(
-    CommandClasses: CommandList,
-    arxiv_id_list: List[str],
-    process_one_entity_at_a_time: bool,
-    pipeline_args: Namespace,
+    CommandClasses: CommandList, arxiv_id_list: List[str], pipeline_args: Namespace,
 ) -> PipelineDigest:
     " Run a sequence of pipeline commands for a list of arXiv IDs. "
 
@@ -57,8 +53,8 @@ def run_commands_for_arxiv_ids(
         command_args.arxiv_ids_file = None
         command_args.v = pipeline_args.v
         command_args.source = pipeline_args.source
+        command_args.batch_size = pipeline_args.entity_batch_size
         command_args.log_names = [log_filename]
-        command_args.one_entity_at_a_time = process_one_entity_at_a_time
         command_args.schema = pipeline_args.database_schema
         command_args.data_version = pipeline_args.data_version
         if CommandCls == FetchArxivSources:
@@ -170,7 +166,7 @@ if __name__ == "__main__":
         help=(
             "Path to an object within the 'scholarphi-work-requests' S3 bucket that contains a "
             + "JSON spec for a job. See 'job_config.py' for a list of supported properties.'"
-            + "Command line options (e.g., '--arxiv-ids', '--one-entity-at-a-time') take "
+            + "Command line options (e.g., '--arxiv-ids') take "
             + "precedence over the job configuration."
         ),
     )
@@ -188,6 +184,19 @@ if __name__ == "__main__":
         type=str,
         default=DEFAULT_S3_ARXIV_SOURCES_BUCKET,
         help="If '--source' is 's3', arXiv sources will be downloaded from this S3 bucket.",
+    )
+    parser.add_argument(
+        "--entity-batch-size",
+        type=int,
+        default=30,
+        help=(
+            "Number of entities to attempt to locate at a time. Setting this to a higher value "
+            + "should speed up the pipeline by reducing the number of compilations and rasters "
+            + "of documents. That said, beyond a certain point, batch size may reduce the accuracy "
+            + "of entity localization. This is because entities are distinguished from each other "
+            + "during localization using distinct hues, which become closer together as the "
+            + "batch size increases."
+        ),
     )
     parser.add_argument(
         "--max-papers",
@@ -214,7 +223,6 @@ if __name__ == "__main__":
         action="store_true",
         help="If '--one-paper-at-a-time' is set, keep a paper's data after it is processed.",
     )
-    add_one_entity_at_a_time_arg(parser)
     parser.add_argument(
         "--store-results",
         action="store_true",
@@ -348,12 +356,6 @@ if __name__ == "__main__":
     if s3_job_spec and s3_job_spec.email:
         emails.append(s3_job_spec.email)
 
-    one_entity_at_a_time = False
-    if args.one_entity_at_a_time:
-        one_entity_at_a_time = True
-    elif s3_job_spec and (s3_job_spec.one_entity_at_a_time is not None):
-        one_entity_at_a_time = s3_job_spec.one_entity_at_a_time
-
     logging.debug("Assembling the list of commands to be run.")
     command_classes = PIPELINE_COMMANDS
 
@@ -396,9 +398,8 @@ if __name__ == "__main__":
                 if skip_command:
                     continue
             if args.extraction_only:
-                if (
-                    issubclass(CommandClass, LocateEntitiesCommand)
-                    or issubclass(CommandClass, DatabaseUploadCommand)
+                if issubclass(CommandClass, LocateEntitiesCommand) or issubclass(
+                    CommandClass, DatabaseUploadCommand
                 ):
                     continue
             # Optionally skip over database upload commands.
@@ -427,7 +428,7 @@ if __name__ == "__main__":
         for arxiv_id in arxiv_ids:
             logging.info("Running pipeline for paper %s", arxiv_id)
             digest_for_paper = run_commands_for_arxiv_ids(
-                filtered_commands, [arxiv_id], one_entity_at_a_time, args
+                filtered_commands, [arxiv_id], args
             )
             # The pipeline digest must be updated after each arXiv ID is processed, because the
             # digest for a paper cannot be computed once the paper's data is deleted.
@@ -437,7 +438,7 @@ if __name__ == "__main__":
     else:
         logging.info("Running pipeline for papers %s", arxiv_ids)
         digest_for_papers = run_commands_for_arxiv_ids(
-            filtered_commands, arxiv_ids, one_entity_at_a_time, args
+            filtered_commands, arxiv_ids, args
         )
         pipeline_digest.update(digest_for_papers)
 

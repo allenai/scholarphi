@@ -57,7 +57,6 @@ def load_job_from_s3(s3_object_path: str) -> Optional[PipelineJob]:
                 # of the job config were set or not.
                 email = job_data.get("email")
                 dry_run = job_data.get("dry_run")
-                one_entity_at_a_time = job_data.get("one_entity_at_a_time")
             except (KeyError, ValueError) as error:
                 logging.error("Error parsing JSON job config: %s", error)
                 return None
@@ -66,5 +65,4 @@ def load_job_from_s3(s3_object_path: str) -> Optional[PipelineJob]:
                 email=email,
                 arxiv_ids=arxiv_ids,
                 dry_run=dry_run,
-                one_entity_at_a_time=one_entity_at_a_time,
             )

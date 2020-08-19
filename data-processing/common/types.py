@@ -30,9 +30,6 @@ class PipelineJob:
     email: Optional[str]
     " Email address to send results to. "
 
-    one_entity_at_a_time: Optional[bool]
-    " Whether to process one entity at a time. "
-
     dry_run: Optional[bool]
     """
     Whether to skip uploading processing results to the database. Use this option when you want

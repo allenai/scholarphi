@@ -2,7 +2,7 @@ import colorsys
 import logging
 import os
 from dataclasses import dataclass
-from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple
+from typing import Callable, Dict, Iterator, Optional, Sequence, Tuple
 
 import numpy as np
 

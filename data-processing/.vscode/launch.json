@@ -10,10 +10,36 @@
       "request": "launch",
       "program": "${workspaceFolder}/scripts/run_pipeline.py",
       "console": "integratedTerminal",
-      "args": ["-v"],
+      "args": [
+        "-v",
+        "--entities",
+        "citations",
+        // "symbols",
+        // "sentences",
+        // "definitions",
+        // "--start",
+        // "detect-sentences",
+        // "extract-symbols",
+        // "embellish-sentences",
+        // "--extraction-only",
+        "--entity-batch-size",
+        "3",
+        "--start",
+        // "raster-pages",
+        "locate-bounding-boxes-for-citations",
+        // "unpack-sources",
+        // "--end",
+        // "extract-symbols",
+        // "--commands",
+        // "locate-hues-for-equation-tokens",
+        "--arxiv-ids",
+        // "2002.04138"
+        "1601.00978"
+      ],
       "cwd": "${workspaceFolder}",
       "env": {
-        "PYTHONPATH": "."
+        "PYTHONPATH": ".",
+        "PATH": "/Users/andrew/.nvm/versions/node/v10.16.0/bin/"
       }
     },
     /*
