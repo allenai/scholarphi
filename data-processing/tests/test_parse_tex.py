@@ -1,6 +1,5 @@
 from common.parse_tex import (
     BeginDocumentExtractor,
-    BibitemExtractor,
     DocumentclassExtractor,
     EquationExtractor,
     MacroExtractor,
@@ -8,6 +7,7 @@ from common.parse_tex import (
     extract_plaintext,
 )
 from common.types import MacroDefinition
+from entities.citations.extractor import BibitemExtractor
 from entities.sentences.extractor import SentenceExtractor
 
 
@@ -277,9 +277,9 @@ def test_extract_bibitems():
     extractor = BibitemExtractor()
     bibitems = list(extractor.parse(tex))
     assert len(bibitems) == 2
-    assert bibitems[0].key == "key1"
+    assert bibitems[0].id_ == "key1"
     assert bibitems[0].text == "token1 token2 token3"
-    assert bibitems[1].key == "key2"
+    assert bibitems[1].id_ == "key2"
     assert bibitems[1].text == "token4 token5"
 
 
@@ -288,7 +288,7 @@ def test_extract_bibitem_tokens_from_curly_braces():
     extractor = BibitemExtractor()
     bibitems = list(extractor.parse(tex))
     assert len(bibitems) == 1
-    assert bibitems[0].key == "key1"
+    assert bibitems[0].id_ == "key1"
     assert bibitems[0].text == "token1 token2 token3"
 
 
@@ -304,7 +304,7 @@ def test_extract_bibitems_from_environment():
     extractor = BibitemExtractor()
     bibitems = list(extractor.parse(tex))
     assert len(bibitems) == 1
-    assert bibitems[0].key == "key1"
+    assert bibitems[0].id_ == "key1"
     assert bibitems[0].text == "token1"
 
 
@@ -315,7 +315,7 @@ def test_extract_bibitem_stop_at_newline():
     extractor = BibitemExtractor()
     bibitems = list(extractor.parse(tex))
     assert len(bibitems) == 1
-    assert bibitems[0].key == "key1"
+    assert bibitems[0].id_ == "key1"
     assert bibitems[0].text == "token1"
 
 

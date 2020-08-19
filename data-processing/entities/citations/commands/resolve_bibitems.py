@@ -1,13 +1,14 @@
 import logging
 import os.path
-import re
 from dataclasses import dataclass
-from typing import Iterator, List, Set
+from typing import Iterator, List
 
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
-from common.types import ArxivId, Bibitem, BibitemMatch, SerializableReference
-from ..utils import extract_ngrams, ngram_sim
+from common.types import ArxivId, SerializableReference
+
+from ..types import Bibitem, BibitemMatch
+from ..utils import ngram_sim
 
 
 @dataclass(frozen=True)
@@ -41,7 +42,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
             file_utils.clean_directory(
                 directories.arxiv_subdir("bibitem-resolutions", arxiv_id)
             )
-            bibitems_dir = directories.arxiv_subdir("bibitems", arxiv_id)
+            bibitems_dir = directories.arxiv_subdir("detected-citations", arxiv_id)
             metadata_dir = directories.arxiv_subdir("s2-metadata", arxiv_id)
 
             references_path = os.path.join(metadata_dir, "references.csv")
@@ -56,7 +57,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
                 file_utils.load_from_csv(references_path, SerializableReference)
             )
 
-            bibitems_path = os.path.join(bibitems_dir, "bibitems.csv")
+            bibitems_path = os.path.join(bibitems_dir, "entities.csv")
             if not os.path.exists(bibitems_path):
                 logging.warning(
                     "Could not find %s, skipping reference resolution for paper %s",
@@ -86,7 +87,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
 
             if most_similar_reference is not None:
                 yield BibitemMatch(
-                    bibitem.key,
+                    bibitem.id_,
                     bibitem.text,
                     most_similar_reference.s2_id,
                     most_similar_reference.title,
@@ -94,7 +95,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
             else:
                 logging.warning(
                     "Could not find a sufficiently similar reference for bibitem %s of paper %s",
-                    bibitem.key,
+                    bibitem.id_,
                     item.arxiv_id,
                 )
 

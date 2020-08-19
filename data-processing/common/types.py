@@ -63,6 +63,7 @@ class CompilationResult:
     output_files: List[OutputFile]
     stdout: bytes
     stderr: bytes
+    error_cause_entity_id: Optional[str] = None
 
 
 """
@@ -106,27 +107,6 @@ class SerializableReference:
 class S2Metadata:
     s2_id: S2Id
     references: List[Reference]
-
-
-"""
-CITATIONS
-"""
-
-
-@dataclass(frozen=True)
-class Bibitem:
-    key: str
-
-    text: str
-    " Plaintext extracted for bibitem. "
-
-
-@dataclass(frozen=True)
-class BibitemMatch:
-    key: str
-    bibitem_text: str
-    s2_id: str
-    s2_title: str
 
 
 """
@@ -499,7 +479,7 @@ class BoundingBoxAndHue:
 
 @dataclass(frozen=True)
 class HueLocationInfo(BoundingBox, ColorizationRecord):
-    relative_file_path: str
+    pass
 
 
 TokenLocations = Dict[TokenId, List[BoundingBox]]

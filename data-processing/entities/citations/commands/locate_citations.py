@@ -32,13 +32,13 @@ class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
         return "Find locations of citations. Requires 'locate-citation-hues' to have been run."
 
     def get_arxiv_ids_dirkey(self) -> str:
-        return "hue-locations-for-citations"
+        return "citations-locations"
 
     def load(self) -> Iterator[LocationTask]:
 
         for arxiv_id in self.arxiv_ids:
 
-            output_dir = directories.arxiv_subdir("citation-locations", arxiv_id)
+            output_dir = directories.arxiv_subdir("citation-cluster-locations", arxiv_id)
             file_utils.clean_directory(output_dir)
 
             boxes_by_hue_iteration = file_utils.load_citation_hue_locations(arxiv_id)
@@ -98,7 +98,7 @@ class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
                 )
 
     def save(self, item: LocationTask, result: CitationLocation) -> None:
-        output_dir = directories.arxiv_subdir("citation-locations", item.arxiv_id)
+        output_dir = directories.arxiv_subdir("citation-cluster-locations", item.arxiv_id)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 

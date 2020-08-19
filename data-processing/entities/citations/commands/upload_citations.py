@@ -6,10 +6,11 @@ from typing import Dict, Iterator, List, cast
 
 from common import directories, file_utils
 from common.commands.database import DatabaseUploadCommand
-from common.types import (BibitemMatch, BoundingBox, CitationData,
+from common.types import (BoundingBox, CitationData,
                           EntityInformation, SerializableReference)
 from common.upload_entities import upload_entities
 
+from ..types import BibitemMatch
 from ..utils import load_located_citations
 
 CitationKey = str

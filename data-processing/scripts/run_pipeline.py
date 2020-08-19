@@ -16,17 +16,13 @@ from common.commands.base import (
     load_arxiv_ids_using_args,
     read_arxiv_ids_from_file,
 )
-from common.commands.colorize_tex import ColorizeTexCommand
-from common.commands.compile_tex import CompileTexCommand
 from common.commands.database import DatabaseUploadCommand
-from common.commands.diff_images import DiffImagesCommand
 from common.commands.fetch_arxiv_sources import (
     DEFAULT_S3_ARXIV_SOURCES_BUCKET,
     FetchArxivSources,
 )
 from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
-from common.commands.locate_hues import LocateHuesCommand
-from common.commands.raster_pages import RasterPagesCommand
+from common.commands.locate_entities import LocateEntitiesCommand
 from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
 from common.make_digest import make_paper_digest
@@ -401,11 +397,7 @@ if __name__ == "__main__":
                     continue
             if args.extraction_only:
                 if (
-                    issubclass(CommandClass, ColorizeTexCommand)
-                    or issubclass(CommandClass, CompileTexCommand)
-                    or issubclass(CommandClass, RasterPagesCommand)
-                    or issubclass(CommandClass, DiffImagesCommand)
-                    or issubclass(CommandClass, LocateHuesCommand)
+                    issubclass(CommandClass, LocateEntitiesCommand)
                     or issubclass(CommandClass, DatabaseUploadCommand)
                 ):
                     continue

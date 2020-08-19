@@ -2,7 +2,7 @@ import os.path
 
 import cv2
 
-from common.image_processing import contains_black_pixels
+from common.locate_entities import contains_black_pixels
 from tests.util import get_test_path
 
 

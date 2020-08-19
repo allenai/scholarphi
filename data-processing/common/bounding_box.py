@@ -68,7 +68,7 @@ def extract_bounding_boxes(
 def find_boxes_with_color(
     image: np.ndarray,
     hue: float,
-    tolerance: float = 0.005,
+    tolerance: float = 0.01,
     masks: Optional[Iterable[Rectangle]] = None,
 ) -> List[Rectangle]:
     """

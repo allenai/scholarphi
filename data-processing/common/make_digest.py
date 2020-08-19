@@ -47,7 +47,7 @@ def make_default_paper_digest(
     num_entities_detected = count_detected_entities(arxiv_id, detected_entities_dirkey)
 
     # Look in the default location for a list of hues located in the file.
-    hue_locations_dirkey = f"hue-locations-for-{entity_name}"
+    hue_locations_dirkey = f"{entity_name}-locations"
     num_hues_located = count_hues_located(arxiv_id, hue_locations_dirkey)
 
     return EntityProcessingDigest(
@@ -80,7 +80,7 @@ def count_detected_entities(
 def count_hues_located(
     arxiv_id: ArxivId,
     hue_locations_dirkey: str,
-    hue_locations_filename: str = "hue_locations.csv",
+    hue_locations_filename: str = "entity_locations.csv",
 ) -> Optional[int]:
 
     num_hues_located = None

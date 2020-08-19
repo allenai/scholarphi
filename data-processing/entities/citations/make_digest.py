@@ -3,8 +3,9 @@ from typing import Optional
 
 from common import directories, file_utils
 from common.make_digest import make_default_paper_digest
-from common.types import ArxivId, Bibitem, EntityProcessingDigest
+from common.types import ArxivId, EntityProcessingDigest
 
+from .types import Bibitem
 from .utils import load_located_citations
 
 
@@ -40,7 +41,7 @@ def count_entities_extracted(arxiv_id: ArxivId) -> Optional[int]:
     number of bibitems which are colorized to enable detection of citation locations.
     """
     bibitems_path = os.path.join(
-        directories.arxiv_subdir("bibitems", arxiv_id), "bibitems.csv"
+        directories.arxiv_subdir("detected-citations", arxiv_id), "entities.csv"
     )
     if not os.path.exists(bibitems_path):
         return None

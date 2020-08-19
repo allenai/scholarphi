@@ -32,7 +32,7 @@ class LocateSymbols(ArxivBatchCommand[LocationTask, BoundingBox]):
         )
 
     def get_arxiv_ids_dirkey(self) -> str:
-        return "hue-locations-for-equation-tokens"
+        return "equation-tokens-locations"
 
     def load(self) -> Iterator[LocationTask]:
 

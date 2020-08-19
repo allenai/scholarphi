@@ -1,14 +1,10 @@
 from typing import List, Optional, Type
 
 from common import directories
-from common.colorize_tex import ColorPositionsFunc, ColorWhenFunc
+from common.colorize_tex import ColorizeOptions
 from common.commands.base import Command, CommandList
-from common.commands.colorize_tex import make_colorize_tex_command
-from common.commands.compile_tex import make_compile_tex_command
 from common.commands.detect_entities import make_detect_entities_command
-from common.commands.diff_images import make_diff_images_command
-from common.commands.locate_hues import make_locate_hues_command
-from common.commands.raster_pages import make_raster_pages_command
+from common.commands.locate_entities import make_locate_entities_command, ColorizeFunc
 from common.commands.upload_entities import make_upload_entities_command
 from common.parse_tex import EntityExtractor
 from common.types import EntityUploadCallable, SerializableEntity
@@ -19,8 +15,8 @@ def create_entity_localization_command_sequence(
     EntityExtractorType: Type[EntityExtractor],
     DetectedEntityType: Optional[Type[SerializableEntity]] = None,
     upload_func: Optional[EntityUploadCallable] = None,
-    colorize_entity_when: Optional[ColorWhenFunc] = None,
-    get_color_positions: Optional[ColorPositionsFunc] = None,
+    colorize_options: ColorizeOptions = ColorizeOptions(),
+    colorize_func: Optional[ColorizeFunc] = None,
 ) -> List[Type[Command]]:  # type: ignore
     """
     Create a set of commands that can be used to locate a new type of entity. In the simplest case,
@@ -29,7 +25,7 @@ def create_entity_localization_command_sequence(
     pipeline is run, and an 'EntityExtractorType' that locates all instances of that entity in the
     TeX. This function creates the commands necessary to colorize the entities, compile the
     LaTeX, raster the pages, and locate the colors in the pages. You may define additional
-    paramters (e.g., 'colorize_entity_when') to fine-tune the commands.
+    paramters (e.g., 'colorize_options') to fine-tune the commands.
 
     If you are trying to find the locations of a new type of entity, it is highly recommended that
     you use this convenience methods instead of creating new commands yourself.
@@ -39,22 +35,15 @@ def create_entity_localization_command_sequence(
     directories.register(f"detected-{entity_name}")
     directories.register(f"sources-with-colorized-{entity_name}")
     directories.register(f"compiled-sources-with-colorized-{entity_name}")
-    directories.register(f"paper-with-colorized-{entity_name}-images")
-    directories.register(f"diff-images-with-colorized-{entity_name}")
-    directories.register(f"hue-locations-for-{entity_name}")
+    directories.register(f"paper-images-with-colorized-{entity_name}")
+    directories.register(f"diffed-images-with-colorized-{entity_name}")
+    directories.register(f"{entity_name}-locations")
 
     commands: CommandList = [
         make_detect_entities_command(entity_name, EntityExtractorType),
-        make_colorize_tex_command(
-            entity_name=entity_name,
-            DetectedEntityType=DetectedEntityType,
-            when=colorize_entity_when,
-            get_color_positions=get_color_positions,
+        make_locate_entities_command(
+            entity_name, DetectedEntityType, colorize_options, colorize_func
         ),
-        make_compile_tex_command(entity_name),
-        make_raster_pages_command(entity_name),
-        make_diff_images_command(entity_name),
-        make_locate_hues_command(entity_name),
     ]
 
     if upload_func is not None:
