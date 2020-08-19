@@ -1,4 +1,10 @@
-from common.compile import get_errors, is_driver_unimplemented
+from common.compile import (
+    did_compilation_fail,
+    get_errors,
+    get_last_autotex_compiler,
+    get_last_colorized_entity_id,
+    is_driver_unimplemented,
+)
 
 
 def test_is_not_missing_driver():
@@ -46,3 +52,56 @@ def test_get_errors():
     error2 = errors[1]
     assert len(error2.splitlines()) == 3
     assert error2.startswith(b"! Emergency stop.")
+
+
+def test_get_last_autotex_compiler():
+    autotex_log = "\n".join(
+        [
+            "[verbose]:  ~~~~~~~~~~~ Running hpdflatex for the first time ~~~~~~~~",
+            "...",
+            "[verbose]:  ~~~~~~~~~~~ Running pdflatex for the first time ~~~~~~~~",
+            "...",
+            "[verbose]:  ~~~~~~~~~~~ Running pdflatex for the second time ~~~~~~~~",
+            "...",
+        ]
+    )
+    compiler = get_last_autotex_compiler(autotex_log)
+    assert compiler == "pdflatex"
+
+
+def test_detect_compilation_failure():
+    autotex_log = "\n".join(
+        [
+            "[verbose]:  ~~~~~~~~~~~ Running pdflatex for the first time ~~~~~~~~",
+            "! Emergency stop.",
+        ]
+    )
+    failed = did_compilation_fail(autotex_log, "pdflatex")
+    assert failed
+
+
+def test_ignore_compilation_failure_for_other_compiler():
+    autotex_log = "\n".join(
+        [
+            "[verbose]:  ~~~~~~~~~~~ Running pdflatex for the first time ~~~~~~~~",
+            "! Emergency stop.",
+        ]
+    )
+    failed = did_compilation_fail(autotex_log, "other-compiler-not-pdflatex")
+    assert not failed
+
+
+def test_get_entity_colored_before_failure():
+    autotex_log = "\n".join(
+        [
+            "[verbose]:  ~~~~~~~~~~~ Running pdflatex for the first time ~~~~~~~~",
+            "...",
+            "S2: Colorized entity 1.",
+            "...",
+            "S2: Colorized entity 2.",
+            "...",
+            "! Emergency stop.",
+        ]
+    )
+    id_ = get_last_colorized_entity_id(autotex_log, "pdflatex")
+    assert id_ == "2"

@@ -89,3 +89,46 @@ def contains_black_pixels(img: np.ndarray) -> bool:
             )
         )
     )
+
+def has_hue_shifted(
+    before: np.ndarray, after: np.ndarray, hue: float, tolerance: float = 0.02
+) -> bool:
+    """
+    Detect whether pixels of a specified 'hue' have shifted away from where pixels were in a
+    baseline image. Used to detect whether rasters of pages with colorized images had
+    contain accidental layout changes. See 'extract_bounding_boxes' for a description of the 'hue'
+    and 'tolerance' arguments.
+    """
+
+    CV2_MAXIMUM_HUE = 180
+
+    # A pixel with a value above 230 and a saturation below 10 is considered blank.
+    VALUE_THRESHOLD = 230  # out of 255
+    SATURATION_THRESHOLD = 10  # out of 255
+
+    # Detect which pixels in 'after' have changed from not filled to filled.
+    before_hsv = cv2.cvtColor(before, cv2.COLOR_BGR2HSV)
+    after_hsv = cv2.cvtColor(after, cv2.COLOR_BGR2HSV)
+
+    SATURATION_CHANNEL = 1
+    VALUE_CHANNEL = 2
+    blank_before = np.logical_and(
+        before_hsv[:, :, SATURATION_CHANNEL] < SATURATION_THRESHOLD,
+        before_hsv[:, :, VALUE_CHANNEL] > VALUE_THRESHOLD,
+    )
+    blank_after = np.logical_and(
+        after_hsv[:, :, SATURATION_CHANNEL] < SATURATION_THRESHOLD,
+        after_hsv[:, :, VALUE_CHANNEL] > VALUE_THRESHOLD,
+    )
+    fill_changes = np.logical_xor(blank_before, blank_after)
+
+    # Compute hues at all location where saturation changed.
+    HUE_CHANNEL = 0
+    after_hues = after_hsv[:, :, HUE_CHANNEL]
+
+    # Determine whether the hue at any of the locations matches the input hue.
+    cv2_hue = hue * CV2_MAXIMUM_HUE
+    cv2_tolerance = tolerance * CV2_MAXIMUM_HUE
+    distance_to_hue = np.abs(after_hues.astype(np.int16) - cv2_hue)
+    abs_distance_to_hue = np.minimum(distance_to_hue, CV2_MAXIMUM_HUE - distance_to_hue)
+    return np.any((abs_distance_to_hue <= cv2_tolerance) & fill_changes)
