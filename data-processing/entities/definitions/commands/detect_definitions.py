@@ -44,9 +44,11 @@ class TermDefinitionPair:
     term_start: int
     term_end: int
     term_text: str
+    term_type: str
     definition_start: int
     definition_end: int
     definition_text: str
+    definition_type: str
 
 
 def get_token_character_ranges(text: str, tokens: List[str]) -> List[CharacterRange]:
@@ -91,6 +93,20 @@ def get_term_definition_pairs(
                 definitions.append(definition_ranges)
             term_ranges, definition_ranges = [], []
 
+    # Extract ranges for all abbreviations.
+    abbreviation_ranges: List[CharacterRange] = []
+    for (abbreviation_label, a_range) in zip(featurized_text['abbreviation'], ranges):
+        # 1 means the token is a part of abbreviation
+        if abbreviation_label == 1:
+            abbreviation_ranges.append(a_range)
+
+    # Extract ranges for all entities.
+    entity_ranges: List[CharacterRange] = []
+    for (entity_label, a_range) in zip(featurized_text['entity'], ranges):
+        # 1 means the token is a part of abbreviation
+        if entity_label == 1:
+            entity_ranges.append(a_range)
+
     # Match pairs of term and definitions sequentially ( O T O O D then (T, D)). This
     # does not handle multi-term / definitions pairs
     num_term_definition_pairs = min(len(terms), len(definitions))
@@ -107,24 +123,71 @@ def get_term_definition_pairs(
             num_term_definition_pairs,
         )
 
-        term_range_list = terms[pair_index]
-        definition_range_list = definitions[pair_index]
+        term_a_rangelist = terms[pair_index]
+        definition_a_rangelist = definitions[pair_index]
 
-        term_start = min([r.start for r in term_range_list])
-        term_end = max([r.end for r in term_range_list]) + 1
-        definition_start = min([r.start for r in definition_range_list])
-        definition_end = max([r.end for r in definition_range_list]) + 1
+        term_start = min([r.start for r in term_a_rangelist])
+        term_end = max([r.end for r in term_a_rangelist]) + 1
+        definition_start = min([r.start for r in definition_a_rangelist])
+        definition_end = max([r.end for r in definition_a_rangelist]) + 1
+
+
+
+        # Decide types of terms and definitions.
+        # Term types: [symbol, term, abbreviation, entity]
+        # NOTE currently, we don't manage to get abbreviation type of term and definition separation. Instead, we only detect whether "term" is a part of abbreviation.
+        term_type = "symbol" if "SYMBOL" in text[term_start:term_end] else "term"
+
+
+        # Check whethe ther term is a part of entity or not.
+        for a_range in entity_ranges:
+            # check whether definiendum contains an entiity.
+            if term_start <= a_range.start and a_range.end <= term_end:
+                # print('*******************************************')
+                # print('TERM:ENTITY',a_range, term_start, term_end, text[a_range.start:a_range.end+1], '/', text[term_start:term_end+1])
+                # print('*******************************************')
+                if term_type == "term":
+                    term_type = "entity"
+
+        # Check whethe ther term is a part of abbreviation or not.
+        # (abbreviation over-write entitiy type)
+        for a_range in abbreviation_ranges:
+            print('*******************************************')
+            print('TERM:ABBREVIATION',a_range, term_start, term_end, text[a_range.start:a_range.end+1], '/', text[term_start:term_end+1])
+            print('*******************************************')
+            # check whether definiendum contains an abbreviation.
+            if term_start <= a_range.start and a_range.end <= term_end:
+                if term_type == "term":
+                    term_type = "abbreviation"
+
+        #TODO check all appearance of each term -> get doc-freq, position statistics
+        # definition types: [nickname, definition] for symbol, [definition] for protologism, [expansion] for protologism
+        definition_type = "definition"
+
+        # if term_type == 'symbol':
+
+
 
         pair = TermDefinitionPair(
             term_start=term_start,
             term_end=term_end,
             term_text=text[term_start:term_end],
+            term_type=term_type,
             definition_start=definition_start,
             definition_end=definition_end,
             definition_text=text[definition_start:definition_end],
+            definition_type=definition_type
         )
         logging.debug("Found definition-term pair %s", pair)
         pairs.append(pair)
+
+
+
+
+
+
+
+
 
     return pairs
 
@@ -324,9 +387,9 @@ class DetectDefinitions(
                             )
                             definition_id = f"definition-{tex_path}-{definition_index}"
                             definiendum_text = pair.term_text
-                            definiendum_type = (
-                                "symbol" if "SYMBOL" in definiendum_text else "term"
-                            )
+                            definiendum_type = pair.term_type
+
+                            definition_type = pair.definition_type
 
                             # Map definiendum and definition start and end positions back to
                             # their original positions in the TeX.
@@ -390,13 +453,14 @@ class DetectDefinitions(
                                     definition_start:definition_end
                                 ]
 
+
                             # Save the definition to file.
                             definition = Definition(
                                 id_=definition_id,
                                 start=definition_start,
                                 end=definition_end,
                                 definiendum=definiendum_text,
-                                type_=None,
+                                type_=definition_type,
                                 tex_path=tex_path,
                                 tex=definition_tex,
                                 text=pair.definition_text,
@@ -412,29 +476,28 @@ class DetectDefinitions(
                             # save it to file once it's done being processed. It will need
                             # to be associated with other definitions. Also, other references
                             # to the term will be detected before this method is over.
-                            definiendums[definiendum_text].append(
-                                Definiendum(
-                                    id_=definiendum_id,
-                                    text=definiendum_text,
-                                    type_=definiendum_type,
-                                    confidence=None,
-                                    # Link the definiendum to the text that defined it.
-                                    definition_id=definition_id,
-                                    # Because a term can be defined multiple places in the paper, these
-                                    # three lists of definition data will be filled out once all of the
-                                    # definitions have been found.
-                                    definition_ids=[],
-                                    definitions=[],
-                                    definition_texs=[],
-                                    sources=[],
-                                    start=definiendum_start,
-                                    end=definiendum_end,
-                                    tex_path=tex_path,
-                                    tex=definiendum_tex,
-                                    context_tex=s.context_tex,
-                                    sentence_id=s.id_,
-                                )
+                            definiendum = Definiendum(
+                                id_=definiendum_id,
+                                text=definiendum_text,
+                                type_=definiendum_type,
+                                confidence=None,
+                                # Link the definiendum to the text that defined it.
+                                definition_id=definition_id,
+                                # Because a term can be defined multiple places in the paper, these
+                                # three lists of definition data will be filled out once all of the
+                                # definitions have been found.
+                                definition_ids=[],
+                                definitions=[],
+                                definition_texs=[],
+                                sources=[],
+                                start=definiendum_start,
+                                end=definiendum_end,
+                                tex_path=tex_path,
+                                tex=definiendum_tex,
+                                context_tex=s.context_tex,
+                                sentence_id=s.id_,
                             )
+                            definiendums[definiendum_text].append(definiendum)
                             definition_index += 1
 
                     features = []
