@@ -80,7 +80,7 @@ class TermReference(Term):
     " A list of the term' position ratios in the paper "
 
     section_names: List[str]
-    " A list of section names of the term"
+    " A list of section names of the term "
 
 
 @dataclass(frozen=True)
@@ -91,7 +91,13 @@ class Definiendum(TermReference):
     " The ID for the definiens that defines this term. "
 
     confidence: Optional[float]
-    " The confidence score of the model's prediction
+    " The confidence score of the model's prediction "
+
+    position_ratio: float
+    " The relative ratio of the term in the paper. "
+
+    section_name: str
+    " The name of section that dfines this term. "
 
 
 
