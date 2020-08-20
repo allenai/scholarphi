@@ -335,7 +335,7 @@ class Trainer(object):
 
         return new_intent_preds, new_slot_preds
 
-    def evaluate_one(self, dataset: TensorDataset) -> Tuple[List[int], List[List[str]]]:
+    def evaluate_from_input(self, dataset: TensorDataset) -> Tuple[List[int], List[List[str]], List[List[float]]]:
         eval_sampler = SequentialSampler(dataset)
         eval_dataloader = DataLoader(
             dataset, sampler=eval_sampler, batch_size=self.args.eval_batch_size
@@ -346,6 +346,7 @@ class Trainer(object):
         nb_eval_steps = 0
         intent_preds = None
         slot_preds = None
+        slot_conf = None
         gold_intent_label_ids = []
         gold_slot_labels_ids = []
 
@@ -382,6 +383,7 @@ class Trainer(object):
             nb_eval_steps += 1
 
             # Predict intent.
+            intent_probs = torch.softmax(intent_logits, dim=1).detach().cpu().numpy()
             if intent_preds is None:
                 intent_preds = intent_logits.detach().cpu().numpy()
                 gold_intent_label_ids = (
@@ -398,19 +400,29 @@ class Trainer(object):
                 )
 
             # Predict slots.
+            slot_probs = torch.softmax(slot_logits,dim=2).detach().cpu().numpy()
             if slot_preds is None:
                 if self.args.use_crf:
-                    # decode() in `torchcrf` returns list with best index directly.
-                    slot_preds = np.array(self.model.crf.decode(slot_logits))
+                    slot_logits_crf = np.array(self.model.crf.decode(slot_logits))
+                    # decode() in `torchcrf` returns list with best index directly
+                    slot_preds = slot_logits_crf
+                    # get confidence from softmax
+                    I,J = np.ogrid[:slot_logits_crf.shape[0], :slot_logits_crf.shape[1]]
+                    slot_conf = slot_probs[I, J, slot_logits_crf]
                 else:
                     slot_preds = slot_logits.detach().cpu().numpy()
 
                 gold_slot_labels_ids = inputs["slot_labels_ids"].detach().cpu().numpy()
             else:
                 if self.args.use_crf:
-                    slot_preds = np.append(
-                        slot_preds, np.array(self.model.crf.decode(slot_logits)), axis=0
-                    )
+                    slot_logits_crf = np.array(self.model.crf.decode(slot_logits))
+                    slot_preds = np.append(slot_preds, slot_logits_crf, axis=0)
+                    # get confidence from softmax
+                    I,J = np.ogrid[:slot_logits_crf.shape[0], :slot_logits_crf.shape[1]]
+                    slot_conf = np.append(slot_conf, slot_probs[I, J, slot_logits_crf], axis=0)
+
+
+
                 else:
                     slot_preds = np.append(
                         slot_preds, slot_logits.detach().cpu().numpy(), axis=0
@@ -429,6 +441,9 @@ class Trainer(object):
 
         # Finally compute the slots.
         if not self.args.use_crf:
+            # get confidence from softmax
+            I,J = np.ogrid[:slot_preds.shape[0], :slot_preds.shape[1]]
+            slot_conf = slot_preds[I, J, np.argmax(slot_preds, axis=2)]
             slot_preds = np.argmax(slot_preds, axis=2)
 
         slot_label_map = {i: label for i, label in enumerate(self.slot_label_lst)}
@@ -436,6 +451,8 @@ class Trainer(object):
         gold_slot_num_length = int(len(gold_slot_labels_ids[0]))
         gold_slot_label_list = [[] for _ in range(gold_slot_num_batch)]
         slot_preds_list = [[] for _ in range(gold_slot_num_batch)]
+        slot_conf_list = [[] for _ in range(gold_slot_labels_ids.shape[0])]
+
 
         for i in range(gold_slot_num_batch):
             for j in range(gold_slot_num_length):
@@ -444,6 +461,8 @@ class Trainer(object):
                         slot_label_map[gold_slot_labels_ids[i][j]]
                     )
                     slot_preds_list[i].append(slot_label_map[slot_preds[i][j]])
+                    slot_conf_list[i].append(slot_conf[i][j])
+
 
         # Apply heuristic filters.
         if self.args.use_heuristic:
@@ -454,7 +473,8 @@ class Trainer(object):
                 gold_slot_label_list,
             )
 
-        return intent_preds, slot_preds_list
+
+        return intent_preds, slot_preds_list, slot_conf_list
 
     def evaluate(self, mode: str) -> Dict[Any, Any]:
         if mode == "test":
@@ -485,6 +505,7 @@ class Trainer(object):
         nb_eval_steps = 0
         intent_preds = None
         slot_preds = None
+        slot_conf = None
         gold_intent_label_ids = []
         gold_slot_labels_ids = []
 
@@ -537,20 +558,26 @@ class Trainer(object):
                 )
 
             # Predict slots.
+            slot_probs = torch.softmax(slot_logits,dim=2).detach().cpu().numpy()
             if slot_preds is None:
                 if self.args.use_crf:
-
-                    # decode() in `torchcrf` returns list with best index directly.
-                    slot_preds = np.array(self.model.crf.decode(slot_logits))
+                    slot_logits_crf = np.array(self.model.crf.decode(slot_logits))
+                    # decode() in `torchcrf` returns list with best index directly
+                    slot_preds = slot_logits_crf
+                    I,J = np.ogrid[:slot_logits_crf.shape[0], :slot_logits_crf.shape[1]]
+                    # get confidence from softmax
+                    slot_conf = slot_probs[I, J, slot_logits_crf]
                 else:
                     slot_preds = slot_logits.detach().cpu().numpy()
 
                 gold_slot_labels_ids = inputs["slot_labels_ids"].detach().cpu().numpy()
             else:
                 if self.args.use_crf:
-                    slot_preds = np.append(
-                        slot_preds, np.array(self.model.crf.decode(slot_logits)), axis=0
-                    )
+                    slot_logits_crf = np.array(self.model.crf.decode(slot_logits))
+                    slot_preds = np.append(slot_preds, slot_logits_crf, axis=0)
+                    I,J = np.ogrid[:slot_logits_crf.shape[0], :slot_logits_crf.shape[1]]
+                    # get confidence from softmax
+                    slot_conf = np.append(slot_conf, slot_probs[I, J, slot_logits_crf], axis=0)
                 else:
                     slot_preds = np.append(
                         slot_preds, slot_logits.detach().cpu().numpy(), axis=0
@@ -570,6 +597,9 @@ class Trainer(object):
 
         # Slot result
         if not self.args.use_crf:
+            # get confidence from softmax
+            I,J = np.ogrid[:slot_preds.shape[0], :slot_preds.shape[1]]
+            slot_conf = slot_preds[I, J, np.argmax(slot_preds, axis=2)]
             slot_preds = np.argmax(slot_preds, axis=2)
 
         slot_label_map = {i: label for i, label in enumerate(self.slot_label_lst)}
@@ -577,6 +607,7 @@ class Trainer(object):
         gold_slot_num_length = int(len(gold_slot_labels_ids[0]))
         gold_slot_label_list = [[] for _ in range(gold_slot_num_batch)]
         slot_preds_list = [[] for _ in range(gold_slot_num_batch)]
+        slot_conf_list = [[] for _ in range(gold_slot_labels_ids.shape[0])]
 
         for i in range(gold_slot_num_batch):
             for j in range(gold_slot_num_length):
@@ -585,6 +616,8 @@ class Trainer(object):
                         slot_label_map[gold_slot_labels_ids[i][j]]
                     )
                     slot_preds_list[i].append(slot_label_map[slot_preds[i][j]])
+                    slot_conf_list[i].append(slot_conf[i][j])
+
 
         # heuristics
         if self.args.use_heuristic:

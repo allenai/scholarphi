@@ -25,7 +25,6 @@ Deployment TODOs:
 
 Detection improvement TODOs:
 * TODO(dykang): aggregation over terms / definitions (e.g., coreference links)
-* TODO(dykang): add confidence scores
 """
 
 TermName = str
@@ -45,10 +44,12 @@ class TermDefinitionPair:
     term_end: int
     term_text: str
     term_type: str
+    term_confidence: float
     definition_start: int
     definition_end: int
     definition_text: str
     definition_type: str
+    definition_confidence: float
 
 
 def get_token_character_ranges(text: str, tokens: List[str]) -> List[CharacterRange]:
@@ -70,7 +71,9 @@ def get_token_character_ranges(text: str, tokens: List[str]) -> List[CharacterRa
 
 
 def get_term_definition_pairs(
-    text: str, featurized_text: Dict[Any, Any], slot_preds: List[str],
+    text: str, featurized_text: Dict[Any, Any],
+    slot_preds: List[str],
+    slot_pred_confs: List[float],
     nlp_model
 ) -> List[TermDefinitionPair]:
 
@@ -80,18 +83,25 @@ def get_term_definition_pairs(
     # Extract ranges for all terms and definitions.
     terms: List[List[CharacterRange]] = []
     definitions: List[List[CharacterRange]] = []
+    term_confidences: List[float] = []
+    definition_confidences: List[float] = []
     term_ranges, definition_ranges = [], []
+    term_confs, definition_confs = [], []
 
-    for (slot_label, r) in zip(slot_preds, ranges):
+    for (slot_label, slot_conf, r) in zip(slot_preds, slot_pred_confs, ranges):
         if slot_label == "TERM":
             term_ranges.append(r)
+            term_confs.append(slot_conf)
         if slot_label == "DEF":
             definition_ranges.append(r)
+            definition_confs.append(slot_conf)
         if slot_label == "O":
             if len(term_ranges) > 0:
                 terms.append(term_ranges)
+                term_confidences.append(sum(term_confs)/len(term_confs))
             if len(definition_ranges) > 0:
                 definitions.append(definition_ranges)
+                definition_confidences.append(sum(definition_confs)/len(definition_confs))
             term_ranges, definition_ranges = [], []
 
     # Extract ranges for all abbreviations.
@@ -126,6 +136,8 @@ def get_term_definition_pairs(
 
         term_a_rangelist = terms[pair_index]
         definition_a_rangelist = definitions[pair_index]
+        term_confidence = term_confidences[pair_index]
+        definition_confidence = definition_confidences[pair_index]
 
         term_start = min([r.start for r in term_a_rangelist])
         term_end = max([r.end for r in term_a_rangelist]) + 1
@@ -155,10 +167,12 @@ def get_term_definition_pairs(
                 term_end=acronym_end,
                 term_text=abbreviation_term[acronym_start:acronym_end],
                 term_type="acronym",
+                term_confidence=None,
                 definition_start=expansion_start,
                 definition_end=expansion_end,
                 definition_text=abbreviation_term[expansion_start:expansion_end],
-                definition_type="expansion"
+                definition_type="expansion",
+                definition_confidence=None
             )
             logging.debug("Found definition-term pair %s", pair)
             pairs.append(pair)
@@ -190,10 +204,12 @@ def get_term_definition_pairs(
             term_end=term_end,
             term_text=text[term_start:term_end],
             term_type=term_type,
+            term_confidence=term_confidence,
             definition_start=definition_start,
             definition_end=definition_end,
             definition_text=text[definition_start:definition_end],
-            definition_type=definition_type
+            definition_type=definition_type,
+            definition_confidence=definition_confidence
         )
         logging.debug("Found definition-term pair %s", pair)
         pairs.append(pair)
@@ -254,10 +270,12 @@ def get_term_definition_pairs(
                 term_end=symbol_end,
                 term_text=text[symbol_start:symbol_end],
                 term_type="symbol",
+                term_confidence=None,
                 definition_start=nickname_start,
                 definition_end=nickname_end,
                 definition_text=text[nickname_start:nickname_end],
-                definition_type="nickname"
+                definition_type="nickname",
+                definition_confidence=None,
             )
             logging.debug("Found definition-term pair %s", pair)
             pairs.append(pair)
@@ -466,12 +484,12 @@ class DetectDefinitions(
 
                     # Detect terms and definitions in each sentence with a pre-trained definition
                     # extraction model, from the featurized text.
-                    intents, slots = model.predict_batch(
+                    intents, slots, slots_conf = model.predict_batch(
                         cast(List[Dict[Any, Any]], features)
                     )
 
-                    for s, sentence_features, intent, sentence_slots in zip(
-                        sentences, features, intents, slots
+                    for s, sentence_features, intent, sentence_slots, sentence_slots_conf in zip(
+                        sentences, features, intents, slots, slots_conf
                     ):
                         # Only process slots when they includ both 'TERM' and 'DEFINITION'.
                         if "TERM" not in sentence_slots or "DEF" not in sentence_slots:
@@ -483,6 +501,7 @@ class DetectDefinitions(
                             s.legacy_definition_input,
                             sentence_features,
                             sentence_slots,
+                            sentence_slots_conf,
                             model.nlp
                         )
 
@@ -503,6 +522,9 @@ class DetectDefinitions(
                             definiendum_text = pair.term_text
                             definiendum_type = pair.term_type
                             definition_type = pair.definition_type
+
+                            definiendum_confidence = pair.term_confidence
+                            definition_confidence = pair.definition_confidence
 
                             # Map definiendum and definition start and end positions back to
                             # their original positions in the TeX.
@@ -593,7 +615,7 @@ class DetectDefinitions(
                                 context_tex=s.context_tex,
                                 sentence_id=s.id_,
                                 intent=bool(intent),
-                                confidence=None,
+                                confidence=definition_confidence,
                             )
                             definitions[definition_id] = definition
                             yield definition
@@ -606,7 +628,7 @@ class DetectDefinitions(
                                 id_=definiendum_id,
                                 text=definiendum_text,
                                 type_=definiendum_type,
-                                confidence=None,
+                                confidence=definiendum_confidence,
                                 # Link the definiendum to the text that defined it.
                                 definition_id=definition_id,
                                 # Because a term can be defined multiple places in the paper, these
