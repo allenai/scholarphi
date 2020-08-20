@@ -269,32 +269,9 @@ class DefinitionDetectionModel:
 
         return features
 
-    def predict_one(self, data: Dict[Any, Any]) -> Tuple[List[int], List[List[str]]]:
-
-        # Load data.
-        test_dataset = load_and_cache_example(self.data_args, self.tokenizer, data,)
-
-        # Perform inference.
-        intent_pred, slot_preds = self.trainer.evaluate_one(test_dataset)
-
-        # Process predictions.
-        simplified_slot_preds = []
-        for slot_pred in slot_preds:
-            simplified_slot_pred = []
-            for s in slot_pred:
-                if s.endswith("TERM"):
-                    simplified_slot_pred.append("TERM")
-                elif s.endswith("DEF"):
-                    simplified_slot_pred.append("DEF")
-                else:
-                    simplified_slot_pred.append("O")
-            simplified_slot_preds.append(simplified_slot_pred)
-
-        return intent_pred, simplified_slot_preds
-
     def predict_batch(
         self, data: List[Dict[Any, Any]]
-    ) -> Tuple[List[int], List[List[str]]]:
+    ) -> Tuple[List[int], List[List[str]], List[List[float]]]:
 
         # Load data.
         test_dataset = load_and_cache_example_batch(
@@ -302,7 +279,7 @@ class DefinitionDetectionModel:
         )
 
         # Perform inference.
-        intent_pred, slot_preds = self.trainer.evaluate_one(test_dataset)
+        intent_pred, slot_preds, slot_pred_confs = self.trainer.evaluate_from_input(test_dataset)
 
         # Process predictions.
         simplified_slot_preds = []
@@ -317,4 +294,4 @@ class DefinitionDetectionModel:
                     simplified_slot_pred.append("O")
             simplified_slot_preds.append(simplified_slot_pred)
 
-        return intent_pred, simplified_slot_preds
+        return intent_pred, simplified_slot_preds, slot_pred_confs
