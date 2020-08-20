@@ -2,11 +2,11 @@ import colorsys
 import logging
 import os
 from dataclasses import dataclass
-from typing import Callable, Dict, Iterator, Optional, Sequence, Tuple
+from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple
 
 import numpy as np
 
-from common.parse_tex import BeginDocumentExtractor, DocumentclassExtractor
+from common.parse_tex import BeginDocumentExtractor, DocumentclassExtractor, overlaps
 from common.types import CharacterRange, Hue, SerializableEntity
 
 """
@@ -150,7 +150,7 @@ def _get_color_end_tex(entity_id: str) -> str:
     This allows the pipeline to scan the output of the TeX compiler to detect which entities
     were successfully colorized before errors were encountered.
     """
-    return rf"\scholarrevertcolor{{}}\message{{S2: Colorized entity {entity_id}.}}"
+    return rf"\scholarrevertcolor{{}}\message{{S2: Colorized entity '{entity_id}'.}}"
 
 
 ColorWhenFunc = Callable[[SerializableEntity], bool]
@@ -195,7 +195,19 @@ EntityId = str
 @dataclass(frozen=True)
 class ColorizedTex:
     tex: str
+    " TeX instrumented with colorization of entities. "
+
     entity_hues: Dict[EntityId, Hue]
+    " Map from entity IDs to the hues they've been colored. "
+
+    skipped: Optional[List[SerializableEntity]] = None
+    """
+    Sometimes it is impossible to colorize all of the entities at once. One case is when
+    to entities overlap with each other. This means that part of at least one of the entities
+    will not have the assigned color. In that case, the colorize function is supposed to detect
+    the conflict, and return a list of entities that were not colorized, and which should
+    therefore be colorized in a later pass.
+    """
 
 
 def colorize_entities(
@@ -215,9 +227,21 @@ def colorize_entities(
     adjust_color_positions = options.adjust_color_positions
     braces = options.braces
 
+    # Filter entities to a list where no entity overlaps with any other entity. Those
+    # that overlap will be returned as skipped entities.
+    entities_filtered: List[SerializableEntity] = []
+    skipped = []
+    for entity in entities:
+        if any([overlaps(entity, e) for e in entities_filtered]):
+            skipped.append(entity)
+            continue
+        entities_filtered.append(entity)
+
     # Order entities from last-to-first so we can add color commands without messing with the offsets of
     # entities that haven't yet been colored.
-    entities_reverse_order = sorted(entities, key=lambda e: e.start, reverse=True)
+    entities_reverse_order = sorted(
+        entities_filtered, key=lambda e: e.start, reverse=True
+    )
 
     hue_generator = generate_hues()
     entity_hues = {}
@@ -258,4 +282,4 @@ def colorize_entities(
     if insert_color_macros:
         colorized_tex = add_color_macros(colorized_tex)
 
-    return ColorizedTex(colorized_tex, entity_hues)
+    return ColorizedTex(colorized_tex, entity_hues, skipped=skipped)

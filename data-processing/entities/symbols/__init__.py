@@ -3,7 +3,7 @@ from common.colorize_tex import ColorizeOptions
 from common.commands.base import CommandList
 from common.commands.locate_entities import make_locate_entities_command
 from common.make_digest import make_default_paper_digest
-from common.types import ArxivId, EntityProcessingDigest
+from common.types import ArxivId, EntityProcessingDigest, SerializableToken
 from scripts.pipelines import EntityPipeline, register_entity_pipeline
 
 from entities.sentences.commands.find_entity_sentences import (
@@ -37,6 +37,7 @@ commands = [
     FindSymbolSentences,
     make_locate_entities_command(
         "equation-tokens",
+        DetectedEntityType=SerializableToken,
         colorize_options=ColorizeOptions(adjust_color_positions=adjust_color_positions),
     ),
     LocateSymbols,

@@ -60,7 +60,6 @@ class CompilationResult:
     output_files: List[OutputFile]
     stdout: bytes
     stderr: bytes
-    error_cause_entity_id: Optional[str] = None
 
 
 """

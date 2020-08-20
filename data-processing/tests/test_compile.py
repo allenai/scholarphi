@@ -96,9 +96,9 @@ def test_get_entity_colored_before_failure():
         [
             "[verbose]:  ~~~~~~~~~~~ Running pdflatex for the first time ~~~~~~~~",
             "...",
-            "S2: Colorized entity 1.",
+            "S2: Colorized entity '1'.",
             "...",
-            "S2: Colorized entity 2.",
+            "S2: Colorized entity '2'.",
             "...",
             "! Emergency stop.",
         ]

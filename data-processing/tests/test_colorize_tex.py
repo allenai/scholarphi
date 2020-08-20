@@ -144,6 +144,34 @@ def test_color_inside_braces():
     assert matches[0] == "entity"
 
 
+def test_skip_overlapping_entities():
+    tex = "(outer (inner))"
+    outer = SerializableEntity(
+        start=1,
+        end=13,
+        tex_path="main.tex",
+        id_="id-outer",
+        tex="outer (inner)",
+        context_tex=tex,
+    )
+    inner = SerializableEntity(
+        start=7,
+        end=12,
+        tex_path="main.tex",
+        id_="id-inner",
+        tex="inner",
+        context_tex=tex,
+    )
+    result = colorize_entities(
+        tex, [outer, inner], ColorizeOptions(insert_color_macros=False)
+    )
+    colorized = result.tex
+    matches = re.findall(COLOR_PATTERN, colorized)
+    assert len(matches) == 1
+    assert len(result.skipped) == 1
+    assert result.skipped[0] in [outer, inner]
+
+
 def token(
     equation_start: int,
     relative_start: int,

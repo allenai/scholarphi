@@ -131,9 +131,9 @@ COMPILER_RUNNING_PATTERN = re.compile(r"[~]+ Running (.*?) for the first time [~
 
 def get_last_autotex_compiler(autotex_log: str) -> Optional[str]:
     compiler_names = COMPILER_RUNNING_PATTERN.findall(autotex_log)
-    if not compiler_names and isinstance(compiler_names[-1], str):
-        return None
-    return compiler_names[-1]
+    if compiler_names and isinstance(compiler_names[-1], str):
+        return compiler_names[-1]
+    return None
 
 
 def get_compilation_logs(autotex_log: str, compiler_name: str) -> List[str]:
@@ -180,7 +180,7 @@ def get_last_colorized_entity_id(
         return None
 
     # Only search for colorization commands in the logs for the last pass of the compiler.
-    entity_ids = re.findall(r"S2: Colorized entity (.*?)\.", logs[-1])
+    entity_ids = re.findall(r"S2: Colorized entity '(.*?)'\.", logs[-1])
     if entity_ids and isinstance(entity_ids[-1], str):
         return entity_ids[-1]
 
