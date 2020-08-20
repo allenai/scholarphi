@@ -123,6 +123,12 @@ class TermReference(Term):
     definition_texs: List[str]
     " The original TeX for each definition in 'definitions'. "
 
+    position_ratios: List[str]
+    " A list of the term' position ratios in the paper "
+
+    section_names: List[str]
+    " A list of section names of the term"
+
 
 @dataclass(frozen=True)
 class Definiendum(TermReference):
@@ -132,3 +138,7 @@ class Definiendum(TermReference):
     " The ID for the definiens that defines this term. "
 
     confidence: Optional[float]
+    " The confidence score of the model's prediction
+
+
+
