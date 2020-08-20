@@ -163,9 +163,9 @@ def get_term_definition_pairs(
             pairs.append(pair)
 
         # Decide types of terms and definitions.
-        #  - Term types: [symbol, term, abbreviation, entity]
+        #  - Term types: [symbol, term, abbreviation, entity, acrnonym]
         #  - definition types: [nickname, definition] for symbol, [definition] for protologism, [expansion] for protologism
-        # NOTE currently, our model doesn't predict acronym as a term and its expansion as a definition. In case we detect an abbreviation in the detected term, we split it into acroynm and expansion, and make a new pair of term and definintion.
+        # Currently, our model doesn't predict [acronym] as a term and its [expansion] as a definition. In case we detect an abbreviation in the detected term, we split it into [acroynm] and [expansion], and make a new pair of term and definintion.
         term_type = "symbol" if "SYMBOL" in text[term_start:term_end] else "term"
         definition_type = "definition"
 
@@ -241,7 +241,7 @@ def get_term_definition_pairs(
 
 
         for symbol_idx,symbol_range, nickname_idxs, nickname_ranges in previous_symbol_nickname_pairs:
-            # print("\t", symbol_idx, symbol_range, [featurized_text['tokens'][idx] for idx in nickname_idxs], nickname_ranges)
+            logging.debug("Detected nicknames", symbol_idx, symbol_range, [featurized_text['tokens'][idx] for idx in nickname_idxs], nickname_ranges)
 
             symbol_start = symbol_range.start
             symbol_end = symbol_range.end+1
@@ -384,6 +384,7 @@ class DetectDefinitions(
     ) -> Iterator[Union[Definiendum, Definition, TermReference]]:
         sentences_ordered = sorted(item.sentences, key=lambda s: s.start)
         num_sentences = len(sentences_ordered)
+        end_posiion_of_last_sentence = sentences_ordered[-1].end
 
         if len(item.sentences) == 0:
             logging.warning(  # pylint: disable=logging-not-lazy
@@ -447,8 +448,6 @@ class DetectDefinitions(
                         )
 
 
-                        from pdb import set_trace; set_trace()
-
                         # Extract TeX for each symbol from a parallel representation of the
                         # sentence, so that the TeX for symbols can be saved.
                         symbol_texs = get_symbol_texs(
@@ -499,6 +498,10 @@ class DetectDefinitions(
                                 continue
                             definition_start = s.start + offsets[0]
                             definition_end = s.start + offsets[1]
+
+                            # Extract document-level features from sentence
+                            position_ratio = definiendum_start / end_posiion_of_last_sentence * 100.0
+                            section_name = s.section_name
 
                             try:
                                 tex = item.tex_by_file[tex_path]
@@ -571,6 +574,11 @@ class DetectDefinitions(
                                 tex=definiendum_tex,
                                 context_tex=s.context_tex,
                                 sentence_id=s.id_,
+                                # Document-level features below.
+                                position_ratio=position_ratio,
+                                position_ratios=[],
+                                section_name=section_name,
+                                section_names=[]
                             )
                             definiendums[definiendum_text].append(definiendum)
                             definition_index += 1
@@ -583,6 +591,9 @@ class DetectDefinitions(
             item.arxiv_id,
         )
 
+
+        # TODO Check/Load the list of detected defineundum across documents.
+
         all_definiendums: List[Definiendum] = []
         for _, definiendum_list in definiendums.items():
             all_definiendums.extend(definiendum_list)
@@ -591,6 +602,8 @@ class DetectDefinitions(
         definition_texs: Dict[TermName, List[str]] = {}
         definition_texts: Dict[TermName, List[str]] = {}
         sources: Dict[TermName, List[str]] = {}
+        position_ratios: Dict[TermName, List[float]] = {}
+        section_names: Dict[TermName, List[str]] = {}
 
         # Associate terms with all definitions that apply to them.
         for term, definiendum_list in definiendums.items():
@@ -602,14 +615,8 @@ class DetectDefinitions(
                 definitions[d.definition_id].text for d in definiendum_list
             ]
             sources[term] = ["model"] * len(definition_ids[term])
-
-
-        # Check all appearances of each definieundum within document.
-        # Check/Load the list of detected defineundum across documents.
-
-
-
-
+            position_ratios[term] = [d.position_ratio for d in definiendum_list]
+            section_names[term] = [d.section_name for d in definiendum_list]
 
         # Associate each definiendum with all applicable definitions, and save them to file.
         for _, definiendum_list in definiendums.items():
@@ -618,6 +625,8 @@ class DetectDefinitions(
                 d.definition_texs.extend(definition_texs[d.text])
                 d.definitions.extend(definition_texts[d.text])
                 d.sources.extend(sources[d.text])
+                d.position_ratios.extend(position_ratios[d.text])
+                d.section_names.extend(section_names[d.text])
                 yield d
 
         # Detect all other references to the defined terms.
@@ -651,6 +660,8 @@ class DetectDefinitions(
                     definitions=definition_texts[t.text],
                     definition_texs=definition_texs[t.text],
                     sources=sources[t.text],
+                    position_ratios=position_ratios[t.text],
+                    section_names=section_names[t.text],
                     start=t.start,
                     end=t.end,
                     tex_path=t.tex_path,
