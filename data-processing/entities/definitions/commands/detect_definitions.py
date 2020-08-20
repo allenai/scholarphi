@@ -1,6 +1,7 @@
 import logging
 import os.path
 import re
+import pickle as pkl
 from argparse import ArgumentParser
 from collections import defaultdict
 from dataclasses import dataclass
@@ -394,6 +395,44 @@ class DetectDefinitions(
             )
             return
 
+
+        # Make a cross-doc dictionary files (./data/)
+        cache_directory = "./cache/cross_doc_model"
+        if not os.path.exists(cache_directory):
+            os.makedirs(cache_directory)
+            logging.debug("Created cache directory for models at %s", cache_directory)
+
+            # Download the best model files in ./data/
+            DICTIONARY_URL = (
+                "http://dongtae.lti.cs.cmu.edu/data/cross_doc/term_dictionary_use_raw_math=True.pkl"
+            )
+            logging.debug(
+                "Downloading cross-term dictionary from %s. Warning: this will take a long time.",
+                DICTIONARY_URL,
+            )
+            cache_file = "term_dictionary_use_raw_math=True.pkl"
+            urllib.request.urlretrieve(
+                DICTIONARY_URL, os.path.join("{}/{}".format(cache_directory, cache_file)),
+            )
+
+            logging.debug(
+                "Downloaded dictionary file in directory %s", cache_file
+            )
+
+        else:
+            logging.debug(  # pylint: disable=logging-not-lazy
+                "Cache directory for models already exists at %s. "
+                + "Skipping creation of directory and download of data.",
+                cache_directory,
+            )
+
+        # Load the list of detected defineundum across documents.
+        cross_term_dict = pkl.load(open('cache/cross_doc_model/term_dictionary_use_raw_math=True.pkl','rb'))
+
+        # Currently, we are using terms in ACL papers only.
+        logging.debug('Total number of terms in cross-doc term dictionary', len(cross_term_dict))
+
+
         # Load the pre-trained definition detection model.
         model = DefinitionDetectionModel()
 
@@ -531,6 +570,15 @@ class DetectDefinitions(
                                     definition_start:definition_end
                                 ]
 
+                            # Check whether the definiendum appears in the cross-doc term dictionary
+                            # and decide whether it is protologism or not
+                            if definiendum_type == 'term':
+                                if not definiendum_text in cross_term_dict and definiendum_text != 'CITATION':
+                                    logging.debug('Protologism detected', definiendum_text )
+                                    definiendum_type = 'protologism'
+                                # else:
+                                # print('\t',term, cross_term_dict[term]['num_definitions'], cross_term_dict[term]['cross_sentence_distance'])
+
 
                             # Save the definition to file.
                             definition = Definition(
@@ -592,7 +640,7 @@ class DetectDefinitions(
         )
 
 
-        # TODO Check/Load the list of detected defineundum across documents.
+
 
         all_definiendums: List[Definiendum] = []
         for _, definiendum_list in definiendums.items():
