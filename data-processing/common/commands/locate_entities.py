@@ -6,7 +6,6 @@ from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from collections import deque
 from dataclasses import dataclass
-from enum import Enum
 from typing import Any, Callable, Deque, Dict, Iterator, List, Optional, Type
 
 from common import directories, file_utils
@@ -219,6 +218,17 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                 colorized_tex = custom_colorize_func(
                     item.file_contents.contents, entities, self.get_colorize_options()
                 )
+                if len(colorized_tex.entity_hues) == 0:
+                    logging.info(  # pylint: disable=logging-not-lazy
+                        "Custom colorization function colored nothing for entity batch %d of " +
+                        "paper %s when coloring file %s. The function probably decide there was " +
+                        "nothing to do for this file, and will hopefullly colorize these " +
+                        "entities in another file. Skipping this batch for this file.",
+                        batch_index,
+                        item.arxiv_id,
+                        item.file_contents.path
+                    )
+                    continue
             else:
                 colorized_tex = colorize_entities(
                     item.file_contents.contents, entities, self.get_colorize_options()

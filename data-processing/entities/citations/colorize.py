@@ -23,7 +23,7 @@ def colorize_citations(
     documentclass_extractor = DocumentclassExtractor()
     documentclass = documentclass_extractor.parse(tex)
     if not documentclass:
-        ColorizedTex(tex, {})
+        return ColorizedTex(tex, {})
 
     citation_color_commands_tex = ""
     citation_hues = {}
