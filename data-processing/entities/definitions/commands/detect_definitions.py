@@ -71,6 +71,7 @@ def get_token_character_ranges(text: str, tokens: List[str]) -> List[CharacterRa
 
 def get_term_definition_pairs(
     text: str, featurized_text: Dict[Any, Any], slot_preds: List[str],
+    nlp_model
 ) -> List[TermDefinitionPair]:
 
     # Make index from tokens to their character positions.
@@ -135,9 +136,9 @@ def get_term_definition_pairs(
 
         # Decide types of terms and definitions.
         # Term types: [symbol, term, abbreviation, entity]
-        # NOTE currently, we don't manage to get abbreviation type of term and definition separation. Instead, we only detect whether "term" is a part of abbreviation.
+        # NOTE currently, we don't manage to predict acronym as a term and its expansion as a definition from the model predictions. This will be updated later after discussion. Instead, we make a simple rule to detect them and make a separate term and definition pair (see below).
         term_type = "symbol" if "SYMBOL" in text[term_start:term_end] else "term"
-
+        definition_type = "definition"
 
         # Check whethe ther term is a part of entity or not.
         for a_range in entity_ranges:
@@ -150,23 +151,57 @@ def get_term_definition_pairs(
                     term_type = "entity"
 
         # Check whethe ther term is a part of abbreviation or not.
-        # (abbreviation over-write entitiy type)
         for a_range in abbreviation_ranges:
-            print('*******************************************')
-            print('TERM:ABBREVIATION',a_range, term_start, term_end, text[a_range.start:a_range.end+1], '/', text[term_start:term_end+1])
-            print('*******************************************')
             # check whether definiendum contains an abbreviation.
             if term_start <= a_range.start and a_range.end <= term_end:
+                # print('*******************************************')
+                # print('TERM:ABBREVIATION',a_range, term_start, term_end, text[a_range.start:a_range.end+1], '/', text[term_start:term_end+1])
+                # print('*******************************************')
+
+                # Extract an acronym as a term and expansion as a definition using abbreviation detector.
+                # E.g., [Term]: Expected Gradients (EG) -> [Term]: EG, [Definition]: Expected Gradients
+                abbreviation_term = text[term_start:term_end+1]
+                doc = nlp_model(abbreviation_term)
+                abbreviation_tokens = [str(t) for t in doc]
+                for abrv in doc._.abbreviations:
+                    # Make index from tokens to their character positions.
+                    abbreviation_ranges = get_token_character_ranges(abbreviation_term, abbreviation_tokens)
+
+                    # acronym (term)
+                    acronym_ranges = abbreviation_ranges[abrv.start:abrv.end]
+                    acronym_start = min([r.start for r in acronym_ranges])
+                    acronym_end = max([r.end for r in acronym_ranges]) + 1
+
+                    # expansion (definition)
+                    expansion_start = abbreviation_term.index(str(abrv._.long_form))
+                    expansion_end = expansion_start + len(str(abrv._.long_form))
+
+                    pair = TermDefinitionPair(
+                        term_start=acronym_start,
+                        term_end=acronym_end,
+                        term_text=abbreviation_term[acronym_start:acronym_end],
+                        term_type="acronym",
+                        definition_start=expansion_start,
+                        definition_end=expansion_end,
+                        definition_text=abbreviation_term[expansion_start:expansion_end],
+                        definition_type="expansion"
+                    )
+                    logging.debug("Found definition-term pair %s", pair)
+                    pairs.append(pair)
+
+
+                # abbreviation over-write entitiy type because entity type is optional
                 if term_type == "term":
                     term_type = "abbreviation"
 
+
         #TODO check all appearance of each term -> get doc-freq, position statistics
         # definition types: [nickname, definition] for symbol, [definition] for protologism, [expansion] for protologism
-        definition_type = "definition"
-
         # if term_type == 'symbol':
 
+        # working on whether the definition is a nickname for the term by using their POS/NounPhrase patterns., although there are some cases not convered by these rules
 
+        # One more thing: for protologism, I will use some statistics to detect them, although this is still a hypothesis. My basic assumption is the newly-proposed terms should be used in many places in the paper.
 
         pair = TermDefinitionPair(
             term_start=term_start,
@@ -180,9 +215,6 @@ def get_term_definition_pairs(
         )
         logging.debug("Found definition-term pair %s", pair)
         pairs.append(pair)
-
-
-
 
 
 
@@ -371,6 +403,7 @@ class DetectDefinitions(
                             s.legacy_definition_input,
                             sentence_features,
                             sentence_slots,
+                            model.nlp
                         )
 
                         # Extract TeX for each symbol from a parallel representation of the
