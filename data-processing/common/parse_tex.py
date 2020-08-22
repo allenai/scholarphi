@@ -327,10 +327,15 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
     """
     # Patterns of text that should be replaced with other plaintext.
     REPLACE_PATTERNS = {
+        # Separate section text from the rest of the text.
+        Pattern(
+            "section", r"\s*\\(?:sub)*section\*?\{([^}]*)\}\s*(\\label{[^}]*}\s*)?"
+        ): "\n\n\\1\n\n",
+        # Replace TeX source spaces with semantic spacing.
         Pattern("linebreak_keep", r"(\\\\|\\linebreak)|\n(\s)*\n\s*"): "\n",
         Pattern("linebreak_ignore", r"\n"): " ",
         Pattern("space_macro", r"\\[ ,]"): " ",
-        Pattern("tilde", r"~"): " "
+        Pattern("tilde", r"~"): " ",
     }
 
     # Patterns of text the extractor should skip.
@@ -340,6 +345,7 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
         # Many patterns below were written with reference to the LaTeX tokenizer in Python's
         # 'doctools' sources at:
         # http://svn.python.org/projects/doctools/converter/converter/tokenizer.py
+        Pattern("environment_tags", r"\\(begin|end)\{[^}]*\}"),
         Pattern("macro", r"\\[a-zA-Z]+\*?[ \t]*"),
         RIGHT_BRACE,
         LEFT_BRACE,
@@ -380,7 +386,11 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
             keep_after = match.end
         if match.pattern in REPLACE_PATTERNS:
             plaintext = plaintext.edit(
-                match.start, match.end, REPLACE_PATTERNS[match.pattern]
+                match.start,
+                match.end,
+                re.sub(
+                    match.pattern.regex, REPLACE_PATTERNS[match.pattern], match.text
+                ),
             )
         if match.pattern not in SKIP_PATTERNS:
             keep_after = match.start

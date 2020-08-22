@@ -1,3 +1,5 @@
+import re
+
 from common.parse_tex import (
     BeginDocumentExtractor,
     DocumentclassExtractor,
@@ -41,6 +43,21 @@ def test_extract_plaintext_consolidate_periods():
 def test_extract_plaintext_consolidate_periods_across_groups():
     plaintext = extract_plaintext("main.tex", "\\footnote{Sentence.}. Next sentence.")
     assert plaintext == "Sentence. Next sentence."
+
+
+def test_extract_plaintext_separate_section_header():
+    plaintext = extract_plaintext("main.text", "\n".join([
+        "Line 1",
+        r"\section{Section header}",
+        "Line 3"
+    ]))
+    assert plaintext == "\n".join([
+        "Line 1",
+        "",
+        "Section header",
+        "",
+        "Line 3"
+    ])
 
 
 def test_extract_phrases():
@@ -164,21 +181,6 @@ def test_combine_sentence_tex_following_latex_linebreak_conventions():
         sentences[4].text == "This is the fifth sentence, which is written on multiple lines."
     )
     assert len(sentences) == 5
-
-
-def test_sentence_extract_from_command():
-    extractor = SentenceExtractor(from_named_sections_only=False)
-    sentences = list(
-        extractor.parse(
-            "main.tex",
-            r"\section{Introduction}"
-        )
-    )
-    assert sentences[0].text == "Introduction"
-    assert sentences[0].tex == "Introduction"
-    assert sentences[0].start == 9
-    assert sentences[0].end == 21
-    assert len(sentences) == 1
 
 
 def test_extract_equation_from_dollar_sign():
