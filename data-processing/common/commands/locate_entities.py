@@ -181,8 +181,14 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
 
     def process(self, item: LocationTask) -> Iterator[HueLocationInfo]:
 
-        entities_by_id = {e.id_: e for e in item.entities}
-        to_process = deque([e.id_ for e in item.entities])
+        # Sort entities by the order in which they appear in the TeX. This allows the pipeline
+        # to keep track of which ones appear first, when trying to recover from errors (i.e., when
+        # trying to detect which entity in a batch may have shifted to cause many others to move.)
+        entities_ordered = sorted(item.entities, key=lambda e: e.start)
+
+        # Construct a queue of entities to detect.
+        entities_by_id = {e.id_: e for e in entities_ordered}
+        to_process = deque([e.id_ for e in entities_ordered])
         to_process_alone: Deque[str] = deque()
 
         def next_batch() -> List[str]:
@@ -220,13 +226,13 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                 )
                 if len(colorized_tex.entity_hues) == 0:
                     logging.info(  # pylint: disable=logging-not-lazy
-                        "Custom colorization function colored nothing for entity batch %d of " +
-                        "paper %s when coloring file %s. The function probably decide there was " +
-                        "nothing to do for this file, and will hopefullly colorize these " +
-                        "entities in another file. Skipping this batch for this file.",
+                        "Custom colorization function colored nothing for entity batch %d of "
+                        + "paper %s when coloring file %s. The function probably decide there was "
+                        + "nothing to do for this file, and will hopefullly colorize these "
+                        + "entities in another file. Skipping this batch for this file.",
                         batch_index,
                         item.arxiv_id,
-                        item.file_contents.path
+                        item.file_contents.path,
                     )
                     continue
             else:
@@ -402,26 +408,31 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                         logging.info(  # pylint: disable=logging-not-lazy
                             "Entity %s has been marked as being the potential cause of shifting in "
                             + "the colorized document for paper %s batch %d. It will be processed "
-                            + "on its own.",
+                            + "later on its own. The other shifted entities in %s will be queued to "
+                            + "process as a group in an upcoming batch.",
                             first_shifted_entity_id,
                             item.arxiv_id,
                             batch_index,
+                            location_result.shifted_entities,
                         )
 
+                        # Get the index of the first entity for which the location has shifted
+                        # during colorization.
                         moved_entity_index = batch.index(first_shifted_entity_id)
 
-                        # Mark that entity to be reprocessed alone, where its position can maybe be
-                        # discovered without affecting the positions of other element.
+                        # Mark all other entities that have shifted after the first one one to be processed
+                        # in a later batch (instead of on their own). It could be that they won't shift
+                        # once the first shifted entity is removed.
+                        for i in range(len(batch) - 1, moved_entity_index, -1):
+                            if batch[i] in location_result.shifted_entities:
+                                to_process.appendleft(batch[i])
+                                del batch[i]
+
+                        # Mark the first entity that shifted to be reprocessed alone, where its position
+                        # might be discoverable, without affecting the positions of other element.
                         del batch[moved_entity_index]
                         to_process_alone.append(first_shifted_entity_id)
 
-                        # Mark all entities after that one to be reprocessed in a batch.
-                        reprocess = batch[moved_entity_index:]
-                        to_process.extendleft(reversed(reprocess))
-
-                        # Continue processing the rest of the batch that occurred before this entity
-                        # as if nothing had happened.
-                        batch = batch[:moved_entity_index]
                     elif len(batch) == 1 and self.should_sanity_check_images():
                         logging.info(  # pylint: disable=logging-not-lazy
                             "Skipping entity %s for paper %s as it caused "
