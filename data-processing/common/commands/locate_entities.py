@@ -564,7 +564,7 @@ def get_last_colorized_entity(
     else:
         logging.warning(  # pylint: disable=logging-not-lazy
             "Unable to determine what was the last entity colorized before compilation failure "
-            + "in source directory %s from log %s for compiler '%s'. Entity batching may be less effieicnt.",
+            + "in source directory %s from log %s for compiler '%s'. Entity batching may be less efficient.",
             compilation_path,
             new_autogen_log_path,
             compiler_name,
