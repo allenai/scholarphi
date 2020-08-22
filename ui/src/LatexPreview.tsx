@@ -4,7 +4,7 @@
  */
 
 import LinearProgress from "@material-ui/core/LinearProgress";
-import katex from "katex";
+import katex, { TrustContext } from "katex";
 import renderMathInElement from "katex/dist/contrib/auto-render";
 import "katex/dist/katex.min.css"; // KaTeX styles necessary for styling formulas.
 import React from "react";
@@ -68,6 +68,13 @@ class LatexPreview extends React.PureComponent<Props> {
            * https://github.com/KaTeX/KaTeX/issues/2300
            */
           "\\hl": "\\colorbox{yellow}{$#1$}",
+        },
+        trust: (context: TrustContext) => {
+          const PERMITTED_CLASSES = ["match-highlight"];
+          if (context.command === "\\htmlClass") {
+            return PERMITTED_CLASSES.indexOf(context.class) !== -1;
+          }
+          return false;
         },
       });
     }

@@ -3,6 +3,17 @@
  */
 declare module "katex" {
   declare class ParseError {}
+
+  /**
+   * Contexts used to determine whether to trust HTML formatting of TeX. See types in
+   * https://github.com/KaTeX/KaTeX/blob/80b0e3dc20c06e9aba6859a799049deed551639f/src/Settings.js#L19
+   */
+  type TrustContext = ClassTrustContext;
+
+  interface ClassTrustContext {
+    command: "\\htmlClass";
+    class: string;
+  }
 }
 
 declare module "katex/dist/contrib/auto-render" {
@@ -36,6 +47,11 @@ declare module "katex/dist/contrib/auto-render" {
      * https://github.com/KaTeX/KaTeX/issues/1801#issuecomment-445813146
      */
     macros?: { [macro: string]: string };
+    /**
+     * Allow formatting that could cause security vulnerabilities. For example, permit the
+     * direct specification of CSS classes using LaTeX macros.
+     */
+    trust?: boolean | ((context: TrustContext) => boolean);
   }
 
   interface DelimiterSpec {
