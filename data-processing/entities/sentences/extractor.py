@@ -63,44 +63,47 @@ class SentenceExtractor(EntityExtractor):
         in_table = False
         in_itemize = False
 
+        # The pysbd module has several open bugs and issues which are addressed below.
+        # As of 3/23/20 we know the module will fail in the following ways:
+        # 1. pysbd will not break up the sentence when it starts with a punctuation mark or space.
+        #    ex: ". hello. world. hi."
+        #    sol: check for sentences being longer than 1000 characters. Also, see the
+        #         plaintext extraction function, which attempts to clean up the text so that
+        #         consecutive periods are removed before segmentation.
+        # 2. pysbd uses reserved characters for splitting sentences
+        #    ex: see PYSBD_RESERVED_CHARACTERS list.
+        #    sol: throw a warning if the sentence contains any of these characters.
+        # Issue #1 is addressed in the plaintext extractor by removing consecutive periods.
         for i, span in enumerate(segmenter.segment(str(plaintext))):
-            # The pysbd module has several open bugs and issues which are addressed below.
-            # As of 3/23/20 we know the module will fail in the following ways:
-            # 1. pysbd will not break up the sentence when it starts with a punctuation mark or space.
-            #    ex: ". hello. world. hi."
-            #    sol: check for sentences being longer than 1000 characters. Also, see the
-            #         plaintext extraction function, which attempts to clean up the text so that
-            #         consecutive periods are removed before segmentation.
-            # 2. pysbd uses reserved characters for splitting sentences
-            #    ex: see PYSBD_RESERVED_CHARACTERS list.
-            #    sol: throw a warning if the sentence contains any of these characters.
-            start, end = plaintext.initial_offsets(span.start, span.end)
-            if start is None or end is None:
+
+            # Strip leading and trailing whitespace from sentence.
+            plaintext_start = span.start + regex.search(r"^(\s*)", span.sent).end()
+            plaintext_end = span.start + regex.search(r"(\s*)$", span.sent).start()
+
+            tex_start, tex_end = plaintext.initial_offsets(plaintext_start, plaintext_end)
+            if tex_start is None or tex_end is None:
                 logging.warning(  # pylint: disable=logging-not-lazy
                     "The span bounds (%d, %d) from pysbd for a sentence could not be mapped "
                     + "back to character offsets in the LaTeX for an unknown reason.",
-                    span.start,
-                    span.end,
+                    plaintext_start,
+                    plaintext_end,
                 )
                 continue
-            sentence_tex = tex[start:end]
+
+            sentence_tex = tex[tex_start:tex_end]
 
             # Save the sentence as a journaled string, which will allow the mapping of the cleaned
             # sentence text to the original TeX.
-            sentence = plaintext.substring(span.start, span.end)
+            sentence = plaintext.substring(plaintext_start, plaintext_end)
             if len(sentence) > 1000:
                 logging.warning(  # pylint: disable=logging-not-lazy
                     "Exceptionally long sentence (length %d). This might indicate the sentence "
                     + "extractor failed to properly split text into sentences.",
                     len(sentence),
                 )
-            # Strip whitespace from the end of the sentence.
-            space = regex.search(r"\s+$", str(sentence))
-            if space is not None:
-                sentence = sentence.edit(space.start(), len(sentence), "")
 
             # Extract TeX around sentence to understand the environment in which it appears
-            context_tex = get_context(tex, start, end)
+            context_tex = get_context(tex, tex_start, tex_end)
 
             # Detect features describing the context the sentence appears in (i.e., the section it's in,
             # or if it's in a figure, etc.) using regular expressions.
@@ -249,8 +252,8 @@ class SentenceExtractor(EntityExtractor):
             yield Sentence(
                 id_=str(i),
                 tex_path=tex_path,
-                start=start,
-                end=end,
+                start=tex_start,
+                end=tex_end,
                 text=str(sentence),
                 text_journal=sentence,
                 sanitized=str(sanitized),

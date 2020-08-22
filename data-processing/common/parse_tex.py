@@ -327,13 +327,16 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
     """
     # Patterns of text that should be replaced with other plaintext.
     REPLACE_PATTERNS = {
-        Pattern("backslash_newline", r"\\\\"): "\n",
+        Pattern("linebreak_keep", r"(\\\\|\\linebreak)|\n(\s)*\n\s*"): "\n",
+        Pattern("linebreak_ignore", r"\n"): " ",
         Pattern("space_macro", r"\\[ ,]"): " ",
         Pattern("tilde", r"~"): " "
     }
 
     # Patterns of text the extractor should skip.
     SKIP_PATTERNS = [
+        # Include specific macros first, before the more general-purpose 'macro'.
+        Pattern("input", r"\\(input|include)(\s+\S+|\{[^}]+\})"),
         # Many patterns below were written with reference to the LaTeX tokenizer in Python's
         # 'doctools' sources at:
         # http://svn.python.org/projects/doctools/converter/converter/tokenizer.py

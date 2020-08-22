@@ -11,20 +11,6 @@ from entities.citations.extractor import BibitemExtractor
 from entities.sentences.extractor import SentenceExtractor
 
 
-def test_extract_plaintext_with_newlines():
-    plaintext = extract_plaintext(
-        "main.tex",
-        "This sentence is followed by a newline.\nThis is the second sentence.",
-    )
-    # Earlier versions of the plaintext extractor inadvertently removed newlines, which are needed
-    # to accurately perform downstream tasks like sentence boundary detection. This test makes sure
-    # that the newlines are preserved.
-    assert (
-        plaintext
-        == "This sentence is followed by a newline.\nThis is the second sentence."
-    )
-
-
 def test_extract_plaintext_with_equations():
     plaintext = extract_plaintext(
         "main.tex", "This sentence includes a symbol $x$ and equation $$y = x$$."
@@ -38,6 +24,13 @@ def test_extract_plaintext_with_equations():
 def test_extract_plaintext_remove_comments():
     plaintext = extract_plaintext("main.tex", "% comment\nText% comment\n% comment")
     assert plaintext == "Text"
+
+
+def test_extract_plaintext_skip_input():
+    plaintext = extract_plaintext(
+        "main.tex", "\n".join([r"\input file", r"\input{file}", r"\include{file}"])
+    )
+    assert plaintext.isspace()
 
 
 def test_extract_plaintext_consolidate_periods():
@@ -81,7 +74,7 @@ def test_extract_sentences():
 
     sentence1 = sentences[0]
     assert sentence1.start == 0
-    assert sentence1.end == 41
+    assert sentence1.end == 40
     assert sentence1.text == "This is the first argsentence."
 
     sentence2 = sentences[1]
@@ -109,7 +102,7 @@ def test_sentence_splitting_end_points():
     )
 
     assert len(sentences) == 4
-    sentence_end_points = [[0, 20], [20, 48], [48, 67], [67, 86]]
+    sentence_end_points = [[0, 19], [20, 47], [48, 66], [67, 86]]
     for i, [start, end] in enumerate(sentence_end_points):
         assert sentences[i].start == start
         assert sentences[i].end == end
@@ -125,18 +118,67 @@ def test_sentence_splitting_end_points_and_more_text():
     )
     assert len(sentences) == 8
     sentence_end_points = [
-        [0, 15],
-        [15, 26],
-        [26, 32],
-        [32, 41],
-        [41, 51],
-        [51, 61],
-        [61, 77],
+        [0, 14],
+        [15, 25],
+        [26, 31],
+        [32, 40],
+        [41, 50],
+        [51, 60],
+        [61, 76],
         [77, 83],
     ]
     for i, [start, end] in enumerate(sentence_end_points):
         assert sentences[i].start == start
         assert sentences[i].end == end
+
+
+def test_combine_sentence_tex_following_latex_linebreak_conventions():
+    extractor = SentenceExtractor(from_named_sections_only=False)
+    sentences = list(
+        extractor.parse(
+            "main.tex",
+            "\n".join(
+                [
+                    # All on one line.
+                    (
+                        r"This is the first sentence.\\"
+                        + r"This is the second sentence.\linebreak "
+                        + "This is the third sentence."
+                    ),
+                    "",
+                    "This is the fourth sentence.",
+                    " ",
+                    # With only a single newline, consecutive lines should be considered the same sentence.
+                    "This is the fifth sentence, which is written on multiple",
+                    "lines.",
+                ]
+            ),
+        )
+    )
+    assert sentences[0].text == "This is the first sentence."
+    assert sentences[0].end == 27
+    assert sentences[1].text == "This is the second sentence."
+    assert sentences[2].text == "This is the third sentence."
+    assert sentences[3].text == "This is the fourth sentence."
+    assert (
+        sentences[4].text == "This is the fifth sentence, which is written on multiple lines."
+    )
+    assert len(sentences) == 5
+
+
+def test_sentence_extract_from_command():
+    extractor = SentenceExtractor(from_named_sections_only=False)
+    sentences = list(
+        extractor.parse(
+            "main.tex",
+            r"\section{Introduction}"
+        )
+    )
+    assert sentences[0].text == "Introduction"
+    assert sentences[0].tex == "Introduction"
+    assert sentences[0].start == 9
+    assert sentences[0].end == 21
+    assert len(sentences) == 1
 
 
 def test_extract_equation_from_dollar_sign():
