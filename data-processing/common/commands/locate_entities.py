@@ -181,10 +181,13 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
 
     def process(self, item: LocationTask) -> Iterator[HueLocationInfo]:
 
+        # Filter out entities that are empty (i.e., have nothing to color)
+        entities_filtered = [e for e in item.entities if e.start != e.end]
+
         # Sort entities by the order in which they appear in the TeX. This allows the pipeline
         # to keep track of which ones appear first, when trying to recover from errors (i.e., when
         # trying to detect which entity in a batch may have shifted to cause many others to move.)
-        entities_ordered = sorted(item.entities, key=lambda e: e.start)
+        entities_ordered = sorted(entities_filtered, key=lambda e: e.start)
 
         # Construct a queue of entities to detect.
         entities_by_id = {e.id_: e for e in entities_ordered}
@@ -296,18 +299,27 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                     item.arxiv_id, compiled_tex_dir
                 )
                 if last_colorized_entity_id is not None:
+                    problem_ids = [last_colorized_entity_id]
+                    if batch.index(last_colorized_entity_id) < len(batch) - 1:
+                        problem_ids += [batch[batch.index(last_colorized_entity_id) + 1]]
+
                     logging.warning(  # pylint: disable=logging-not-lazy
-                        "Failed to compile paper %s with colorized entities. The culprit is likely "
-                        + "the colorization command for entity %s. That entity will now be ignored. Attempting to "
-                        + "compile the paper again without colorizing that entity.",
+                        "Failed to compile paper %s with colorized entities. The culprit may be "
+                        + "the colorization command for entity %s. The problematic entities will be "
+                        + "colorized on their own, and the rest of the entities will be colorized "
+                        + "together in the next batch.",
                         item.arxiv_id,
-                        last_colorized_entity_id,
+                        "or".join(problem_ids),
                     )
-                    del batch[batch.index(last_colorized_entity_id)]
+
+                    for id_ in problem_ids:
+                        to_process_alone.append(id_)
+                        del batch[batch.index(id_)]
+
                     to_process.extendleft(reversed(batch))
                     continue
 
-                # If there was some other reason for the error, discard the whole batch.
+                # If there was some other reason for the error, remove just the first entity from the batch.
                 logging.error(  # pylint: disable=logging-not-lazy
                     "Failed to compile paper %s with colorized entities %s. The cause "
                     + "is assumed to be in the first colorized entity. The location for the "
