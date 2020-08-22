@@ -142,10 +142,10 @@ def test_latex():
         abbs[5],
         "expansion-2",
         "CV",
-        171,
+        179,
         204,
         "computer vision",
-        "\\textbf{c}omputer \\textbf{v}ision",
+        "c}omputer \\textbf{v}ision",
     )
     assert_abbreviation(
         abbs[6], "abbreviation-2-0", "CV", 206, 208, "computer vision", "CV"

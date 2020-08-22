@@ -54,7 +54,7 @@ def test_extract_plaintext_separate_section_header():
     assert plaintext == "\n".join([
         "Line 1",
         "",
-        "Section header",
+        "Section header.",
         "",
         "Line 3"
     ])
@@ -181,6 +181,17 @@ def test_combine_sentence_tex_following_latex_linebreak_conventions():
         sentences[4].text == "This is the fifth sentence, which is written on multiple lines."
     )
     assert len(sentences) == 5
+
+
+def test_sentence_from_within_command():
+    extractor = SentenceExtractor(from_named_sections_only=False)
+    # The space in the start of this sentence is important, as in an earlier version of the
+    # code, this space caused extraction to fail.
+    sentences = list(extractor.parse("main.tex", r" \textit{Example sentence.}"))
+    assert sentences[0].text == "Example sentence."
+    assert sentences[0].tex == "Example sentence."
+    assert sentences[0].start == 9
+    assert sentences[0].end == 26
 
 
 def test_extract_equation_from_dollar_sign():

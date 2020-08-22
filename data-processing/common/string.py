@@ -133,13 +133,20 @@ class JournaledString(UserString):  # pylint: disable=too-many-ancestors
             # Skip blank sub-segments.
             if len(s.current) == 0 and len(s.initial) == 0:
                 continue
-            # Merge consecutive ranges that are either changed or not.
-            if last_segment is not None and s.changed == last_segment.changed:
-                last_segment.initial += s.initial
-                last_segment.current += s.current
-            else:
-                merged.append(s)
-                last_segment = s
+            # Merge consecutive ranges.
+            if last_segment is not None:
+                # Two consecutive ranges are both unaltered.
+                if not s.changed and not last_segment.changed:
+                    last_segment.initial += s.initial
+                    last_segment.current += s.current
+                    continue
+                # Two consecutive ranges are empty.
+                if s.changed and last_segment.changed and len(s.current) == len(last_segment.current) == 0:
+                    last_segment.initial += s.initial
+                    last_segment.current += s.current
+                    continue
+            merged.append(s)
+            last_segment = s
 
         return JournaledString(merged)
 
@@ -205,46 +212,59 @@ class JournaledString(UserString):  # pylint: disable=too-many-ancestors
         been mutated.
         """
 
+        # Search for the start position. Search from the end of the current
+        # string backwards, to find the last possible segment that could
+        # map to the initial offsets, to provide a tight mapping.
+        current_segment_end = sum([len(s.current) for s in self.segments])
+        initial_segment_end = sum([len(s.initial) for s in self.segments])
+        start_in_initial: Optional[int] = initial_segment_end
+
+        for s in reversed(self.segments):
+
+            current_segment_start = current_segment_end - len(s.current)
+            initial_segment_start = initial_segment_end - len(s.initial)
+            if current_segment_start <= start <= current_segment_end:
+                if s.changed:
+                    start_in_initial = (
+                        initial_segment_end
+                        if start == current_segment_end
+                        else initial_segment_start
+                    )
+                else:
+                    start_in_initial = initial_segment_start + (
+                        start - current_segment_start
+                    )
+                break
+
+            current_segment_end -= len(s.current)
+            initial_segment_end -= len(s.initial)
+
+        # Repeat the search, this time searching forward to find the end offset.
         current_segment_start = 0
         initial_segment_start = 0
+        end_in_initial: Optional[int] = initial_segment_start
 
-        start_in_initial: Optional[int] = None
         for s in self.segments:
 
             current_segment_end = current_segment_start + len(s.current)
-
-            # Search the segment for the start position.
-            if start_in_initial is None:
-                if current_segment_start <= start <= current_segment_end:
-                    start_in_initial = initial_segment_start
-                    # If the 'start' offset comes at the end of this segment, return the end.
-                    if s.changed and start == current_segment_end:
-                        start_in_initial = initial_segment_start + len(s.initial)
-                    # If this segment is still from the initial string, the start index
-                    # can be adjusted to a specific offset in the segment.
-                    if not s.changed:
-                        start_in_initial += start - current_segment_start
-
-            # Only look for the end once the start has been found.
-            if start_in_initial is not None:
-                # Search the segment for the end position. This search process is analogous
-                # to the search for 'start' above; see it for comments.
-                if current_segment_start <= end <= current_segment_end:
-                    if s.changed:
-                        if end == current_segment_start:
-                            end_in_initial = initial_segment_start
-                        else:
-                            end_in_initial = initial_segment_start + len(s.initial)
-                    else:
-                        end_in_initial = initial_segment_start + (
-                            end - current_segment_start
-                        )
-                    return (start_in_initial, end_in_initial)
+            initial_segment_end = initial_segment_start + len(s.initial)
+            if current_segment_start <= end <= current_segment_end:
+                if s.changed and len(s.current) > 0:
+                    end_in_initial = (
+                        initial_segment_start
+                        if end == current_segment_start
+                        else initial_segment_end
+                    )
+                else:
+                    end_in_initial = initial_segment_start + (
+                        end - current_segment_start
+                    )
+                break
 
             current_segment_start += len(s.current)
             initial_segment_start += len(s.initial)
 
-        return (None, None)
+        return (start_in_initial, end_in_initial)
 
     def current_offsets(
         self, start: int, end: int

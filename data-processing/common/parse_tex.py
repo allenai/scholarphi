@@ -327,10 +327,9 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
     """
     # Patterns of text that should be replaced with other plaintext.
     REPLACE_PATTERNS = {
-        # Separate section text from the rest of the text.
-        Pattern(
-            "section", r"\s*\\(?:sub)*section\*?\{([^}]*)\}\s*(\\label{[^}]*}\s*)?"
-        ): "\n\n\\1\n\n",
+        # Separate sections and captions text from the rest of the text.
+        Pattern("section", r"\s*\\(?:sub)*section\*?\{([^}]*)\}\s*"): "\n\n\\1.\n\n",
+        Pattern("caption", r"(.)(?=\\caption\*?\{)"): "\1\n\n",
         # Replace TeX source spaces with semantic spacing.
         Pattern("linebreak_keep", r"(\\\\|\\linebreak)|\n(\s)*\n\s*"): "\n",
         Pattern("linebreak_ignore", r"\n"): " ",
