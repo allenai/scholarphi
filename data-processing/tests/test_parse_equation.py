@@ -131,6 +131,12 @@ def test_summation_is_not_symbol():
     assert str(result.symbols[1].element) == "<mi>N</mi>"
 
 
+def test_parse_detect_definition():
+    result = parse_element(load_fragment_tag("x_equals_1.xml"))
+    assert len(result.symbols) == 1
+    assert result.symbols[0].defined
+
+
 def test_parse_equation():
     with open(
         get_test_path(os.path.join("mathml", "x_sub_t_sub_i.xml"))

@@ -15,7 +15,7 @@ invisible and we wouldn't want to detect it anyway.
 """
 
 
-@dataclass(frozen=True)
+@dataclass
 class Node:
     " Node for a 'symbol' in a parse tree for an equation. "
 
@@ -29,6 +29,12 @@ class Node:
     """
     List of all tokens that belong to this symbol. It's tokens in this list that will be colorized
     to determine the bounding box of the symbol.
+    """
+
+    defined: Optional[bool] = None
+    """
+    Whether this node is being defined (i.e., whether it is the top-level symbol) on the left side
+    of an equation with an equality.
     """
 
 
@@ -116,9 +122,15 @@ def parse_element(element: Tag) -> ParseResult:
     # Visit each of the child nodes. Iterate over 'element' instead of 'clean_element', as the
     # children will have been removed from 'clean_element' As of BeautifulSoup version 4.8.2,
     # children are visited in order.
-    child_symbols = []
+    child_symbols: List[Node] = []
     for child in soup_children:
         if isinstance(child, Tag):
+            # Detect definitions of symbols.
+            if _is_definition_operator(child):
+                if len(child_symbols) == 1:
+                    child_symbols[0].defined = True
+
+            # Parse new symbols from this child.
             child_parse_result = parse_element(child)
             child_symbols.extend(child_parse_result.symbols)
             if child_parse_result.element is not None:
@@ -253,6 +265,10 @@ def _is_token(element: Tag) -> bool:
         return True
 
     return False
+
+
+def _is_definition_operator(element: Tag) -> bool:
+    return element.name == "mo" and element.text in ["=", "≈", "≥", "≤", "∈", "∼"]
 
 
 def _is_error_element(element: Tag) -> bool:

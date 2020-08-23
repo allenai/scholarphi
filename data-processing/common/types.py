@@ -349,6 +349,10 @@ class SerializableToken(SerializableEntity, Token):
 class SerializableSymbol(SerializableEntity, SymbolId):
     equation: str
     mathml: str
+    is_definition: bool
+    """
+    Whether this appearance of the symbol is a definition of the symbol.
+    """
 
 
 @dataclass(frozen=True)
