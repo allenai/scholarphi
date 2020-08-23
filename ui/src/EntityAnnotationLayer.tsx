@@ -263,8 +263,8 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
             const isSelectable =
               isSelectionChild ||
               isTopLevelInSelectedEquation ||
-              equationId === null ||
-              (!this.shouldShowEquation(equationId) && isTopLevel);
+              (isTopLevel &&
+                (equationId === null || !this.shouldShowEquation(equationId)));
 
             /*
              * Show a more prominent selection hint than an underline when the symbol is
