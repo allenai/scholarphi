@@ -138,6 +138,12 @@ def test_parse_detect_definition():
     assert result.symbols[0].defined
 
 
+def test_ignore_definition_in_sum_argument():
+    result = parse_element(load_fragment_tag("sum_i_equals_0.xml"))
+    assert str(result.symbols[0].element) == "<mi>i</mi>"
+    assert not result.symbols[0].defined
+
+
 def test_detect_function_declaration():
     result = parse_element(load_fragment_tag("function.xml"))
     symbol = result.symbols[0]
@@ -165,10 +171,11 @@ def test_detect_function_declaration():
     assert str(child_symbols[3].element) == "<mi>y</mi>"
 
 
-def test_ignore_definition_in_sum_argument():
-    result = parse_element(load_fragment_tag("sum_i_equals_0.xml"))
-    assert str(result.symbols[0].element) == "<mi>i</mi>"
-    assert not result.symbols[0].defined
+def test_detect_definition_of_function():
+    result = parse_element(load_fragment_tag("function_definition.xml"))
+    symbol = result.symbols[0]
+    assert symbol.type_ == NodeType.FUNCTION
+    assert symbol.defined
 
 
 def test_parse_equation():

@@ -20,6 +20,7 @@ class NodeType(Enum):
     FUNCTION = "function"
     LEFT_PARENS = "left-parens"
     RIGHT_PARENS = "right-parens"
+    DEFINITION_OPERATOR = "definition-operator"
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__, self.name}"
@@ -153,7 +154,7 @@ def parse_element(element: Tag) -> ParseResult:
     tokens: List[Token] = []
     clean_element = create_empty_tag_copy(element)
 
-    for ci, child in enumerate(soup_children):
+    for child in soup_children:
         if isinstance(child, Tag):
 
             # Parse symbols from the child.
@@ -162,14 +163,6 @@ def parse_element(element: Tag) -> ParseResult:
             tokens.extend(child_parse_result.tokens)
             if child_parse_result.element is not None:
                 clean_element.append(child_parse_result.element)
-
-            # If the child is a definition operator and one symbol appears to its
-            # left, then the symbol to the left is probably getting defined.
-            if _is_definition_operator(child):
-                if len(children[:ci]) == 1:
-                    previous_child = children[0]
-                    if previous_child.is_symbol:
-                        previous_child.defined = True
 
         # If the child isn't a tag, it's probably a string (like the text 'x' that's a
         # child of the '<mi>x</mi>' element). Strings must be added to the cleaned element,
@@ -196,6 +189,19 @@ def parse_element(element: Tag) -> ParseResult:
     parens = parse_parens(clean_element, original_element)
     if parens is not None:
         return parens
+    definition_operator = parse_definition_operator(clean_element, original_element)
+    if definition_operator is not None:
+        return definition_operator
+
+    # Now that the sequence of children has been transformed by sanitizers and parsers, check
+    # to see if any of the children in the sequence have been defined.
+    for i, c in enumerate(children):
+        if i == 1 and c.type_ == NodeType.DEFINITION_OPERATOR:
+            previous_child = children[0]
+            if previous_child.is_symbol and not _appears_in_operator_argument(
+                original_element
+            ):
+                children[0].defined = True
 
     # If a specific type of node can't be parsed, then return a generic type of node,
     # comprising of all the children and tokens found in this element.
@@ -372,6 +378,30 @@ def parse_parens(clean_element: Tag, original_element: Tag) -> Optional[ParseRes
     return None
 
 
+def parse_definition_operator(
+    clean_element: Tag, original_element: Tag
+) -> Optional[ParseResult]:
+    EQUATION_SIGNS = [
+        "=",
+        "≈",
+        "≥",
+        "≤",
+        "∈",
+        "∼",
+    ]
+    if clean_element.name != "mo" or clean_element.text not in EQUATION_SIGNS:
+        return None
+
+    tokens = _extract_tokens(original_element)
+    node = Node(
+        type_=NodeType.DEFINITION_OPERATOR,
+        element=clean_element,
+        children=[],
+        tokens=tokens,
+    )
+    return ParseResult([node], clean_element, tokens)
+
+
 def _extract_tokens(element: Tag) -> List[Token]:
     """
     Get the tokens defined in this element. Tokens are only found in low-level elements like
@@ -423,21 +453,11 @@ def _is_token(element: Tag) -> bool:
     return False
 
 
-def _is_definition_operator(element: Tag) -> bool:
-    # Check whether this is a definition operator.
-    is_definition_operator = element.name == "mo" and element.text in [
-        "=",
-        "≈",
-        "≥",
-        "≤",
-        "∈",
-        "∼",
-    ]
-    if not is_definition_operator:
-        return False
-
-    # Filter out cases where the operator appears in an argument to an existing operator, like
-    # beneath of a summation sign (i.e., the '=' in "Σ_{i = 0}").
+def _appears_in_operator_argument(element: Tag) -> bool:
+    """
+    Detect whether this element appearns in an argument to an operator. Used to determine, for instance,
+    whether a definition appears in the argument of a summation.
+    """
     parent = element
     while parent is not None:
         parent_children = [c for c in parent.children if isinstance(c, Tag)]
@@ -446,10 +466,10 @@ def _is_definition_operator(element: Tag) -> bool:
             and len(parent_children) > 0
             and parent_children[0].name == "mo"
         ):
-            return False
+            return True
         parent = parent.parent
 
-    return True
+    return False
 
 
 def _is_error_element(element: Tag) -> bool:
