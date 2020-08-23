@@ -77,7 +77,7 @@ def parse_equation(mathml: str) -> List[Node]:
     soup = BeautifulSoup(mathml, "lxml")
 
     # Parse the MathML equation, extracting top-level symbols.
-    top_level_symbols = parse_element(soup.body).nodes
+    top_level_symbols = parse_element(soup.body).symbols
 
     # Build a list of all symbols found with a breadth-first search over the symbol tree.
     all_symbols = []
@@ -85,7 +85,7 @@ def parse_equation(mathml: str) -> List[Node]:
     while len(symbols_to_visit) > 0:
         symbol = symbols_to_visit.pop(0)
         all_symbols.append(symbol)
-        symbols_to_visit.extend(symbol.children)
+        symbols_to_visit.extend(symbol.child_symbols)
 
     return all_symbols
 
@@ -331,7 +331,7 @@ def parse_functions(
             continue
 
         func_children = children[r_start : r_end + 1]
-        func_tokens = [t for c in children for t in c.tokens]
+        func_tokens = [t for c in func_children for t in c.tokens]
 
         # Create synthetic MathML row for the function.
         func_element = create_empty_tag_copy(element)

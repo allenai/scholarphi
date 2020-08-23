@@ -1,6 +1,7 @@
 import json
 import logging
 import os.path
+import re
 import subprocess
 from argparse import ArgumentParser
 from dataclasses import dataclass
@@ -186,10 +187,22 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                     Extract approximate TeX for the symbol. It's estimated to be the span of TeX
                     that covers all of the tokens, including extra curly braces needed to close
                     opened curly braces (which often aren't included in the token start and end
-                    character indexes).
+                    character indexes). While these positions aren't used for colorization (and
+                    hence don't have to be super precise), they are useful for:
+                    1. Ordering the symbols
+                    2. Rendering the symbols in the user interface
+                    Hence it is a good thing if a complete subset of the TeX can be extracted that
+                    can be used to render the symbol.
                     """
                     start = min([t.start for t in s.tokens])
                     end = max([t.end for t in s.tokens])
+
+                    # Grab the macro right before the symbol if there is one. This ensures that the
+                    # rendered 'tex' field will include, for instance, `\mathrm` commands that are
+                    # used to style the math.
+                    for match in re.finditer(r"\{|\\\w+\{", equation):
+                        if match.end() == start:
+                            start = match.start()
 
                     # Adjust the end position to after curly braces are closed.
                     open_brace_count = 0
