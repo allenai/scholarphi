@@ -1,7 +1,7 @@
-from collections import UserString
 import dataclasses
-from dataclasses import dataclass
 import logging
+from collections import UserString
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 
@@ -74,86 +74,65 @@ class JournaledString(UserString):  # pylint: disable=too-many-ancestors
         Return a changed copy (do not modify this object).
         """
 
-        new_segments = []
+        # By making 'middle' a greedy substring, and the other two non-greedy, 'greedy'
+        # absorbs the contents of 'initial' there would be a conflict, and also absorbs
+        # segments where 'initial' was replaced with the empty string.
+        left = self.substring(0, start, greedy=False)
+        middle = self.substring(start, end, greedy=True)
+        right = self.substring(end, len(self), greedy=False)
+
+        # If the replacement doesn't change the string, return a clone.
+        if str(middle) == replacement:
+            return JournaledString(self.segments)
+
+        # Merge the middle segments into a contiguous "changed" segment.
+        merged_middle = Segment(
+            initial="".join([s.initial for s in middle.segments]),
+            current=replacement,
+            changed=True,
+        )
+
+        # Detect whether the replacement bisects segments on its left or right side.
+        left_cut = False
+        right_cut = False
         s_start = 0
-        edit_inserted = False
-
         for s in self.segments:
-
-            s_end = s_start + len(s.current)
-            if not (start <= s_end and end >= s_start):
-                new_segments.append(s)
-                s_start += len(s.current)
-                continue
-
-            start_in_s = min(max(0, start - s_start), len(s.current))
-            end_in_s = min(max(0, end - s_start), len(s.current))
-
-            # Split the initial value of the segment into sub-segments. If the
-            # segment hasn't been changed yet, divide it at the 'start' and 'end' boundaries.
-            if not s.changed:
-                initial_split = [
-                    s.initial[:start_in_s],
-                    s.initial[start_in_s:end_in_s],
-                    s.initial[end_in_s:],
-                ]
-            # If the segment has been changed by a past call to 'edit', then assign
-            # 'initial' to the first split segment. While not semantically correct, it will
-            # work out: these segments will be recombined into one at the end of this method.
-            else:
-                initial_split = [s.initial, "", ""]
-
-            # Split the current value of the segment into sub-segments.
-            current_split = [
-                s.current[:start_in_s],
-                # Insert the updated string in the first segment where the replacement
-                # span overlaps. Other overlapping segments will be cleared out, and then
-                # merged into this one in a later step.
-                replacement if not edit_inserted else "",
-                s.current[end_in_s:],
-            ]
-            edit_inserted = True
-
-            # Save a new list of segments comprised of the sub-segments.
-            new_segments.extend(
-                [
-                    Segment(initial_split[0], current_split[0], s.changed),
-                    Segment(initial_split[1], current_split[1], True),
-                    Segment(initial_split[2], current_split[2], s.changed),
-                ]
-            )
-
+            if s_start < start < s_start + len(s.current):
+                left_cut = True
+            if s_start < end < s_start + len(s.current):
+                right_cut = True
             s_start += len(s.current)
 
-        # Merge consecutive "changed" ranges, assigning them into all one value of
-        # 'initial' and 'current' by concatenating them all together.
-        merged = []
-        last_segment: Optional[Segment] = None
-        for s in new_segments:
-            # Skip blank sub-segments.
-            if len(s.current) == 0 and len(s.initial) == 0:
-                continue
-            # Merge consecutive ranges.
-            if last_segment is not None:
-                # Two consecutive ranges are both unaltered.
-                if not s.changed and not last_segment.changed:
-                    last_segment.initial += s.initial
-                    last_segment.current += s.current
-                    continue
-                # Two consecutive ranges are empty.
-                if s.changed and last_segment.changed and len(s.current) == len(last_segment.current) == 0:
-                    last_segment.initial += s.initial
-                    last_segment.current += s.current
-                    continue
-            merged.append(s)
-            last_segment = s
+        # If a segment on the left was bisected, and it has been changed
+        # in the past, it needs to be merged with the middle as the call to
+        # 'substring' will have duplicated the 'initial' property in both the middle
+        # substring and the one on the side, which needs to be deduplicated.
+        if left_cut and left.segments[-1].changed:
+            last_left = left.segments[-1]
+            merged_middle.current = last_left.current + merged_middle.current
+            del left.segments[-1]
 
-        return JournaledString(merged)
+        # Do the same check on the right.
+        if right_cut and right.segments[0].changed:
+            first_right = right.segments[0]
+            merged_middle.current = merged_middle.current + first_right.current
+            del right.segments[0]
 
-    def substring(self, start: int, end: int) -> "JournaledString":
+        # Create a new string by combining all the segments.
+        new_segments = []
+        for segment_list in [left.segments, [merged_middle], right.segments]:
+            for s in segment_list:
+                if not (s.initial == "" and s.current == ""):
+                    new_segments.append(s)
+        return JournaledString(new_segments)
+
+    def substring(self, start: int, end: int, greedy: bool = True) -> "JournaledString":
         """
         Get a substring of the journaled string, with pointers back to only the parts of the
-        initial substring that correspond to the substringed part of the string.
+        initial substring that correspond to the substringed part of the string. 'greedy'
+        determines whether 'initial' is grown, to include:
+        * segments on the boundary where 'initial' was replaced with ''
+        * the contents of 'initial' for bisected segments.
         """
 
         new_segments: List[Segment] = []
@@ -165,10 +144,13 @@ class JournaledString(UserString):  # pylint: disable=too-many-ancestors
             # Simplest case: 'start' and 'end' surround a segment, so that entire segment
             # will be included in the new string.
             if start <= s_start and end >= s_end:
+                # Only include replacements of spans with blanks if in 'greedy' mode.
+                if (s_start == start or s_end == end) and s_start == s_end and not greedy:
+                    continue
                 new_segments.append(s)
 
             # Trickier cases: look for when 'start' and 'end' appear within a segment. In that
-            # case, the a new segment needs to be added with the initial and current strings truncated.
+            # case, a new segment needs to be added with the initial and current strings truncated.
             else:
                 initial = s.initial
                 current = s.current
@@ -185,6 +167,10 @@ class JournaledString(UserString):  # pylint: disable=too-many-ancestors
                     # assume that the segment maps to the same initial segment.
                     if not s.changed:
                         initial = initial[:end_in_s]
+                    elif greedy:
+                        initial = initial
+                    else:
+                        initial = ""
                 # Truncate left side if the start is within this segment. Note that it might be
                 # possible for both the start ane end to lie within this segment, hence the shared
                 # 'current' and 'initial' variables.

@@ -192,6 +192,15 @@ def test_sentence_from_within_command():
     assert sentences[0].end == 26
 
 
+def test_sentence_includes_preceding_equation():
+    extractor = SentenceExtractor(from_named_sections_only=False)
+    # This was a specific case seen in an example paper.
+    sentences = list(extractor.parse("main.tex", "Sentence 1.\n\\[x\\]\nstarts the sentence."))
+    assert sentences[1].tex == "\\[x\\]\nstarts the sentence."
+    assert sentences[1].start == 12
+    assert sentences[1].end == 38
+
+
 def test_extract_equation_from_dollar_sign():
     extractor = EquationExtractor()
     equations = list(extractor.parse("main.tex", "$x + y$"))
