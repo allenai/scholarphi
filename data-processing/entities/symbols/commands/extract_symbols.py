@@ -245,7 +245,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                     )
 
                 # Save the relationships between this symbol and its children.
-                for child in symbol.children:
+                for child in symbol.child_symbols:
                     child_index = symbols.index(child)
                     file_utils.append_to_csv(
                         symbol_children_path,
