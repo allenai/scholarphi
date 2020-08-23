@@ -17,9 +17,9 @@ from common.types import (
     SymbolLocation,
 )
 from common.upload_entities import upload_entities
-from entities.sentences.commands.find_entity_sentences import EntitySentencePairIds
+from entities.sentences.types import Context
 
-from ..types import SentenceKey, SymbolData
+from ..types import SymbolData
 
 
 class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
@@ -86,34 +86,31 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
                     matches[match.queried_mathml] = []
                 matches[match.queried_mathml].append(match)
 
-            sentence_data_missing = False
-            sentences_path = os.path.join(
-                directories.arxiv_subdir("sentences-for-symbols", arxiv_id),
-                "entity_sentences.csv",
+            context_data_missing = False
+            contexts_path = os.path.join(
+                directories.arxiv_subdir("contexts-for-symbols", arxiv_id),
+                "contexts.csv",
             )
-            if not os.path.exists(sentences_path):
+            if not os.path.exists(contexts_path):
                 logging.warning(  # pylint: disable=logging-not-lazy
-                    "Symbols for arXiv paper %s have not been aligned to sentences. "
-                    + "Symbol data will be uploaded without links to sentences",
+                    "Contexts have not been found for symbols for arXiv paper %s. "
+                    + "Symbol data will be uploaded without contexts.",
                     arxiv_id,
                 )
-                sentence_data_missing = True
+                context_data_missing = True
 
-            if not sentence_data_missing:
-                symbol_sentences = {}
-                for pair in file_utils.load_from_csv(
-                    sentences_path, EntitySentencePairIds
-                ):
-                    tex_path = pair.tex_path
+            if not context_data_missing:
+                contexts = {}
+                for context in file_utils.load_from_csv(contexts_path, Context):
+                    tex_path = context.tex_path
                     equation_index, symbol_index = [
-                        int(t) for t in pair.entity_id.split("-")
+                        int(t) for t in context.entity_id.split("-")
                     ]
-                    sentence_key = SentenceKey(pair.tex_path, pair.sentence_id)
                     symbol_id = SymbolId(tex_path, equation_index, symbol_index)
-                    symbol_sentences[symbol_id] = sentence_key
+                    contexts[symbol_id] = context
 
             yield SymbolData(
-                arxiv_id, s2_id, symbols_with_ids, boxes, symbol_sentences, matches,
+                arxiv_id, s2_id, symbols_with_ids, boxes, contexts, matches,
             )
 
     def process(self, _: SymbolData) -> Iterator[None]:
@@ -123,7 +120,7 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
         symbols_with_ids = item.symbols_with_ids
         boxes = item.boxes
         matches = item.matches
-        symbol_sentences = item.symbol_sentences
+        contexts = item.symbol_contexts
 
         symbol_ids_by_symbol_object_ids = {}
         for symbol_with_id in symbols_with_ids:
@@ -136,6 +133,7 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
         for symbol_with_id in symbols_with_ids:
             symbol = symbol_with_id.symbol
             symbol_id = symbol_with_id.symbol_id
+            context = contexts.get(symbol_id)
 
             box = boxes.get(symbol_id)
             if box is None:
@@ -148,17 +146,18 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
                 "mathml": symbol.mathml,
                 "mathml_near_matches": [
                     m.matching_mathml for m in matches[symbol.mathml]
-                ],
+                ]
             }
+            if context is not None:
+                data["snippet"] = context.snippet
 
             create_symbol_id_string: Callable[[SymbolId], str] = (
                 lambda sid: f"{sid.tex_path}-{sid.equation_index}-{sid.symbol_index}"
             )
 
-            sentence_key = symbol_sentences.get(symbol_id)
             sentence_id = (
-                f"{sentence_key.tex_path}-{sentence_key.sentence_id}"
-                if sentence_key is not None
+                f"{context.tex_path}-{context.sentence_id}"
+                if context is not None
                 else None
             )
 
@@ -187,9 +186,9 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
                 "children": [
                     EntityReference(type_="symbol", id_=id_) for id_ in child_ids
                 ],
-                "sentence": EntityReference(type_="sentence", id_=None)
-                if sentence_id is None
-                else EntityReference(type_="sentence", id_=sentence_id),
+                "sentence": EntityReference(type_="sentence", id_=sentence_id)
+                if sentence_id is not None
+                else EntityReference(type_="sentence", id_=None),
             }
 
             entity_information = EntityInformation(

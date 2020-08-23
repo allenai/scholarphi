@@ -346,11 +346,8 @@ class SerializableToken(SerializableEntity, Token):
 
 
 @dataclass(frozen=True)
-class SerializableSymbol(SymbolId):
+class SerializableSymbol(SerializableEntity, SymbolId):
     equation: str
-    start: int
-    end: int
-    tex: str
     mathml: str
 
 

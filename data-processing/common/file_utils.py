@@ -324,8 +324,8 @@ def load_tokens(arxiv_id: ArxivId) -> Optional[List[SerializableToken]]:
 
 def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
 
-    data_dir = directories.arxiv_subdir("detected-equation-tokens", arxiv_id)
-    symbols_path = os.path.join(data_dir, "symbols.csv")
+    data_dir = directories.arxiv_subdir("detected-symbols", arxiv_id)
+    symbols_path = os.path.join(data_dir, "entities.csv")
     symbol_tokens_path = os.path.join(data_dir, "symbol_tokens.csv")
     symbol_children_path = os.path.join(data_dir, "symbol_children.csv")
 

@@ -303,13 +303,22 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                     if batch.index(last_colorized_entity_id) < len(batch) - 1:
                         problem_ids += [batch[batch.index(last_colorized_entity_id) + 1]]
 
+                    if len(batch) == 1:
+                        logging.warning(  # pylint: disable=logging-not-lazy
+                            "Failed to compile paper %s with colorized entity %s, even when it was "
+                            + "colorized in isolation. The location of this entity will not be detected.",
+                            item.arxiv_id,
+                            batch[0]
+                        )
+                        continue
+
                     logging.warning(  # pylint: disable=logging-not-lazy
                         "Failed to compile paper %s with colorized entities. The culprit may be "
                         + "the colorization command for entity %s. The problematic entities will be "
                         + "colorized on their own, and the rest of the entities will be colorized "
                         + "together in the next batch.",
                         item.arxiv_id,
-                        "or".join(problem_ids),
+                        " or ".join(problem_ids),
                     )
 
                     for id_ in problem_ids:

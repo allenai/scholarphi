@@ -68,6 +68,9 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
             file_utils.clean_directory(
                 directories.arxiv_subdir("detected-equation-tokens", arxiv_id)
             )
+            file_utils.clean_directory(
+                directories.arxiv_subdir("detected-symbols", arxiv_id)
+            )
             yield arxiv_id
 
     def process(self, item: ArxivId) -> Iterator[SymbolData]:
@@ -125,6 +128,9 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
         tokens_dir = directories.arxiv_subdir("detected-equation-tokens", item)
         if not os.path.exists(tokens_dir):
             os.makedirs(tokens_dir)
+        symbols_dir = directories.arxiv_subdir("detected-symbols", item)
+        if not os.path.exists(symbols_dir):
+            os.makedirs(symbols_dir)
 
         if result.success and result.symbols is not None:
             logging.debug(
@@ -158,9 +164,9 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
             symbols = result.symbols
 
             tokens_path = os.path.join(tokens_dir, "entities.csv")
-            symbols_path = os.path.join(tokens_dir, "symbols.csv")
-            symbol_tokens_path = os.path.join(tokens_dir, "symbol_tokens.csv")
-            symbol_children_path = os.path.join(tokens_dir, "symbol_children.csv")
+            symbols_path = os.path.join(symbols_dir, "entities.csv")
+            symbol_tokens_path = os.path.join(symbols_dir, "symbol_tokens.csv")
+            symbol_children_path = os.path.join(symbols_dir, "symbol_children.csv")
 
             # The list of symbol children might be empty, e.g., for a paper with only
             # very simple symbols. Make sure there's at least an empty file, as later stages expect
@@ -211,6 +217,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                 file_utils.append_to_csv(
                     symbols_path,
                     SerializableSymbol(
+                        id_=f"{result.equation_index}-{symbol_index}",
                         tex_path=result.tex_path,
                         equation_index=result.equation_index,
                         equation=result.equation,
@@ -218,6 +225,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                         start=start,
                         end=end,
                         tex=symbol_tex,
+                        context_tex=result.context_tex,
                         mathml=str(symbol.element),
                     ),
                 )

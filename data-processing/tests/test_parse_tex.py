@@ -1,5 +1,3 @@
-import re
-
 from common.parse_tex import (
     BeginDocumentExtractor,
     DocumentclassExtractor,
