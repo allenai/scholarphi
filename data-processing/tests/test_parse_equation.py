@@ -2,7 +2,7 @@ import os
 
 from bs4 import BeautifulSoup, Tag
 
-from common.parse_equation import parse_element, parse_equation
+from common.parse_equation import parse_element, parse_equation, NodeType
 from common.types import Token
 from tests.util import get_test_path
 
@@ -23,6 +23,7 @@ def test_parse_single_symbol():
     assert len(result.symbols) == 1
     symbol = result.symbols[0]
     assert str(symbol.element) == "<mi>x</mi>"
+    assert symbol.type_ == NodeType.IDENTIFIER
     assert symbol.children == []
     assert symbol.tokens == [Token(0, 1, "x", 0)]
     assert result.tokens == [Token(0, 1, "x", 0)]
@@ -133,8 +134,41 @@ def test_summation_is_not_symbol():
 
 def test_parse_detect_definition():
     result = parse_element(load_fragment_tag("x_equals_1.xml"))
-    assert len(result.symbols) == 1
+    assert str(result.symbols[0].element) == "<mi>x</mi>"
     assert result.symbols[0].defined
+
+
+def test_detect_function_declaration():
+    result = parse_element(load_fragment_tag("function.xml"))
+    symbol = result.symbols[0]
+
+    assert symbol.element.text == "p(x;θ,y)"
+    assert symbol.type_ == NodeType.FUNCTION
+    assert (
+        Token(1, 2, "(", 1) in symbol.tokens
+    ), "function tokens should include parentheses"
+    assert (
+        Token(15, 16, ")", 7) in symbol.tokens
+    ), "function tokens should include parentheses"
+    assert not any(
+        [t.text == "," for t in symbol.tokens]
+    ), "function tokens should not include commas"
+    assert not any(
+        [t.text == ";" for t in symbol.tokens]
+    ), "function tokens should not include semicolons"
+
+    child_symbols = symbol.child_symbols
+    assert len(child_symbols) == 4
+    assert str(child_symbols[0].element) == "<mi>p</mi>"
+    assert str(child_symbols[1].element) == "<mi>x</mi>"
+    assert str(child_symbols[2].element) == "<mi>θ</mi>"
+    assert str(child_symbols[3].element) == "<mi>y</mi>"
+
+
+def test_ignore_definition_in_sum_argument():
+    result = parse_element(load_fragment_tag("sum_i_equals_0.xml"))
+    assert str(result.symbols[0].element) == "<mi>i</mi>"
+    assert not result.symbols[0].defined
 
 
 def test_parse_equation():
