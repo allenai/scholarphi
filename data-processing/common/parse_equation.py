@@ -330,7 +330,7 @@ def parse_functions(
         if r_start == -1 or r_end == -1:
             continue
 
-        func_children = children[r_start:r_end + 1]
+        func_children = children[r_start : r_end + 1]
         func_tokens = [t for c in children for t in c.tokens]
 
         # Create synthetic MathML row for the function.
@@ -346,7 +346,7 @@ def parse_functions(
                 break
 
         func_node = Node(NodeType.FUNCTION, func_element, func_children, func_tokens)
-        new_children = new_children[:r_start] + [func_node] + new_children[r_end + 1:]
+        new_children = new_children[:r_start] + [func_node] + new_children[r_end + 1 :]
         function_created = True
 
     if function_created:
@@ -424,7 +424,32 @@ def _is_token(element: Tag) -> bool:
 
 
 def _is_definition_operator(element: Tag) -> bool:
-    return element.name == "mo" and element.text in ["=", "≈", "≥", "≤", "∈", "∼"]
+    # Check whether this is a definition operator.
+    is_definition_operator = element.name == "mo" and element.text in [
+        "=",
+        "≈",
+        "≥",
+        "≤",
+        "∈",
+        "∼",
+    ]
+    if not is_definition_operator:
+        return False
+
+    # Filter out cases where the operator appears in an argument to an existing operator, like
+    # beneath of a summation sign (i.e., the '=' in "Σ_{i = 0}").
+    parent = element
+    while parent is not None:
+        parent_children = [c for c in parent.children if isinstance(c, Tag)]
+        if (
+            parent.name in ["msubsup", "msub", "msup"]
+            and len(parent_children) > 0
+            and parent_children[0].name == "mo"
+        ):
+            return False
+        parent = parent.parent
+
+    return True
 
 
 def _is_error_element(element: Tag) -> bool:
