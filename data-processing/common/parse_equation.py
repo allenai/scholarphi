@@ -196,12 +196,12 @@ def parse_element(element: Tag) -> ParseResult:
     # Now that the sequence of children has been transformed by sanitizers and parsers, check
     # to see if any of the children in the sequence have been defined.
     for i, c in enumerate(children):
-        if i == 1 and c.type_ == NodeType.DEFINITION_OPERATOR:
-            previous_child = children[0]
+        if c.type_ == NodeType.DEFINITION_OPERATOR and i >= 1:
+            previous_child = children[i - 1]
             if previous_child.is_symbol and not _appears_in_operator_argument(
                 original_element
             ):
-                children[0].defined = True
+                previous_child.defined = True
 
     # If a specific type of node can't be parsed, then return a generic type of node,
     # comprising of all the children and tokens found in this element.
@@ -316,10 +316,14 @@ def parse_functions(
                 start = i
                 continue
             # Start parsing a function when a left parentheses if found.
-            if child.type_ is NodeType.LEFT_PARENS:
+            elif child.type_ is NodeType.LEFT_PARENS:
                 if start != -1:
                     parens_depth += 1
                     continue
+            # If this is not an identifier or a left parens, don't consider the
+            # current child as a starting point for making a function.
+            else:
+                start = -1
 
         if parens_depth > 0:
             if child.type_ is NodeType.RIGHT_PARENS:
@@ -386,8 +390,11 @@ def parse_definition_operator(
         "≈",
         "≥",
         "≤",
+        "<",
+        ">",
         "∈",
         "∼",
+        "≜"
     ]
     if clean_element.name != "mo" or clean_element.text not in EQUATION_SIGNS:
         return None

@@ -1,0 +1,10 @@
+<mrow>
+    <mi s2:start="0" s2:end="1" s2:index="0">x</mi>
+    <mo s2:start="2" s2:end="3" s2:index="1">=</mo>
+    <mn s2:start="4" s2:end="5" s2:index="2">1</mn>
+    <mspace width="1em"/>
+    <mo separator="true" s2:start="11" s2:end="12" s2:index="3">,</mo>
+    <mi s2:start="13" s2:end="14" s2:index="4">y</mi>
+    <mo s2:start="15" s2:end="16" s2:index="5">=</mo>
+    <mn s2:start="17" s2:end="18" s2:index="6">2</mn>
+</mrow>

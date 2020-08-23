@@ -26,6 +26,7 @@ def test_parse_single_symbol():
     assert symbol.type_ == NodeType.IDENTIFIER
     assert symbol.children == []
     assert symbol.tokens == [Token(0, 1, "x", 0)]
+    assert not symbol.defined
     assert result.tokens == [Token(0, 1, "x", 0)]
 
 
@@ -132,8 +133,22 @@ def test_summation_is_not_symbol():
     assert str(result.symbols[1].element) == "<mi>N</mi>"
 
 
-def test_parse_detect_definition():
+def test_detect_definition():
     result = parse_element(load_fragment_tag("x_equals_1.xml"))
+    assert str(result.symbols[0].element) == "<mi>x</mi>"
+    assert result.symbols[0].defined
+
+
+def test_detect_multiple_definitions():
+    result = parse_element(load_fragment_tag("multiple_definitions.xml"))
+    assert str(result.symbols[0].element) == "<mi>x</mi>"
+    assert result.symbols[0].defined
+    assert str(result.symbols[1].element) == "<mi>y</mi>"
+    assert result.symbols[1].defined
+
+
+def test_detect_definition_with_annotated_operator():
+    result = parse_element(load_fragment_tag("iid.xml"))
     assert str(result.symbols[0].element) == "<mi>x</mi>"
     assert result.symbols[0].defined
 
