@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Type
 
 from common import directories, file_utils
+from common.colorize_tex import wrap_span
 from common.commands.base import ArxivBatchCommand
 from common.types import ArxivId, RelativePath, SerializableEntity
 
@@ -148,7 +149,23 @@ class ExtractContextsCommand(ArxivBatchCommand[Task, Context]):
             sentence = sentences_by_id[sentence_id]
             for entity_key in sentence_entities[sentence_id]:
                 entities = sentence_entities[sentence_id][entity_key]
+
+                # Assemble a snippet for this sentences with entity appearances highlighted.
+                # Wrap all repeat appearances of the same entity in a tag that can be used
+                # by the KaTeX browser-based LaTeX renderer to style the matches.
                 snippet = sentence.tex
+                for entity in sorted(entities, key=lambda e: e.start, reverse=True):
+                    start_in_snippet = entity.start - sentence.start
+                    end_in_snippet = entity.end - sentence.start
+                    snippet = wrap_span(
+                        snippet,
+                        start_in_snippet,
+                        end_in_snippet,
+                        before=r"\htmlClass{match-highlight}{",
+                        after="}",
+                        braces=True,
+                    )
+
                 for entity in entities:
                     neighbor_ids = [e.id_ for e in entities if e != entity]
                     yield Context(
@@ -176,7 +193,7 @@ EntityKeyFunc = Callable[[SerializableEntity], Any]
 def make_extract_contexts_command(
     entity_name: str,
     entity_key: Optional[EntityKeyFunc] = None,
-    EntityType: Optional[Type[SerializableEntity]] = None
+    EntityType: Optional[Type[SerializableEntity]] = None,
 ) -> Type[ExtractContextsCommand]:
     class C(ExtractContextsCommand):
         @staticmethod
