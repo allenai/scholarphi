@@ -171,6 +171,7 @@ export interface SymbolAttributes extends BaseEntityAttributes {
   tex: string | null;
   mathml: string | null;
   mathml_near_matches: string[];
+  is_definition: boolean | null;
   /**
    * Nicknames for the symbol extracted from the text, no more than a few words long.
    */

@@ -80,6 +80,7 @@ export let attributes = Joi.object({
  * absence of data indicates an empty list, not a null value.
  */
 const stringAttribute = Joi.string().allow(null).default(null);
+const booleanAttribute = Joi.boolean().allow(null).default(null);
 const numberAttribute = Joi.number()
   .allow(null)
   .default(null)

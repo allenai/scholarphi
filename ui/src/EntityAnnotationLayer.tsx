@@ -292,7 +292,8 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
              * A symbol will be shown if it's either selectable, or if it's selected and
              * it doesn't have any children to be selected.
              */
-            const active = isSelectable || (isLeaf && isSelected);
+            const active =
+              (isSelectable && !isSelectionAncestor) || (isLeaf && isSelected);
 
             return (
               <EntityAnnotation

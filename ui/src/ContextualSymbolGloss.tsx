@@ -34,11 +34,12 @@ interface Props {
   handleJumpToEntity: (entityId: string) => void;
 }
 
-type DetailLevel = "default" | "nicknames" | "definition" | "everything";
+type DetailLevel = "defined-here" | "nicknames" | "definition" | "everything";
 
 interface State {
   detail: DetailLevel;
   activeSymbolId: string;
+  definitionsOpen: boolean;
   formulasOpen: boolean;
   usagesOpen: boolean;
 }
@@ -69,14 +70,34 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      detail: "everything",
+      detail: this.getDefaultDetailLevel(props.symbol),
       activeSymbolId: props.symbol.id,
+      definitionsOpen: true,
       formulasOpen: false,
       usagesOpen: false,
     };
+    this.onChangeDefinitionsOpen = this.onChangeDefinitionsOpen.bind(this);
     this.onChangeFormulasOpen = this.onChangeFormulasOpen.bind(this);
     this.onChangeUsagesOpen = this.onChangeUsagesOpen.bind(this);
+    this.onClickShowMore = this.onClickShowMore.bind(this);
     this.setActiveSymbolId = this.setActiveSymbolId.bind(this);
+  }
+
+  getDefaultDetailLevel(symbol: Symbol) {
+    if (
+      symbol.attributes.is_definition === true ||
+      symbol.relationships.definition_sentences.some(
+        (r) => r.id !== null && r.id === symbol.relationships.sentence.id
+      )
+    ) {
+      return "defined-here";
+    } else if (symbol.attributes.nicknames.length > 0) {
+      return "nicknames";
+    } else if (symbol.attributes.definitions.length > 0) {
+      return "definition";
+    } else {
+      return "everything";
+    }
   }
 
   setActiveSymbolId(id: string) {
@@ -86,12 +107,28 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
     }
   }
 
-  onChangeFormulasOpen(_, expanded: boolean) {
+  onChangeDefinitionsOpen(_: any, expanded: boolean) {
+    this.setState({ definitionsOpen: expanded });
+  }
+
+  onChangeFormulasOpen(_: any, expanded: boolean) {
     this.setState({ formulasOpen: expanded });
   }
 
-  onChangeUsagesOpen(_, expanded: boolean) {
+  onChangeUsagesOpen(_: any, expanded: boolean) {
     this.setState({ usagesOpen: expanded });
+  }
+
+  onClickShowMore() {
+    this.setState((prevState) => {
+      const prevDetail = prevState.detail;
+      if (prevDetail === "nicknames" || prevDetail === "defined-here") {
+        return { detail: "everything" };
+      } else if (prevDetail === "definition") {
+        return { detail: "everything" };
+      }
+      return { detail: "everything" };
+    });
   }
 
   render() {
@@ -99,27 +136,29 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
     const { activeSymbolId, detail } = this.state;
     const symbol = entities.byId[activeSymbolId] as Symbol;
 
+    const originalSymbol = this.props.symbol;
+    const { definitions, sentences: definitionSentences } = getDefinitions(
+      symbol,
+      entities,
+      originalSymbol.id === activeSymbolId
+    );
     const { snippets, sentences: snippetSentences } = getSnippets(
       symbol,
-      entities
+      entities,
+      originalSymbol.id === activeSymbolId
     );
     const { formulas, equations: formulaEquations } = getDefiningFormulas(
       symbol,
-      entities
+      entities,
+      originalSymbol.id === activeSymbolId
     );
 
     const {
       tex,
       nicknames,
-      definitions,
       // is_definition,
     } = symbol.attributes;
-    const {
-      parent,
-      children,
-      nickname_sentences,
-      definition_sentences,
-    } = symbol.relationships;
+    const { nickname_sentences } = symbol.relationships;
 
     const related = entities.all
       .map((id) => entities.byId[id])
@@ -138,16 +177,19 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
       .filter(isSymbol)
       .filter((s) => s.attributes.tex !== null);
 
-    const alsoSee: Symbol[] = [];
-    const alsoSeeTexs: { [tex: string]: boolean } = {};
-    related.forEach((r) => {
-      if (!alsoSeeTexs[r.attributes.tex as string]) {
-        alsoSee.push(r);
-        alsoSeeTexs[r.attributes.tex as string] = true;
+    const relatedTexs = related.map((s) => s.attributes.tex) as string[];
+    const relatedTexsByFrequency = uiUtils.sortByFrequency(relatedTexs);
+    let alsoSee = [];
+    for (const tex of relatedTexsByFrequency) {
+      for (const r of related) {
+        if (r.attributes.tex === tex) {
+          alsoSee.push(r);
+          break;
+        }
       }
-    });
-
-    const originalSymbol = this.props.symbol;
+    }
+    const MAX_ALSO_SEE = 5;
+    alsoSee = alsoSee.slice(0, MAX_ALSO_SEE);
 
     const groupedNicknames = groupNicknames(
       nicknames,
@@ -156,57 +198,164 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
     );
     const nicknamesOrdered = uiUtils.sortByFrequency(nicknames);
 
+    const notFound = [];
+    let somethingKnown = false;
+    if (
+      detail === "nicknames" ||
+      detail === "definition" ||
+      detail === "everything"
+    ) {
+      if (nicknames.length === 0) {
+        notFound.push("nicknames");
+      } else {
+        somethingKnown = true;
+      }
+    }
+    if (detail === "definition" || detail === "everything") {
+      if (definitions.length === 0) {
+        notFound.push("definitions");
+      } else {
+        somethingKnown = true;
+      }
+    }
+    if (detail === "everything") {
+      if (formulas.length === 0) {
+        notFound.push("formulas");
+      } else {
+        somethingKnown = true;
+      }
+    }
+    if (detail === "everything") {
+      if (snippets.length === 0) {
+        notFound.push("exemplary usages");
+      } else {
+        somethingKnown = true;
+      }
+    }
+    let notFoundString = "";
+    for (let i = 0; i < notFound.length; i++) {
+      notFoundString += notFound[i];
+      if (notFound.length == 2 && i == 0) {
+        notFoundString += " or ";
+      } else if (i < notFound.length - 1) {
+        notFoundString += ", ";
+      }
+      if (i == notFound.length - 2 && i >= 1) {
+        notFoundString += "or ";
+      }
+    }
+
     return (
       <div
-        className={classNames("gloss", "symbol-definition-gloss", {
-          "mode-everything": detail === "everything",
-        })}
+        className={classNames(
+          "gloss",
+          "symbol-definition-gloss",
+          `mode-${detail}`
+        )}
       >
-        {(detail === "definition" || detail === "everything") &&
-          alsoSee.length > 0 && (
-            <div className="gloss__section">
-              <p>
-                Also see{" "}
-                {alsoSee.map((s, i) => (
-                  <>
-                    <SymbolLink
-                      symbol={s}
-                      handleSetActiveSymbol={this.setActiveSymbolId}
-                    />
-                    {i < alsoSee.length - 1 && ", "}
-                  </>
+        <div className="gloss__section">
+          <p>
+            <RichText>{tex || "<symbol>"}</RichText>:{" "}
+            {detail === "defined-here" && "Defined above (see highlights)."}
+            {(detail === "nicknames" ||
+              detail === "definition" ||
+              detail === "everything") &&
+            nicknames.length > 0 ? (
+              <span>
+                called{" "}
+                {nicknamesOrdered.map((n, i) => (
+                  <span className="symbol-nickname" key={n}>
+                    "{n}"{" "}
+                    {groupedNicknames[n].length > 0 && (
+                      <span className="sentence-reference">
+                        (page{" "}
+                        {groupedNicknames[n].map((use, j) => (
+                          <React.Fragment key={use.sentenceId}>
+                            <EntityLinkSpan
+                              entityId={use.sentenceId}
+                              handleJumpToEntity={this.props.handleJumpToEntity}
+                            >
+                              {use.page}
+                            </EntityLinkSpan>
+                            {j < groupedNicknames[n].length - 1 ? ", " : ")"}
+                          </React.Fragment>
+                        ))}
+                        {i < nicknamesOrdered.length - 1 ? ", " : ""}
+                      </span>
+                    )}
+                  </span>
                 ))}
-              </p>
+                .
+              </span>
+            ) : null}
+            <span>
+              {notFoundString.length > 0 && (
+                <>
+                  {`There are no ${notFoundString} for symbol `}
+                  <RichText>{tex || "<symbol>"}</RichText>
+                  {` in this paper.`}
+                  {detail === "everything" &&
+                    !somethingKnown &&
+                    " Search for the symbol using the widget in the upper left corner, or click on a subsymbol."}
+                </>
+              )}{" "}
+              {detail !== "everything" && (
+                <>
+                  <span
+                    onClick={this.onClickShowMore}
+                    className="gloss__show-more"
+                  >
+                    {detail === "defined-here"
+                      ? "Show other definitions, formulas, and exemplary usages"
+                      : detail === "nicknames"
+                      ? "Show definitions"
+                      : detail === "definition"
+                      ? "Show defining formulas and exemplary usages"
+                      : null}
+                  </span>
+                  .
+                </>
+              )}
+            </span>
+          </p>
+        </div>
+
+        {(detail === "definition" || detail === "everything") &&
+          definitions.length > 0 && (
+            <div className="gloss__section">
+              <Accordion
+                defaultExpanded={true}
+                expanded={this.state.definitionsOpen}
+                onChange={this.onChangeDefinitionsOpen}
+              >
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  Definitions
+                </AccordionSummary>
+                <AccordionDetails>
+                  <div>
+                    <p className="gloss-section__label">
+                      Ordered from first to last (skipping this page).
+                    </p>
+                    <GlossSection>
+                      {definitions.map((d, i) => (
+                        <Snippet
+                          key={i}
+                          sentence={definitionSentences[i]}
+                          linkText={getLinkText(
+                            originalSymbol,
+                            definitionSentences[i]
+                          )}
+                          handleJumpToSnippet={this.props.handleJumpToEntity}
+                        >
+                          {d}
+                        </Snippet>
+                      ))}
+                    </GlossSection>
+                  </div>
+                </AccordionDetails>
+              </Accordion>
             </div>
           )}
-        {(detail === "nicknames" || detail === "everything") &&
-        nicknames.length > 0 ? (
-          <div className="gloss__section">
-            <p>
-              In this paper, called{" "}
-              {nicknamesOrdered.map((n) => (
-                <span className="symbol-nickname" key={n}>
-                  "{n}"{" "}
-                  <span className="sentence-reference">
-                    (see page{" "}
-                    {groupedNicknames[n].map((use, i) => (
-                      <React.Fragment key={use.sentenceId}>
-                        <EntityLinkSpan
-                          entityId={use.sentenceId}
-                          handleJumpToEntity={this.props.handleJumpToEntity}
-                        >
-                          {use.page}
-                        </EntityLinkSpan>
-                        {i < groupedNicknames[n].length - 1 ? " " : null}
-                      </React.Fragment>
-                    ))}
-                    )
-                  </span>
-                </span>
-              ))}
-            </p>
-          </div>
-        ) : null}
         {detail === "everything" && formulas.length > 0 ? (
           <div className="gloss__section">
             <Accordion
@@ -219,8 +368,7 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
               <AccordionDetails>
                 <div>
                   <p className="gloss-section__label">
-                    Showing defining formulas. Formulas before this page are
-                    shown first.
+                    Ordered from first to last (skipping this page).
                   </p>
                   <GlossSection>
                     {formulas.map((f, i) => (
@@ -254,8 +402,8 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
               <AccordionDetails>
                 <div>
                   <p className="gloss-section__label">
-                    Showing usages of this symbol. Usages after this page are
-                    shown first.
+                    Selected usages begin on the next page, then wrap back to
+                    the start. See usages in context by looking for highlights.
                   </p>
                   <GlossSection>
                     {snippets.map((s, i) => (
@@ -277,6 +425,24 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
             </Accordion>
           </div>
         ) : null}
+        {(detail === "definition" || detail === "everything") &&
+          alsoSee.length > 0 && (
+            <div className="gloss__section">
+              <p>
+                Also see glossary entries for{" "}
+                {alsoSee.map((s, i) => (
+                  <>
+                    <SymbolLink
+                      symbol={s}
+                      handleSetActiveSymbol={this.setActiveSymbolId}
+                    />
+                    {i < alsoSee.length - 1 && ", "}
+                  </>
+                ))}
+                .
+              </p>
+            </div>
+          )}
       </div>
     );
   }
@@ -295,7 +461,11 @@ function getLinkText(source: Entity, destination: Entity) {
   }
 }
 
-function getDefiningFormulas(symbol: Symbol, entities: Entities) {
+function getDefiningFormulas(
+  symbol: Symbol,
+  entities: Entities,
+  omitOwn?: boolean
+) {
   const currentPage = getFirstPage(symbol);
   if (currentPage === null) {
     return { formulas: [], equations: [] };
@@ -319,6 +489,9 @@ function getDefiningFormulas(symbol: Symbol, entities: Entities) {
     }
     const equation = entities.byId[equationRelationship.id];
     if (equation === undefined || !isEquation(equation)) {
+      continue;
+    }
+    if (omitOwn && symbol.relationships.equation.id === equation.id) {
       continue;
     }
     const equationPage = getFirstPage(equation);
@@ -373,7 +546,7 @@ function comparePosition(e1: Entity, e2: Entity) {
   );
 }
 
-function getSnippets(symbol: Symbol, entities: Entities) {
+function getSnippets(symbol: Symbol, entities: Entities, omitOwn?: boolean) {
   const currentPage = getFirstPage(symbol);
   if (currentPage === null) {
     return { snippets: [], sentences: [] };
@@ -388,7 +561,7 @@ function getSnippets(symbol: Symbol, entities: Entities) {
 
   for (let i = 0; i < snippets.length; i++) {
     const snippet = snippets[i];
-    const MAXIMUM_SNIPPET_LENGTH = 200;
+    const MAXIMUM_SNIPPET_LENGTH = 500;
     if (snippet.length > MAXIMUM_SNIPPET_LENGTH) {
       continue;
     }
@@ -401,6 +574,9 @@ function getSnippets(symbol: Symbol, entities: Entities) {
     }
     const sentence = entities.byId[sentenceRelationship.id];
     if (sentence === undefined || !isSentence(sentence)) {
+      continue;
+    }
+    if (omitOwn && symbol.relationships.sentence.id === sentence.id) {
       continue;
     }
     const sentencePage = getFirstPage(sentence);
@@ -442,6 +618,74 @@ function getSnippets(symbol: Symbol, entities: Entities) {
   };
 }
 
+function getDefinitions(symbol: Symbol, entities: Entities, omitOwn?: boolean) {
+  const currentPage = getFirstPage(symbol);
+  if (currentPage === null) {
+    return { definitions: [], sentences: [] };
+  }
+
+  const { definitions } = symbol.attributes;
+  const { definition_sentences } = symbol.relationships;
+
+  const before = [];
+  const onPage = [];
+  const after = [];
+
+  for (let i = 0; i < definitions.length; i++) {
+    const definition = definitions[i];
+    const sentenceRelationship = definition_sentences[i];
+    if (
+      sentenceRelationship === undefined ||
+      sentenceRelationship.id === null
+    ) {
+      continue;
+    }
+    const sentence = entities.byId[sentenceRelationship.id];
+    if (sentence === undefined || !isSentence(sentence)) {
+      continue;
+    }
+    if (omitOwn && symbol.relationships.sentence.id === sentence.id) {
+      continue;
+    }
+    const sentencePage = getFirstPage(sentence);
+    if (sentencePage === null) {
+      continue;
+    }
+    if (sentencePage === currentPage) {
+      onPage.push({ definition, sentence });
+    }
+    if (sentencePage < currentPage) {
+      before.push({ definition, sentence });
+    }
+    if (sentencePage > currentPage) {
+      after.push({ definition, sentence });
+    }
+  }
+
+  before.sort((s1, s2) => {
+    return comparePosition(s1.sentence, s2.sentence);
+  });
+  onPage.sort((s1, s2) => {
+    return comparePosition(s1.sentence, s2.sentence);
+  });
+  after.sort((s1, s2) => {
+    return comparePosition(s1.sentence, s2.sentence);
+  });
+
+  return {
+    definitions: [
+      after.map((s) => s.definition),
+      before.map((s) => s.definition),
+      onPage.map((s) => s.definition),
+    ].flat(),
+    sentences: [
+      after.map((s) => s.sentence),
+      before.map((s) => s.sentence),
+      onPage.map((s) => s.sentence),
+    ].flat(),
+  };
+}
+
 function groupNicknames(
   nicknames: string[],
   nickname_sentences: Relationship[],
@@ -451,6 +695,9 @@ function groupNicknames(
     [nickname: string]: { page: number; sentenceId: string }[];
   } = {};
   nicknames.forEach((n, i) => {
+    if (grouped[n] === undefined) {
+      grouped[n] = [];
+    }
     if (!nickname_sentences[i]) {
       return;
     }
@@ -461,9 +708,6 @@ function groupNicknames(
     const sentence = entities.byId[sentenceId];
     if (!sentence || !isSentence(sentence)) {
       return;
-    }
-    if (grouped[n] === undefined) {
-      grouped[n] = [];
     }
     const sentenceBoxes = sentence.attributes.bounding_boxes;
     if (sentenceBoxes.length > 0) {
@@ -648,15 +892,22 @@ function getFirstPage(entity: Entity) {
   return Math.min(...boxes.map((b) => b.page));
 }
 
+interface GlossSectionProps {
+  startingRows?: number;
+}
+
 interface GlossSectionState {
   visibleRows: number;
 }
 
-class GlossSection extends React.PureComponent<{}, GlossSectionState> {
-  constructor(props: {}) {
+class GlossSection extends React.PureComponent<
+  GlossSectionProps,
+  GlossSectionState
+> {
+  constructor(props: GlossSectionProps) {
     super(props);
     this.state = {
-      visibleRows: 2,
+      visibleRows: props.startingRows || 2,
     };
     this.onClickShowMore = this.onClickShowMore.bind(this);
   }
@@ -666,7 +917,7 @@ class GlossSection extends React.PureComponent<{}, GlossSectionState> {
       currentVisibleRows: this.state.visibleRows,
     });
     this.setState((prevState) => ({
-      visibleRows: prevState.visibleRows + 2,
+      visibleRows: prevState.visibleRows + 1,
     }));
   }
 
@@ -682,7 +933,7 @@ class GlossSection extends React.PureComponent<{}, GlossSectionState> {
           {children
             .filter((c, i) => i < this.state.visibleRows)
             .map((c, i) => (
-              <TableRow>
+              <TableRow key={i}>
                 <TableCell className="gloss-entry__property">{c}</TableCell>
                 <TableCell className="gloss-entry__vote-button">
                   <VoteButton context={{}} />
