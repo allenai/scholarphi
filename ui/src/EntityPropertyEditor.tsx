@@ -196,15 +196,15 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
       label: "Defining formulas",
     },
     {
-      key: "defining_formula_sentences",
+      key: "defining_formula_equations",
       parentKey: "relationships",
       type: "relation-id",
       is_list: true,
-      relation_type: "sentence",
+      relation_type: "equation",
       label: "Defining formula sentence IDs",
     },
     {
-      key: "passages",
+      key: "snippets",
       parentKey: "attributes",
       type: "multiline-latex",
       is_list: true,
@@ -212,7 +212,7 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
       label: "Related passages",
     },
     {
-      key: "passage_sentences",
+      key: "snippet_sentences",
       parentKey: "relationships",
       type: "relation-id",
       is_list: true,

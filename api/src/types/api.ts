@@ -192,7 +192,7 @@ export interface SymbolAttributes extends BaseEntityAttributes {
   /**
    * An extracted TeX snippet that shows the symbol in context.
    */
-  snippets: string[] | null;
+  snippets: string[];
 }
 
 export interface SymbolRelationships {

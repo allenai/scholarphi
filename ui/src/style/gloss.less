@@ -67,10 +67,14 @@
     }
   }
 
+  p {
+    margin-top: @padding;
+  }
+
   /*
    * Links within the document
    */
-  .entity-link-span {
+  .entity-link-span.clickable {
     text-decoration: underline;
     cursor: pointer;
     color: @s2-link-default;
@@ -95,7 +99,7 @@
   /*
    * Some equations will be massive, so they scroll.
    */
-  max-height: 3rem;
+  max-height: 5rem;
   overflow: auto;
 
   /*
@@ -105,5 +109,56 @@
     white-space: pre;
     display: table;
     margin: 0 auto;
+  }
+}
+
+/**
+ * Fonts
+ */
+.gloss-entry-table {
+  &__clickable-link {
+    color: @s2-link-default;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+
+/**
+ * Property evaluation tables
+ */
+.gloss-entry-table {
+  table-layout: fixed;
+
+  /**
+   * Cell dimensions
+   */
+  td {
+    padding-left: @padding / 2;
+
+    &:first-of-type {
+      /*
+       * Scroll display equations
+       */
+      width: 90%;
+      padding-right: @padding / 2;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    &.vote-button {
+      width: 24px;
+      padding-left: @padding;
+      padding-right: @padding;
+    }
+  }
+
+  &__action-buttons-row {
+    td {
+      text-align: center;
+    }
+
+    button {
+      text-transform: none;
+    }
   }
 }
