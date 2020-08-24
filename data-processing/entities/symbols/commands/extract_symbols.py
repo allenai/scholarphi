@@ -200,7 +200,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                     # Grab the macro right before the symbol if there is one. This ensures that the
                     # rendered 'tex' field will include, for instance, `\mathrm` commands that are
                     # used to style the math.
-                    for match in re.finditer(r"\{|\\\w+\{", equation):
+                    for match in re.finditer(r"\\((math|text)\w+)\{", equation):
                         if match.end() == start:
                             start = match.start()
 
