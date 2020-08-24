@@ -227,7 +227,7 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
     }
     if (detail === "everything") {
       if (snippets.length === 0) {
-        notFound.push("exemplary usages");
+        notFound.push("short usages");
       } else {
         somethingKnown = true;
       }
@@ -291,12 +291,10 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
             <span>
               {notFoundString.length > 0 && (
                 <>
-                  {`There are no ${notFoundString} for symbol `}
-                  <RichText>{tex || "<symbol>"}</RichText>
-                  {` in this paper.`}
+                  {`There are no ${notFoundString} in this paper. `}
                   {detail === "everything" &&
                     !somethingKnown &&
-                    " Search for the symbol using the widget in the upper left corner, or click on a subsymbol."}
+                    " Search for usages with the widget the upper left corner."}
                 </>
               )}{" "}
               {detail !== "everything" && (
@@ -333,9 +331,9 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
                 </AccordionSummary>
                 <AccordionDetails>
                   <div>
-                    <p className="gloss-section__label">
+                    {/* <p className="gloss-section__label">
                       Ordered from first to last (skipping this page).
-                    </p>
+                    </p> */}
                     <GlossSection>
                       {definitions.map((d, i) => (
                         <Snippet
@@ -367,9 +365,9 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
               </AccordionSummary>
               <AccordionDetails>
                 <div>
-                  <p className="gloss-section__label">
+                  {/* <p className="gloss-section__label">
                     Ordered from first to last (skipping this page).
-                  </p>
+                  </p> */}
                   <GlossSection>
                     {formulas.map((f, i) => (
                       <DefiningFormula
@@ -401,10 +399,10 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
               </AccordionSummary>
               <AccordionDetails>
                 <div>
-                  <p className="gloss-section__label">
+                  {/* <p className="gloss-section__label">
                     Selected usages begin on the next page, then wrap back to
                     the start. See usages in context by looking for highlights.
-                  </p>
+                  </p> */}
                   <GlossSection>
                     {snippets.map((s, i) => (
                       <Snippet

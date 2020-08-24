@@ -10,7 +10,7 @@
  */
 rect.equation-diagram__feature {
   stroke: black;
-  stroke-width: 1;
+  stroke-width: 2;
   fill: none;
   opacity: 0;
 }
@@ -19,7 +19,7 @@ rect.equation-diagram__feature {
  * Labels.
  */
 rect.diagram-label__background {
-  fill: @label-color;
+  fill: @highlight-color;
   stroke: @label-border-color;
   stroke-width: @label-border-width;
 }
@@ -27,14 +27,14 @@ rect.diagram-label__background {
 .equation-diagram__label__text {
   fill: @s2-text-default;
   font-family: @s2-font-family;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 /**
  * Leader lines.
  */
 g.equation-diagram__leader {
-  opacity: 0.5;
+  opacity: 0.8;
 
   &:hover {
     opacity: 1;
@@ -42,14 +42,14 @@ g.equation-diagram__leader {
 
   path.leader-background {
     stroke: white;
-    stroke-width: 4;
+    stroke-width: 2;
     fill: none;
   }
 
   path.leader-foreground {
-    stroke: darkblue;
-    stroke-dasharray: 1pt;
-    stroke-width: 2;
+    stroke: gray;
+    // stroke-dasharray: 1pt;
+    stroke-width: 1;
     fill: none;
   }
 }

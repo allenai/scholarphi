@@ -18,6 +18,8 @@ class DiagramLabel extends React.PureComponent<Props> {
           className="diagram-label__background"
           width={width}
           height={height}
+          rx="5"
+          ry="5"
         />
         <text
           className={this.props.textClassname}

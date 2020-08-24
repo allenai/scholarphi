@@ -85,6 +85,10 @@
     z-index: @sentence-annotation-z-index;
   }
 
+  &.equation-annotation {
+    z-index: @equation-annotation-z-index;
+  }
+
   &:not(.sentence-annotation) {
     z-index: @other-annotation-z-index;
   }
@@ -124,8 +128,9 @@
  * Equation annotations
  */
 .equation-annotation {
-  &.selected {
+  &.annotation-selected {
     pointer-events: none;
     background: none !important;
+    border-bottom: none !important;
   }
 }
