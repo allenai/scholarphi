@@ -14,6 +14,7 @@ interface Props {
    * Text to render is passed in as a child. Should be either a string or a single span.
    */
   children: React.ReactNode;
+  onRendered?: () => void;
   handleParseError?: (message: string, error: katex.ParseError) => void;
 }
 
@@ -67,7 +68,7 @@ class LatexPreview extends React.PureComponent<Props> {
            * LaTeX delimiters. See:
            * https://github.com/KaTeX/KaTeX/issues/2300
            */
-          "\\hl": "\\colorbox{yellow}{$#1$}",
+          "\\hl": "\\colorbox{yellow}{$#1$}"
         },
         trust: (context: TrustContext) => {
           const PERMITTED_CLASSES = ["match-highlight"];
@@ -83,6 +84,9 @@ class LatexPreview extends React.PureComponent<Props> {
      */
     if (this._progressContainer !== null) {
       this._progressContainer.hidden = true;
+    }
+    if (this.props.onRendered) {
+      this.props.onRendered();
     }
   }
 

@@ -56,7 +56,6 @@
   /*
    * List element styling
    */
-
   li {
     margin-bottom: @medium * 0.5;
 
@@ -66,5 +65,45 @@
     .katex-display {
       margin: unset;
     }
+  }
+
+  /*
+   * Links within the document
+   */
+  .entity-link-span {
+    text-decoration: underline;
+    cursor: pointer;
+    color: @s2-link-default;
+  }
+}
+
+/**
+ * Formulas
+ */
+.defining-formula {
+  border: @border;
+  border-radius: @border-radius;
+  padding: @padding;
+
+  /*
+   * Interaction
+   */
+  &.clickable {
+    cursor: pointer;
+  }
+
+  /*
+   * Some equations will be massive, so they scroll.
+   */
+  max-height: 3rem;
+  overflow: auto;
+
+  /*
+   * Don't wrap the text, and center the span if it doesn't take up the whole width.
+   */
+  .formatted-text {
+    white-space: pre;
+    display: table;
+    margin: 0 auto;
   }
 }

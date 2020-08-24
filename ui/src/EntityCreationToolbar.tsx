@@ -93,6 +93,7 @@ export function createCreateEntityDataWithBoxes(
       defining_formulas: [],
       passages: [],
       mathml_near_matches: [],
+      snippets: [],
     } as Omit<SymbolAttributes, "version">;
     data.relationships = {
       sentence: { type: "sentence", id: null },
@@ -101,8 +102,8 @@ export function createCreateEntityDataWithBoxes(
       children: [],
       nickname_sentences: [],
       definition_sentences: [],
-      defining_formula_sentences: [],
-      passage_sentences: [],
+      defining_formula_equations: [],
+      snippet_sentences: [],
     } as Omit<SymbolRelationships, "version">;
   } else if (type === "sentence") {
     data.attributes = {

@@ -113,6 +113,7 @@ attributes = attributes
           defining_formulas: stringListAttribute,
           passages: stringListAttribute,
           mathml_near_matches: stringListAttribute,
+          snippets: stringListAttribute,
         }),
       },
       {
@@ -185,8 +186,8 @@ relationships = relationships
           parent: oneToOneRelationship("symbol"),
           nickname_sentences: oneToManyRelationship("sentence"),
           definition_sentences: oneToManyRelationship("sentence"),
-          defining_formula_sentences: oneToManyRelationship("sentence"),
-          passage_sentences: oneToManyRelationship("sentence"),
+          defining_formula_equations: oneToManyRelationship("equation"),
+          snippet_sentences: oneToManyRelationship("sentence"),
         }),
       },
     ],
