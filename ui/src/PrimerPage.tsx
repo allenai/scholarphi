@@ -232,7 +232,8 @@ class PrimerPage extends React.PureComponent<Props> {
             {symbols.length > 0 ? (
               <>
                 <p className="primer-page__header">
-                  Glossary of selected symbols (by order of appearance)
+                  Glossary of selected {terms.length === 0 && "terms and "}{" "}
+                  symbols (by order of appearance)
                 </p>
                 <div className="primer-page__glossary">
                   <ul>

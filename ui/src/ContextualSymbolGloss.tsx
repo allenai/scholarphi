@@ -503,7 +503,7 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
           alsoSee.length > 0 && (
             <div className="gloss__section">
               <p>
-                Definitions are available for{" "}
+                Definitions are also available for{" "}
                 {alsoSee.map((s, i) => (
                   <>
                     <SymbolLink
