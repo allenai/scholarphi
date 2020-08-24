@@ -53,6 +53,7 @@ class PrimerPage extends React.PureComponent<Props> {
     } else {
       viewer.insertBefore(this._element, viewer.children[0]);
     }
+    this.props.pdfViewer.container.scrollTop = 0;
   }
 
   componentWillUnmount() {
@@ -72,12 +73,6 @@ class PrimerPage extends React.PureComponent<Props> {
     this.props.handleSetGlossStyle(
       (event.target as HTMLInputElement).value as GlossStyle
     );
-  }
-
-  scrollIntoView(pageElement: HTMLElement | null) {
-    if (pageElement !== null) {
-      pageElement.scrollIntoView();
-    }
   }
 
   render() {
@@ -101,7 +96,7 @@ class PrimerPage extends React.PureComponent<Props> {
     const symbols = entities !== null ? glossarySymbols(entities) : [];
 
     return ReactDOM.createPortal(
-      <div ref={this.scrollIntoView} className="primer-page__contents">
+      <div className="primer-page__contents">
         <p className="primer-page__header">This paper is interactive.</p>
         <p>
           Sometimes it can be hard to understand a paper. The citations can be

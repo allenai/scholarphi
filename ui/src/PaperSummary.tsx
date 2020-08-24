@@ -7,11 +7,14 @@ import AuthorList from "./AuthorList";
 import FeedbackButton from "./FeedbackButton";
 import ChartIcon from "./icon/ChartIcon";
 import InfluentialCitationIcon from "./icon/InfluentialCitationIcon";
+import { getRemoteLogger } from "./logging";
 import { userLibraryUrl } from "./s2-url";
 import S2Link from "./S2Link";
 import { PaperId, UserLibrary } from "./state";
 import { Paper } from "./types/api";
 import { truncateText } from "./utils/ui";
+
+const logger = getRemoteLogger();
 
 interface Props {
   paper: Paper;
@@ -203,20 +206,30 @@ export class PaperSummary extends React.PureComponent<Props, State> {
           <Button
             startIcon={<CiteIcon />}
             className="paper-summary__action"
-            onClick={() => warnOfUnimplementedActionAndTrack("cite")}
+            onClick={() => {
+              warnOfUnimplementedActionAndTrack("cite");
+              logger.log("debug", "citation-action", {
+                type: "cite",
+                paper: this.props.paper,
+              });
+            }}
           >
             Cite
           </Button>
           {inLibrary
             ? this.renderLibraryButton("In Your Library", () => goToLibrary())
-            : this.renderLibraryButton("Save To Library", () =>
+            : this.renderLibraryButton("Save To Library", () => {
                 this.saveToLibrary(
                   userLibrary,
                   handleAddPaperToLibrary,
                   paper.s2Id,
                   paper.title
-                )
-              )}
+                );
+                logger.log("debug", "citation-action", {
+                  type: "save-to-library",
+                  paper: this.props.paper,
+                });
+              })}
         </div>
 
         <div className="paper-summary__section paper-summary__feedback">

@@ -110,24 +110,52 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
     if (entities.byId[id] !== undefined && isSymbol(entities.byId[id])) {
       this.setState({ activeSymbolId: id });
     }
+    logger.log("debug", "set-active-symbol", {
+      ...this.getLogContext(),
+      newActiveSymbol: this.props.entities.byId[id],
+    });
+  }
+
+  getLogContext() {
+    return {
+      currentSymbol: this.props.entities.byId[this.state.activeSymbolId],
+      originalSymbol: this.props.symbol,
+    };
   }
 
   onChangeDefinitionsOpen(_: any, expanded: boolean) {
     this.setState({ definitionsOpen: expanded });
+    logger.log("debug", "toggle-definitions", {
+      ...this.getLogContext(),
+      expanded,
+    });
   }
 
   onChangeFormulasOpen(_: any, expanded: boolean) {
     this.setState({ formulasOpen: expanded });
+    logger.log("debug", "toggle-formulas", {
+      ...this.getLogContext(),
+      expanded,
+    });
   }
 
   onChangeUsagesOpen(_: any, expanded: boolean) {
     this.setState({ usagesOpen: expanded });
+    logger.log("debug", "toggle-usages", {
+      ...this.getLogContext(),
+      expanded,
+    });
   }
 
   onClickShowMore() {
     this.setState((prevState) => {
       const prevDetail = prevState.detail;
       if (prevDetail === "nicknames" || prevDetail === "defined-here") {
+        logger.log("debug", "clicked-to-show-more", {
+          ...this.getLogContext(),
+          prevDetail,
+          newDetail: "definition",
+        });
         return {
           detail: "definition",
           definitionsOpen: true,
@@ -135,6 +163,11 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
           usagesOpen: prevState.formulasOpen,
         };
       } else if (prevDetail === "definition") {
+        logger.log("debug", "clicked-to-show-more", {
+          ...this.getLogContext(),
+          prevDetail,
+          newDetail: "everything",
+        });
         return {
           detail: "everything",
           formulasOpen: true,
@@ -276,13 +309,15 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
         className={classNames(
           "gloss",
           "symbol-definition-gloss",
+          "contextual-symbol-gloss",
           `mode-${detail}`
         )}
       >
         <div className="gloss__section">
           <p>
             <RichText>{tex || "<symbol>"}</RichText>
-            {detail === "defined-here" && ": Defined above (see highlights)."}
+            {detail === "defined-here" &&
+              ": Defined on the page above (see highlights)."}
             {detail !== "defined-here" &&
               nicknames.length === 0 &&
               definitions.length === 0 &&
@@ -304,6 +339,7 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
                         {groupedNicknames[n].map((use, j) => (
                           <React.Fragment key={use.sentenceId}>
                             <EntityLinkSpan
+                              id={`symbol-${symbol.id}-nickname-${i}-instance-${j}`}
                               entityId={use.sentenceId}
                               handleJumpToEntity={this.props.handleJumpToEntity}
                             >
@@ -319,7 +355,7 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
                     )}
                   </span>
                 ))}
-                .
+                . <VoteButton context={{ for: "nicknames" }} />
               </span>
             ) : null}
           </p>
@@ -352,10 +388,11 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
                     {/* <p className="gloss-section__label">
                       Ordered from first to last (skipping this page).
                     </p> */}
-                    <GlossSection startingRows={1}>
+                    <GlossSection id={`definitions-symbol-${symbol.id}`}>
                       {definitions.map((d, i) => (
                         <Snippet
                           key={i}
+                          id={`symbol-${symbol.id}-definition-${i}`}
                           sentence={definitionSentences[i]}
                           linkText={getLinkText(
                             originalSymbol,
@@ -387,10 +424,11 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
                   {/* <p className="gloss-section__label">
                     Ordered from first to last (skipping this page).
                   </p> */}
-                  <GlossSection>
+                  <GlossSection id={`formulas-symbol-${symbol.id}`}>
                     {formulas.map((f, i) => (
                       <DefiningFormula
                         key={i}
+                        id={`symbol-${symbol.id}-formula-${i}`}
                         equation={formulaEquations[i]}
                         linkText={getLinkText(
                           originalSymbol,
@@ -435,10 +473,11 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
                     Selected usages begin on the next page, then wrap back to
                     the start. See usages in context by looking for highlights.
                   </p> */}
-                  <GlossSection>
+                  <GlossSection id={`snippets-symbol-${symbol.id}`}>
                     {snippets.map((s, i) => (
                       <Snippet
                         key={i}
+                        id={`symbol-${symbol.id}-snippet-${i}`}
                         sentence={snippetSentences[i]}
                         linkText={getLinkText(
                           originalSymbol,
@@ -464,7 +503,7 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
           alsoSee.length > 0 && (
             <div className="gloss__section">
               <p>
-                Also see glossary entries for{" "}
+                Definitions are available for{" "}
                 {alsoSee.map((s, i) => (
                   <>
                     <SymbolLink
@@ -786,6 +825,7 @@ class SymbolLink extends React.PureComponent<SymbolLinkProps> {
 }
 
 interface EntityLinkSpanProps {
+  id: string;
   className?: string;
   entityId?: string | null;
   handleJumpToEntity: (entityId: string) => void;
@@ -798,6 +838,10 @@ class EntityLinkSpan extends React.PureComponent<EntityLinkSpanProps> {
   }
 
   onClick(event: React.MouseEvent<HTMLSpanElement>) {
+    logger.log("debug", "clicked-to-jump-to-context", {
+      id: this.props.id,
+      entityId: this.props.entityId,
+    });
     if (this.props.entityId) {
       this.props.handleJumpToEntity(this.props.entityId);
     }
@@ -818,6 +862,7 @@ class EntityLinkSpan extends React.PureComponent<EntityLinkSpanProps> {
 }
 
 interface DefiningFormulaProps {
+  id: string;
   equation?: Equation;
   linkText?: string | null;
   handleJumpToEquation?: (equationId: string) => void;
@@ -851,6 +896,9 @@ class DefiningFormula extends React.PureComponent<DefiningFormulaProps> {
   }
 
   onClick() {
+    logger.log("debug", "clicked-jump-to-defining-formula", {
+      equationId: this.props.equation,
+    });
     if (this.props.handleJumpToEquation && this.props.equation) {
       this.props.handleJumpToEquation(this.props.equation.id);
     }
@@ -872,6 +920,7 @@ class DefiningFormula extends React.PureComponent<DefiningFormulaProps> {
         {this.props.handleJumpToEquation && equation && this.props.linkText && (
           <p>
             <EntityLinkSpan
+              id={`${this.props.id}-text-link`}
               entityId={equation.id}
               handleJumpToEntity={this.props.handleJumpToEquation}
             >
@@ -888,6 +937,7 @@ class DefiningFormula extends React.PureComponent<DefiningFormulaProps> {
 }
 
 interface SnippetProps {
+  id: string;
   sentence?: Sentence;
   linkText?: string | null;
   handleJumpToSnippet?: (sentenceId: string) => void;
@@ -906,6 +956,7 @@ class Snippet extends React.PureComponent<SnippetProps> {
           <p>
             {" "}
             <EntityLinkSpan
+              id={`${this.props.id}-text-link`}
               entityId={sentence ? sentence.id : undefined}
               handleJumpToEntity={this.props.handleJumpToSnippet}
             >
@@ -928,6 +979,7 @@ function getFirstPage(entity: Entity) {
 }
 
 interface GlossSectionProps {
+  id: string;
   startingRows?: number;
 }
 
@@ -949,6 +1001,7 @@ class GlossSection extends React.PureComponent<
 
   onClickShowMore() {
     logger.log("debug", "Clicked on show more", {
+      id: this.props.id,
       currentVisibleRows: this.state.visibleRows,
     });
     this.setState((prevState) => ({
@@ -971,7 +1024,12 @@ class GlossSection extends React.PureComponent<
               <TableRow key={i}>
                 <TableCell className="gloss-entry__property">{c}</TableCell>
                 <TableCell className="gloss-entry__vote-button">
-                  <VoteButton context={{}} />
+                  <VoteButton
+                    context={{
+                      tableId: this.props.id,
+                      item: i,
+                    }}
+                  />
                 </TableCell>
               </TableRow>
             ))}
