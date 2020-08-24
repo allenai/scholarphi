@@ -74,6 +74,12 @@ class PrimerPage extends React.PureComponent<Props> {
     );
   }
 
+  scrollIntoView(pageElement: HTMLElement | null) {
+    if (pageElement !== null) {
+      pageElement.scrollIntoView();
+    }
+  }
+
   render() {
     const { pages, entities } = this.props;
 
@@ -95,7 +101,7 @@ class PrimerPage extends React.PureComponent<Props> {
     const symbols = entities !== null ? glossarySymbols(entities) : [];
 
     return ReactDOM.createPortal(
-      <div className="primer-page__contents">
+      <div ref={this.scrollIntoView} className="primer-page__contents">
         <p className="primer-page__header">This paper is interactive.</p>
         <p>
           Sometimes it can be hard to understand a paper. The citations can be

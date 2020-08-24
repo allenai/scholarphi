@@ -85,15 +85,20 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
 
   getDefaultDetailLevel(symbol: Symbol) {
     if (
-      symbol.attributes.is_definition === true ||
       symbol.relationships.definition_sentences.some(
         (r) => r.id !== null && r.id === symbol.relationships.sentence.id
+      ) ||
+      symbol.relationships.defining_formula_equations.some(
+        (r) => r.id !== null && r.id === symbol.relationships.equation.id
       )
     ) {
       return "defined-here";
     } else if (symbol.attributes.nicknames.length > 0) {
       return "nicknames";
-    } else if (symbol.attributes.definitions.length > 0) {
+    } else if (
+      symbol.attributes.definitions.length > 0 ||
+      symbol.attributes.defining_formulas.length > 0
+    ) {
       return "definition";
     } else {
       return "everything";
@@ -123,11 +128,26 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
     this.setState((prevState) => {
       const prevDetail = prevState.detail;
       if (prevDetail === "nicknames" || prevDetail === "defined-here") {
-        return { detail: "everything" };
+        return {
+          detail: "definition",
+          definitionsOpen: true,
+          formulasOpen: true,
+          usagesOpen: prevState.formulasOpen,
+        };
       } else if (prevDetail === "definition") {
-        return { detail: "everything" };
+        return {
+          detail: "everything",
+          formulasOpen: true,
+          usagesOpen: true,
+          definitionsOpen: prevState.definitionsOpen,
+        };
       }
-      return { detail: "everything" };
+      return {
+        detail: "everything",
+        formulasOpen: prevState.formulasOpen,
+        definitionsOpen: prevState.definitionsOpen,
+        usagesOpen: prevState.usagesOpen,
+      };
     });
   }
 
@@ -175,7 +195,13 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
       .map((r) => entities.byId[r.id as string])
       .filter((e) => e !== undefined)
       .filter(isSymbol)
-      .filter((s) => s.attributes.tex !== null);
+      .filter((s) => s.attributes.tex !== null)
+      .filter(
+        (s) =>
+          s.attributes.nicknames.length > 0 ||
+          s.attributes.definitions.length > 0 ||
+          s.attributes.defining_formulas.length > 0
+      );
 
     const relatedTexs = related.map((s) => s.attributes.tex) as string[];
     const relatedTexsByFrequency = uiUtils.sortByFrequency(relatedTexs);
@@ -255,15 +281,21 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
       >
         <div className="gloss__section">
           <p>
-            <RichText>{tex || "<symbol>"}</RichText>:{" "}
-            {detail === "defined-here" && "Defined above (see highlights)."}
+            <RichText>{tex || "<symbol>"}</RichText>
+            {detail === "defined-here" && ": Defined above (see highlights)."}
+            {detail !== "defined-here" &&
+              nicknames.length === 0 &&
+              definitions.length === 0 &&
+              formulas.length === 0 &&
+              snippets.length === 0 &&
+              ": No definitions found. Symbol search is enabled in the upper left corner of the screen."}
             {(detail === "nicknames" ||
               detail === "definition" ||
               detail === "everything") &&
             nicknames.length > 0 ? (
               <span>
-                called{" "}
-                {nicknamesOrdered.map((n, i) => (
+                : called{" "}
+                {nicknamesOrdered.slice(0, 3).map((n, i) => (
                   <span className="symbol-nickname" key={n}>
                     "{n}"{" "}
                     {groupedNicknames[n].length > 0 && (
@@ -280,7 +312,9 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
                             {j < groupedNicknames[n].length - 1 ? ", " : ")"}
                           </React.Fragment>
                         ))}
-                        {i < nicknamesOrdered.length - 1 ? ", " : ""}
+                        {i < Math.min(nicknamesOrdered.length, 3) - 1
+                          ? ", "
+                          : ""}
                       </span>
                     )}
                   </span>
@@ -288,34 +322,18 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
                 .
               </span>
             ) : null}
-            <span>
-              {notFoundString.length > 0 && (
-                <>
-                  {`There are no ${notFoundString} in this paper. `}
-                  {detail === "everything" &&
-                    !somethingKnown &&
-                    " Search for usages with the widget the upper left corner."}
-                </>
-              )}{" "}
-              {detail !== "everything" && (
-                <>
-                  <span
-                    onClick={this.onClickShowMore}
-                    className="gloss__show-more"
-                  >
-                    {detail === "defined-here"
-                      ? "Show other definitions, formulas, and exemplary usages"
-                      : detail === "nicknames"
-                      ? "Show definitions"
-                      : detail === "definition"
-                      ? "Show defining formulas and exemplary usages"
-                      : null}
-                  </span>
-                  .
-                </>
-              )}
-            </span>
           </p>
+          {(detail === "nicknames" || detail === "defined-here") &&
+            (definitions.length > 0 || formulas.length > 0) && (
+              <p>
+                <span
+                  onClick={this.onClickShowMore}
+                  className="gloss__show-more"
+                >
+                  Show definitions
+                </span>
+              </p>
+            )}
         </div>
 
         {(detail === "definition" || detail === "everything") &&
@@ -334,7 +352,7 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
                     {/* <p className="gloss-section__label">
                       Ordered from first to last (skipping this page).
                     </p> */}
-                    <GlossSection>
+                    <GlossSection startingRows={1}>
                       {definitions.map((d, i) => (
                         <Snippet
                           key={i}
@@ -354,7 +372,8 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
               </Accordion>
             </div>
           )}
-        {detail === "everything" && formulas.length > 0 ? (
+        {(detail === "everything" || detail === "definition") &&
+        formulas.length > 0 ? (
           <div className="gloss__section">
             <Accordion
               expanded={this.state.formulasOpen}
@@ -388,6 +407,19 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
             </Accordion>
           </div>
         ) : null}
+        {(((detail === "nicknames" || detail === "defined-here") &&
+          definitions.length === 0 &&
+          formulas.length === 0 &&
+          snippets.length > 0) ||
+          (detail === "definition" && snippets.length > 0)) && (
+          <div className="gloss__section">
+            <p>
+              <span onClick={this.onClickShowMore} className="gloss__show-more">
+                Show usages
+              </span>
+            </p>
+          </div>
+        )}
         {detail === "everything" && snippets.length > 0 ? (
           <div className="gloss__section">
             <Accordion
@@ -423,7 +455,12 @@ class ContextualSymbolGloss extends React.PureComponent<Props, State> {
             </Accordion>
           </div>
         ) : null}
-        {(detail === "definition" || detail === "everything") &&
+        {(detail === "definition" ||
+          detail === "everything" ||
+          ((detail === "defined-here" || detail === "nicknames") &&
+            snippets.length === 0 &&
+            definitions.length === 0 &&
+            formulas.length === 0)) &&
           alsoSee.length > 0 && (
             <div className="gloss__section">
               <p>
@@ -905,7 +942,7 @@ class GlossSection extends React.PureComponent<
   constructor(props: GlossSectionProps) {
     super(props);
     this.state = {
-      visibleRows: props.startingRows || 2,
+      visibleRows: props.startingRows || 1,
     };
     this.onClickShowMore = this.onClickShowMore.bind(this);
   }
