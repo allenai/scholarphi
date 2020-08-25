@@ -156,6 +156,14 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
       label: "MathML",
     },
     {
+      key: "diagram_label",
+      parentKey: "attributes",
+      type: "text",
+      is_list: false,
+      relation_type: null,
+      label: "Diagram Label",
+    },
+    {
       key: "nicknames",
       parentKey: "attributes",
       type: "text",
@@ -370,6 +378,13 @@ class EntityPropertyEditor extends React.PureComponent<Props, State> {
       } else {
         value = { type: property.relation_type, id: value };
       }
+    }
+
+    /*
+     * Convert single properties that have been changed to the empty string to 'null'.
+     */
+    if (!property.is_list && value === "") {
+      value = null;
     }
 
     /*

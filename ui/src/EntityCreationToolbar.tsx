@@ -89,6 +89,7 @@ export function createCreateEntityDataWithBoxes(
       mathml: null,
       tex: text ? `$${text}$` : null,
       nicknames: [],
+      diagram_label: null,
       is_definition: null,
       definitions: [],
       defining_formulas: [],

@@ -110,6 +110,8 @@ attributes = attributes
           mathml: stringAttribute,
           tex: stringAttribute,
           nicknames: stringListAttribute,
+          diagram_label: stringAttribute,
+          id_definition: booleanAttribute,
           definitions: stringListAttribute,
           defining_formulas: stringListAttribute,
           passages: stringListAttribute,

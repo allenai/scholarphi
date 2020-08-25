@@ -112,7 +112,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       symbolSearchEnabled: true,
       declutterEnabled: true,
       definitionPreviewEnabled: false,
-      equationDiagramsEnabled: false,
+      equationDiagramsEnabled: true,
       entityCreationEnabled: false,
       entityEditingEnabled: false,
       sentenceTexCopyOnOptionClickEnabled: false,
@@ -1146,6 +1146,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                             pageView={pageView}
                             entities={entities}
                             equation={e}
+                            handleSelectEntity={this.selectEntity}
                           />
                         ))}
                     {/* Canvas for annotating entities. */}

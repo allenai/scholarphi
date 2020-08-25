@@ -7,6 +7,7 @@ interface Props {
   width: number;
   height: number;
   text: string;
+  onClick?: () => void;
 }
 
 class DiagramLabel extends React.PureComponent<Props> {
@@ -15,6 +16,7 @@ class DiagramLabel extends React.PureComponent<Props> {
     return (
       <g className="diagram-label" transform={`translate(${x}, ${y})`}>
         <rect
+          onClick={this.props.onClick}
           className="diagram-label__background"
           width={width}
           height={height}
@@ -22,6 +24,7 @@ class DiagramLabel extends React.PureComponent<Props> {
           ry="5"
         />
         <text
+          onClick={this.props.onClick}
           className={this.props.textClassname}
           textAnchor="middle"
           dominantBaseline="middle"

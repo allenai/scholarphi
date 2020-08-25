@@ -172,6 +172,7 @@ export interface SymbolAttributes extends BaseEntityAttributes {
   mathml: string | null;
   mathml_near_matches: string[];
   is_definition: boolean | null;
+  diagram_label: string | null;
   /**
    * Nicknames for the symbol extracted from the text, no more than a few words long.
    */

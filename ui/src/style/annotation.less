@@ -90,7 +90,7 @@
   }
 
   &:not(.sentence-annotation) {
-    z-index: @other-annotation-z-index;
+    z-index: @default-annotation-z-index;
   }
 }
 
@@ -112,6 +112,16 @@
     border-radius: 10px;
     border: 1px solid black;
     animation: pulse 0.5s ease-in-out infinite alternate;
+
+    /*
+     * By default, annotations appear behind equation diagrams, which are meant to appear
+     * as overlays on top of the annotations. However, when an equation diagram and a
+     * symbol is meant to be clickable, its z-index needs to be higher than the z-index
+     * for the diagram.
+     */
+    &.in-selected-equation {
+      z-index: @equation-diagram-annotation-z-index;
+    }
   }
 
   @keyframes pulse {

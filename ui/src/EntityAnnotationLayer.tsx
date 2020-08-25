@@ -97,7 +97,18 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
         .map((id) => entities.byId[id])
         .filter((e) => e !== undefined)
         .filter(isSymbol)
-        .some((s) => s.relationships.equation.id === equationId)
+        .some((s) => s.relationships.equation.id === equationId) &&
+      [
+        "52763",
+        "52775",
+        "52783",
+        "52787",
+        "53007",
+        "53024",
+        "53039",
+        "53042",
+        "53050",
+      ].indexOf(equationId) !== -1
     );
   }
 
@@ -256,11 +267,11 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
             );
             const isTopLevel = selectors.isTopLevelSymbol(entity, entities);
             const equationId = entity.relationships.equation.id;
+            const inSelectedEquation = selectedEntities.some(
+              (e) => isEquation(e) && equationId === e.id
+            );
             const isTopLevelInSelectedEquation =
-              isTopLevel &&
-              selectedEntities.some(
-                (e) => isEquation(e) && equationId === e.id
-              );
+              isTopLevel && inSelectedEquation;
             const isSelectable =
               isSelectionChild ||
               isTopLevelInSelectedEquation ||
@@ -286,7 +297,6 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
               (e) => isSymbol(e) && selectors.isDescendant(e, entity, entities)
             );
             const isLeaf = entity.relationships.children.length === 0;
-            const descendants = selectors.descendants(entity.id, entities);
 
             /*
              * A symbol will be shown if it's either selectable, or if it's selected and
@@ -303,6 +313,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                   "selection-hint": showSelectionHint,
                   "leaf-symbol": isLeaf,
                   "ancestor-of-selection": isSelectionAncestor,
+                  "in-selected-equation": inSelectedEquation,
                 })}
                 pageView={pageView}
                 entity={entity}

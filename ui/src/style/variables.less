@@ -92,17 +92,20 @@
 
 /**
 * Z INDEXES
+* 100-based z-indexes are chosen to work with Material UI's z-indexes:
+* https://material-ui.com/customization/z-index/
 */
 @base-annotation-z-index: 1000;
 @sentence-annotation-z-index: @base-annotation-z-index;
 @equation-annotation-z-index: @sentence-annotation-z-index + 1;
-@equation-diagram-z-index: @equation-annotation-z-index + 1;
-@other-annotation-z-index: @equation-diagram-z-index + 1;
-@max-annotation-z-index: @other-annotation-z-index;
+@default-annotation-z-index: @equation-annotation-z-index + 1;
 
-@page-mask-z-index: @max-annotation-z-index + 1;
+@page-mask-z-index: @default-annotation-z-index + 1;
+@equation-diagram-z-index: @page-mask-z-index + 1;
+@equation-diagram-annotation-z-index: @equation-diagram-z-index + 1;
+
 @tooltip-z-index: @page-mask-z-index + 1;
-@toolbar-z-index: @page-mask-z-index + 1;
+@toolbar-z-index: @tooltip-z-index + 1;
 @drawer-close-button-z-index: 1200;
 
 /**
