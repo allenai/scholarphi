@@ -240,7 +240,9 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                         tex=symbol_tex,
                         context_tex=result.context_tex,
                         mathml=str(symbol.element),
-                        is_definition=symbol.defined or False
+                        is_definition=symbol.defined or False,
+                        relative_start=relative_start,
+                        relative_end=relative_end
                     ),
                 )
 

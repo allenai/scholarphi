@@ -351,7 +351,16 @@ def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
     for s in loaded_symbols:
         symbol_id = SymbolId(s.tex_path, s.equation_index, s.symbol_index)
         symbols_by_id[symbol_id] = Symbol(
-            tokens=[], start=s.start, end=s.end, tex=s.tex, mathml=s.mathml, children=[]
+            tokens=[],
+            start=s.start,
+            end=s.end,
+            tex=s.tex,
+            mathml=s.mathml,
+            children=[],
+            is_definition=s.is_definition,
+            equation=s.equation,
+            relative_start=s.relative_start,
+            relative_end=s.relative_end
         )
 
     for t in loaded_symbol_tokens:

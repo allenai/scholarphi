@@ -182,7 +182,11 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
     def process(self, item: LocationTask) -> Iterator[HueLocationInfo]:
 
         # Filter out entities that are empty (i.e., have nothing to color)
-        entities_filtered = [e for e in item.entities if e.start != e.end]
+        # A '-1' in the 'start' or 'end' field indicates that the entity does not occur in a
+        # specific place in the TeX, but rather a custom coloring technique based on other
+        # entity properties will be used. So entities that have a '-1' for their start and
+        # end should still be processed even though they appear to be zero-length.
+        entities_filtered = [e for e in item.entities if e.start == -1 or e.end == -1 or e.start != e.end]
 
         # Sort entities by the order in which they appear in the TeX. This allows the pipeline
         # to keep track of which ones appear first, when trying to recover from errors (i.e., when

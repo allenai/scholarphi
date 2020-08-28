@@ -1,8 +1,10 @@
 import logging
 import os.path
+from collections import defaultdict
 from typing import Callable, Dict, Iterator, Optional
 
 from common import directories, file_utils
+from common.colorize_tex import wrap_span
 from common.commands.database import DatabaseUploadCommand
 from common.s2_data import get_s2_id
 from common.types import (
@@ -19,7 +21,7 @@ from common.types import (
 from common.upload_entities import upload_entities
 from entities.sentences.types import Context
 
-from ..types import SymbolData
+from ..types import SymbolData, DefiningFormula
 
 
 class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
@@ -44,6 +46,8 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
             symbols_with_ids = file_utils.load_symbols(arxiv_id)
             if symbols_with_ids is None:
                 continue
+
+            symbols_by_id = {s.symbol_id: s.symbol for s in symbols_with_ids}
 
             boxes: Dict[SymbolId, BoundingBox] = {}
             boxes_path = os.path.join(
@@ -99,18 +103,54 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
                 )
                 context_data_missing = True
 
+            symbol_contexts = {}
+            mathml_contexts = defaultdict(list)
             if not context_data_missing:
-                contexts = {}
                 for context in file_utils.load_from_csv(contexts_path, Context):
                     tex_path = context.tex_path
                     equation_index, symbol_index = [
                         int(t) for t in context.entity_id.split("-")
                     ]
                     symbol_id = SymbolId(tex_path, equation_index, symbol_index)
-                    contexts[symbol_id] = context
+                    symbol_contexts[symbol_id] = context
+                    symbol = symbols_by_id[symbol_id]
+                    mathml_contexts[symbol.mathml].append(context)
+
+            symbol_formulas = {}
+            mathml_formulas = defaultdict(set)
+            for id_, symbol in symbols_by_id.items():
+                if (
+                    symbol.is_definition
+                    and symbol.equation is not None
+                    and symbol.relative_start is not None
+                    and symbol.relative_end is not None
+                ):
+                    highlighted = wrap_span(
+                        symbol.equation,
+                        symbol.relative_start,
+                        symbol.relative_end,
+                        before=r"\htmlClass{match-highlight}{",
+                        after="}",
+                        braces=True,
+                    )
+                    formula = DefiningFormula(
+                        tex=highlighted,
+                        tex_path=id_.tex_path,
+                        equation_id=id_.equation_index,
+                    )
+                    symbol_formulas[id_] = formula
+                    mathml_formulas[symbol.mathml].add(formula)
 
             yield SymbolData(
-                arxiv_id, s2_id, symbols_with_ids, boxes, contexts, matches,
+                arxiv_id,
+                s2_id,
+                symbols_with_ids,
+                boxes,
+                symbol_contexts,
+                symbol_formulas,
+                mathml_contexts,
+                mathml_formulas,
+                matches,
             )
 
     def process(self, _: SymbolData) -> Iterator[None]:
@@ -120,7 +160,10 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
         symbols_with_ids = item.symbols_with_ids
         boxes = item.boxes
         matches = item.matches
-        contexts = item.symbol_contexts
+        symbol_contexts = item.symbol_contexts
+        mathml_contexts = item.mathml_contexts
+        symbol_formulas = item.symbol_formulas
+        mathml_formulas = item.mathml_formulas
 
         symbol_ids_by_symbol_object_ids = {}
         for symbol_with_id in symbols_with_ids:
@@ -132,8 +175,38 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
 
         for symbol_with_id in symbols_with_ids:
             symbol = symbol_with_id.symbol
+            # TODO(andrewhead): move this filtering condition into 'parse_equation'
+            if symbol.tex in ["$|$", "|"]:
+                continue
+
             symbol_id = symbol_with_id.symbol_id
-            context = contexts.get(symbol_id)
+
+            # Get context and formula of the symbol, and other matching ones.
+            context = symbol_contexts.get(symbol_id)
+            matching_contexts = mathml_contexts.get(symbol.mathml, [])
+            other_context_texs = []
+            other_context_sentence_ids = []
+            for c in matching_contexts:
+                matching_sentence_id = f"{c.tex_path}-{c.sentence_id}"
+                if (
+                    matching_sentence_id not in other_context_sentence_ids
+                    # and c.sentence_id != context.sentence_id
+                ):
+                    other_context_texs.append(c.snippet)
+                    other_context_sentence_ids.append(matching_sentence_id)
+
+            formula = symbol_formulas.get(symbol_id)
+            matching_formulas = mathml_formulas.get(symbol.mathml, [])
+            other_formula_texs = []
+            other_formula_ids = []
+            for f in matching_formulas:
+                equation_id = f"{f.tex_path}-{f.equation_id}"
+                if equation_id not in other_formula_ids :
+                    # and (
+                    #   :  formula is None or equation_id != formula.equation_id
+                    # )
+                    other_formula_texs.append(f.tex)
+                    other_formula_ids.append(equation_id)
 
             box = boxes.get(symbol_id)
             if box is None:
@@ -146,10 +219,14 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
                 "mathml": symbol.mathml,
                 "mathml_near_matches": [
                     m.matching_mathml for m in matches[symbol.mathml]
-                ]
+                ],
+                # "snippet": context.snippet,
+                "snippets": other_context_texs,
+                "defining_formulas": other_formula_texs,
+                "is_definition": symbol.is_definition or False,
             }
-            if context is not None:
-                data["snippet"] = context.snippet
+            # if formula is not None:
+            #     data['formula'] = formula.tex
 
             create_symbol_id_string: Callable[[SymbolId], str] = (
                 lambda sid: f"{sid.tex_path}-{sid.equation_index}-{sid.symbol_index}"
@@ -189,6 +266,25 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
                 "sentence": EntityReference(type_="sentence", id_=sentence_id)
                 if sentence_id is not None
                 else EntityReference(type_="sentence", id_=None),
+                "defining_formula_equations": [
+                    EntityReference(type_="equation", id_=id_)
+                    for id_ in other_formula_ids
+                ],
+                "snippet_sentences": [
+                    EntityReference(type_="sentence", id_=id_)
+                    for id_ in other_context_sentence_ids
+                ],
+                # "snippet_sentence": EntityReference(
+                #     type_="sentence", id_=f"{symbol_id.tex_path}-f{context.sentence_id}"
+                # )
+                # if context is not None
+                # else None,
+                # "formula_equation": EntityReference(
+                #     type_="equation",
+                #     id_=f"{symbol_id.tex_path}-f{formula.equation_id}"
+                #     if formula is not None
+                #     else None,
+                # ),
             }
 
             entity_information = EntityInformation(

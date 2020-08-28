@@ -308,6 +308,11 @@ class Symbol(NamedTuple):
     actually a list of all other symbols for which this is the closest ancestor.
     """
 
+    is_definition: bool = False
+    equation: Optional[str] = None
+    relative_start: Optional[int] = None
+    relative_end: Optional[int] = None
+
 
 class SymbolWithId(NamedTuple):
     symbol_id: SymbolId
@@ -353,6 +358,9 @@ class SerializableSymbol(SerializableEntity, SymbolId):
     """
     Whether this appearance of the symbol is a definition of the symbol.
     """
+
+    relative_start: int
+    relative_end: int
 
 
 @dataclass(frozen=True)
