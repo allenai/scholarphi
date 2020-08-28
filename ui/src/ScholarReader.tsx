@@ -112,7 +112,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       symbolSearchEnabled: true,
       declutterEnabled: true,
       definitionPreviewEnabled: false,
-      equationDiagramsEnabled: false,
+      equationDiagramsEnabled: true,
       entityCreationEnabled: false,
       entityEditingEnabled: false,
       sentenceTexCopyOnOptionClickEnabled: false,
@@ -138,6 +138,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.setTextSelection = this.setTextSelection.bind(this);
     this.selectEntity = this.selectEntity.bind(this);
     this.selectEntityAnnotation = this.selectEntityAnnotation.bind(this);
+    this.jumpToEntity = this.jumpToEntity.bind(this);
     this.clearEntitySelection = this.clearEntitySelection.bind(this);
 
     this.setMultiselectEnabled = this.setMultiselectEnabled.bind(this);
@@ -831,6 +832,13 @@ class ScholarReader extends React.PureComponent<Props, State> {
         top + SCROLL_OFFSET_Y,
       ],
     });
+
+    if (!this._backButtonHintShown) {
+      this.showSnackbarMessage(
+        "Press the 'Back' button to return to your previous location."
+      );
+      this._backButtonHintShown = true;
+    }
   }
 
   render() {
@@ -1123,6 +1131,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                         }
                         handleShowSnackbarMessage={this.showSnackbarMessage}
                         handleAddPaperToLibrary={this.addToLibrary}
+                        handleJumpToEntity={this.jumpToEntity}
                       />
                     )}
                     {/* Equation diagram overlays. */}
@@ -1137,6 +1146,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                             pageView={pageView}
                             entities={entities}
                             equation={e}
+                            handleSelectEntity={this.selectEntity}
                           />
                         ))}
                     {/* Canvas for annotating entities. */}
@@ -1160,6 +1170,8 @@ class ScholarReader extends React.PureComponent<Props, State> {
       </>
     );
   }
+
+  private _backButtonHintShown: boolean = false;
 }
 
 async function waitForPDFViewerInitialization() {

@@ -56,8 +56,8 @@
   }
 
   &.find-selection {
-    background-color: green;
-    opacity: 0.6;
+    background-color: green !important;
+    opacity: 0.6 !important;
   }
 }
 
@@ -85,8 +85,12 @@
     z-index: @sentence-annotation-z-index;
   }
 
+  &.equation-annotation {
+    z-index: @equation-annotation-z-index;
+  }
+
   &:not(.sentence-annotation) {
-    z-index: @other-annotation-z-index;
+    z-index: @default-annotation-z-index;
   }
 }
 
@@ -99,14 +103,25 @@
     background: none !important;
     padding: @padding / 2;
     margin: -@padding / 2;
-    border: 4px solid @highlight-color;
+    border: 4px solid rgba(0, 128, 0, 0.5);
     border-radius: @border-radius;
   }
 
   &.selection-hint {
-    background-color: rgba(255, 255, 0, 1);
+    background-color: @highlight-color;
     border-radius: 10px;
+    border: 1px solid black;
     animation: pulse 0.5s ease-in-out infinite alternate;
+
+    /*
+     * By default, annotations appear behind equation diagrams, which are meant to appear
+     * as overlays on top of the annotations. However, when an equation diagram and a
+     * symbol is meant to be clickable, its z-index needs to be higher than the z-index
+     * for the diagram.
+     */
+    &.in-selected-equation {
+      z-index: @equation-diagram-annotation-z-index;
+    }
   }
 
   @keyframes pulse {
@@ -123,8 +138,9 @@
  * Equation annotations
  */
 .equation-annotation {
-  &.selected {
+  &.annotation-selected {
     pointer-events: none;
     background: none !important;
+    border-bottom: none !important;
   }
 }

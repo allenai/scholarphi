@@ -62,7 +62,7 @@ class PageMask extends React.PureComponent<Props> {
           width={width}
           height={height}
           fill="white"
-          opacity={0.5}
+          opacity={0.6}
           mask={`url(#${maskId})`}
         />
         {highlight !== undefined

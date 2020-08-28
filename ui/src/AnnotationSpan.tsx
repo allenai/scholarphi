@@ -100,11 +100,14 @@ export class AnnotationSpan extends React.PureComponent<Props> {
     if (this.props.glossContent !== null) {
       if (this.props.glossStyle === "tooltip" && this.props.selected === true) {
         return (
-          <Tooltip
-            pageView={this.props.pageView}
-            anchor={this.props.location}
-            content={this.props.glossContent}
-          />
+          <>
+            {span}
+            <Tooltip
+              pageView={this.props.pageView}
+              anchor={this.props.location}
+              content={this.props.glossContent}
+            />
+          </>
         );
       } else if (
         this.props.glossStyle === "sidenote" &&

@@ -14,6 +14,7 @@ interface Props {
    * Text to render is passed in as a child. Should be either a string or a single span.
    */
   children: React.ReactNode;
+  onRendered?: () => void;
   handleParseError?: (message: string, error: katex.ParseError) => void;
 }
 
@@ -56,6 +57,20 @@ class LatexPreview extends React.PureComponent<Props> {
             display: true,
           },
         ],
+        preProcess: (math: string) => {
+          return (
+            math
+              /*
+               * Replace ampersands, which frequently appear in 'align' environments but which
+               * KaTeX doesn't know how to parse.
+               */
+              .replace(/&/g, " ")
+              /*
+               * Remove macros like labels that KaTeX doesn't know how to parse.
+               */
+              .replace(/\\label\{[^}]+\}/g, "")
+          );
+        },
         errorCallback: (message: string, error: katex.ParseError) => {
           if (this.props.handleParseError !== undefined) {
             this.props.handleParseError(message, error);
@@ -68,6 +83,11 @@ class LatexPreview extends React.PureComponent<Props> {
            * https://github.com/KaTeX/KaTeX/issues/2300
            */
           "\\hl": "\\colorbox{yellow}{$#1$}",
+          /*
+           * Remove macros that KaTeX doesn't know how to parse.
+           */
+          "\\mathds": "",
+          "\\nonumber": "",
         },
         trust: (context: TrustContext) => {
           const PERMITTED_CLASSES = ["match-highlight"];
@@ -83,6 +103,9 @@ class LatexPreview extends React.PureComponent<Props> {
      */
     if (this._progressContainer !== null) {
       this._progressContainer.hidden = true;
+    }
+    if (this.props.onRendered) {
+      this.props.onRendered();
     }
   }
 
