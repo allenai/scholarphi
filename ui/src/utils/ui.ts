@@ -335,7 +335,7 @@ export function sortByFrequency(strings: string[]) {
   indexes.sort((i1, i2) => {
     const s1 = countsKeys[i1];
     const s2 = countsKeys[i2];
-    return counts[s1] - counts[s2];
+    return counts[s2] - counts[s1];
   });
 
   return indexes.map((i) => countsKeys[i]);

@@ -59,6 +59,7 @@ interface Props {
    * Store of entities that contains all symbols that belong to the equation.
    */
   entities: Entities;
+  handleSelectEntity(entityId: string): void;
 }
 
 interface State {
@@ -110,7 +111,7 @@ class EquationDiagram extends React.PureComponent<Props, State> {
       .filter(
         (s) =>
           selectors.outerBoundingBox(s, pageNumber) !== null &&
-          selectors.nickname(s) !== null &&
+          selectors.diagramLabel(s) !== null &&
           s.attributes.tex !== null
       )
       .map((s) => {
@@ -123,7 +124,7 @@ class EquationDiagram extends React.PureComponent<Props, State> {
           id: s.id,
           groupId: s.attributes.tex as string,
           location: { left, top, width, height },
-          label: selectors.nickname(s) as string,
+          label: selectors.diagramLabel(s) as string,
         } as Feature;
       });
 
@@ -216,21 +217,6 @@ class EquationDiagram extends React.PureComponent<Props, State> {
       >
         {labels.map((l) => (
           <g key={l.feature.id} className="equation-diagram__labeled-feature">
-            <rect
-              className="equation-diagram__feature"
-              x={l.feature.location.left - FEATURE_MARGIN}
-              y={l.feature.location.top - FEATURE_MARGIN}
-              width={l.feature.location.width + FEATURE_MARGIN * 2}
-              height={l.feature.location.height + FEATURE_MARGIN * 2}
-            />
-            <DiagramLabel
-              textClassname="equation-diagram__label__text"
-              x={l.left}
-              y={l.top}
-              width={l.width}
-              height={l.height}
-              text={l.text}
-            />
             <g className="equation-diagram__leader">
               <path
                 className="leader-background"
@@ -240,7 +226,24 @@ class EquationDiagram extends React.PureComponent<Props, State> {
                 className="leader-foreground"
                 d={createLeader(l, FEATURE_MARGIN)}
               />
+              <rect
+                onClick={() => this.props.handleSelectEntity(l.feature.id)}
+                className="equation-diagram__feature"
+                x={l.feature.location.left - FEATURE_MARGIN}
+                y={l.feature.location.top - FEATURE_MARGIN}
+                width={l.feature.location.width + FEATURE_MARGIN * 2}
+                height={l.feature.location.height + FEATURE_MARGIN * 2}
+              />
             </g>
+            <DiagramLabel
+              textClassname="equation-diagram__label__text"
+              x={l.left}
+              y={l.top}
+              width={l.width}
+              height={l.height}
+              text={l.text}
+              onClick={() => this.props.handleSelectEntity(l.feature.id)}
+            />
           </g>
         ))}
       </svg>

@@ -93,6 +93,20 @@ def generate_hues() -> Iterator[float]:
     return
 
 
+def wrap_span(
+    tex: str, start: int, end: int, before: str, after: str, braces: bool = False
+) -> str:
+    return (
+        tex[:start]
+        + ("{" if braces else "")
+        + before
+        + tex[start:end]
+        + after
+        + ("}" if braces else "")
+        + tex[end:]
+    )
+
+
 def insert_color_in_tex(
     tex: str, entity_id: str, hue: float, start: int, end: int, braces: bool = False
 ) -> str:
@@ -101,14 +115,13 @@ def insert_color_in_tex(
     This is particularly helpful for coloring symbols, so that single letters that may be an
     argument of a macro will still be considered as just one argument to that macro.
     """
-    return (
-        tex[:start]
-        + ("{" if braces else "")
-        + _get_color_start_tex(hue)
-        + tex[start:end]
-        + _get_color_end_tex(entity_id)
-        + ("}" if braces else "")
-        + tex[end:]
+    return wrap_span(
+        tex,
+        start,
+        end,
+        _get_color_start_tex(hue),
+        _get_color_end_tex(entity_id),
+        braces,
     )
 
 

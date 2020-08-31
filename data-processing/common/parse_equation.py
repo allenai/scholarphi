@@ -1,9 +1,9 @@
-import copy
+from enum import Enum
 import re
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, Tuple, Union
 
-from bs4 import BeautifulSoup, Tag
+from bs4 import BeautifulSoup, NavigableString, Tag
 
 from common.types import Token
 
@@ -15,21 +15,58 @@ invisible and we wouldn't want to detect it anyway.
 """
 
 
-@dataclass(frozen=True)
+class NodeType(Enum):
+    IDENTIFIER = "identifier"
+    FUNCTION = "function"
+    LEFT_PARENS = "left-parens"
+    RIGHT_PARENS = "right-parens"
+    DEFINITION_OPERATOR = "definition-operator"
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__, self.name}"
+
+
+@dataclass
 class Node:
-    " Node for a 'symbol' in a parse tree for an equation. "
+    " Node for a parse tree for an equation. "
+
+    type_: NodeType
+    " A tag describing the role of the node in the equation. "
 
     element: Tag
     " BeautifulSoup element. Use 'str(node.soup)' to see the cleaned MathML for this node. "
 
     children: List["Node"]
-    " List of all symbols that are a child of this one. "
+    " List of all nodes that are a child of this one. "
 
     tokens: List[Token]
     """
     List of all tokens that belong to this symbol. It's tokens in this list that will be colorized
     to determine the bounding box of the symbol.
     """
+
+    defined: Optional[bool] = None
+    """
+    Whether this node is being defined (i.e., whether it is the top-level symbol) on the left side
+    of an equation with an equality. Should only be set to true for nodes that
+    corresponds to symbols (e.g., identifiers, functions).
+    """
+
+    @property
+    def is_symbol(self) -> bool:
+        """
+        Whether this node should be considered a 'symbol', i.e., an entity in an equation that
+        has meaning and needs an explanation.
+        """
+        return self.type_ in [NodeType.IDENTIFIER, NodeType.FUNCTION]
+
+    @property
+    def child_symbols(self) -> List["Node"]:
+        """
+        Get all child symbols of this node, excluding nodes that serve a syntactic role
+        used mostly just for parsing, like parentheses.
+        """
+        return list(filter(lambda c: c.is_symbol, self.children))
 
 
 def parse_equation(mathml: str) -> List[Node]:
@@ -49,7 +86,7 @@ def parse_equation(mathml: str) -> List[Node]:
     while len(symbols_to_visit) > 0:
         symbol = symbols_to_visit.pop(0)
         all_symbols.append(symbol)
-        symbols_to_visit.extend(symbol.children)
+        symbols_to_visit.extend(symbol.child_symbols)
 
     return all_symbols
 
@@ -57,7 +94,7 @@ def parse_equation(mathml: str) -> List[Node]:
 @dataclass(frozen=True)
 class ParseResult:
 
-    symbols: List[Node]
+    nodes: List[Node]
     """
     Top-level symbol nodes found by parsing an element. These are nodes that can be considered
     "child symbols", if you are parsing the child tag of the parent.
@@ -74,6 +111,11 @@ class ParseResult:
     """
     List of all tokens found in the subtree starting at the parsed element.
     """
+
+    @property
+    def symbols(self) -> List[Node]:
+        " Get a list of all top-level symbol nodes parsed from the MathML. "
+        return [n for n in self.nodes if n.is_symbol]
 
 
 def parse_element(element: Tag) -> ParseResult:
@@ -104,45 +146,68 @@ def parse_element(element: Tag) -> ParseResult:
         else:
             soup_children = merged_children
 
-    # Extract the tokens that are uniquely defined in this element.
-    tokens = _extract_tokens(element)
+    # Parse each child element. As of BeautifulSoup version 4.8.2, the 'element.children' property
+    # ensures that children are visited in order.
+    # At the same time, create a generic MathML element that can be returned from this parse
+    # function if none of the type-specific node parsers can create an element.
+    children: List[Node] = []
+    tokens: List[Token] = []
+    clean_element = create_empty_tag_copy(element)
 
-    # Create a new BeautifulSoup element that will be a cleaned clone of the input element.
-    # Remove children from the element. Cleaned up children will be added shortly.
-    clean_element = copy.copy(element)
-    _remove_s2_annotations(clean_element)
-    clean_element.clear()
-
-    # Visit each of the child nodes. Iterate over 'element' instead of 'clean_element', as the
-    # children will have been removed from 'clean_element' As of BeautifulSoup version 4.8.2,
-    # children are visited in order.
-    child_symbols = []
     for child in soup_children:
         if isinstance(child, Tag):
+
+            # Parse symbols from the child.
             child_parse_result = parse_element(child)
-            child_symbols.extend(child_parse_result.symbols)
+            children.extend(child_parse_result.nodes)
+            tokens.extend(child_parse_result.tokens)
             if child_parse_result.element is not None:
                 clean_element.append(child_parse_result.element)
 
-            # Register the tokens found in the child elements as being part of this symbol.
-            tokens.extend(child_parse_result.tokens)
+        # If the child isn't a tag, it's probably a string (like the text 'x' that's a
+        # child of the '<mi>x</mi>' element). Strings must be added to the cleaned element,
+        # to contain the text for identifiers and relevant operators. New NavigableStrings
+        # are created for text, rather than appending the existing string to the element,
+        # as BeautifulSoup only allows a NavigableString to be associated with one element.
+        elif isinstance(child, NavigableString) and not child.isspace():
+            clean_element.append(NavigableString(str(child)))
 
-        # If the child is not a tag, it's probably a string (like 'x' in <mi>x</mi>). We need
-        # to make sure these are getting added to the element_clone too.
-        elif isinstance(child, str) and not child.isspace():
-            clean_element.append(child)
+    # Attempt to parse nodes of specific types from the current element. Node type-specific
+    # parsers are responsible returning a parse result, which includes a cleaned MathML element
+    # stripped of position annotations. Type-specific parsers may take in:
+    # * the original element, if they need to extract tokens from the element;
+    # * the cleaned element, if they want to parse a cleaned-up version of the MathML;
+    # * the list of all tokens parsed in the parses of child elements, because some tokens will have been found that
+    #   don't have a corresponding node in 'children' (for instance, numbers, etc.).
+    original_element = element
+    identifier = parse_identifier(clean_element, original_element, children, tokens)
+    if identifier is not None:
+        return identifier
+    functions = parse_functions(clean_element, children, tokens)
+    if functions is not None:
+        children = functions.nodes
+    parens = parse_parens(clean_element, original_element)
+    if parens is not None:
+        return parens
+    definition_operator = parse_definition_operator(clean_element, original_element)
+    if definition_operator is not None:
+        return definition_operator
 
-    # If the element's tag indicates the element is a symbol, return a new symbol node, setting its
-    # children to the symbols found in the children.
-    if _is_symbol(clean_element):
-        return_symbols = [
-            Node(children=child_symbols, element=clean_element, tokens=tokens)
-        ]
-    # Otherwise, return the list of symbols found in the children.
-    else:
-        return_symbols = child_symbols
+    # Now that the sequence of children has been transformed by sanitizers and parsers, check
+    # to see if any of the children in the sequence have been defined.
+    for i, c in enumerate(children):
+        if c.type_ == NodeType.DEFINITION_OPERATOR and i >= 1:
+            previous_child = children[i - 1]
+            if previous_child.is_symbol and not _appears_in_operator_argument(
+                original_element
+            ):
+                previous_child.defined = True
 
-    return ParseResult(return_symbols, clean_element, tokens)
+    # If a specific type of node can't be parsed, then return a generic type of node,
+    # comprising of all the children and tokens found in this element.
+    tokens = list({t for s in children for t in s.tokens})
+    tokens.extend(_extract_tokens(element))
+    return ParseResult(children, clean_element, tokens)
 
 
 def clean_row(elements: List[Tag]) -> List[Tag]:
@@ -168,11 +233,11 @@ def clean_row(elements: List[Tag]) -> List[Tag]:
             e.name == "mi"
             and e.text in DERIVATIVE_GLYPHS
             # Is the next element a symbol?
-            and (i < len(elements) - 1 and _is_symbol(elements[i + 1]))
+            and (i < len(elements) - 1 and _is_identifier(elements[i + 1]))
             # Is the element after that either not a symbol, or another derivative sign?
             and (
                 i == len(elements) - 2
-                or not _is_symbol(elements[i + 2])
+                or not _is_identifier(elements[i + 2])
                 or elements[i + 2].text in DERIVATIVE_GLYPHS
             )
         )
@@ -183,8 +248,8 @@ def clean_row(elements: List[Tag]) -> List[Tag]:
     return elements
 
 
-def _is_symbol(element: Tag) -> bool:
-    " Determine whether an element should be parsed as a symbol. "
+def _is_identifier(element: Tag) -> bool:
+    " Determine whether an element represents identifier. "
 
     if element.name == "mi":
         # Exclude special math symbols typically used as constants.
@@ -199,12 +264,149 @@ def _is_symbol(element: Tag) -> bool:
         return (
             len(child_elements) >= 1
             and isinstance(child_elements[0], Tag)
-            and _is_symbol(child_elements[0])
+            and _is_identifier(child_elements[0])
         )
     if element.name == "mtext" and re.match(r"\w+", element.text):
         return True
 
     return False
+
+
+def parse_identifier(
+    clean_element: Tag, original_element: Tag, children: List[Node], tokens: List[Token]
+) -> Optional[ParseResult]:
+    " Attempt to parse an element as an identifier. "
+
+    if _is_identifier(clean_element):
+
+        tokens = list(tokens)
+        tokens.extend(_extract_tokens(original_element))
+
+        node = Node(NodeType.IDENTIFIER, clean_element, children, tokens)
+        return ParseResult([node], clean_element, tokens)
+
+    return None
+
+
+def parse_functions(
+    element: Tag, children: List[Node], tokens: List[Token]
+) -> Optional[ParseResult]:
+    """
+    Attempt to parse an row of children into functions. Because this function processes rows of
+    elements ('mrow'), it might find multiple functions, for example if two functions are
+    multiplied by each other (e.g., 'f(x)g(x)').
+    """
+
+    if not element.name == "mrow":
+        return None
+
+    new_children = list(children)
+    function_ranges: List[Tuple[int, int]] = []
+    start = -1
+    end = -1
+    parens_depth = 0
+
+    # Detect ranges of children than should be combined into functions.
+    for i, child in enumerate(children):
+
+        if parens_depth == 0:
+            # Each identifier found in a row could be an identifier for a function,
+            # so the last potential function identifier is saved.
+            if child.type_ is NodeType.IDENTIFIER:
+                start = i
+                continue
+            # Start parsing a function when a left parentheses if found.
+            elif child.type_ is NodeType.LEFT_PARENS:
+                if start != -1:
+                    parens_depth += 1
+                    continue
+            # If this is not an identifier or a left parens, don't consider the
+            # current child as a starting point for making a function.
+            else:
+                start = -1
+
+        if parens_depth > 0:
+            if child.type_ is NodeType.RIGHT_PARENS:
+                parens_depth -= 1
+                if parens_depth == 0:
+                    end = i
+                    function_ranges.append((start, end))
+                    start = -1
+                    end = -1
+
+    # Nest children that appear to be parts of function in new function nodes.
+    function_created = False
+    for r_start, r_end in reversed(function_ranges):
+        if r_start == -1 or r_end == -1:
+            continue
+
+        func_children = children[r_start : r_end + 1]
+        func_tokens = [t for c in func_children for t in c.tokens]
+
+        # Create synthetic MathML row for the function.
+        func_element = create_empty_tag_copy(element)
+        add_elements = False
+        for child_element in element.children:
+            if child_element is func_children[0].element:
+                add_elements = True
+            if add_elements:
+                func_element.append(clone_element(child_element))
+            if child_element is func_children[-1].element:
+                add_elements = False
+                break
+
+        func_node = Node(NodeType.FUNCTION, func_element, func_children, func_tokens)
+        new_children = new_children[:r_start] + [func_node] + new_children[r_end + 1 :]
+        function_created = True
+
+    if function_created:
+        return ParseResult(new_children, element, tokens)
+    return None
+
+
+def parse_parens(clean_element: Tag, original_element: Tag) -> Optional[ParseResult]:
+    if clean_element.name == "mo" and clean_element.text in ["(", ")"]:
+
+        tokens = _extract_tokens(original_element)
+
+        node = Node(
+            type_=NodeType.LEFT_PARENS
+            if clean_element.text == "("
+            else NodeType.RIGHT_PARENS,
+            element=clean_element,
+            children=[],
+            tokens=tokens,
+        )
+        return ParseResult([node], clean_element, tokens)
+
+    return None
+
+
+def parse_definition_operator(
+    clean_element: Tag, original_element: Tag
+) -> Optional[ParseResult]:
+    EQUATION_SIGNS = [
+        "=",
+        "≈",
+        "≥",
+        "≤",
+        "<",
+        ">",
+        "∈",
+        "∼",
+        "≜"
+    ]
+    if clean_element.name != "mo" or clean_element.text not in EQUATION_SIGNS:
+        return None
+
+    tokens = _extract_tokens(original_element)
+    node = Node(
+        type_=NodeType.DEFINITION_OPERATOR,
+        element=clean_element,
+        children=[],
+        tokens=tokens,
+    )
+    return ParseResult([node], clean_element, tokens)
 
 
 def _extract_tokens(element: Tag) -> List[Token]:
@@ -248,9 +450,31 @@ def _is_token(element: Tag) -> bool:
     # The prime symbol (e.g., "x'").
     if element.name == "mo" and element.text in ["′", "'"]:
         return True
+    # Parentheses, for functions.
+    if element.name == "mo" and element.text in ["(", ")"]:
+        return True
     # Text spans comprising only a single word.
     if element.name == "mtext" and re.match(r"\w+", element.text):
         return True
+
+    return False
+
+
+def _appears_in_operator_argument(element: Tag) -> bool:
+    """
+    Detect whether this element appearns in an argument to an operator. Used to determine, for instance,
+    whether a definition appears in the argument of a summation.
+    """
+    parent = element
+    while parent is not None:
+        parent_children = [c for c in parent.children if isinstance(c, Tag)]
+        if (
+            parent.name in ["msubsup", "msub", "msup"]
+            and len(parent_children) > 0
+            and parent_children[0].name == "mo"
+        ):
+            return True
+        parent = parent.parent
 
     return False
 
@@ -269,6 +493,35 @@ def _remove_s2_annotations(element: Tag) -> None:
         for key in list(element.attrs.keys()):
             if key.startswith("s2:"):
                 del element.attrs[key]
+
+
+def create_empty_tag_copy(element: Tag) -> Tag:
+    """
+    Create a new BeautifulSoup element that will be a cleaned (empty) clone of the element.
+    Create the clone by creating a new tag, rather than using 'copy.copy', because edits made
+    to copies of elements will modify the contents of the original element, which may be in
+    use by other parts of the code.
+    """
+    clean_element = create_element(element.name)
+    for key, value in element.attrs.items():
+        clean_element.attrs[key] = value
+
+    # Position markers are removed from the element to make it possible to do similarity
+    # comparisons between nodes based on their MathML alone.
+    _remove_s2_annotations(clean_element)
+
+    return clean_element
+
+
+def clone_element(element: Union[Tag, NavigableString]) -> Union[Tag, NavigableString]:
+    " Create a deep copy of an element from a BeautifulSoup tree. "
+    if isinstance(element, Tag):
+        new_element = create_empty_tag_copy(element)
+        for child in element.children:
+            new_element.append(clone_element(child))
+        return new_element
+
+    return NavigableString(str(element))
 
 
 def create_element(tag_name: str) -> Tag:

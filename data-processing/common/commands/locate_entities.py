@@ -6,7 +6,6 @@ from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from collections import deque
 from dataclasses import dataclass
-from enum import Enum
 from typing import Any, Callable, Deque, Dict, Iterator, List, Optional, Type
 
 from common import directories, file_utils
@@ -182,8 +181,21 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
 
     def process(self, item: LocationTask) -> Iterator[HueLocationInfo]:
 
-        entities_by_id = {e.id_: e for e in item.entities}
-        to_process = deque([e.id_ for e in item.entities])
+        # Filter out entities that are empty (i.e., have nothing to color)
+        # A '-1' in the 'start' or 'end' field indicates that the entity does not occur in a
+        # specific place in the TeX, but rather a custom coloring technique based on other
+        # entity properties will be used. So entities that have a '-1' for their start and
+        # end should still be processed even though they appear to be zero-length.
+        entities_filtered = [e for e in item.entities if e.start == -1 or e.end == -1 or e.start != e.end]
+
+        # Sort entities by the order in which they appear in the TeX. This allows the pipeline
+        # to keep track of which ones appear first, when trying to recover from errors (i.e., when
+        # trying to detect which entity in a batch may have shifted to cause many others to move.)
+        entities_ordered = sorted(entities_filtered, key=lambda e: e.start)
+
+        # Construct a queue of entities to detect.
+        entities_by_id = {e.id_: e for e in entities_ordered}
+        to_process = deque([e.id_ for e in entities_ordered])
         to_process_alone: Deque[str] = deque()
 
         def next_batch() -> List[str]:
@@ -219,6 +231,17 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                 colorized_tex = custom_colorize_func(
                     item.file_contents.contents, entities, self.get_colorize_options()
                 )
+                if len(colorized_tex.entity_hues) == 0:
+                    logging.info(  # pylint: disable=logging-not-lazy
+                        "Custom colorization function colored nothing for entity batch %d of "
+                        + "paper %s when coloring file %s. The function probably decide there was "
+                        + "nothing to do for this file, and will hopefullly colorize these "
+                        + "entities in another file. Skipping this batch for this file.",
+                        batch_index,
+                        item.arxiv_id,
+                        item.file_contents.path,
+                    )
+                    continue
             else:
                 colorized_tex = colorize_entities(
                     item.file_contents.contents, entities, self.get_colorize_options()
@@ -280,18 +303,36 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                     item.arxiv_id, compiled_tex_dir
                 )
                 if last_colorized_entity_id is not None:
+                    problem_ids = [last_colorized_entity_id]
+                    if batch.index(last_colorized_entity_id) < len(batch) - 1:
+                        problem_ids += [batch[batch.index(last_colorized_entity_id) + 1]]
+
+                    if len(batch) == 1:
+                        logging.warning(  # pylint: disable=logging-not-lazy
+                            "Failed to compile paper %s with colorized entity %s, even when it was "
+                            + "colorized in isolation. The location of this entity will not be detected.",
+                            item.arxiv_id,
+                            batch[0]
+                        )
+                        continue
+
                     logging.warning(  # pylint: disable=logging-not-lazy
-                        "Failed to compile paper %s with colorized entities. The culprit is likely "
-                        + "the colorization command for entity %s. That entity will now be ignored. Attempting to "
-                        + "compile the paper again without colorizing that entity.",
+                        "Failed to compile paper %s with colorized entities. The culprit may be "
+                        + "the colorization command for entity %s. The problematic entities will be "
+                        + "colorized on their own, and the rest of the entities will be colorized "
+                        + "together in the next batch.",
                         item.arxiv_id,
-                        last_colorized_entity_id,
+                        " or ".join(problem_ids),
                     )
-                    del batch[batch.index(last_colorized_entity_id)]
+
+                    for id_ in problem_ids:
+                        to_process_alone.append(id_)
+                        del batch[batch.index(id_)]
+
                     to_process.extendleft(reversed(batch))
                     continue
 
-                # If there was some other reason for the error, discard the whole batch.
+                # If there was some other reason for the error, remove just the first entity from the batch.
                 logging.error(  # pylint: disable=logging-not-lazy
                     "Failed to compile paper %s with colorized entities %s. The cause "
                     + "is assumed to be in the first colorized entity. The location for the "
@@ -392,26 +433,31 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                         logging.info(  # pylint: disable=logging-not-lazy
                             "Entity %s has been marked as being the potential cause of shifting in "
                             + "the colorized document for paper %s batch %d. It will be processed "
-                            + "on its own.",
+                            + "later on its own. The other shifted entities in %s will be queued to "
+                            + "process as a group in an upcoming batch.",
                             first_shifted_entity_id,
                             item.arxiv_id,
                             batch_index,
+                            location_result.shifted_entities,
                         )
 
+                        # Get the index of the first entity for which the location has shifted
+                        # during colorization.
                         moved_entity_index = batch.index(first_shifted_entity_id)
 
-                        # Mark that entity to be reprocessed alone, where its position can maybe be
-                        # discovered without affecting the positions of other element.
+                        # Mark all other entities that have shifted after the first one one to be processed
+                        # in a later batch (instead of on their own). It could be that they won't shift
+                        # once the first shifted entity is removed.
+                        for i in range(len(batch) - 1, moved_entity_index, -1):
+                            if batch[i] in location_result.shifted_entities:
+                                to_process.appendleft(batch[i])
+                                del batch[i]
+
+                        # Mark the first entity that shifted to be reprocessed alone, where its position
+                        # might be discoverable, without affecting the positions of other element.
                         del batch[moved_entity_index]
                         to_process_alone.append(first_shifted_entity_id)
 
-                        # Mark all entities after that one to be reprocessed in a batch.
-                        reprocess = batch[moved_entity_index:]
-                        to_process.extendleft(reversed(reprocess))
-
-                        # Continue processing the rest of the batch that occurred before this entity
-                        # as if nothing had happened.
-                        batch = batch[:moved_entity_index]
                     elif len(batch) == 1 and self.should_sanity_check_images():
                         logging.info(  # pylint: disable=logging-not-lazy
                             "Skipping entity %s for paper %s as it caused "
@@ -543,7 +589,7 @@ def get_last_colorized_entity(
     else:
         logging.warning(  # pylint: disable=logging-not-lazy
             "Unable to determine what was the last entity colorized before compilation failure "
-            + "in source directory %s from log %s for compiler '%s'. Entity batching may be less effieicnt.",
+            + "in source directory %s from log %s for compiler '%s'. Entity batching may be less efficient.",
             compilation_path,
             new_autogen_log_path,
             compiler_name,

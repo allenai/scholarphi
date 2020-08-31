@@ -9,9 +9,19 @@ import {
   Sentence,
   Symbol,
 } from "../types/api";
+import * as uiUtils from "../utils/ui";
 
-export function nickname(symbol: Symbol): string | null {
-  return symbol.attributes.nicknames[0] || null;
+export function diagramLabel(
+  symbol: Symbol,
+  includeNicknames?: boolean
+): string | null {
+  if (symbol.attributes.diagram_label !== null) {
+    return symbol.attributes.diagram_label;
+  }
+  if (includeNicknames) {
+    return uiUtils.sortByFrequency(symbol.attributes.nicknames)[0] || null;
+  }
+  return null;
 }
 
 export function isTopLevelSymbol(symbol: Symbol, entities: Entities) {

@@ -171,6 +171,8 @@ export interface SymbolAttributes extends BaseEntityAttributes {
   tex: string | null;
   mathml: string | null;
   mathml_near_matches: string[];
+  is_definition: boolean | null;
+  diagram_label: string | null;
   /**
    * Nicknames for the symbol extracted from the text, no more than a few words long.
    */
@@ -189,6 +191,10 @@ export interface SymbolAttributes extends BaseEntityAttributes {
    * Other passages from the paper that help explain what this symbol means.
    */
   passages: string[];
+  /**
+   * An extracted TeX snippet that shows the symbol in context.
+   */
+  snippets: string[];
 }
 
 export interface SymbolRelationships {
@@ -205,8 +211,8 @@ export interface SymbolRelationships {
    */
   nickname_sentences: Relationship[];
   definition_sentences: Relationship[];
-  defining_formula_sentences: Relationship[];
-  passage_sentences: Relationship[];
+  defining_formula_equations: Relationship[];
+  snippet_sentences: Relationship[];
 }
 
 /**

@@ -361,6 +361,8 @@ export class Connection {
     relationships: GenericRelationships
   ) {
     const rows: Omit<EntityDataRow, "id">[] = [];
+    const keys = [];
+
     const addRow = (
       key: string,
       value: string | null,
@@ -382,6 +384,9 @@ export class Connection {
     for (const key of Object.keys(attributes)) {
       if (["source", "version", "bounding_boxes"].indexOf(key) !== -1) {
         continue;
+      }
+      if (keys.indexOf(key) === -1) {
+        keys.push(key);
       }
       const value = attributes[key];
       let values = [];
@@ -425,7 +430,7 @@ export class Connection {
       }
     }
 
-    return rows;
+    return { rows, keys };
   }
 
   async createEntity(paperSelector: PaperSelector, data: EntityCreateData) {
@@ -474,7 +479,7 @@ export class Connection {
       id,
       data.attributes.bounding_boxes
     );
-    const entityDataRows = this.createEntityDataRows(
+    const { rows: entityDataRows } = this.createEntityDataRows(
       id,
       data.attributes.source,
       data.attributes,
@@ -530,16 +535,19 @@ export class Connection {
      * Update custom attributes, by removing previous values for known attributes and updating
      * them to the new values.
      */
-    const attributeRows = this.createEntityDataRows(
+    const {
+      rows: attributeRows,
+      keys: attributeKeys,
+    } = this.createEntityDataRows(
       entityId,
       data.attributes.source,
       data.attributes,
       {}
     );
-    for (const row of attributeRows) {
+    for (const key of attributeKeys) {
       await this._knex("entitydata")
         .delete()
-        .where({ entity_id: data.id, key: row.key });
+        .where({ entity_id: data.id, key });
     }
     await this._knex.batchInsert("entitydata", attributeRows);
 
@@ -547,16 +555,19 @@ export class Connection {
      * Update relationships.
      */
     if (data.relationships !== undefined) {
-      const relationshipRows = this.createEntityDataRows(
+      const {
+        keys: relationshipKeys,
+        rows: relationshipRows,
+      } = this.createEntityDataRows(
         entityId,
         data.attributes.source,
         {},
         data.relationships as GenericRelationships
       );
-      for (const row of relationshipRows) {
+      for (const key of relationshipKeys) {
         await this._knex("entitydata")
           .delete()
-          .where({ entity_id: data.id, key: row.key });
+          .where({ entity_id: data.id, key });
       }
       await this._knex.batchInsert("entitydata", relationshipRows);
     }

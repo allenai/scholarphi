@@ -61,6 +61,19 @@ def test_map_to_initial_offsets():
     assert edited.initial_offsets(15, 15) == (14, 14)
 
 
+def test_uncertainty_grows_with_overlapping_edits():
+    s = JournaledString("starter string")
+    edited1 = s.edit(1, 7, "tarted")
+    edited2 = edited1.edit(7, 13, " stron")
+    edited3 = edited2.edit(5, 8, "ing_")
+    
+    # The third edit crosses the spans of the two edits before it. The string can't tell
+    # where characters in the third edited span map---whether to the initial span on the
+    # left side or the right side, so it conservatively suggests outer bounds at the
+    # edges of all edits so far.
+    assert edited3.initial_offsets(6, 7) == (1, 13)
+
+
 def test_map_to_mutated_offsets():
     s = JournaledString("starter string")
     edited = s.edit(8, 14, "changed")

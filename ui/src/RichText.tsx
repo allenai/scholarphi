@@ -5,6 +5,7 @@ import LatexPreview from "./LatexPreview";
 
 interface Props {
   children: string;
+  onRendered?: () => void;
   handleLatexParseError?: (message: string, error: katex.ParseError) => void;
 }
 
@@ -14,7 +15,10 @@ interface Props {
 class RichText extends React.PureComponent<Props> {
   render() {
     return this.props.children === null ? null : (
-      <LatexPreview handleParseError={this.props.handleLatexParseError}>
+      <LatexPreview
+        onRendered={this.props.onRendered}
+        handleParseError={this.props.handleLatexParseError}
+      >
         <FormattedText>{this.props.children}</FormattedText>
       </LatexPreview>
     );

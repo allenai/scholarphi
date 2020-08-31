@@ -327,16 +327,30 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
     """
     # Patterns of text that should be replaced with other plaintext.
     REPLACE_PATTERNS = {
-        Pattern("backslash_newline", r"\\\\"): "\n",
+        # Separate sections and captions text from the rest of the text.
+        Pattern("section", r"\s*\\(?:sub)*section\*?\{([^}]*)\}\s*"): "\n\n\\1.\n\n",
+        Pattern("paragraph", r"\s*\\paragraph*?\{([^}]*)\}\s*"): "\n\n\\1.\n\n",
+        Pattern("caption", r"(.)(?=\\caption\*?\{)"): "\\1\n\n",
+        # Replace commands for which colorizing the contents will lead to compilation failures.
+        CITATION_PATTERN: "Citation (\\1)",
+        Pattern("label", r"\\label\{([^}]+)\}"): "(Label \\1)",
+        Pattern("ref", r"\\(?:page|c)?ref\{([^}]+)\}"): "(Ref \\1)",
+        Pattern("glossary_term", r"\\gls(?:pl)?\*?\{([^}]+)\}"): "Glossary term (\\1)",
+        # Replace TeX source spaces with semantic spacing.
+        Pattern("linebreak_keep", r"(\\\\|\\linebreak)|\n(\s)*\n\s*"): "\n",
+        Pattern("linebreak_ignore", r"\n"): " ",
         Pattern("space_macro", r"\\[ ,]"): " ",
-        Pattern("tilde", r"~"): " "
+        Pattern("tilde", r"~"): " ",
     }
 
     # Patterns of text the extractor should skip.
     SKIP_PATTERNS = [
+        # Include specific macros first, before the more general-purpose 'macro'.
+        Pattern("input", r"\\(input|include)(\s+\S+|\{[^}]+\})"),
         # Many patterns below were written with reference to the LaTeX tokenizer in Python's
         # 'doctools' sources at:
         # http://svn.python.org/projects/doctools/converter/converter/tokenizer.py
+        Pattern("environment_tags", r"\\(begin|end)\{[^}]*\}"),
         Pattern("macro", r"\\[a-zA-Z]+\*?[ \t]*"),
         RIGHT_BRACE,
         LEFT_BRACE,
@@ -377,7 +391,11 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
             keep_after = match.end
         if match.pattern in REPLACE_PATTERNS:
             plaintext = plaintext.edit(
-                match.start, match.end, REPLACE_PATTERNS[match.pattern]
+                match.start,
+                match.end,
+                re.sub(
+                    match.pattern.regex, REPLACE_PATTERNS[match.pattern], match.text
+                ),
             )
         if match.pattern not in SKIP_PATTERNS:
             keep_after = match.start
@@ -395,6 +413,87 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
         plaintext = plaintext.edit(m.start(), m.end(), "")
 
     return plaintext
+
+
+CITATION_COMMAND_NAMES = [
+    # LaTeX built-in commands
+    "cite",
+    # biblatex
+    "Cite",
+    "parencite",
+    "Parencite",
+    "footcite",
+    "footcitetext",
+    "textcite",
+    "Textcite",
+    "smartcite",
+    "Smartcite",
+    r"cite\*",
+    r"parencite\*",
+    "supercite",
+    "autocite",
+    "Autocite",
+    r"autocite\*",
+    r"Autocite\*",
+    "citeauthor",
+    r"citeauthor\*",
+    "Citeauthor",
+    r"Citeauthor\*",
+    "citetitle",
+    r"citetitle\*",
+    "citeyear",
+    r"citeyear\*",
+    "citedate",
+    r"citedate\*",
+    "citeurl",
+    "fullcite",
+    "footfullcite",
+    "notecite",
+    "Notecite",
+    "pnotecite",
+    "Pnotecite",
+    "fnotecite",
+    # natbib
+    "citet",
+    "Citet",
+    r"citet\*",
+    r"Citet\*",
+    "citep",
+    "Citep",
+    r"citep\*",
+    r"Citep\*",
+    "citealt",
+    "Citealt",
+    r"citealt\*",
+    r"Citealt\*",
+    "citealp",
+    "Citealp",
+    r"citealp\*",
+    r"Citealp\*",
+    "citenum",
+    "citeyearpar",
+    "citefullauthor",
+    "Citefullauthor",
+    "citetalias",
+    "citepalias",
+    # 'cite' package
+    "citen",
+    "citeonline",
+]
+
+
+def _make_citation_command_regex(commands: List[str]) -> str:
+    """
+    A citation command typically has this structure:
+    \\command[prenote][postnote]{keys}[punctuation]
+    where prenote, postnote, and punctuation are all optional.
+    Reference: https://ctan.math.illinois.edu/macros/latex/contrib/biblatex/doc/biblatex.pdf
+    """
+    command_names = r"(?:" + "|".join([r"\\" + c for c in commands]) + ")"
+    return command_names + r"(?:\[[^\]]*\]){0,2}{([^}]*?)}(?:\[[^\]]*\])?"
+
+
+CITATION_PATTERN = Pattern("citation", _make_citation_command_regex(CITATION_COMMAND_NAMES))
 
 
 @dataclass(frozen=True)

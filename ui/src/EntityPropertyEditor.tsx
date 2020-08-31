@@ -156,6 +156,14 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
       label: "MathML",
     },
     {
+      key: "diagram_label",
+      parentKey: "attributes",
+      type: "text",
+      is_list: false,
+      relation_type: null,
+      label: "Diagram Label",
+    },
+    {
       key: "nicknames",
       parentKey: "attributes",
       type: "text",
@@ -196,15 +204,15 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
       label: "Defining formulas",
     },
     {
-      key: "defining_formula_sentences",
+      key: "defining_formula_equations",
       parentKey: "relationships",
       type: "relation-id",
       is_list: true,
-      relation_type: "sentence",
+      relation_type: "equation",
       label: "Defining formula sentence IDs",
     },
     {
-      key: "passages",
+      key: "snippets",
       parentKey: "attributes",
       type: "multiline-latex",
       is_list: true,
@@ -212,7 +220,7 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
       label: "Related passages",
     },
     {
-      key: "passage_sentences",
+      key: "snippet_sentences",
       parentKey: "relationships",
       type: "relation-id",
       is_list: true,
@@ -370,6 +378,13 @@ class EntityPropertyEditor extends React.PureComponent<Props, State> {
       } else {
         value = { type: property.relation_type, id: value };
       }
+    }
+
+    /*
+     * Convert single properties that have been changed to the empty string to 'null'.
+     */
+    if (!property.is_list && value === "") {
+      value = null;
     }
 
     /*

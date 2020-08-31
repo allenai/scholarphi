@@ -7,6 +7,7 @@
 @mui-tab: ~".MuiTab-root";
 @drawer: ~".drawer .MuiPaper-root";
 @form-control: ~"div.MuiFormControl-root";
+@accordion-summary: ~"div.MuiAccordionSummary-root";
 
 /**
  * COLORS
@@ -28,11 +29,11 @@
 /**
  * HIGHLIGHTS
  */
-@highlight-color: rgb(255, 211, 15);
-@highlight-opacity: 0.3;
+@highlight-color: rgb(207, 176, 103);
+@highlight-opacity: 0.4;
 @highlight-border-color: #88f;
 @highlight-hover-opacity: 0.2;
-@highlight-hover-background: rgb(255, 211, 15);
+@highlight-hover-background: rgb(207, 176, 103);
 @highlight-hitbox-padding: 0.1em;
 
 /**
@@ -46,9 +47,9 @@
 /**
  * BORDERS
  */
-@border-color: @black;
+@border-color: #ddd;
 @border-width: 1px;
-@border-radius: 10px;
+@border-radius: 3px;
 @border: @border-width @border-color solid;
 
 /**
@@ -91,16 +92,20 @@
 
 /**
 * Z INDEXES
+* 100-based z-indexes are chosen to work with Material UI's z-indexes:
+* https://material-ui.com/customization/z-index/
 */
 @base-annotation-z-index: 1000;
 @sentence-annotation-z-index: @base-annotation-z-index;
-@other-annotation-z-index: @sentence-annotation-z-index + 1;
-@max-annotation-z-index: @other-annotation-z-index;
+@equation-annotation-z-index: @sentence-annotation-z-index + 1;
+@default-annotation-z-index: @equation-annotation-z-index + 1;
 
-@page-mask-z-index: @max-annotation-z-index + 1;
-@equation-diagram-z-index: @max-annotation-z-index + 1;
-@tooltip-z-index: @equation-diagram-z-index + 1;
-@toolbar-z-index: @equation-diagram-z-index + 1;
+@page-mask-z-index: @default-annotation-z-index + 1;
+@equation-diagram-z-index: @page-mask-z-index + 1;
+@equation-diagram-annotation-z-index: @equation-diagram-z-index + 1;
+
+@tooltip-z-index: @page-mask-z-index + 1;
+@toolbar-z-index: @tooltip-z-index + 1;
 @drawer-close-button-z-index: 1200;
 
 /**

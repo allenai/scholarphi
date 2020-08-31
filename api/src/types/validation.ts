@@ -80,6 +80,7 @@ export let attributes = Joi.object({
  * absence of data indicates an empty list, not a null value.
  */
 const stringAttribute = Joi.string().allow(null).default(null);
+const booleanAttribute = Joi.boolean().allow(null).default(null);
 const numberAttribute = Joi.number()
   .allow(null)
   .default(null)
@@ -109,10 +110,13 @@ attributes = attributes
           mathml: stringAttribute,
           tex: stringAttribute,
           nicknames: stringListAttribute,
+          diagram_label: stringAttribute,
+          id_definition: booleanAttribute,
           definitions: stringListAttribute,
           defining_formulas: stringListAttribute,
           passages: stringListAttribute,
           mathml_near_matches: stringListAttribute,
+          snippets: stringListAttribute,
         }),
       },
       {
@@ -185,8 +189,8 @@ relationships = relationships
           parent: oneToOneRelationship("symbol"),
           nickname_sentences: oneToManyRelationship("sentence"),
           definition_sentences: oneToManyRelationship("sentence"),
-          defining_formula_sentences: oneToManyRelationship("sentence"),
-          passage_sentences: oneToManyRelationship("sentence"),
+          defining_formula_equations: oneToManyRelationship("equation"),
+          snippet_sentences: oneToManyRelationship("sentence"),
         }),
       },
     ],

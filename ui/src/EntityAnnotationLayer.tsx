@@ -1,12 +1,12 @@
 import classNames from "classnames";
 import React from "react";
 import CitationGloss from "./CitationGloss";
+import ContextualSymbolGloss from "./ContextualSymbolGloss";
 import EntityAnnotation from "./EntityAnnotation";
 import * as selectors from "./selectors";
 import { GlossStyle } from "./settings";
 import { Entities, PaperId, Papers, UserLibrary } from "./state";
 import SymbolDefinitionGloss from "./SymbolDefinitionGloss";
-import SymbolPropertyEvaluationGloss from "./SymbolPropertyEvaluationGloss";
 import TermDefinitionGloss from "./TermDefinitionGloss";
 import TermPropertyEvaluationGloss from "./TermPropertyEvaluationGloss";
 import {
@@ -43,6 +43,7 @@ interface Props {
   ) => void;
   handleShowSnackbarMessage: (message: string) => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
+  handleJumpToEntity: (entityId: string) => void;
 }
 
 class EntityAnnotationLayer extends React.Component<Props, {}> {
@@ -96,7 +97,18 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
         .map((id) => entities.byId[id])
         .filter((e) => e !== undefined)
         .filter(isSymbol)
-        .some((s) => s.relationships.equation.id === equationId)
+        .some((s) => s.relationships.equation.id === equationId) &&
+      [
+        "52763",
+        "52775",
+        "52783",
+        "52787",
+        "53007",
+        "53024",
+        "53039",
+        "53042",
+        "53050",
+      ].indexOf(equationId) !== -1
     );
   }
 
@@ -255,16 +267,16 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
             );
             const isTopLevel = selectors.isTopLevelSymbol(entity, entities);
             const equationId = entity.relationships.equation.id;
+            const inSelectedEquation = selectedEntities.some(
+              (e) => isEquation(e) && equationId === e.id
+            );
             const isTopLevelInSelectedEquation =
-              isTopLevel &&
-              selectedEntities.some(
-                (e) => isEquation(e) && equationId === e.id
-              );
+              isTopLevel && inSelectedEquation;
             const isSelectable =
               isSelectionChild ||
               isTopLevelInSelectedEquation ||
-              equationId === null ||
-              (!this.shouldShowEquation(equationId) && isTopLevel);
+              (isTopLevel &&
+                (equationId === null || !this.shouldShowEquation(equationId)));
 
             /*
              * Show a more prominent selection hint than an underline when the symbol is
@@ -285,13 +297,13 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
               (e) => isSymbol(e) && selectors.isDescendant(e, entity, entities)
             );
             const isLeaf = entity.relationships.children.length === 0;
-            const descendants = selectors.descendants(entity.id, entities);
 
             /*
              * A symbol will be shown if it's either selectable, or if it's selected and
              * it doesn't have any children to be selected.
              */
-            const active = isSelectable || (isLeaf && isSelected);
+            const active =
+              (isSelectable && !isSelectionAncestor) || (isLeaf && isSelected);
 
             return (
               <EntityAnnotation
@@ -301,6 +313,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                   "selection-hint": showSelectionHint,
                   "leaf-symbol": isLeaf,
                   "ancestor-of-selection": isSelectionAncestor,
+                  "in-selected-equation": inSelectedEquation,
                 })}
                 pageView={pageView}
                 entity={entity}
@@ -321,10 +334,10 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 glossContent={
                   !(this.props.glossStyle === "tooltip" && !isFindSelection) ? (
                     glossEvaluationEnabled ? (
-                      <SymbolPropertyEvaluationGloss
-                        id={annotationId}
+                      <ContextualSymbolGloss
                         symbol={entity}
-                        descendants={descendants}
+                        entities={entities}
+                        handleJumpToEntity={this.props.handleJumpToEntity}
                       />
                     ) : (
                       <SymbolDefinitionGloss symbol={entity} />

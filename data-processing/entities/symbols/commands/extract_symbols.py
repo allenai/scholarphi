@@ -1,6 +1,7 @@
 import json
 import logging
 import os.path
+import re
 import subprocess
 from argparse import ArgumentParser
 from dataclasses import dataclass
@@ -68,6 +69,9 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
             file_utils.clean_directory(
                 directories.arxiv_subdir("detected-equation-tokens", arxiv_id)
             )
+            file_utils.clean_directory(
+                directories.arxiv_subdir("detected-symbols", arxiv_id)
+            )
             yield arxiv_id
 
     def process(self, item: ArxivId) -> Iterator[SymbolData]:
@@ -125,6 +129,9 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
         tokens_dir = directories.arxiv_subdir("detected-equation-tokens", item)
         if not os.path.exists(tokens_dir):
             os.makedirs(tokens_dir)
+        symbols_dir = directories.arxiv_subdir("detected-symbols", item)
+        if not os.path.exists(symbols_dir):
+            os.makedirs(symbols_dir)
 
         if result.success and result.symbols is not None:
             logging.debug(
@@ -158,9 +165,9 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
             symbols = result.symbols
 
             tokens_path = os.path.join(tokens_dir, "entities.csv")
-            symbols_path = os.path.join(tokens_dir, "symbols.csv")
-            symbol_tokens_path = os.path.join(tokens_dir, "symbol_tokens.csv")
-            symbol_children_path = os.path.join(tokens_dir, "symbol_children.csv")
+            symbols_path = os.path.join(symbols_dir, "entities.csv")
+            symbol_tokens_path = os.path.join(symbols_dir, "symbol_tokens.csv")
+            symbol_children_path = os.path.join(symbols_dir, "symbol_children.csv")
 
             # The list of symbol children might be empty, e.g., for a paper with only
             # very simple symbols. Make sure there's at least an empty file, as later stages expect
@@ -180,10 +187,22 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                     Extract approximate TeX for the symbol. It's estimated to be the span of TeX
                     that covers all of the tokens, including extra curly braces needed to close
                     opened curly braces (which often aren't included in the token start and end
-                    character indexes).
+                    character indexes). While these positions aren't used for colorization (and
+                    hence don't have to be super precise), they are useful for:
+                    1. Ordering the symbols
+                    2. Rendering the symbols in the user interface
+                    Hence it is a good thing if a complete subset of the TeX can be extracted that
+                    can be used to render the symbol.
                     """
                     start = min([t.start for t in s.tokens])
                     end = max([t.end for t in s.tokens])
+
+                    # Grab the macro right before the symbol if there is one. This ensures that the
+                    # rendered 'tex' field will include, for instance, `\mathrm` commands that are
+                    # used to style the math.
+                    for match in re.finditer(r"\\((math|text)\w+)\{", equation):
+                        if match.end() == start:
+                            start = match.start()
 
                     # Adjust the end position to after curly braces are closed.
                     open_brace_count = 0
@@ -211,6 +230,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                 file_utils.append_to_csv(
                     symbols_path,
                     SerializableSymbol(
+                        id_=f"{result.equation_index}-{symbol_index}",
                         tex_path=result.tex_path,
                         equation_index=result.equation_index,
                         equation=result.equation,
@@ -218,7 +238,11 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                         start=start,
                         end=end,
                         tex=symbol_tex,
+                        context_tex=result.context_tex,
                         mathml=str(symbol.element),
+                        is_definition=symbol.defined or False,
+                        relative_start=relative_start,
+                        relative_end=relative_end
                     ),
                 )
 
@@ -236,7 +260,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                     )
 
                 # Save the relationships between this symbol and its children.
-                for child in symbol.children:
+                for child in symbol.child_symbols:
                     child_index = symbols.index(child)
                     file_utils.append_to_csv(
                         symbol_children_path,

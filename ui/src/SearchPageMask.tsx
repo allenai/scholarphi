@@ -2,7 +2,7 @@ import React from "react";
 import PageMask from "./PageMask";
 import * as selectors from "./selectors";
 import { Entities } from "./state";
-import { BoundingBox } from "./types/api";
+import { BoundingBox, isSymbol } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 import * as uiUtils from "./utils/ui";
 
@@ -22,12 +22,7 @@ export class SearchPageMask extends React.PureComponent<Props> {
     /*
      * Show the sentences containing all matching symbols.
      */
-    const {
-      matchingEntityIds,
-      firstMatchingEntityId,
-      entities,
-      highlightFirstMatch,
-    } = this.props;
+    const { matchingEntityIds, entities, highlightFirstMatch } = this.props;
     if (entities === null) {
       return null;
     }
@@ -42,23 +37,37 @@ export class SearchPageMask extends React.PureComponent<Props> {
       .filter((b) => b.page === pageNumber);
 
     /*
-     * Highlight a sentence that contains the first matching symbol.
+     * Highlight sentences that contain definition information.
      */
-    let highlight: BoundingBox[] = [];
-    if (highlightFirstMatch && firstMatchingEntityId !== null) {
-      const firstMatchingSentence = selectors.symbolSentences(
-        [firstMatchingEntityId],
-        entities
-      )[0];
-      if (firstMatchingSentence !== undefined) {
-        highlight = firstMatchingSentence.attributes.bounding_boxes;
-      }
-    }
+    const highlights = matchingEntityIds
+      .map((id) => entities.byId[id])
+      .filter((e) => e !== undefined)
+      .filter(isSymbol)
+      .map((e) => [
+        ...e.relationships.definition_sentences.map((r) => r.id),
+        ...e.relationships.nickname_sentences.map((r) => r.id),
+        ...e.relationships.defining_formula_equations.map((r) => r.id),
+      ])
+      .flat()
+      .filter((id) => id !== null)
+      .map((id) => entities.byId[id as string])
+      .filter((e) => e !== undefined)
+      .map((e) => e.attributes.bounding_boxes)
+      .flat()
+      .reduce((boxes, b) => {
+        boxes[`${b.page}-${b.left}-${b.top}-${b.width}-${b.height}`] = b;
+        return boxes;
+      }, {} as { [boxKey: string]: BoundingBox });
+    const highlight = Object.values(highlights);
 
     /*
      * Place a label right below the last bounding box of the highlight.
      */
-    const firstHighlight = highlight[0];
+    let firstHighlight;
+    if (highlightFirstMatch) {
+      firstHighlight = highlight[0];
+    }
+
     const { width, height } = uiUtils.getPageViewDimensions(
       this.props.pageView
     );

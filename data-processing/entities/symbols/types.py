@@ -1,9 +1,8 @@
 from dataclasses import dataclass
-from typing import Dict, List
+from typing import Dict, List, Set
 
 from common.types import ArxivId, BoundingBox, Matches, S2Id, SymbolId, SymbolWithId
-
-SentenceId = str
+from entities.sentences.types import Context
 
 
 @dataclass(frozen=True)
@@ -14,10 +13,14 @@ class SymbolKey:
     token_index: int
 
 
+MathMl = str
+
+
 @dataclass(frozen=True)
-class SentenceKey:
+class DefiningFormula:
+    tex: str
     tex_path: str
-    sentence_id: str
+    equation_id: str
 
 
 @dataclass(frozen=True)
@@ -26,5 +29,8 @@ class SymbolData:
     s2_id: S2Id
     symbols_with_ids: List[SymbolWithId]
     boxes: Dict[SymbolId, BoundingBox]
-    symbol_sentences: Dict[SymbolId, SentenceKey]
+    symbol_contexts: Dict[SymbolId, Context]
+    symbol_formulas: Dict[SymbolId, DefiningFormula]
+    mathml_contexts: Dict[MathMl, List[Context]]
+    mathml_formulas: Dict[MathMl, Set[DefiningFormula]]
     matches: Matches
