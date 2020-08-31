@@ -1,17 +1,25 @@
 import re
 
-from common.colorize_tex import (COLOR_MACROS, COLOR_MACROS_BASE_MACROS,
-                                 COLOR_MACROS_LATEX_IMPORTS,
-                                 COLOR_MACROS_TEX_IMPORTS, add_color_macros,
-                                 colorize_citations, colorize_entities,
-                                 colorize_equation_tokens)
-from common.types import (Equation, FileContents, SerializableEntity,
-                          SerializableToken)
+from common.colorize_tex import (
+    COLOR_MACROS,
+    COLOR_MACROS_BASE_MACROS,
+    COLOR_MACROS_LATEX_IMPORTS,
+    COLOR_MACROS_TEX_IMPORTS,
+    add_color_macros,
+    colorize_entities,
+    ColorizeOptions,
+)
+from common.types import SerializableEntity, SerializableToken
+from entities.citations.colorize import colorize_citations
+from entities.citations.types import Bibitem
+from entities.symbols.colorize import (
+    adjust_color_positions as adjust_token_color_positions,
+)
 
 COLOR_PATTERN = (
     r"\\scholarsetcolor\[rgb\]{[0-9.]+,[0-9.]+,[0-9.]+}"
     + r"(.*?)"
-    + r"\\scholarrevertcolor"
+    + r"\\scholarrevertcolor{}\\message\{.*\}"
 )
 
 
@@ -51,15 +59,28 @@ def test_add_color_macros_to_latex():
     )
 
 
+def bibitem(key: str) -> Bibitem:
+    return Bibitem(
+        id_=key,
+        text="text",
+        start=-1,
+        end=-1,
+        tex_path="N/A",
+        tex="N/A",
+        context_tex="N/A",
+    )
+
+
 def test_color_citations():
     tex = "\n".join(["\\documentclass{article}", "word.~\\cite{source1,source2}"])
-    bibitem_keys = ["source2"]
-    colorized, citations = next(colorize_citations(tex, bibitem_keys))
+    result = colorize_citations(tex, [bibitem("source2")])
+    colorized = result.tex
+    hues = result.entity_hues
     assert re.search(
         r"\\scholarregistercitecolor{source2}{[0-9.]+}{[0-9.]+}{[0-9.]+}", colorized
     )
-    assert len(citations) == 1
-    assert citations[0].key == "source2"
+    assert len(hues) == 1
+    assert list(hues.keys()) == ["source2"]
 
 
 def test_no_disable_hyperref_colors():
@@ -75,8 +96,11 @@ def test_no_disable_hyperref_colors():
             "\\cite{source}",
         ]
     )
-    colorized, _ = next(colorize_citations(tex, ["source"]))
+    colorized = colorize_citations(tex, [bibitem("source")]).tex
     assert "\\usepackage[colorlinks=true,citecolor=blue]{hyperref}" in colorized
+
+
+COLORIZE_ENTITY_TEST_OPTIONS = ColorizeOptions(insert_color_macros=False)
 
 
 def test_color_entity():
@@ -89,36 +113,63 @@ def test_color_entity():
         tex="entity",
         context_tex="word entity word",
     )
-    colorized, _ = next(colorize_entities(tex, [entity], insert_color_macros=False))
+    colorized = colorize_entities(
+        tex,
+        [entity],
+        # In the tests below, don't insert the color macro definitions in the preambles or the
+        # openings of the TeX files, to keep the offsets of the entities in predictable places.
+        options=ColorizeOptions(insert_color_macros=False),
+    ).tex
     assert colorized.startswith("word ")
     matches = re.findall(COLOR_PATTERN, colorized)
     assert len(matches) == 1
     assert matches[0] == "entity"
 
 
-def equation(
-    content_tex: str,
-    offset: int = 0,
-    before: str = "$",
-    after: str = "$",
-    depth: int = 0,
-    index: int = 0,
-) -> Equation:
-    tex = before + content_tex + after
-    return Equation(
-        start=offset,
-        end=offset + len(tex),
+def test_color_inside_braces():
+    tex = "word entity word"
+    entity = SerializableEntity(
+        start=5,
+        end=11,
         tex_path="main.tex",
-        id_=str(index),
-        tex=tex,
-        context_tex=tex,
-        i=index,
-        content_start=offset + len(before),
-        content_end=offset + len(tex) - len(after),
-        content_tex=content_tex,
-        katex_compatible_tex=content_tex,
-        depth=depth,
+        id_="id",
+        tex="entity",
+        context_tex="word entity word",
     )
+    colorized = colorize_entities(
+        tex, [entity], ColorizeOptions(insert_color_macros=False, braces=True)
+    ).tex
+    matches = re.findall(r"\{" + COLOR_PATTERN + r"\}", colorized)
+    assert len(matches) == 1
+    assert matches[0] == "entity"
+
+
+def test_skip_overlapping_entities():
+    tex = "(outer (inner))"
+    outer = SerializableEntity(
+        start=1,
+        end=13,
+        tex_path="main.tex",
+        id_="id-outer",
+        tex="outer (inner)",
+        context_tex=tex,
+    )
+    inner = SerializableEntity(
+        start=7,
+        end=12,
+        tex_path="main.tex",
+        id_="id-inner",
+        tex="inner",
+        context_tex=tex,
+    )
+    result = colorize_entities(
+        tex, [outer, inner], ColorizeOptions(insert_color_macros=False)
+    )
+    colorized = result.tex
+    matches = re.findall(COLOR_PATTERN, colorized)
+    assert len(matches) == 1
+    assert len(result.skipped) == 1
+    assert result.skipped[0] in [outer, inner]
 
 
 def token(
@@ -150,124 +201,18 @@ def token(
     )
 
 
-def test_color_tokens():
-    equation_tex = "x + y"
-    file_contents = {
-        "main.tex": FileContents("main.tex", f"$ignore$ ${equation_tex}$", "encoding")
-    }
-    tokens = [
-        token(
-            equation_start=10,
-            relative_start=0,
-            relative_end=1,
-            token_index=0,
-            tex="x",
-            equation_tex=equation_tex,
-        ),
-        token(
-            equation_start=10,
-            relative_start=4,
-            relative_end=5,
-            token_index=1,
-            tex="y",
-            equation_tex=equation_tex,
-        ),
-    ]
-    colorized_files, _ = next(
-        colorize_equation_tokens(file_contents, tokens, insert_color_macros=False)
-    )
-    colorized = colorized_files["main.tex"].contents
-    assert colorized.startswith("$ignore$")
-    matches = re.findall(COLOR_PATTERN, colorized)
-    assert len(matches) == 2
-    assert matches[0] == "x"
-    assert matches[1] == "y"
-
-
-def test_color_inside_brackets():
-    equation_tex = "{x}"
-    file_contents = {
-        "main.tex": FileContents("main.tex", f"${equation_tex}$", "encoding")
-    }
-    tokens = [
-        token(
-            equation_start=1,
-            relative_start=0,
-            relative_end=3,
-            tex="x",
-            equation_tex=equation_tex,
-        )
-    ]
-    colorized_files, _ = next(
-        colorize_equation_tokens(file_contents, tokens, insert_color_macros=False)
-    )
-    colorized = colorized_files["main.tex"].contents
-    matches = re.findall(COLOR_PATTERN, colorized)
-    assert len(matches) == 1
-    assert matches[0] != "{x}"
-    assert matches[0] == "x"
-
-
-def test_adjust_indexes_to_within_bounds():
+def test_adjust_token_color_locations_to_within_equation_bounds():
     equation_tex = "x"
-    file_contents = {
-        "main.tex": FileContents(
-            "main.tex", f"${equation_tex}$ ignore text after", "encoding"
-        )
-    }
-    tokens = [
-        token(
-            equation_start=1,
-            relative_start=0,
-            # For reasons I don't yet know, KaTeX sometimes returns character indexes that are
-            # outside the equation. This will result in coloring bleeding over the edges of
-            # equations into the surrounding text, and sometimes TeX compilation errors.
-            relative_end=9,
-            tex="x",
-            equation_tex=equation_tex,
-        )
-    ]
-    colorized_files, _ = next(
-        colorize_equation_tokens(file_contents, tokens, insert_color_macros=False)
+    t = token(
+        equation_start=1,
+        relative_start=0,
+        # For reasons I don't yet know, KaTeX sometimes returns character indexes that are
+        # outside the equation. This will result in coloring bleeding over the edges of
+        # equations into the surrounding text, and sometimes TeX compilation errors.
+        relative_end=9,
+        tex="x",
+        equation_tex=equation_tex,
     )
-    colorized = colorized_files["main.tex"].contents
-    matches = re.findall(COLOR_PATTERN, colorized)
-    assert len(matches) == 1
-    assert matches[0] == "x"
-
-
-def test_dont_color_nested_equations():
-    file_contents = {
-        "main.tex": FileContents(
-            "main.tex", "\\begin{equation}\\hbox{$x$}\\end{equation}", "encoding"
-        )
-    }
-    equation_outer_tex = "\\hbox{$x$}"
-    equation_inner_tex = "x"
-    # Simulate the same token being found twice: once within the outer equation, and once within
-    # the inner equation. It should only be colorized relative to the outer (highest depth) equation.
-    tokens = [
-        token(
-            equation_start=16,
-            relative_start=7,
-            relative_end=8,
-            tex="x",
-            equation_tex=equation_outer_tex,
-            equation_depth=0,
-        ),
-        token(
-            equation_start=23,
-            relative_start=0,
-            relative_end=1,
-            tex="x",
-            equation_tex=equation_inner_tex,
-            equation_depth=1,
-        ),
-    ]
-    colorized_files, _ = next(
-        colorize_equation_tokens(file_contents, tokens, insert_color_macros=False)
-    )
-    colorized = colorized_files["main.tex"].contents
-    matches = re.findall(COLOR_PATTERN, colorized)
-    assert len(matches) == 1
-    assert matches[0] == "x"
+    color_positions = adjust_token_color_positions(t)
+    assert color_positions.start == 1
+    assert color_positions.end == 2

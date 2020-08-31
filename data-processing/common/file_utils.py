@@ -428,8 +428,8 @@ def load_hue_locations(
 
     boxes_by_hue_iteration: Dict[HueIteration, List[BoundingBox]] = {}
     bounding_boxes_path = os.path.join(
-        directories.arxiv_subdir(f"hue-locations-for-{entity_name}", arxiv_id),
-        "hue_locations.csv",
+        directories.arxiv_subdir(f"{entity_name}-locations", arxiv_id),
+        "entity_locations.csv",
     )
     if not os.path.exists(bounding_boxes_path):
         logging.warning(
@@ -467,8 +467,8 @@ def load_equation_token_locations(
 
     token_locations: Dict[TokenId, List[BoundingBox]] = {}
     token_locations_path = os.path.join(
-        directories.arxiv_subdir("hue-locations-for-equation-tokens", arxiv_id),
-        "hue_locations.csv",
+        directories.arxiv_subdir("equation-tokens-locations", arxiv_id),
+        "entity_locations.csv",
     )
     if not os.path.exists(token_locations_path):
         logging.warning(

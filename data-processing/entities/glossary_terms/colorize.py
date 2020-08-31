@@ -5,7 +5,7 @@ from common.parse_tex import EquationExtractor
 from common.types import CharacterRange, SerializableEntity, Term
 
 
-def get_term_color_positions(entity: SerializableEntity) -> CharacterRange:
+def adjust_color_positions(entity: SerializableEntity) -> CharacterRange:
     """
     Color commands sometimes introduce unwanted space when added right before or after an equation.
     One solution is to put color commands right inside the equation.

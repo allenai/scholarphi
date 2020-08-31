@@ -112,23 +112,6 @@ def add_arxiv_id_filter_args(parser: ArgumentParser) -> None:
     )
 
 
-def add_one_entity_at_a_time_arg(parser: ArgumentParser) -> None:
-    parser.add_argument(
-        "--one-entity-at-a-time",
-        action="store_true",
-        help=(
-            "Colorize one entity at a time. This option is useful for achieving more accurate "
-            + "localization of entities. Because only one entity is being colorized at a time, "
-            + "if any one entity changes the layout of the TeX document or causes a compilation "
-            + "failure, that failure will be isolated to just the detection of that entity. "
-            + "However, setting this flag will incur a substantial cost for performance and "
-            + "storage, as one version of the TeX document will be compiled for each entity, "
-            + "resulting in many more compilation passes, and many more directories of PDFs "
-            + "and images."
-        ),
-    )
-
-
 def load_arxiv_ids_using_args(args: Any) -> Optional[List[ArxivId]]:
     if args.arxiv_ids is None and args.arxiv_ids_file is None:
         return None

@@ -30,9 +30,6 @@ class PipelineJob:
     email: Optional[str]
     " Email address to send results to. "
 
-    one_entity_at_a_time: Optional[bool]
-    " Whether to process one entity at a time. "
-
     dry_run: Optional[bool]
     """
     Whether to skip uploading processing results to the database. Use this option when you want
@@ -106,27 +103,6 @@ class SerializableReference:
 class S2Metadata:
     s2_id: S2Id
     references: List[Reference]
-
-
-"""
-CITATIONS
-"""
-
-
-@dataclass(frozen=True)
-class Bibitem:
-    key: str
-
-    text: str
-    " Plaintext extracted for bibitem. "
-
-
-@dataclass(frozen=True)
-class BibitemMatch:
-    key: str
-    bibitem_text: str
-    s2_id: str
-    s2_title: str
 
 
 """
@@ -499,7 +475,7 @@ class BoundingBoxAndHue:
 
 @dataclass(frozen=True)
 class HueLocationInfo(BoundingBox, ColorizationRecord):
-    relative_file_path: str
+    pass
 
 
 TokenLocations = Dict[TokenId, List[BoundingBox]]

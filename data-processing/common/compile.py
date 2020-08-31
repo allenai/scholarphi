@@ -4,7 +4,7 @@ import os
 import os.path
 import re
 import subprocess
-from typing import Iterator, List
+from typing import Iterator, List, Optional
 
 from common import file_utils
 from common.types import CompilationResult, OutputFile
@@ -124,3 +124,64 @@ def is_driver_unimplemented(tex_engine_output: bytes) -> bool:
     # This string should be exactly the same as the one that we program the color command to emit
     # when no driver is found, in 'color_commands.tex'.
     return br"Coloring not implemented for driver" in tex_engine_output
+
+
+COMPILER_RUNNING_PATTERN = re.compile(r"[~]+ Running (.*?) for the first time [~]+")
+
+
+def get_last_autotex_compiler(autotex_log: str) -> Optional[str]:
+    compiler_names = COMPILER_RUNNING_PATTERN.findall(autotex_log)
+    if compiler_names and isinstance(compiler_names[-1], str):
+        return compiler_names[-1]
+    return None
+
+
+def get_compilation_logs(autotex_log: str, compiler_name: str) -> List[str]:
+    """
+    Get AutoTeX logs for a specific TeX compiler that was attempted.
+    May return multiple logs, one for each pass of that compiler. There may be multiple
+    passes of a compiler as AutoTeX may run a compiler multiple times to resolve citations
+    and other references in the document.
+    """
+
+    current_compiler = None
+    log_start = None
+    logs: List[str] = []
+
+    for match in COMPILER_RUNNING_PATTERN.finditer(autotex_log):
+        if log_start is not None and current_compiler == compiler_name:
+            logs.append(autotex_log[log_start : match.start()])
+
+        log_start = match.end()
+        current_compiler = match.group(1)
+
+    if current_compiler == compiler_name:
+        logs.append(autotex_log[log_start : len(autotex_log)])
+
+    return logs
+
+
+def did_compilation_fail(autotex_log: str, compiler_name: str) -> bool:
+    EMERGENCY_STOP_PATTERN = re.compile(r"^! Emergency stop.", flags=re.MULTILINE)
+    for log in get_compilation_logs(autotex_log, compiler_name):
+        if EMERGENCY_STOP_PATTERN.search(log) is not None:
+            return True
+    return False
+
+
+EntityId = str
+
+
+def get_last_colorized_entity_id(
+    autotex_log: str, compiler_name: str
+) -> Optional[EntityId]:
+    logs = get_compilation_logs(autotex_log, compiler_name)
+    if len(logs) == 0:
+        return None
+
+    # Only search for colorization commands in the logs for the last pass of the compiler.
+    entity_ids = re.findall(r"S2: Colorized entity '(.*?)'\.", logs[-1])
+    if entity_ids and isinstance(entity_ids[-1], str):
+        return entity_ids[-1]
+
+    return None

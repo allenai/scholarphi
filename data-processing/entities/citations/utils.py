@@ -32,7 +32,7 @@ def ngram_sim(s1: str, s2: str) -> float:
 def load_located_citations(arxiv_id: ArxivId) -> Optional[Citations]:
     citation_locations: Citations = {}
     citation_locations_path = os.path.join(
-        directories.arxiv_subdir("citation-locations", arxiv_id),
+        directories.arxiv_subdir("citation-cluster-locations", arxiv_id),
         "citation_locations.csv",
     )
     if not os.path.exists(citation_locations_path):

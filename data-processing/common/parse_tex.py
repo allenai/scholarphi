@@ -3,9 +3,9 @@ import re
 import string
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Dict, Iterator, List, Optional, Set, Union
+from typing import Dict, Iterator, List, Optional, Union
 
-from TexSoup import RArg, TexNode, TexSoup, TokenWithPosition
+from TexSoup import TexSoup
 
 from common.scan_tex import (
     EndOfInput,
@@ -18,7 +18,6 @@ from common.scan_tex import (
 from common.string import JournaledString
 from common.types import (
     BeginDocument,
-    Bibitem,
     Documentclass,
     Equation,
     LengthAssignment,
@@ -526,57 +525,6 @@ class DocumentclassExtractor:
         if required_arg is not None:
             return Documentclass(start, required_arg.end)
         return None
-
-
-class BibitemExtractor:
-    def __init__(self) -> None:
-        self.current_bibitem_label: Optional[str] = None
-        self.bibitem_text = ""
-        self.nodes_scanned: Set[TexNode] = set()
-        self.bibitems: List[Bibitem] = []
-
-    def parse(self, tex: str) -> Iterator[Bibitem]:
-        bibitem_pattern = Pattern("bibitem", r"\\bibitem.*?(?=\\bibitem|\n\n|$|\\end{)")
-        for bibitem in scan_tex(tex, [bibitem_pattern]):
-            try:
-                bibitem_soup = parse_soup(bibitem.text)
-            except TexSoupParseError:
-                continue
-            key = self._extract_key(bibitem_soup)
-            tokens = self._extract_text(bibitem_soup)
-            if key is None:
-                logging.warning(
-                    "Detected bibitem with null key %s. Skipping.", str(bibitem_soup)
-                )
-                continue
-            yield Bibitem(key, tokens)
-
-    def _extract_key(self, bibitem: TexSoup) -> Optional[str]:
-        for arg in bibitem[0].args:
-            if isinstance(arg, RArg):
-                return str(arg.value)
-        return None
-
-    def _extract_text(self, bibitem: TexSoup) -> str:
-        text = ""
-        for content in list(bibitem.contents)[1:]:
-            if isinstance(content, TexNode) and content.string is not None:
-                text += content.string
-            # One common pattern in TeX is to force capitalization for a bibliography entry by
-            # surrounding tokens with curly braces. This gets interpreted (incorrectly)
-            # by TeXSoup as an RArg. Here, the contents of an RArg are extracted as literal
-            # text. A space is appended after the RArg's value because TeXSoup will remove the
-            # spaces between what it interprets as RArgs. As only approximate matching will be
-            # performed on the text, erroneous insertion of spaces shouldn't be an issue.
-            if isinstance(content, RArg):
-                text += content.value + " "
-            elif isinstance(content, TokenWithPosition):
-                text += str(content)
-        return _clean_bibitem_text(text)
-
-
-def _clean_bibitem_text(text: str) -> str:
-    return re.sub(r"\s+", " ", text).strip()
 
 
 class MacroExtractor:

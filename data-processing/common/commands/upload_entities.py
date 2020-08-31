@@ -70,7 +70,7 @@ class UploadEntitiesCommand(DatabaseUploadCommand[PaperProcessingResult, None]):
             # Load in locations of all detected hues.
             hue_locations_path = os.path.join(
                 directories.arxiv_subdir(self.get_hue_locations_dirkey(), arxiv_id),
-                "hue_locations.csv",
+                "entity_locations.csv",
             )
             hue_location_infos = list(
                 file_utils.load_from_csv(hue_locations_path, HueLocationInfo)
@@ -153,7 +153,7 @@ def make_upload_entities_command(
             return f"detected-{entity_name}"
 
         def get_hue_locations_dirkey(self) -> str:
-            return f"hue-locations-for-{entity_name}"
+            return f"{entity_name}-locations"
 
         def save(self, item: PaperProcessingResult, _: None) -> None:
             upload_func(item, self.args.data_version)
