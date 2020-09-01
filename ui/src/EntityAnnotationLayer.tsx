@@ -97,18 +97,6 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
         .map((id) => entities.byId[id])
         .filter((e) => e !== undefined)
         .filter(isSymbol)
-        .some((s) => s.relationships.equation.id === equationId) &&
-      [
-        "52763",
-        "52775",
-        "52783",
-        "52787",
-        "53007",
-        "53024",
-        "53039",
-        "53042",
-        "53050",
-      ].indexOf(equationId) !== -1
     );
   }
 
