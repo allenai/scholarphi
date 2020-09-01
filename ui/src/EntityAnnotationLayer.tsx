@@ -97,6 +97,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
         .map((id) => entities.byId[id])
         .filter((e) => e !== undefined)
         .filter(isSymbol)
+        .some((s) => s.relationships.equation.id === equationId)
     );
   }
 
