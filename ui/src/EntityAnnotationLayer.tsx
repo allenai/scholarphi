@@ -1,10 +1,10 @@
 import classNames from "classnames";
 import React from "react";
 import CitationGloss from "./CitationGloss";
-import ContextualSymbolGloss from "./ContextualSymbolGloss";
 import EntityAnnotation from "./EntityAnnotation";
 import * as selectors from "./selectors";
 import { GlossStyle } from "./settings";
+import SimpleSymbolGloss from "./SimpleSymbolGloss";
 import { Entities, PaperId, Papers, UserLibrary } from "./state";
 import SymbolDefinitionGloss from "./SymbolDefinitionGloss";
 import TermDefinitionGloss from "./TermDefinitionGloss";
@@ -323,7 +323,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 glossContent={
                   !(this.props.glossStyle === "tooltip" && !isFindSelection) ? (
                     glossEvaluationEnabled ? (
-                      <ContextualSymbolGloss
+                      <SimpleSymbolGloss
                         symbol={entity}
                         entities={entities}
                         handleJumpToEntity={this.props.handleJumpToEntity}
@@ -333,6 +333,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                     )
                   ) : null
                 }
+                tooltipPlacement="above"
                 handleSelect={this.props.handleSelectEntityAnnotation}
               />
             );

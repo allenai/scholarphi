@@ -2,7 +2,7 @@ import classNames from "classnames";
 import React from "react";
 import { GlossStyle } from "./settings";
 import Sidenote from "./Sidenote";
-import Tooltip from "./Tooltip";
+import Tooltip, { TooltipPlacement } from "./Tooltip";
 import { BoundingBox } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 import * as uiUtils from "./utils/ui";
@@ -26,6 +26,7 @@ interface Props {
   location: BoundingBox;
   glossContent: React.ReactNode | null;
   glossStyle: GlossStyle | null;
+  tooltipPlacement?: TooltipPlacement;
   underline: boolean;
   /**
    * Correction factor to apply to bounding box coordinates before rendering the annotation.
@@ -106,6 +107,7 @@ export class AnnotationSpan extends React.PureComponent<Props> {
               pageView={this.props.pageView}
               anchor={this.props.location}
               content={this.props.glossContent}
+              placement={this.props.tooltipPlacement}
             />
           </>
         );

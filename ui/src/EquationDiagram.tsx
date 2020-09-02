@@ -111,7 +111,7 @@ class EquationDiagram extends React.PureComponent<Props, State> {
       .filter(
         (s) =>
           selectors.outerBoundingBox(s, pageNumber) !== null &&
-          selectors.diagramLabel(s) !== null &&
+          selectors.diagramLabel(s, true) !== null &&
           s.attributes.tex !== null
       )
       .map((s) => {
@@ -124,7 +124,7 @@ class EquationDiagram extends React.PureComponent<Props, State> {
           id: s.id,
           groupId: s.attributes.tex as string,
           location: { left, top, width, height },
-          label: selectors.diagramLabel(s) as string,
+          label: selectors.diagramLabel(s, true) as string,
         } as Feature;
       });
 
