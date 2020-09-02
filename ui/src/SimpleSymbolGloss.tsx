@@ -168,22 +168,23 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
           "contextual-symbol-gloss"
         )}
       >
-        {definedHere && <div className="gloss__section">Defined here.</div>}
+        {definedHere && (
+          <div className="gloss__section">
+            <p>Defined here.</p>
+          </div>
+        )}
         {!definedHere && definitions.length > 0 && (
           <div className="gloss__section">
-            <GlossSection id={`definitions-symbol-${symbol.id}`}>
-              {definitions.map((d, i) => (
-                <Snippet
-                  key={i}
-                  id={`symbol-${symbol.id}-definition-${i}`}
-                  sentence={definitionSentences[i]}
-                  linkText={getLinkText(originalSymbol, definitionSentences[i])}
-                  handleJumpToSnippet={this.props.handleJumpToEntity}
-                >
-                  {d}
-                </Snippet>
-              ))}
-            </GlossSection>
+            <Snippet
+              id={`symbol-${symbol.id}-definition`}
+              sentence={definitionSentences[0]}
+              linkText={
+                " " + getLinkText(originalSymbol, definitionSentences[0])
+              }
+              handleJumpToSnippet={this.props.handleJumpToEntity}
+            >
+              {definitions[0]}
+            </Snippet>
           </div>
         )}
         <div className="gloss__section">
@@ -216,7 +217,7 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
                     )}
                   </span>
                 ))}
-                . <VoteButton context={{ for: "nicknames" }} />
+                .
               </span>
             </p>
           ) : null}
@@ -233,9 +234,9 @@ function getLinkText(source: Entity, destination: Entity) {
     return null;
   }
   if (sourcePage === destPage) {
-    return `See in context on this page`;
+    return null;
   } else {
-    return `See in context on page ${destPage + 1}`;
+    return `(See in context on page ${destPage + 1})`;
   }
 }
 
@@ -652,24 +653,18 @@ class Snippet extends React.PureComponent<SnippetProps> {
   render() {
     const { sentence } = this.props;
     return (
-      <>
-        <div className="snippet">
-          <RichText>{cleanTex(this.props.children)}</RichText>
-        </div>
+      <p>
+        <RichText>{cleanTex(this.props.children)}</RichText>
         {this.props.handleJumpToSnippet && this.props.linkText ? (
-          <p>
-            {" "}
-            <EntityLinkSpan
-              id={`${this.props.id}-text-link`}
-              entityId={sentence ? sentence.id : undefined}
-              handleJumpToEntity={this.props.handleJumpToSnippet}
-            >
-              {this.props.linkText}
-            </EntityLinkSpan>
-            {"."}
-          </p>
+          <EntityLinkSpan
+            id={`${this.props.id}-text-link`}
+            entityId={sentence ? sentence.id : undefined}
+            handleJumpToEntity={this.props.handleJumpToSnippet}
+          >
+            {this.props.linkText}
+          </EntityLinkSpan>
         ) : null}
-      </>
+      </p>
     );
   }
 }
