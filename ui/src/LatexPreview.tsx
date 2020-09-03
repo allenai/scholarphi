@@ -69,6 +69,7 @@ class LatexPreview extends React.PureComponent<Props> {
                * Remove macros like labels that KaTeX doesn't know how to parse.
                */
               .replace(/\\label\{[^}]+\}/g, "")
+              .replace(/\\vspace\{[^}]+\}/g, "")
           );
         },
         errorCallback: (message: string, error: katex.ParseError) => {
@@ -88,6 +89,39 @@ class LatexPreview extends React.PureComponent<Props> {
            */
           "\\mathds": "",
           "\\nonumber": "",
+          /*
+           * TODO(andrewhead): The following macros are specific to a Neurips 2017 paper. They
+           * should be removed in the future when 1703.06114 is no longer being used as a demo paper.
+           */
+          "\\Bcal": "\\mathcal{B}",
+          "\\Dcal": "\\mathcal{D}",
+          "\\Scal": "\\mathcal{S}",
+          "\\Qcal": "\\mathcal{Q}",
+          "\\Tcal": "\\mathcal{T}",
+          "\\Fcal": "\\mathcal{F}",
+          "\\Pcal": "\\mathcal{P}",
+          "\\Ccal": "\\mathcal{C}",
+          "\\Ocal": "\\mathcal{O}",
+          "\\Xcal": "\\mathcal{X}",
+          "\\Mcal": "\\mathcal{M}",
+          "\\Ical": "\\mathcal{I}",
+          "\\Jcal": "\\mathcal{J}",
+          "\\Ycal": "\\mathcal{Y}",
+          "\\Gcal": "\\mathcal{G}",
+          "\\Zcal": "\\mathcal{Z}",
+          "\\Ncal": "\\mathcal{N}",
+          "\\Ucal": "\\mathcal{U}",
+          "\\Ecal": "\\mathcal{E}",
+          "\\Hcal": "\\mathcal{H}",
+          "\\inner": "\\left\\langle #1,#2 \\right\\rangle",
+          "\\rbr": "\\left(#1\\right)",
+          "\\sbr": "\\left[#1\\right]",
+          "\\cbr": "\\left\\{#1\\right\\}",
+          "\\nbr": "\\left\\|#1\\right\\|",
+          "\\abr": "\\left|#1\\right|",
+          "\\RR": "\\mathbb{R}",
+          "\\NN": "\\mathbb{N}",
+          "\\ZZ": "\\mathbb{Z}",
         },
         trust: (context: TrustContext) => {
           const PERMITTED_CLASSES = ["match-highlight"];
