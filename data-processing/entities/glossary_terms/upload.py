@@ -1,17 +1,46 @@
-from typing import Optional, cast
+import os.path
+from collections import defaultdict
+from typing import Dict, List, Optional, cast
 
-from common.types import BoundingBox, EntityInformation, PaperProcessingResult
-from common.types import Term as TermEntity
+from common import directories, file_utils
+from common.types import (
+    BoundingBox,
+    EntityInformation,
+    EntityReference,
+    PaperProcessingResult,
+    Term,
+)
 from common.upload_entities import upload_entities
+from entities.sentences.types import Context
 
 
 def upload_terms(
     processing_summary: PaperProcessingResult, data_version: Optional[int]
 ) -> None:
 
+    arxiv_id = processing_summary.arxiv_id
+    contexts = file_utils.load_from_csv(
+        os.path.join(
+            directories.arxiv_subdir("contexts-for-glossary-terms", arxiv_id),
+            "contexts.csv",
+        ),
+        Context,
+    )
+    contexts_by_entity = {(c.tex_path, c.entity_id): c for c in contexts}
+
+    # Assemble contexts that should be shown for each term.
+    contexts_by_term: Dict[str, List[Context]] = defaultdict(list)
+    for entity_and_location in processing_summary.localized_entities:
+        term = cast(Term, entity_and_location.entity)
+        if (term.tex_path, term.id_) in contexts_by_entity:
+            contexts_by_term[term.text].append(
+                contexts_by_entity[(term.tex_path, term.id_)]
+            )
+
     entity_infos = []
     for entity_and_location in processing_summary.localized_entities:
-        term = cast(TermEntity, entity_and_location.entity)
+        term = cast(Term, entity_and_location.entity)
+        context = contexts_by_entity.get((term.tex_path, term.id_))
         boxes = [cast(BoundingBox, l) for l in entity_and_location.locations]
 
         entity_info = EntityInformation(
@@ -20,8 +49,24 @@ def upload_terms(
             bounding_boxes=boxes,
             data={
                 "name": term.text,
-                "glossary_definitions": term.definitions,
-                "glossary_sources": term.sources,
+                "definitions": term.definitions,
+                "definition_texs": term.definitions,
+                "sources": term.sources,
+                "snippets": [c.snippet for c in contexts_by_term.get(term.text, [])],
+            },
+            relationships={
+                "sentence": EntityReference(
+                    type_="sentence",
+                    id_=f"{context.tex_path}-{context.sentence_id}"
+                    if context is not None
+                    else None,
+                ),
+                "snippet_sentences": [
+                    EntityReference(
+                        type_="sentence", id_=f"{c.tex_path}-{c.sentence_id}"
+                    )
+                    for c in contexts_by_term.get(term.text, [])
+                ],
             },
         )
         entity_infos.append(entity_info)

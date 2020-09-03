@@ -3,14 +3,14 @@ import os.path
 from abc import abstractmethod
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Type
+from typing import Any, Callable, Dict, Iterator, List, Optional, Type
 
 from common import directories, file_utils
 from common.colorize_tex import wrap_span
 from common.commands.base import ArxivBatchCommand
 from common.types import ArxivId, RelativePath, SerializableEntity
 
-from ..types import Sentence, Context
+from ..types import Context, Sentence
 
 
 @dataclass(frozen=True)
@@ -102,7 +102,7 @@ class ExtractContextsCommand(ArxivBatchCommand[Task, Context]):
 
         # Entities, grouped by similarity and sentence.
         sentence_entities: Dict[
-            SentenceId, Dict[EntityKey, Set[SerializableEntity]]
+            SentenceId, Dict[EntityKey, List[SerializableEntity]]
         ] = {}
 
         if len(item.sentences) == 0:
@@ -123,7 +123,7 @@ class ExtractContextsCommand(ArxivBatchCommand[Task, Context]):
             return
 
         sentence = next(sentences_ordered)
-        sentence_entities[sentence.id_] = defaultdict(set)
+        sentence_entities[sentence.id_] = defaultdict(list)
         entity = next(entities_ordered)
         while True:
             try:
@@ -137,11 +137,11 @@ class ExtractContextsCommand(ArxivBatchCommand[Task, Context]):
                     )
                     entity = next(entities_ordered)
                 elif entity.start >= sentence.start and entity.end <= sentence.end:
-                    sentence_entities[sentence.id_][self.get_key(entity)].add(entity)
+                    sentence_entities[sentence.id_][self.get_key(entity)].append(entity)
                     entity = next(entities_ordered)
                 else:
                     sentence = next(sentences_ordered)
-                    sentence_entities[sentence.id_] = defaultdict(set)
+                    sentence_entities[sentence.id_] = defaultdict(list)
             except StopIteration:
                 break
 
