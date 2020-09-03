@@ -181,6 +181,8 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
             findMatchedEntityIds.indexOf(entityId) !== -1;
           const isFindSelection = findSelectionEntityId === entityId;
           const selectedSpanIds = isSelected ? selectedAnnotationSpanIds : null;
+          const inDefinition = selectors.inDefinition(entityId, entities);
+          const hasDefinition = selectors.hasDefinition(entityId, entities);
 
           if (
             isTerm(entity) &&
@@ -193,7 +195,9 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 key={annotationId}
                 id={annotationId}
                 entity={entity}
-                className="term-annotation"
+                className={classNames("term-annotation", {
+                  "gloss-hint": hasDefinition && !inDefinition,
+                })}
                 pageView={pageView}
                 underline={showAnnotations}
                 glossStyle={glossStyle}
@@ -268,6 +272,9 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
             const isSelectionChild = selectedEntities.some(
               (e) => isSymbol(e) && selectors.isChild(entity, e)
             );
+            const isSelectionDescendant = selectedEntities.some(
+              (e) => isSymbol(e) && selectors.isDescendant(entity, e, entities)
+            );
             const isTopLevel = selectors.isTopLevelSymbol(entity, entities);
             const equationId = entity.relationships.equation.id;
             const inSelectedEquation = selectedEntities.some(
@@ -287,6 +294,11 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
              */
             const showSelectionHint =
               isSelectionChild || isTopLevelInSelectedEquation;
+
+            const showTopLevelGlossHint =
+              isTopLevel &&
+              (hasDefinition ||
+                selectors.descendantHasDefinition(entity.id, entities));
 
             /*
              * Compute attributes of symbols to use for styling, like whether it
@@ -310,7 +322,10 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 id={annotationId}
                 className={classNames("symbol-annotation", {
                   "selection-hint": showSelectionHint,
+                  "top-level-gloss-hint": showTopLevelGlossHint,
+                  "has-definition": hasDefinition && !inDefinition,
                   "leaf-symbol": isLeaf,
+                  "descendant-of-selection": isSelectionDescendant,
                   "ancestor-of-selection": isSelectionAncestor,
                   "in-selected-equation": inSelectedEquation,
                 })}

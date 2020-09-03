@@ -108,10 +108,9 @@
   }
 
   &.selection-hint {
-    background-color: @highlight-color;
-    border-radius: 10px;
-    border: 1px solid black;
-    animation: pulse 0.5s ease-in-out infinite alternate;
+    // background-color: @highlight-color;
+    border-radius: @border-radius;
+    border: 3px solid black;
 
     /*
      * By default, annotations appear behind equation diagrams, which are meant to appear
@@ -124,13 +123,17 @@
     }
   }
 
-  @keyframes pulse {
-    0% {
-      opacity: 0.1;
+  &.top-level-gloss-hint:hover {
+    &.has-definition {
+      background-color: fade(@s2-link-default, 40%);
     }
-    100% {
-      opacity: @highlight-opacity;
-    }
+    background: none !important;
+    border: 4px blue solid !important;
+    border-width: 4px;
+  }
+
+  &.has-definition.descendant-of-selection {
+    background-color: fade(@s2-link-default, 40%);
   }
 }
 

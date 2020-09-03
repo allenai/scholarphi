@@ -1,3 +1,7 @@
+import IconButton from "@material-ui/core/IconButton";
+import Functions from "@material-ui/icons/Functions";
+import Search from "@material-ui/icons/Search";
+import Toc from "@material-ui/icons/Toc";
 import classNames from "classnames";
 import React from "react";
 import EntityLink from "./EntityLink";
@@ -142,10 +146,7 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
     const MAX_ALSO_SEE = 5;
     alsoSee = alsoSee.slice(0, MAX_ALSO_SEE);
 
-    const definedHere = symbol.relationships.definition_sentences.some(
-      (r) => r.id !== null && r.id === symbol.relationships.sentence.id
-    );
-
+    const definedHere = selectors.inDefinition(symbol.id, entities);
     if (!definedHere && nickname === null && definition === null) {
       return null;
     }
@@ -204,6 +205,17 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
             </p>
           </div>
         )}
+        <div className="inline-gloss__action-buttons">
+          <IconButton size="small">
+            <Search />
+          </IconButton>
+          <IconButton size="small">
+            <Functions />
+          </IconButton>
+          <IconButton size="small">
+            <Toc />
+          </IconButton>
+        </div>
       </div>
     );
   }

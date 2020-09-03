@@ -3,7 +3,12 @@ import { SymbolFilter } from "../FindBar";
 import { Entities } from "../state";
 import { isSymbol, Relationship, Symbol } from "../types/api";
 import * as uiUtils from "../utils/ui";
-import { adjacentContext, orderByPosition, orderExcerpts } from "./entity";
+import {
+  adjacentContext,
+  hasDefinition,
+  orderByPosition,
+  orderExcerpts,
+} from "./entity";
 
 export function diagramLabel(
   symbol: Symbol,
@@ -141,7 +146,7 @@ export function isDescendant(
   entities: Entities
 ) {
   let parent: Relationship = symbol1.relationships.parent;
-  while (parent.id !== null) {
+  while (parent && parent.id !== null) {
     const parentEntity = entities.byId[parent.id];
     if (parentEntity !== undefined && isSymbol(parentEntity)) {
       if (parentEntity === symbol2) {
@@ -188,11 +193,11 @@ export function definingFormulas(symbolIds: string[], entities: Entities) {
  * a definition where the entity appears.
  */
 export function adjacentNickname(
-  entityId: string,
+  symbolId: string,
   entities: Entities,
   where: "before" | "after"
 ) {
-  const symbol = entities.byId[entityId];
+  const symbol = entities.byId[symbolId];
   if (symbol === undefined || !isSymbol(symbol)) {
     return null;
   }
@@ -206,4 +211,10 @@ export function adjacentNickname(
   const ordered = orderExcerpts(nicknames, contexts, entities);
   const sentenceId = symbol.relationships.sentence.id;
   return adjacentContext(sentenceId, entities, ordered, where);
+}
+
+export function descendantHasDefinition(symbolId: string, entities: Entities) {
+  return descendants(symbolId, entities).some((s) =>
+    hasDefinition(s.id, entities)
+  );
 }

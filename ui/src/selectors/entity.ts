@@ -290,6 +290,32 @@ export function definitions(entityIds: string[], entities: Entities) {
   return orderExcerpts(definitions, contexts, entities);
 }
 
+export function inDefinition(entityId: string, entities: Entities) {
+  const entity = entities.byId[entityId];
+  if (entity === undefined || !(isSymbol(entity) || isTerm(entity))) {
+    return false;
+  }
+  return entity.relationships.definition_sentences.some(
+    (r) => r.id !== null && r.id === entity.relationships.sentence.id
+  );
+}
+
+export function hasDefinition(entityId: string, entities: Entities) {
+  const entity = entities.byId[entityId];
+  if (entity === undefined || !(isSymbol(entity) || isTerm(entity))) {
+    return false;
+  }
+  if (isTerm(entity)) {
+    return entity.attributes.definition_texs.length > 0;
+  }
+  if (isSymbol(entity)) {
+    return (
+      entity.attributes.definitions.length > 0 ||
+      entity.attributes.nicknames.length > 0
+    );
+  }
+}
+
 /**
  * Get the last context that appears right before an entity. Assumes that 'orderedContexts'
  * has already been ordered by document position.
