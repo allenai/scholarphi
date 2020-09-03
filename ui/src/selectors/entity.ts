@@ -245,37 +245,65 @@ export function orderExcerpts(
 }
 
 /**
- * Get definition that appears right above an entity. (Don't include)
+ * Get definition that appears right before or after an entity. Don't include
  * a definition where the entity appears.
  */
-export function definitionBefore(entityId: string, entities: Entities) {
+export function adjacentDefinition(
+  entityId: string,
+  entities: Entities,
+  where: "before" | "after"
+) {
   const entity = entities.byId[entityId];
-  if (entity === undefined || !(isTerm(entity) || isSymbol(entity))) {
+  const contexts = definitions([entityId], entities);
+  if (
+    entity === undefined ||
+    !(isTerm(entity) || isSymbol(entity)) ||
+    contexts.length === 0
+  ) {
     return null;
   }
-
-  const definitions = isTerm(entity)
-    ? entity.attributes.definition_texs
-    : entity.attributes.definitions;
-  const contexts = entity.relationships.definition_sentences;
-  if (definitions.length === 0 || contexts.length === 0) {
-    return null;
-  }
-
-  const ordered = orderExcerpts(definitions, contexts, entities);
   const sentenceId = entity.relationships.sentence.id;
-  return contextBefore(sentenceId, entities, ordered);
+  return adjacentContext(sentenceId, entities, contexts, where);
+}
+
+/**
+ * Get a list of definitions for a set of entities, ordered by their position in the paper.
+ */
+export function definitions(entityIds: string[], entities: Entities) {
+  const entitiesWithDefinitions = entityIds
+    .map((id) => entities.byId[id])
+    .filter((e) => e !== undefined)
+    .filter((e) => isTerm(e) || isSymbol(e))
+    .map((e) => e as Term | Symbol);
+  const definitions = entitiesWithDefinitions
+    .map((e) => {
+      if (isTerm(e)) {
+        return e.attributes.definition_texs;
+      } else {
+        return e.attributes.definitions;
+      }
+    })
+    .flat();
+  const contexts = entitiesWithDefinitions
+    .map((s) => s.relationships.definition_sentences)
+    .flat();
+  return orderExcerpts(definitions, contexts, entities);
 }
 
 /**
  * Get the last context that appears right before an entity. Assumes that 'orderedContexts'
  * has already been ordered by document position.
  */
-export function contextBefore(
+export function adjacentContext(
   entityId: string | null | undefined,
   entities: Entities,
-  orderedContexts: { excerpt: string; contextEntity: Entity }[]
+  orderedContexts: { excerpt: string; contextEntity: Entity }[],
+  where: "before" | "after"
 ) {
+  if (orderedContexts.length === 0) {
+    return null;
+  }
+
   /*
    * If the requested entity doesn't exist, return the first context.
    */
@@ -290,12 +318,21 @@ export function contextBefore(
   /*
    * Return the first context that appears before the entity.
    */
-  const reversed = [...orderedContexts].reverse();
-  for (const context of reversed) {
-    if (comparePosition(context.contextEntity, entity) < 0) {
-      return context;
+  if (where === "before") {
+    const reversed = [...orderedContexts].reverse();
+    for (const context of reversed) {
+      if (comparePosition(context.contextEntity, entity) < 0) {
+        return context;
+      }
+    }
+  } else {
+    for (const context of orderedContexts) {
+      if (comparePosition(entity, context.contextEntity) < 0) {
+        return context;
+      }
     }
   }
+
   return null;
 }
 

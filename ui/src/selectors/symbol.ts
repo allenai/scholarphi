@@ -3,7 +3,7 @@ import { SymbolFilter } from "../FindBar";
 import { Entities } from "../state";
 import { isSymbol, Relationship, Symbol } from "../types/api";
 import * as uiUtils from "../utils/ui";
-import { contextBefore, orderByPosition, orderExcerpts } from "./entity";
+import { adjacentContext, orderByPosition, orderExcerpts } from "./entity";
 
 export function diagramLabel(
   symbol: Symbol,
@@ -187,7 +187,11 @@ export function definingFormulas(symbolIds: string[], entities: Entities) {
  * Get definition that appears right above an entity. (Don't include)
  * a definition where the entity appears.
  */
-export function nicknameBefore(entityId: string, entities: Entities) {
+export function adjacentNickname(
+  entityId: string,
+  entities: Entities,
+  where: "before" | "after"
+) {
   const symbol = entities.byId[entityId];
   if (symbol === undefined || !isSymbol(symbol)) {
     return null;
@@ -201,5 +205,5 @@ export function nicknameBefore(entityId: string, entities: Entities) {
 
   const ordered = orderExcerpts(nicknames, contexts, entities);
   const sentenceId = symbol.relationships.sentence.id;
-  return contextBefore(sentenceId, entities, ordered);
+  return adjacentContext(sentenceId, entities, ordered, where);
 }

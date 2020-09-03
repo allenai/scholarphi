@@ -52,8 +52,56 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
     const { activeSymbolId } = this.state;
     const symbol = entities.byId[activeSymbolId] as Symbol;
 
-    const definition = selectors.definitionBefore(activeSymbolId, entities);
-    const nickname = selectors.nicknameBefore(activeSymbolId, entities);
+    /*
+     * Try to find definition and nickname right before the symbol.
+     */
+    let definition = selectors.adjacentDefinition(
+      activeSymbolId,
+      entities,
+      "before"
+    );
+    let nicknameFrom = "before";
+    let nickname = selectors.adjacentNickname(
+      activeSymbolId,
+      entities,
+      "before"
+    );
+
+    /*
+     * Only show nickname if it appeared after the last definition.
+     */
+    if (nickname !== null && definition !== null) {
+      if (
+        selectors.comparePosition(
+          nickname.contextEntity,
+          definition.contextEntity
+        ) < 0
+      ) {
+        nickname = null;
+      }
+    }
+
+    /*
+     * If nothing was found before the symbol, search for the first
+     * definition or nickname after it.
+     */
+    if (nickname === null && definition == null) {
+      definition = selectors.adjacentDefinition(
+        activeSymbolId,
+        entities,
+        "after"
+      );
+      if (definition === null) {
+        nickname = selectors.adjacentNickname(
+          activeSymbolId,
+          entities,
+          "after"
+        );
+        if (nickname !== null) {
+          nicknameFrom = "after";
+        }
+      }
+    }
 
     const originalSymbol = this.props.symbol;
 
@@ -94,13 +142,13 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
     const MAX_ALSO_SEE = 5;
     alsoSee = alsoSee.slice(0, MAX_ALSO_SEE);
 
-    if (nickname === null || definition === null) {
-      return null;
-    }
-
     const definedHere = symbol.relationships.definition_sentences.some(
       (r) => r.id !== null && r.id === symbol.relationships.sentence.id
     );
+
+    if (!definedHere && nickname === null && definition === null) {
+      return null;
+    }
 
     /*
      * Find most recent definition.
@@ -118,31 +166,41 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
             <p>Defined here.</p>
           </div>
         )}
-        {!definedHere && definition !== null && (
+        {!definedHere && (definition !== null || nickname !== null) && (
           <div className="gloss__section">
             <p>
-              <EntityLink
-                id={`symbol-${symbol.id}-definition`}
-                entityId={definition.contextEntity.id}
-                handleJumpToEntity={this.props.handleJumpToEntity}
-              >
-                <RichText>{definition.excerpt}</RichText>
-              </EntityLink>
-            </p>
-          </div>
-        )}
-        {nickname !== null && (
-          <div className="gloss__section">
-            <p>
-              Last called{' "'}
-              <EntityLink
-                id={`symbol-${symbol.id}-nickname`}
-                entityId={nickname.contextEntity.id}
-                handleJumpToEntity={this.props.handleJumpToEntity}
-              >
-                {nickname.excerpt}
-              </EntityLink>
-              {'"'}
+              {definition !== null && (
+                <span>
+                  <EntityLink
+                    id={`symbol-${symbol.id}-definition`}
+                    className="subtle"
+                    entityId={definition.contextEntity.id}
+                    handleJumpToEntity={this.props.handleJumpToEntity}
+                  >
+                    <RichText>{definition.excerpt}</RichText>
+                  </EntityLink>
+                  {". "}
+                </span>
+              )}
+              {definition !== null && nickname !== null && <br />}
+              {nickname !== null && (
+                <span>
+                  {nicknameFrom === "before"
+                    ? "Recently called "
+                    : "Later called "}
+                  <i>
+                    <EntityLink
+                      id={`symbol-${symbol.id}-nickname`}
+                      className="subtle"
+                      entityId={nickname.contextEntity.id}
+                      handleJumpToEntity={this.props.handleJumpToEntity}
+                    >
+                      {nickname.excerpt}
+                    </EntityLink>
+                  </i>
+                  {"."}
+                </span>
+              )}
             </p>
           </div>
         )}
