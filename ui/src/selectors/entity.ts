@@ -6,6 +6,7 @@ import {
   isSentence,
   isSymbol,
   isTerm,
+  Relationship,
   Sentence,
   Symbol,
   Term,
@@ -161,6 +162,37 @@ export function compareBoxes(box1: BoundingBox, box2: BoundingBox) {
 }
 
 /**
+ * Compare the position of two entities. Use as a comparator when ordering entities
+ * from top-to-bottom in the document.
+ */
+export function comparePosition(e1: Entity, e2: Entity) {
+  if (e1.id === e2.id) {
+    return 0;
+  }
+  if (
+    e1.attributes.bounding_boxes.length === 0 ||
+    e2.attributes.bounding_boxes.length === 0
+  ) {
+    return 0;
+  }
+  return compareBoxes(
+    e1.attributes.bounding_boxes[0],
+    e2.attributes.bounding_boxes[0]
+  );
+}
+
+/**
+ * Get the page number for the first page the entity appears on.
+ */
+export function firstPage(entity: Entity) {
+  const boxes = entity.attributes.bounding_boxes;
+  if (boxes.length === 0) {
+    return null;
+  }
+  return Math.min(...boxes.map((b) => b.page));
+}
+
+/**
  * Order a list of entity IDs by which ones appear first in the paper, using the position of
  * the symbol bounding boxes. Does not take columns into account. This method is memoized
  * because it's assumed that it will frequently be called with the list of all entities in
@@ -179,3 +211,129 @@ export const orderByPosition = defaultMemoize(
     return sorted;
   }
 );
+
+/**
+ * Order a list of definitions based on their accompanying contexts. 'definitions' and
+ * 'contexts' should have the same dimensions, where each definition is associated with one context.
+ * 'contexts' are used to sort the order of the definitions.
+ */
+export function orderExcerpts(
+  excerpts: string[],
+  contexts: Relationship[],
+  entities: Entities
+) {
+  const contextualized = [];
+  for (let i = 0; i < excerpts.length; i++) {
+    const excerpt = excerpts[i];
+    const context = contexts[i];
+    if (context === undefined || context.id === null) {
+      continue;
+    }
+    const contextEntity = entities.byId[context.id];
+    if (contextEntity === undefined) {
+      continue;
+    }
+    const contextPage = firstPage(contextEntity);
+    if (contextPage === null) {
+      continue;
+    }
+    contextualized.push({ excerpt, contextEntity });
+  }
+  return contextualized.sort((c1, c2) =>
+    comparePosition(c1.contextEntity, c2.contextEntity)
+  );
+}
+
+/**
+ * Get definition that appears right above an entity. (Don't include)
+ * a definition where the entity appears.
+ */
+export function definitionBefore(entityId: string, entities: Entities) {
+  const entity = entities.byId[entityId];
+  if (entity === undefined || !(isTerm(entity) || isSymbol(entity))) {
+    return null;
+  }
+
+  const definitions = isTerm(entity)
+    ? entity.attributes.definition_texs
+    : entity.attributes.definitions;
+  const contexts = entity.relationships.definition_sentences;
+  if (definitions.length === 0 || contexts.length === 0) {
+    return null;
+  }
+
+  const ordered = orderExcerpts(definitions, contexts, entities);
+  const sentenceId = entity.relationships.sentence.id;
+  return contextBefore(sentenceId, entities, ordered);
+}
+
+/**
+ * Get the last context that appears right before an entity. Assumes that 'orderedContexts'
+ * has already been ordered by document position.
+ */
+export function contextBefore(
+  entityId: string | null | undefined,
+  entities: Entities,
+  orderedContexts: { excerpt: string; contextEntity: Entity }[]
+) {
+  /*
+   * If the requested entity doesn't exist, return the first context.
+   */
+  if (entityId === undefined || entityId === null) {
+    return orderedContexts[0];
+  }
+  const entity = entities.byId[entityId];
+  if (entity === undefined || entity === null) {
+    return orderedContexts[0];
+  }
+
+  /*
+   * Return the first context that appears before the entity.
+   */
+  const reversed = [...orderedContexts].reverse();
+  for (const context of reversed) {
+    if (comparePosition(context.contextEntity, entity) < 0) {
+      return context;
+    }
+  }
+  return null;
+}
+
+/**
+ * Get a list of usages for a set of entities, ordered by their position in the paper.
+ */
+export function usages(entityIds: string[], entities: Entities) {
+  const entitiesWithUsages = entityIds
+    .map((id) => entities.byId[id])
+    .filter((e) => e !== undefined)
+    .filter((e) => isTerm(e) || isSymbol(e))
+    .map((e) => e as Term | Symbol);
+  const snippets = entitiesWithUsages.map((e) => e.attributes.snippets).flat();
+  const contexts = entitiesWithUsages
+    .map((s) => s.relationships.snippet_sentences)
+    .flat();
+  return orderExcerpts(snippets, contexts, entities);
+}
+
+/**
+ * Rendering of equation TeX takes place using KaTeX. This leaves the rest of the text formatting
+ * for the prose, like citations, references, citations, italics, bolds, and more as it appeared
+ * in the raw TeX. This function performs some simple (brittle) replacements to attempt to turn the
+ * raw TeX into plaintext.
+ */
+export function cleanTex(tex: string) {
+  const noArgMacro = (name: string) => new RegExp(`\\\\${name}(?:{})?`, "g");
+  const oneArgMacro = (name: string) =>
+    new RegExp(`\\\\${name}\\{([^}]*)\\}`, "g");
+  return tex
+    .replace(/%.*?$/gm, "")
+    .replace(oneArgMacro("label"), "")
+    .replace(oneArgMacro("texttt"), "$1")
+    .replace(oneArgMacro("textbf"), "$1")
+    .replace(oneArgMacro("textit|emph"), "$1")
+    .replace(oneArgMacro("footnote"), "")
+    .replace(oneArgMacro("\\w*cite\\w*\\*?"), "[Citation]")
+    .replace(oneArgMacro("(?:eq|c|)ref"), "[Reference]")
+    .replace(oneArgMacro("gls(?:pl)?\\*"), (_, arg) => arg.toUpperCase())
+    .replace(noArgMacro("bfseries"), "");
+}

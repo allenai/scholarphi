@@ -3,7 +3,7 @@ import { SymbolFilter } from "../FindBar";
 import { Entities } from "../state";
 import { isSymbol, Relationship, Symbol } from "../types/api";
 import * as uiUtils from "../utils/ui";
-import { orderByPosition } from "./entity";
+import { contextBefore, orderByPosition, orderExcerpts } from "./entity";
 
 export function diagramLabel(
   symbol: Symbol,
@@ -169,4 +169,37 @@ export function symbolMathMls(symbolIds: string[], entities: Entities) {
     }
   });
   return uniqueMathMls;
+}
+
+export function definingFormulas(symbolIds: string[], entities: Entities) {
+  const symbols = symbolIds
+    .map((id) => entities.byId[id])
+    .filter((e) => e !== undefined)
+    .filter(isSymbol);
+  const formulas = symbols.map((s) => s.attributes.defining_formulas).flat();
+  const contexts = symbols
+    .map((s) => s.relationships.defining_formula_equations)
+    .flat();
+  return orderExcerpts(formulas, contexts, entities);
+}
+
+/**
+ * Get definition that appears right above an entity. (Don't include)
+ * a definition where the entity appears.
+ */
+export function nicknameBefore(entityId: string, entities: Entities) {
+  const symbol = entities.byId[entityId];
+  if (symbol === undefined || !isSymbol(symbol)) {
+    return null;
+  }
+
+  const { nicknames } = symbol.attributes;
+  const contexts = symbol.relationships.nickname_sentences;
+  if (nicknames.length === 0 || contexts.length === 0) {
+    return null;
+  }
+
+  const ordered = orderExcerpts(nicknames, contexts, entities);
+  const sentenceId = symbol.relationships.sentence.id;
+  return contextBefore(sentenceId, entities, ordered);
 }

@@ -96,6 +96,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       findMatchCount: null,
       findMatchedEntities: null,
       drawerMode: "closed",
+      drawerContentType: null,
       snackbarMode: "closed",
       snackbarActivationTimeMs: null,
       snackbarMessage: null,
@@ -142,7 +143,6 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.clearEntitySelection = this.clearEntitySelection.bind(this);
 
     this.setMultiselectEnabled = this.setMultiselectEnabled.bind(this);
-    this.scrollSymbolIntoView = this.scrollSymbolIntoView.bind(this);
     this.showSnackbarMessage = this.showSnackbarMessage.bind(this);
     this.closeSnackbar = this.closeSnackbar.bind(this);
     this.closeDrawer = this.closeDrawer.bind(this);
@@ -332,55 +332,6 @@ class ScholarReader extends React.PureComponent<Props, State> {
       selectedAnnotationSpanIds: [],
       selectedEntityIds: [],
     });
-  }
-
-  /**
-   * Will scroll a symbol horizontally into view when the drawer opens
-   * if it is now obscured by the drawer.
-   */
-  scrollSymbolIntoView() {
-    const { selectedEntityIds, pdfViewer, entities, pages } = this.state;
-    const DRAWER_WIDTH = 470;
-    const SYMBOL_VIEW_PADDING = 50;
-    if (
-      pdfViewer &&
-      pages !== null &&
-      entities !== null &&
-      selectedEntityIds.length >= 1
-    ) {
-      const lastSelectedEntityId =
-        selectedEntityIds[selectedEntityIds.length - 1];
-      const symbol = entities.byId[lastSelectedEntityId];
-      const symbolBox = symbol.attributes.bounding_boxes[0];
-      const pdfLeft = pdfViewer.container.getBoundingClientRect().left;
-      if (pages[symbolBox.page + 1].view != null) {
-        const { left, width } = uiUtils.getPositionInPageView(
-          pages[symbolBox.page + 1].view,
-          symbolBox
-        );
-        /*
-         * Each component of the calculation:
-         * left + width = right position on the pdf page of the selected symbol
-         * scrollLeft = how much the pdf has been scrolled left already
-         * pdfLeft = how far to the left the pdf is relative to the viewport
-         * ----------------
-         * innerWidth = possible visible area of the viewport for the entire website
-         * 470 = width of the drawer that is now obscuring the view
-         */
-        const relativeSymbolRightPosition =
-          left + width - pdfViewer.container.scrollLeft + pdfLeft;
-        const viewableViewportWidth = window.innerWidth - DRAWER_WIDTH;
-        if (relativeSymbolRightPosition > viewableViewportWidth) {
-          // Add 50px padding to make the symbol close to the drawer but not hidden by it.
-          pdfViewer.container.scrollLeft += Math.max(
-            relativeSymbolRightPosition -
-              viewableViewportWidth +
-              SYMBOL_VIEW_PADDING,
-            0
-          );
-        }
-      }
-    }
   }
 
   setEntityCreationType(type: KnownEntityType) {
@@ -990,18 +941,17 @@ class ScholarReader extends React.PureComponent<Props, State> {
                 />
               ) : null}
               <Drawer
-                paperId={this.props.paperId}
                 pdfViewer={this.state.pdfViewer}
                 mode={
-                  this.state.entityEditingEnabled
+                  this.state.drawerContentType === "entity-property-editor"
                     ? "open"
                     : this.state.drawerMode
                 }
+                contentType={this.state.drawerContentType}
                 entities={this.state.entities}
                 selectedEntityIds={this.state.selectedEntityIds}
-                entityEditingEnabled={this.state.entityEditingEnabled}
                 propagateEntityEdits={this.state.propagateEntityEdits}
-                handleScrollSymbolIntoView={this.scrollSymbolIntoView}
+                handleJumpToEntity={this.jumpToEntity}
                 handleClose={this.closeDrawer}
                 handleUpdateEntity={this.updateEntity}
                 handleDeleteEntity={this.deleteEntity}
