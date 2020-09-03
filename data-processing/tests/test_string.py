@@ -48,6 +48,13 @@ def test_substring_at_boundaries():
     assert sub.initial == "er"
 
 
+def test_substring_includes_initial_edges():
+    s = JournaledString("starter string")
+    edited = s.edit(13, 14, "")
+    sub = edited.substring(0, 13, greedy=False)
+    assert sub.initial == "starter string"
+
+
 def test_map_to_initial_offsets():
     s = JournaledString("starter string")
     edited = s.edit(8, 15, "changed")
@@ -66,7 +73,7 @@ def test_uncertainty_grows_with_overlapping_edits():
     edited1 = s.edit(1, 7, "tarted")
     edited2 = edited1.edit(7, 13, " stron")
     edited3 = edited2.edit(5, 8, "ing_")
-    
+
     # The third edit crosses the spans of the two edits before it. The string can't tell
     # where characters in the third edited span map---whether to the initial span on the
     # left side or the right side, so it conservatively suggests outer bounds at the

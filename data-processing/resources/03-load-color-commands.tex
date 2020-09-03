@@ -94,6 +94,30 @@
 }}%
 %
 % == Instrument hyperref citation formatting macros ==
+% * Fetch the key of the citation that's currently being formatted. If no
+% * citation key can be found, return empty.
+\def\scholar@current@citation@key{%
+% Check whether @citeb (which typically contains the citation key used
+% to look up citation color) is defined. This requires multiple checks.
+% First, check to see if @citeb was set to the '@nil' special value.
+% Make sure @nnil is defined, as it will only be defined for LaTeX.
+\scholarifdefinedelse{@nnil}{%
+\ifx\@citeb\@nnil%
+\scholar@key@from@Hy@testname%
+\else%
+\scholar@key@from@citeb@or@Hy@testname%
+\fi%
+}{%
+\scholar@key@from@citeb@or@Hy@testname%
+}}%
+% * Helpers for extracting citation keys from active macros in the environment.
+\def\scholar@key@from@Hy@testname{%
+\scholarifdefined{Hy@testname}{%
+\expandafter\scholar@extract@citation@key\Hy@testname%
+}}%
+\def\scholar@key@from@citeb@or@Hy@testname{%
+\scholarifdefinedelse{@citeb}{\@citeb}{\scholar@key@from@Hy@testname}%
+}%
 % * In a previous version, we instrumented '\@citecolor' instead of
 % * '\hyper@link', but this didn't always work. One hypothesis is that
 % * '\@citecolor' wasn't getting called if 'colorlinks' was set to false.
@@ -104,35 +128,12 @@
 % Only attempt to color if this hyperlink is for a citation.
 \def\scholar@link@type{#1}%
 \def\scholar@link@citation@type{cite}%
-\ifx\scholar@link@type\scholar@link@citation@type
-%
-% Check whether @citeb (which typically contains the citation key used
-% to look up citation color) is defined. This requires multiple checks.
-% First, check to see if @citeb was set to the '@nil' special value.
-% Make sure @nnil is defined, as it will only be defined for LaTeX.
-\scholarifdefined{@nnil}{%
-\ifx\@citeb\@nnil%
-\def\scholar@key@undefined{yes}%
-\fi%
-}%
-% Second, check to see if the @citeb macro still lacks a definition.
-\scholarifundefined{scholar@key@undefined}{%
-\scholarifundefined{@citeb}{%
-\def\scholar@key@undefined{yes}%
-}}%
-%
-% Determine the citation key from @citeb or hyperref arguments.
-\scholarifdefinedelse{scholar@key@undefined}{%
+\ifx\scholar@link@type\scholar@link@citation@type%
+\edef\scholar@citation@key{\scholar@current@citation@key}%
+\ifx\scholar@citation@key\empty%
 \edef\scholar@citation@key{\scholar@extract@citation@key #3}%
-\message{%
-@citeb is not defined. This probably means that this TeX project uses the
-package called cite. Attempting to infer citation key from arguments to the
-hyperref hyperlink commands. The inferred key is \scholar@citation@key.
-}%
-}{%
-\edef\scholar@citation@key{\@citeb}%
-}%
-% Finally, color the citation text.
+\fi%
+% Color the citation text.
 \scholar@color@if@citation@registered{\scholar@citation@key}{#4}%
 \else%
 % This part will be executed if it's not a citation hyperlink.
@@ -143,7 +144,9 @@ hyperref hyperlink commands. The inferred key is \scholar@citation@key.
 % == Instrument natbib citation formatting macros ==
 % * The wrapped macros are defined in 'natbib.sty' in the TeXLive distribution.
 \let\scholar@inner@NAT@hyper@\NAT@hyper@
-\def\NAT@hyper@#1{\scholar@color@if@citation@registered{\@citeb}{%
+\def\NAT@hyper@#1{\scholar@color@if@citation@registered{%
+\scholar@current@citation@key%
+}{%
 \scholar@inner@NAT@hyper@{#1}%
 }}%
 % To fool-proof coloring for natbib, the \@citecolor macro from hyperref is
@@ -155,8 +158,8 @@ hyperref hyperlink commands. The inferred key is \scholar@citation@key.
 \def\scholar@wrap@citecolor{%
 \let\scholar@inner@citecolor\@citecolor
 \def\@citecolor{%
-\scholarifdefinedelse{scholarcolor@\@citeb}{%
-scholarcolor@\@citeb%
+\scholarifdefinedelse{scholarcolor@\scholar@current@citation@key}{%
+scholarcolor@\scholar@current@citation@key%
 }{%
 \scholar@inner@citecolor%
 }}%

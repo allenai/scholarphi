@@ -77,9 +77,21 @@ class JournaledString(UserString):  # pylint: disable=too-many-ancestors
         # By making 'middle' a greedy substring, and the other two non-greedy, 'greedy'
         # absorbs the contents of 'initial' there would be a conflict, and also absorbs
         # segments where 'initial' was replaced with the empty string.
-        left = self.substring(0, start, greedy=False)
+        left = self.substring(
+            0,
+            start,
+            greedy=False,
+            include_truncated_left=True,
+            include_truncated_right=False,
+        )
         middle = self.substring(start, end, greedy=True)
-        right = self.substring(end, len(self), greedy=False)
+        right = self.substring(
+            end,
+            len(self),
+            greedy=False,
+            include_truncated_left=False,
+            include_truncated_right=True,
+        )
 
         # If the replacement doesn't change the string, return a clone.
         if str(middle) == replacement:
@@ -126,7 +138,14 @@ class JournaledString(UserString):  # pylint: disable=too-many-ancestors
                     new_segments.append(s)
         return JournaledString(new_segments)
 
-    def substring(self, start: int, end: int, greedy: bool = True) -> "JournaledString":
+    def substring(
+        self,
+        start: int,
+        end: int,
+        greedy: bool = True,
+        include_truncated_left: bool = True,
+        include_truncated_right: bool = True,
+    ) -> "JournaledString":
         """
         Get a substring of the journaled string, with pointers back to only the parts of the
         initial substring that correspond to the substringed part of the string. 'greedy'
@@ -145,7 +164,9 @@ class JournaledString(UserString):  # pylint: disable=too-many-ancestors
             # will be included in the new string.
             if start <= s_start and end >= s_end:
                 # Only include replacements of spans with blanks if in 'greedy' mode.
-                if (s_start == start or s_end == end) and s_start == s_end and not greedy:
+                if s_start == start and s_start == s_end and not include_truncated_left:
+                    continue
+                if s_end == end and s_start == s_end and not include_truncated_right:
                     continue
                 new_segments.append(s)
 

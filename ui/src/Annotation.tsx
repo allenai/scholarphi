@@ -2,6 +2,7 @@ import classNames from "classnames";
 import React from "react";
 import AnnotationSpan from "./AnnotationSpan";
 import { GlossStyle } from "./settings";
+import { TooltipPlacement } from "./Tooltip";
 import { BoundingBox } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 import * as uiUtils from "./utils/ui";
@@ -67,6 +68,10 @@ interface Props {
    * be shown for this annotation.
    */
   glossStyle?: GlossStyle | null;
+  /**
+   * Where to place a tooltip gloss, if a gloss is to be rendered in a tooltip.
+   */
+  tooltipPlacement?: TooltipPlacement;
   /**
    * Whether to show an underline hint beneath the annotation. Defaults to true.
    */
@@ -151,6 +156,7 @@ export class Annotation extends React.PureComponent<Props> {
                 }
                 glossContent={this.props.glossContent}
                 glossStyle={this.props.glossStyle}
+                tooltipPlacement={this.props.tooltipPlacement}
                 underline={this.props.underline}
                 onClick={this.props.onClick}
                 onKeyDown={this.props.onKeyDown}

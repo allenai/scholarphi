@@ -33,6 +33,12 @@ def test_extract_plaintext_skip_input():
     assert plaintext.isspace()
 
 
+def test_extract_plaintext_leave_initial_intact():
+    tex = "\\documentclass{article}"
+    plaintext = extract_plaintext("main.tex", tex)
+    assert plaintext.initial == tex
+
+
 def test_extract_plaintext_consolidate_periods():
     plaintext = extract_plaintext("main.tex", "Sentence. .. Next sentence.")
     assert plaintext == "Sentence. Next sentence."
@@ -44,18 +50,10 @@ def test_extract_plaintext_consolidate_periods_across_groups():
 
 
 def test_extract_plaintext_separate_section_header():
-    plaintext = extract_plaintext("main.text", "\n".join([
-        "Line 1",
-        r"\section{Section header}",
-        "Line 3"
-    ]))
-    assert plaintext == "\n".join([
-        "Line 1",
-        "",
-        "Section header.",
-        "",
-        "Line 3"
-    ])
+    plaintext = extract_plaintext(
+        "main.text", "\n".join(["Line 1", r"\section{Section header}", "Line 3"])
+    )
+    assert plaintext == "\n".join(["Line 1", "", "Section header.", "", "Line 3"])
 
 
 def test_extract_phrases():
@@ -176,7 +174,8 @@ def test_combine_sentence_tex_following_latex_linebreak_conventions():
     assert sentences[2].text == "This is the third sentence."
     assert sentences[3].text == "This is the fourth sentence."
     assert (
-        sentences[4].text == "This is the fifth sentence, which is written on multiple lines."
+        sentences[4].text
+        == "This is the fifth sentence, which is written on multiple lines."
     )
     assert len(sentences) == 5
 
@@ -195,7 +194,9 @@ def test_sentence_from_within_command():
 def test_sentence_includes_preceding_equation():
     extractor = SentenceExtractor(from_named_sections_only=False)
     # This was a specific case seen in an example paper.
-    sentences = list(extractor.parse("main.tex", "Sentence 1.\n\\[x\\]\nstarts the sentence."))
+    sentences = list(
+        extractor.parse("main.tex", "Sentence 1.\n\\[x\\]\nstarts the sentence.")
+    )
     assert sentences[1].tex == "\\[x\\]\nstarts the sentence."
     assert sentences[1].start == 12
     assert sentences[1].end == 38

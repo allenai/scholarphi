@@ -112,7 +112,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       symbolSearchEnabled: true,
       declutterEnabled: true,
       definitionPreviewEnabled: false,
-      equationDiagramsEnabled: true,
+      equationDiagramsEnabled: false,
       entityCreationEnabled: false,
       entityEditingEnabled: false,
       sentenceTexCopyOnOptionClickEnabled: false,

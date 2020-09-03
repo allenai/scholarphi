@@ -2,6 +2,7 @@ import classNames from "classnames";
 import React from "react";
 import Annotation from "./Annotation";
 import { GlossStyle } from "./settings";
+import { TooltipPlacement } from "./Tooltip";
 import { Entity } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 
@@ -18,6 +19,7 @@ interface Props {
   selectedSpanIds: string[] | null;
   glossStyle?: GlossStyle;
   glossContent?: React.ReactNode;
+  tooltipPlacement?: TooltipPlacement;
   handleSelect?: (
     entityId: string,
     annotationId: string,
@@ -62,6 +64,7 @@ class EntityAnnotation extends React.PureComponent<Props> {
         source={this.props.entity.attributes.source}
         glossStyle={this.props.glossStyle}
         glossContent={this.props.glossContent}
+        tooltipPlacement={this.props.tooltipPlacement}
         handleSelect={this.handleSelect}
         onClick={this.onClick}
       />
