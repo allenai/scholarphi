@@ -33,7 +33,7 @@ interface Props {
   /**
    * When active, an annotation can be interacted with. Visual effects will show to indicate that
    * the annotation can be interacted with (e.g., underlines, and highlights that appear on hover).
-   * If not active, an annotation can still be highlighted
+   * If not active, an annotation can still be highlighted or underlined.
    */
   active?: boolean;
   /**

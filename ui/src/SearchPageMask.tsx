@@ -12,6 +12,7 @@ interface Props {
   firstMatchingEntityId: string | null;
   matchingEntityIds: string[];
   highlightFirstMatch?: boolean;
+  highlightDefinitions?: boolean;
 }
 
 /**
@@ -22,7 +23,12 @@ export class SearchPageMask extends React.PureComponent<Props> {
     /*
      * Show the sentences containing all matching symbols.
      */
-    const { matchingEntityIds, entities, highlightFirstMatch } = this.props;
+    const {
+      matchingEntityIds,
+      entities,
+      highlightFirstMatch,
+      highlightDefinitions,
+    } = this.props;
     if (entities === null) {
       return null;
     }
@@ -36,15 +42,18 @@ export class SearchPageMask extends React.PureComponent<Props> {
     /*
      * Highlight sentences that contain definition information.
      */
-    const highlights = selectors
-      .definingSentences(matchingEntityIds, entities)
-      .map((e) => e.attributes.bounding_boxes)
-      .flat()
-      .reduce((boxes, b) => {
-        boxes[`${b.page}-${b.left}-${b.top}-${b.width}-${b.height}`] = b;
-        return boxes;
-      }, {} as { [boxKey: string]: BoundingBox });
-    const highlight = Object.values(highlights);
+    let highlight: BoundingBox[] = [];
+    if (highlightDefinitions) {
+      const highlights = selectors
+        .definingSentences(matchingEntityIds, entities)
+        .map((e) => e.attributes.bounding_boxes)
+        .flat()
+        .reduce((boxes, b) => {
+          boxes[`${b.page}-${b.left}-${b.top}-${b.width}-${b.height}`] = b;
+          return boxes;
+        }, {} as { [boxKey: string]: BoundingBox });
+      highlight = Object.values(highlights);
+    }
 
     /*
      * Place a label right below the last bounding box of the highlight.

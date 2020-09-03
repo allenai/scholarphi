@@ -199,7 +199,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                   "gloss-hint": hasDefinition && !inDefinition,
                 })}
                 pageView={pageView}
-                underline={showAnnotations}
+                underline={showAnnotations && hasDefinition && !inDefinition}
                 glossStyle={glossStyle}
                 glossContent={
                   glossEvaluationEnabled ? (
@@ -339,7 +339,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                  * symbol (once selected) should no longer be interactive itself.
                  */
                 active={active}
-                underline={showAnnotations}
+                underline={showAnnotations && hasDefinition && !inDefinition}
                 selected={isSelected}
                 selectedSpanIds={selectedSpanIds}
                 isFindSelection={isFindSelection}

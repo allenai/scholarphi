@@ -33,7 +33,16 @@
  */
 .annotationLayer .linkAnnotation {
   border: none !important;
-  // display: none !important;
+  display: none !important;
+}
+
+/**
+ * Make highlights for the pdf.js find bar consistent with the rest of the application.
+ */
+.textLayer .highlight {
+  &.selected {
+    background-color: @highlight-color !important;
+  }
 }
 
 /**

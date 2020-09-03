@@ -36,13 +36,8 @@
     }
   }
 
-  .scholar-reader-annotation-span.active {
-    /**
-     * Provide an underline as a hint that the annotation is interactive 
-     */
-    &.underline {
-      border-bottom: @underline-width @underline-color dotted;
-    }
+  .scholar-reader-annotation-span.underline {
+    border-bottom: @underline-width @underline-color dotted;
   }
 }
 
@@ -51,13 +46,12 @@
  */
 .scholar-reader-annotation-span {
   &.find-match {
-    background-color: green;
+    background-color: fade(@highlight-color, 15%);
     opacity: 0.3;
   }
 
   &.find-selection {
-    background-color: green !important;
-    opacity: 0.6 !important;
+    background-color: fade(@highlight-color, 30%) !important;
   }
 }
 
@@ -72,7 +66,7 @@
  * Highlight entities that were extracted using experimental techniques
  */
 .scholar-reader-annotation-span.source-other {
-  background-color: rgba(255, 255, 0, 0.3);
+  background-color: fade(yellow, 30%);
 }
 
 /**
@@ -100,17 +94,14 @@
 .symbol-annotation {
   &.selected:not(.leaf-symbol) {
     pointer-events: none;
-    background: none !important;
     padding: @padding / 2;
     margin: -@padding / 2;
-    border: 4px solid rgba(0, 128, 0, 0.5);
     border-radius: @border-radius;
   }
 
   &.selection-hint {
-    // background-color: @highlight-color;
+    background-color: fade(@highlight-color, 20%);
     border-radius: @border-radius;
-    border: 3px solid black;
 
     /*
      * By default, annotations appear behind equation diagrams, which are meant to appear
@@ -121,19 +112,6 @@
     &.in-selected-equation {
       z-index: @equation-diagram-annotation-z-index;
     }
-  }
-
-  &.top-level-gloss-hint:hover {
-    &.has-definition {
-      background-color: fade(@s2-link-default, 40%);
-    }
-    background: none !important;
-    border: 4px blue solid !important;
-    border-width: 4px;
-  }
-
-  &.has-definition.descendant-of-selection {
-    background-color: fade(@s2-link-default, 40%);
   }
 }
 
