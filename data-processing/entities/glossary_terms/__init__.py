@@ -4,6 +4,7 @@ from common.commands.upload_entities import UploadEntitiesCommand
 from common.types import SerializableEntity, Term
 from entities.common import create_entity_localization_command_sequence
 from entities.sentences.commands.extract_contexts import make_extract_contexts_command
+from entities.sentences.types import TexWrapper
 from scripts.pipelines import EntityPipeline, register_entity_pipeline
 
 from .colorize import adjust_color_positions
@@ -27,7 +28,11 @@ for i, command in enumerate(commands):
 directories.register("contexts-for-glossary-terms")
 commands.insert(
     upload_command_index,
-    make_extract_contexts_command("glossary-terms", EntityType=Term),
+    make_extract_contexts_command(
+        "glossary-terms",
+        EntityType=Term,
+        tex_wrapper=TexWrapper(before="**", after="**"),
+    ),
 )
 
 terms_pipeline = EntityPipeline("glossary-terms", commands)
