@@ -3,6 +3,7 @@ from collections import defaultdict
 from typing import Dict, List, Optional, cast
 
 from common import directories, file_utils
+from common.bounding_box import cluster_boxes
 from common.types import (
     BoundingBox,
     EntityInformation,
@@ -43,33 +44,39 @@ def upload_terms(
         context = contexts_by_entity.get((term.tex_path, term.id_))
         boxes = [cast(BoundingBox, l) for l in entity_and_location.locations]
 
-        entity_info = EntityInformation(
-            id_=f"{term.tex_path}-{term.id_}",
-            type_="term",
-            bounding_boxes=boxes,
-            data={
-                "name": term.text,
-                "definitions": term.definitions,
-                "definition_texs": term.definitions,
-                "sources": term.sources,
-                "snippets": [c.snippet for c in contexts_by_term.get(term.text, [])],
-            },
-            relationships={
-                "sentence": EntityReference(
-                    type_="sentence",
-                    id_=f"{context.tex_path}-{context.sentence_id}"
-                    if context is not None
-                    else None,
-                ),
-                "snippet_sentences": [
-                    EntityReference(
-                        type_="sentence", id_=f"{c.tex_path}-{c.sentence_id}"
-                    )
-                    for c in contexts_by_term.get(term.text, [])
-                ],
-            },
-        )
-        entity_infos.append(entity_info)
+        # Cluster bounding boxes, in case any of these terms are defined as a macro (in which)
+        # case all appearances of that term on the same page will have been lumped together.
+        clusters = cluster_boxes(boxes, vertical_split=0.005)
+        for i, cluster in enumerate(clusters):
+            entity_info = EntityInformation(
+                id_=f"{term.tex_path}-{term.id_}-{i}",
+                type_="term",
+                bounding_boxes=list(cluster),
+                data={
+                    "name": term.text,
+                    "definitions": term.definitions,
+                    "definition_texs": term.definitions,
+                    "sources": term.sources,
+                    "snippets": [
+                        c.snippet for c in contexts_by_term.get(term.text, [])
+                    ],
+                },
+                relationships={
+                    "sentence": EntityReference(
+                        type_="sentence",
+                        id_=f"{context.tex_path}-{context.sentence_id}"
+                        if context is not None
+                        else None,
+                    ),
+                    "snippet_sentences": [
+                        EntityReference(
+                            type_="sentence", id_=f"{c.tex_path}-{c.sentence_id}"
+                        )
+                        for c in contexts_by_term.get(term.text, [])
+                    ],
+                },
+            )
+            entity_infos.append(entity_info)
 
     upload_entities(
         processing_summary.s2_id,
