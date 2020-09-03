@@ -253,10 +253,11 @@ class ScholarReader extends React.PureComponent<Props, State> {
       }
 
       /*
-       * The default behavior is to just update the selection. If the selection is a symbol,
-       * however, start a symbol search.
+       * The default behavior is to just update the selection. If the selection is a,
+       * searchable type of entity, however, start a search.
        */
-      if (prevEntities.byId[entityId].type !== "symbol") {
+      const entityType = prevEntities.byId[entityId].type;
+      if (["symbol", "term"].indexOf(entityType) === -1) {
         return {
           selectedEntityIds,
           selectedAnnotationIds,
@@ -265,7 +266,31 @@ class ScholarReader extends React.PureComponent<Props, State> {
       }
 
       /*
-       * If this is a symbol, start or update the search.
+       * If this is a term, start a term search.
+       */
+      if (entityType === "term") {
+        const termIds = selectedEntityIds.filter(
+          (id) => prevEntities.byId[id].type === "term"
+        );
+        const matching = selectors.matchingTerms(termIds, prevEntities);
+        const matchCount = matching.length;
+        const matchIndex = matching.indexOf(entityId);
+        return {
+          selectedEntityIds,
+          selectedAnnotationIds,
+          selectedAnnotationSpanIds,
+          isFindActive: true,
+          findMode: "term",
+          findActivationTimeMs: Date.now(),
+          findQuery: prevEntities.byId[entityId],
+          findMatchCount: matchCount,
+          findMatchIndex: matchIndex,
+          findMatchedEntities: matching,
+        } as State;
+      }
+
+      /*
+       * If this is a symbol, start a symbol search.
        */
       const symbolIds = selectedEntityIds.filter(
         (id) => prevEntities.byId[id].type === "symbol"
@@ -299,7 +324,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
   clearEntitySelection() {
     logger.log("debug", "clear-entity-selection");
 
-    if (this.state.findMode === "symbol") {
+    if (this.state.findMode === "symbol" || this.state.findMode === "term") {
       this.closeFindBar();
     }
     this.setState({
@@ -638,13 +663,13 @@ class ScholarReader extends React.PureComponent<Props, State> {
   setFindMatchIndex(findMatchIndex: number | null) {
     this.setState((state) => {
       if (
-        state.findMode === "symbol" &&
+        (state.findMode === "symbol" || state.findMode === "term") &&
         state.findMatchedEntities !== null &&
         findMatchIndex !== null &&
         state.entities !== null
       ) {
-        const symbolId = state.findMatchedEntities[findMatchIndex];
-        this.jumpToEntity(symbolId);
+        const entityId = state.findMatchedEntities[findMatchIndex];
+        this.jumpToEntity(entityId);
       }
       return { findMatchIndex };
     });
@@ -1004,10 +1029,6 @@ class ScholarReader extends React.PureComponent<Props, State> {
             pdfViewer={this.state.pdfViewer}
             pages={this.state.pages}
             entities={this.state.entities}
-            annotationHintsEnabled={this.state.annotationHintsEnabled}
-            glossStyle={this.state.glossStyle}
-            handleSetAnnotationHintsEnabled={this.setAnnotationHintsEnabled}
-            handleSetGlossStyle={this.setGlossStyle}
           />
         ) : null}
         {
@@ -1079,7 +1100,8 @@ class ScholarReader extends React.PureComponent<Props, State> {
                     {/* Mask for highlighting results from in-situ search. */}
                     {!this.state.entityCreationEnabled &&
                     this.state.declutterEnabled &&
-                    this.state.findMode === "symbol" &&
+                    (this.state.findMode === "symbol" ||
+                      this.state.findMode === "term") &&
                     findMatchedEntityIds !== null ? (
                       <SearchPageMask
                         pageView={pageView}

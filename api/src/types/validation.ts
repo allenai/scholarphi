@@ -135,9 +135,9 @@ attributes = attributes
           term_type: stringAttribute,
           definitions: stringListAttribute,
           definition_texs: stringListAttribute,
-          passages: stringListAttribute,
-          glossary_definitions: stringListAttribute,
-          glossary_sources: stringListAttribute,
+          sources: stringListAttribute,
+          snippets: stringListAttribute,
+          tags: stringListAttribute,
         }),
       },
       {
@@ -190,6 +190,14 @@ relationships = relationships
           nickname_sentences: oneToManyRelationship("sentence"),
           definition_sentences: oneToManyRelationship("sentence"),
           defining_formula_equations: oneToManyRelationship("equation"),
+          snippet_sentences: oneToManyRelationship("sentence"),
+        }),
+      },
+      {
+        is: "term",
+        then: Joi.object().keys({
+          sentence: oneToOneRelationship("sentence"),
+          definition_sentences: oneToManyRelationship("sentence"),
           snippet_sentences: oneToManyRelationship("sentence"),
         }),
       },

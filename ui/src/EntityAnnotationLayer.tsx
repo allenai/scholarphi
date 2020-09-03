@@ -160,16 +160,28 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
     return (
       <>
         {entities.all.map((entityId) => {
+          /*
+           * Unpack entity data.
+           */
           const entity = entities.byId[entityId];
           const annotationId = `entity-${entityId}-page-${pageNumber}-annotation`;
-          const isSelected = selectedAnnotationIds.indexOf(annotationId) !== -1;
           const boundingBoxes = entity.attributes.bounding_boxes.filter(
             (box) => box.page === pageNumber
           );
           if (boundingBoxes.length === 0) {
             return null;
           }
+
+          /*
+           * Determine generic selection properties.
+           */
+          const isSelected = selectedAnnotationIds.indexOf(annotationId) !== -1;
+          const isMatch =
+            findMatchedEntityIds !== null &&
+            findMatchedEntityIds.indexOf(entityId) !== -1;
+          const isFindSelection = findSelectionEntityId === entityId;
           const selectedSpanIds = isSelected ? selectedAnnotationSpanIds : null;
+
           if (
             isTerm(entity) &&
             entity.attributes.term_type !== "symbol" &&
@@ -197,6 +209,8 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 }
                 selected={isSelected}
                 selectedSpanIds={selectedSpanIds}
+                isFindSelection={isFindSelection}
+                isFindMatch={isMatch}
                 handleSelect={handleSelectEntityAnnotation}
               />
             );
@@ -278,10 +292,6 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
              * Compute attributes of symbols to use for styling, like whether it
              * is a search result, and how it relates to the current selections.
              */
-            const isMatch =
-              findMatchedEntityIds !== null &&
-              findMatchedEntityIds.indexOf(entityId) !== -1;
-            const isFindSelection = findSelectionEntityId === entityId;
             const isSelectionAncestor = selectedEntities.some(
               (e) => isSymbol(e) && selectors.isDescendant(e, entity, entities)
             );

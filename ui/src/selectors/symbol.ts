@@ -1,15 +1,9 @@
 import { defaultMemoize } from "reselect";
 import { SymbolFilter } from "../FindBar";
 import { Entities } from "../state";
-import {
-  BoundingBox,
-  isSentence,
-  isSymbol,
-  Relationship,
-  Sentence,
-  Symbol,
-} from "../types/api";
+import { isSymbol, Relationship, Symbol } from "../types/api";
 import * as uiUtils from "../utils/ui";
+import { orderByPosition } from "./entity";
 
 export function diagramLabel(
   symbol: Symbol,
@@ -58,24 +52,6 @@ export function descendants(symbolId: string, entities: Entities): Symbol[] {
   }
 
   return descendantsList;
-}
-
-/**
- * Return all sentences containing a list of symbols.
- */
-export function symbolSentences(
-  entityIds: string[],
-  entities: Entities
-): Sentence[] {
-  return entityIds
-    .map((id) => entities.byId[id])
-    .filter((e) => e !== undefined)
-    .filter(isSymbol)
-    .map((s) => s.relationships.sentence.id)
-    .filter((sentId) => sentId !== null)
-    .map((sentId) => entities.byId[sentId as string])
-    .filter((sent) => sent !== undefined)
-    .filter(isSentence);
 }
 
 export const symbolIds = defaultMemoize(
@@ -194,48 +170,3 @@ export function symbolMathMls(symbolIds: string[], entities: Entities) {
   });
   return uniqueMathMls;
 }
-
-/**
- * Comparator for sorting boxes from highest position in the paper to lowest.
- * See https://github.com/allenai/scholar-reader/issues/115 for a discussion for how we might
- * be able to sort symbols by their order in the prose instead of their position.
- */
-export function compareBoxes(box1: BoundingBox, box2: BoundingBox) {
-  if (box1.page !== box2.page) {
-    return box1.page - box2.page;
-  }
-  if (areBoxesVerticallyAligned(box1, box2)) {
-    return box1.left - box2.left;
-  } else {
-    return box1.top - box2.top;
-  }
-}
-
-function areBoxesVerticallyAligned(box1: BoundingBox, box2: BoundingBox) {
-  const box1Bottom = box1.top + box1.height;
-  const box2Bottom = box2.top + box2.height;
-  return (
-    (box1.top >= box2.top && box1.top <= box2Bottom) ||
-    (box2.top >= box1.top && box2.top <= box1Bottom)
-  );
-}
-
-/**
- * Order a list of symbol IDs by which ones appear first in the paper, using the position of
- * the symbol bounding boxes. Does not take columns into account. This method is memoized
- * because it's assumed that it will frequently be called with the list of all symbols in
- * the paper, and that this sort will be costly.
- */
-export const orderByPosition = defaultMemoize(
-  (symbolIds: string[], entities: Entities) => {
-    const sorted = [...symbolIds];
-    sorted.sort((sId1, sId2) => {
-      const symbol1Boxes = entities.byId[sId1].attributes.bounding_boxes;
-      const symbol1TopBox = symbol1Boxes.sort(compareBoxes)[0];
-      const symbol2Boxes = entities.byId[sId2].attributes.bounding_boxes;
-      const symbol2TopBox = symbol2Boxes.sort(compareBoxes)[0];
-      return compareBoxes(symbol1TopBox, symbol2TopBox);
-    });
-    return sorted;
-  }
-);

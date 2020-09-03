@@ -62,8 +62,7 @@ export class SymbolPreviewGloss extends React.PureComponent<Props> {
       )[0];
     }
 
-    const sentence =
-      selectors.symbolSentences([symbol.id], entities)[0] || null;
+    const sentence = selectors.sentences([symbol.id], entities)[0] || null;
 
     return (
       <div className="gloss symbol-gloss">
