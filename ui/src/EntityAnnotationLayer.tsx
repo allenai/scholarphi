@@ -30,6 +30,7 @@ interface Props {
   selectedAnnotationSpanIds: string[];
   findMatchedEntityIds: string[] | null;
   findSelectionEntityId: string | null;
+  jumpTarget: string | null;
   showAnnotations: boolean;
   glossStyle: GlossStyle;
   glossEvaluationEnabled: boolean;
@@ -145,6 +146,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
       selectedAnnotationSpanIds,
       findMatchedEntityIds,
       findSelectionEntityId,
+      jumpTarget,
       showAnnotations,
       glossStyle,
       glossEvaluationEnabled,
@@ -181,6 +183,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
             findMatchedEntityIds.indexOf(entityId) !== -1;
           const isFindSelection = findSelectionEntityId === entityId;
           const selectedSpanIds = isSelected ? selectedAnnotationSpanIds : null;
+          const isJumpTarget = jumpTarget === entityId;
           const inDefinition = selectors.inDefinition(entityId, entities);
           const hasDefinition = selectors.hasDefinition(entityId, entities);
 
@@ -367,7 +370,9 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
             return (
               <EntityAnnotation
                 key={annotationId}
-                className="sentence-annotation"
+                className={classNames("sentence-annotation", {
+                  "jump-target": isJumpTarget,
+                })}
                 id={annotationId}
                 pageView={pageView}
                 entity={entity}

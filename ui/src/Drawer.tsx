@@ -3,6 +3,7 @@ import IconButton from "@material-ui/core/IconButton";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import React from "react";
 import { DefiningFormulas } from "./DefiningFormulas";
+import Definitions from "./Definitions";
 import EntityPropertyEditor from "./EntityPropertyEditor";
 import { Entities } from "./state";
 import { Entity, EntityUpdateData } from "./types/api";
@@ -11,6 +12,7 @@ import Usages from "./Usages";
 
 export type DrawerMode = "open" | "closed";
 export type DrawerContentType =
+  | "definitions"
   | "defining-formulas"
   | "usages"
   | "entity-property-editor"
@@ -142,6 +144,13 @@ export class Drawer extends React.PureComponent<Props> {
           )}
           {contentType === "usages" && entities !== null && (
             <Usages
+              selectedEntityIds={selectedEntityIds}
+              entities={entities}
+              handleJumpToEntity={this.props.handleJumpToEntity}
+            />
+          )}
+          {contentType === "definitions" && entities !== null && (
+            <Definitions
               selectedEntityIds={selectedEntityIds}
               entities={entities}
               handleJumpToEntity={this.props.handleJumpToEntity}

@@ -67,54 +67,68 @@ class SimpleTermGloss extends React.PureComponent<Props, State> {
      */
     return (
       <div
-        className={classNames(
-          "gloss",
-          "inline-gloss",
-          "term-gloss",
-          "simple-gloss",
-          {
-            "with-action-buttons": this.props.showDrawerActions,
-            closed: this.state.closed,
-          }
-        )}
+        className={classNames("gloss", "term-gloss", "simple-gloss", {
+          "with-action-buttons": this.props.showDrawerActions,
+          closed: this.state.closed,
+        })}
       >
-        <div className="gloss__section">
-          <p>
-            <RichText>{definition.excerpt}</RichText>
-            {" (page "}
-            <EntityLink
-              id={`term-${term.id}-definition`}
-              className="subtle"
-              entityId={definition.contextEntity.id}
-              handleJumpToEntity={this.props.handleJumpToEntity}
-            >
-              {selectors.readableFirstPageNumber(definition.contextEntity)}
-            </EntityLink>
-            {")."}
-          </p>
-        </div>
-        {this.props.showDrawerActions && (
-          <div className="inline-gloss__action-buttons">
-            <MuiTooltip
-              title={
-                usages.length > 0 ? `See ${usages.length} usages` : "No usages."
-              }
-            >
-              <IconButton
-                size="small"
-                disabled={usages.length === 0}
-                onClick={this.onClickUsagesButton}
-              >
-                <Toc />
-              </IconButton>
-            </MuiTooltip>
-            <MuiTooltip title="Dismiss">
-              <IconButton size="small" onClick={this.onClickClose}>
-                <Close />
-              </IconButton>
-            </MuiTooltip>
-          </div>
-        )}
+        <table>
+          <tbody>
+            <tr>
+              <td>
+                {definedHere && <p>Defined here.</p>}
+                {!definedHere && definition !== null && (
+                  <p>
+                    {definition !== null && (
+                      <>
+                        <RichText>{`"${definition.excerpt}"`}</RichText>
+                        {" (page "}
+                        <EntityLink
+                          id={`term-${term.id}-definition`}
+                          className="subtle"
+                          entityId={definition.contextEntity.id}
+                          handleJumpToEntity={this.props.handleJumpToEntity}
+                        >
+                          {selectors.readableFirstPageNumber(
+                            definition.contextEntity
+                          )}
+                        </EntityLink>
+                      </>
+                    )}
+                  </p>
+                )}
+              </td>
+              {this.props.showDrawerActions && (
+                <React.Fragment>
+                  <td>
+                    <MuiTooltip
+                      title={
+                        usages.length > 0
+                          ? `See ${usages.length} usages`
+                          : "No usages."
+                      }
+                    >
+                      <IconButton
+                        size="small"
+                        disabled={usages.length === 0}
+                        onClick={this.onClickUsagesButton}
+                      >
+                        <Toc />
+                      </IconButton>
+                    </MuiTooltip>
+                  </td>
+                  <td>
+                    <MuiTooltip title="Dismiss">
+                      <IconButton size="small" onClick={this.onClickClose}>
+                        <Close />
+                      </IconButton>
+                    </MuiTooltip>
+                  </td>
+                </React.Fragment>
+              )}
+            </tr>
+          </tbody>
+        </table>
       </div>
     );
   }

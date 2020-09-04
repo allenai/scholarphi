@@ -84,6 +84,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       selectedAnnotationSpanIds: [],
       selectedEntityIds: [],
       multiselectEnabled: false,
+      jumpTarget: null,
 
       textSelection: null,
       textSelectionChangeMs: null,
@@ -332,6 +333,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       selectedAnnotationIds: [],
       selectedAnnotationSpanIds: [],
       selectedEntityIds: [],
+      jumpTarget: null,
     });
   }
 
@@ -819,10 +821,17 @@ class ScholarReader extends React.PureComponent<Props, State> {
 
     if (!this._backButtonHintShown) {
       this.showSnackbarMessage(
-        "Press the 'Back' button to return to your previous location."
+        "To return to where you were before, press the 'Back' button."
       );
-      this._backButtonHintShown = true;
+      // this._backButtonHintShown = true;
     }
+
+    /*
+     * Store the position that the paper has jumped to.
+     */
+    this.setState({
+      jumpTarget: id,
+    });
   }
 
   render() {
@@ -1057,6 +1066,12 @@ class ScholarReader extends React.PureComponent<Props, State> {
                     entities,
                     pageNumber
                   )[0] || null;
+                const jumpTarget =
+                  selectors.entityIdsInPage(
+                    this.state.jumpTarget ? [this.state.jumpTarget] : [],
+                    entities,
+                    pageNumber
+                  )[0] || null;
 
                 return (
                   <PageOverlay key={key} pageView={pageView}>
@@ -1100,6 +1115,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                         selectedAnnotationSpanIds={selectedAnnotationSpanIds}
                         findMatchedEntityIds={findMatchedEntityIds}
                         findSelectionEntityId={findSelectionEntityId}
+                        jumpTarget={jumpTarget}
                         showAnnotations={this.state.annotationHintsEnabled}
                         glossStyle={this.state.glossStyle}
                         glossEvaluationEnabled={

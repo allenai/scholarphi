@@ -7,23 +7,6 @@
     min-width: 200px;
   }
 
-  &.simple-gloss.with-action-buttons {
-    min-width: 100px;
-    max-width: 450px;
-    &.symbol-gloss > div.gloss__section:first-child {
-      width: calc(100% - 82px);
-    }
-    &.symbol-gloss > div.inline-gloss__action-buttons {
-      width: 82px;
-    }
-    &.term-gloss > div.gloss__section:first-child {
-      width: calc(100% - 60px);
-    }
-    &.term-gloss > div.inline-gloss__action-buttons {
-      width: 60px;
-    }
-  }
-
   &.closed {
     display: none;
   }
@@ -37,9 +20,10 @@
     background-color: #eee;
     padding: 0;
 
-    .gloss__section p {
-      padding-left: @padding / 2;
-      padding-right: @padding / 2;
+    p {
+      padding-left: @padding / 4;
+      padding-right: @padding / 4;
+      padding-bottom: @padding / 4;
     }
   }
 

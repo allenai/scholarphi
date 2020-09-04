@@ -74,6 +74,7 @@ export interface State extends Settings {
   selectedAnnotationSpanIds: string[];
   selectedEntityIds: string[];
   multiselectEnabled: boolean;
+  jumpTarget: string | null;
 
   /*
    * ~ Text selection ~

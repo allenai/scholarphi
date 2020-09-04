@@ -2,6 +2,7 @@ import IconButton from "@material-ui/core/IconButton";
 import MuiTooltip from "@material-ui/core/Tooltip";
 import Close from "@material-ui/icons/Close";
 import Functions from "@material-ui/icons/Functions";
+import MenuBook from "@material-ui/icons/MenuBook";
 import Toc from "@material-ui/icons/Toc";
 import classNames from "classnames";
 import React from "react";
@@ -37,6 +38,7 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
       closed: false,
     };
     this.setActiveSymbolId = this.setActiveSymbolId.bind(this);
+    this.onClickDefinitionsButton = this.onClickDefinitionsButton.bind(this);
     this.onClickDefiningFormulasButton = this.onClickDefiningFormulasButton.bind(
       this
     );
@@ -60,6 +62,10 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
       currentSymbol: this.props.entities.byId[this.state.activeSymbolId],
       originalSymbol: this.props.symbol,
     };
+  }
+
+  onClickDefinitionsButton() {
+    this.props.handleOpenDrawer("definitions");
   }
 
   onClickDefiningFormulasButton() {
@@ -131,6 +137,10 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
     }
 
     const originalSymbol = this.props.symbol;
+    const defsAndNicknames = selectors.definitionsAndNicknames(
+      [activeSymbolId],
+      entities
+    );
     const formulas = selectors.definingFormulas([activeSymbolId], entities);
     const usages = selectors.usages([activeSymbolId], entities);
 
@@ -181,97 +191,120 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
      */
     return (
       <div
-        className={classNames(
-          "gloss",
-          "inline-gloss",
-          "simple-gloss",
-          "symbol-gloss",
-          {
-            "with-action-buttons": this.props.showDrawerActions,
-            closed: this.state.closed,
-          }
-        )}
+        className={classNames("gloss", "simple-gloss", "symbol-gloss", {
+          "with-action-buttons": this.props.showDrawerActions,
+          closed: this.state.closed,
+        })}
       >
-        {definedHere && (
-          <div className="gloss__section">
-            <p>Defined here.</p>
-          </div>
-        )}
-        {!definedHere && (definition !== null || nickname !== null) && (
-          <div className="gloss__section">
-            <p>
-              {definition !== null && (
-                <>
-                  <RichText>{`"${definition.excerpt}"`}</RichText>
-                  {" (page "}
-                  <EntityLink
-                    id={`symbol-${symbol.id}-definition`}
-                    className="subtle"
-                    entityId={definition.contextEntity.id}
-                    handleJumpToEntity={this.props.handleJumpToEntity}
-                  >
-                    {selectors.readableFirstPageNumber(
-                      definition.contextEntity
+        <table>
+          <tbody>
+            <tr>
+              <td>
+                {definedHere && <p>Defined here.</p>}
+                {!definedHere && (definition !== null || nickname !== null) && (
+                  <p>
+                    {definition !== null && (
+                      <>
+                        <RichText>{`"${definition.excerpt}"`}</RichText>
+                        {" (page "}
+                        <EntityLink
+                          id={`symbol-${symbol.id}-definition`}
+                          className="subtle"
+                          entityId={definition.contextEntity.id}
+                          handleJumpToEntity={this.props.handleJumpToEntity}
+                        >
+                          {selectors.readableFirstPageNumber(
+                            definition.contextEntity
+                          )}
+                        </EntityLink>
+                        {nickname !== null ? "); " : ")."}
+                      </>
                     )}
-                  </EntityLink>
-                  {nickname !== null ? "); " : ")."}
-                </>
+                    {nickname !== null && (
+                      <>
+                        {`"${nickname.excerpt}"`}
+                        {" (page "}
+                        <EntityLink
+                          id={`symbol-${symbol.id}-nickname`}
+                          className="subtle"
+                          entityId={nickname.contextEntity.id}
+                          handleJumpToEntity={this.props.handleJumpToEntity}
+                        >
+                          {selectors.readableFirstPageNumber(
+                            nickname.contextEntity
+                          )}
+                        </EntityLink>
+                        {")."}
+                      </>
+                    )}
+                  </p>
+                )}
+              </td>
+              {this.props.showDrawerActions && (
+                <React.Fragment>
+                  <td>
+                    <MuiTooltip
+                      title={
+                        defsAndNicknames.length > 0
+                          ? `See ${defsAndNicknames.length} definitions`
+                          : "No definitions."
+                      }
+                    >
+                      <IconButton
+                        size="small"
+                        disabled={defsAndNicknames.length === 0}
+                        onClick={this.onClickDefinitionsButton}
+                      >
+                        <MenuBook />
+                      </IconButton>
+                    </MuiTooltip>
+                  </td>
+                  <td>
+                    <MuiTooltip
+                      title={
+                        formulas.length > 0
+                          ? `See ${formulas.length} defining formulas`
+                          : "No defining formulas."
+                      }
+                    >
+                      <IconButton
+                        size="small"
+                        disabled={formulas.length === 0}
+                        onClick={this.onClickDefiningFormulasButton}
+                      >
+                        <Functions />
+                      </IconButton>
+                    </MuiTooltip>
+                  </td>
+                  <td>
+                    <MuiTooltip
+                      title={
+                        usages.length > 0
+                          ? `See ${usages.length} usages`
+                          : "No usages."
+                      }
+                    >
+                      <IconButton
+                        size="small"
+                        disabled={usages.length === 0}
+                        onClick={this.onClickUsagesButton}
+                      >
+                        <Toc />
+                      </IconButton>
+                    </MuiTooltip>
+                  </td>
+                  <td>
+                    <MuiTooltip title="Dismiss">
+                      <IconButton size="small" onClick={this.onClickClose}>
+                        <Close />
+                      </IconButton>
+                    </MuiTooltip>
+                  </td>
+                </React.Fragment>
               )}
-              {nickname !== null && (
-                <>
-                  {`"${nickname.excerpt}"`}
-                  {" (page "}
-                  <EntityLink
-                    id={`symbol-${symbol.id}-nickname`}
-                    className="subtle"
-                    entityId={nickname.contextEntity.id}
-                    handleJumpToEntity={this.props.handleJumpToEntity}
-                  >
-                    {selectors.readableFirstPageNumber(nickname.contextEntity)}
-                  </EntityLink>
-                  {")."}
-                </>
-              )}
-            </p>
-          </div>
-        )}
-        {this.props.showDrawerActions && (
-          <div className="inline-gloss__action-buttons">
-            <MuiTooltip
-              title={
-                formulas.length > 0
-                  ? `See ${formulas.length} defining formulas`
-                  : "No defining formulas."
-              }
-            >
-              <IconButton
-                size="small"
-                disabled={formulas.length === 0}
-                onClick={this.onClickDefiningFormulasButton}
-              >
-                <Functions />
-              </IconButton>
-            </MuiTooltip>
-            <MuiTooltip
-              title={
-                usages.length > 0 ? `See ${usages.length} usages` : "No usages."
-              }
-            >
-              <IconButton
-                size="small"
-                disabled={usages.length === 0}
-                onClick={this.onClickUsagesButton}
-              >
-                <Toc />
-              </IconButton>
-            </MuiTooltip>
-            <MuiTooltip title="Dismiss">
-              <IconButton size="small" onClick={this.onClickClose}>
-                <Close />
-              </IconButton>
-            </MuiTooltip>
-          </div>
-        )}
+            </tr>
+          </tbody>
+        </table>
       </div>
     );
   }

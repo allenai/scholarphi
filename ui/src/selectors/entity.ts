@@ -274,7 +274,11 @@ export function adjacentDefinition(
 /**
  * Get a list of definitions for a set of entities, ordered by their position in the paper.
  */
-export function definitions(entityIds: string[], entities: Entities) {
+export function definitions(
+  entityIds: string[],
+  entities: Entities,
+  includeNicknames?: boolean
+) {
   const entitiesWithDefinitions = entityIds
     .map((id) => entities.byId[id])
     .filter((e) => e !== undefined)
@@ -300,9 +304,22 @@ export function inDefinition(entityId: string, entities: Entities) {
   if (entity === undefined || (!isSymbol(entity) && !isTerm(entity))) {
     return false;
   }
-  return entity.relationships.definition_sentences.some(
-    (r) => r.id !== null && r.id === entity.relationships.sentence.id
-  );
+  if (isTerm(entity)) {
+    return entity.relationships.definition_sentences.some(
+      (r) => r.id !== null && r.id === entity.relationships.sentence.id
+    );
+  }
+  if (isSymbol(entity)) {
+    return (
+      entity.relationships.definition_sentences.some(
+        (r) => r.id !== null && r.id === entity.relationships.sentence.id
+      ) ||
+      entity.relationships.nickname_sentences.some(
+        (r) => r.id !== null && r.id === entity.relationships.sentence.id
+      )
+    );
+  }
+  return false;
 }
 
 export function hasDefinition(entityId: string, entities: Entities) {

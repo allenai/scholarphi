@@ -177,6 +177,25 @@ export function symbolMathMls(symbolIds: string[], entities: Entities) {
   return uniqueMathMls;
 }
 
+export function definitionsAndNicknames(
+  symbolIds: string[],
+  entities: Entities
+) {
+  const symbols = symbolIds
+    .map((id) => entities.byId[id])
+    .filter((e) => e !== undefined)
+    .filter(isSymbol);
+  const excerpts = symbols.map((s) => s.attributes.definitions).flat();
+  const contexts = symbols
+    .map((s) => s.relationships.definition_sentences)
+    .flat();
+  excerpts.push(...symbols.map((s) => s.attributes.nicknames).flat());
+  contexts.push(
+    ...symbols.map((s) => s.relationships.nickname_sentences).flat()
+  );
+  return orderExcerpts(excerpts, contexts, entities);
+}
+
 export function definingFormulas(symbolIds: string[], entities: Entities) {
   const symbols = symbolIds
     .map((id) => entities.byId[id])

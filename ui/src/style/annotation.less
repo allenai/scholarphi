@@ -57,6 +57,27 @@
 }
 
 /**
+ * Highlight the target of jumps within the document
+ */
+.scholar-reader-annotation-span.jump-target {
+  transition: background-color ease-out;
+  animation-name: fade;
+  animation-duration: 5s;
+}
+
+@keyframes fade {
+  0% {
+    background-color: fade(@highlight-color, @highlight-hover-opacity-percent);
+  }
+  25% {
+    background-color: fade(@highlight-color, @highlight-hover-opacity-percent);
+  }
+  100% {
+    background-color: none;
+  }
+}
+
+/**
  * Make inactive annotations non-interactive
  */
 .scholar-reader-annotation-span.inactive {
