@@ -9,25 +9,16 @@
  * Features (areas of interest) in diagrams.
  */
 rect.equation-diagram__feature {
-  stroke: black;
   stroke-width: 2;
-  fill: none;
-  opacity: 0;
+  fill: @highlight-color;
+  fill-opacity: @highlight-hover-opacity;
 }
 
 /**
- * Labels.
+ * Labels
  */
-rect.diagram-label__background {
-  fill: @highlight-color;
-  stroke: @label-border-color;
-  stroke-width: @label-border-width;
-}
-
-.equation-diagram__label__text {
-  fill: @s2-text-default;
-  font-family: @s2-font-family;
-  font-size: 18px;
+div.equation-diagram-gloss {
+  cursor: pointer;
 }
 
 /**
@@ -42,14 +33,14 @@ g.equation-diagram__leader {
 
   path.leader-background {
     stroke: white;
-    stroke-width: 2;
+    stroke-width: 4;
     fill: none;
   }
 
   path.leader-foreground {
-    stroke: gray;
-    // stroke-dasharray: 1pt;
-    stroke-width: 1;
+    stroke: @highlight-color;
+    stroke-opacity: 0.5;
+    stroke-width: 2;
     fill: none;
   }
 }

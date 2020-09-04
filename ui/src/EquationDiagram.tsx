@@ -1,10 +1,10 @@
 import Labella from "labella";
 import React from "react";
 import EquationDiagramGloss from "./EquationDiagramGloss";
+import LabelRenderer from "./LabelRenderer";
 import { Point } from "./Selection";
 import * as selectors from "./selectors";
 import { Entities } from "./state";
-import SvgTextRenderer from "./SvgTextRenderer";
 import { Equation } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 import { Dimensions, Rectangle } from "./types/ui";
@@ -64,7 +64,7 @@ interface Props {
 }
 
 interface State {
-  svgTextDimensions: { [text: string]: Dimensions } | null;
+  glossDimensions: { [text: string]: Dimensions } | null;
 }
 
 /*
@@ -74,15 +74,13 @@ class EquationDiagram extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      svgTextDimensions: null,
+      glossDimensions: null,
     };
-    this.onSvgTextDimensionsComputed = this.onSvgTextDimensionsComputed.bind(
-      this
-    );
+    this.onGlossDimensionsComputed = this.onGlossDimensionsComputed.bind(this);
   }
 
-  onSvgTextDimensionsComputed(dimensions: { [text: string]: Dimensions }) {
-    this.setState({ svgTextDimensions: dimensions });
+  onGlossDimensionsComputed(dimensions: { [text: string]: Dimensions }) {
+    this.setState({ glossDimensions: dimensions });
   }
 
   render() {
@@ -138,16 +136,13 @@ class EquationDiagram extends React.PureComponent<Props, State> {
      * First, render just the text elements to get their widths. These widths are needed in order
      * to dynamically layout the elements.
      */
-    const { svgTextDimensions } = this.state;
-    if (svgTextDimensions === null) {
+    const { glossDimensions } = this.state;
+    if (glossDimensions === null) {
       return (
-        <svg>
-          <SvgTextRenderer
-            textClassName="equation-diagram__label__text"
-            texts={features.map((f) => f.label)}
-            onTextDimensionsComputed={this.onSvgTextDimensionsComputed}
-          />
-        </svg>
+        <LabelRenderer
+          texts={features.map((f) => f.label)}
+          onDimensionsComputed={this.onGlossDimensionsComputed}
+        />
       );
     }
 
@@ -171,7 +166,7 @@ class EquationDiagram extends React.PureComponent<Props, State> {
      * Split features into two groups: those that will have labels that appear above the figure,
      * and those that will have labels that appear below the figure.
      */
-    const featureGroups = splitFeatures(filtered, svgTextDimensions);
+    const featureGroups = splitFeatures(filtered, glossDimensions);
     const topFeatures = featureGroups.first;
     const bottomFeatures = featureGroups.second;
 
@@ -179,7 +174,7 @@ class EquationDiagram extends React.PureComponent<Props, State> {
     const LABEL_PADDING = 6;
     const topLabels = createLabels(
       topFeatures,
-      svgTextDimensions,
+      glossDimensions,
       drawingArea,
       "above",
       BOUNDARY_MARGIN,
@@ -187,7 +182,7 @@ class EquationDiagram extends React.PureComponent<Props, State> {
     );
     const bottomLabels = createLabels(
       bottomFeatures,
-      svgTextDimensions,
+      glossDimensions,
       drawingArea,
       "below",
       BOUNDARY_MARGIN,

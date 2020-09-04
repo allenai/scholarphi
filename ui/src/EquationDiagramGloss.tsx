@@ -1,15 +1,18 @@
 import Card from "@material-ui/core/Card";
 import IconButton from "@material-ui/core/IconButton";
 import MoreHoriz from "@material-ui/icons/MoreHoriz";
+import classNames from "classnames";
 import React from "react";
 import RichText from "./RichText";
 import { Point } from "./Selection";
 
 interface Props {
-  entityId: string;
-  children: string;
+  id?: string;
+  className?: string;
   anchor: Point;
-  handleShowMore: (entityId: string) => void;
+  entityId?: string;
+  children: string;
+  handleShowMore?: (entityId: string) => void;
 }
 
 class EquationDiagramGloss extends React.PureComponent<Props> {
@@ -19,25 +22,37 @@ class EquationDiagramGloss extends React.PureComponent<Props> {
   }
 
   onClickShowMore() {
-    this.props.handleShowMore(this.props.entityId);
+    if (this.props.entityId && this.props.handleShowMore) {
+      this.props.handleShowMore(this.props.entityId);
+    }
   }
 
   render() {
     return (
       <Card
+        id={this.props.id}
+        className={classNames(
+          this.props.className,
+          "scholar-reader-tooltip tooltip"
+        )}
         style={{
           position: "absolute",
           left: this.props.anchor.x,
           top: this.props.anchor.y,
         }}
-        className="scholar-reader-tooltip tooltip"
       >
         <div className="gloss simple-gloss equation-diagram-gloss">
           <table>
             <tbody>
               <tr>
                 <td>
-                  <RichText>{this.props.children}</RichText>
+                  <p
+                    className="equation-diagram-gloss__label"
+                    tabIndex={0}
+                    onClick={this.onClickShowMore}
+                  >
+                    <RichText>{this.props.children}</RichText>
+                  </p>
                 </td>
                 <td>
                   <IconButton onClick={this.onClickShowMore} size="small">
