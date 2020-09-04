@@ -287,8 +287,12 @@ export function isCitation(entity: Entity): entity is Citation {
 
 export interface Equation extends BaseEntity {
   type: "equation";
-  attributes: BaseEntityAttributes;
+  attributes: EquationAttributes;
   relationships: {};
+}
+
+export interface EquationAttributes extends BaseEntityAttributes {
+  tex: string | null;
 }
 
 export function isEquation(entity: Entity): entity is Equation {

@@ -93,7 +93,7 @@ export function getSettings(preset?: string) {
     symbolSearchEnabled: true,
     declutterEnabled: true,
     definitionPreviewEnabled: false,
-    equationDiagramsEnabled: false,
+    equationDiagramsEnabled: true,
     entityCreationEnabled: false,
     entityEditingEnabled: false,
     sentenceTexCopyOnOptionClickEnabled: false,

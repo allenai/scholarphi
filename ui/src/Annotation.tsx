@@ -140,7 +140,8 @@ export class Annotation extends React.PureComponent<Props> {
             let isSelected = false;
             if (this.props.selected) {
               isSelected =
-                this.props.selectedSpanIds === null
+                this.props.selectedSpanIds === null ||
+                this.props.selectedSpanIds.length === 0
                   ? i === 0
                   : this.props.selectedSpanIds.indexOf(spanId) !== -1;
             }

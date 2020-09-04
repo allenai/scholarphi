@@ -92,8 +92,18 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
    */
   shouldShowEquation(equationId: string) {
     const { entities, equationDiagramsEnabled, selectedEntityIds } = this.props;
+    if (!equationDiagramsEnabled) {
+      return false;
+    }
+    const equation = entities.byId[equationId];
+    if (equation === undefined || !isEquation(equation)) {
+      return false;
+    }
+    const isInlineEquation =
+      equation.attributes.tex === null ||
+      /^\s*\$\s*[^$]/.test(equation.attributes.tex);
     return (
-      equationDiagramsEnabled &&
+      !isInlineEquation &&
       selectors.equationTopLevelSymbols(equationId, entities).length > 1 &&
       !selectedEntityIds
         .map((id) => entities.byId[id])
@@ -305,14 +315,16 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 (equationId === null || !this.shouldShowEquation(equationId)));
 
             let underline =
-              showAnnotations && selectors.shouldUnderline(entityId, entities);
+              showAnnotations &&
+              selectors.shouldUnderline(entityId, entities) &&
+              !(equationId !== null && this.shouldShowEquation(equationId)) &&
+              !inSelectedEquation;
 
             /*
              * Show a more prominent selection hint than an underline when the symbol is
              * child of something else that's already selected.
              */
-            const showSelectionHint =
-              isSelectionChild || isTopLevelInSelectedEquation;
+            const showSelectionHint = isSelectionChild;
 
             const showTopLevelGlossHint =
               isTopLevel &&

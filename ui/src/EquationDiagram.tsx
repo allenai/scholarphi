@@ -1,6 +1,7 @@
 import Labella from "labella";
 import React from "react";
-import DiagramLabel from "./DiagramLabel";
+import EquationDiagramGloss from "./EquationDiagramGloss";
+import { Point } from "./Selection";
 import * as selectors from "./selectors";
 import { Entities } from "./state";
 import SvgTextRenderer from "./SvgTextRenderer";
@@ -59,7 +60,7 @@ interface Props {
    * Store of entities that contains all symbols that belong to the equation.
    */
   entities: Entities;
-  handleSelectEntity(entityId: string): void;
+  handleShowMore(entityId: string): void;
 }
 
 interface State {
@@ -111,10 +112,13 @@ class EquationDiagram extends React.PureComponent<Props, State> {
       .filter(
         (s) =>
           selectors.outerBoundingBox(s, pageNumber) !== null &&
-          selectors.diagramLabel(s, true) !== null &&
           s.attributes.tex !== null
       )
       .map((s) => {
+        const label = selectors.diagramLabel(s, entities, false);
+        if (!label) {
+          return null;
+        }
         const box = selectors.outerBoundingBox(s, pageNumber) as Rectangle;
         const left = box.left * pageWidth;
         const top = box.top * pageHeight;
@@ -124,9 +128,11 @@ class EquationDiagram extends React.PureComponent<Props, State> {
           id: s.id,
           groupId: s.attributes.tex as string,
           location: { left, top, width, height },
-          label: selectors.diagramLabel(s, true) as string,
+          label,
         } as Feature;
-      });
+      })
+      .filter((f) => f !== null)
+      .map((f) => f as Feature);
 
     /*
      * First, render just the text elements to get their widths. These widths are needed in order
@@ -188,65 +194,82 @@ class EquationDiagram extends React.PureComponent<Props, State> {
       LABEL_PADDING
     );
 
-    /*
-     * Size the SVG canvas dynamically so that all labels will be showing.
-     */
     const labels = [...topLabels, ...bottomLabels];
-    const left = Math.min(0, ...labels.map((l) => l.left));
-    const right = Math.max(
-      drawingArea.width,
-      ...labels.map((l) => l.left + l.width)
-    );
-    const top = Math.min(0, ...labels.map((l) => l.top));
-    const bottom = Math.max(
-      drawingArea.height,
-      ...labels.map((l) => l.top + l.height + 4)
-    );
-    const width = right - left;
-    const height = bottom - top;
-
     const FEATURE_MARGIN = 6;
 
     return (
-      <svg
-        style={{ position: "absolute", left, top }}
-        className="equation-diagram"
-        viewBox={`${left} ${top} ${width} ${height}`}
-        width={width}
-        height={height}
-      >
-        {labels.map((l) => (
-          <g key={l.feature.id} className="equation-diagram__labeled-feature">
-            <g className="equation-diagram__leader">
-              <path
-                className="leader-background"
-                d={createLeader(l, FEATURE_MARGIN)}
-              />
-              <path
-                className="leader-foreground"
-                d={createLeader(l, FEATURE_MARGIN)}
-              />
-              <rect
-                onClick={() => this.props.handleSelectEntity(l.feature.id)}
-                className="equation-diagram__feature"
-                x={l.feature.location.left - FEATURE_MARGIN}
-                y={l.feature.location.top - FEATURE_MARGIN}
-                width={l.feature.location.width + FEATURE_MARGIN * 2}
-                height={l.feature.location.height + FEATURE_MARGIN * 2}
-              />
-            </g>
-            <DiagramLabel
-              textClassname="equation-diagram__label__text"
-              x={l.left}
-              y={l.top}
-              width={l.width}
-              height={l.height}
-              text={l.text}
-              onClick={() => this.props.handleSelectEntity(l.feature.id)}
-            />
-          </g>
-        ))}
-      </svg>
+      <div className="equation-diagram">
+        {labels.map((l) => {
+          const leader = createLeader(l, FEATURE_MARGIN);
+          const leaderBounds = {
+            left: Math.min(...leader.map((p) => p.x)),
+            top: Math.min(...leader.map((p) => p.y)),
+            right: Math.max(...leader.map((p) => p.x)),
+            bottom: Math.max(...leader.map((p) => p.y)),
+          };
+          const featureBounds = {
+            left: l.feature.location.left - FEATURE_MARGIN,
+            top: l.feature.location.top - FEATURE_MARGIN,
+            right:
+              l.feature.location.left +
+              l.feature.location.width +
+              FEATURE_MARGIN,
+            bottom:
+              l.feature.location.top +
+              l.feature.location.height +
+              FEATURE_MARGIN,
+          };
+          const svgBounds = {
+            left: Math.min(leaderBounds.left, featureBounds.left),
+            top: Math.min(leaderBounds.top, featureBounds.top),
+            right: Math.max(leaderBounds.right, featureBounds.right),
+            bottom: Math.max(leaderBounds.bottom, featureBounds.bottom),
+          };
+          const svgWidth = svgBounds.right - svgBounds.left;
+          const svgHeight = svgBounds.bottom - svgBounds.top;
+
+          return (
+            <div className="equation-diagram__label-container">
+              <svg
+                style={{
+                  position: "absolute",
+                  left: svgBounds.left,
+                  top: svgBounds.top,
+                }}
+                width={svgWidth}
+                height={svgHeight}
+                viewBox={`${svgBounds.left} ${svgBounds.top} ${svgWidth} ${svgHeight}`}
+              >
+                {/* TODO(andrewhead): set svg width, height, and view box dynamically. */}
+                <g
+                  key={l.feature.id}
+                  className="equation-diagram__labeled-feature"
+                >
+                  <g className="equation-diagram__leader">
+                    <path className="leader-background" d={svgPath(leader)} />
+                    <path className="leader-foreground" d={svgPath(leader)} />
+                    <rect
+                      onClick={() => this.props.handleShowMore(l.feature.id)}
+                      className="equation-diagram__feature"
+                      x={l.feature.location.left - FEATURE_MARGIN}
+                      y={l.feature.location.top - FEATURE_MARGIN}
+                      width={l.feature.location.width + FEATURE_MARGIN * 2}
+                      height={l.feature.location.height + FEATURE_MARGIN * 2}
+                    />
+                  </g>
+                </g>
+              </svg>
+              <EquationDiagramGloss
+                anchor={{ x: l.left, y: l.top }}
+                entityId={l.feature.id}
+                handleShowMore={this.props.handleShowMore}
+              >
+                {l.text}
+              </EquationDiagramGloss>
+            </div>
+          );
+        })}
+      </div>
     );
   }
 }
@@ -350,7 +373,8 @@ function createLabels(
  * Generate L-shaped leaders, which seem to have a good balance between usability and
  * likability. For a review of the terms used in this function, and of the justification for
  * using L-shaped leaders, see Barth et al.,
- * "On the readability of leaders in boundary labeling", 2019.
+ * "On the readability of leaders in boundary labeling", 2019. Returns a set of points,
+ * which can be turned into an SVG path with 'svgPath'.
  */
 function createLeader(label: Label, featureMargin?: number) {
   const feature = label.feature.location;
@@ -436,15 +460,20 @@ function createLeader(label: Label, featureMargin?: number) {
     ];
   }
 
+  return [port, midpoint, site, ...featureEdge];
+}
+
+function svgPath(points: Point[]) {
   /*
    * Path is expressed in SVG path coordinates:
    * https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/d
    */
   return (
-    `M ${port.x}, ${port.y} ` +
-    `L ${midpoint.x}, ${midpoint.y} ` +
-    `L ${site.x}, ${site.y} ` +
-    featureEdge.map((p) => `L ${p.x}, ${p.y}`)
+    `M ${points[0].x}, ${points[0].y} ` +
+    points
+      .slice(1)
+      .map((p) => ` L ${p.x}, ${p.y}`)
+      .join(" ")
   );
 }
 

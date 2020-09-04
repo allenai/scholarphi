@@ -2,9 +2,10 @@ import { defaultMemoize } from "reselect";
 import { SymbolFilter } from "../FindBar";
 import { Entities } from "../state";
 import { isSymbol, Relationship, Symbol } from "../types/api";
-import * as uiUtils from "../utils/ui";
 import {
   adjacentContext,
+  adjacentDefinition,
+  comparePosition,
   hasDefinition,
   inDefinition,
   orderByPosition,
@@ -13,13 +14,15 @@ import {
 
 export function diagramLabel(
   symbol: Symbol,
-  includeNicknames?: boolean
+  entities: Entities,
+  explicitLabelsOnly?: boolean
 ): string | null {
   if (symbol.attributes.diagram_label !== null) {
     return symbol.attributes.diagram_label;
   }
-  if (includeNicknames) {
-    return uiUtils.sortByFrequency(symbol.attributes.nicknames)[0] || null;
+  if (!explicitLabelsOnly) {
+    const definition = nearbyDefinition(symbol.id, entities);
+    return definition ? definition.excerpt : null;
   }
   return null;
 }
@@ -266,4 +269,39 @@ export function shouldUnderline(symbolId: string, entities: Entities) {
     ancestorId = ancestor.relationships.parent.id;
   }
   return true;
+}
+
+/**
+ * Get the first definition or nickname right before the appearance of the symbol, if
+ * possible. If not possible, get the first definition or nickname right after the appearance
+ * of the symbol.
+ */
+export function nearbyDefinition(symbolId: string, entities: Entities) {
+  const dBefore = adjacentDefinition(symbolId, entities, "before");
+  const nBefore = adjacentNickname(symbolId, entities, "before");
+  if (dBefore && nBefore) {
+    return comparePosition(dBefore.contextEntity, nBefore.contextEntity) > 0
+      ? dBefore
+      : nBefore;
+  }
+  if (dBefore) {
+    return dBefore;
+  }
+  if (nBefore) {
+    return nBefore;
+  }
+  const dAfter = adjacentDefinition(symbolId, entities, "after");
+  const nAfter = adjacentNickname(symbolId, entities, "after");
+  if (dAfter && nAfter) {
+    return comparePosition(dAfter.contextEntity, nAfter.contextEntity) < 0
+      ? dAfter
+      : nAfter;
+  }
+  if (dAfter) {
+    return dAfter;
+  }
+  if (nAfter) {
+    return nAfter;
+  }
+  return null;
 }

@@ -129,6 +129,12 @@ attributes = attributes
         }),
       },
       {
+        is: "equation",
+        then: Joi.object().keys({
+          tex: stringAttribute,
+        }),
+      },
+      {
         is: "term",
         then: Joi.object().keys({
           name: stringAttribute,

@@ -211,17 +211,13 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   selectEntity(id: string) {
-    this.setState({
-      selectedEntityIds: [id],
-      selectedAnnotationIds: [],
-      selectedAnnotationSpanIds: [],
-    });
+    this.selectEntityAnnotation(id);
   }
 
   selectEntityAnnotation(
     entityId: string,
-    annotationId: string,
-    annotationSpanId: string
+    annotationId?: string,
+    annotationSpanId?: string
   ) {
     logger.log("debug", "select-entity", {
       entityId,
@@ -247,10 +243,13 @@ class ScholarReader extends React.PureComponent<Props, State> {
       if (selectedEntityIds.indexOf(entityId) === -1) {
         selectedEntityIds.push(entityId);
       }
-      if (selectedAnnotationIds.indexOf(annotationId) === -1) {
+      if (annotationId && selectedAnnotationIds.indexOf(annotationId) === -1) {
         selectedAnnotationIds.push(annotationId);
       }
-      if (selectedAnnotationSpanIds.indexOf(annotationSpanId) === -1) {
+      if (
+        annotationSpanId &&
+        selectedAnnotationSpanIds.indexOf(annotationSpanId) === -1
+      ) {
         selectedAnnotationSpanIds.push(annotationSpanId);
       }
 
@@ -1157,7 +1156,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                             pageView={pageView}
                             entities={entities}
                             equation={e}
-                            handleSelectEntity={this.selectEntity}
+                            handleShowMore={this.selectEntity}
                           />
                         ))}
                     {/* Canvas for annotating entities. */}
