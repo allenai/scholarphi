@@ -194,7 +194,7 @@ export function firstPage(entity: Entity) {
 
 export function readableFirstPageNumber(entity: Entity) {
   const pageNumber = firstPage(entity);
-  return pageNumber ? `${pageNumber + 1}` : "?";
+  return pageNumber !== null ? `${pageNumber + 1}` : "?";
 }
 
 /**

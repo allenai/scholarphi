@@ -134,6 +134,9 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.selectEntity = this.selectEntity.bind(this);
     this.selectEntityAnnotation = this.selectEntityAnnotation.bind(this);
     this.jumpToEntity = this.jumpToEntity.bind(this);
+    this.jumpToEntityWithBackMessage = this.jumpToEntityWithBackMessage.bind(
+      this
+    );
     this.clearEntitySelection = this.clearEntitySelection.bind(this);
 
     this.setMultiselectEnabled = this.setMultiselectEnabled.bind(this);
@@ -208,7 +211,11 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   selectEntity(id: string) {
-    this.setState({ selectedEntityIds: [id] });
+    this.setState({
+      selectedEntityIds: [id],
+      selectedAnnotationIds: [],
+      selectedAnnotationSpanIds: [],
+    });
   }
 
   selectEntityAnnotation(
@@ -758,7 +765,18 @@ class ScholarReader extends React.PureComponent<Props, State> {
     }
   }
 
-  jumpToEntity(id: string) {
+  jumpToEntityWithBackMessage(id: string) {
+    const success = this.jumpToEntity(id);
+
+    if (success && !this._backButtonHintShown) {
+      this.showSnackbarMessage(
+        "Resume where you left by pressing the browser '←' button."
+      );
+      // this._backButtonHintShown = true;
+    }
+  }
+
+  jumpToEntity(id: string): boolean {
     /*
      * In a past version, these offsets were based roughly off those in the pdf.js "find" functionality:
      * https://github.com/mozilla/pdf.js/blob/16ae7c6960c1296370c1600312f283a68e82b137/web/pdf_find_controller.js#L28-L29
@@ -777,7 +795,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       pages === null ||
       Object.values(pages).length === 0
     ) {
-      return;
+      return false;
     }
 
     const dest = entities.byId[id].attributes.bounding_boxes[0];
@@ -812,19 +830,14 @@ class ScholarReader extends React.PureComponent<Props, State> {
       ],
     });
 
-    if (!this._backButtonHintShown) {
-      this.showSnackbarMessage(
-        "Return to where you were before by pressing the 'Back' button."
-      );
-      // this._backButtonHintShown = true;
-    }
-
     /*
      * Store the position that the paper has jumped to.
      */
     this.setState({
       jumpTarget: id,
     });
+
+    return true;
   }
 
   render() {
@@ -966,7 +979,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                 entities={this.state.entities}
                 selectedEntityIds={this.state.selectedEntityIds}
                 propagateEntityEdits={this.state.propagateEntityEdits}
-                handleJumpToEntity={this.jumpToEntity}
+                handleJumpToEntity={this.jumpToEntityWithBackMessage}
                 handleClose={this.closeDrawer}
                 handleUpdateEntity={this.updateEntity}
                 handleDeleteEntity={this.deleteEntity}
@@ -1128,7 +1141,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                         }
                         handleShowSnackbarMessage={this.showSnackbarMessage}
                         handleAddPaperToLibrary={this.addToLibrary}
-                        handleJumpToEntity={this.jumpToEntity}
+                        handleJumpToEntity={this.jumpToEntityWithBackMessage}
                         handleOpenDrawer={this.openDrawer}
                       />
                     )}

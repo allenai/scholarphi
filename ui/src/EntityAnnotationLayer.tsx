@@ -177,9 +177,18 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
           }
 
           /*
-           * Determine generic selection properties.
+           * Determine generic selection properties. Select an annotation if it has been explicitly
+           * selected, or if there are no selections and the annotation is for this entity.
            */
-          const isSelected = selectedAnnotationIds.indexOf(annotationId) !== -1;
+          let isSelected = false;
+          if (selectedAnnotationIds.indexOf(annotationId) !== -1) {
+            isSelected = true;
+          } else if (
+            selectedAnnotationIds.length === 0 &&
+            selectedEntityIds.indexOf(entityId) !== -1
+          ) {
+            isSelected = true;
+          }
           const isMatch =
             findMatchedEntityIds !== null &&
             findMatchedEntityIds.indexOf(entityId) !== -1;

@@ -124,7 +124,7 @@ class AppOverlay extends React.PureComponent<Props> {
             key={this.props.snackbarActivationTimeMs}
             open={this.props.snackbarMode === "open"}
             message={this.props.snackbarMessage}
-            anchorOrigin={{ horizontal: "center", vertical: "top" }}
+            anchorOrigin={{ horizontal: "left", vertical: "top" }}
             /*
              * Set to Snackbar showing time to recommended lower limit from Material design
              * guidelines. See https://material.io/components/snackbars#behavior

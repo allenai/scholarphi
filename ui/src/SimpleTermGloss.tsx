@@ -81,7 +81,7 @@ class SimpleTermGloss extends React.PureComponent<Props, State> {
                   <p>
                     {definition !== null && (
                       <>
-                        <RichText>{`"${definition.excerpt}"`}</RichText>
+                        <RichText>{`${definition.excerpt}`}</RichText>
                         {" (page "}
                         <EntityLink
                           id={`term-${term.id}-definition`}
@@ -93,6 +93,7 @@ class SimpleTermGloss extends React.PureComponent<Props, State> {
                             definition.contextEntity
                           )}
                         </EntityLink>
+                        {")."}
                       </>
                     )}
                   </p>
