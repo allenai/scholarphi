@@ -3,6 +3,7 @@ import * as selectors from "./selectors";
 import Snippet from "./Snippet";
 import { Entities } from "./state";
 import { isSymbol, isTerm, Symbol, Term } from "./types/api";
+import * as uiUtils from "./utils/ui";
 
 interface Props {
   selectedEntityIds: string[];
@@ -17,13 +18,30 @@ export class Usages extends React.PureComponent<Props> {
       .map((id) => entities.byId[id])
       .filter((e) => e !== undefined)
       .filter((e) => isTerm(e) || isSymbol(e))
-      .map((e) => e as Term | Symbol)
-      .map((s) => s.id);
-    const usages = selectors.usages(selectedEntityIdsWithUsages, entities);
+      .map((e) => e as Term | Symbol);
+
+    const entityIds = selectedEntityIdsWithUsages.map((e) => e.id);
+    const usages = selectors.usages(entityIds, entities);
+
+    const entityTypes = uiUtils.joinStrings(
+      selectedEntityIdsWithUsages.map((e) => `${e.type}s`)
+    );
 
     return (
       <div className="document-snippets usages">
         <p className="drawer__content__header">Usages</p>
+        {selectedEntityIds.length === 0 && (
+          <p>To see usages, select a symbol or term.</p>
+        )}
+        {selectedEntityIds.length > 0 && (
+          <p>
+            {usages.length === 0
+              ? `No usages were found for the selected ${entityTypes}.`
+              : `Showing ${usages.length} usage${
+                  usages.length === 1 ? "" : "s"
+                } of the selected ${entityTypes}.`}
+          </p>
+        )}
         {usages.map((u) => (
           <Snippet
             key={u.contextEntity.id}

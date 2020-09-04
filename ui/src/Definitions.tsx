@@ -23,6 +23,18 @@ export class Definitions extends React.PureComponent<Props> {
     return (
       <div className="document-snippets definitions">
         <p className="drawer__content__header">Definitions</p>
+        {selectedEntityIds.length === 0 && (
+          <p>To see definitions, select a symbol.</p>
+        )}
+        {selectedEntityIds.length > 0 && (
+          <p>
+            {definitions.length === 0
+              ? `No definitions were found for the selected symbols.`
+              : `Showing ${definitions.length} definition${
+                  definitions.length === 1 ? "" : "s"
+                } of the selected symbols.`}
+          </p>
+        )}
         {definitions.map((u) => (
           <Snippet
             key={u.contextEntity.id}

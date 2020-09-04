@@ -28,6 +28,18 @@ export class DefiningFormulas extends React.PureComponent<Props> {
     return (
       <div className="document-snippets defining-formulas">
         <p className="drawer__content__header">Defining Formulas</p>
+        {selectedEntityIds.length === 0 && (
+          <p>To see formulas that define a symbol, first select a symbol.</p>
+        )}
+        {selectedEntityIds.length > 0 && (
+          <p>
+            {formulas.length === 0
+              ? `No formulas were found that define the selected symbols.`
+              : `Showing ${formulas.length} formula${
+                  formulas.length === 1 ? "" : "s"
+                } that define the selected symbols.`}
+          </p>
+        )}
         {formulas.map((f) => (
           <DefiningFormula
             key={f.contextEntity.id}
