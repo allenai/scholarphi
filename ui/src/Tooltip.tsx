@@ -63,7 +63,11 @@ class Tooltip extends React.PureComponent<Props> {
     }
 
     return (
-      <Card style={style} className="scholar-reader-tooltip tooltip">
+      <Card
+        className="scholar-reader-tooltip tooltip"
+        style={style}
+        elevation={uiUtils.TOOLTIP_ELEVATION}
+      >
         {this.props.content}
       </Card>
     );

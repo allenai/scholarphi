@@ -83,10 +83,16 @@ class ViewerOverlay extends React.PureComponent<Props> {
       uiUtils.findParentElement(event.target, (e) =>
         e.classList.contains("gloss")
       );
+    const clickIsInsideEquationLabel =
+      event.target instanceof Node &&
+      uiUtils.findParentElement(event.target, (e) =>
+        e.classList.contains("equation-diagram__label-container")
+      );
 
     if (
       !clickIsInsideSelectable &&
       !clickIsInsideGloss &&
+      !clickIsInsideEquationLabel &&
       textSelection !== null &&
       textSelection.toString() === ""
     ) {

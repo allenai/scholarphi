@@ -19,6 +19,11 @@ rect.equation-diagram__feature {
  */
 div.equation-diagram-gloss {
   cursor: pointer;
+  max-width: 150px;
+
+  &:hover {
+    background-color: #ddd;
+  }
 }
 
 /**
@@ -38,7 +43,8 @@ g.equation-diagram__leader {
   }
 
   path.leader-foreground {
-    stroke: @highlight-color;
+    // stroke: @highlight-color;
+    stroke: black;
     stroke-opacity: 0.5;
     stroke-width: 2;
     fill: none;
@@ -48,23 +54,23 @@ g.equation-diagram__leader {
 /**
  * Hover behavior.
  */
-g.equation-diagram__labeled-feature {
-  &:hover {
-    cursor: default;
+div.equation-diagram__label-container {
+  pointer-events: all;
+  cursor: pointer;
 
-    rect.diagram-label__background {
-      stroke-width: @label-border-width * 2;
-    }
+  &:hover {
+    cursor: pointer;
 
     rect.equation-diagram__feature {
-      opacity: 1;
+      fill-opacity: @highlight-opacity;
+    }
+
+    .equation-diagram-gloss {
+      background-color: #ddd;
     }
 
     g.equation-diagram__leader {
       opacity: 1;
-      path.leader-foreground {
-        stroke-dasharray: unset;
-      }
     }
   }
 }

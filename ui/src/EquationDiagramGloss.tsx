@@ -1,10 +1,9 @@
 import Card from "@material-ui/core/Card";
-import IconButton from "@material-ui/core/IconButton";
-import MoreHoriz from "@material-ui/icons/MoreHoriz";
 import classNames from "classnames";
 import React from "react";
 import RichText from "./RichText";
 import { Point } from "./Selection";
+import * as uiUtils from "./utils/ui";
 
 interface Props {
   id?: string;
@@ -40,6 +39,7 @@ class EquationDiagramGloss extends React.PureComponent<Props> {
           left: this.props.anchor.x,
           top: this.props.anchor.y,
         }}
+        elevation={uiUtils.TOOLTIP_ELEVATION}
       >
         <div className="gloss simple-gloss equation-diagram-gloss">
           <table>
@@ -53,11 +53,6 @@ class EquationDiagramGloss extends React.PureComponent<Props> {
                   >
                     <RichText>{this.props.children}</RichText>
                   </p>
-                </td>
-                <td>
-                  <IconButton onClick={this.onClickShowMore} size="small">
-                    <MoreHoriz />
-                  </IconButton>
                 </td>
               </tr>
             </tbody>

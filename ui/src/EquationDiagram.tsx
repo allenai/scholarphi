@@ -226,6 +226,7 @@ class EquationDiagram extends React.PureComponent<Props, State> {
           return (
             <div className="equation-diagram__label-container">
               <svg
+                onClick={() => this.props.handleShowMore(l.feature.id)}
                 style={{
                   position: "absolute",
                   left: svgBounds.left,
@@ -244,7 +245,6 @@ class EquationDiagram extends React.PureComponent<Props, State> {
                     <path className="leader-background" d={svgPath(leader)} />
                     <path className="leader-foreground" d={svgPath(leader)} />
                     <rect
-                      onClick={() => this.props.handleShowMore(l.feature.id)}
                       className="equation-diagram__feature"
                       x={l.feature.location.left - FEATURE_MARGIN}
                       y={l.feature.location.top - FEATURE_MARGIN}
@@ -311,13 +311,6 @@ function createLabels(
   labelPadding?: number | undefined
 ): Label[] {
   /*
-   * All labels share the same height, which is the height of the tallest label.
-   */
-  const labelHeight =
-    Math.max(...Object.values(textDimensions).map((d) => d.height)) +
-    (labelPadding || 0) * 2;
-
-  /*
    * Horizontally position the nodes using Labella.js' force-directed layout algorithm. Set
    * algorithm to 'none' to disable the use of multiple layers, because:
    * * multiple layers might decrease readability of labels
@@ -332,9 +325,13 @@ function createLabels(
    */
   const nodes = features.map((feature) => {
     const idealX = feature.location.left + feature.location.width / 2;
-    const labelWidth =
-      textDimensions[feature.label].width + (labelPadding || 0) * 2;
-    return new Labella.Node(idealX, labelWidth, { feature });
+    const { width, height } = textDimensions[feature.label];
+    const y =
+      where === "above"
+        ? drawingArea.top - (boundaryMargin || 0) - height
+        : drawingArea.top + drawingArea.height + (boundaryMargin || 0);
+    const labelWidth = width + (labelPadding || 0) * 2;
+    return new Labella.Node(idealX, labelWidth, { feature, y, height });
   });
   const force = new Labella.Force({
     algorithm: "none",
@@ -343,21 +340,15 @@ function createLabels(
   });
   force.nodes(nodes).compute();
 
-  boundaryMargin = boundaryMargin || 0;
-  const y =
-    where === "above"
-      ? drawingArea.top - boundaryMargin - labelHeight
-      : drawingArea.top + drawingArea.height + boundaryMargin;
-
   return nodes.map((n) => ({
     /*
      * The node returned by 'Force' sets 'currentPos' to the center of the label.
      * Get the left side of the label by subtracting half the label width.
      */
     left: n.currentPos - n.width / 2,
-    top: y,
+    top: n.data.y,
     width: n.width,
-    height: labelHeight,
+    height: n.data.height,
     feature: n.data.feature,
     text: n.data.feature.label,
     where: where,

@@ -290,10 +290,21 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
             );
           } else if (isSymbol(entity)) {
             /*
+             * If the symbol appears in a selected equation, don't render it; the
+             * equation diagram provides its own targets to click.
+             */
+            const equationId = entity.relationships.equation.id;
+            const inSelectedEquation = selectedEntities.some(
+              (e) => isEquation(e) && equationId === e.id
+            );
+            if (inSelectedEquation) {
+              return null;
+            }
+
+            /*
              * A symbol should be shown as clickable in any of the conditions:
              * 1. It is the child of a selected symbol
-             * 2. It is a top-level symbol in a selected equation
-             * 3. Equation annotations are disabled and it's a top-level symbol
+             * 2. Equation annotations are disabled and it's a top-level symbol
              */
             const isSelectionChild = selectedEntities.some(
               (e) => isSymbol(e) && selectors.isChild(entity, e)
@@ -302,10 +313,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
               (e) => isSymbol(e) && selectors.isDescendant(entity, e, entities)
             );
             const isTopLevel = selectors.isTopLevelSymbol(entity, entities);
-            const equationId = entity.relationships.equation.id;
-            const inSelectedEquation = selectedEntities.some(
-              (e) => isEquation(e) && equationId === e.id
-            );
+
             const isTopLevelInSelectedEquation =
               isTopLevel && inSelectedEquation;
             const isSelectable =

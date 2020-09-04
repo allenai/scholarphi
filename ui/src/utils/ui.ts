@@ -5,6 +5,13 @@ import { BoundingBox } from "../types/api";
 import { PDFPageView } from "../types/pdfjs-viewer";
 import { Dimensions, Rectangle } from "../types/ui";
 
+/*
+ * Corresponds to the 'elevation' property of 'Paper' and 'Card' components from Material UI.
+ * Can take on values of 0 to 24 inclusive. See
+ * https://material.io/design/environment/elevation.html#elevation-in-material-design
+ */
+export const TOOLTIP_ELEVATION = 8;
+
 export function getMouseXY(event: React.MouseEvent) {
   const rect = event.currentTarget.getBoundingClientRect();
   const x = event.clientX - rect.left;
