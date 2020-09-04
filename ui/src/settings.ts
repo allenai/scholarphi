@@ -15,6 +15,10 @@ export interface Settings {
    */
   annotationHintsEnabled: boolean;
   /**
+   * Show glosses for citations containing paper summary information.
+   */
+  citationGlossesEnabled: boolean;
+  /**
    * Start a within-paper symbol search when a symbol is selected.
    */
   symbolSearchEnabled: boolean;
@@ -57,6 +61,54 @@ export interface Settings {
    * disabled as it interferes with built-in text selection in pdf.js.
    */
   sentenceTexCopyOnOptionClickEnabled: boolean;
+}
+
+/**
+ * A preset is a named, partial specification of settings.
+ */
+interface Preset extends Partial<Settings> {
+  key: string;
+}
+
+/**
+ * Define new presets for settings here.
+ */
+const PRESETS: Preset[] = [
+  {
+    key: "deepsets",
+    citationGlossesEnabled: false,
+  },
+];
+
+/**
+ * Get app settings, merging presets matching the key 'preset' with the default settings.
+ */
+export function getSettings(preset?: string) {
+  const DEFAULT_SETTINGS: Settings = {
+    primerPageEnabled: true,
+    annotationHintsEnabled: true,
+    glossStyle: "tooltip",
+    textSelectionMenuEnabled: false,
+    citationGlossesEnabled: true,
+    symbolSearchEnabled: true,
+    declutterEnabled: true,
+    definitionPreviewEnabled: false,
+    equationDiagramsEnabled: false,
+    entityCreationEnabled: false,
+    entityEditingEnabled: false,
+    sentenceTexCopyOnOptionClickEnabled: false,
+    glossEvaluationEnabled: false,
+  };
+
+  let settings = DEFAULT_SETTINGS;
+  if (preset) {
+    for (const p of PRESETS) {
+      if (p.key === preset) {
+        settings = { ...settings, ...p };
+      }
+    }
+  }
+  return settings;
 }
 
 /**
@@ -109,6 +161,11 @@ export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
     key: "textSelectionMenuEnabled",
     type: "flag",
     label: "Show text selection menu",
+  },
+  {
+    key: "citationGlossesEnabled",
+    type: "flag",
+    label: "Citation glosses",
   },
   {
     key: "symbolSearchEnabled",

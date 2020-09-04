@@ -25,6 +25,7 @@ import { matchingSymbols } from "./selectors";
 import {
   ConfigurableSetting,
   CONFIGURABLE_SETTINGS,
+  getSettings,
   GlossStyle,
 } from "./settings";
 import {
@@ -61,11 +62,14 @@ const logger = getRemoteLogger();
 
 interface Props {
   paperId?: PaperId;
+  preset?: string;
 }
 
 class ScholarReader extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
+
+    const settings = getSettings(props.preset);
 
     this.state = {
       entities: null,
@@ -106,18 +110,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       entityCreationType: "term",
       propagateEntityEdits: true,
 
-      primerPageEnabled: true,
-      annotationHintsEnabled: true,
-      glossStyle: "tooltip",
-      textSelectionMenuEnabled: false,
-      symbolSearchEnabled: true,
-      declutterEnabled: true,
-      definitionPreviewEnabled: false,
-      equationDiagramsEnabled: false,
-      entityCreationEnabled: false,
-      entityEditingEnabled: false,
-      sentenceTexCopyOnOptionClickEnabled: false,
-      glossEvaluationEnabled: false,
+      ...settings,
     };
 
     /**
@@ -821,7 +814,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
 
     if (!this._backButtonHintShown) {
       this.showSnackbarMessage(
-        "To return to where you were before, press the 'Back' button."
+        "Return to where you were before by pressing the 'Back' button."
       );
       // this._backButtonHintShown = true;
     }
@@ -1117,6 +1110,9 @@ class ScholarReader extends React.PureComponent<Props, State> {
                         findSelectionEntityId={findSelectionEntityId}
                         jumpTarget={jumpTarget}
                         showAnnotations={this.state.annotationHintsEnabled}
+                        citationAnnotationsEnabled={
+                          this.state.citationGlossesEnabled
+                        }
                         glossStyle={this.state.glossStyle}
                         glossEvaluationEnabled={
                           this.state.glossEvaluationEnabled

@@ -46,7 +46,12 @@ if (url !== undefined) {
   }
 }
 
+let preset: string | undefined = undefined;
+if (typeof params.preset === "string") {
+  preset = params.preset;
+}
+
 ReactDOM.render(
-  <ScholarReader paperId={paperId} />,
+  <ScholarReader paperId={paperId} preset={preset} />,
   document.querySelector("#scholar-reader")
 );

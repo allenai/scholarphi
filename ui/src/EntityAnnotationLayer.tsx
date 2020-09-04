@@ -34,6 +34,7 @@ interface Props {
   showAnnotations: boolean;
   glossStyle: GlossStyle;
   glossEvaluationEnabled: boolean;
+  citationAnnotationsEnabled: boolean;
   equationDiagramsEnabled: boolean;
   copySentenceOnClick: boolean;
   handleSelectEntityAnnotation: (
@@ -150,6 +151,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
       showAnnotations,
       glossStyle,
       glossEvaluationEnabled,
+      citationAnnotationsEnabled,
       copySentenceOnClick,
       handleAddPaperToLibrary,
       handleSelectEntityAnnotation,
@@ -223,6 +225,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
               />
             );
           } else if (
+            citationAnnotationsEnabled &&
             isCitation(entity) &&
             papers !== null &&
             entity.attributes.paper_id !== null &&
