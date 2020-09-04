@@ -2,17 +2,33 @@
  * Default gloss dimensions
  */
 .gloss {
-  min-width: 200px;
   max-width: 400px;
+  &:not(.simple-gloss) {
+    min-width: 200px;
+  }
+
+  &.closed {
+    display: none;
+  }
 }
 
 /**
  * Gloss contents
  */
 .gloss {
-  &.contextual-symbol-gloss {
+  &.simple-gloss {
     background-color: #eee;
-    padding: @medium / 2;
+    padding: 0;
+
+    p {
+      padding: @padding / 4;
+      margin: 0;
+    }
+
+    &.term-gloss p {
+      max-height: 4rem;
+      overflow: auto;
+    }
   }
 
   .gloss__section {
@@ -29,6 +45,16 @@
    * Inset nested list elements
    */
   list-style-position: inside;
+
+  /*
+   * If this is an inline gloss, lay out sections horizontally.
+   */
+  &.inline-gloss {
+    & > div {
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
 }
 
 /**
@@ -101,53 +127,6 @@
     border-bottom: 1px solid @s2-link-default;
     color: @s2-link-default;
   }
-
-  /*
-   * Links within the document
-   */
-  .entity-link-span.clickable {
-    text-decoration: underline;
-    cursor: pointer;
-    color: @s2-link-default;
-  }
-}
-
-/**
- * Formulas
- */
-.defining-formula {
-  border: @border;
-  border-radius: @border-radius;
-  padding: @padding;
-
-  /*
-   * Interaction
-   */
-  &.clickable {
-    cursor: pointer;
-  }
-
-  /*
-   * Some equations will be massive, so they scroll.
-   */
-  max-height: 5rem;
-  overflow: hidden;
-
-  /*
-   * Don't wrap the text, and center the span if it doesn't take up the whole width.
-   */
-  .formatted-text {
-    white-space: pre;
-    display: table;
-    margin: 0 auto;
-  }
-}
-
-.snippet {
-  border: @border;
-  border-radius: @border-radius;
-  padding: @padding;
-  overflow: hidden;
 }
 
 /**
@@ -199,18 +178,5 @@
     button {
       text-transform: none;
     }
-  }
-}
-
-.gloss {
-  @{accordion-summary} {
-    min-height: unset;
-    .Mui-expanded {
-      margin: 0;
-    }
-  }
-  .MuiAccordionDetails-root {
-    padding-top: 0;
-    padding-bottom: @padding;
   }
 }

@@ -3,14 +3,14 @@ import os.path
 from abc import abstractmethod
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Type
+from typing import Any, Callable, Dict, Iterator, List, Optional, Type
 
 from common import directories, file_utils
 from common.colorize_tex import wrap_span
 from common.commands.base import ArxivBatchCommand
 from common.types import ArxivId, RelativePath, SerializableEntity
 
-from ..types import Sentence, Context
+from ..types import Context, Sentence, TexWrapper
 
 
 @dataclass(frozen=True)
@@ -44,6 +44,15 @@ class ExtractContextsCommand(ArxivBatchCommand[Task, Context]):
         'SerializableSymbol'.
         """
         return SerializableEntity
+
+    @abstractmethod
+    def get_wrapper(
+        self, entity: SerializableEntity
+    ) -> Optional[TexWrapper]:  # pylint: disable=unused-argument
+        """
+        Override this method to insert custom TeX before and after each appearance of the entity in
+        the TeX, i.e., to add custom styling around the entity where it appears in the TeX.
+        """
 
     def get_key(self, entity: SerializableEntity) -> Any:
         """
@@ -102,7 +111,7 @@ class ExtractContextsCommand(ArxivBatchCommand[Task, Context]):
 
         # Entities, grouped by similarity and sentence.
         sentence_entities: Dict[
-            SentenceId, Dict[EntityKey, Set[SerializableEntity]]
+            SentenceId, Dict[EntityKey, List[SerializableEntity]]
         ] = {}
 
         if len(item.sentences) == 0:
@@ -123,7 +132,7 @@ class ExtractContextsCommand(ArxivBatchCommand[Task, Context]):
             return
 
         sentence = next(sentences_ordered)
-        sentence_entities[sentence.id_] = defaultdict(set)
+        sentence_entities[sentence.id_] = defaultdict(list)
         entity = next(entities_ordered)
         while True:
             try:
@@ -137,11 +146,11 @@ class ExtractContextsCommand(ArxivBatchCommand[Task, Context]):
                     )
                     entity = next(entities_ordered)
                 elif entity.start >= sentence.start and entity.end <= sentence.end:
-                    sentence_entities[sentence.id_][self.get_key(entity)].add(entity)
+                    sentence_entities[sentence.id_][self.get_key(entity)].append(entity)
                     entity = next(entities_ordered)
                 else:
                     sentence = next(sentences_ordered)
-                    sentence_entities[sentence.id_] = defaultdict(set)
+                    sentence_entities[sentence.id_] = defaultdict(list)
             except StopIteration:
                 break
 
@@ -157,14 +166,16 @@ class ExtractContextsCommand(ArxivBatchCommand[Task, Context]):
                 for entity in sorted(entities, key=lambda e: e.start, reverse=True):
                     start_in_snippet = entity.start - sentence.start
                     end_in_snippet = entity.end - sentence.start
-                    snippet = wrap_span(
-                        snippet,
-                        start_in_snippet,
-                        end_in_snippet,
-                        before=r"\htmlClass{match-highlight}{",
-                        after="}",
-                        braces=True,
-                    )
+                    tex_wrapper = self.get_wrapper(entity)
+                    if tex_wrapper is not None:
+                        snippet = wrap_span(
+                            snippet,
+                            start_in_snippet,
+                            end_in_snippet,
+                            before=tex_wrapper.before,
+                            after=tex_wrapper.after,
+                            braces=tex_wrapper.braces,
+                        )
 
                 for entity in entities:
                     neighbor_ids = [e.id_ for e in entities if e != entity]
@@ -193,6 +204,7 @@ EntityKeyFunc = Callable[[SerializableEntity], Any]
 def make_extract_contexts_command(
     entity_name: str,
     entity_key: Optional[EntityKeyFunc] = None,
+    tex_wrapper: Optional[TexWrapper] = None,
     EntityType: Optional[Type[SerializableEntity]] = None,
 ) -> Type[ExtractContextsCommand]:
     class C(ExtractContextsCommand):
@@ -213,6 +225,9 @@ def make_extract_contexts_command(
             if entity_key is None:
                 return super(C, C).get_key(self, entity)
             return entity_key(entity)
+
+        def get_wrapper(self, entity: SerializableEntity) -> Optional[TexWrapper]:
+            return tex_wrapper
 
         @staticmethod
         def get_description() -> str:

@@ -8,3 +8,4 @@ export * from "./annotation";
 export * from "./entity";
 export * from "./equation";
 export * from "./symbol";
+export * from "./term";

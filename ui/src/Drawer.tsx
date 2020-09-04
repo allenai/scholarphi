@@ -2,24 +2,31 @@ import MuiDrawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import React from "react";
+import { DefiningFormulas } from "./DefiningFormulas";
+import Definitions from "./Definitions";
 import EntityPropertyEditor from "./EntityPropertyEditor";
-import FeedbackButton from "./FeedbackButton";
-import { Entities, PaperId } from "./state";
+import { Entities } from "./state";
 import { Entity, EntityUpdateData } from "./types/api";
 import { PDFViewer } from "./types/pdfjs-viewer";
+import Usages from "./Usages";
 
 export type DrawerMode = "open" | "closed";
+export type DrawerContentType =
+  | "definitions"
+  | "defining-formulas"
+  | "usages"
+  | "entity-property-editor"
+  | null;
 
 interface Props {
-  paperId: PaperId | undefined;
   pdfViewer: PDFViewer;
   mode: DrawerMode;
+  contentType: DrawerContentType;
   entities: Entities | null;
   selectedEntityIds: string[];
-  entityEditingEnabled: boolean;
   propagateEntityEdits: boolean;
   handleClose: () => void;
-  handleScrollSymbolIntoView: () => void;
+  handleJumpToEntity: (entityId: string) => void;
   handleSetPropagateEntityEdits: (propagate: boolean) => void;
   handleUpdateEntity: (
     entity: Entity,
@@ -69,43 +76,22 @@ export class Drawer extends React.PureComponent<Props> {
      * state of this React application.
      */
     const {
-      paperId,
       pdfViewer,
       mode,
+      contentType,
       entities,
       selectedEntityIds,
-      entityEditingEnabled,
     } = this.props;
-
-    const feedbackContext = {
-      mode,
-      selectedEntityIds,
-    };
 
     let firstSelectedEntity: Entity | null = null;
     if (entities !== null && selectedEntityIds.length > 0) {
       firstSelectedEntity = entities.byId[selectedEntityIds[0]] || null;
     }
 
-    /*
-     * Only one type of drawer content can appear at a time. This conditional block determines
-     * which types of drawer content have precedence.
-     */
-    type DrawerContentType =
-      | null
-      | "entity-property-editor"
-      | "symbol-search-results";
-    let drawerContentType: DrawerContentType = null;
-    if (entityEditingEnabled === true) {
-      drawerContentType = "entity-property-editor";
-    } else if (firstSelectedEntity === null) {
-      drawerContentType = null;
-    }
-
     if (pdfViewer != null) {
-      if (mode === "open" && drawerContentType !== null) {
+      if (mode === "open" && contentType !== null) {
         this.removePdfPositioningForDrawerOpen(pdfViewer.container);
-        this.positionPdfForDrawerOpen(pdfViewer.container, drawerContentType);
+        this.positionPdfForDrawerOpen(pdfViewer.container, contentType);
       } else {
         this.removePdfPositioningForDrawerOpen(pdfViewer.container);
       }
@@ -120,7 +106,7 @@ export class Drawer extends React.PureComponent<Props> {
          * If for the drawer has been requested to open but there's nothing to show
          * in it, don't show it.
          */
-        open={mode === "open" && drawerContentType !== null}
+        open={mode === "open" && contentType !== null}
       >
         <div className="drawer__header">
           <div className="drawer__close_icon">
@@ -128,10 +114,9 @@ export class Drawer extends React.PureComponent<Props> {
               <ChevronRightIcon />
             </IconButton>
           </div>
-          <FeedbackButton paperId={paperId} extraContext={feedbackContext} />
         </div>
         <div className="drawer__content">
-          {drawerContentType === "entity-property-editor" && (
+          {contentType === "entity-property-editor" && (
             <EntityPropertyEditor
               /*
                * When the selected entity changes, clear the property editor.
@@ -148,6 +133,27 @@ export class Drawer extends React.PureComponent<Props> {
               }
               handleSaveChanges={this.props.handleUpdateEntity}
               handleDeleteEntity={this.props.handleDeleteEntity}
+            />
+          )}
+          {contentType === "defining-formulas" && entities !== null && (
+            <DefiningFormulas
+              selectedEntityIds={selectedEntityIds}
+              entities={entities}
+              handleJumpToEntity={this.props.handleJumpToEntity}
+            />
+          )}
+          {contentType === "usages" && entities !== null && (
+            <Usages
+              selectedEntityIds={selectedEntityIds}
+              entities={entities}
+              handleJumpToEntity={this.props.handleJumpToEntity}
+            />
+          )}
+          {contentType === "definitions" && entities !== null && (
+            <Definitions
+              selectedEntityIds={selectedEntityIds}
+              entities={entities}
+              handleJumpToEntity={this.props.handleJumpToEntity}
             />
           )}
         </div>

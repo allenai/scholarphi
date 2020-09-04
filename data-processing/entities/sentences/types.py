@@ -56,3 +56,17 @@ class Context:
     A list of entity IDs for entities of the same type that also appear in the same sentence. For
     example, this could include IDs of other symbols of the same name in the same sentence.
     """
+
+
+@dataclass(frozen=True)
+class TexWrapper:
+    " Instructions for how to wrap an entity appearance in extracted TeX. "
+
+    before: str
+    " Substring to insert before the entity. "
+
+    after: str
+    " Substring to insert after the entity. "
+
+    braces: bool = False
+    " Whether to wrap the entity in braces. Braces are placed outside 'before' and 'end'. "

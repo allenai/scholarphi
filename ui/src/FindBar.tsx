@@ -10,14 +10,15 @@ import { getRemoteLogger } from "./logging";
 import { PdfjsFindQueryWidget } from "./PdfjsFindQueryWidget";
 import { SymbolFilters } from "./state";
 import { SymbolFindQueryWidget } from "./SymbolFindQueryWidget";
-import { Symbol } from "./types/api";
+import TermFindQueryWidget from "./TermFindQueryWidget";
+import { Symbol, Term } from "./types/api";
 import { PDFViewerApplication } from "./types/pdfjs-viewer";
 import * as uiUtils from "./utils/ui";
 
 const logger = getRemoteLogger();
 
-export type FindMode = null | "pdfjs-builtin-find" | "symbol";
-export type FindQuery = null | string | SymbolFilters;
+export type FindMode = null | "pdfjs-builtin-find" | "symbol" | "term";
+export type FindQuery = null | string | Term | SymbolFilters;
 export interface SymbolFilter {
   symbol: Symbol;
   active?: boolean;
@@ -228,6 +229,9 @@ class FindBar extends React.PureComponent<Props> {
                         handleFilterChange={this.props.handleChangeQuery}
                       />
                     );
+                  }
+                  case "term": {
+                    return <TermFindQueryWidget term={query as Term} />;
                   }
                   default:
                     return;

@@ -4,6 +4,10 @@
 span.formatted-text {
   .highlight {
     font-weight: bold;
+    background-color: fade(@highlight-color, @highlight-hover-opacity-percent);
+    padding-left: 0.3rem;
+    padding-right: 0.3rem;
+    border-radius: @border-radius;
   }
 
   .hide {
@@ -11,6 +15,6 @@ span.formatted-text {
   }
 
   .match-highlight {
-    background-color: @highlight-color;
+    background-color: fade(@highlight-color, @highlight-hover-opacity-percent);
   }
 }

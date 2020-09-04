@@ -81,7 +81,7 @@ export class AnnotationSpan extends React.PureComponent<Props> {
             selected: this.props.selected,
             active: this.props.active === true,
             inactive: this.props.active !== true,
-            underline: this.props.active === true && this.props.underline,
+            underline: this.props.underline,
           }
         )}
         style={uiUtils.getPositionInPageView(

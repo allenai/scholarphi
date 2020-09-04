@@ -1,6 +1,6 @@
 import { PDFDocumentProxy } from "pdfjs-dist";
 import { SnackbarMode } from "./AppOverlay";
-import { DrawerMode } from "./Drawer";
+import { DrawerContentType, DrawerMode } from "./Drawer";
 import { AreaSelectionMethod } from "./EntityCreationToolbar";
 import { FindMode, FindQuery, SymbolFilter } from "./FindBar";
 import { Settings } from "./settings";
@@ -74,6 +74,7 @@ export interface State extends Settings {
   selectedAnnotationSpanIds: string[];
   selectedEntityIds: string[];
   multiselectEnabled: boolean;
+  jumpTarget: string | null;
 
   /*
    * ~ Text selection ~
@@ -91,6 +92,7 @@ export interface State extends Settings {
    * ~ Drawer (sidebar) state ~
    */
   drawerMode: DrawerMode;
+  drawerContentType: DrawerContentType;
 
   /*
    * ~ Snackbar (alert) state ~

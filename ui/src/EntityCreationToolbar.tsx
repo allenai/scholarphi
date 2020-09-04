@@ -17,6 +17,7 @@ import {
   SymbolAttributes,
   SymbolRelationships,
   TermAttributes,
+  TermRelationships,
 } from "./types/api";
 import * as uiUtils from "./utils/ui";
 
@@ -72,12 +73,17 @@ export function createCreateEntityDataWithBoxes(
       ...data.attributes,
       name: text || null,
       term_type: null,
+      tags: [],
       definitions: [],
       definition_texs: [],
-      passages: [],
-      glossary_definitions: [],
-      glossary_sources: [],
+      sources: [],
+      snippets: [],
     } as Omit<TermAttributes, "version">;
+    data.relationships = {
+      sentence: { type: "sentence", id: null },
+      definition_sentences: [],
+      snippet_sentences: [],
+    } as Omit<TermRelationships, "version">;
   } else if (type === "citation") {
     data.attributes = {
       ...data.attributes,

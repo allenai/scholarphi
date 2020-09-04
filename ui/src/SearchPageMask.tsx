@@ -2,7 +2,7 @@ import React from "react";
 import PageMask from "./PageMask";
 import * as selectors from "./selectors";
 import { Entities } from "./state";
-import { BoundingBox, isSymbol } from "./types/api";
+import { BoundingBox } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 import * as uiUtils from "./utils/ui";
 
@@ -12,6 +12,7 @@ interface Props {
   firstMatchingEntityId: string | null;
   matchingEntityIds: string[];
   highlightFirstMatch?: boolean;
+  highlightDefinitions?: boolean;
 }
 
 /**
@@ -22,14 +23,16 @@ export class SearchPageMask extends React.PureComponent<Props> {
     /*
      * Show the sentences containing all matching symbols.
      */
-    const { matchingEntityIds, entities, highlightFirstMatch } = this.props;
+    const {
+      matchingEntityIds,
+      entities,
+      highlightFirstMatch,
+      highlightDefinitions,
+    } = this.props;
     if (entities === null) {
       return null;
     }
-    const sentencesToShow = selectors.symbolSentences(
-      matchingEntityIds,
-      entities
-    );
+    const sentencesToShow = selectors.sentences(matchingEntityIds, entities);
     const pageNumber = uiUtils.getPageNumber(this.props.pageView);
     const show = sentencesToShow
       .map((s) => s.attributes.bounding_boxes)
@@ -39,26 +42,18 @@ export class SearchPageMask extends React.PureComponent<Props> {
     /*
      * Highlight sentences that contain definition information.
      */
-    const highlights = matchingEntityIds
-      .map((id) => entities.byId[id])
-      .filter((e) => e !== undefined)
-      .filter(isSymbol)
-      .map((e) => [
-        ...e.relationships.definition_sentences.map((r) => r.id),
-        ...e.relationships.nickname_sentences.map((r) => r.id),
-        ...e.relationships.defining_formula_equations.map((r) => r.id),
-      ])
-      .flat()
-      .filter((id) => id !== null)
-      .map((id) => entities.byId[id as string])
-      .filter((e) => e !== undefined)
-      .map((e) => e.attributes.bounding_boxes)
-      .flat()
-      .reduce((boxes, b) => {
-        boxes[`${b.page}-${b.left}-${b.top}-${b.width}-${b.height}`] = b;
-        return boxes;
-      }, {} as { [boxKey: string]: BoundingBox });
-    const highlight = Object.values(highlights);
+    let highlight: BoundingBox[] = [];
+    if (highlightDefinitions) {
+      const highlights = selectors
+        .definingSentences(matchingEntityIds, entities)
+        .map((e) => e.attributes.bounding_boxes)
+        .flat()
+        .reduce((boxes, b) => {
+          boxes[`${b.page}-${b.left}-${b.top}-${b.width}-${b.height}`] = b;
+          return boxes;
+        }, {} as { [boxKey: string]: BoundingBox });
+      highlight = Object.values(highlights);
+    }
 
     /*
      * Place a label right below the last bounding box of the highlight.

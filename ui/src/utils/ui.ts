@@ -340,3 +340,26 @@ export function sortByFrequency(strings: string[]) {
 
   return indexes.map((i) => countsKeys[i]);
 }
+
+/**
+ * Join a list of strings into a text list, where strings are separated by commas with an
+ * 'and' before the last string.
+ */
+export function joinStrings(strings: string[]) {
+  if (strings.length === 0) {
+    return "";
+  }
+  if (strings.length === 1) {
+    return strings[0];
+  }
+  if (strings.length === 2) {
+    return strings[0] + " and " + strings[1];
+  }
+  if (strings.length > 2) {
+    return (
+      strings.slice(0, strings.length - 1).join(", ") +
+      ", and" +
+      strings[strings.length - 1]
+    );
+  }
+}

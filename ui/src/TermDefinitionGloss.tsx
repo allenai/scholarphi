@@ -13,9 +13,7 @@ export class TermDefinitionGloss extends React.PureComponent<Props> {
      */
     const { term } = this.props;
     const definition =
-      term.attributes.definition_texs[0] ||
-      term.attributes.definitions[0] ||
-      term.attributes.glossary_definitions[0];
+      term.attributes.definition_texs[0] || term.attributes.definitions[0];
 
     if (term.attributes.name === null) {
       return null;
