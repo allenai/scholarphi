@@ -1,9 +1,9 @@
 import IconButton from "@material-ui/core/IconButton";
 import Functions from "@material-ui/icons/Functions";
-import Search from "@material-ui/icons/Search";
 import Toc from "@material-ui/icons/Toc";
 import classNames from "classnames";
 import React from "react";
+import { DrawerContentType } from "./Drawer";
 import EntityLink from "./EntityLink";
 import { getRemoteLogger } from "./logging";
 import RichText from "./RichText";
@@ -17,6 +17,8 @@ const logger = getRemoteLogger();
 interface Props {
   symbol: Symbol;
   entities: Entities;
+  showDrawerActions?: boolean;
+  handleOpenDrawer: (contentType: DrawerContentType) => void;
   handleJumpToEntity: (entityId: string) => void;
 }
 
@@ -31,6 +33,10 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
       activeSymbolId: props.symbol.id,
     };
     this.setActiveSymbolId = this.setActiveSymbolId.bind(this);
+    this.onClickDefiningFormulasButton = this.onClickDefiningFormulasButton.bind(
+      this
+    );
+    this.onClickUsagesButton = this.onClickUsagesButton.bind(this);
   }
 
   setActiveSymbolId(id: string) {
@@ -49,6 +55,14 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
       currentSymbol: this.props.entities.byId[this.state.activeSymbolId],
       originalSymbol: this.props.symbol,
     };
+  }
+
+  onClickDefiningFormulasButton() {
+    this.props.handleOpenDrawer("defining-formulas");
+  }
+
+  onClickUsagesButton() {
+    this.props.handleOpenDrawer("usages");
   }
 
   render() {
@@ -108,6 +122,8 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
     }
 
     const originalSymbol = this.props.symbol;
+    const formulas = selectors.definingFormulas([activeSymbolId], entities);
+    const usages = selectors.usages([activeSymbolId], entities);
 
     const related = entities.all
       .map((id) => entities.byId[id])
@@ -158,8 +174,10 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
       <div
         className={classNames(
           "gloss",
-          "symbol-definition-gloss",
-          "contextual-symbol-gloss"
+          "inline-gloss",
+          "simple-gloss",
+          "symbol-gloss",
+          { "with-action-buttons": this.props.showDrawerActions }
         )}
       >
         {definedHere && (
@@ -171,51 +189,57 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
           <div className="gloss__section">
             <p>
               {definition !== null && (
-                <span>
+                <>
+                  <RichText>{definition.excerpt}</RichText>
+                  {" (page "}
                   <EntityLink
                     id={`symbol-${symbol.id}-definition`}
                     className="subtle"
                     entityId={definition.contextEntity.id}
                     handleJumpToEntity={this.props.handleJumpToEntity}
                   >
-                    <RichText>{definition.excerpt}</RichText>
+                    {selectors.firstPage(definition.contextEntity)}
                   </EntityLink>
-                  {". "}
-                </span>
+                  {"). "}
+                </>
               )}
               {definition !== null && nickname !== null && <br />}
               {nickname !== null && (
-                <span>
-                  {nicknameFrom === "before"
-                    ? "Recently called "
-                    : "Later called "}
-                  <i>
-                    <EntityLink
-                      id={`symbol-${symbol.id}-nickname`}
-                      className="subtle"
-                      entityId={nickname.contextEntity.id}
-                      handleJumpToEntity={this.props.handleJumpToEntity}
-                    >
-                      {nickname.excerpt}
-                    </EntityLink>
-                  </i>
-                  {"."}
-                </span>
+                <>
+                  {`"${nickname.excerpt}"`}
+                  {" (page "}
+                  <EntityLink
+                    id={`symbol-${symbol.id}-nickname`}
+                    className="subtle"
+                    entityId={nickname.contextEntity.id}
+                    handleJumpToEntity={this.props.handleJumpToEntity}
+                  >
+                    {selectors.firstPage(nickname.contextEntity)}
+                  </EntityLink>
+                  {")."}
+                </>
               )}
             </p>
           </div>
         )}
-        <div className="inline-gloss__action-buttons">
-          <IconButton size="small">
-            <Search />
-          </IconButton>
-          <IconButton size="small">
-            <Functions />
-          </IconButton>
-          <IconButton size="small">
-            <Toc />
-          </IconButton>
-        </div>
+        {this.props.showDrawerActions && (
+          <div className="inline-gloss__action-buttons">
+            <IconButton
+              size="small"
+              disabled={formulas.length === 0}
+              onClick={this.onClickDefiningFormulasButton}
+            >
+              <Functions />
+            </IconButton>
+            <IconButton
+              size="small"
+              disabled={usages.length === 0}
+              onClick={this.onClickUsagesButton}
+            >
+              <Toc />
+            </IconButton>
+          </div>
+        )}
       </div>
     );
   }

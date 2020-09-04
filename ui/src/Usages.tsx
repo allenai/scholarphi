@@ -1,12 +1,11 @@
 import classNames from "classnames";
 import React from "react";
-import { isSymbol } from "util";
 import EntityLink from "./EntityLink";
 import { getRemoteLogger } from "./logging";
 import RichText from "./RichText";
 import * as selectors from "./selectors";
 import { Entities } from "./state";
-import { Entity, isTerm, Symbol, Term } from "./types/api";
+import { Entity, isSymbol, isTerm, Symbol, Term } from "./types/api";
 
 const logger = getRemoteLogger();
 
@@ -28,20 +27,19 @@ export class Usages extends React.PureComponent<Props> {
     const usages = selectors.usages(selectedEntityIdsWithUsages, entities);
 
     return (
-      <>
+      <div className="document-snippets usages">
+        <p className="drawer__content__header">Usages</p>
         {usages.map((u) => (
           <Snippet
             key={u.contextEntity.id}
             id={`usage-${u.contextEntity.id}`}
             context={u.contextEntity}
-            linkText={`See in context on page ${selectors.firstPage(
-              u.contextEntity
-            )}`}
+            handleJumpToContext={this.props.handleJumpToEntity}
           >
             {u.excerpt}
           </Snippet>
         ))}
-      </>
+      </div>
     );
   }
 }
@@ -49,7 +47,6 @@ export class Usages extends React.PureComponent<Props> {
 interface SnippetProps {
   id: string;
   context?: Entity;
-  linkText?: string | null;
   handleJumpToContext?: (contextEntityId: string) => void;
   children: string;
 }
@@ -74,22 +71,24 @@ class Snippet extends React.PureComponent<SnippetProps> {
     return (
       <>
         <div
-          className={classNames("snippet-formula", {
+          className={classNames("snippet", {
             clickable: this.props.context && this.props.handleJumpToContext,
           })}
           onClick={this.onClick}
         >
           <RichText>{selectors.cleanTex(this.props.children)}</RichText>
         </div>
-        {this.props.handleJumpToContext && this.props.linkText ? (
-          <p>
+        {this.props.handleJumpToContext && context ? (
+          <p className="entity-link-message">
+            {"See in context on page "}
             <EntityLink
               id={`${this.props.id}-text-link`}
-              entityId={context ? context.id : undefined}
+              entityId={context.id}
               handleJumpToEntity={this.props.handleJumpToContext}
             >
-              {this.props.linkText}
+              {selectors.firstPage(context)}
             </EntityLink>
+            {"."}
           </p>
         ) : null}
       </>

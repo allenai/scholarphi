@@ -1,12 +1,11 @@
 import classNames from "classnames";
 import React from "react";
-import { isSymbol } from "util";
 import EntityLink from "./EntityLink";
 import { getRemoteLogger } from "./logging";
 import RichText from "./RichText";
 import * as selectors from "./selectors";
 import { Entities } from "./state";
-import { Entity } from "./types/api";
+import { Entity, isSymbol } from "./types/api";
 
 const logger = getRemoteLogger();
 
@@ -27,18 +26,19 @@ export class DefiningFormulas extends React.PureComponent<Props> {
     const formulas = selectors.definingFormulas(selectedSymbolIds, entities);
 
     return (
-      <>
+      <div className="document-snippets defining-formulas">
+        <p className="drawer__content__header">Defining Formulas</p>
         {formulas.map((f) => (
           <DefiningFormula
             key={f.contextEntity.id}
             id={`formula-${f.contextEntity.id}`}
             context={f.contextEntity}
-            linkText={`See in context on page ${selectors.firstPage(
-              f.contextEntity
-            )}`}
-          />
+            handleJumpToContext={this.props.handleJumpToEntity}
+          >
+            {f.excerpt}
+          </DefiningFormula>
         ))}
-      </>
+      </div>
     );
   }
 }
@@ -46,7 +46,6 @@ export class DefiningFormulas extends React.PureComponent<Props> {
 interface DefiningFormulaProps {
   id: string;
   context?: Entity;
-  linkText?: string | null;
   handleJumpToContext?: (contextEntityId: string) => void;
 }
 
@@ -99,16 +98,17 @@ class DefiningFormula extends React.PureComponent<DefiningFormulaProps> {
         >
           <RichText>{`$${this.props.children}$`}</RichText>
         </div>
-        {this.props.handleJumpToContext && equation && this.props.linkText && (
-          <p>
+        {this.props.handleJumpToContext && equation && (
+          <p className="entity-link-message">
+            {"See in context on page "}
             <EntityLink
               id={`${this.props.id}-text-link`}
               entityId={equation.id}
               handleJumpToEntity={this.props.handleJumpToContext}
             >
-              {this.props.linkText}
+              {selectors.firstPage(equation)}
             </EntityLink>
-            .
+            {"."}
           </p>
         )}
       </>

@@ -292,7 +292,7 @@ export function definitions(entityIds: string[], entities: Entities) {
 
 export function inDefinition(entityId: string, entities: Entities) {
   const entity = entities.byId[entityId];
-  if (entity === undefined || !(isSymbol(entity) || isTerm(entity))) {
+  if (entity === undefined || !(isSymbol(entity) && isTerm(entity))) {
     return false;
   }
   return entity.relationships.definition_sentences.some(

@@ -4,7 +4,7 @@ import * as api from "./api";
 import AppOverlay from "./AppOverlay";
 import Control from "./Control";
 import DefinitionPreview from "./DefinitionPreview";
-import { Drawer } from "./Drawer";
+import { Drawer, DrawerContentType } from "./Drawer";
 import EntityAnnotationLayer from "./EntityAnnotationLayer";
 import EntityCreationCanvas from "./EntityCreationCanvas";
 import EntityCreationToolbar, {
@@ -108,7 +108,6 @@ class ScholarReader extends React.PureComponent<Props, State> {
       primerPageEnabled: true,
       annotationHintsEnabled: true,
       glossStyle: "tooltip",
-      glossEvaluationEnabled: true,
       textSelectionMenuEnabled: false,
       symbolSearchEnabled: true,
       declutterEnabled: true,
@@ -117,6 +116,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       entityCreationEnabled: false,
       entityEditingEnabled: false,
       sentenceTexCopyOnOptionClickEnabled: false,
+      glossEvaluationEnabled: false,
     };
 
     /**
@@ -145,6 +145,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.setMultiselectEnabled = this.setMultiselectEnabled.bind(this);
     this.showSnackbarMessage = this.showSnackbarMessage.bind(this);
     this.closeSnackbar = this.closeSnackbar.bind(this);
+    this.openDrawer = this.openDrawer.bind(this);
     this.closeDrawer = this.closeDrawer.bind(this);
     this.startTextSearch = this.startTextSearch.bind(this);
     this.setFindMatchCount = this.setFindMatchCount.bind(this);
@@ -582,6 +583,13 @@ class ScholarReader extends React.PureComponent<Props, State> {
       snackbarMode: "closed",
       snackbarActivationTimeMs: null,
       snackbarMessage: null,
+    });
+  }
+
+  openDrawer(drawerContentType: DrawerContentType) {
+    this.setState({
+      drawerMode: "open",
+      drawerContentType,
     });
   }
 
@@ -1104,6 +1112,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                         handleShowSnackbarMessage={this.showSnackbarMessage}
                         handleAddPaperToLibrary={this.addToLibrary}
                         handleJumpToEntity={this.jumpToEntity}
+                        handleOpenDrawer={this.openDrawer}
                       />
                     )}
                     {/* Equation diagram overlays. */}
