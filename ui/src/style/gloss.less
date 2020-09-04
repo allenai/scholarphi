@@ -21,9 +21,13 @@
     padding: 0;
 
     p {
-      padding-left: @padding / 4;
-      padding-right: @padding / 4;
-      padding-bottom: @padding / 4;
+      padding: @padding / 4;
+      margin: 0;
+    }
+
+    &.term-gloss p {
+      max-height: 4rem;
+      overflow: auto;
     }
   }
 
