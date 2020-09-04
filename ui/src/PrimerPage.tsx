@@ -167,6 +167,11 @@ function glossaryTerms(entities: Entities) {
     .filter((t) => t.attributes.definitions.length > 0)
     .filter((t) => t.attributes.name !== null)
     .filter((t) => (t.attributes.name as string).indexOf("SKIP") === -1)
+    .filter(
+      (t) =>
+        t.attributes.term_type === null ||
+        t.attributes.term_type.toLowerCase() !== "ignore"
+    )
     .forEach((t) => {
       const name = t.attributes.name as string;
       if (termsByName[name] === undefined) {

@@ -34,8 +34,9 @@
     }
   }
 
-  .scholar-reader-annotation-span.underline {
-    border-bottom: @underline-width @underline-color dotted;
+  .scholar-reader-annotation-span.underline:not(.ancestor-of-selection) {
+    padding-bottom: 0.2%;
+    border-bottom: @underline-width fade(@underline-color, 70%) dotted;
   }
 }
 

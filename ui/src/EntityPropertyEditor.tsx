@@ -83,7 +83,7 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
       is_list: false,
       relation_type: null,
       label: "Type of term",
-      choices: ["Nonce", "Abbreviation"],
+      choices: ["Dataset", "Baseline", "Nonce", "Abbreviation", "Ignore"],
     },
     {
       key: "sentence",

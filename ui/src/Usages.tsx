@@ -86,7 +86,7 @@ class Snippet extends React.PureComponent<SnippetProps> {
               entityId={context.id}
               handleJumpToEntity={this.props.handleJumpToContext}
             >
-              {selectors.firstPage(context)}
+              {selectors.readableFirstPageNumber(context)}
             </EntityLink>
             {"."}
           </p>

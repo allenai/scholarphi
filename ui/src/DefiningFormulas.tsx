@@ -106,7 +106,7 @@ class DefiningFormula extends React.PureComponent<DefiningFormulaProps> {
               entityId={equation.id}
               handleJumpToEntity={this.props.handleJumpToContext}
             >
-              {selectors.firstPage(equation)}
+              {selectors.readableFirstPageNumber(equation)}
             </EntityLink>
             {"."}
           </p>

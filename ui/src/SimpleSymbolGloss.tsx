@@ -1,4 +1,6 @@
 import IconButton from "@material-ui/core/IconButton";
+import MuiTooltip from "@material-ui/core/Tooltip";
+import Close from "@material-ui/icons/Close";
 import Functions from "@material-ui/icons/Functions";
 import Toc from "@material-ui/icons/Toc";
 import classNames from "classnames";
@@ -9,7 +11,7 @@ import { getRemoteLogger } from "./logging";
 import RichText from "./RichText";
 import * as selectors from "./selectors";
 import { Entities } from "./state";
-import { isSentence, isSymbol, Relationship, Symbol } from "./types/api";
+import { isSymbol, Symbol } from "./types/api";
 import * as uiUtils from "./utils/ui";
 
 const logger = getRemoteLogger();
@@ -24,6 +26,7 @@ interface Props {
 
 interface State {
   activeSymbolId: string;
+  closed: boolean;
 }
 
 class SimpleSymbolGloss extends React.PureComponent<Props, State> {
@@ -31,12 +34,14 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
     super(props);
     this.state = {
       activeSymbolId: props.symbol.id,
+      closed: false,
     };
     this.setActiveSymbolId = this.setActiveSymbolId.bind(this);
     this.onClickDefiningFormulasButton = this.onClickDefiningFormulasButton.bind(
       this
     );
     this.onClickUsagesButton = this.onClickUsagesButton.bind(this);
+    this.onClickClose = this.onClickClose.bind(this);
   }
 
   setActiveSymbolId(id: string) {
@@ -63,6 +68,10 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
 
   onClickUsagesButton() {
     this.props.handleOpenDrawer("usages");
+  }
+
+  onClickClose() {
+    this.setState({ closed: true });
   }
 
   render() {
@@ -177,7 +186,10 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
           "inline-gloss",
           "simple-gloss",
           "symbol-gloss",
-          { "with-action-buttons": this.props.showDrawerActions }
+          {
+            "with-action-buttons": this.props.showDrawerActions,
+            closed: this.state.closed,
+          }
         )}
       >
         {definedHere && (
@@ -190,7 +202,7 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
             <p>
               {definition !== null && (
                 <>
-                  <RichText>{definition.excerpt}</RichText>
+                  <RichText>{`"${definition.excerpt}"`}</RichText>
                   {" (page "}
                   <EntityLink
                     id={`symbol-${symbol.id}-definition`}
@@ -198,12 +210,13 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
                     entityId={definition.contextEntity.id}
                     handleJumpToEntity={this.props.handleJumpToEntity}
                   >
-                    {selectors.firstPage(definition.contextEntity)}
+                    {selectors.readableFirstPageNumber(
+                      definition.contextEntity
+                    )}
                   </EntityLink>
-                  {"). "}
+                  {nickname !== null ? "); " : ")."}
                 </>
               )}
-              {definition !== null && nickname !== null && <br />}
               {nickname !== null && (
                 <>
                   {`"${nickname.excerpt}"`}
@@ -214,7 +227,7 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
                     entityId={nickname.contextEntity.id}
                     handleJumpToEntity={this.props.handleJumpToEntity}
                   >
-                    {selectors.firstPage(nickname.contextEntity)}
+                    {selectors.readableFirstPageNumber(nickname.contextEntity)}
                   </EntityLink>
                   {")."}
                 </>
@@ -224,62 +237,44 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
         )}
         {this.props.showDrawerActions && (
           <div className="inline-gloss__action-buttons">
-            <IconButton
-              size="small"
-              disabled={formulas.length === 0}
-              onClick={this.onClickDefiningFormulasButton}
+            <MuiTooltip
+              title={
+                formulas.length > 0
+                  ? `See ${formulas.length} defining formulas`
+                  : "No defining formulas."
+              }
             >
-              <Functions />
-            </IconButton>
-            <IconButton
-              size="small"
-              disabled={usages.length === 0}
-              onClick={this.onClickUsagesButton}
+              <IconButton
+                size="small"
+                disabled={formulas.length === 0}
+                onClick={this.onClickDefiningFormulasButton}
+              >
+                <Functions />
+              </IconButton>
+            </MuiTooltip>
+            <MuiTooltip
+              title={
+                usages.length > 0 ? `See ${usages.length} usages` : "No usages."
+              }
             >
-              <Toc />
-            </IconButton>
+              <IconButton
+                size="small"
+                disabled={usages.length === 0}
+                onClick={this.onClickUsagesButton}
+              >
+                <Toc />
+              </IconButton>
+            </MuiTooltip>
+            <MuiTooltip title="Dismiss">
+              <IconButton size="small" onClick={this.onClickClose}>
+                <Close />
+              </IconButton>
+            </MuiTooltip>
           </div>
         )}
       </div>
     );
   }
-}
-
-function groupNicknames(
-  nicknames: string[],
-  nickname_sentences: Relationship[],
-  entities: Entities
-) {
-  const grouped: {
-    [nickname: string]: { page: number; sentenceId: string }[];
-  } = {};
-  nicknames.forEach((n, i) => {
-    if (grouped[n] === undefined) {
-      grouped[n] = [];
-    }
-    if (!nickname_sentences[i]) {
-      return;
-    }
-    const sentenceId = nickname_sentences[i].id;
-    if (!sentenceId) {
-      return;
-    }
-    const sentence = entities.byId[sentenceId];
-    if (!sentence || !isSentence(sentence)) {
-      return;
-    }
-    const sentenceBoxes = sentence.attributes.bounding_boxes;
-    if (sentenceBoxes.length > 0) {
-      const firstPage = Math.min(...sentenceBoxes.map((b) => b.page));
-      grouped[n].push({ page: firstPage, sentenceId: sentence.id });
-    }
-  });
-  for (const nickname in grouped) {
-    grouped[nickname].sort(({ page: p1 }, { page: p2 }) => {
-      return p1 - p2;
-    });
-  }
-  return grouped;
 }
 
 interface SymbolLinkProps {

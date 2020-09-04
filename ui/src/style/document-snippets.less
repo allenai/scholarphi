@@ -1,5 +1,5 @@
 .document-snippets {
-  max-width: 400px;
+  width: @document-snippets-container-width;
   padding-left: @padding;
   padding-right: @padding;
 
@@ -53,13 +53,15 @@
 /*
  * Links within the document
  */
-.entity-link-span.clickable {
-  text-decoration: underline;
-  cursor: pointer;
-  color: @s2-link-default;
-
-  &.subtle {
+.entity-link-span {
+  &.clickable {
+    text-decoration: underline;
+    cursor: pointer;
     color: @s2-link-default;
-    text-decoration: none;
+
+    &.subtle {
+      color: @s2-link-default;
+      text-decoration: none;
+    }
   }
 }

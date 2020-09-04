@@ -1,4 +1,6 @@
 import IconButton from "@material-ui/core/IconButton";
+import MuiTooltip from "@material-ui/core/Tooltip";
+import Close from "@material-ui/icons/Close";
 import Toc from "@material-ui/icons/Toc";
 import classNames from "classnames";
 import React from "react";
@@ -17,14 +19,26 @@ interface Props {
   handleJumpToEntity: (entityId: string) => void;
 }
 
-class SimpleTermGloss extends React.PureComponent<Props> {
+interface State {
+  closed: boolean;
+}
+
+class SimpleTermGloss extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
+    this.state = {
+      closed: false,
+    };
     this.onClickUsagesButton = this.onClickUsagesButton.bind(this);
+    this.onClickClose = this.onClickClose.bind(this);
   }
 
   onClickUsagesButton() {
     this.props.handleOpenDrawer("usages");
+  }
+
+  onClickClose() {
+    this.setState({ closed: true });
   }
 
   render() {
@@ -33,7 +47,9 @@ class SimpleTermGloss extends React.PureComponent<Props> {
     /*
      * Try to find definition and nickname right before the symbol.
      */
-    let definition = selectors.adjacentDefinition(term.id, entities, "before");
+    let definition =
+      selectors.adjacentDefinition(term.id, entities, "before") ||
+      selectors.adjacentDefinition(term.id, entities, "after");
 
     const definedHere = selectors.inDefinition(term.id, entities);
     if (definedHere) {
@@ -56,31 +72,47 @@ class SimpleTermGloss extends React.PureComponent<Props> {
           "inline-gloss",
           "term-gloss",
           "simple-gloss",
-          { "with-action-buttons": this.props.showDrawerActions }
+          {
+            "with-action-buttons": this.props.showDrawerActions,
+            closed: this.state.closed,
+          }
         )}
       >
         <div className="gloss__section">
           <p>
             <RichText>{definition.excerpt}</RichText>
-            {"(page "}
+            {" (page "}
             <EntityLink
               id={`term-${term.id}-definition`}
               className="subtle"
               entityId={definition.contextEntity.id}
               handleJumpToEntity={this.props.handleJumpToEntity}
-            ></EntityLink>
+            >
+              {selectors.readableFirstPageNumber(definition.contextEntity)}
+            </EntityLink>
             {")."}
           </p>
         </div>
         {this.props.showDrawerActions && (
           <div className="inline-gloss__action-buttons">
-            <IconButton
-              size="small"
-              disabled={usages.length === 0}
-              onClick={this.onClickUsagesButton}
+            <MuiTooltip
+              title={
+                usages.length > 0 ? `See ${usages.length} usages` : "No usages."
+              }
             >
-              <Toc />
-            </IconButton>
+              <IconButton
+                size="small"
+                disabled={usages.length === 0}
+                onClick={this.onClickUsagesButton}
+              >
+                <Toc />
+              </IconButton>
+            </MuiTooltip>
+            <MuiTooltip title="Dismiss">
+              <IconButton size="small" onClick={this.onClickClose}>
+                <Close />
+              </IconButton>
+            </MuiTooltip>
           </div>
         )}
       </div>

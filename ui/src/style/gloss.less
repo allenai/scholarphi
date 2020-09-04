@@ -2,17 +2,30 @@
  * Default gloss dimensions
  */
 .gloss {
-  min-width: 200px;
   max-width: 400px;
+  &:not(.simple-gloss) {
+    min-width: 200px;
+  }
 
   &.simple-gloss.with-action-buttons {
+    min-width: 100px;
     max-width: 450px;
     &.symbol-gloss > div.gloss__section:first-child {
-      max-width: 400px;
+      width: calc(100% - 82px);
+    }
+    &.symbol-gloss > div.inline-gloss__action-buttons {
+      width: 82px;
     }
     &.term-gloss > div.gloss__section:first-child {
-      max-width: 420px;
+      width: calc(100% - 60px);
     }
+    &.term-gloss > div.inline-gloss__action-buttons {
+      width: 60px;
+    }
+  }
+
+  &.closed {
+    display: none;
   }
 }
 
@@ -22,7 +35,12 @@
 .gloss {
   &.simple-gloss {
     background-color: #eee;
-    padding: @medium / 2;
+    padding: 0;
+
+    .gloss__section p {
+      padding-left: @padding / 2;
+      padding-right: @padding / 2;
+    }
   }
 
   .gloss__section {

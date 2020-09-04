@@ -188,7 +188,11 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
             isTerm(entity) &&
             entity.attributes.term_type !== "symbol" &&
             entity.attributes.name !== null &&
-            entity.attributes.name.indexOf("SKIP") === -1
+            entity.attributes.name.indexOf("SKIP") === -1 &&
+            !(
+              entity.attributes.term_type !== null &&
+              entity.attributes.term_type.toLowerCase() === "ignore"
+            )
           ) {
             return (
               <EntityAnnotation
@@ -285,6 +289,9 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
               (isTopLevel &&
                 (equationId === null || !this.shouldShowEquation(equationId)));
 
+            let underline =
+              showAnnotations && selectors.shouldUnderline(entityId, entities);
+
             /*
              * Show a more prominent selection hint than an underline when the symbol is
              * child of something else that's already selected.
@@ -335,7 +342,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                  * symbol (once selected) should no longer be interactive itself.
                  */
                 active={active}
-                underline={showAnnotations && hasDefinition && !inDefinition}
+                underline={underline}
                 selected={isSelected}
                 selectedSpanIds={selectedSpanIds}
                 isFindSelection={isFindSelection}

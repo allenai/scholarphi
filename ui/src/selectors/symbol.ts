@@ -6,6 +6,7 @@ import * as uiUtils from "../utils/ui";
 import {
   adjacentContext,
   hasDefinition,
+  inDefinition,
   orderByPosition,
   orderExcerpts,
 } from "./entity";
@@ -217,4 +218,33 @@ export function descendantHasDefinition(symbolId: string, entities: Entities) {
   return descendants(symbolId, entities).some((s) =>
     hasDefinition(s.id, entities)
   );
+}
+
+/**
+ * Determine whether an underline should show for a symbol. An underline should show if
+ * it's not selected, there's a definition for the symbol, it isn't in a definition,
+ * and none of its ancestor symbols will be underlined.
+ */
+export function shouldUnderline(symbolId: string, entities: Entities) {
+  const symbol = entities.byId[symbolId];
+  if (
+    symbol === undefined ||
+    !isSymbol(symbol) ||
+    !hasDefinition(symbolId, entities) ||
+    inDefinition(symbolId, entities)
+  ) {
+    return false;
+  }
+  let ancestorId = symbol.relationships.parent.id;
+  while (ancestorId !== null) {
+    const ancestor = entities.byId[ancestorId];
+    if (ancestor === undefined || !isSymbol(ancestor)) {
+      break;
+    }
+    if (shouldUnderline(ancestor.id, entities)) {
+      return false;
+    }
+    ancestorId = ancestor.relationships.parent.id;
+  }
+  return true;
 }

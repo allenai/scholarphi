@@ -951,11 +951,16 @@ class ScholarReader extends React.PureComponent<Props, State> {
               <Drawer
                 pdfViewer={this.state.pdfViewer}
                 mode={
-                  this.state.drawerContentType === "entity-property-editor"
+                  this.state.drawerMode === "open" ||
+                  this.state.entityEditingEnabled
                     ? "open"
-                    : this.state.drawerMode
+                    : "closed"
                 }
-                contentType={this.state.drawerContentType}
+                contentType={
+                  this.state.entityEditingEnabled
+                    ? "entity-property-editor"
+                    : this.state.drawerContentType
+                }
                 entities={this.state.entities}
                 selectedEntityIds={this.state.selectedEntityIds}
                 propagateEntityEdits={this.state.propagateEntityEdits}

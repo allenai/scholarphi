@@ -53,7 +53,7 @@ class Tooltip extends React.PureComponent<Props> {
     /*
      * Determine vertical placement of the tooltip.
      */
-    const TOOLTIP_VERTICAL_MARGIN = 10;
+    const TOOLTIP_VERTICAL_MARGIN = 4;
     if (placement === "below") {
       style.top =
         anchorPosition.top + anchorPosition.height + TOOLTIP_VERTICAL_MARGIN;

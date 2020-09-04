@@ -192,6 +192,11 @@ export function firstPage(entity: Entity) {
   return Math.min(...boxes.map((b) => b.page));
 }
 
+export function readableFirstPageNumber(entity: Entity) {
+  const pageNumber = firstPage(entity);
+  return pageNumber ? `${pageNumber + 1}` : "?";
+}
+
 /**
  * Order a list of entity IDs by which ones appear first in the paper, using the position of
  * the symbol bounding boxes. Does not take columns into account. This method is memoized
@@ -292,7 +297,7 @@ export function definitions(entityIds: string[], entities: Entities) {
 
 export function inDefinition(entityId: string, entities: Entities) {
   const entity = entities.byId[entityId];
-  if (entity === undefined || !(isSymbol(entity) && isTerm(entity))) {
+  if (entity === undefined || (!isSymbol(entity) && !isTerm(entity))) {
     return false;
   }
   return entity.relationships.definition_sentences.some(
