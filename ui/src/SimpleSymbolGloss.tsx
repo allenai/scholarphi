@@ -7,7 +7,7 @@ import Toc from "@material-ui/icons/Toc";
 import classNames from "classnames";
 import React from "react";
 import { DrawerContentType } from "./Drawer";
-import EntityLink from "./EntityLink";
+import EntityPageLink from "./EntityPageLink";
 import { getRemoteLogger } from "./logging";
 import RichText from "./RichText";
 import * as selectors from "./selectors";
@@ -198,45 +198,40 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
             <tr>
               {(definedHere || definition || nickname) && (
                 <td>
-                  {definedHere && <p>Defined here.</p>}
-                  {!definedHere && (definition !== null || nickname !== null) && (
-                    <p>
-                      {definition !== null && (
-                        <>
-                          <RichText>{`${definition.excerpt}`}</RichText>
-                          {" (page "}
-                          <EntityLink
-                            id={`symbol-${symbol.id}-definition`}
-                            className="subtle"
-                            entityId={definition.contextEntity.id}
-                            handleJumpToEntity={this.props.handleJumpToEntity}
-                          >
-                            {selectors.readableFirstPageNumber(
-                              definition.contextEntity
-                            )}
-                          </EntityLink>
-                          {nickname !== null ? "); " : ")."}
-                        </>
+                  <div className="simple-gloss__definition-container">
+                    {definedHere && <p>Defined here.</p>}
+                    {!definedHere &&
+                      (definition !== null || nickname !== null) && (
+                        <p>
+                          {definition !== null && (
+                            <>
+                              <RichText>{`${definition.excerpt}`}</RichText>{" "}
+                              <EntityPageLink
+                                id={`symbol-${symbol.id}-definition-link`}
+                                entity={definition.contextEntity}
+                                handleJumpToEntity={
+                                  this.props.handleJumpToEntity
+                                }
+                              />
+                              {nickname !== null ? "; " : "."}
+                            </>
+                          )}
+                          {nickname !== null && (
+                            <>
+                              {`${nickname.excerpt}`}{" "}
+                              <EntityPageLink
+                                id={`symbol-${symbol.id}-nickname-link`}
+                                entity={nickname.contextEntity}
+                                handleJumpToEntity={
+                                  this.props.handleJumpToEntity
+                                }
+                              />
+                              {"."}
+                            </>
+                          )}
+                        </p>
                       )}
-                      {nickname !== null && (
-                        <>
-                          {`${nickname.excerpt}`}
-                          {" (page "}
-                          <EntityLink
-                            id={`symbol-${symbol.id}-nickname`}
-                            className="subtle"
-                            entityId={nickname.contextEntity.id}
-                            handleJumpToEntity={this.props.handleJumpToEntity}
-                          >
-                            {selectors.readableFirstPageNumber(
-                              nickname.contextEntity
-                            )}
-                          </EntityLink>
-                          {")."}
-                        </>
-                      )}
-                    </p>
-                  )}
+                  </div>
                 </td>
               )}
               {this.props.showDrawerActions && (

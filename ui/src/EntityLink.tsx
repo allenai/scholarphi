@@ -5,7 +5,7 @@ import { getRemoteLogger } from "./logging";
 const logger = getRemoteLogger();
 
 interface Props {
-  id: string;
+  id?: string;
   className?: string;
   entityId?: string | null;
   handleJumpToEntity: (entityId: string) => void;

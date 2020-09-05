@@ -80,7 +80,11 @@ export let attributes = Joi.object({
  * absence of data indicates an empty list, not a null value.
  */
 const stringAttribute = Joi.string().allow(null).default(null);
-const booleanAttribute = Joi.boolean().allow(null).default(null);
+const booleanAttribute = Joi.boolean()
+  .allow(null)
+  .default(null)
+  .truthy(1)
+  .falsy(0);
 const numberAttribute = Joi.number()
   .allow(null)
   .default(null)
@@ -111,7 +115,7 @@ attributes = attributes
           tex: stringAttribute,
           nicknames: stringListAttribute,
           diagram_label: stringAttribute,
-          id_definition: booleanAttribute,
+          is_definition: booleanAttribute,
           definitions: stringListAttribute,
           defining_formulas: stringListAttribute,
           passages: stringListAttribute,

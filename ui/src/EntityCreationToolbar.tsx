@@ -275,6 +275,7 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
             <MenuItem value="symbol">Symbol</MenuItem>
             <MenuItem value="citation">Citation</MenuItem>
             <MenuItem value="equation">Equation</MenuItem>
+            <MenuItem value="sentence">Sentence</MenuItem>
           </Select>
         </FormControl>
         <FormControl style={{ minWidth: "8em" }}>

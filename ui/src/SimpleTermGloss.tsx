@@ -5,7 +5,7 @@ import Toc from "@material-ui/icons/Toc";
 import classNames from "classnames";
 import React from "react";
 import { DrawerContentType } from "./Drawer";
-import EntityLink from "./EntityLink";
+import EntityPageLink from "./EntityPageLink";
 import RichText from "./RichText";
 import * as selectors from "./selectors";
 import { Entities } from "./state";
@@ -75,30 +75,28 @@ class SimpleTermGloss extends React.PureComponent<Props, State> {
         <table>
           <tbody>
             <tr>
-              <td>
-                {definedHere && <p>Defined here.</p>}
-                {!definedHere && definition !== null && (
-                  <p>
-                    {definition !== null && (
-                      <>
-                        <RichText>{`${definition.excerpt}`}</RichText>
-                        {" (page "}
-                        <EntityLink
-                          id={`term-${term.id}-definition`}
-                          className="subtle"
-                          entityId={definition.contextEntity.id}
-                          handleJumpToEntity={this.props.handleJumpToEntity}
-                        >
-                          {selectors.readableFirstPageNumber(
-                            definition.contextEntity
-                          )}
-                        </EntityLink>
-                        {")."}
-                      </>
+              {(definedHere || definition) && (
+                <td>
+                  <div className="simple-gloss__definition-container">
+                    {definedHere && <p>Defined here.</p>}
+                    {!definedHere && definition !== null && (
+                      <p>
+                        {definition !== null && (
+                          <>
+                            <RichText>{`${definition.excerpt}`}</RichText>{" "}
+                            <EntityPageLink
+                              id={`term-${term.id}-definition-link`}
+                              entity={definition.contextEntity}
+                              handleJumpToEntity={this.props.handleJumpToEntity}
+                            />
+                            {"."}
+                          </>
+                        )}
+                      </p>
                     )}
-                  </p>
-                )}
-              </td>
+                  </div>
+                </td>
+              )}
               {this.props.showDrawerActions && (
                 <React.Fragment>
                   <td>
