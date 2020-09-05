@@ -286,6 +286,14 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
       label: "Child symbols",
     },
     {
+      key: "equation",
+      parentKey: "relationships",
+      type: "relation-id",
+      is_list: false,
+      relation_type: "equation",
+      label: "Equation",
+    },
+    {
       key: "sentence",
       parentKey: "relationships",
       type: "relation-id",
