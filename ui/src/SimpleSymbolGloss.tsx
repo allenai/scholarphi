@@ -182,9 +182,6 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
     alsoSee = alsoSee.slice(0, MAX_ALSO_SEE);
 
     const definedHere = selectors.inDefinition(symbol.id, entities);
-    if (!definedHere && nickname === null && definition === null) {
-      return null;
-    }
 
     /*
      * Find most recent definition.
@@ -199,47 +196,49 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
         <table>
           <tbody>
             <tr>
-              <td>
-                {definedHere && <p>Defined here.</p>}
-                {!definedHere && (definition !== null || nickname !== null) && (
-                  <p>
-                    {definition !== null && (
-                      <>
-                        <RichText>{`${definition.excerpt}`}</RichText>
-                        {" (page "}
-                        <EntityLink
-                          id={`symbol-${symbol.id}-definition`}
-                          className="subtle"
-                          entityId={definition.contextEntity.id}
-                          handleJumpToEntity={this.props.handleJumpToEntity}
-                        >
-                          {selectors.readableFirstPageNumber(
-                            definition.contextEntity
-                          )}
-                        </EntityLink>
-                        {nickname !== null ? "); " : ")."}
-                      </>
-                    )}
-                    {nickname !== null && (
-                      <>
-                        {`${nickname.excerpt}`}
-                        {" (page "}
-                        <EntityLink
-                          id={`symbol-${symbol.id}-nickname`}
-                          className="subtle"
-                          entityId={nickname.contextEntity.id}
-                          handleJumpToEntity={this.props.handleJumpToEntity}
-                        >
-                          {selectors.readableFirstPageNumber(
-                            nickname.contextEntity
-                          )}
-                        </EntityLink>
-                        {")."}
-                      </>
-                    )}
-                  </p>
-                )}
-              </td>
+              {(definedHere || definition || nickname) && (
+                <td>
+                  {definedHere && <p>Defined here.</p>}
+                  {!definedHere && (definition !== null || nickname !== null) && (
+                    <p>
+                      {definition !== null && (
+                        <>
+                          <RichText>{`${definition.excerpt}`}</RichText>
+                          {" (page "}
+                          <EntityLink
+                            id={`symbol-${symbol.id}-definition`}
+                            className="subtle"
+                            entityId={definition.contextEntity.id}
+                            handleJumpToEntity={this.props.handleJumpToEntity}
+                          >
+                            {selectors.readableFirstPageNumber(
+                              definition.contextEntity
+                            )}
+                          </EntityLink>
+                          {nickname !== null ? "); " : ")."}
+                        </>
+                      )}
+                      {nickname !== null && (
+                        <>
+                          {`${nickname.excerpt}`}
+                          {" (page "}
+                          <EntityLink
+                            id={`symbol-${symbol.id}-nickname`}
+                            className="subtle"
+                            entityId={nickname.contextEntity.id}
+                            handleJumpToEntity={this.props.handleJumpToEntity}
+                          >
+                            {selectors.readableFirstPageNumber(
+                              nickname.contextEntity
+                            )}
+                          </EntityLink>
+                          {")."}
+                        </>
+                      )}
+                    </p>
+                  )}
+                </td>
+              )}
               {this.props.showDrawerActions && (
                 <React.Fragment>
                   <td>

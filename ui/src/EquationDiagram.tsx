@@ -60,8 +60,14 @@ interface Props {
    * Store of entities that contains all symbols that belong to the equation.
    */
   entities: Entities;
+  /**
+   * What attributes to use to create labels for entities.
+   */
+  labelSource?: LabelSource;
   handleShowMore(entityId: string): void;
 }
+
+type LabelSource = "only-diagram-labels" | "any-definition";
 
 interface State {
   glossDimensions: { [text: string]: Dimensions } | null;
@@ -84,7 +90,7 @@ class EquationDiagram extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { equation, entities, pageView } = this.props;
+    const { equation, entities, pageView, labelSource } = this.props;
     const pageNumber = uiUtils.getPageNumber(pageView);
     const {
       width: pageWidth,
@@ -113,7 +119,11 @@ class EquationDiagram extends React.PureComponent<Props, State> {
           s.attributes.tex !== null
       )
       .map((s) => {
-        const label = selectors.diagramLabel(s, entities, false);
+        const label = selectors.diagramLabel(
+          s,
+          entities,
+          labelSource === undefined || labelSource === "only-diagram-labels"
+        );
         if (!label) {
           return null;
         }

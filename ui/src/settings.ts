@@ -37,6 +37,11 @@ export interface Settings {
    */
   equationDiagramsEnabled: boolean;
   /**
+   * Use nicknames and definitions to create diagram labels if no explicit diagram label
+   * has been defined for the entity.
+   */
+  useDefinitionsForDiagramLabels: boolean;
+  /**
    * Show menu of actions when text is selected.
    */
   textSelectionMenuEnabled: boolean;
@@ -77,6 +82,7 @@ const PRESETS: Preset[] = [
   {
     key: "deepsets",
     citationGlossesEnabled: false,
+    useDefinitionsForDiagramLabels: true,
   },
 ];
 
@@ -94,6 +100,7 @@ export function getSettings(preset?: string) {
     declutterEnabled: true,
     definitionPreviewEnabled: false,
     equationDiagramsEnabled: true,
+    useDefinitionsForDiagramLabels: false,
     entityCreationEnabled: false,
     entityEditingEnabled: false,
     sentenceTexCopyOnOptionClickEnabled: false,
@@ -186,6 +193,11 @@ export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
     key: "equationDiagramsEnabled",
     type: "flag",
     label: "Equation diagrams",
+  },
+  {
+    key: "useDefinitionsForDiagramLabels",
+    type: "flag",
+    label: "Use definitions for diagram labels",
   },
   {
     key: "entityCreationEnabled",

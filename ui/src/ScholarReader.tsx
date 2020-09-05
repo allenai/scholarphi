@@ -1152,10 +1152,15 @@ class ScholarReader extends React.PureComponent<Props, State> {
                         .filter(isEquation)
                         .map((e) => (
                           <EquationDiagram
-                            key={e.id}
+                            key={`${e.id}-${this.state.useDefinitionsForDiagramLabels}`}
                             pageView={pageView}
                             entities={entities}
                             equation={e}
+                            labelSource={
+                              this.state.useDefinitionsForDiagramLabels
+                                ? "any-definition"
+                                : "only-diagram-labels"
+                            }
                             handleShowMore={this.selectEntity}
                           />
                         ))}

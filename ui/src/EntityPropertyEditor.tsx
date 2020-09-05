@@ -160,6 +160,16 @@ const EDITABLE_PROPERTIES: { [type: string]: Property[] } = {
       label: "LaTeX",
     },
   ],
+  equation: [
+    {
+      key: "tex",
+      parentKey: "attributes",
+      type: "multiline-latex",
+      is_list: false,
+      relation_type: null,
+      label: "LaTeX",
+    },
+  ],
   citation: [
     {
       key: "paper_id",
