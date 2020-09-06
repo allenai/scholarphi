@@ -808,26 +808,16 @@ class ScholarReader extends React.PureComponent<Props, State> {
     const { left, top } = uiUtils.convertBoxToPdfCoordinates(page.view, dest);
 
     /*
-     * Save the current location to history so that when a user clicks the 'Back' button, it takes
+     * Scroll to the destination. Use the 'navigateTo', which will save
+     * the current location to history so that when a user clicks the 'Back' button, it takes
      * them back to where they were before.
      */
-    pdfViewerApplication.pdfHistory.pushCurrentPosition();
-
-    /*
-     * Scroll to the destination.
-     */
-    pdfViewer.scrollPageIntoView({
-      /*
-       * pdf.js page indexes are one more than the page indexes used by this application's bounding boxes.
-       */
-      pageNumber: dest.page + 1,
-      destArray: [
-        undefined,
-        { name: "XYZ" },
-        left + SCROLL_OFFSET_X,
-        top + SCROLL_OFFSET_Y,
-      ],
-    });
+    pdfViewerApplication.pdfLinkService.navigateTo([
+      dest.page,
+      { name: "XYZ" },
+      left + SCROLL_OFFSET_X,
+      top + SCROLL_OFFSET_Y,
+    ]);
 
     /*
      * Store the position that the paper has jumped to.

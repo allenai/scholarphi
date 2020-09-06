@@ -20,7 +20,7 @@ export interface PDFViewerApplication {
   externalServices: ExternalServices;
   pdfViewer: PDFViewer;
   pdfDocument: PDFDocumentProxy;
-  pdfHistory: PDFHistory;
+  pdfLinkService: PDFLinkService;
 }
 
 export interface AppConfig {
@@ -96,6 +96,10 @@ export interface PDFViewer {
   _scrollIntoView: (options: ScrollIntoViewOptions) => void;
 }
 
+export interface PDFLinkService {
+  navigateTo: (explicitDest: DestArray) => void;
+}
+
 /**
  * X and Y coordinates are in the PDF coordinate system, not in the viewport coordinate system.
  */
@@ -126,8 +130,4 @@ export interface PDFPageView {
   div: HTMLDivElement;
   scale: number;
   viewport: PDFPageViewport;
-}
-
-export interface PDFHistory {
-  pushCurrentPosition: () => void;
 }
