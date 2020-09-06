@@ -1,3 +1,5 @@
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
 import TextField from "@material-ui/core/TextField";
 import React from "react";
 import {
@@ -14,6 +16,10 @@ interface Props {
   pdfViewerApplication: PDFViewerApplication;
 }
 
+interface State {
+  matchCase: boolean;
+}
+
 /**
  * Widget for searching for text. It relies entirely on pdf.js' 'find' functionality.
  * This component is partially controlled:
@@ -23,10 +29,14 @@ interface Props {
  * * The component controls the pdf.js state for finding text, providing a wrapper around
  *   the pdf.js 'find' functionality.
  */
-export class PdfjsFindQueryWidget extends React.PureComponent<Props> {
+export class PdfjsFindQueryWidget extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
+    this.state = {
+      matchCase: false,
+    };
     this.onInputChange = this.onInputChange.bind(this);
+    this.onMatchCaseChange = this.onMatchCaseChange.bind(this);
   }
 
   componentDidMount() {
@@ -88,8 +98,11 @@ export class PdfjsFindQueryWidget extends React.PureComponent<Props> {
    * Whenever the query property changes (likely because the user has types in the 'find' box),
    * notify the pdf.js 'find controller' to trigger a new search.
    */
-  componentDidUpdate(nextProps: Props) {
-    if (this.props.query !== nextProps.query) {
+  componentDidUpdate(prevProps: Props, prevState: State) {
+    if (
+      this.props.query !== prevProps.query ||
+      this.state.matchCase !== prevState.matchCase
+    ) {
       this.dispatchToPdfjs("find");
     }
   }
@@ -112,6 +125,10 @@ export class PdfjsFindQueryWidget extends React.PureComponent<Props> {
     const query =
       this.inputElement.value === "" ? null : this.inputElement.value;
     this.props.onQueryChanged(query);
+  }
+
+  onMatchCaseChange(event: React.ChangeEvent<HTMLInputElement>) {
+    this.setState({ matchCase: event.target.checked });
   }
 
   next() {
@@ -138,9 +155,9 @@ export class PdfjsFindQueryWidget extends React.PureComponent<Props> {
         type: eventName.substring("find".length),
         query,
         phraseSearch: true,
-        caseSensitive: false,
+        caseSensitive: this.state.matchCase,
         entireWord: false,
-        highlightAll: false,
+        highlightAll: true,
         findPrevious: findPrevious || false,
       });
     }
@@ -148,17 +165,31 @@ export class PdfjsFindQueryWidget extends React.PureComponent<Props> {
 
   render() {
     return (
-      <TextField
-        className="find-bar__query"
-        inputRef={(ref) => {
-          this.inputElement = ref;
-        }}
-        onInput={this.onInputChange}
-        defaultValue={this.props.query || ""}
-        placeholder="Find in document…"
-        tabIndex={0}
-        autoFocus
-      />
+      <>
+        <TextField
+          className="find-bar__query__input"
+          inputRef={(ref) => {
+            this.inputElement = ref;
+          }}
+          onInput={this.onInputChange}
+          defaultValue={this.props.query || ""}
+          placeholder="Find in document…"
+          tabIndex={0}
+          autoFocus
+        />
+        <FormControlLabel
+          className="find-bar__query__flag"
+          control={
+            <Switch
+              checked={this.state.matchCase}
+              color="primary"
+              size="small"
+              onChange={this.onMatchCaseChange}
+            />
+          }
+          label="Match case"
+        />
+      </>
     );
   }
 
