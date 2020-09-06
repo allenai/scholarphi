@@ -83,8 +83,9 @@ class PrimerPage extends React.PureComponent<Props> {
             <>
               {terms.length > 0 ? (
                 <>
-                  <p className="primer-page__header">
-                    Glossary of key terms (in order of appearance)
+                  <p className="primer-page__header">Glossary of key terms</p>
+                  <p className="primer-page__subheader">
+                    Listed in order of appearance.
                   </p>
                   <div className="primer-page__glossary">
                     <ul>
@@ -103,7 +104,9 @@ class PrimerPage extends React.PureComponent<Props> {
                 <>
                   <p className="primer-page__header">
                     Glossary of key {terms.length === 0 && "terms and "} symbols
-                    (in order of appearance)
+                  </p>
+                  <p className="primer-page__subheader">
+                    Listed in order of appearance.
                   </p>
                   <div className="primer-page__glossary">
                     <ul>
@@ -137,7 +140,7 @@ class PrimerPage extends React.PureComponent<Props> {
  * Get the first instance of each defined symbol.
  */
 function glossarySymbols(entities: Entities) {
-  const symbolsByTex: { [tex: string]: Symbol } = {};
+  const symbolsByTex: { [tex: string]: Symbol[] } = {};
   entities.all
     .map((id) => entities.byId[id])
     .filter((e) => e !== undefined)
@@ -152,10 +155,19 @@ function glossarySymbols(entities: Entities) {
     .forEach((s) => {
       const tex = s.attributes.tex as string;
       if (symbolsByTex[tex] === undefined) {
-        symbolsByTex[tex] = s;
+        symbolsByTex[tex] = [];
       }
+      symbolsByTex[tex].push(s);
     });
-  return Object.values(symbolsByTex);
+
+  const commonSymbols = [];
+  for (const tex in symbolsByTex) {
+    if (symbolsByTex[tex].length > 1) {
+      commonSymbols.push(symbolsByTex[tex][0]);
+    }
+  }
+
+  return commonSymbols;
 }
 
 /**
