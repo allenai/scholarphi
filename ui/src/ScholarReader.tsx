@@ -62,14 +62,14 @@ const logger = getRemoteLogger();
 
 interface Props {
   paperId?: PaperId;
-  preset?: string;
+  presets?: string[];
 }
 
 class ScholarReader extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    const settings = getSettings(props.preset);
+    const settings = getSettings(props.presets);
 
     this.state = {
       entities: null,
@@ -851,6 +851,18 @@ class ScholarReader extends React.PureComponent<Props, State> {
       ];
     }
 
+    if (
+      !this._jumpedToInitialFocus &&
+      this.state.pages !== null &&
+      Object.keys(this.state.pages).length > 0 &&
+      this.state.entities !== null
+    ) {
+      if (this.state.initialFocus !== null) {
+        this.jumpToEntity(this.state.initialFocus);
+      }
+      this._jumpedToInitialFocus = true;
+    }
+
     return (
       <>
         {this.state.pdfViewerApplication !== null &&
@@ -1006,6 +1018,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
             pdfViewer={this.state.pdfViewer}
             pages={this.state.pages}
             entities={this.state.entities}
+            scrollToPageOnLoad={this.state.initialFocus === null}
           />
         ) : null}
         {
@@ -1187,6 +1200,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   private _backButtonHintShown: boolean = false;
+  private _jumpedToInitialFocus: boolean = false;
 }
 
 async function waitForPDFViewerInitialization() {

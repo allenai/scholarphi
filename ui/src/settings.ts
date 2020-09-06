@@ -15,6 +15,10 @@ export interface Settings {
    */
   annotationHintsEnabled: boolean;
   /**
+   * When the paper first loads, automatically scroll the the entity with this ID.
+   */
+  initialFocus: string | null;
+  /**
    * Show glosses for citations containing paper summary information.
    */
   citationGlossesEnabled: boolean;
@@ -80,19 +84,64 @@ interface Preset extends Partial<Settings> {
  */
 const PRESETS: Preset[] = [
   {
-    key: "deepsets",
+    key: "focused-reading",
     citationGlossesEnabled: false,
     useDefinitionsForDiagramLabels: true,
+  },
+  {
+    key: "skim",
+    citationGlossesEnabled: false,
+    useDefinitionsForDiagramLabels: true,
+  },
+  {
+    key: "condition-x",
+    equationDiagramsEnabled: false,
+    declutterEnabled: false,
+  },
+  {
+    key: "condition-y",
+    equationDiagramsEnabled: false,
+    declutterEnabled: true,
+  },
+  {
+    key: "condition-z",
+    equationDiagramsEnabled: false,
+    declutterEnabled: false,
+  },
+  {
+    key: "task-a",
+    initialFocus: "94211",
+  },
+  {
+    key: "task-b",
+    initialFocus: "94180",
+  },
+  {
+    key: "task-c",
+    initialFocus: "94247",
+  },
+  {
+    key: "task-d",
+    initialFocus: "94351",
+  },
+  {
+    key: "task-e",
+    initialFocus: "94110",
+  },
+  {
+    key: "task-f",
+    initialFocus: "94159",
   },
 ];
 
 /**
  * Get app settings, merging presets matching the key 'preset' with the default settings.
  */
-export function getSettings(preset?: string) {
+export function getSettings(presets?: string[]) {
   const DEFAULT_SETTINGS: Settings = {
     primerPageEnabled: true,
     annotationHintsEnabled: true,
+    initialFocus: null,
     glossStyle: "tooltip",
     textSelectionMenuEnabled: false,
     citationGlossesEnabled: true,
@@ -108,10 +157,12 @@ export function getSettings(preset?: string) {
   };
 
   let settings = DEFAULT_SETTINGS;
-  if (preset) {
-    for (const p of PRESETS) {
-      if (p.key === preset) {
-        settings = { ...settings, ...p };
+  if (presets) {
+    for (const preset of presets) {
+      for (const p of PRESETS) {
+        if (p.key === preset) {
+          settings = { ...settings, ...p };
+        }
       }
     }
   }

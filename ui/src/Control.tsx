@@ -8,7 +8,7 @@ import { ConfigurableSetting } from "./settings";
 
 interface Props {
   setting: ConfigurableSetting;
-  value: boolean | string;
+  value: boolean | string | null;
   handleChange: (setting: ConfigurableSetting, value: any) => void;
 }
 

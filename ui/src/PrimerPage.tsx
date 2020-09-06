@@ -11,6 +11,7 @@ interface Props {
   pdfViewer: PDFViewer;
   pages: Pages;
   entities: Entities | null;
+  scrollToPageOnLoad?: boolean;
 }
 
 /**
@@ -34,7 +35,9 @@ class PrimerPage extends React.PureComponent<Props> {
     } else {
       viewer.insertBefore(this._element, viewer.children[0]);
     }
-    this.props.pdfViewer.container.scrollTop = 0;
+    if (this.props.scrollToPageOnLoad) {
+      this.props.pdfViewer.container.scrollTop = 0;
+    }
   }
 
   componentWillUnmount() {
