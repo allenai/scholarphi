@@ -218,7 +218,7 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
                           )}
                           {nickname !== null && (
                             <>
-                              {`${nickname.excerpt}`}{" "}
+                              <RichText>{`${nickname.excerpt}`}</RichText>{" "}
                               <EntityPageLink
                                 id={`symbol-${symbol.id}-nickname-link`}
                                 entity={nickname.contextEntity}
