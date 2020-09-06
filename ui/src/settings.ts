@@ -15,9 +15,17 @@ export interface Settings {
    */
   annotationHintsEnabled: boolean;
   /**
+   * Make entities (like symbols and terms) clickable.
+   */
+  annotationsEnabled: boolean;
+  /**
    * When the paper first loads, automatically scroll the the entity with this ID.
    */
   initialFocus: string | null;
+  /**
+   * Show glosses when an entity (i.e., symbol or term) is selected.
+   */
+  glossesEnabled: boolean;
   /**
    * Show glosses for citations containing paper summary information.
    */
@@ -84,52 +92,79 @@ interface Preset extends Partial<Settings> {
  */
 const PRESETS: Preset[] = [
   {
-    key: "focused-reading",
+    key: "study",
     citationGlossesEnabled: false,
     useDefinitionsForDiagramLabels: true,
   },
+  /*
+   * No interactivity for terms and symbols.
+   */
   {
-    key: "skim",
-    citationGlossesEnabled: false,
-    useDefinitionsForDiagramLabels: true,
-  },
-  {
-    key: "condition-x",
+    key: "ca",
+    annotationsEnabled: false,
+    primerPageEnabled: false,
     equationDiagramsEnabled: false,
+    glossesEnabled: false,
     declutterEnabled: false,
   },
+  /*
+   * Show glosses, not declutter.
+   */
   {
-    key: "condition-y",
+    key: "cb",
+    annotationsEnabled: true,
+    primerPageEnabled: true,
+    glossesEnabled: true,
+    equationDiagramsEnabled: true,
+    declutterEnabled: false,
+  },
+  /*
+   * Show declutter, not glosses.
+   */
+  {
+    key: "cc",
+    annotationsEnabled: true,
+    primerPageEnabled: false,
+    glossesEnabled: false,
     equationDiagramsEnabled: false,
     declutterEnabled: true,
   },
+  /*
+   * Enable both declutter and glosses.
+   */
   {
-    key: "condition-z",
-    equationDiagramsEnabled: false,
-    declutterEnabled: false,
+    key: "cd",
+    annotationsEnabled: true,
+    primerPageEnabled: true,
+    glossesEnabled: true,
+    equationDiagramsEnabled: true,
+    declutterEnabled: true,
   },
   {
-    key: "task-a",
+    key: "focused-reading",
+  },
+  {
+    key: "ta",
     initialFocus: "94211",
   },
   {
-    key: "task-b",
+    key: "tb",
     initialFocus: "94180",
   },
   {
-    key: "task-c",
+    key: "tc",
     initialFocus: "94247",
   },
   {
-    key: "task-d",
+    key: "td",
     initialFocus: "94351",
   },
   {
-    key: "task-e",
+    key: "te",
     initialFocus: "94110",
   },
   {
-    key: "task-f",
+    key: "tf",
     initialFocus: "94159",
   },
 ];
@@ -140,7 +175,9 @@ const PRESETS: Preset[] = [
 export function getSettings(presets?: string[]) {
   const DEFAULT_SETTINGS: Settings = {
     primerPageEnabled: true,
+    annotationsEnabled: true,
     annotationHintsEnabled: true,
+    glossesEnabled: true,
     initialFocus: null,
     glossStyle: "tooltip",
     textSelectionMenuEnabled: false,

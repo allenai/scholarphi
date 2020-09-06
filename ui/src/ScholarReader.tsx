@@ -1111,42 +1111,44 @@ class ScholarReader extends React.PureComponent<Props, State> {
                       />
                     ) : null}
                     {/* Interactive annotations on entities. */}
-                    {this.state.entities !== null && (
-                      <EntityAnnotationLayer
-                        paperId={this.props.paperId}
-                        pageView={pageView}
-                        papers={this.state.papers}
-                        entities={entities}
-                        userLibrary={this.state.userLibrary}
-                        selectedEntityIds={selectedEntityIds}
-                        selectedAnnotationIds={selectedAnnotationIds}
-                        selectedAnnotationSpanIds={selectedAnnotationSpanIds}
-                        findMatchedEntityIds={findMatchedEntityIds}
-                        findSelectionEntityId={findSelectionEntityId}
-                        jumpTarget={jumpTarget}
-                        showAnnotations={this.state.annotationHintsEnabled}
-                        citationAnnotationsEnabled={
-                          this.state.citationGlossesEnabled
-                        }
-                        glossStyle={this.state.glossStyle}
-                        glossEvaluationEnabled={
-                          this.state.glossEvaluationEnabled
-                        }
-                        equationDiagramsEnabled={
-                          this.state.equationDiagramsEnabled
-                        }
-                        copySentenceOnClick={
-                          this.state.sentenceTexCopyOnOptionClickEnabled
-                        }
-                        handleSelectEntityAnnotation={
-                          this.selectEntityAnnotation
-                        }
-                        handleShowSnackbarMessage={this.showSnackbarMessage}
-                        handleAddPaperToLibrary={this.addToLibrary}
-                        handleJumpToEntity={this.jumpToEntityWithBackMessage}
-                        handleOpenDrawer={this.openDrawer}
-                      />
-                    )}
+                    {this.state.annotationsEnabled &&
+                      this.state.entities !== null && (
+                        <EntityAnnotationLayer
+                          paperId={this.props.paperId}
+                          pageView={pageView}
+                          papers={this.state.papers}
+                          entities={entities}
+                          userLibrary={this.state.userLibrary}
+                          selectedEntityIds={selectedEntityIds}
+                          selectedAnnotationIds={selectedAnnotationIds}
+                          selectedAnnotationSpanIds={selectedAnnotationSpanIds}
+                          findMatchedEntityIds={findMatchedEntityIds}
+                          findSelectionEntityId={findSelectionEntityId}
+                          jumpTarget={jumpTarget}
+                          showAnnotations={this.state.annotationHintsEnabled}
+                          showGlosses={this.state.glossesEnabled}
+                          citationAnnotationsEnabled={
+                            this.state.citationGlossesEnabled
+                          }
+                          glossStyle={this.state.glossStyle}
+                          glossEvaluationEnabled={
+                            this.state.glossEvaluationEnabled
+                          }
+                          equationDiagramsEnabled={
+                            this.state.equationDiagramsEnabled
+                          }
+                          copySentenceOnClick={
+                            this.state.sentenceTexCopyOnOptionClickEnabled
+                          }
+                          handleSelectEntityAnnotation={
+                            this.selectEntityAnnotation
+                          }
+                          handleShowSnackbarMessage={this.showSnackbarMessage}
+                          handleAddPaperToLibrary={this.addToLibrary}
+                          handleJumpToEntity={this.jumpToEntityWithBackMessage}
+                          handleOpenDrawer={this.openDrawer}
+                        />
+                      )}
                     {/* Equation diagram overlays. */}
                     {this.state.equationDiagramsEnabled &&
                       selectedEntityIds

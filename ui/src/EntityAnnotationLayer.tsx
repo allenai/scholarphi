@@ -32,6 +32,7 @@ interface Props {
   findSelectionEntityId: string | null;
   jumpTarget: string | null;
   showAnnotations: boolean;
+  showGlosses: boolean;
   glossStyle: GlossStyle;
   glossEvaluationEnabled: boolean;
   citationAnnotationsEnabled: boolean;
@@ -159,6 +160,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
       findSelectionEntityId,
       jumpTarget,
       showAnnotations,
+      showGlosses,
       glossStyle,
       glossEvaluationEnabled,
       citationAnnotationsEnabled,
@@ -228,13 +230,15 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 underline={showAnnotations && hasDefinition && !inDefinition}
                 glossStyle={glossStyle}
                 glossContent={
-                  <SimpleTermGloss
-                    term={entity}
-                    entities={entities}
-                    showDrawerActions={true}
-                    handleJumpToEntity={this.props.handleJumpToEntity}
-                    handleOpenDrawer={this.props.handleOpenDrawer}
-                  />
+                  showGlosses ? (
+                    <SimpleTermGloss
+                      term={entity}
+                      entities={entities}
+                      showDrawerActions={true}
+                      handleJumpToEntity={this.props.handleJumpToEntity}
+                      handleOpenDrawer={this.props.handleOpenDrawer}
+                    />
+                  ) : null
                 }
                 selected={isSelected}
                 selectedSpanIds={selectedSpanIds}
@@ -260,14 +264,16 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 underline={showAnnotations}
                 glossStyle={glossStyle}
                 glossContent={
-                  <CitationGloss
-                    citation={entity}
-                    paper={papers[entity.attributes.paper_id]}
-                    userLibrary={userLibrary}
-                    handleAddPaperToLibrary={handleAddPaperToLibrary}
-                    openedPaperId={paperId}
-                    evaluationEnabled={glossEvaluationEnabled}
-                  />
+                  showGlosses ? (
+                    <CitationGloss
+                      citation={entity}
+                      paper={papers[entity.attributes.paper_id]}
+                      userLibrary={userLibrary}
+                      handleAddPaperToLibrary={handleAddPaperToLibrary}
+                      openedPaperId={paperId}
+                      evaluationEnabled={glossEvaluationEnabled}
+                    />
+                  ) : null
                 }
                 selected={isSelected}
                 selectedSpanIds={selectedSpanIds}
@@ -384,6 +390,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 isFindMatch={isMatch}
                 glossStyle={glossStyle}
                 glossContent={
+                  showGlosses &&
                   !(this.props.glossStyle === "tooltip" && !isFindSelection) ? (
                     <SimpleSymbolGloss
                       symbol={entity}
