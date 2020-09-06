@@ -290,6 +290,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 entity={entity}
                 underline={showAnnotations}
                 selected={isSelected}
+                active={!isSelected}
                 selectedSpanIds={selectedSpanIds}
                 handleSelect={this.props.handleSelectEntityAnnotation}
               />

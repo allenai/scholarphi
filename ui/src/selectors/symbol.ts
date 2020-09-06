@@ -1,7 +1,7 @@
 import { defaultMemoize } from "reselect";
 import { SymbolFilter } from "../FindBar";
 import { Entities } from "../state";
-import { isSymbol, Relationship, Symbol } from "../types/api";
+import { isSentence, isSymbol, Relationship, Symbol } from "../types/api";
 import {
   adjacentContext,
   adjacentDefinition,
@@ -18,10 +18,13 @@ export function diagramLabel(
   explicitLabelsOnly?: boolean
 ): string | null {
   if (symbol.attributes.diagram_label !== null) {
+    if (symbol.attributes.diagram_label === "SKIP") {
+      return null;
+    }
     return symbol.attributes.diagram_label;
   }
   if (!explicitLabelsOnly) {
-    const definition = nearbyDefinition(symbol.id, entities);
+    const definition = nearbyDefinition(symbol.id, entities, true);
     return definition ? definition.excerpt : null;
   }
   return null;
@@ -274,9 +277,39 @@ export function shouldUnderline(symbolId: string, entities: Entities) {
 /**
  * Get the first definition or nickname right before the appearance of the symbol, if
  * possible. If not possible, get the first definition or nickname right after the appearance
- * of the symbol.
+ * of the symbol. If 'includeThisAppearance' is set, the sentence that the symbol appears
+ * will be returned, if it is a definition.
  */
-export function nearbyDefinition(symbolId: string, entities: Entities) {
+export function nearbyDefinition(
+  symbolId: string,
+  entities: Entities,
+  includeThisAppearance?: boolean
+) {
+  const symbol = entities.byId[symbolId];
+  if (symbol === undefined || !isSymbol(symbol)) {
+    return null;
+  }
+  if (includeThisAppearance && inDefinition(symbol.id, entities)) {
+    for (let i = 0; i < symbol.attributes.definitions.length; i++) {
+      const context = symbol.relationships.definition_sentences[i];
+      if (context === undefined || context.id === null) {
+        continue;
+      }
+      const sentence = entities.byId[context.id];
+      if (sentence === undefined || !isSentence(sentence)) {
+        continue;
+      }
+      if (
+        sentence.id === symbol.relationships.sentence.id &&
+        symbol.attributes.definitions[i] !== undefined
+      ) {
+        return {
+          excerpt: symbol.attributes.definitions[i],
+          contextEntity: sentence,
+        };
+      }
+    }
+  }
   const dBefore = adjacentDefinition(symbolId, entities, "before");
   const nBefore = adjacentNickname(symbolId, entities, "before");
   if (dBefore && nBefore) {

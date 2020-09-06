@@ -73,10 +73,9 @@ class PrimerPage extends React.PureComponent<Props> {
           {entities === null ? (
             <>
               <p className="primer-page__header">
-                Building a priming glossary of key terms and symbols for this
-                paper...
+                Building a glossary of key terms and symbols for this paper...
               </p>
-              <p>Please wait... Scanning paper to assemble glossary...</p>
+              <p>Please wait... Scanning paper...</p>
               <LinearProgress />
             </>
           ) : (
