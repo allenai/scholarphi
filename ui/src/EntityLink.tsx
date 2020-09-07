@@ -17,10 +17,14 @@ class EntityLink extends React.PureComponent<Props> {
     this.onClick = this.onClick.bind(this);
   }
 
-  onClick(event: React.MouseEvent<HTMLSpanElement>) {
-    logger.log("debug", "clicked-to-jump-to-context", {
+  onClick() {
+    logger.log("debug", "clicked-jump-to-context", {
       id: this.props.id,
       entityId: this.props.entityId,
+      linkText:
+        typeof this.props.children === "string"
+          ? this.props.children
+          : undefined,
     });
     if (this.props.entityId) {
       this.props.handleJumpToEntity(this.props.entityId);

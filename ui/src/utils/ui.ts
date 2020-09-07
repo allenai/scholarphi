@@ -370,3 +370,23 @@ export function joinStrings(strings: string[]) {
     );
   }
 }
+
+export function getScrollCoordinates(element: HTMLElement) {
+  return {
+    scrollLeft: element.scrollLeft,
+    scrollTop: element.scrollTop,
+    scrollWidth: element.scrollWidth,
+    scrollHeight: element.scrollHeight,
+    clientWidth: element.clientWidth,
+    clientHeight: element.clientHeight,
+  };
+}
+
+export function getElementCoordinates(element: HTMLElement) {
+  return {
+    offsetLeft: element.offsetLeft,
+    offsetTop: element.offsetTop,
+    clientWidth: element.clientWidth,
+    clientHeight: element.clientHeight,
+  };
+}

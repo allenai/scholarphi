@@ -2,6 +2,7 @@ import Labella from "labella";
 import React from "react";
 import EquationDiagramGloss from "./EquationDiagramGloss";
 import LabelRenderer from "./LabelRenderer";
+import { getRemoteLogger } from "./logging";
 import { Point } from "./Selection";
 import * as selectors from "./selectors";
 import { Entities } from "./state";
@@ -9,6 +10,8 @@ import { Equation } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 import { Dimensions, Rectangle } from "./types/ui";
 import * as uiUtils from "./utils/ui";
+
+const logger = getRemoteLogger();
 
 /**
  * A feature that is to be labeled in a diagram.
@@ -83,10 +86,28 @@ class EquationDiagram extends React.PureComponent<Props, State> {
       glossDimensions: null,
     };
     this.onGlossDimensionsComputed = this.onGlossDimensionsComputed.bind(this);
+    this.onClickShowMore = this.onClickShowMore.bind(this);
+  }
+
+  componentDidMount() {
+    const { equation } = this.props;
+    logger.log("debug", "mounted-equation-diagram", {
+      equation: {
+        id: equation.id,
+        tex: equation.attributes.tex,
+      },
+    });
   }
 
   onGlossDimensionsComputed(dimensions: { [text: string]: Dimensions }) {
     this.setState({ glossDimensions: dimensions });
+  }
+
+  onClickShowMore(entityId: string) {
+    logger.log("debug", "clicked-equation-diagram-symbol-or-label", {
+      entityId,
+    });
+    this.props.handleShowMore(entityId);
   }
 
   render() {
@@ -236,7 +257,7 @@ class EquationDiagram extends React.PureComponent<Props, State> {
           return (
             <div className="equation-diagram__label-container">
               <svg
-                onClick={() => this.props.handleShowMore(l.feature.id)}
+                onClick={() => this.onClickShowMore(l.feature.id)}
                 style={{
                   position: "absolute",
                   left: svgBounds.left,
@@ -267,7 +288,7 @@ class EquationDiagram extends React.PureComponent<Props, State> {
               <EquationDiagramGloss
                 anchor={{ x: l.left, y: l.top }}
                 entityId={l.feature.id}
-                handleShowMore={this.props.handleShowMore}
+                handleShowMore={this.onClickShowMore}
               >
                 {l.text}
               </EquationDiagramGloss>

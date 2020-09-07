@@ -18,21 +18,48 @@ class RemoteLogger {
     this._context = context;
   }
 
-  async log(level: LogLevel, eventType?: any, data?: any) {
-    let dataWithContext: any = {};
-    if (this._context) {
-      dataWithContext._context = this._context;
-    }
-    if (data) {
-      dataWithContext = { ...dataWithContext, ...data };
+  /**
+   * To debounce an event (i.e., only log it every so often), set 'debounce' to a number of
+   * milliseconds to wait before logging an event of that type. Once the wait period expires,
+   * the last event of that type will be logged.
+   *
+   * If 'data' is a function, this function will be called to produce the data to be logged.
+   * This may be useful when using 'debounce' to ensure that data that is expensive to compute
+   * will only be computed when the debounce waiting time has passed.
+   */
+  async log(
+    level: LogLevel,
+    eventType?: string,
+    data?: any,
+    debounce?: number
+  ) {
+    if (eventType !== undefined && debounce !== undefined && debounce > 0) {
+      /*
+       * If debouncing is requested, only log the data once the interval has passed.
+       * When that interval passes, log only the most recent data for the event.
+       */
+      if (this._debouncedData[eventType] === undefined) {
+        setTimeout(() => {
+          const d = this._debouncedData[eventType];
+          this._debouncedData[eventType] = undefined;
+          this._log(level, eventType, d);
+        }, debounce);
+      }
+      this._debouncedData[eventType] = data;
+      return;
     }
 
+    this._log(level, eventType, data);
+  }
+
+  async _log(level: LogLevel, eventType?: string, data?: any) {
+    const logData = this._prepareData(data);
     return axios
       .post("/api/log", {
         username: this._username,
         level,
         event_type: eventType,
-        data: dataWithContext,
+        data: logData,
       } as LogEntryCreatePayload)
       .catch((e) => {
         if (!this._receivedPostError) {
@@ -49,9 +76,22 @@ class RemoteLogger {
       });
   }
 
+  private _prepareData(data: any) {
+    let dataWithContext: any = {};
+    if (this._context) {
+      dataWithContext._context = this._context;
+    }
+    if (data) {
+      const d = typeof data === "function" ? data() : data;
+      dataWithContext = { ...dataWithContext, ...d };
+    }
+    return dataWithContext;
+  }
+
   private _username: string | null = null;
-  private _receivedPostError: boolean = false;
   private _context: any;
+  private _debouncedData: { [eventType: string]: any } = {};
+  private _receivedPostError: boolean = false;
 }
 
 const remoteLoggerInstance = new RemoteLogger();

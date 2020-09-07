@@ -1,6 +1,9 @@
 import Snackbar from "@material-ui/core/Snackbar";
 import React from "react";
+import { getRemoteLogger } from "./logging";
 import * as uiUtils from "./utils/ui";
+
+const logger = getRemoteLogger();
 
 interface Props {
   /*
@@ -35,6 +38,7 @@ class AppOverlay extends React.PureComponent<Props> {
     super(props);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
+    this.onPopState = this.onPopState.bind(this);
     this.onCloseSnackbar = this.onCloseSnackbar.bind(this);
   }
 
@@ -62,11 +66,16 @@ class AppOverlay extends React.PureComponent<Props> {
      */
     element.addEventListener("keydown", this.onKeyDown);
     element.addEventListener("keyup", this.onKeyUp);
+    /*
+     * Listen for clicks on the 'back' button on the global window event.
+     */
+    window.addEventListener("popstate", this.onPopState);
   }
 
   removeEventListeners(element: HTMLElement) {
     element.removeEventListener("keydown", this.onKeyDown);
     element.removeEventListener("keyup", this.onKeyUp);
+    window.removeEventListener("popsstate", this.onPopState);
   }
 
   onKeyDown(event: KeyboardEvent) {
@@ -99,6 +108,10 @@ class AppOverlay extends React.PureComponent<Props> {
     if (event.keyCode === 16 || event.key === "Shift") {
       this.props.handleSetMultiselectEnabled(false);
     }
+  }
+
+  onPopState() {
+    logger.log("debug", "pop-history-state");
   }
 
   onCloseSnackbar(_: any, reason: string) {

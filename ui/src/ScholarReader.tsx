@@ -79,6 +79,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     if (props.paperId) {
       loggingContext.paperId = props.paperId;
     }
+    logger.setContext(loggingContext);
 
     this.state = {
       entities: null,
@@ -261,6 +262,12 @@ class ScholarReader extends React.PureComponent<Props, State> {
       ) {
         selectedAnnotationSpanIds.push(annotationSpanId);
       }
+
+      logger.log("debug", "selection-updated", {
+        selectedEntityIds,
+        selectedAnnotationIds,
+        selectedAnnotationSpanIds,
+      });
 
       /*
        * The default behavior is to just update the selection. If the selection is a,
@@ -606,6 +613,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   openDrawer(drawerContentType: DrawerContentType) {
+    logger.log("debug", "request-open-drawer", { drawerContentType });
     this.setState({
       drawerMode: "open",
       drawerContentType,
@@ -613,6 +621,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   closeDrawer() {
+    logger.log("debug", "close-drawer");
     this.setState({ drawerMode: "closed" });
   }
 
@@ -627,6 +636,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   startTextSearch() {
+    logger.log("debug", "start-text-search");
     this.setState({
       isFindActive: true,
       findActivationTimeMs: Date.now(),
@@ -695,6 +705,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   closeFindBar() {
+    logger.log("debug", "find-close");
     this.setState({
       isFindActive: false,
       findActivationTimeMs: null,
@@ -872,6 +883,9 @@ class ScholarReader extends React.PureComponent<Props, State> {
     ) {
       if (this.state.initialFocus !== null) {
         this.jumpToEntity(this.state.initialFocus);
+        logger.log("debug", "jump-page-to-initial-focus", {
+          entityId: this.state.initialFocus,
+        });
       }
       this._jumpedToInitialFocus = true;
     }

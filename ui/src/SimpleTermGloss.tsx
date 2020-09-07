@@ -6,10 +6,13 @@ import classNames from "classnames";
 import React from "react";
 import { DrawerContentType } from "./Drawer";
 import EntityPageLink from "./EntityPageLink";
+import { getRemoteLogger } from "./logging";
 import RichText from "./RichText";
 import * as selectors from "./selectors";
 import { Entities } from "./state";
 import { Term } from "./types/api";
+
+const logger = getRemoteLogger();
 
 interface Props {
   term: Term;
@@ -33,11 +36,22 @@ class SimpleTermGloss extends React.PureComponent<Props, State> {
     this.onClickClose = this.onClickClose.bind(this);
   }
 
+  componentDidMount() {
+    logger.log("debug", "rendered-term-tooltip", {
+      term: this.props.term.id,
+      name: this.props.term.attributes.name,
+      numDefinitions: this.props.term.attributes.definitions.length,
+      numUsages: this.props.term.attributes.snippets.length,
+    });
+  }
+
   onClickUsagesButton() {
+    logger.log("debug", "clicked-open-term-usages");
     this.props.handleOpenDrawer("usages");
   }
 
   onClickClose() {
+    logger.log("debug", "clicked-dismiss-term-tooltip");
     this.setState({ closed: true });
   }
 

@@ -42,10 +42,10 @@ export class Usages extends React.PureComponent<Props> {
                 } of the selected ${entityTypes}.`}
           </p>
         )}
-        {usages.map((u) => (
+        {usages.map((u, i) => (
           <Snippet
             key={u.contextEntity.id}
-            id={`usage-${u.contextEntity.id}`}
+            id={`usage-${i}-${u.contextEntity.id}`}
             context={u.contextEntity}
             handleJumpToContext={this.props.handleJumpToEntity}
           >

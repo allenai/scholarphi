@@ -5,10 +5,14 @@ import React from "react";
 import { DefiningFormulas } from "./DefiningFormulas";
 import Definitions from "./Definitions";
 import EntityPropertyEditor from "./EntityPropertyEditor";
+import { getRemoteLogger } from "./logging";
 import { Entities } from "./state";
 import { Entity, EntityUpdateData } from "./types/api";
 import { PDFViewer } from "./types/pdfjs-viewer";
 import Usages from "./Usages";
+import * as uiUtils from "./utils/ui";
+
+const logger = getRemoteLogger();
 
 export type DrawerMode = "open" | "closed";
 export type DrawerContentType =
@@ -38,6 +42,7 @@ interface Props {
 export class Drawer extends React.PureComponent<Props> {
   constructor(props: Props) {
     super(props);
+    this.onScroll = this.onScroll.bind(this);
     this.closeDrawer = this.closeDrawer.bind(this);
   }
 
@@ -45,6 +50,14 @@ export class Drawer extends React.PureComponent<Props> {
     const { pdfViewer } = this.props;
     if (pdfViewer != null) {
       this.removePdfPositioningForDrawerOpen(pdfViewer.container);
+    }
+  }
+
+  onScroll(event: React.UIEvent<HTMLDivElement>) {
+    if (event.target instanceof HTMLDivElement) {
+      logger.log("debug", "scroll-drawer", {
+        scroll: uiUtils.getScrollCoordinates(event.target),
+      });
     }
   }
 
@@ -107,6 +120,7 @@ export class Drawer extends React.PureComponent<Props> {
          * in it, don't show it.
          */
         open={mode === "open" && contentType !== null}
+        onScroll={this.onScroll}
       >
         <div className="drawer__header">
           <div className="drawer__close_icon">

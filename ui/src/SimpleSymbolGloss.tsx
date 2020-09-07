@@ -12,8 +12,7 @@ import { getRemoteLogger } from "./logging";
 import RichText from "./RichText";
 import * as selectors from "./selectors";
 import { Entities } from "./state";
-import { isSymbol, Symbol } from "./types/api";
-import * as uiUtils from "./utils/ui";
+import { Symbol } from "./types/api";
 
 const logger = getRemoteLogger();
 
@@ -26,7 +25,6 @@ interface Props {
 }
 
 interface State {
-  activeSymbolId: string;
   closed: boolean;
 }
 
@@ -34,10 +32,8 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      activeSymbolId: props.symbol.id,
       closed: false,
     };
-    this.setActiveSymbolId = this.setActiveSymbolId.bind(this);
     this.onClickDefinitionsButton = this.onClickDefinitionsButton.bind(this);
     this.onClickDefiningFormulasButton = this.onClickDefiningFormulasButton.bind(
       this
@@ -46,59 +42,50 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
     this.onClickClose = this.onClickClose.bind(this);
   }
 
-  setActiveSymbolId(id: string) {
-    const { entities } = this.props;
-    if (entities.byId[id] !== undefined && isSymbol(entities.byId[id])) {
-      this.setState({ activeSymbolId: id });
-    }
-    logger.log("debug", "set-active-symbol", {
-      ...this.getLogContext(),
-      newActiveSymbol: this.props.entities.byId[id],
+  componentDidMount() {
+    logger.log("debug", "rendered-symbol-tooltip", {
+      symbol: this.props.symbol.id,
+      name: this.props.symbol.attributes.tex,
+      numDefinitions: this.props.symbol.attributes.definitions.length,
+      numFormulas: this.props.symbol.attributes.defining_formulas.length,
+      numUsages: this.props.symbol.attributes.snippets.length,
+      numChildren: this.props.symbol.relationships.children.length,
+      hasParent: this.props.symbol.relationships.parent.id !== null,
     });
   }
 
-  getLogContext() {
-    return {
-      currentSymbol: this.props.entities.byId[this.state.activeSymbolId],
-      originalSymbol: this.props.symbol,
-    };
-  }
-
   onClickDefinitionsButton() {
+    logger.log("debug", "clicked-open-symbol-definitions");
     this.props.handleOpenDrawer("definitions");
   }
 
   onClickDefiningFormulasButton() {
+    logger.log("debug", "clicked-open-symbol-defining-formulas");
     this.props.handleOpenDrawer("defining-formulas");
   }
 
   onClickUsagesButton() {
+    logger.log("debug", "clicked-open-symbol-usages");
     this.props.handleOpenDrawer("usages");
   }
 
   onClickClose() {
+    logger.log("debug", "clicked-dismiss-symbol-tooltip");
     this.setState({ closed: true });
   }
 
   render() {
-    const { entities } = this.props;
-    const { activeSymbolId } = this.state;
-    const symbol = entities.byId[activeSymbolId] as Symbol;
+    const { entities, symbol } = this.props;
 
     /*
      * Try to find definition and nickname right before the symbol.
      */
     let definition = selectors.adjacentDefinition(
-      activeSymbolId,
+      symbol.id,
       entities,
       "before"
     );
-    let nicknameFrom = "before";
-    let nickname = selectors.adjacentNickname(
-      activeSymbolId,
-      entities,
-      "before"
-    );
+    let nickname = selectors.adjacentNickname(symbol.id, entities, "before");
 
     /*
      * Only show nickname if it appeared after the last definition.
@@ -119,67 +106,18 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
      * definition or nickname after it.
      */
     if (nickname === null && definition == null) {
-      definition = selectors.adjacentDefinition(
-        activeSymbolId,
-        entities,
-        "after"
-      );
+      definition = selectors.adjacentDefinition(symbol.id, entities, "after");
       if (definition === null) {
-        nickname = selectors.adjacentNickname(
-          activeSymbolId,
-          entities,
-          "after"
-        );
-        if (nickname !== null) {
-          nicknameFrom = "after";
-        }
+        nickname = selectors.adjacentNickname(symbol.id, entities, "after");
       }
     }
 
-    const originalSymbol = this.props.symbol;
     const defsAndNicknames = selectors.definitionsAndNicknames(
-      [activeSymbolId],
+      [symbol.id],
       entities
     );
-    const formulas = selectors.definingFormulas([activeSymbolId], entities);
-    const usages = selectors.usages([activeSymbolId], entities);
-
-    const related = entities.all
-      .map((id) => entities.byId[id])
-      .filter((e) => e !== undefined)
-      .filter(isSymbol)
-      .filter(
-        (s) =>
-          s.attributes.tex !== null &&
-          s.attributes.tex === symbol.attributes.tex
-      )
-      .map((s) => s.relationships.children.concat(s.relationships.parent))
-      .flat()
-      .filter((r) => r.id !== null)
-      .map((r) => entities.byId[r.id as string])
-      .filter((e) => e !== undefined)
-      .filter(isSymbol)
-      .filter((s) => s.attributes.tex !== null)
-      .filter(
-        (s) =>
-          s.attributes.nicknames.length > 0 ||
-          s.attributes.definitions.length > 0 ||
-          s.attributes.defining_formulas.length > 0
-      );
-
-    const relatedTexs = related.map((s) => s.attributes.tex) as string[];
-    const relatedTexsByFrequency = uiUtils.sortByFrequency(relatedTexs);
-    let alsoSee = [];
-    for (const tex of relatedTexsByFrequency) {
-      for (const r of related) {
-        if (r.attributes.tex === tex) {
-          alsoSee.push(r);
-          break;
-        }
-      }
-    }
-    const MAX_ALSO_SEE = 5;
-    alsoSee = alsoSee.slice(0, MAX_ALSO_SEE);
+    const formulas = selectors.definingFormulas([symbol.id], entities);
+    const usages = selectors.usages([symbol.id], entities);
 
     const definedHere = selectors.inDefinition(symbol.id, entities);
 
@@ -300,33 +238,6 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
           </tbody>
         </table>
       </div>
-    );
-  }
-}
-
-interface SymbolLinkProps {
-  symbol: Symbol;
-  handleSetActiveSymbol: (symbolId: string) => void;
-}
-
-class SymbolLink extends React.PureComponent<SymbolLinkProps> {
-  constructor(props: SymbolLinkProps) {
-    super(props);
-    this.onClick = this.onClick.bind(this);
-  }
-
-  onClick() {
-    this.props.handleSetActiveSymbol(this.props.symbol.id);
-  }
-
-  render() {
-    if (this.props.symbol.attributes.tex === null) {
-      return null;
-    }
-    return (
-      <span className="other-symbol-link" onClick={this.onClick}>
-        <RichText>{this.props.symbol.attributes.tex as string}</RichText>
-      </span>
     );
   }
 }

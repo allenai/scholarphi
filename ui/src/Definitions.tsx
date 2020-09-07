@@ -35,14 +35,14 @@ export class Definitions extends React.PureComponent<Props> {
                 } of the selected symbols.`}
           </p>
         )}
-        {definitions.map((u) => (
+        {definitions.map((d, i) => (
           <Snippet
-            key={u.contextEntity.id}
-            id={`definition-${u.contextEntity.id}`}
-            context={u.contextEntity}
+            key={d.contextEntity.id}
+            id={`definition-${i}-${d.contextEntity.id}`}
+            context={d.contextEntity}
             handleJumpToContext={this.props.handleJumpToEntity}
           >
-            {u.excerpt}
+            {d.excerpt}
           </Snippet>
         ))}
       </div>

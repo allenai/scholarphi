@@ -1,6 +1,9 @@
 import React from "react";
+import { getRemoteLogger } from "./logging";
 import { PDFViewer } from "./types/pdfjs-viewer";
 import * as uiUtils from "./utils/ui";
+
+const logger = getRemoteLogger();
 
 interface Props {
   pdfViewer: PDFViewer;
@@ -40,6 +43,8 @@ class ViewerOverlay extends React.PureComponent<Props> {
     this.onClick = this.onClick.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
     this.onSelectionChange = this.onSelectionChange.bind(this);
+    this.onScroll = this.onScroll.bind(this);
+    this._getScrollData = this._getScrollData.bind(this);
   }
 
   componentDidMount() {
@@ -60,6 +65,7 @@ class ViewerOverlay extends React.PureComponent<Props> {
   addEventListenersToViewer(pdfViewer: PDFViewer) {
     pdfViewer.container.addEventListener("click", this.onClick);
     pdfViewer.container.addEventListener("keyup", this.onKeyUp);
+    pdfViewer.container.addEventListener("scroll", this.onScroll);
     /*
      * To capture changes in the selection within the document, there is no option other than
      * to listen to changes within the entire document. The W3C standards offer no way of listening
@@ -72,6 +78,7 @@ class ViewerOverlay extends React.PureComponent<Props> {
   removeEventListenersForViewer(pdfViewer: PDFViewer) {
     pdfViewer.container.removeEventListener("click", this.onClick);
     pdfViewer.container.removeEventListener("keyup", this.onKeyUp);
+    pdfViewer.container.removeEventListener("scroll", this.onScroll);
     document.removeEventListener("selectionchange", this.onSelectionChange);
   }
 
@@ -104,6 +111,36 @@ class ViewerOverlay extends React.PureComponent<Props> {
     if (uiUtils.isKeypressEscape(event)) {
       this.props.handleClearEntitySelection();
     }
+  }
+
+  onScroll() {
+    logger.log("debug", "scroll", this._getScrollData, 500);
+  }
+
+  _getScrollData() {
+    const container = this.props.pdfViewer.container;
+    const data: any = {
+      container: uiUtils.getScrollCoordinates(container),
+      pages: [],
+    };
+
+    container.querySelectorAll(".page").forEach((p) => {
+      if (p instanceof HTMLElement) {
+        if (p.dataset["pageNumber"]) {
+          data.pages.push({
+            ...uiUtils.getElementCoordinates(p),
+            pdfjsPageNumber: p.dataset["pageNumber"],
+          });
+        }
+      }
+    });
+
+    const primerPage = container.querySelector(".primer-page");
+    if (primerPage && primerPage instanceof HTMLElement) {
+      data.primerPage = uiUtils.getElementCoordinates(primerPage);
+    }
+
+    return data;
   }
 
   onSelectionChange() {

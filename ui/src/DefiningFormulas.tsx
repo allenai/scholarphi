@@ -40,10 +40,10 @@ export class DefiningFormulas extends React.PureComponent<Props> {
                 } that define the selected symbols.`}
           </p>
         )}
-        {formulas.map((f) => (
+        {formulas.map((f, i) => (
           <DefiningFormula
             key={f.contextEntity.id}
-            id={`formula-${f.contextEntity.id}`}
+            id={`formula-${i}-${f.contextEntity.id}`}
             context={f.contextEntity}
             handleJumpToContext={this.props.handleJumpToEntity}
           >
