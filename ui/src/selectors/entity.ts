@@ -412,6 +412,8 @@ export function cleanTex(tex: string) {
     new RegExp(`\\\\${name}\\{([^}]*)\\}`, "g");
   return tex
     .replace(/%.*?$/gm, "")
+    .replace(/\\&/gm, "&")
+    .replace(/\{\s*\\bf\s*([^}]*)\}/g, "$1")
     .replace(oneArgMacro("label"), "")
     .replace(oneArgMacro("texttt"), "$1")
     .replace(oneArgMacro("textbf"), "$1")
