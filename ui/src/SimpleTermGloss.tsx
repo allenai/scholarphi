@@ -38,10 +38,7 @@ class SimpleTermGloss extends React.PureComponent<Props, State> {
 
   componentDidMount() {
     logger.log("debug", "rendered-term-tooltip", {
-      term: this.props.term.id,
-      name: this.props.term.attributes.name,
-      numDefinitions: this.props.term.attributes.definitions.length,
-      numUsages: this.props.term.attributes.snippets.length,
+      term: selectors.termLogData(this.props.term),
     });
   }
 

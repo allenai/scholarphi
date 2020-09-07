@@ -86,6 +86,8 @@ class EquationDiagram extends React.PureComponent<Props, State> {
       glossDimensions: null,
     };
     this.onGlossDimensionsComputed = this.onGlossDimensionsComputed.bind(this);
+    this.onMouseEnterLabel = this.onMouseEnterLabel.bind(this);
+    this.onMouseLeaveLabel = this.onMouseLeaveLabel.bind(this);
     this.onClickShowMore = this.onClickShowMore.bind(this);
   }
 
@@ -103,8 +105,23 @@ class EquationDiagram extends React.PureComponent<Props, State> {
     this.setState({ glossDimensions: dimensions });
   }
 
+  onMouseEnterLabel(entityId: string) {
+    logger.log("debug", "mouse-enter-equation-diagram-label", {
+      equation: this.props.equation.id,
+      entityId,
+    });
+  }
+
+  onMouseLeaveLabel(entityId: string) {
+    logger.log("debug", "mouse-leave-equation-diagram-label", {
+      equation: this.props.equation.id,
+      entityId,
+    });
+  }
+
   onClickShowMore(entityId: string) {
     logger.log("debug", "clicked-equation-diagram-symbol-or-label", {
+      equation: this.props.equation.id,
       entityId,
     });
     this.props.handleShowMore(entityId);
@@ -255,7 +272,11 @@ class EquationDiagram extends React.PureComponent<Props, State> {
           const svgHeight = svgBounds.bottom - svgBounds.top;
 
           return (
-            <div className="equation-diagram__label-container">
+            <div
+              className="equation-diagram__label-container"
+              onMouseEnter={() => this.onMouseEnterLabel(l.feature.id)}
+              onMouseLeave={() => this.onMouseLeaveLabel(l.feature.id)}
+            >
               <svg
                 onClick={() => this.onClickShowMore(l.feature.id)}
                 style={{

@@ -8,6 +8,7 @@ import classNames from "classnames";
 import React from "react";
 import { getRemoteLogger } from "./logging";
 import { PdfjsFindQueryWidget } from "./PdfjsFindQueryWidget";
+import * as selectors from "./selectors";
 import { SymbolFilters } from "./state";
 import { SymbolFindQueryWidget } from "./SymbolFindQueryWidget";
 import TermFindQueryWidget from "./TermFindQueryWidget";
@@ -48,7 +49,24 @@ class FindBar extends React.PureComponent<Props> {
   }
 
   componentDidMount() {
-    logger.log("debug", "find-bar-show", { query: this.props.query });
+    const { mode, query } = this.props;
+    let queryInfo;
+    if (mode === "pdfjs-builtin-find") {
+      queryInfo = query;
+    } else if (mode === "symbol") {
+      const symbolQuery = query as SymbolFilters;
+      queryInfo = symbolQuery.all
+        .map((id) => symbolQuery.byId[id])
+        .filter((f) => f !== undefined)
+        .map((f) => f as SymbolFilter)
+        .map((f) => selectors.symbolLogData(f.symbol));
+    } else if (mode === "term") {
+      queryInfo = selectors.termLogData(query as Term);
+    }
+    logger.log("debug", "find-bar-show", {
+      mode,
+      query: queryInfo,
+    });
   }
 
   /*

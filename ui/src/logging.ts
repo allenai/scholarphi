@@ -77,10 +77,10 @@ class RemoteLogger {
   }
 
   private _prepareData(data: any) {
-    let dataWithContext: any = {};
-    if (this._context) {
-      dataWithContext._context = this._context;
-    }
+    const context = this._context || {};
+    context.clientTimestamp = new Date().getTime();
+    let dataWithContext = { _context: context };
+
     if (data) {
       const d = typeof data === "function" ? data() : data;
       dataWithContext = { ...dataWithContext, ...d };

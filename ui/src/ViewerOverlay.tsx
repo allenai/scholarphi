@@ -43,8 +43,8 @@ class ViewerOverlay extends React.PureComponent<Props> {
     this.onClick = this.onClick.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
     this.onSelectionChange = this.onSelectionChange.bind(this);
-    this.onScroll = this.onScroll.bind(this);
-    this._getScrollData = this._getScrollData.bind(this);
+    this.onViewportChanged = this.onViewportChanged.bind(this);
+    this._getViewportData = this._getViewportData.bind(this);
   }
 
   componentDidMount() {
@@ -65,7 +65,7 @@ class ViewerOverlay extends React.PureComponent<Props> {
   addEventListenersToViewer(pdfViewer: PDFViewer) {
     pdfViewer.container.addEventListener("click", this.onClick);
     pdfViewer.container.addEventListener("keyup", this.onKeyUp);
-    pdfViewer.container.addEventListener("scroll", this.onScroll);
+    pdfViewer.container.addEventListener("scroll", this.onViewportChanged);
     /*
      * To capture changes in the selection within the document, there is no option other than
      * to listen to changes within the entire document. The W3C standards offer no way of listening
@@ -73,13 +73,20 @@ class ViewerOverlay extends React.PureComponent<Props> {
      * https://w3c.github.io/selection-api/#user-interactions).
      */
     document.addEventListener("selectionchange", this.onSelectionChange);
+    /*
+     * Resize events are only fired on the window (not on individual elements). See
+     * https://developer.mozilla.org/en-US/docs/Web/API/Window/resize_event
+     */
+    window.addEventListener("resize", this.onViewportChanged);
   }
 
   removeEventListenersForViewer(pdfViewer: PDFViewer) {
     pdfViewer.container.removeEventListener("click", this.onClick);
     pdfViewer.container.removeEventListener("keyup", this.onKeyUp);
-    pdfViewer.container.removeEventListener("scroll", this.onScroll);
+    pdfViewer.container.removeEventListener("scroll", this.onViewportChanged);
+    pdfViewer.container.removeEventListener("resize", this.onViewportChanged);
     document.removeEventListener("selectionchange", this.onSelectionChange);
+    window.removeEventListener("resize", this.onViewportChanged);
   }
 
   onClick(event: MouseEvent) {
@@ -113,11 +120,11 @@ class ViewerOverlay extends React.PureComponent<Props> {
     }
   }
 
-  onScroll() {
-    logger.log("debug", "scroll", this._getScrollData, 500);
+  onViewportChanged() {
+    logger.log("debug", "paper-viewport-changed", this._getViewportData, 500);
   }
 
-  _getScrollData() {
+  _getViewportData() {
     const container = this.props.pdfViewer.container;
     const data: any = {
       container: uiUtils.getScrollCoordinates(container),

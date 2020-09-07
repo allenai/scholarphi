@@ -1,5 +1,5 @@
 import { Entities } from "../state";
-import { isTerm } from "../types/api";
+import { isTerm, Term } from "../types/api";
 import { orderByPosition } from "./entity";
 
 /**
@@ -17,4 +17,18 @@ export function matchingTerms(termIds: string[], entities: Entities) {
     .filter((t) => names.indexOf(t.attributes.name) !== -1)
     .map((t) => t.id);
   return orderByPosition(matchingTermIds, entities);
+}
+
+/**
+ * A summary of term data suitable for logging. This set of properties should
+ * be fast to compute (i.e., mostly of property accesses).
+ */
+export function termLogData(term: Term) {
+  return {
+    id: term.id,
+    name: term.attributes.name,
+    numDefinitions: term.attributes.definitions.length,
+    numUsages: term.attributes.snippets.length,
+    pages: term.attributes.bounding_boxes.map((b) => b.page),
+  };
 }

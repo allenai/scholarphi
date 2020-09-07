@@ -55,9 +55,14 @@ export class Drawer extends React.PureComponent<Props> {
 
   onScroll(event: React.UIEvent<HTMLDivElement>) {
     if (event.target instanceof HTMLDivElement) {
-      logger.log("debug", "scroll-drawer", {
-        scroll: uiUtils.getScrollCoordinates(event.target),
-      });
+      logger.log(
+        "debug",
+        "scroll-drawer",
+        {
+          scroll: uiUtils.getScrollCoordinates(event.target),
+        },
+        500
+      );
     }
   }
 

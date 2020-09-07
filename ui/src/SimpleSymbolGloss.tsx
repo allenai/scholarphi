@@ -44,13 +44,7 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
 
   componentDidMount() {
     logger.log("debug", "rendered-symbol-tooltip", {
-      symbol: this.props.symbol.id,
-      name: this.props.symbol.attributes.tex,
-      numDefinitions: this.props.symbol.attributes.definitions.length,
-      numFormulas: this.props.symbol.attributes.defining_formulas.length,
-      numUsages: this.props.symbol.attributes.snippets.length,
-      numChildren: this.props.symbol.relationships.children.length,
-      hasParent: this.props.symbol.relationships.parent.id !== null,
+      symbol: selectors.symbolLogData(this.props.symbol),
     });
   }
 

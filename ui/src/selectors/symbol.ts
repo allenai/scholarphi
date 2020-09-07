@@ -338,3 +338,21 @@ export function nearbyDefinition(
   }
   return null;
 }
+
+/**
+ * A summary of symbol data suitable for logging. This set of properties should
+ * be fast to compute, comprising mostly of property accesses.
+ */
+export function symbolLogData(symbol: Symbol) {
+  return {
+    id: symbol.id,
+    name: symbol.attributes.tex,
+    numNicknames: symbol.attributes.nicknames.length,
+    numDefinitions: symbol.attributes.definitions.length,
+    numFormulas: symbol.attributes.defining_formulas.length,
+    numUsages: symbol.attributes.snippets.length,
+    numChildren: symbol.relationships.children.length,
+    hasParent: symbol.relationships.parent.id !== null,
+    pages: symbol.attributes.bounding_boxes.map((b) => b.page),
+  };
+}
