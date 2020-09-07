@@ -144,15 +144,15 @@ const PRESETS: Preset[] = [
   },
   {
     key: "ta",
-    initialFocus: "94159",
-  },
-  {
-    key: "tb",
     initialFocus: "94247",
   },
   {
-    key: "tc",
+    key: "tb",
     initialFocus: "94110",
+  },
+  {
+    key: "tc",
+    initialFocus: "94159",
   },
 ];
 
