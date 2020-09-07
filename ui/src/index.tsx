@@ -53,7 +53,12 @@ if (params.preset instanceof Array) {
   presets = [params.preset];
 }
 
+let context: any = {};
+if (typeof params.p === "string") {
+  context.userId = params.p;
+}
+
 ReactDOM.render(
-  <ScholarReader paperId={paperId} presets={presets} />,
+  <ScholarReader paperId={paperId} presets={presets} context={context} />,
   document.querySelector("#scholar-reader")
 );

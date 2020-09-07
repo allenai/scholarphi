@@ -63,6 +63,7 @@ const logger = getRemoteLogger();
 interface Props {
   paperId?: PaperId;
   presets?: string[];
+  context?: any;
 }
 
 class ScholarReader extends React.PureComponent<Props, State> {
@@ -70,6 +71,8 @@ class ScholarReader extends React.PureComponent<Props, State> {
     super(props);
 
     const settings = getSettings(props.presets);
+    const logger = getRemoteLogger();
+    logger.setContext({ ...props.context, presets: props.presets });
 
     this.state = {
       entities: null,

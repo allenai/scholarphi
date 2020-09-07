@@ -14,13 +14,25 @@ class RemoteLogger {
     this._username = username;
   }
 
+  setContext(context?: any) {
+    this._context = context;
+  }
+
   async log(level: LogLevel, eventType?: any, data?: any) {
+    let dataWithContext: any = {};
+    if (this._context) {
+      dataWithContext._context = this._context;
+    }
+    if (data) {
+      dataWithContext = { ...dataWithContext, ...data };
+    }
+
     return axios
       .post("/api/log", {
         username: this._username,
         level,
         event_type: eventType,
-        data,
+        data: dataWithContext,
       } as LogEntryCreatePayload)
       .catch((e) => {
         if (!this._receivedPostError) {
@@ -39,6 +51,7 @@ class RemoteLogger {
 
   private _username: string | null = null;
   private _receivedPostError: boolean = false;
+  private _context: any;
 }
 
 const remoteLoggerInstance = new RemoteLogger();
