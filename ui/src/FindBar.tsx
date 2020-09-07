@@ -47,6 +47,10 @@ class FindBar extends React.PureComponent<Props> {
     this.close = this.close.bind(this);
   }
 
+  componentDidMount() {
+    logger.log("debug", "find-bar-show", { query: this.props.query });
+  }
+
   /*
    * The code for creating the match count message is based on 'PDFFindBar.updateResultsCount' in pdf.js:
    * https://github.com/mozilla/pdf.js/blob/49f59eb627646ae9a6e166ee2e0ef2cac9390b4f/web/pdf_find_bar.js#L152
@@ -146,12 +150,14 @@ class FindBar extends React.PureComponent<Props> {
       previousButton !== null &&
       (event.key === "ArrowLeft" || (event.shiftKey && event.key === "Enter"))
     ) {
+      logger.log("debug", "find-previous-triggered-by-keypress");
       uiUtils.simulateMaterialUiButtonClick(previousButton);
       event.stopPropagation();
     } else if (
       nextButton !== null &&
       (event.key === "ArrowRight" || event.key === "Enter")
     ) {
+      logger.log("debug", "find-next-triggered-by-keypress");
       uiUtils.simulateMaterialUiButtonClick(nextButton);
       event.stopPropagation();
     }

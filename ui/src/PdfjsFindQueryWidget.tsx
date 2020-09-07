@@ -2,11 +2,14 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import TextField from "@material-ui/core/TextField";
 import React from "react";
+import { getRemoteLogger } from "./logging";
 import {
   EventBus,
   PdfJsFindControllerState,
   PDFViewerApplication,
 } from "./types/pdfjs-viewer";
+
+const logger = getRemoteLogger();
 
 interface Props {
   query: string | null;
@@ -122,12 +125,19 @@ export class PdfjsFindQueryWidget extends React.PureComponent<Props, State> {
     if (this.inputElement === null) {
       return;
     }
+    logger.log("debug", "find-text-query-changed", {
+      previous: this.props.query,
+      next: this.inputElement.value,
+    });
     const query =
       this.inputElement.value === "" ? null : this.inputElement.value;
     this.props.onQueryChanged(query);
   }
 
   onMatchCaseChange(event: React.ChangeEvent<HTMLInputElement>) {
+    logger.log("debug", "find-text-match-case-toggled", {
+      checked: event.target.checked,
+    });
     this.setState({ matchCase: event.target.checked });
   }
 

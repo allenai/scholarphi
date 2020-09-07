@@ -72,7 +72,13 @@ class ScholarReader extends React.PureComponent<Props, State> {
 
     const settings = getSettings(props.presets);
     const logger = getRemoteLogger();
-    logger.setContext({ ...props.context, presets: props.presets });
+    const loggingContext: any = { ...props.context };
+    if (props.presets) {
+      loggingContext.presets = props.presets;
+    }
+    if (props.paperId) {
+      loggingContext.paperId = props.paperId;
+    }
 
     this.state = {
       entities: null,
@@ -629,10 +635,15 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   setFindMatchCount(findMatchCount: number | null) {
+    logger.log("debug", "find-match-count-updated", { count: findMatchCount });
     this.setState({ findMatchCount });
   }
 
   setFindMatchIndex(findMatchIndex: number | null) {
+    logger.log("debug", "find-match-index-updated", {
+      index: findMatchIndex,
+      count: this.state.findMatchCount,
+    });
     this.setState((state) => {
       if (
         (state.findMode === "symbol" || state.findMode === "term") &&
