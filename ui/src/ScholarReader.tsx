@@ -292,6 +292,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
         const matching = selectors.matchingTerms(termIds, prevEntities);
         const matchCount = matching.length;
         const matchIndex = matching.indexOf(entityId);
+        logger.log("debug", "starting-term-search", { matchIndex, matchCount });
         return {
           selectedEntityIds,
           selectedAnnotationIds,
@@ -315,6 +316,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       const matching = matchingSymbols(symbolIds, prevEntities);
       const matchCount = matching.length;
       const matchIndex = matching.indexOf(entityId);
+      logger.log("debug", "starting-symbol-search", { matchIndex, matchCount });
       return {
         selectedEntityIds,
         selectedAnnotationIds,
@@ -719,6 +721,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
 
   async componentDidMount() {
     waitForPDFViewerInitialization().then((application) => {
+      logger.log("debug", "application-loaded");
       /*
        * Tell pdf.js not to use default find functionality, but instead to forward find events
        * to external services. The events are intercepted in 'FindBar'.
