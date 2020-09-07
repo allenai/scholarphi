@@ -9,6 +9,7 @@
 
   .entity-link-message {
     text-align: center;
+    margin-bottom: @padding * 2;
   }
 }
 
@@ -48,6 +49,13 @@
   border-radius: @border-radius;
   padding: @padding;
   overflow: hidden;
+  font-size: @medium;
+  /*
+   * Give lines in snippets a bit of breathing room, as usages frequently
+   * inline equations that will make lines taller. By increasing the line
+   * height, the line spacing of snippets looks more consistent.
+   */
+  line-height: 1.5em;
 }
 
 /*
