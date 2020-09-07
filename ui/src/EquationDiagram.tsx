@@ -219,22 +219,19 @@ class EquationDiagram extends React.PureComponent<Props, State> {
     const bottomFeatures = featureGroups.second;
 
     const BOUNDARY_MARGIN = 30;
-    const LABEL_PADDING = 6;
     const topLabels = createLabels(
       topFeatures,
       glossDimensions,
       drawingArea,
       "above",
-      BOUNDARY_MARGIN,
-      LABEL_PADDING
+      BOUNDARY_MARGIN
     );
     const bottomLabels = createLabels(
       bottomFeatures,
       glossDimensions,
       drawingArea,
       "below",
-      BOUNDARY_MARGIN,
-      LABEL_PADDING
+      BOUNDARY_MARGIN
     );
 
     const labels = [...topLabels, ...bottomLabels];
@@ -359,8 +356,7 @@ function createLabels(
   textDimensions: { [text: string]: Dimensions },
   drawingArea: Rectangle,
   where: Side,
-  boundaryMargin?: number | undefined,
-  labelPadding?: number | undefined
+  boundaryMargin?: number | undefined
 ): Label[] {
   /*
    * Horizontally position the nodes using Labella.js' force-directed layout algorithm. Set
@@ -382,8 +378,7 @@ function createLabels(
       where === "above"
         ? drawingArea.top - (boundaryMargin || 0) - height
         : drawingArea.top + drawingArea.height + (boundaryMargin || 0);
-    const labelWidth = width + (labelPadding || 0) * 2;
-    return new Labella.Node(idealX, labelWidth, { feature, y, height });
+    return new Labella.Node(idealX, width, { feature, y, height });
   });
   const force = new Labella.Force({
     algorithm: "none",
@@ -424,7 +419,7 @@ function createLeader(label: Label, featureMargin?: number) {
    * The leader leaves the label from .
    */
   const featureCenterX = feature.left + feature.width / 2;
-  const PORT_PADDING = 2;
+  const PORT_PADDING = 10;
 
   let portX;
   if (
