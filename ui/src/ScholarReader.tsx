@@ -325,6 +325,15 @@ class ScholarReader extends React.PureComponent<Props, State> {
   clearEntitySelection() {
     logger.log("debug", "clear-entity-selection");
 
+    /*
+     * If interaction with entities is currently turned off, then nothing was selected in the
+     * first place. Don't change the state, incase the selected annotation list or the jump
+     * target contains important highlights that shouldn't be dismissed.
+     */
+    if (!this.state.annotationInteractionEnabled) {
+      return;
+    }
+
     if (this.state.findMode === "symbol" || this.state.findMode === "term") {
       this.closeFindBar();
     }
@@ -1111,44 +1120,46 @@ class ScholarReader extends React.PureComponent<Props, State> {
                       />
                     ) : null}
                     {/* Interactive annotations on entities. */}
-                    {this.state.annotationsEnabled &&
-                      this.state.entities !== null && (
-                        <EntityAnnotationLayer
-                          paperId={this.props.paperId}
-                          pageView={pageView}
-                          papers={this.state.papers}
-                          entities={entities}
-                          userLibrary={this.state.userLibrary}
-                          selectedEntityIds={selectedEntityIds}
-                          selectedAnnotationIds={selectedAnnotationIds}
-                          selectedAnnotationSpanIds={selectedAnnotationSpanIds}
-                          findMatchedEntityIds={findMatchedEntityIds}
-                          findSelectionEntityId={findSelectionEntityId}
-                          jumpTarget={jumpTarget}
-                          showAnnotations={this.state.annotationHintsEnabled}
-                          showGlosses={this.state.glossesEnabled}
-                          citationAnnotationsEnabled={
-                            this.state.citationGlossesEnabled
-                          }
-                          glossStyle={this.state.glossStyle}
-                          glossEvaluationEnabled={
-                            this.state.glossEvaluationEnabled
-                          }
-                          equationDiagramsEnabled={
-                            this.state.equationDiagramsEnabled
-                          }
-                          copySentenceOnClick={
-                            this.state.sentenceTexCopyOnOptionClickEnabled
-                          }
-                          handleSelectEntityAnnotation={
-                            this.selectEntityAnnotation
-                          }
-                          handleShowSnackbarMessage={this.showSnackbarMessage}
-                          handleAddPaperToLibrary={this.addToLibrary}
-                          handleJumpToEntity={this.jumpToEntityWithBackMessage}
-                          handleOpenDrawer={this.openDrawer}
-                        />
-                      )}
+                    {this.state.entities !== null && (
+                      <EntityAnnotationLayer
+                        paperId={this.props.paperId}
+                        pageView={pageView}
+                        papers={this.state.papers}
+                        entities={entities}
+                        userLibrary={this.state.userLibrary}
+                        selectedEntityIds={selectedEntityIds}
+                        selectedAnnotationIds={selectedAnnotationIds}
+                        selectedAnnotationSpanIds={selectedAnnotationSpanIds}
+                        findMatchedEntityIds={findMatchedEntityIds}
+                        findSelectionEntityId={findSelectionEntityId}
+                        jumpTarget={jumpTarget}
+                        showAnnotations={this.state.annotationHintsEnabled}
+                        annotationInteractionEnabled={
+                          this.state.annotationInteractionEnabled
+                        }
+                        showGlosses={this.state.glossesEnabled}
+                        citationAnnotationsEnabled={
+                          this.state.citationGlossesEnabled
+                        }
+                        glossStyle={this.state.glossStyle}
+                        glossEvaluationEnabled={
+                          this.state.glossEvaluationEnabled
+                        }
+                        equationDiagramsEnabled={
+                          this.state.equationDiagramsEnabled
+                        }
+                        copySentenceOnClick={
+                          this.state.sentenceTexCopyOnOptionClickEnabled
+                        }
+                        handleSelectEntityAnnotation={
+                          this.selectEntityAnnotation
+                        }
+                        handleShowSnackbarMessage={this.showSnackbarMessage}
+                        handleAddPaperToLibrary={this.addToLibrary}
+                        handleJumpToEntity={this.jumpToEntityWithBackMessage}
+                        handleOpenDrawer={this.openDrawer}
+                      />
+                    )}
                     {/* Equation diagram overlays. */}
                     {this.state.equationDiagramsEnabled &&
                       selectedEntityIds

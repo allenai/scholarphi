@@ -17,7 +17,7 @@ export interface Settings {
   /**
    * Make entities (like symbols and terms) clickable.
    */
-  annotationsEnabled: boolean;
+  annotationInteractionEnabled: boolean;
   /**
    * When the paper first loads, automatically scroll the the entity with this ID.
    */
@@ -101,21 +101,11 @@ const PRESETS: Preset[] = [
    */
   {
     key: "ca",
-    annotationsEnabled: false,
+    annotationHintsEnabled: false,
+    annotationInteractionEnabled: false,
     primerPageEnabled: false,
     equationDiagramsEnabled: false,
     glossesEnabled: false,
-    declutterEnabled: false,
-  },
-  /*
-   * Show glosses, not declutter.
-   */
-  {
-    key: "cb",
-    annotationsEnabled: true,
-    primerPageEnabled: true,
-    glossesEnabled: true,
-    equationDiagramsEnabled: true,
     declutterEnabled: false,
   },
   /*
@@ -123,18 +113,18 @@ const PRESETS: Preset[] = [
    */
   {
     key: "cc",
-    annotationsEnabled: true,
+    annotationInteractionEnabled: true,
     primerPageEnabled: false,
     glossesEnabled: false,
     equationDiagramsEnabled: false,
     declutterEnabled: true,
   },
   /*
-   * Enable both declutter and glosses.
+   * Enable all of the interactive features.
    */
   {
     key: "cd",
-    annotationsEnabled: true,
+    annotationInteractionEnabled: true,
     primerPageEnabled: true,
     glossesEnabled: true,
     equationDiagramsEnabled: true,
@@ -142,30 +132,27 @@ const PRESETS: Preset[] = [
   },
   {
     key: "focused-reading",
+    annotationInteractionEnabled: true,
+    primerPageEnabled: true,
+    glossesEnabled: true,
+    equationDiagramsEnabled: true,
+    declutterEnabled: true,
+  },
+  {
+    key: "tp",
+    initialFocus: "94185",
   },
   {
     key: "ta",
-    initialFocus: "94211",
+    initialFocus: "94159",
   },
   {
     key: "tb",
-    initialFocus: "94180",
-  },
-  {
-    key: "tc",
     initialFocus: "94247",
   },
   {
-    key: "td",
-    initialFocus: "94351",
-  },
-  {
-    key: "te",
+    key: "tc",
     initialFocus: "94110",
-  },
-  {
-    key: "tf",
-    initialFocus: "94159",
   },
 ];
 
@@ -175,7 +162,7 @@ const PRESETS: Preset[] = [
 export function getSettings(presets?: string[]) {
   const DEFAULT_SETTINGS: Settings = {
     primerPageEnabled: true,
-    annotationsEnabled: true,
+    annotationInteractionEnabled: true,
     annotationHintsEnabled: true,
     glossesEnabled: true,
     initialFocus: null,

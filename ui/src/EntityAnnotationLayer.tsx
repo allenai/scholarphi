@@ -32,6 +32,7 @@ interface Props {
   findSelectionEntityId: string | null;
   jumpTarget: string | null;
   showAnnotations: boolean;
+  annotationInteractionEnabled: boolean;
   showGlosses: boolean;
   glossStyle: GlossStyle;
   glossEvaluationEnabled: boolean;
@@ -160,6 +161,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
       findSelectionEntityId,
       jumpTarget,
       showAnnotations,
+      annotationInteractionEnabled,
       showGlosses,
       glossStyle,
       glossEvaluationEnabled,
@@ -242,6 +244,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 }
                 selected={isSelected}
                 selectedSpanIds={selectedSpanIds}
+                active={annotationInteractionEnabled}
                 isFindSelection={isFindSelection}
                 isFindMatch={isMatch}
                 handleSelect={handleSelectEntityAnnotation}
@@ -276,6 +279,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                   ) : null
                 }
                 selected={isSelected}
+                active={annotationInteractionEnabled}
                 selectedSpanIds={selectedSpanIds}
                 handleSelect={handleSelectEntityAnnotation}
               />
@@ -290,7 +294,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 entity={entity}
                 underline={showAnnotations}
                 selected={isSelected}
-                active={!isSelected}
+                active={annotationInteractionEnabled && !isSelected}
                 selectedSpanIds={selectedSpanIds}
                 handleSelect={this.props.handleSelectEntityAnnotation}
               />
@@ -360,7 +364,9 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
              * it doesn't have any children to be selected.
              */
             const active =
-              (isSelectable && !isSelectionAncestor) || (isLeaf && isSelected);
+              annotationInteractionEnabled &&
+              ((isSelectable && !isSelectionAncestor) ||
+                (isLeaf && isSelected));
 
             return (
               <EntityAnnotation
@@ -416,7 +422,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 id={annotationId}
                 pageView={pageView}
                 entity={entity}
-                active={copySentenceOnClick}
+                active={annotationInteractionEnabled && copySentenceOnClick}
                 underline={false}
                 selected={false}
                 selectedSpanIds={null}
