@@ -279,6 +279,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
           selectedEntityIds,
           selectedAnnotationIds,
           selectedAnnotationSpanIds,
+          jumpTarget: null,
         } as State;
       }
 
@@ -304,6 +305,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
           findMatchCount: matchCount,
           findMatchIndex: matchIndex,
           findMatchedEntities: matching,
+          jumpTarget: null,
         } as State;
       }
 
@@ -336,6 +338,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
         findMatchCount: matchCount,
         findMatchIndex: matchIndex,
         findMatchedEntities: matching,
+        jumpTarget: null,
       } as State;
     });
   }
