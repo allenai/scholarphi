@@ -32,7 +32,7 @@ class EquationDiagramGloss extends React.PureComponent<Props> {
         id={this.props.id}
         className={classNames(
           this.props.className,
-          "scholar-reader-tooltip tooltip"
+          "scholar-reader-tooltip tooltip equation-diagram-tooltip"
         )}
         style={{
           position: "absolute",

@@ -409,7 +409,11 @@ function createLabels(
  * "On the readability of leaders in boundary labeling", 2019. Returns a set of points,
  * which can be turned into an SVG path with 'svgPath'.
  */
-function createLeader(label: Label, featureMargin?: number) {
+function createLeader(
+  label: Label,
+  featureMargin?: number,
+  style?: "orthogonal" | "diagonal"
+) {
   const feature = label.feature.location;
   const { where } = label;
 
@@ -426,7 +430,7 @@ function createLeader(label: Label, featureMargin?: number) {
     featureCenterX > label.left &&
     featureCenterX < label.left + label.width
   ) {
-    portX = feature.left + feature.width / 2;
+    portX = featureCenterX;
   } else if (feature.left > label.left + label.width) {
     portX = label.left + label.width - PORT_PADDING;
   } else {
@@ -439,18 +443,20 @@ function createLeader(label: Label, featureMargin?: number) {
 
   /*
    * The leader connects to the feature at a site. The site is chosen in a way
-   * that the leader will not pass through the feature. If possible, the leader will be purely
-   * vertical; otherwise, if the label doesn't align with the feature, the label will connect
-   * on the side of the feature.
+   * that the leader will not pass through the feature.
+   *
+   * For orthogonal leaders, the leader will be purely vertical whenever, and
+   * otherwise will connect on the side of the feature. Dialgonal leaders will
+   * always connect to the top or bottom of the feature.
    */
-  let site;
-  if (port.x < feature.left) {
+  let site: { x: number; y: number; side: "left" | "right" | "top" | "bottom" };
+  if (style === "orthogonal" && port.x < feature.left) {
     site = {
       x: feature.left - featureMargin,
       y: feature.top + feature.height / 2,
       side: "left",
     };
-  } else if (port.x > feature.left + feature.width) {
+  } else if (style === "orthogonal" && port.x > feature.left + feature.width) {
     site = {
       x: feature.left + feature.width + featureMargin,
       y: feature.top + feature.height / 2,
@@ -493,7 +499,12 @@ function createLeader(label: Label, featureMargin?: number) {
     ];
   }
 
-  return [port, midpoint, site, ...featureEdge];
+  const path = [port];
+  if (style === "orthogonal") {
+    path.push(midpoint);
+  }
+  path.push(...[site, ...featureEdge]);
+  return path;
 }
 
 function svgPath(points: Point[]) {
