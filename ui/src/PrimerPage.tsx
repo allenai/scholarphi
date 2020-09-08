@@ -200,7 +200,7 @@ class PrimerPage extends React.PureComponent<Props> {
                   </p>
                   <div className="primer-page__glossary">
                     <ul>
-                      {glossarySymbols(entities)
+                      {symbols
                         .filter(
                           (s) =>
                             s.attributes.definitions.length > 0 ||
@@ -237,9 +237,7 @@ function glossarySymbols(entities: Entities) {
     .filter(isSymbol)
     .filter(
       (s) =>
-        s.attributes.nicknames.length > 0 ||
-        s.attributes.definitions.length > 0 ||
-        s.attributes.defining_formulas.length > 0
+        s.attributes.nicknames.length > 0 || s.attributes.definitions.length > 0
     )
     .filter((s) => s.attributes.tex !== null)
     .forEach((s) => {
