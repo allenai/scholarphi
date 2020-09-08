@@ -37,6 +37,7 @@ interface Props {
   glossStyle: GlossStyle;
   glossEvaluationEnabled: boolean;
   citationAnnotationsEnabled: boolean;
+  termAnnotationsEnabled: boolean;
   equationDiagramsEnabled: boolean;
   copySentenceOnClick: boolean;
   handleSelectEntityAnnotation: (
@@ -166,6 +167,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
       glossStyle,
       glossEvaluationEnabled,
       citationAnnotationsEnabled,
+      termAnnotationsEnabled,
       copySentenceOnClick,
       handleAddPaperToLibrary,
       handleSelectEntityAnnotation,
@@ -213,10 +215,11 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
           const hasDefinition = selectors.hasDefinition(entityId, entities);
 
           if (
+            termAnnotationsEnabled &&
             isTerm(entity) &&
             entity.attributes.term_type !== "symbol" &&
-            entity.attributes.name !== null &&
-            entity.attributes.name.indexOf("SKIP") === -1 &&
+            // entity.attributes.name !== null &&
+            // entity.attributes.name.indexOf("SKIP") === -1 &&
             !(
               entity.attributes.term_type !== null &&
               entity.attributes.term_type.toLowerCase() === "ignore"

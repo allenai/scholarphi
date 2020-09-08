@@ -1051,7 +1051,11 @@ class ScholarReader extends React.PureComponent<Props, State> {
             pdfViewer={this.state.pdfViewer}
             pages={this.state.pages}
             entities={this.state.entities}
+            annotationHintsEnabled={this.state.annotationHintsEnabled}
+            termGlossesEnabled={this.state.termGlossesEnabled}
+            showInstructions={this.state.primerInstructionsEnabled}
             scrollToPageOnLoad={this.state.initialFocus === null}
+            handleSetAnnotationHintsEnabled={this.setAnnotationHintsEnabled}
           />
         ) : null}
         {
@@ -1175,6 +1179,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                         citationAnnotationsEnabled={
                           this.state.citationGlossesEnabled
                         }
+                        termAnnotationsEnabled={this.state.termGlossesEnabled}
                         glossStyle={this.state.glossStyle}
                         glossEvaluationEnabled={
                           this.state.glossEvaluationEnabled

@@ -11,6 +11,10 @@ export interface Settings {
    */
   primerPageEnabled: boolean;
   /**
+   * Show instructions in the primer describing how to use the tool.
+   */
+  primerInstructionsEnabled: boolean;
+  /**
    * Style annotations to show hints that they're there (e.g., underlines).
    */
   annotationHintsEnabled: boolean;
@@ -30,6 +34,10 @@ export interface Settings {
    * Show glosses for citations containing paper summary information.
    */
   citationGlossesEnabled: boolean;
+  /**
+   * Show glosses for terms.
+   */
+  termGlossesEnabled: boolean;
   /**
    * Start a within-paper symbol search when a symbol is selected.
    */
@@ -92,8 +100,16 @@ interface Preset extends Partial<Settings> {
  */
 const PRESETS: Preset[] = [
   {
+    key: "sab",
+    termGlossesEnabled: false,
+    citationGlossesEnabled: true,
+    primerInstructionsEnabled: true,
+  },
+  {
     key: "study",
+    primerInstructionsEnabled: false,
     citationGlossesEnabled: false,
+    termGlossesEnabled: true,
     useDefinitionsForDiagramLabels: true,
   },
   /*
@@ -162,6 +178,7 @@ const PRESETS: Preset[] = [
 export function getSettings(presets?: string[]) {
   const DEFAULT_SETTINGS: Settings = {
     primerPageEnabled: true,
+    primerInstructionsEnabled: true,
     annotationInteractionEnabled: true,
     annotationHintsEnabled: true,
     glossesEnabled: true,
@@ -169,6 +186,7 @@ export function getSettings(presets?: string[]) {
     glossStyle: "tooltip",
     textSelectionMenuEnabled: false,
     citationGlossesEnabled: true,
+    termGlossesEnabled: true,
     symbolSearchEnabled: true,
     declutterEnabled: true,
     definitionPreviewEnabled: false,
