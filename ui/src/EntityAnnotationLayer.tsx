@@ -19,6 +19,8 @@ import {
 import { PDFPageView } from "./types/pdfjs-viewer";
 import * as uiUtils from "./utils/ui";
 
+export type SymbolUnderlineMethod = "top-level-symbols" | "defined-symbols";
+
 interface Props {
   paperId?: PaperId;
   pageView: PDFPageView;
@@ -38,6 +40,7 @@ interface Props {
   glossEvaluationEnabled: boolean;
   citationAnnotationsEnabled: boolean;
   termAnnotationsEnabled: boolean;
+  symbolUnderlineMethod: SymbolUnderlineMethod;
   equationDiagramsEnabled: boolean;
   copySentenceOnClick: boolean;
   handleSelectEntityAnnotation: (
@@ -167,7 +170,9 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
       glossStyle,
       glossEvaluationEnabled,
       citationAnnotationsEnabled,
+      symbolUnderlineMethod,
       termAnnotationsEnabled,
+      equationDiagramsEnabled,
       copySentenceOnClick,
       handleAddPaperToLibrary,
       handleSelectEntityAnnotation,
@@ -336,11 +341,19 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
               (isTopLevel &&
                 (equationId === null || !this.shouldShowEquation(equationId)));
 
-            let underline =
-              showAnnotations &&
-              selectors.shouldUnderline(entityId, entities) &&
-              !(equationId !== null && this.shouldShowEquation(equationId)) &&
-              !inSelectedEquation;
+            let underline = false;
+            if (showAnnotations) {
+              if (
+                (equationId !== null && this.shouldShowEquation(equationId)) ||
+                (equationDiagramsEnabled && inSelectedEquation)
+              ) {
+                underline = false;
+              } else if (symbolUnderlineMethod === "top-level-symbols") {
+                underline = isSelectable;
+              } else if (symbolUnderlineMethod === "defined-symbols") {
+                underline = selectors.shouldUnderline(entityId, entities);
+              }
+            }
 
             /*
              * Show a more prominent selection hint than an underline when the symbol is

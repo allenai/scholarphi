@@ -1,3 +1,5 @@
+import { SymbolUnderlineMethod } from "./EntityAnnotationLayer";
+
 /**
  * Configurable app-wide settings. Whenever an experimental feature is added that should be
  * possible to toggle on / off (either during development, or when sharing a prototype with
@@ -38,6 +40,11 @@ export interface Settings {
    * Show glosses for terms.
    */
   termGlossesEnabled: boolean;
+  /**
+   * How to determine whether to underline a symbol. For example, underlines can be placed
+   * underneath all symbols with a definition, or under all top-level symbols.
+   */
+  symbolUnderlineMethod: SymbolUnderlineMethod;
   /**
    * Start a within-paper symbol search when a symbol is selected.
    */
@@ -103,13 +110,20 @@ const PRESETS: Preset[] = [
     key: "sab",
     termGlossesEnabled: false,
     citationGlossesEnabled: true,
+    symbolUnderlineMethod: "defined-symbols",
     primerInstructionsEnabled: true,
+  },
+  {
+    key: "sab-lite",
+    symbolUnderlineMethod: "top-level-symbols",
+    equationDiagramsEnabled: false,
   },
   {
     key: "study",
     primerInstructionsEnabled: false,
     citationGlossesEnabled: false,
     termGlossesEnabled: true,
+    symbolUnderlineMethod: "defined-symbols",
     useDefinitionsForDiagramLabels: true,
   },
   /*
@@ -187,6 +201,7 @@ export function getSettings(presets?: string[]) {
     textSelectionMenuEnabled: false,
     citationGlossesEnabled: true,
     termGlossesEnabled: true,
+    symbolUnderlineMethod: "defined-symbols",
     symbolSearchEnabled: true,
     declutterEnabled: true,
     definitionPreviewEnabled: false,

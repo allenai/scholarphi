@@ -1180,6 +1180,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
                           this.state.citationGlossesEnabled
                         }
                         termAnnotationsEnabled={this.state.termGlossesEnabled}
+                        symbolUnderlineMethod={this.state.symbolUnderlineMethod}
                         glossStyle={this.state.glossStyle}
                         glossEvaluationEnabled={
                           this.state.glossEvaluationEnabled
