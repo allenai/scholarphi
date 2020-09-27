@@ -2,13 +2,14 @@ import logging
 import os.path
 import re
 import pickle as pkl
+import urllib
 from argparse import ArgumentParser
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, Dict, Iterator, List, Optional, Union, cast
 
 from tqdm import tqdm
-
+import pdb
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
 from common.parse_tex import PhraseExtractor, get_containing_entity, overlaps
@@ -55,7 +56,7 @@ class TermDefinitionPair:
 def get_token_character_ranges(text: str, tokens: List[str]) -> List[CharacterRange]:
     """
     Extract start and end charcter positions for each token in featurized tokens
-    """
+    """    
     ranges = []
     current_position = 0
     for token in tokens:
@@ -66,7 +67,7 @@ def get_token_character_ranges(text: str, tokens: List[str]) -> List[CharacterRa
                 current_position + start_index + len(token) - 1,
             )
         )
-        current_position += len(token)
+        current_position += (len(token) + start_index)
     return ranges
 
 
@@ -216,18 +217,25 @@ def get_term_definition_pairs(
 
 
 
+    return pairs
+
+def get_symbol_nickname_pairs(text: str, featurized_text: Dict[Any, Any], symbol_texs : Dict[Any, Any]):
+
     # Check whether a symbol's definition is nickname of the symbol or not
     # using heuristic rules below, although they are not pefect for some cases.
     #  a/DT particular/JJ transcript/NN SYMBOL/NN
     #  the/DT self-interaction/JJ term/JJ SYMBOL/NN
     #  the/DT main/JJ effect/NN of/NN feature/JJ SYMBOL/JJ
 
-    # Union set of POS tags in nicknames. Feel free to add more if you have new patterns.
+    # Union set of POS tags in nicknames. Feel free to add more if you have new patterns
+    ranges = get_token_character_ranges(text, featurized_text["tokens"])
+    pairs = []
     UNION_POS_SET = ["DT", "JJ", "NN", "NNS", "NNP", "NNPS"]
-
     if 'SYMBOL' in text:
         previous_symbol_nickname_pairs = []
         for tidx, (token,pos,np,range_) in enumerate(zip(featurized_text['tokens'], featurized_text['pos'],featurized_text['np'],ranges)):
+            if 'So, the role label scores ' in text:
+                print(f'token = {token, pos, range_.start}')
             if token == 'SYMBOL':
                 # extract a phrase that includes POS tags in the union set.
                 # we assume that nicknames only appear ahead SYMBOL.
@@ -256,9 +264,54 @@ def get_term_definition_pairs(
                         (symbol_idx,symbol_range,
                          nickname_idxs, nickname_ranges))
 
+            if (token == 'SYMBOLth'):
+                next_pos_idxs = []
+                next_pos_tags = []
+                next_pos_ranges = []
+                current_idx = tidx + 1
+                # Search ahead until the POS tag is not in the union set
+                while featurized_text["pos"][current_idx] in UNION_POS_SET:
+                    next_pos_idxs.append(current_idx)
+                    next_pos_ranges.append(ranges[current_idx])
+                    next_pos_tags.append(featurized_text['pos'][current_idx])
+                    current_idx += 1
+                
+                if len(next_pos_idxs) > 0 :
+                    symbol_idx = tidx
+                    symbol_range = range_
+                    nickname_idxs = next_pos_idxs
+                    nickname_ranges = [npr for npr in next_pos_ranges]
+                    previous_symbol_nickname_pairs.append(
+                        (symbol_idx,symbol_range,
+                        nickname_idxs, nickname_ranges))
+                    
+            if range_.start in symbol_texs:
+                print('reached here',symbol_texs[range_.start])
+                if (token == 'SYMBOL' and len(symbol_texs[range_.start])==1):
+                    print('aaaand reached here')
 
+                    next_pos_idxs = []
+                    next_pos_tags = []
+                    next_pos_ranges = []
+                    current_idx = tidx + 1
+                    # Search ahead until the POS tag is not in the union set
+                    while featurized_text["pos"][current_idx] in UNION_POS_SET:
+                        next_pos_idxs.append(current_idx)
+                        next_pos_ranges.append(ranges[current_idx])
+                        next_pos_tags.append(featurized_text['pos'][current_idx])
+                        current_idx += 1
+                    
+                    if len(next_pos_idxs) > 0 :
+                        symbol_idx = tidx
+                        symbol_range = range_
+                        nickname_idxs = next_pos_idxs
+                        nickname_ranges = [npr for npr in next_pos_ranges]
+                        previous_symbol_nickname_pairs.append(
+                            (symbol_idx,symbol_range,
+                            nickname_idxs, nickname_ranges))
+            
         for symbol_idx,symbol_range, nickname_idxs, nickname_ranges in previous_symbol_nickname_pairs:
-            logging.debug("Detected nicknames", symbol_idx, symbol_range, [featurized_text['tokens'][idx] for idx in nickname_idxs], nickname_ranges)
+            # logging.debug("Detected nicknames", symbol_idx, symbol_range, [featurized_text['tokens'][idx] for idx in nickname_idxs], nickname_ranges)
 
             symbol_start = symbol_range.start
             symbol_end = symbol_range.end+1
@@ -448,7 +501,7 @@ class DetectDefinitions(
         cross_term_dict = pkl.load(open('cache/cross_doc_model/term_dictionary_use_raw_math=True.pkl','rb'))
 
         # Currently, we are using terms in ACL papers only.
-        logging.debug('Total number of terms in cross-doc term dictionary', len(cross_term_dict))
+        logging.debug('Total number of terms in cross-doc term dictionary : %d', len(cross_term_dict))
 
 
         # Load the pre-trained definition detection model.
@@ -479,6 +532,7 @@ class DetectDefinitions(
                 features.append(featurized_text)
                 sentences.append(sentence)
 
+
                 # Process sentences in batches.
                 if len(features) >= self.args.batch_size or si == num_sentences - 1:
 
@@ -491,26 +545,36 @@ class DetectDefinitions(
                     for s, sentence_features, intent, sentence_slots, sentence_slots_conf in zip(
                         sentences, features, intents, slots, slots_conf
                     ):
-                        # Only process slots when they includ both 'TERM' and 'DEFINITION'.
-                        if "TERM" not in sentence_slots or "DEF" not in sentence_slots:
-                            continue
-
-                        # Package extracted terms and definitions into a representation that's
-                        # easier to process.
-                        pairs = get_term_definition_pairs(
-                            s.legacy_definition_input,
-                            sentence_features,
-                            sentence_slots,
-                            sentence_slots_conf,
-                            model.nlp
-                        )
-
-
                         # Extract TeX for each symbol from a parallel representation of the
                         # sentence, so that the TeX for symbols can be saved.
                         symbol_texs = get_symbol_texs(
                             s.legacy_definition_input, s.with_equation_tex
                         )
+
+                        symbol_nickname_pairs = get_symbol_nickname_pairs(
+                            s.legacy_definition_input, sentence_features, symbol_texs
+                        )
+                        
+                        
+                        # Only process slots when they includ both 'TERM' and 'DEFINITION'.
+                        if "TERM" not in sentence_slots or "DEF" not in sentence_slots:
+                            term_definition_pairs = []
+                        else:
+                            term_definition_pairs = get_term_definition_pairs(
+                                s.legacy_definition_input,
+                                sentence_features,
+                                sentence_slots,
+                                sentence_slots_conf,
+                                model.nlp
+                            )
+
+
+                        # Package extracted terms and definitions into a representation that's
+                        # easier to process.
+                        
+                        pairs = term_definition_pairs + symbol_nickname_pairs
+
+                        
 
                         for pair in pairs:
 
@@ -596,7 +660,7 @@ class DetectDefinitions(
                             # and decide whether it is protologism or not
                             if definiendum_type == 'term':
                                 if not definiendum_text in cross_term_dict and definiendum_text != 'CITATION':
-                                    logging.debug('Protologism detected', definiendum_text )
+                                    logging.debug('Protologism detected : %s', definiendum_text )
                                     definiendum_type = 'protologism'
                                 # else:
                                 # print('\t',term, cross_term_dict[term]['num_definitions'], cross_term_dict[term]['cross_sentence_distance'])
