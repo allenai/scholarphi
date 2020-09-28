@@ -9,12 +9,10 @@
     right: @entity-property-editor-width;
   }
 
-  &.drawer-symbol-search-results {
-    right: @drawer-paper-clipping-width;
-  }
-
-  &.drawer-paper-list {
-    right: @paper-summary-width;
+  &.drawer-usages,
+  &.drawer-defining-formulas,
+  &.drawer-definitions {
+    right: @document-snippets-container-width;
   }
 }
 
@@ -33,7 +31,18 @@
  */
 .annotationLayer .linkAnnotation {
   border: none !important;
-  // display: none !important;
+  display: none !important;
+}
+
+/**
+ * Make highlights for the pdf.js find bar consistent with the rest of the application.
+ */
+.textLayer .highlight {
+  background-color: fade(@highlight-color, 70%);
+
+  &.selected {
+    background-color: @highlight-color !important;
+  }
 }
 
 /**

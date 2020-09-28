@@ -33,7 +33,14 @@
  * Drawer text.
  */
 .drawer__content {
-  p {
+  &__header {
+    font-size: @large;
+    font-weight: bolder;
+    padding-top: @padding;
+    padding-bottom: @padding;
+  }
+
+  p:not(&__header) {
     font-size: @medium;
     line-height: @medium * @line-height-ratio;
     color: @s2-text-default;

@@ -46,7 +46,19 @@ if (url !== undefined) {
   }
 }
 
+let presets: string[] | undefined = undefined;
+if (params.preset instanceof Array) {
+  presets = params.preset;
+} else if (typeof params.preset === "string") {
+  presets = [params.preset];
+}
+
+let context: any = {};
+if (typeof params.p === "string") {
+  context.userId = params.p;
+}
+
 ReactDOM.render(
-  <ScholarReader paperId={paperId} />,
+  <ScholarReader paperId={paperId} presets={presets} context={context} />,
   document.querySelector("#scholar-reader")
 );

@@ -5,6 +5,13 @@ import { BoundingBox } from "../types/api";
 import { PDFPageView } from "../types/pdfjs-viewer";
 import { Dimensions, Rectangle } from "../types/ui";
 
+/*
+ * Corresponds to the 'elevation' property of 'Paper' and 'Card' components from Material UI.
+ * Can take on values of 0 to 24 inclusive. See
+ * https://material.io/design/environment/elevation.html#elevation-in-material-design
+ */
+export const TOOLTIP_ELEVATION = 8;
+
 export function getMouseXY(event: React.MouseEvent) {
   const rect = event.currentTarget.getBoundingClientRect();
   const x = event.clientX - rect.left;
@@ -339,4 +346,47 @@ export function sortByFrequency(strings: string[]) {
   });
 
   return indexes.map((i) => countsKeys[i]);
+}
+
+/**
+ * Join a list of strings into a text list, where strings are separated by commas with an
+ * 'and' before the last string.
+ */
+export function joinStrings(strings: string[]) {
+  if (strings.length === 0) {
+    return "";
+  }
+  if (strings.length === 1) {
+    return strings[0];
+  }
+  if (strings.length === 2) {
+    return strings[0] + " and " + strings[1];
+  }
+  if (strings.length > 2) {
+    return (
+      strings.slice(0, strings.length - 1).join(", ") +
+      ", and" +
+      strings[strings.length - 1]
+    );
+  }
+}
+
+export function getScrollCoordinates(element: HTMLElement) {
+  return {
+    scrollLeft: element.scrollLeft,
+    scrollTop: element.scrollTop,
+    scrollWidth: element.scrollWidth,
+    scrollHeight: element.scrollHeight,
+    clientWidth: element.clientWidth,
+    clientHeight: element.clientHeight,
+  };
+}
+
+export function getElementCoordinates(element: HTMLElement) {
+  return {
+    offsetLeft: element.offsetLeft,
+    offsetTop: element.offsetTop,
+    clientWidth: element.clientWidth,
+    clientHeight: element.clientHeight,
+  };
 }

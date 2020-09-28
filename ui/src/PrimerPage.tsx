@@ -1,30 +1,23 @@
 import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormLabel from "@material-ui/core/FormLabel";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
 import Switch from "@material-ui/core/Switch";
-import ThumbsUp from "@material-ui/icons/ThumbUpSharp";
 import React from "react";
 import ReactDOM from "react-dom";
-import { getRemoteLogger } from "./logging";
-import { GlossStyle } from "./settings";
 import { Entities, Pages } from "./state";
 import SymbolDefinitionGloss from "./SymbolDefinitionGloss";
 import TermDefinitionGloss from "./TermDefinitionGloss";
 import { isSymbol, isTerm, Symbol, Term } from "./types/api";
 import { PDFViewer } from "./types/pdfjs-viewer";
 
-const logger = getRemoteLogger();
-
 interface Props {
   pdfViewer: PDFViewer;
   pages: Pages;
   entities: Entities | null;
+  showInstructions: boolean;
   annotationHintsEnabled: boolean;
-  glossStyle: GlossStyle;
-  handleSetGlossStyle: (style: GlossStyle) => void;
+  termGlossesEnabled: boolean;
+  scrollToPageOnLoad?: boolean;
   handleSetAnnotationHintsEnabled: (enabled: boolean) => void;
 }
 
@@ -43,7 +36,6 @@ class PrimerPage extends React.PureComponent<Props> {
     this.onAnnotationHintsEnabledChanged = this.onAnnotationHintsEnabledChanged.bind(
       this
     );
-    this.onGlossStyleChanged = this.onGlossStyleChanged.bind(this);
   }
 
   componentDidMount() {
@@ -53,7 +45,9 @@ class PrimerPage extends React.PureComponent<Props> {
     } else {
       viewer.insertBefore(this._element, viewer.children[0]);
     }
-    this.props.pdfViewer.container.scrollTop = 0;
+    if (this.props.scrollToPageOnLoad) {
+      this.props.pdfViewer.container.scrollTop = 0;
+    }
   }
 
   componentWillUnmount() {
@@ -64,19 +58,16 @@ class PrimerPage extends React.PureComponent<Props> {
   }
 
   onAnnotationHintsEnabledChanged(event: React.ChangeEvent<HTMLInputElement>) {
-    logger.log("debug", "set-hints-enabled", { enabled: event.target.checked });
     this.props.handleSetAnnotationHintsEnabled(event.target.checked);
   }
 
-  onGlossStyleChanged(event: React.ChangeEvent<HTMLInputElement>) {
-    logger.log("debug", "set-gloss-style", { style: event.target.value });
-    this.props.handleSetGlossStyle(
-      (event.target as HTMLInputElement).value as GlossStyle
-    );
-  }
-
   render() {
-    const { pages, entities } = this.props;
+    const {
+      pages,
+      entities,
+      showInstructions,
+      termGlossesEnabled,
+    } = this.props;
 
     /*
      * The width of the primer should be the same as the width of the first page. The height of
@@ -96,165 +87,138 @@ class PrimerPage extends React.PureComponent<Props> {
     const symbols = entities !== null ? glossarySymbols(entities) : [];
 
     return ReactDOM.createPortal(
-      <div className="primer-page__contents">
-        <p className="primer-page__header">This paper is interactive.</p>
-        <p>
-          Sometimes it can be hard to understand a paper. The citations can be
-          poorly explained. Symbols can be cryptic. Terms can be confusing. What
-          if your reading application helped explain these parts of a paper?
-        </p>
-        <p>
-          This reading application, called <b>ScholarPhi</b>, explains confusing
-          things in papers. You can click on citations, symbols, and terms to
-          look up explanations of them. Anything that has a{" "}
-          <span style={{ borderBottom: "1px dotted" }}>dotted underline</span>{" "}
-          can be clicked to access an explanation.
-        </p>
-        <p>The main features are:</p>
-        <ul className="feature-list">
-          <li>Click a citation to see the abstract for that citation</li>
-          <li>Click a term to see a definition of that term</li>
-          <li>
-            Click a symbol to see its definitions <i>and</i> search for that
-            symbol elsewhere in the paper
-          </li>
-        </ul>
-        <p>
-          Subsymbols of big, complex symbols can be selected by clicking first
-          on the complex symbol, and then on its subsymbol. If you want to hide
-          the explanations, just click anywhere on the page that isn't
-          underlined.
-        </p>
-        <p>
-          Before reading this paper, please open{" "}
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://forms.gle/7SUx72xEaPCRb5NLA"
-          >
-            this form
-          </a>{" "}
-          and take a look at it. We'd like if you could provide feedback about
-          what's working in the tool as you use it, and what isn't.
-        </p>
-        <p>
-          We also ask that you click the thumbs-up button (which looks like{" "}
-          <ThumbsUp />) whenever you see a useful explanation. This helps us
-          know what explanations to keep in future versions of the application.
-        </p>
-        <p>
-          Your use of this application is entirely voluntary and you may exit it
-          at any time. By using this tool, you consent to have your interactions
-          with the tool logged with your IP address. Your interactions and
-          responses to the form will be analyzed as part of on-going research
-          conducted by post-doc{" "}
-          <a href="mailto:andrewhead@berkeley.edu">Andrew Head</a> and PI{" "}
-          <a href="mailto:hears@berkeley.edu">Marti Hearst</a> at UC Berkeley.
-          Contact the researchers if you have any questions.
-        </p>
-        <hr />
-        <p className="primer-page__header">Reading settings</p>
-        <div>
-          <FormControl>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={this.props.annotationHintsEnabled}
-                  color="primary"
-                  onChange={this.onAnnotationHintsEnabledChanged}
-                />
-              }
-              label={
+      <>
+        <div className="primer-page__contents">
+          {showInstructions && (
+            <>
+              <p className="primer-page__header">This paper is interactive.</p>
+              <p>
+                Sometimes it can be hard to understand a paper. The citations
+                can be poorly explained. Symbols can be cryptic. Terms can be
+                confusing. What if your reading application helped explain these
+                parts of a paper?
+              </p>
+              <p>
+                This reading application, called <b>ScholarPhi</b>, explains
+                confusing things in papers. You can click on citations, symbols,
+                and terms to look up explanations of them. Anything that has a{" "}
+                <span style={{ borderBottom: "1px dotted" }}>
+                  dotted underline
+                </span>{" "}
+                can be clicked to access an explanation.
+              </p>
+              <p>The main features are:</p>
+              <ul className="feature-list">
+                <li>Click a citation to see the abstract for that citation</li>
+                <li>
+                  Click a symbol to see its definitions <i>and</i> search for
+                  that symbol elsewhere in the paper
+                </li>
+                <li>
+                  Click a display equation to see a diagram with definitions of
+                  key symbols.
+                </li>
+              </ul>
+              <p>
+                Subsymbols of big, complex symbols can be selected by clicking
+                first on the complex symbol, and then on its subsymbol. If you
+                want to hide the explanations, just click anywhere on the page
+                that isn't underlined.
+              </p>
+              <p>
+                Your use of this application is entirely voluntary and you may
+                exit it at any time. By using this tool, you consent to have
+                your interactions with the tool logged with your IP address.
+                Your interactions and responses to the form will be analyzed as
+                part of on-going research conducted by post-doc{" "}
+                <a href="mailto:andrewhead@berkeley.edu">Andrew Head</a> and PI{" "}
+                <a href="mailto:hears@berkeley.edu">Marti Hearst</a> at UC
+                Berkeley. Contact the researchers if you have any questions.
+              </p>
+              <hr />
+              <p className="primer-page__header">Reading settings</p>
+              <div>
+                <FormControl>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={this.props.annotationHintsEnabled}
+                        color="primary"
+                        onChange={this.onAnnotationHintsEnabledChanged}
+                      />
+                    }
+                    label={
+                      <>
+                        Mark explainable things with a{" "}
+                        <span style={{ borderBottom: "1px dotted" }}>
+                          dotted underline
+                        </span>{" "}
+                        (recommended).
+                      </>
+                    }
+                  />
+                </FormControl>
+              </div>
+            </>
+          )}
+          {entities === null ? (
+            <>
+              <p className="primer-page__header">
+                Building a glossary of key terms and symbols for this paper...
+              </p>
+              <p>Please wait... Scanning paper...</p>
+              <LinearProgress />
+            </>
+          ) : (
+            <>
+              {termGlossesEnabled && terms.length > 0 ? (
                 <>
-                  Mark explainable things with a{" "}
-                  <span style={{ borderBottom: "1px dotted" }}>
-                    dotted underline
-                  </span>
-                  (recommended).
+                  <p className="primer-page__header">Glossary of key terms</p>
+                  <p className="primer-page__subheader">
+                    Listed in order of appearance.
+                  </p>
+                  <div className="primer-page__glossary">
+                    <ul>
+                      {terms
+                        .filter((t) => t.attributes.term_type !== "symbol")
+                        .map((t) => (
+                          <li key={t.id}>
+                            <TermDefinitionGloss term={t} />
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
                 </>
-              }
-            />
-          </FormControl>
+              ) : null}
+              {symbols.length > 0 ? (
+                <>
+                  <p className="primer-page__header">
+                    Glossary of key {terms.length === 0 && "terms and "} symbols
+                  </p>
+                  <p className="primer-page__subheader">
+                    Listed in order of appearance.
+                  </p>
+                  <div className="primer-page__glossary">
+                    <ul>
+                      {symbols
+                        .filter(
+                          (s) =>
+                            s.attributes.definitions.length > 0 ||
+                            s.attributes.nicknames.length > 0
+                        )
+                        .map((s) => (
+                          <li key={s.id}>
+                            <SymbolDefinitionGloss symbol={s} />
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+                </>
+              ) : null}
+            </>
+          )}
         </div>
-        <div>
-          <FormControl component="fieldset">
-            <FormLabel component="legend">
-              How would you like to view explanations?
-            </FormLabel>
-            <RadioGroup
-              defaultValue="tooltip"
-              value={this.props.glossStyle}
-              onChange={this.onGlossStyleChanged}
-            >
-              <FormControlLabel
-                value="tooltip"
-                control={<Radio color="primary" size="small" />}
-                label="Tooltips (Recommended for laptops and small displays)"
-              />
-              <FormControlLabel
-                value="sidenote"
-                control={<Radio color="primary" size="small" />}
-                label="Sidenotes (Recommended for large displays)"
-              />
-            </RadioGroup>
-          </FormControl>
-        </div>
-        <hr />
-        {entities === null ? (
-          <>
-            <p>Assembling a list of explanations...</p>
-            <LinearProgress />
-          </>
-        ) : (
-          <>
-            <p>
-              To start, here is an an overview of terms from this paper and
-              their definitions:
-            </p>
-            {terms.length > 0 ? (
-              <>
-                <p className="primer-page__header">
-                  Glossary of selected terms (by order of appearance)
-                </p>
-                <div className="primer-page__glossary">
-                  <ul>
-                    {terms
-                      .filter((t) => t.attributes.term_type !== "symbol")
-                      .map((t) => (
-                        <li key={t.id}>
-                          <TermDefinitionGloss term={t} />
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-              </>
-            ) : null}
-            {symbols.length > 0 ? (
-              <>
-                <p className="primer-page__header">
-                  Glossary of selected {terms.length === 0 && "terms and "}{" "}
-                  symbols (by order of appearance)
-                </p>
-                <div className="primer-page__glossary">
-                  <ul>
-                    {glossarySymbols(entities)
-                      .filter(
-                        (s) =>
-                          s.attributes.definitions.length > 0 ||
-                          s.attributes.nicknames.length > 0
-                      )
-                      .map((s) => (
-                        <li key={s.id}>
-                          <SymbolDefinitionGloss symbol={s} />
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-              </>
-            ) : null}
-          </>
-        )}
-      </div>,
+      </>,
       this._element
     );
   }
@@ -266,25 +230,32 @@ class PrimerPage extends React.PureComponent<Props> {
  * Get the first instance of each defined symbol.
  */
 function glossarySymbols(entities: Entities) {
-  const symbolsByTex: { [tex: string]: Symbol } = {};
+  const symbolsByTex: { [tex: string]: Symbol[] } = {};
   entities.all
     .map((id) => entities.byId[id])
     .filter((e) => e !== undefined)
     .filter(isSymbol)
     .filter(
       (s) =>
-        s.attributes.nicknames.length > 0 ||
-        s.attributes.definitions.length > 0 ||
-        s.attributes.defining_formulas.length > 0
+        s.attributes.nicknames.length > 0 || s.attributes.definitions.length > 0
     )
     .filter((s) => s.attributes.tex !== null)
     .forEach((s) => {
       const tex = s.attributes.tex as string;
       if (symbolsByTex[tex] === undefined) {
-        symbolsByTex[tex] = s;
+        symbolsByTex[tex] = [];
       }
+      symbolsByTex[tex].push(s);
     });
-  return Object.values(symbolsByTex);
+
+  const commonSymbols = [];
+  for (const tex in symbolsByTex) {
+    if (symbolsByTex[tex].length > 1) {
+      commonSymbols.push(symbolsByTex[tex][0]);
+    }
+  }
+
+  return commonSymbols;
 }
 
 /**
@@ -299,6 +270,11 @@ function glossaryTerms(entities: Entities) {
     .filter((t) => t.attributes.definitions.length > 0)
     .filter((t) => t.attributes.name !== null)
     .filter((t) => (t.attributes.name as string).indexOf("SKIP") === -1)
+    .filter(
+      (t) =>
+        t.attributes.term_type === null ||
+        t.attributes.term_type.toLowerCase() !== "ignore"
+    )
     .forEach((t) => {
       const name = t.attributes.name as string;
       if (termsByName[name] === undefined) {

@@ -33,7 +33,7 @@ interface Props {
   /**
    * When active, an annotation can be interacted with. Visual effects will show to indicate that
    * the annotation can be interacted with (e.g., underlines, and highlights that appear on hover).
-   * If not active, an annotation can still be highlighted
+   * If not active, an annotation can still be highlighted or underlined.
    */
   active?: boolean;
   /**
@@ -43,7 +43,8 @@ interface Props {
   /**
    * If the annotation is selected, this is the ID of the span of the annotation that was selected.
    * This ensures that the tooltip will show right next to where the user clicked. IDs for spans that
-   * do not belong to this annotation are ignored.
+   * do not belong to this annotation are ignored. If set to 'null' and 'selected' is true, the
+   * first annotation span will be selected.
    */
   selectedSpanIds: string[] | null;
   /**
@@ -136,6 +137,14 @@ export class Annotation extends React.PureComponent<Props> {
           })
           .map((box, i) => {
             const spanId = `${this.props.id}-span-${i}`;
+            let isSelected = false;
+            if (this.props.selected) {
+              isSelected =
+                this.props.selectedSpanIds === null ||
+                this.props.selectedSpanIds.length === 0
+                  ? i === 0
+                  : this.props.selectedSpanIds.indexOf(spanId) !== -1;
+            }
             return (
               <AnnotationSpan
                 key={spanId}
@@ -150,10 +159,7 @@ export class Annotation extends React.PureComponent<Props> {
                 })}
                 active={this.props.active}
                 location={box}
-                selected={
-                  this.props.selectedSpanIds !== null &&
-                  this.props.selectedSpanIds.indexOf(spanId) !== -1
-                }
+                selected={isSelected}
                 glossContent={this.props.glossContent}
                 glossStyle={this.props.glossStyle}
                 tooltipPlacement={this.props.tooltipPlacement}

@@ -1,3 +1,5 @@
+import { SymbolUnderlineMethod } from "./EntityAnnotationLayer";
+
 /**
  * Configurable app-wide settings. Whenever an experimental feature is added that should be
  * possible to toggle on / off (either during development, or when sharing a prototype with
@@ -11,9 +13,38 @@ export interface Settings {
    */
   primerPageEnabled: boolean;
   /**
+   * Show instructions in the primer describing how to use the tool.
+   */
+  primerInstructionsEnabled: boolean;
+  /**
    * Style annotations to show hints that they're there (e.g., underlines).
    */
   annotationHintsEnabled: boolean;
+  /**
+   * Make entities (like symbols and terms) clickable.
+   */
+  annotationInteractionEnabled: boolean;
+  /**
+   * When the paper first loads, automatically scroll the the entity with this ID.
+   */
+  initialFocus: string | null;
+  /**
+   * Show glosses when an entity (i.e., symbol or term) is selected.
+   */
+  glossesEnabled: boolean;
+  /**
+   * Show glosses for citations containing paper summary information.
+   */
+  citationGlossesEnabled: boolean;
+  /**
+   * Show glosses for terms.
+   */
+  termGlossesEnabled: boolean;
+  /**
+   * How to determine whether to underline a symbol. For example, underlines can be placed
+   * underneath all symbols with a definition, or under all top-level symbols.
+   */
+  symbolUnderlineMethod: SymbolUnderlineMethod;
   /**
    * Start a within-paper symbol search when a symbol is selected.
    */
@@ -32,6 +63,11 @@ export interface Settings {
    * Show callouts over equation when the equation is selected.
    */
   equationDiagramsEnabled: boolean;
+  /**
+   * Use nicknames and definitions to create diagram labels if no explicit diagram label
+   * has been defined for the entity.
+   */
+  useDefinitionsForDiagramLabels: boolean;
   /**
    * Show menu of actions when text is selected.
    */
@@ -57,6 +93,137 @@ export interface Settings {
    * disabled as it interferes with built-in text selection in pdf.js.
    */
   sentenceTexCopyOnOptionClickEnabled: boolean;
+}
+
+/**
+ * A preset is a named, partial specification of settings.
+ */
+interface Preset extends Partial<Settings> {
+  key: string;
+}
+
+/**
+ * Define new presets for settings here.
+ */
+const PRESETS: Preset[] = [
+  {
+    key: "sab",
+    termGlossesEnabled: false,
+    citationGlossesEnabled: true,
+    symbolUnderlineMethod: "defined-symbols",
+    primerInstructionsEnabled: true,
+  },
+  {
+    key: "sab-lite",
+    symbolUnderlineMethod: "top-level-symbols",
+    equationDiagramsEnabled: false,
+  },
+  {
+    key: "study",
+    primerInstructionsEnabled: false,
+    citationGlossesEnabled: false,
+    termGlossesEnabled: true,
+    symbolUnderlineMethod: "defined-symbols",
+    useDefinitionsForDiagramLabels: true,
+  },
+  /*
+   * No interactivity for terms and symbols.
+   */
+  {
+    key: "ca",
+    annotationHintsEnabled: false,
+    annotationInteractionEnabled: false,
+    primerPageEnabled: false,
+    equationDiagramsEnabled: false,
+    glossesEnabled: false,
+    declutterEnabled: false,
+  },
+  /*
+   * Show declutter, not glosses.
+   */
+  {
+    key: "cc",
+    annotationInteractionEnabled: true,
+    primerPageEnabled: false,
+    glossesEnabled: false,
+    equationDiagramsEnabled: false,
+    declutterEnabled: true,
+  },
+  /*
+   * Enable all of the interactive features.
+   */
+  {
+    key: "cd",
+    annotationInteractionEnabled: true,
+    primerPageEnabled: true,
+    glossesEnabled: true,
+    equationDiagramsEnabled: true,
+    declutterEnabled: true,
+  },
+  {
+    key: "focused-reading",
+    annotationInteractionEnabled: true,
+    primerPageEnabled: true,
+    glossesEnabled: true,
+    equationDiagramsEnabled: true,
+    declutterEnabled: true,
+  },
+  {
+    key: "tp",
+    initialFocus: "94185",
+  },
+  {
+    key: "ta",
+    initialFocus: "94247",
+  },
+  {
+    key: "tb",
+    initialFocus: "94110",
+  },
+  {
+    key: "tc",
+    initialFocus: "94159",
+  },
+];
+
+/**
+ * Get app settings, merging presets matching the key 'preset' with the default settings.
+ */
+export function getSettings(presets?: string[]) {
+  const DEFAULT_SETTINGS: Settings = {
+    primerPageEnabled: true,
+    primerInstructionsEnabled: true,
+    annotationInteractionEnabled: true,
+    annotationHintsEnabled: true,
+    glossesEnabled: true,
+    initialFocus: null,
+    glossStyle: "tooltip",
+    textSelectionMenuEnabled: false,
+    citationGlossesEnabled: true,
+    termGlossesEnabled: true,
+    symbolUnderlineMethod: "defined-symbols",
+    symbolSearchEnabled: true,
+    declutterEnabled: true,
+    definitionPreviewEnabled: false,
+    equationDiagramsEnabled: true,
+    useDefinitionsForDiagramLabels: false,
+    entityCreationEnabled: false,
+    entityEditingEnabled: false,
+    sentenceTexCopyOnOptionClickEnabled: false,
+    glossEvaluationEnabled: false,
+  };
+
+  let settings = DEFAULT_SETTINGS;
+  if (presets) {
+    for (const preset of presets) {
+      for (const p of PRESETS) {
+        if (p.key === preset) {
+          settings = { ...settings, ...p };
+        }
+      }
+    }
+  }
+  return settings;
 }
 
 /**
@@ -111,6 +278,11 @@ export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
     label: "Show text selection menu",
   },
   {
+    key: "citationGlossesEnabled",
+    type: "flag",
+    label: "Citation glosses",
+  },
+  {
     key: "symbolSearchEnabled",
     type: "flag",
     label: "Symbol search",
@@ -129,6 +301,11 @@ export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
     key: "equationDiagramsEnabled",
     type: "flag",
     label: "Equation diagrams",
+  },
+  {
+    key: "useDefinitionsForDiagramLabels",
+    type: "flag",
+    label: "Use definitions for diagram labels",
   },
   {
     key: "entityCreationEnabled",

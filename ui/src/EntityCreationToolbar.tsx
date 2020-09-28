@@ -17,6 +17,7 @@ import {
   SymbolAttributes,
   SymbolRelationships,
   TermAttributes,
+  TermRelationships,
 } from "./types/api";
 import * as uiUtils from "./utils/ui";
 
@@ -72,12 +73,17 @@ export function createCreateEntityDataWithBoxes(
       ...data.attributes,
       name: text || null,
       term_type: null,
+      tags: [],
       definitions: [],
       definition_texs: [],
-      passages: [],
-      glossary_definitions: [],
-      glossary_sources: [],
+      sources: [],
+      snippets: [],
     } as Omit<TermAttributes, "version">;
+    data.relationships = {
+      sentence: { type: "sentence", id: null },
+      definition_sentences: [],
+      snippet_sentences: [],
+    } as Omit<TermRelationships, "version">;
   } else if (type === "citation") {
     data.attributes = {
       ...data.attributes,
@@ -269,6 +275,7 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
             <MenuItem value="symbol">Symbol</MenuItem>
             <MenuItem value="citation">Citation</MenuItem>
             <MenuItem value="equation">Equation</MenuItem>
+            <MenuItem value="sentence">Sentence</MenuItem>
           </Select>
         </FormControl>
         <FormControl style={{ minWidth: "8em" }}>

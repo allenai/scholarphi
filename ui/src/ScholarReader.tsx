@@ -4,7 +4,7 @@ import * as api from "./api";
 import AppOverlay from "./AppOverlay";
 import Control from "./Control";
 import DefinitionPreview from "./DefinitionPreview";
-import { Drawer } from "./Drawer";
+import { Drawer, DrawerContentType } from "./Drawer";
 import EntityAnnotationLayer from "./EntityAnnotationLayer";
 import EntityCreationCanvas from "./EntityCreationCanvas";
 import EntityCreationToolbar, {
@@ -25,6 +25,7 @@ import { matchingSymbols } from "./selectors";
 import {
   ConfigurableSetting,
   CONFIGURABLE_SETTINGS,
+  getSettings,
   GlossStyle,
 } from "./settings";
 import {
@@ -61,11 +62,24 @@ const logger = getRemoteLogger();
 
 interface Props {
   paperId?: PaperId;
+  presets?: string[];
+  context?: any;
 }
 
 class ScholarReader extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
+
+    const settings = getSettings(props.presets);
+    const logger = getRemoteLogger();
+    const loggingContext: any = { ...props.context };
+    if (props.presets) {
+      loggingContext.presets = props.presets;
+    }
+    if (props.paperId) {
+      loggingContext.paperId = props.paperId;
+    }
+    logger.setContext(loggingContext);
 
     this.state = {
       entities: null,
@@ -84,6 +98,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       selectedAnnotationSpanIds: [],
       selectedEntityIds: [],
       multiselectEnabled: false,
+      jumpTarget: null,
 
       textSelection: null,
       textSelectionChangeMs: null,
@@ -96,6 +111,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       findMatchCount: null,
       findMatchedEntities: null,
       drawerMode: "closed",
+      drawerContentType: null,
       snackbarMode: "closed",
       snackbarActivationTimeMs: null,
       snackbarMessage: null,
@@ -104,18 +120,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       entityCreationType: "term",
       propagateEntityEdits: true,
 
-      primerPageEnabled: true,
-      annotationHintsEnabled: true,
-      glossStyle: "tooltip",
-      glossEvaluationEnabled: true,
-      textSelectionMenuEnabled: false,
-      symbolSearchEnabled: true,
-      declutterEnabled: true,
-      definitionPreviewEnabled: false,
-      equationDiagramsEnabled: false,
-      entityCreationEnabled: false,
-      entityEditingEnabled: false,
-      sentenceTexCopyOnOptionClickEnabled: false,
+      ...settings,
     };
 
     /**
@@ -139,12 +144,15 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.selectEntity = this.selectEntity.bind(this);
     this.selectEntityAnnotation = this.selectEntityAnnotation.bind(this);
     this.jumpToEntity = this.jumpToEntity.bind(this);
+    this.jumpToEntityWithBackMessage = this.jumpToEntityWithBackMessage.bind(
+      this
+    );
     this.clearEntitySelection = this.clearEntitySelection.bind(this);
 
     this.setMultiselectEnabled = this.setMultiselectEnabled.bind(this);
-    this.scrollSymbolIntoView = this.scrollSymbolIntoView.bind(this);
     this.showSnackbarMessage = this.showSnackbarMessage.bind(this);
     this.closeSnackbar = this.closeSnackbar.bind(this);
+    this.openDrawer = this.openDrawer.bind(this);
     this.closeDrawer = this.closeDrawer.bind(this);
     this.startTextSearch = this.startTextSearch.bind(this);
     this.setFindMatchCount = this.setFindMatchCount.bind(this);
@@ -213,13 +221,13 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   selectEntity(id: string) {
-    this.setState({ selectedEntityIds: [id] });
+    this.selectEntityAnnotation(id);
   }
 
   selectEntityAnnotation(
     entityId: string,
-    annotationId: string,
-    annotationSpanId: string
+    annotationId?: string,
+    annotationSpanId?: string
   ) {
     logger.log("debug", "select-entity", {
       entityId,
@@ -245,27 +253,64 @@ class ScholarReader extends React.PureComponent<Props, State> {
       if (selectedEntityIds.indexOf(entityId) === -1) {
         selectedEntityIds.push(entityId);
       }
-      if (selectedAnnotationIds.indexOf(annotationId) === -1) {
+      if (annotationId && selectedAnnotationIds.indexOf(annotationId) === -1) {
         selectedAnnotationIds.push(annotationId);
       }
-      if (selectedAnnotationSpanIds.indexOf(annotationSpanId) === -1) {
+      if (
+        annotationSpanId &&
+        selectedAnnotationSpanIds.indexOf(annotationSpanId) === -1
+      ) {
         selectedAnnotationSpanIds.push(annotationSpanId);
       }
 
+      logger.log("debug", "selection-updated", {
+        selectedEntityIds,
+        selectedAnnotationIds,
+        selectedAnnotationSpanIds,
+      });
+
       /*
-       * The default behavior is to just update the selection. If the selection is a symbol,
-       * however, start a symbol search.
+       * The default behavior is to just update the selection. If the selection is a,
+       * searchable type of entity, however, start a search.
        */
-      if (prevEntities.byId[entityId].type !== "symbol") {
+      const entityType = prevEntities.byId[entityId].type;
+      if (["symbol", "term"].indexOf(entityType) === -1) {
         return {
           selectedEntityIds,
           selectedAnnotationIds,
           selectedAnnotationSpanIds,
+          jumpTarget: null,
         } as State;
       }
 
       /*
-       * If this is a symbol, start or update the search.
+       * If this is a term, start a term search.
+       */
+      if (entityType === "term") {
+        const termIds = selectedEntityIds.filter(
+          (id) => prevEntities.byId[id].type === "term"
+        );
+        const matching = selectors.matchingTerms(termIds, prevEntities);
+        const matchCount = matching.length;
+        const matchIndex = matching.indexOf(entityId);
+        logger.log("debug", "starting-term-search", { matchIndex, matchCount });
+        return {
+          selectedEntityIds,
+          selectedAnnotationIds,
+          selectedAnnotationSpanIds,
+          isFindActive: true,
+          findMode: "term",
+          findActivationTimeMs: Date.now(),
+          findQuery: prevEntities.byId[entityId],
+          findMatchCount: matchCount,
+          findMatchIndex: matchIndex,
+          findMatchedEntities: matching,
+          jumpTarget: null,
+        } as State;
+      }
+
+      /*
+       * If this is a symbol, start a symbol search.
        */
       const symbolIds = selectedEntityIds.filter(
         (id) => prevEntities.byId[id].type === "symbol"
@@ -273,6 +318,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       const matching = matchingSymbols(symbolIds, prevEntities);
       const matchCount = matching.length;
       const matchIndex = matching.indexOf(entityId);
+      logger.log("debug", "starting-symbol-search", { matchIndex, matchCount });
       return {
         selectedEntityIds,
         selectedAnnotationIds,
@@ -292,6 +338,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
         findMatchCount: matchCount,
         findMatchIndex: matchIndex,
         findMatchedEntities: matching,
+        jumpTarget: null,
       } as State;
     });
   }
@@ -299,63 +346,24 @@ class ScholarReader extends React.PureComponent<Props, State> {
   clearEntitySelection() {
     logger.log("debug", "clear-entity-selection");
 
-    if (this.state.findMode === "symbol") {
+    /*
+     * If interaction with entities is currently turned off, then nothing was selected in the
+     * first place. Don't change the state, incase the selected annotation list or the jump
+     * target contains important highlights that shouldn't be dismissed.
+     */
+    if (!this.state.annotationInteractionEnabled) {
+      return;
+    }
+
+    if (this.state.findMode === "symbol" || this.state.findMode === "term") {
       this.closeFindBar();
     }
     this.setState({
       selectedAnnotationIds: [],
       selectedAnnotationSpanIds: [],
       selectedEntityIds: [],
+      jumpTarget: null,
     });
-  }
-
-  /**
-   * Will scroll a symbol horizontally into view when the drawer opens
-   * if it is now obscured by the drawer.
-   */
-  scrollSymbolIntoView() {
-    const { selectedEntityIds, pdfViewer, entities, pages } = this.state;
-    const DRAWER_WIDTH = 470;
-    const SYMBOL_VIEW_PADDING = 50;
-    if (
-      pdfViewer &&
-      pages !== null &&
-      entities !== null &&
-      selectedEntityIds.length >= 1
-    ) {
-      const lastSelectedEntityId =
-        selectedEntityIds[selectedEntityIds.length - 1];
-      const symbol = entities.byId[lastSelectedEntityId];
-      const symbolBox = symbol.attributes.bounding_boxes[0];
-      const pdfLeft = pdfViewer.container.getBoundingClientRect().left;
-      if (pages[symbolBox.page + 1].view != null) {
-        const { left, width } = uiUtils.getPositionInPageView(
-          pages[symbolBox.page + 1].view,
-          symbolBox
-        );
-        /*
-         * Each component of the calculation:
-         * left + width = right position on the pdf page of the selected symbol
-         * scrollLeft = how much the pdf has been scrolled left already
-         * pdfLeft = how far to the left the pdf is relative to the viewport
-         * ----------------
-         * innerWidth = possible visible area of the viewport for the entire website
-         * 470 = width of the drawer that is now obscuring the view
-         */
-        const relativeSymbolRightPosition =
-          left + width - pdfViewer.container.scrollLeft + pdfLeft;
-        const viewableViewportWidth = window.innerWidth - DRAWER_WIDTH;
-        if (relativeSymbolRightPosition > viewableViewportWidth) {
-          // Add 50px padding to make the symbol close to the drawer but not hidden by it.
-          pdfViewer.container.scrollLeft += Math.max(
-            relativeSymbolRightPosition -
-              viewableViewportWidth +
-              SYMBOL_VIEW_PADDING,
-            0
-          );
-        }
-      }
-    }
   }
 
   setEntityCreationType(type: KnownEntityType) {
@@ -609,7 +617,16 @@ class ScholarReader extends React.PureComponent<Props, State> {
     });
   }
 
+  openDrawer(drawerContentType: DrawerContentType) {
+    logger.log("debug", "request-open-drawer", { drawerContentType });
+    this.setState({
+      drawerMode: "open",
+      drawerContentType,
+    });
+  }
+
   closeDrawer() {
+    logger.log("debug", "close-drawer");
     this.setState({ drawerMode: "closed" });
   }
 
@@ -624,6 +641,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   startTextSearch() {
+    logger.log("debug", "start-text-search");
     this.setState({
       isFindActive: true,
       findActivationTimeMs: Date.now(),
@@ -632,19 +650,24 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   setFindMatchCount(findMatchCount: number | null) {
+    logger.log("debug", "find-match-count-updated", { count: findMatchCount });
     this.setState({ findMatchCount });
   }
 
   setFindMatchIndex(findMatchIndex: number | null) {
+    logger.log("debug", "find-match-index-updated", {
+      index: findMatchIndex,
+      count: this.state.findMatchCount,
+    });
     this.setState((state) => {
       if (
-        state.findMode === "symbol" &&
+        (state.findMode === "symbol" || state.findMode === "term") &&
         state.findMatchedEntities !== null &&
         findMatchIndex !== null &&
         state.entities !== null
       ) {
-        const symbolId = state.findMatchedEntities[findMatchIndex];
-        this.jumpToEntity(symbolId);
+        const entityId = state.findMatchedEntities[findMatchIndex];
+        this.jumpToEntity(entityId);
       }
       return { findMatchIndex };
     });
@@ -687,6 +710,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   closeFindBar() {
+    logger.log("debug", "find-close");
     this.setState({
       isFindActive: false,
       findActivationTimeMs: null,
@@ -700,6 +724,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
 
   async componentDidMount() {
     waitForPDFViewerInitialization().then((application) => {
+      logger.log("debug", "application-loaded");
       /*
        * Tell pdf.js not to use default find functionality, but instead to forward find events
        * to external services. The events are intercepted in 'FindBar'.
@@ -779,7 +804,18 @@ class ScholarReader extends React.PureComponent<Props, State> {
     }
   }
 
-  jumpToEntity(id: string) {
+  jumpToEntityWithBackMessage(id: string) {
+    const success = this.jumpToEntity(id);
+
+    if (success && !this._backButtonHintShown) {
+      this.showSnackbarMessage(
+        "Resume where you left by pressing the browser '←' button."
+      );
+      // this._backButtonHintShown = true;
+    }
+  }
+
+  jumpToEntity(id: string): boolean {
     /*
      * In a past version, these offsets were based roughly off those in the pdf.js "find" functionality:
      * https://github.com/mozilla/pdf.js/blob/16ae7c6960c1296370c1600312f283a68e82b137/web/pdf_find_controller.js#L28-L29
@@ -798,7 +834,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
       pages === null ||
       Object.values(pages).length === 0
     ) {
-      return;
+      return false;
     }
 
     const dest = entities.byId[id].attributes.bounding_boxes[0];
@@ -812,33 +848,25 @@ class ScholarReader extends React.PureComponent<Props, State> {
     const { left, top } = uiUtils.convertBoxToPdfCoordinates(page.view, dest);
 
     /*
-     * Save the current location to history so that when a user clicks the 'Back' button, it takes
+     * Scroll to the destination. Use the 'navigateTo', which will save
+     * the current location to history so that when a user clicks the 'Back' button, it takes
      * them back to where they were before.
      */
-    pdfViewerApplication.pdfHistory.pushCurrentPosition();
+    pdfViewerApplication.pdfLinkService.navigateTo([
+      dest.page,
+      { name: "XYZ" },
+      left + SCROLL_OFFSET_X,
+      top + SCROLL_OFFSET_Y,
+    ]);
 
     /*
-     * Scroll to the destination.
+     * Store the position that the paper has jumped to.
      */
-    pdfViewer.scrollPageIntoView({
-      /*
-       * pdf.js page indexes are one more than the page indexes used by this application's bounding boxes.
-       */
-      pageNumber: dest.page + 1,
-      destArray: [
-        undefined,
-        { name: "XYZ" },
-        left + SCROLL_OFFSET_X,
-        top + SCROLL_OFFSET_Y,
-      ],
+    this.setState({
+      jumpTarget: id,
     });
 
-    if (!this._backButtonHintShown) {
-      this.showSnackbarMessage(
-        "Press the 'Back' button to return to your previous location."
-      );
-      this._backButtonHintShown = true;
-    }
+    return true;
   }
 
   render() {
@@ -851,6 +879,21 @@ class ScholarReader extends React.PureComponent<Props, State> {
       findMatchEntityId = this.state.findMatchedEntities[
         this.state.findMatchIndex
       ];
+    }
+
+    if (
+      !this._jumpedToInitialFocus &&
+      this.state.pages !== null &&
+      Object.keys(this.state.pages).length > 0 &&
+      this.state.entities !== null
+    ) {
+      if (this.state.initialFocus !== null) {
+        this.jumpToEntity(this.state.initialFocus);
+        logger.log("debug", "jump-page-to-initial-focus", {
+          entityId: this.state.initialFocus,
+        });
+      }
+      this._jumpedToInitialFocus = true;
     }
 
     return (
@@ -965,18 +1008,22 @@ class ScholarReader extends React.PureComponent<Props, State> {
                 />
               ) : null}
               <Drawer
-                paperId={this.props.paperId}
                 pdfViewer={this.state.pdfViewer}
                 mode={
+                  this.state.drawerMode === "open" ||
                   this.state.entityEditingEnabled
                     ? "open"
-                    : this.state.drawerMode
+                    : "closed"
+                }
+                contentType={
+                  this.state.entityEditingEnabled
+                    ? "entity-property-editor"
+                    : this.state.drawerContentType
                 }
                 entities={this.state.entities}
                 selectedEntityIds={this.state.selectedEntityIds}
-                entityEditingEnabled={this.state.entityEditingEnabled}
                 propagateEntityEdits={this.state.propagateEntityEdits}
-                handleScrollSymbolIntoView={this.scrollSymbolIntoView}
+                handleJumpToEntity={this.jumpToEntityWithBackMessage}
                 handleClose={this.closeDrawer}
                 handleUpdateEntity={this.updateEntity}
                 handleDeleteEntity={this.deleteEntity}
@@ -1005,9 +1052,10 @@ class ScholarReader extends React.PureComponent<Props, State> {
             pages={this.state.pages}
             entities={this.state.entities}
             annotationHintsEnabled={this.state.annotationHintsEnabled}
-            glossStyle={this.state.glossStyle}
+            termGlossesEnabled={this.state.termGlossesEnabled}
+            showInstructions={this.state.primerInstructionsEnabled}
+            scrollToPageOnLoad={this.state.initialFocus === null}
             handleSetAnnotationHintsEnabled={this.setAnnotationHintsEnabled}
-            handleSetGlossStyle={this.setGlossStyle}
           />
         ) : null}
         {
@@ -1073,13 +1121,20 @@ class ScholarReader extends React.PureComponent<Props, State> {
                     entities,
                     pageNumber
                   )[0] || null;
+                const jumpTarget =
+                  selectors.entityIdsInPage(
+                    this.state.jumpTarget ? [this.state.jumpTarget] : [],
+                    entities,
+                    pageNumber
+                  )[0] || null;
 
                 return (
                   <PageOverlay key={key} pageView={pageView}>
                     {/* Mask for highlighting results from in-situ search. */}
                     {!this.state.entityCreationEnabled &&
                     this.state.declutterEnabled &&
-                    this.state.findMode === "symbol" &&
+                    (this.state.findMode === "symbol" ||
+                      this.state.findMode === "term") &&
                     findMatchedEntityIds !== null ? (
                       <SearchPageMask
                         pageView={pageView}
@@ -1115,7 +1170,17 @@ class ScholarReader extends React.PureComponent<Props, State> {
                         selectedAnnotationSpanIds={selectedAnnotationSpanIds}
                         findMatchedEntityIds={findMatchedEntityIds}
                         findSelectionEntityId={findSelectionEntityId}
+                        jumpTarget={jumpTarget}
                         showAnnotations={this.state.annotationHintsEnabled}
+                        annotationInteractionEnabled={
+                          this.state.annotationInteractionEnabled
+                        }
+                        showGlosses={this.state.glossesEnabled}
+                        citationAnnotationsEnabled={
+                          this.state.citationGlossesEnabled
+                        }
+                        termAnnotationsEnabled={this.state.termGlossesEnabled}
+                        symbolUnderlineMethod={this.state.symbolUnderlineMethod}
                         glossStyle={this.state.glossStyle}
                         glossEvaluationEnabled={
                           this.state.glossEvaluationEnabled
@@ -1131,7 +1196,8 @@ class ScholarReader extends React.PureComponent<Props, State> {
                         }
                         handleShowSnackbarMessage={this.showSnackbarMessage}
                         handleAddPaperToLibrary={this.addToLibrary}
-                        handleJumpToEntity={this.jumpToEntity}
+                        handleJumpToEntity={this.jumpToEntityWithBackMessage}
+                        handleOpenDrawer={this.openDrawer}
                       />
                     )}
                     {/* Equation diagram overlays. */}
@@ -1142,11 +1208,16 @@ class ScholarReader extends React.PureComponent<Props, State> {
                         .filter(isEquation)
                         .map((e) => (
                           <EquationDiagram
-                            key={e.id}
+                            key={`${e.id}-${this.state.useDefinitionsForDiagramLabels}`}
                             pageView={pageView}
                             entities={entities}
                             equation={e}
-                            handleSelectEntity={this.selectEntity}
+                            labelSource={
+                              this.state.useDefinitionsForDiagramLabels
+                                ? "any-definition"
+                                : "only-diagram-labels"
+                            }
+                            handleShowMore={this.selectEntity}
                           />
                         ))}
                     {/* Canvas for annotating entities. */}
@@ -1172,6 +1243,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   private _backButtonHintShown: boolean = false;
+  private _jumpedToInitialFocus: boolean = false;
 }
 
 async function waitForPDFViewerInitialization() {

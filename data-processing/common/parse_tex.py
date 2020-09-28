@@ -341,6 +341,8 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
         Pattern("linebreak_ignore", r"\n"): " ",
         Pattern("space_macro", r"\\[ ,]"): " ",
         Pattern("tilde", r"~"): " ",
+        # Replace characters that need to be escaped in TeX with unescaped text.
+        Pattern("ampersand", r"\\&"): "&",
     }
 
     # Patterns of text the extractor should skip.
@@ -493,7 +495,9 @@ def _make_citation_command_regex(commands: List[str]) -> str:
     return command_names + r"(?:\[[^\]]*\]){0,2}{([^}]*?)}(?:\[[^\]]*\])?"
 
 
-CITATION_PATTERN = Pattern("citation", _make_citation_command_regex(CITATION_COMMAND_NAMES))
+CITATION_PATTERN = Pattern(
+    "citation", _make_citation_command_regex(CITATION_COMMAND_NAMES)
+)
 
 
 @dataclass(frozen=True)

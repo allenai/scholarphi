@@ -1,4 +1,4 @@
-from typing import cast, Any
+from typing import Any, cast
 
 from common import directories
 from common.colorize_tex import ColorizeOptions
@@ -13,6 +13,7 @@ from common.types import (
     SerializableToken,
 )
 from entities.sentences.commands.extract_contexts import make_extract_contexts_command
+from entities.sentences.types import TexWrapper
 from scripts.pipelines import EntityPipeline, register_entity_pipeline
 
 from .colorize import adjust_color_positions
@@ -46,7 +47,12 @@ commands = [
     ExtractSymbols,
     FindSymbolMatches,
     make_extract_contexts_command(
-        "symbols", EntityType=SerializableSymbol, entity_key=entity_key_for_contexts
+        "symbols",
+        EntityType=SerializableSymbol,
+        entity_key=entity_key_for_contexts,
+        tex_wrapper=TexWrapper(
+            before=r"\htmlClass{match-highlight}{", after="}", braces=True
+        ),
     ),
     make_locate_entities_command(
         "equation-tokens",

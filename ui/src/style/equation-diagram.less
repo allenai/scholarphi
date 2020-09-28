@@ -9,25 +9,25 @@
  * Features (areas of interest) in diagrams.
  */
 rect.equation-diagram__feature {
-  stroke: black;
   stroke-width: 2;
-  fill: none;
-  opacity: 0;
+  fill: @highlight-color;
+  fill-opacity: @highlight-hover-opacity;
 }
 
 /**
- * Labels.
+ * Labels
  */
-rect.diagram-label__background {
-  fill: @highlight-color;
-  stroke: @label-border-color;
-  stroke-width: @label-border-width;
+div.equation-diagram-tooltip {
+  border: 1px solid #bbb;
 }
 
-.equation-diagram__label__text {
-  fill: @s2-text-default;
-  font-family: @s2-font-family;
-  font-size: 18px;
+div.equation-diagram-gloss {
+  cursor: pointer;
+  max-width: 150px;
+
+  &:hover {
+    background-color: #ddd;
+  }
 }
 
 /**
@@ -42,14 +42,15 @@ g.equation-diagram__leader {
 
   path.leader-background {
     stroke: white;
-    stroke-width: 2;
+    stroke-width: 4;
     fill: none;
   }
 
   path.leader-foreground {
-    stroke: gray;
-    // stroke-dasharray: 1pt;
-    stroke-width: 1;
+    // stroke: @highlight-color;
+    stroke: black;
+    stroke-opacity: 0.4;
+    stroke-width: 2;
     fill: none;
   }
 }
@@ -57,23 +58,23 @@ g.equation-diagram__leader {
 /**
  * Hover behavior.
  */
-g.equation-diagram__labeled-feature {
-  &:hover {
-    cursor: default;
+div.equation-diagram__label-container {
+  pointer-events: all;
+  cursor: pointer;
 
-    rect.diagram-label__background {
-      stroke-width: @label-border-width * 2;
-    }
+  &:hover {
+    cursor: pointer;
 
     rect.equation-diagram__feature {
-      opacity: 1;
+      fill-opacity: @highlight-opacity;
     }
 
-    g.equation-diagram__leader {
-      opacity: 1;
-      path.leader-foreground {
-        stroke-dasharray: unset;
-      }
+    .equation-diagram-gloss {
+      background-color: #ddd;
+    }
+
+    path.leader-foreground {
+      stroke-opacity: 0.7;
     }
   }
 }

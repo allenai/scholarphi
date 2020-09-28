@@ -123,7 +123,7 @@ export class SearchResults extends React.PureComponent<Props, State> {
                   return null;
                 }
                 const sentence =
-                  selectors.symbolSentences([symbol.id], entities)[0] || null;
+                  selectors.sentences([symbol.id], entities)[0] || null;
 
                 return (
                   <div className="search-results__result" key={sId}>

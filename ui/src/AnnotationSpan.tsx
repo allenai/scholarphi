@@ -1,11 +1,14 @@
 import classNames from "classnames";
 import React from "react";
+import { getRemoteLogger } from "./logging";
 import { GlossStyle } from "./settings";
 import Sidenote from "./Sidenote";
 import Tooltip, { TooltipPlacement } from "./Tooltip";
 import { BoundingBox } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 import * as uiUtils from "./utils/ui";
+
+const logger = getRemoteLogger();
 
 /**
  * Many of these properties are analogous to those in 'Annotation'. For complete documentation,
@@ -54,6 +57,10 @@ export class AnnotationSpan extends React.PureComponent<Props> {
 
   onClick(e: React.MouseEvent<HTMLDivElement>) {
     let eventHandled = false;
+    logger.log("debug", "clicked-annotation-span", {
+      id: this.props.id,
+      underlined: this.props.underline,
+    });
     if (this.props.onClick !== undefined) {
       if (this.props.onClick(e) === true) {
         eventHandled = true;
@@ -81,7 +88,7 @@ export class AnnotationSpan extends React.PureComponent<Props> {
             selected: this.props.selected,
             active: this.props.active === true,
             inactive: this.props.active !== true,
-            underline: this.props.active === true && this.props.underline,
+            underline: this.props.underline,
           }
         )}
         style={uiUtils.getPositionInPageView(

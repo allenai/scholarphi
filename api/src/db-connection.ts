@@ -398,9 +398,12 @@ export class Connection {
         values = [value];
         of_list = false;
       }
-      for (const v of values) {
+      for (let v of values) {
         let item_type: EntityDataRowType | undefined = undefined;
-        if (typeof v === "number") {
+        if (typeof v === "boolean") {
+          item_type = "boolean";
+          v = v ? 1 : 0;
+        } else if (typeof v === "number") {
           /**
            * This check for whether a number is an integer is based on the polyfill from MDN:
            * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger#Polyfill
@@ -420,6 +423,9 @@ export class Connection {
     }
 
     for (const key of Object.keys(relationships)) {
+      if (keys.indexOf(key) === -1) {
+        keys.push(key);
+      }
       const value = relationships[key];
       if (Array.isArray(value)) {
         for (const r of value) {

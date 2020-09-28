@@ -80,7 +80,11 @@ export let attributes = Joi.object({
  * absence of data indicates an empty list, not a null value.
  */
 const stringAttribute = Joi.string().allow(null).default(null);
-const booleanAttribute = Joi.boolean().allow(null).default(null);
+const booleanAttribute = Joi.boolean()
+  .allow(null)
+  .default(null)
+  .truthy(1)
+  .falsy(0);
 const numberAttribute = Joi.number()
   .allow(null)
   .default(null)
@@ -111,7 +115,7 @@ attributes = attributes
           tex: stringAttribute,
           nicknames: stringListAttribute,
           diagram_label: stringAttribute,
-          id_definition: booleanAttribute,
+          is_definition: booleanAttribute,
           definitions: stringListAttribute,
           defining_formulas: stringListAttribute,
           passages: stringListAttribute,
@@ -129,15 +133,21 @@ attributes = attributes
         }),
       },
       {
+        is: "equation",
+        then: Joi.object().keys({
+          tex: stringAttribute,
+        }),
+      },
+      {
         is: "term",
         then: Joi.object().keys({
           name: stringAttribute,
           term_type: stringAttribute,
           definitions: stringListAttribute,
           definition_texs: stringListAttribute,
-          passages: stringListAttribute,
-          glossary_definitions: stringListAttribute,
-          glossary_sources: stringListAttribute,
+          sources: stringListAttribute,
+          snippets: stringListAttribute,
+          tags: stringListAttribute,
         }),
       },
       {
@@ -190,6 +200,14 @@ relationships = relationships
           nickname_sentences: oneToManyRelationship("sentence"),
           definition_sentences: oneToManyRelationship("sentence"),
           defining_formula_equations: oneToManyRelationship("equation"),
+          snippet_sentences: oneToManyRelationship("sentence"),
+        }),
+      },
+      {
+        is: "term",
+        then: Joi.object().keys({
+          sentence: oneToOneRelationship("sentence"),
+          definition_sentences: oneToManyRelationship("sentence"),
           snippet_sentences: oneToManyRelationship("sentence"),
         }),
       },

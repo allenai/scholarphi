@@ -8,16 +8,18 @@ import classNames from "classnames";
 import React from "react";
 import { getRemoteLogger } from "./logging";
 import { PdfjsFindQueryWidget } from "./PdfjsFindQueryWidget";
+import * as selectors from "./selectors";
 import { SymbolFilters } from "./state";
 import { SymbolFindQueryWidget } from "./SymbolFindQueryWidget";
-import { Symbol } from "./types/api";
+import TermFindQueryWidget from "./TermFindQueryWidget";
+import { Symbol, Term } from "./types/api";
 import { PDFViewerApplication } from "./types/pdfjs-viewer";
 import * as uiUtils from "./utils/ui";
 
 const logger = getRemoteLogger();
 
-export type FindMode = null | "pdfjs-builtin-find" | "symbol";
-export type FindQuery = null | string | SymbolFilters;
+export type FindMode = null | "pdfjs-builtin-find" | "symbol" | "term";
+export type FindQuery = null | string | Term | SymbolFilters;
 export interface SymbolFilter {
   symbol: Symbol;
   active?: boolean;
@@ -44,6 +46,27 @@ class FindBar extends React.PureComponent<Props> {
     this.onClickPrevious = this.onClickPrevious.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.close = this.close.bind(this);
+  }
+
+  componentDidMount() {
+    const { mode, query } = this.props;
+    let queryInfo;
+    if (mode === "pdfjs-builtin-find") {
+      queryInfo = query;
+    } else if (mode === "symbol") {
+      const symbolQuery = query as SymbolFilters;
+      queryInfo = symbolQuery.all
+        .map((id) => symbolQuery.byId[id])
+        .filter((f) => f !== undefined)
+        .map((f) => f as SymbolFilter)
+        .map((f) => selectors.symbolLogData(f.symbol));
+    } else if (mode === "term") {
+      queryInfo = selectors.termLogData(query as Term);
+    }
+    logger.log("debug", "find-bar-show", {
+      mode,
+      query: queryInfo,
+    });
   }
 
   /*
@@ -145,12 +168,14 @@ class FindBar extends React.PureComponent<Props> {
       previousButton !== null &&
       (event.key === "ArrowLeft" || (event.shiftKey && event.key === "Enter"))
     ) {
+      logger.log("debug", "find-previous-triggered-by-keypress");
       uiUtils.simulateMaterialUiButtonClick(previousButton);
       event.stopPropagation();
     } else if (
       nextButton !== null &&
       (event.key === "ArrowRight" || event.key === "Enter")
     ) {
+      logger.log("debug", "find-next-triggered-by-keypress");
       uiUtils.simulateMaterialUiButtonClick(nextButton);
       event.stopPropagation();
     }
@@ -228,6 +253,9 @@ class FindBar extends React.PureComponent<Props> {
                         handleFilterChange={this.props.handleChangeQuery}
                       />
                     );
+                  }
+                  case "term": {
+                    return <TermFindQueryWidget term={query as Term} />;
                   }
                   default:
                     return;

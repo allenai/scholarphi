@@ -48,12 +48,12 @@ export interface EntityGetResponse {
 /**
  * Use type guards (e.g., 'isSymbol') to distinguish between types of entities.
  */
-export type Entity = GenericEntity | Symbol | Citation | Sentence;
+export type Entity = GenericEntity | Symbol | Term | Citation | Sentence;
 
 /**
  * All entity specifications should extend BaseEntity. To make specific relationship properties
- * known to TypeScript, define a relationships type (e.g., see 'SymbolRelationships'), and
- * pass it as the first generic parameter. Otherwise, set the generic to '{}'.
+ * known to TypeScript, define a relationships type (e.g., see 'SymbolRelationships'). Otherwise,
+ * set the relationships property type to '{}'.
  */
 export interface BaseEntity {
   /**
@@ -225,7 +225,7 @@ export function isSymbol(entity: Entity): entity is Symbol {
 export interface Term extends BaseEntity {
   type: "term";
   attributes: TermAttributes;
-  relationships: {};
+  relationships: TermRelationships;
 }
 
 export interface TermAttributes extends BaseEntityAttributes {
@@ -239,21 +239,32 @@ export interface TermAttributes extends BaseEntityAttributes {
    */
   definitions: string[];
   /**
-   * List of passages of TeX, one for each of the 'definitions'.
+   * List of passages of TeX. Each item should correspond to the definition at the same index
+   * from 'definitions', assuming the definition was extracted from TeX; otherwise the item
+   * should be set to 'null'.
    */
   definition_texs: string[];
   /**
+   * Tag indicating the source of the definition. For example, the tag might indicate that the
+   * definition came from an external glossary, or from a definition extractor. There should be one
+   * source for each definition in 'definitions'.
+   */
+  sources: string[];
+  /**
    * Additional passages that help explain what this term means.
    */
-  passages: string[];
+  snippets: string[];
   /**
-   * Definitions for the term from external glossaries.
+   * Additional metadata for this term. For instance, one tag could be whether a term has been
+   * identified as a 'key term', to indicate that the term should be displayed in a special way.
    */
-  glossary_definitions: string[];
-  /**
-   * Sources for definitions from external glossaries. There is one source per definition.
-   */
-  glossary_sources: string[];
+  tags: string[];
+}
+
+export interface TermRelationships {
+  sentence: Relationship;
+  definition_sentences: Relationship[];
+  snippet_sentences: Relationship[];
 }
 
 export function isTerm(entity: Entity): entity is Term {
@@ -276,8 +287,12 @@ export function isCitation(entity: Entity): entity is Citation {
 
 export interface Equation extends BaseEntity {
   type: "equation";
-  attributes: BaseEntityAttributes;
+  attributes: EquationAttributes;
   relationships: {};
+}
+
+export interface EquationAttributes extends BaseEntityAttributes {
+  tex: string | null;
 }
 
 export function isEquation(entity: Entity): entity is Equation {

@@ -1,25 +1,31 @@
 import { defaultMemoize } from "reselect";
 import { SymbolFilter } from "../FindBar";
 import { Entities } from "../state";
+import { isSentence, isSymbol, Relationship, Symbol } from "../types/api";
 import {
-  BoundingBox,
-  isSentence,
-  isSymbol,
-  Relationship,
-  Sentence,
-  Symbol,
-} from "../types/api";
-import * as uiUtils from "../utils/ui";
+  adjacentContext,
+  adjacentDefinition,
+  comparePosition,
+  hasDefinition,
+  inDefinition,
+  orderByPosition,
+  orderExcerpts,
+} from "./entity";
 
 export function diagramLabel(
   symbol: Symbol,
-  includeNicknames?: boolean
+  entities: Entities,
+  explicitLabelsOnly?: boolean
 ): string | null {
   if (symbol.attributes.diagram_label !== null) {
+    if (symbol.attributes.diagram_label === "SKIP") {
+      return null;
+    }
     return symbol.attributes.diagram_label;
   }
-  if (includeNicknames) {
-    return uiUtils.sortByFrequency(symbol.attributes.nicknames)[0] || null;
+  if (!explicitLabelsOnly) {
+    const definition = nearbyDefinition(symbol.id, entities, true);
+    return definition ? definition.excerpt : null;
   }
   return null;
 }
@@ -58,24 +64,6 @@ export function descendants(symbolId: string, entities: Entities): Symbol[] {
   }
 
   return descendantsList;
-}
-
-/**
- * Return all sentences containing a list of symbols.
- */
-export function symbolSentences(
-  entityIds: string[],
-  entities: Entities
-): Sentence[] {
-  return entityIds
-    .map((id) => entities.byId[id])
-    .filter((e) => e !== undefined)
-    .filter(isSymbol)
-    .map((s) => s.relationships.sentence.id)
-    .filter((sentId) => sentId !== null)
-    .map((sentId) => entities.byId[sentId as string])
-    .filter((sent) => sent !== undefined)
-    .filter(isSentence);
 }
 
 export const symbolIds = defaultMemoize(
@@ -165,7 +153,7 @@ export function isDescendant(
   entities: Entities
 ) {
   let parent: Relationship = symbol1.relationships.parent;
-  while (parent.id !== null) {
+  while (parent && parent.id !== null) {
     const parentEntity = entities.byId[parent.id];
     if (parentEntity !== undefined && isSymbol(parentEntity)) {
       if (parentEntity === symbol2) {
@@ -195,47 +183,176 @@ export function symbolMathMls(symbolIds: string[], entities: Entities) {
   return uniqueMathMls;
 }
 
-/**
- * Comparator for sorting boxes from highest position in the paper to lowest.
- * See https://github.com/allenai/scholar-reader/issues/115 for a discussion for how we might
- * be able to sort symbols by their order in the prose instead of their position.
- */
-export function compareBoxes(box1: BoundingBox, box2: BoundingBox) {
-  if (box1.page !== box2.page) {
-    return box1.page - box2.page;
-  }
-  if (areBoxesVerticallyAligned(box1, box2)) {
-    return box1.left - box2.left;
-  } else {
-    return box1.top - box2.top;
-  }
+export function definitionsAndNicknames(
+  symbolIds: string[],
+  entities: Entities
+) {
+  const symbols = symbolIds
+    .map((id) => entities.byId[id])
+    .filter((e) => e !== undefined)
+    .filter(isSymbol);
+  const excerpts = symbols.map((s) => s.attributes.definitions).flat();
+  const contexts = symbols
+    .map((s) => s.relationships.definition_sentences)
+    .flat();
+  excerpts.push(...symbols.map((s) => s.attributes.nicknames).flat());
+  contexts.push(
+    ...symbols.map((s) => s.relationships.nickname_sentences).flat()
+  );
+  return orderExcerpts(excerpts, contexts, entities);
 }
 
-function areBoxesVerticallyAligned(box1: BoundingBox, box2: BoundingBox) {
-  const box1Bottom = box1.top + box1.height;
-  const box2Bottom = box2.top + box2.height;
-  return (
-    (box1.top >= box2.top && box1.top <= box2Bottom) ||
-    (box2.top >= box1.top && box2.top <= box1Bottom)
+export function definingFormulas(symbolIds: string[], entities: Entities) {
+  const symbols = symbolIds
+    .map((id) => entities.byId[id])
+    .filter((e) => e !== undefined)
+    .filter(isSymbol);
+  const formulas = symbols.map((s) => s.attributes.defining_formulas).flat();
+  const contexts = symbols
+    .map((s) => s.relationships.defining_formula_equations)
+    .flat();
+  return orderExcerpts(formulas, contexts, entities);
+}
+
+/**
+ * Get definition that appears right above an entity. (Don't include)
+ * a definition where the entity appears.
+ */
+export function adjacentNickname(
+  symbolId: string,
+  entities: Entities,
+  where: "before" | "after"
+) {
+  const symbol = entities.byId[symbolId];
+  if (symbol === undefined || !isSymbol(symbol)) {
+    return null;
+  }
+
+  const { nicknames } = symbol.attributes;
+  const contexts = symbol.relationships.nickname_sentences;
+  if (nicknames.length === 0 || contexts.length === 0) {
+    return null;
+  }
+
+  const ordered = orderExcerpts(nicknames, contexts, entities);
+  const sentenceId = symbol.relationships.sentence.id;
+  return adjacentContext(sentenceId, entities, ordered, where);
+}
+
+export function descendantHasDefinition(symbolId: string, entities: Entities) {
+  return descendants(symbolId, entities).some((s) =>
+    hasDefinition(s.id, entities)
   );
 }
 
 /**
- * Order a list of symbol IDs by which ones appear first in the paper, using the position of
- * the symbol bounding boxes. Does not take columns into account. This method is memoized
- * because it's assumed that it will frequently be called with the list of all symbols in
- * the paper, and that this sort will be costly.
+ * Determine whether an underline should show for a symbol. An underline should show if
+ * it's not selected, there's a definition for the symbol, it isn't in a definition,
+ * and none of its ancestor symbols will be underlined.
  */
-export const orderByPosition = defaultMemoize(
-  (symbolIds: string[], entities: Entities) => {
-    const sorted = [...symbolIds];
-    sorted.sort((sId1, sId2) => {
-      const symbol1Boxes = entities.byId[sId1].attributes.bounding_boxes;
-      const symbol1TopBox = symbol1Boxes.sort(compareBoxes)[0];
-      const symbol2Boxes = entities.byId[sId2].attributes.bounding_boxes;
-      const symbol2TopBox = symbol2Boxes.sort(compareBoxes)[0];
-      return compareBoxes(symbol1TopBox, symbol2TopBox);
-    });
-    return sorted;
+export function shouldUnderline(symbolId: string, entities: Entities) {
+  const symbol = entities.byId[symbolId];
+  if (
+    symbol === undefined ||
+    !isSymbol(symbol) ||
+    !hasDefinition(symbolId, entities) ||
+    inDefinition(symbolId, entities)
+  ) {
+    return false;
   }
-);
+  let ancestorId = symbol.relationships.parent.id;
+  while (ancestorId !== null) {
+    const ancestor = entities.byId[ancestorId];
+    if (ancestor === undefined || !isSymbol(ancestor)) {
+      break;
+    }
+    if (shouldUnderline(ancestor.id, entities)) {
+      return false;
+    }
+    ancestorId = ancestor.relationships.parent.id;
+  }
+  return true;
+}
+
+/**
+ * Get the first definition or nickname right before the appearance of the symbol, if
+ * possible. If not possible, get the first definition or nickname right after the appearance
+ * of the symbol. If 'includeThisAppearance' is set, the sentence that the symbol appears
+ * will be returned, if it is a definition.
+ */
+export function nearbyDefinition(
+  symbolId: string,
+  entities: Entities,
+  includeThisAppearance?: boolean
+) {
+  const symbol = entities.byId[symbolId];
+  if (symbol === undefined || !isSymbol(symbol)) {
+    return null;
+  }
+  if (includeThisAppearance && inDefinition(symbol.id, entities)) {
+    for (let i = 0; i < symbol.attributes.definitions.length; i++) {
+      const context = symbol.relationships.definition_sentences[i];
+      if (context === undefined || context.id === null) {
+        continue;
+      }
+      const sentence = entities.byId[context.id];
+      if (sentence === undefined || !isSentence(sentence)) {
+        continue;
+      }
+      if (
+        sentence.id === symbol.relationships.sentence.id &&
+        symbol.attributes.definitions[i] !== undefined
+      ) {
+        return {
+          excerpt: symbol.attributes.definitions[i],
+          contextEntity: sentence,
+        };
+      }
+    }
+  }
+  const dBefore = adjacentDefinition(symbolId, entities, "before");
+  const nBefore = adjacentNickname(symbolId, entities, "before");
+  if (dBefore && nBefore) {
+    return comparePosition(dBefore.contextEntity, nBefore.contextEntity) > 0
+      ? dBefore
+      : nBefore;
+  }
+  if (dBefore) {
+    return dBefore;
+  }
+  if (nBefore) {
+    return nBefore;
+  }
+  const dAfter = adjacentDefinition(symbolId, entities, "after");
+  const nAfter = adjacentNickname(symbolId, entities, "after");
+  if (dAfter && nAfter) {
+    return comparePosition(dAfter.contextEntity, nAfter.contextEntity) < 0
+      ? dAfter
+      : nAfter;
+  }
+  if (dAfter) {
+    return dAfter;
+  }
+  if (nAfter) {
+    return nAfter;
+  }
+  return null;
+}
+
+/**
+ * A summary of symbol data suitable for logging. This set of properties should
+ * be fast to compute, comprising mostly of property accesses.
+ */
+export function symbolLogData(symbol: Symbol) {
+  return {
+    id: symbol.id,
+    name: symbol.attributes.tex,
+    numNicknames: symbol.attributes.nicknames.length,
+    numDefinitions: symbol.attributes.definitions.length,
+    numFormulas: symbol.attributes.defining_formulas.length,
+    numUsages: symbol.attributes.snippets.length,
+    numChildren: symbol.relationships.children.length,
+    hasParent: symbol.relationships.parent.id !== null,
+    pages: symbol.attributes.bounding_boxes.map((b) => b.page),
+  };
+}

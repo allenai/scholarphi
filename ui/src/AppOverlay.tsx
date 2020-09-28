@@ -1,6 +1,9 @@
 import Snackbar from "@material-ui/core/Snackbar";
 import React from "react";
+import { getRemoteLogger } from "./logging";
 import * as uiUtils from "./utils/ui";
+
+const logger = getRemoteLogger();
 
 interface Props {
   /*
@@ -35,6 +38,7 @@ class AppOverlay extends React.PureComponent<Props> {
     super(props);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
+    this.onPopState = this.onPopState.bind(this);
     this.onCloseSnackbar = this.onCloseSnackbar.bind(this);
   }
 
@@ -62,11 +66,16 @@ class AppOverlay extends React.PureComponent<Props> {
      */
     element.addEventListener("keydown", this.onKeyDown);
     element.addEventListener("keyup", this.onKeyUp);
+    /*
+     * Listen for clicks on the 'back' button on the global window event.
+     */
+    window.addEventListener("popstate", this.onPopState);
   }
 
   removeEventListeners(element: HTMLElement) {
     element.removeEventListener("keydown", this.onKeyDown);
     element.removeEventListener("keyup", this.onKeyUp);
+    window.removeEventListener("popsstate", this.onPopState);
   }
 
   onKeyDown(event: KeyboardEvent) {
@@ -101,6 +110,10 @@ class AppOverlay extends React.PureComponent<Props> {
     }
   }
 
+  onPopState() {
+    logger.log("debug", "pop-history-state");
+  }
+
   onCloseSnackbar(_: any, reason: string) {
     /*
      * Only dismiss the snack bar when it has shown for the requested duration. Don't hide it
@@ -124,7 +137,7 @@ class AppOverlay extends React.PureComponent<Props> {
             key={this.props.snackbarActivationTimeMs}
             open={this.props.snackbarMode === "open"}
             message={this.props.snackbarMessage}
-            anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+            anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
             /*
              * Set to Snackbar showing time to recommended lower limit from Material design
              * guidelines. See https://material.io/components/snackbars#behavior

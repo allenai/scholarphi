@@ -1,14 +1,13 @@
 import classNames from "classnames";
 import React from "react";
 import CitationGloss from "./CitationGloss";
+import { DrawerContentType } from "./Drawer";
 import EntityAnnotation from "./EntityAnnotation";
 import * as selectors from "./selectors";
 import { GlossStyle } from "./settings";
 import SimpleSymbolGloss from "./SimpleSymbolGloss";
+import SimpleTermGloss from "./SimpleTermGloss";
 import { Entities, PaperId, Papers, UserLibrary } from "./state";
-import SymbolDefinitionGloss from "./SymbolDefinitionGloss";
-import TermDefinitionGloss from "./TermDefinitionGloss";
-import TermPropertyEvaluationGloss from "./TermPropertyEvaluationGloss";
 import {
   Entity,
   isCitation,
@@ -19,6 +18,8 @@ import {
 } from "./types/api";
 import { PDFPageView } from "./types/pdfjs-viewer";
 import * as uiUtils from "./utils/ui";
+
+export type SymbolUnderlineMethod = "top-level-symbols" | "defined-symbols";
 
 interface Props {
   paperId?: PaperId;
@@ -31,9 +32,15 @@ interface Props {
   selectedAnnotationSpanIds: string[];
   findMatchedEntityIds: string[] | null;
   findSelectionEntityId: string | null;
+  jumpTarget: string | null;
   showAnnotations: boolean;
+  annotationInteractionEnabled: boolean;
+  showGlosses: boolean;
   glossStyle: GlossStyle;
   glossEvaluationEnabled: boolean;
+  citationAnnotationsEnabled: boolean;
+  termAnnotationsEnabled: boolean;
+  symbolUnderlineMethod: SymbolUnderlineMethod;
   equationDiagramsEnabled: boolean;
   copySentenceOnClick: boolean;
   handleSelectEntityAnnotation: (
@@ -44,6 +51,7 @@ interface Props {
   handleShowSnackbarMessage: (message: string) => void;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
   handleJumpToEntity: (entityId: string) => void;
+  handleOpenDrawer: (contentType: DrawerContentType) => void;
 }
 
 class EntityAnnotationLayer extends React.Component<Props, {}> {
@@ -90,8 +98,18 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
    */
   shouldShowEquation(equationId: string) {
     const { entities, equationDiagramsEnabled, selectedEntityIds } = this.props;
+    if (!equationDiagramsEnabled) {
+      return false;
+    }
+    const equation = entities.byId[equationId];
+    if (equation === undefined || !isEquation(equation)) {
+      return false;
+    }
+    const isInlineEquation =
+      equation.attributes.tex === null ||
+      /^\s*\$\s*[^$]/.test(equation.attributes.tex);
     return (
-      equationDiagramsEnabled &&
+      !isInlineEquation &&
       selectors.equationTopLevelSymbols(equationId, entities).length > 1 &&
       !selectedEntityIds
         .map((id) => entities.byId[id])
@@ -145,9 +163,16 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
       selectedAnnotationSpanIds,
       findMatchedEntityIds,
       findSelectionEntityId,
+      jumpTarget,
       showAnnotations,
+      annotationInteractionEnabled,
+      showGlosses,
       glossStyle,
       glossEvaluationEnabled,
+      citationAnnotationsEnabled,
+      symbolUnderlineMethod,
+      termAnnotationsEnabled,
+      equationDiagramsEnabled,
       copySentenceOnClick,
       handleAddPaperToLibrary,
       handleSelectEntityAnnotation,
@@ -160,21 +185,50 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
     return (
       <>
         {entities.all.map((entityId) => {
+          /*
+           * Unpack entity data.
+           */
           const entity = entities.byId[entityId];
           const annotationId = `entity-${entityId}-page-${pageNumber}-annotation`;
-          const isSelected = selectedAnnotationIds.indexOf(annotationId) !== -1;
           const boundingBoxes = entity.attributes.bounding_boxes.filter(
             (box) => box.page === pageNumber
           );
           if (boundingBoxes.length === 0) {
             return null;
           }
+
+          /*
+           * Determine generic selection properties. Select an annotation if it has been explicitly
+           * selected, or if there are no selections and the annotation is for this entity.
+           */
+          let isSelected = false;
+          if (selectedAnnotationIds.indexOf(annotationId) !== -1) {
+            isSelected = true;
+          } else if (
+            selectedAnnotationIds.length === 0 &&
+            selectedEntityIds.indexOf(entityId) !== -1
+          ) {
+            isSelected = true;
+          }
+          const isMatch =
+            findMatchedEntityIds !== null &&
+            findMatchedEntityIds.indexOf(entityId) !== -1;
+          const isFindSelection = findSelectionEntityId === entityId;
           const selectedSpanIds = isSelected ? selectedAnnotationSpanIds : null;
+          const isJumpTarget = jumpTarget === entityId;
+          const inDefinition = selectors.inDefinition(entityId, entities);
+          const hasDefinition = selectors.hasDefinition(entityId, entities);
+
           if (
+            termAnnotationsEnabled &&
             isTerm(entity) &&
             entity.attributes.term_type !== "symbol" &&
-            entity.attributes.name !== null &&
-            entity.attributes.name.indexOf("SKIP") === -1
+            // entity.attributes.name !== null &&
+            // entity.attributes.name.indexOf("SKIP") === -1 &&
+            !(
+              entity.attributes.term_type !== null &&
+              entity.attributes.term_type.toLowerCase() === "ignore"
+            )
           ) {
             return (
               <EntityAnnotation
@@ -183,24 +237,29 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 entity={entity}
                 className="term-annotation"
                 pageView={pageView}
-                underline={showAnnotations}
+                underline={showAnnotations && hasDefinition && !inDefinition}
                 glossStyle={glossStyle}
                 glossContent={
-                  glossEvaluationEnabled ? (
-                    <TermPropertyEvaluationGloss
-                      id={annotationId}
+                  showGlosses ? (
+                    <SimpleTermGloss
                       term={entity}
+                      entities={entities}
+                      showDrawerActions={true}
+                      handleJumpToEntity={this.props.handleJumpToEntity}
+                      handleOpenDrawer={this.props.handleOpenDrawer}
                     />
-                  ) : (
-                    <TermDefinitionGloss term={entity} />
-                  )
+                  ) : null
                 }
                 selected={isSelected}
                 selectedSpanIds={selectedSpanIds}
+                active={annotationInteractionEnabled}
+                isFindSelection={isFindSelection}
+                isFindMatch={isMatch}
                 handleSelect={handleSelectEntityAnnotation}
               />
             );
           } else if (
+            citationAnnotationsEnabled &&
             isCitation(entity) &&
             papers !== null &&
             entity.attributes.paper_id !== null &&
@@ -216,16 +275,19 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 underline={showAnnotations}
                 glossStyle={glossStyle}
                 glossContent={
-                  <CitationGloss
-                    citation={entity}
-                    paper={papers[entity.attributes.paper_id]}
-                    userLibrary={userLibrary}
-                    handleAddPaperToLibrary={handleAddPaperToLibrary}
-                    openedPaperId={paperId}
-                    evaluationEnabled={glossEvaluationEnabled}
-                  />
+                  showGlosses ? (
+                    <CitationGloss
+                      citation={entity}
+                      paper={papers[entity.attributes.paper_id]}
+                      userLibrary={userLibrary}
+                      handleAddPaperToLibrary={handleAddPaperToLibrary}
+                      openedPaperId={paperId}
+                      evaluationEnabled={glossEvaluationEnabled}
+                    />
+                  ) : null
                 }
                 selected={isSelected}
+                active={annotationInteractionEnabled}
                 selectedSpanIds={selectedSpanIds}
                 handleSelect={handleSelectEntityAnnotation}
               />
@@ -240,25 +302,37 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 entity={entity}
                 underline={showAnnotations}
                 selected={isSelected}
+                active={annotationInteractionEnabled && !isSelected}
                 selectedSpanIds={selectedSpanIds}
                 handleSelect={this.props.handleSelectEntityAnnotation}
               />
             );
           } else if (isSymbol(entity)) {
             /*
-             * A symbol should be shown as clickable in any of the conditions:
-             * 1. It is the child of a selected symbol
-             * 2. It is a top-level symbol in a selected equation
-             * 3. Equation annotations are disabled and it's a top-level symbol
+             * If the symbol appears in a selected equation, don't render it; the
+             * equation diagram provides its own targets to click.
              */
-            const isSelectionChild = selectedEntities.some(
-              (e) => isSymbol(e) && selectors.isChild(entity, e)
-            );
-            const isTopLevel = selectors.isTopLevelSymbol(entity, entities);
             const equationId = entity.relationships.equation.id;
             const inSelectedEquation = selectedEntities.some(
               (e) => isEquation(e) && equationId === e.id
             );
+            if (inSelectedEquation) {
+              return null;
+            }
+
+            /*
+             * A symbol should be shown as clickable in any of the conditions:
+             * 1. It is the child of a selected symbol
+             * 2. Equation annotations are disabled and it's a top-level symbol
+             */
+            const isSelectionChild = selectedEntities.some(
+              (e) => isSymbol(e) && selectors.isChild(entity, e)
+            );
+            const isSelectionDescendant = selectedEntities.some(
+              (e) => isSymbol(e) && selectors.isDescendant(entity, e, entities)
+            );
+            const isTopLevel = selectors.isTopLevelSymbol(entity, entities);
+
             const isTopLevelInSelectedEquation =
               isTopLevel && inSelectedEquation;
             const isSelectable =
@@ -267,21 +341,35 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
               (isTopLevel &&
                 (equationId === null || !this.shouldShowEquation(equationId)));
 
+            let underline = false;
+            if (showAnnotations) {
+              if (
+                (equationId !== null && this.shouldShowEquation(equationId)) ||
+                (equationDiagramsEnabled && inSelectedEquation)
+              ) {
+                underline = false;
+              } else if (symbolUnderlineMethod === "top-level-symbols") {
+                underline = isSelectable;
+              } else if (symbolUnderlineMethod === "defined-symbols") {
+                underline = selectors.shouldUnderline(entityId, entities);
+              }
+            }
+
             /*
              * Show a more prominent selection hint than an underline when the symbol is
              * child of something else that's already selected.
              */
-            const showSelectionHint =
-              isSelectionChild || isTopLevelInSelectedEquation;
+            const showSelectionHint = isSelectionChild;
+
+            const showTopLevelGlossHint =
+              isTopLevel &&
+              (hasDefinition ||
+                selectors.descendantHasDefinition(entity.id, entities));
 
             /*
              * Compute attributes of symbols to use for styling, like whether it
              * is a search result, and how it relates to the current selections.
              */
-            const isMatch =
-              findMatchedEntityIds !== null &&
-              findMatchedEntityIds.indexOf(entityId) !== -1;
-            const isFindSelection = findSelectionEntityId === entityId;
             const isSelectionAncestor = selectedEntities.some(
               (e) => isSymbol(e) && selectors.isDescendant(e, entity, entities)
             );
@@ -292,7 +380,9 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
              * it doesn't have any children to be selected.
              */
             const active =
-              (isSelectable && !isSelectionAncestor) || (isLeaf && isSelected);
+              annotationInteractionEnabled &&
+              ((isSelectable && !isSelectionAncestor) ||
+                (isLeaf && isSelected));
 
             return (
               <EntityAnnotation
@@ -300,7 +390,9 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 id={annotationId}
                 className={classNames("symbol-annotation", {
                   "selection-hint": showSelectionHint,
+                  "top-level-gloss-hint": showTopLevelGlossHint,
                   "leaf-symbol": isLeaf,
+                  "descendant-of-selection": isSelectionDescendant,
                   "ancestor-of-selection": isSelectionAncestor,
                   "in-selected-equation": inSelectedEquation,
                 })}
@@ -314,26 +406,25 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                  * symbol (once selected) should no longer be interactive itself.
                  */
                 active={active}
-                underline={showAnnotations}
+                underline={underline}
                 selected={isSelected}
                 selectedSpanIds={selectedSpanIds}
                 isFindSelection={isFindSelection}
                 isFindMatch={isMatch}
                 glossStyle={glossStyle}
                 glossContent={
+                  showGlosses &&
                   !(this.props.glossStyle === "tooltip" && !isFindSelection) ? (
-                    glossEvaluationEnabled ? (
-                      <SimpleSymbolGloss
-                        symbol={entity}
-                        entities={entities}
-                        handleJumpToEntity={this.props.handleJumpToEntity}
-                      />
-                    ) : (
-                      <SymbolDefinitionGloss symbol={entity} />
-                    )
+                    <SimpleSymbolGloss
+                      symbol={entity}
+                      entities={entities}
+                      showDrawerActions={true}
+                      handleJumpToEntity={this.props.handleJumpToEntity}
+                      handleOpenDrawer={this.props.handleOpenDrawer}
+                    />
                   ) : null
                 }
-                tooltipPlacement="above"
+                tooltipPlacement="below"
                 handleSelect={this.props.handleSelectEntityAnnotation}
               />
             );
@@ -341,11 +432,13 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
             return (
               <EntityAnnotation
                 key={annotationId}
-                className="sentence-annotation"
+                className={classNames("sentence-annotation", {
+                  "jump-target": isJumpTarget,
+                })}
                 id={annotationId}
                 pageView={pageView}
                 entity={entity}
-                active={copySentenceOnClick}
+                active={annotationInteractionEnabled && copySentenceOnClick}
                 underline={false}
                 selected={false}
                 selectedSpanIds={null}

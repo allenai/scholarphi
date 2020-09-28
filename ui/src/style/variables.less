@@ -3,6 +3,8 @@
  */
 // Express MUI components with high specificity so we don't have to write '!important' for rules.
 @mui-tooltip: ~"div[role=tooltip] .MuiTooltip-tooltip";
+@mui-snackbar: ~".MuiSnackbar-root";
+@mui-snackbar-message: ~".MuiSnackbarContent-message";
 @mui-button-base: ~".MuiButtonBase-root";
 @mui-tab: ~".MuiTab-root";
 @drawer: ~".drawer .MuiPaper-root";
@@ -29,11 +31,13 @@
 /**
  * HIGHLIGHTS
  */
-@highlight-color: rgb(207, 176, 103);
+@highlight-color: darken(@s2-link-default, 20%);
 @highlight-opacity: 0.4;
+@highlight-opacity-percent: 30%;
 @highlight-border-color: #88f;
 @highlight-hover-opacity: 0.2;
-@highlight-hover-background: rgb(207, 176, 103);
+@highlight-hover-opacity-percent: 20%;
+@highlight-hover-background: @s2-link-default;
 @highlight-hitbox-padding: 0.1em;
 
 /**
@@ -62,6 +66,7 @@
 /**
  * FONT SIZES
  */
+@x-large: 2rem;
 @large: 1.2rem;
 @medium: 1rem;
 @small: 0.8rem;
@@ -85,9 +90,7 @@
 @tooltip-paper-clipping-height: 120px;
 @tooltip-padding: 4px;
 
-@drawer-paper-clipping-width: @paper-summary-width + (@paper-padding * 2);
-@drawer-paper-clipping-height: 200px;
-
+@document-snippets-container-width: 300px;
 @entity-property-editor-width: 400px;
 
 /**

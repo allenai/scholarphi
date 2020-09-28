@@ -21,8 +21,7 @@
    * Highlight all spans of an annotation when hovering over any one span of the annotation
    */
   &:hover .scholar-reader-annotation-span {
-    background: @highlight-hover-background;
-    opacity: @highlight-hover-opacity;
+    background-color: fade(@highlight-color, @highlight-hover-opacity-percent);
     cursor: pointer;
   }
 
@@ -31,18 +30,13 @@
    */
   &.selected .scholar-reader-annotation-span {
     &:not(.find-selection) {
-      background-color: @highlight-color;
-      opacity: @highlight-opacity;
+      background-color: fade(@highlight-color, @highlight-opacity-percent);
     }
   }
 
-  .scholar-reader-annotation-span.active {
-    /**
-     * Provide an underline as a hint that the annotation is interactive 
-     */
-    &.underline {
-      border-bottom: @underline-width @underline-color dotted;
-    }
+  .scholar-reader-annotation-span.underline:not(.ancestor-of-selection) {
+    padding-bottom: 0.2%;
+    border-bottom: @underline-width fade(@underline-color, 70%) dotted;
   }
 }
 
@@ -51,13 +45,36 @@
  */
 .scholar-reader-annotation-span {
   &.find-match {
-    background-color: green;
-    opacity: 0.3;
+    background-color: fade(@highlight-color, @highlight-hover-opacity-percent);
   }
 
   &.find-selection {
-    background-color: green !important;
-    opacity: 0.6 !important;
+    background-color: fade(
+      @highlight-color,
+      @highlight-opacity-percent
+    ) !important;
+  }
+}
+
+/**
+ * Highlight the target of jumps within the document
+ */
+.scholar-reader-annotation-span.jump-target {
+  background-color: fade(@highlight-color, @highlight-hover-opacity-percent);
+  // transition: background-color ease-out;
+  // animation-name: fade;
+  // animation-duration: 20s;
+}
+
+@keyframes fade {
+  0% {
+    background-color: fade(@highlight-color, @highlight-hover-opacity-percent);
+  }
+  75% {
+    background-color: fade(@highlight-color, @highlight-hover-opacity-percent);
+  }
+  100% {
+    background-color: none;
   }
 }
 
@@ -72,7 +89,7 @@
  * Highlight entities that were extracted using experimental techniques
  */
 .scholar-reader-annotation-span.source-other {
-  background-color: rgba(255, 255, 0, 0.3);
+  background-color: fade(yellow, 30%);
 }
 
 /**
@@ -100,18 +117,18 @@
 .symbol-annotation {
   &.selected:not(.leaf-symbol) {
     pointer-events: none;
-    background: none !important;
     padding: @padding / 2;
     margin: -@padding / 2;
-    border: 4px solid rgba(0, 128, 0, 0.5);
     border-radius: @border-radius;
+    background-color: fade(
+      @highlight-color,
+      @highlight-hover-opacity-percent
+    ) !important;
   }
 
   &.selection-hint {
-    background-color: @highlight-color;
-    border-radius: 10px;
-    border: 1px solid black;
-    animation: pulse 0.5s ease-in-out infinite alternate;
+    background-color: fade(@highlight-color, @highlight-opacity-percent);
+    border-radius: @border-radius;
 
     /*
      * By default, annotations appear behind equation diagrams, which are meant to appear
@@ -121,15 +138,6 @@
      */
     &.in-selected-equation {
       z-index: @equation-diagram-annotation-z-index;
-    }
-  }
-
-  @keyframes pulse {
-    0% {
-      opacity: 0.1;
-    }
-    100% {
-      opacity: @highlight-opacity;
     }
   }
 }

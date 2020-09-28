@@ -51,7 +51,7 @@ def test_extract_plaintext_consolidate_periods_across_groups():
 
 def test_extract_plaintext_separate_section_header():
     plaintext = extract_plaintext(
-        "main.text", "\n".join(["Line 1", r"\section{Section header}", "Line 3"])
+        "main.tex", "\n".join(["Line 1", r"\section{Section header}", "Line 3"])
     )
     assert plaintext == "\n".join(["Line 1", "", "Section header.", "", "Line 3"])
 
@@ -73,6 +73,40 @@ def test_extract_phrases():
     assert phrase2.start == 34
     assert phrase2.end == 50
     assert phrase2.text == "two-token phrase"
+
+
+def test_extract_phrases_from_formatted_text():
+    extractor = PhraseExtractor(["two-token phrase"])
+    phrases = list(
+        extractor.parse(
+            "main.tex", r"In this \textbf{two-token phrase}, something happens."
+        )
+    )
+    assert len(phrases) == 1
+
+
+def test_extract_phrases_containing_ampersands():
+    # This example is from arXiv paper 1811.11889.
+    extractor = PhraseExtractor(["D&M"])
+    phrases = list(extractor.parse("main.tex", r"This sentence contains D\&M."))
+    assert len(phrases) == 1
+    assert phrases[0].text == "D&M"
+    assert phrases[0].tex == "D\&M"
+
+
+def test_extract_phrases_starting_with_symbol():
+    # This example is from arXiv paper 1811.11889.
+    extractor = PhraseExtractor(["+D&M"])
+    phrases = list(extractor.parse("main.tex", r"This sentence contains +D\&M."))
+    assert len(phrases) == 1
+    assert phrases[0].text == "+D&M"
+
+
+def test_extract_phrase_containing_single_letter():
+    extractor = PhraseExtractor(["T"])
+    phrases = list(extractor.parse("main.tex", "This sentence contains the letter T."))
+    assert len(phrases) == 1
+    assert phrases[0].text == "T"
 
 
 def test_extract_sentences():
