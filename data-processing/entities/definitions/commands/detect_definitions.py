@@ -219,6 +219,46 @@ def get_term_definition_pairs(
 
     return pairs
 
+def search_symbol_nickname(tidx, featurized_text, range_, ranges, direction):
+    UNION_POS_SET = ["DT", "JJ", "NN", "NNS", "NNP", "NNPS"]
+    pos_idxs = []
+    pos_tags = []
+    pos_ranges = []
+    if direction=='RIGHT':
+        current_idx = tidx + 1
+    elif direction=='LEFT':
+        current_idx = tidx - 1
+
+    # Search ahead until the POS tag is not in the union set
+    while featurized_text["pos"][current_idx] in UNION_POS_SET:
+        pos_idxs.append(current_idx)
+        pos_ranges.append(ranges[current_idx])
+        pos_tags.append(featurized_text['pos'][current_idx])
+        if direction=='RIGHT':
+            current_idx += 1
+        elif direction=='LEFT':
+            current_idx -= 1
+
+    print(featurized_text['tokens'][tidx], pos_idxs)
+    # ignore when the POS tag is [DT].
+    if len(pos_tags) == 1 and pos_tags[0] == "DT":
+        return None, None, None, None
+
+    if len(pos_idxs) > 0 :
+        symbol_idx = tidx
+        symbol_range = range_
+        
+        if direction=='LEFT':
+            nickname_idxs = reversed(pos_idxs)
+            nickname_ranges = [ppr for ppr in reversed(pos_ranges)]
+        elif direction=='RIGHT':                    
+            nickname_idxs = pos_idxs
+            nickname_ranges = [npr for npr in pos_ranges]
+        return symbol_idx,symbol_range,nickname_idxs, nickname_ranges
+    else:
+        return None, None, None, None
+
+
 def get_symbol_nickname_pairs(text: str, featurized_text: Dict[Any, Any], symbol_texs : Dict[Any, Any]):
 
     # Check whether a symbol's definition is nickname of the symbol or not
@@ -230,87 +270,42 @@ def get_symbol_nickname_pairs(text: str, featurized_text: Dict[Any, Any], symbol
     # Union set of POS tags in nicknames. Feel free to add more if you have new patterns
     ranges = get_token_character_ranges(text, featurized_text["tokens"])
     pairs = []
-    UNION_POS_SET = ["DT", "JJ", "NN", "NNS", "NNP", "NNPS"]
     if 'SYMBOL' in text:
-        previous_symbol_nickname_pairs = []
+        symbol_nickname_pairs = []
         for tidx, (token,pos,np,range_) in enumerate(zip(featurized_text['tokens'], featurized_text['pos'],featurized_text['np'],ranges)):
-            if 'So, the role label scores ' in text:
-                print(f'token = {token, pos, range_.start}')
-            if token == 'SYMBOL':
-                # extract a phrase that includes POS tags in the union set.
-                # we assume that nicknames only appear ahead SYMBOL.
-                previous_pos_idxs = []
-                previous_pos_tags = []
-                previous_pos_ranges = []
-                current_idx = tidx - 1
-                # Search back until the POS tag is not in the union set
-                while featurized_text["pos"][current_idx] in UNION_POS_SET:
-                    previous_pos_idxs.append(current_idx)
-                    previous_pos_ranges.append(ranges[current_idx])
-                    previous_pos_tags.append(featurized_text['pos'][current_idx])
-                    current_idx -= 1
-
-                # ignore when the POS tag is [DT].
-                if len(previous_pos_tags) == 1 and previous_pos_tags[0] == "DT":
-                    continue
-
-                # store the start SYMBOL index and the reversed pos list
-                if len(previous_pos_idxs) > 0 :
-                    symbol_idx = tidx
-                    symbol_range = range_
-                    nickname_idxs = reversed(previous_pos_idxs)
-                    nickname_ranges = [ppr for ppr in reversed(previous_pos_ranges)]
-                    previous_symbol_nickname_pairs.append(
-                        (symbol_idx,symbol_range,
-                         nickname_idxs, nickname_ranges))
-
+            # 1. If of the form '*th', check RIGHT pf symbol
+            # 2. If token is a symbol, then:
+            #   a. If the symbol tex is present:
+            #       i. If single length symbol, first check LEFT then RIGHT
+            #       ii. If multi length symbol, check LEFT
+            #   b. If symbol tex is not present, just check LEFT 
             if (token == 'SYMBOLth'):
-                next_pos_idxs = []
-                next_pos_tags = []
-                next_pos_ranges = []
-                current_idx = tidx + 1
-                # Search ahead until the POS tag is not in the union set
-                while featurized_text["pos"][current_idx] in UNION_POS_SET:
-                    next_pos_idxs.append(current_idx)
-                    next_pos_ranges.append(ranges[current_idx])
-                    next_pos_tags.append(featurized_text['pos'][current_idx])
-                    current_idx += 1
+                symbol_idx,symbol_range,nickname_idxs, nickname_ranges = search_symbol_nickname(tidx, featurized_text, range_, ranges, 'RIGHT')
+                if symbol_idx != None:
+                    symbol_nickname_pairs.append((symbol_idx,symbol_range,nickname_idxs, nickname_ranges))
                 
-                if len(next_pos_idxs) > 0 :
-                    symbol_idx = tidx
-                    symbol_range = range_
-                    nickname_idxs = next_pos_idxs
-                    nickname_ranges = [npr for npr in next_pos_ranges]
-                    previous_symbol_nickname_pairs.append(
-                        (symbol_idx,symbol_range,
-                        nickname_idxs, nickname_ranges))
-                    
-            if range_.start in symbol_texs:
-                print('reached here',symbol_texs[range_.start])
-                if (token == 'SYMBOL' and len(symbol_texs[range_.start])==1):
-                    print('aaaand reached here')
+            elif token == 'SYMBOL':
+                if range_.start in symbol_texs:
+                    if len(symbol_texs[range_.start])==1:
+                        symbol_idx,symbol_range,nickname_idxs, nickname_ranges = search_symbol_nickname(tidx, featurized_text, range_, ranges, 'LEFT')
+                        if symbol_idx is not None:
+                            symbol_nickname_pairs.append((symbol_idx,symbol_range,nickname_idxs, nickname_ranges))
+                        else:
+                            symbol_idx,symbol_range,nickname_idxs, nickname_ranges = search_symbol_nickname(tidx, featurized_text, range_, ranges,  'RIGHT')
+                            if symbol_idx is not None:
+                                symbol_nickname_pairs.append((symbol_idx,symbol_range,nickname_idxs, nickname_ranges))
+                    else:
+                        symbol_idx,symbol_range,nickname_idxs, nickname_ranges = search_symbol_nickname(tidx, featurized_text, range_, ranges,  'LEFT')
+                        if symbol_idx is not None:
+                            symbol_nickname_pairs.append((symbol_idx,symbol_range,nickname_idxs, nickname_ranges))
+                else:
+                    symbol_idx,symbol_range,nickname_idxs, nickname_ranges = search_symbol_nickname(tidx, featurized_text, range_, ranges,  'LEFT')
+                    if symbol_idx is not None:
+                        symbol_nickname_pairs.append((symbol_idx,symbol_range,nickname_idxs, nickname_ranges))
+                        
+                        
 
-                    next_pos_idxs = []
-                    next_pos_tags = []
-                    next_pos_ranges = []
-                    current_idx = tidx + 1
-                    # Search ahead until the POS tag is not in the union set
-                    while featurized_text["pos"][current_idx] in UNION_POS_SET:
-                        next_pos_idxs.append(current_idx)
-                        next_pos_ranges.append(ranges[current_idx])
-                        next_pos_tags.append(featurized_text['pos'][current_idx])
-                        current_idx += 1
-                    
-                    if len(next_pos_idxs) > 0 :
-                        symbol_idx = tidx
-                        symbol_range = range_
-                        nickname_idxs = next_pos_idxs
-                        nickname_ranges = [npr for npr in next_pos_ranges]
-                        previous_symbol_nickname_pairs.append(
-                            (symbol_idx,symbol_range,
-                            nickname_idxs, nickname_ranges))
-            
-        for symbol_idx,symbol_range, nickname_idxs, nickname_ranges in previous_symbol_nickname_pairs:
+        for symbol_idx,symbol_range, nickname_idxs, nickname_ranges in symbol_nickname_pairs:
             # logging.debug("Detected nicknames", symbol_idx, symbol_range, [featurized_text['tokens'][idx] for idx in nickname_idxs], nickname_ranges)
 
             symbol_start = symbol_range.start
@@ -332,7 +327,6 @@ def get_symbol_nickname_pairs(text: str, featurized_text: Dict[Any, Any], symbol
             )
             logging.debug("Found definition-term pair %s", pair)
             pairs.append(pair)
-
     return pairs
 
 
