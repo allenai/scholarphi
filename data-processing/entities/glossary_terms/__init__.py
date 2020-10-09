@@ -35,5 +35,5 @@ commands.insert(
     ),
 )
 
-terms_pipeline = EntityPipeline("glossary-terms", commands)
+terms_pipeline = EntityPipeline("glossary-terms", commands, depends_on=["sentences"])
 register_entity_pipeline(terms_pipeline)
