@@ -229,8 +229,14 @@ def search_symbol_nickname(tidx, featurized_text, range_, ranges, direction):
     pos_ranges = []
     if direction=='RIGHT':
         current_idx = tidx + 1
+
     elif direction=='LEFT':
         current_idx = tidx - 1
+        
+
+    # Exit if the current id is greater than the length of the sentence or below zero
+    if current_idx >= len(featurized_text["pos"]) or current_idx<0:
+        return None, None, None, None
 
     # Search ahead until the POS tag is not in the union set
     while featurized_text["pos"][current_idx] in UNION_POS_SET:
@@ -242,9 +248,8 @@ def search_symbol_nickname(tidx, featurized_text, range_, ranges, direction):
         elif direction=='LEFT':
             current_idx -= 1
 
-    print(featurized_text['tokens'][tidx], pos_idxs)
-    # ignore when the POS tag is [DT].
-    if len(pos_tags) == 1 and pos_tags[0] == "DT":
+    # ignore when the POS tag is [DT] or [IN].
+    if len(pos_tags) == 1 and (pos_tags[0] == "DT"):
         return None, None, None, None
 
     if len(pos_idxs) > 0 :
@@ -252,11 +257,23 @@ def search_symbol_nickname(tidx, featurized_text, range_, ranges, direction):
         symbol_range = range_
         
         if direction=='LEFT':
-            nickname_idxs = reversed(pos_idxs)
+            nickname_idxs = list(reversed(pos_idxs))
             nickname_ranges = [ppr for ppr in reversed(pos_ranges)]
+            nickname_tags = [ppt for ppt in reversed(pos_tags)]
+
         elif direction=='RIGHT':                    
             nickname_idxs = pos_idxs
             nickname_ranges = [npr for npr in pos_ranges]
+            nickname_tags = [ppt for ppt in pos_tags]
+        
+        #Skip 'DT' or 'IN' as first or last nickname tokens
+        if (nickname_tags[0] == "DT"):
+            nickname_ranges = nickname_ranges[1:]
+            nickname_idxs = nickname_idxs[1:]
+        elif (nickname_tags[-1] == "DT"):
+            nickname_ranges = nickname_ranges[:-1]
+            nickname_idxs = nickname_idxs[:-1]
+
         return symbol_idx,symbol_range,nickname_idxs, nickname_ranges
     else:
         return None, None, None, None
@@ -286,27 +303,26 @@ def get_symbol_nickname_pairs(text: str, featurized_text: Dict[Any, Any], symbol
                 symbol_idx,symbol_range,nickname_idxs, nickname_ranges = search_symbol_nickname(tidx, featurized_text, range_, ranges, 'RIGHT')
                 if symbol_idx != None:
                     symbol_nickname_pairs.append((symbol_idx,symbol_range,nickname_idxs, nickname_ranges))
-                
+    
             elif token == 'SYMBOL':
-                if range_.start in symbol_texs:
-                    if len(symbol_texs[range_.start])==1:
-                        symbol_idx,symbol_range,nickname_idxs, nickname_ranges = search_symbol_nickname(tidx, featurized_text, range_, ranges, 'LEFT')
-                        if symbol_idx is not None:
-                            symbol_nickname_pairs.append((symbol_idx,symbol_range,nickname_idxs, nickname_ranges))
+                # Decide the order of LEFT or RIGHT
+                DIRS = []
+                if tidx > 0:
+                    if tidx < len(featurized_text['pos'])-1: 
+                        if featurized_text['pos'][tidx + 1] in ['NN']:
+                            DIRS = ['RIGHT','LEFT']
                         else:
-                            symbol_idx,symbol_range,nickname_idxs, nickname_ranges = search_symbol_nickname(tidx, featurized_text, range_, ranges,  'RIGHT')
-                            if symbol_idx is not None:
-                                symbol_nickname_pairs.append((symbol_idx,symbol_range,nickname_idxs, nickname_ranges))
+                            DIRS = ['LEFT','RIGHT']
                     else:
-                        symbol_idx,symbol_range,nickname_idxs, nickname_ranges = search_symbol_nickname(tidx, featurized_text, range_, ranges,  'LEFT')
-                        if symbol_idx is not None:
-                            symbol_nickname_pairs.append((symbol_idx,symbol_range,nickname_idxs, nickname_ranges))
-                else:
-                    symbol_idx,symbol_range,nickname_idxs, nickname_ranges = search_symbol_nickname(tidx, featurized_text, range_, ranges,  'LEFT')
+                        DIRS = ['LEFT']
+                elif tidx < len(featurized_text['pos'])-1:
+                    DIRS = ['RIGHT']
+
+                for direction in DIRS:
+                    symbol_idx,symbol_range,nickname_idxs, nickname_ranges = search_symbol_nickname(tidx, featurized_text, range_, ranges, direction)
                     if symbol_idx is not None:
                         symbol_nickname_pairs.append((symbol_idx,symbol_range,nickname_idxs, nickname_ranges))
-                        
-                        
+                        break        
 
         for symbol_idx,symbol_range, nickname_idxs, nickname_ranges in symbol_nickname_pairs:
             # logging.debug("Detected nicknames", symbol_idx, symbol_range, [featurized_text['tokens'][idx] for idx in nickname_idxs], nickname_ranges)
@@ -328,8 +344,9 @@ def get_symbol_nickname_pairs(text: str, featurized_text: Dict[Any, Any], symbol
                 definition_type="nickname",
                 definition_confidence=None,
             )
-            logging.debug("Found definition-term pair %s", pair)
+            logging.debug("Found definition-term pair %s", pair) 
             pairs.append(pair)
+
     return pairs
 
 
@@ -349,6 +366,8 @@ def get_symbol_texs(
     Returns None if there was an error establishing a mapping, for instance if there are
     a different number of 'SYMBOL' and 'FORMULA' tags between the two versions of the sentence.
     """
+    sentence_with_formula_contents = sentence_with_formula_contents.replace('\n','')
+    sentence_with_symbol_tags = sentence_with_symbol_tags.replace('\n','')
     symbol_starts = [
         m.start() for m in re.finditer(r"SYMBOL", sentence_with_symbol_tags)
     ]
@@ -356,6 +375,7 @@ def get_symbol_texs(
         m.group(1)
         for m in re.finditer(r"\[\[FORMULA:(.*?)\]\]", sentence_with_formula_contents)
     ]
+
     if len(symbol_starts) != len(symbol_texs):
         logging.warning(  # pylint: disable=logging-not-lazy
             "The two representations of a sentence %s and %s were detected as having differing "
@@ -546,6 +566,7 @@ class DetectDefinitions(
                     ) in zip(sentences, features, intents, slots, slots_conf):
                         # Extract TeX for each symbol from a parallel representation of the
                         # sentence, so that the TeX for symbols can be saved.
+                        
                         symbol_texs = get_symbol_texs(
                             s.legacy_definition_input, s.with_equation_tex
                         )
