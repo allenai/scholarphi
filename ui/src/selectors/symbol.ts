@@ -113,6 +113,9 @@ const symbolsMatchingSingleSymbol = defaultMemoize(
       .map((sId) => entities.byId[sId])
       .map((s) => s as Symbol)
       .filter((otherSymbol) => {
+        if (otherSymbol.attributes.bounding_boxes.length === 0) {
+          return false;
+        }
         if (
           otherSymbol.attributes.mathml === null ||
           otherSymbol.attributes.mathml === ""

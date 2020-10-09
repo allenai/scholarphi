@@ -15,6 +15,7 @@ export function matchingTerms(termIds: string[], entities: Entities) {
     .filter((e) => e !== undefined)
     .filter(isTerm)
     .filter((t) => names.indexOf(t.attributes.name) !== -1)
+    .filter((t) => t.attributes.bounding_boxes.length > 0)
     .map((t) => t.id);
   return orderByPosition(matchingTermIds, entities);
 }
