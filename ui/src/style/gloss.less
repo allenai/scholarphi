@@ -2,7 +2,7 @@
  * Default gloss dimensions
  */
 .gloss {
-  max-width: 400px;
+  max-width: 420px;
   &:not(.simple-gloss) {
     min-width: 200px;
   }
@@ -20,9 +20,14 @@
     background-color: #eee;
     padding: 0;
 
-    .simple-gloss__definition-container {
+    &.symbol-gloss .simple-gloss__definition-container {
       width: max-content;
-      max-width: 280px;
+      max-width: 350px;
+    }
+
+    &.term-gloss .simple-gloss__definition-container {
+      width: max-content;
+      max-width: 350px;
     }
 
     p {

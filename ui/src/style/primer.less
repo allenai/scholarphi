@@ -81,14 +81,14 @@
   .gloss {
     width: unset;
     padding: unset;
-    display: inline-block;
+    // display: inline-block;
   }
 
   /*
    * Show glossary entries in columns
    */
   ul {
-    column-count: 3;
+    // column-count: 3;
     li {
       list-style: none;
     }
@@ -98,9 +98,15 @@
      * https://stackoverflow.com/a/7785711/2096369.
      */
     li {
-      break-inside: avoid-column;
+      break-inside: avoid-page;
       .gloss {
-        display: inline-block;
+        display: block;
+        /*
+         * Prevents fragmentation of absolutely-positioned children
+         * (which is necessary to render KaTeX equations properly). See
+         * https://stackoverflow.com/a/57976866/2096369
+         */
+        transform: translate(0, 0);
       }
     }
   }

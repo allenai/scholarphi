@@ -75,7 +75,7 @@ class AppOverlay extends React.PureComponent<Props> {
   removeEventListeners(element: HTMLElement) {
     element.removeEventListener("keydown", this.onKeyDown);
     element.removeEventListener("keyup", this.onKeyUp);
-    window.removeEventListener("popsstate", this.onPopState);
+    window.removeEventListener("popstate", this.onPopState);
   }
 
   onKeyDown(event: KeyboardEvent) {

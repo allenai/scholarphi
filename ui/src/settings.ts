@@ -107,6 +107,11 @@ interface Preset extends Partial<Settings> {
  */
 const PRESETS: Preset[] = [
   {
+    key: "demo",
+    primerInstructionsEnabled: false,
+    useDefinitionsForDiagramLabels: true,
+  },
+  {
     key: "sab",
     termGlossesEnabled: false,
     citationGlossesEnabled: true,

@@ -235,7 +235,7 @@ class EquationDiagram extends React.PureComponent<Props, State> {
     );
 
     const labels = [...topLabels, ...bottomLabels];
-    const FEATURE_MARGIN = 6;
+    const FEATURE_MARGIN = 2;
 
     return (
       <div className="equation-diagram">
