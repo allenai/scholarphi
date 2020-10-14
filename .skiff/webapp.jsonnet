@@ -17,12 +17,11 @@ function(
     // We only allow registration of hostnames attached to '*.apps.allenai.org'
     // at this point. If you need a custom domain, contact us: reviz@allenai.org.
     local topLevelDomain = '.apps.allenai.org';
-    local hosts = [
+    local hosts = 
         if env == 'prod' then
-            config.appName + topLevelDomain
+            [ config.appName + topLevelDomain, 's2-reader.semanticscholar.org' ]
         else
-            config.appName + '.' + env + topLevelDomain
-    ];
+            [ config.appName + '.' + env + topLevelDomain ];
 
     // In production we run two versions of your application, as to ensure that
     // if one instance goes down or is busy, end users can still use the application.
