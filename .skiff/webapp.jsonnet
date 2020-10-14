@@ -19,7 +19,7 @@ function(
     local topLevelDomain = '.apps.allenai.org';
     local hosts = 
         if env == 'prod' then
-            [ config.appName + topLevelDomain, 's2-reader.semanticscholar.org' ]
+            [ config.appName + topLevelDomain, 'scholarphi.semanticscholar.org' ]
         else
             [ config.appName + '.' + env + topLevelDomain ];
 
