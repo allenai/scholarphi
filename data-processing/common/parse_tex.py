@@ -18,6 +18,7 @@ from common.scan_tex import (
 from common.string import JournaledString
 from common.types import (
     BeginDocument,
+    CharacterRange,
     Documentclass,
     Equation,
     LengthAssignment,
@@ -307,10 +308,48 @@ def _replace_substring_with_space(s: str, start: int, end: int) -> str:
     return s[:start] + (" " * (end - start)) + s[end:]
 
 
+def delimit_equations(s: JournaledString, equations: List[Equation]) -> JournaledString:
+    " Replace delimiters around TeX equations with standardized delimiters. "
+
+    replacements: Dict[CharacterRange, str] = {}
+
+    def needs_space_before(s: JournaledString, character_index: int) -> bool:
+        return character_index > 0 and not s[character_index - 1].isspace()
+
+    def needs_space_after(s: JournaledString, character_index: int) -> bool:
+        return character_index < len(s) and not s[character_index].isspace()
+
+    for equation in equations:
+
+        start_replacement_range = CharacterRange(equation.start, equation.content_start)
+        start_replacement = f"EQUATION_DEPTH_{equation.depth}_START"
+        if needs_space_before(s, start_replacement_range.start):
+            start_replacement = " " + start_replacement
+        if needs_space_after(s, start_replacement_range.end):
+            start_replacement = start_replacement + " "
+        replacements[start_replacement_range] = start_replacement
+
+        end_replacement_range = CharacterRange(equation.content_end, equation.end)
+        end_replacement = f"EQUATION_DEPTH_{equation.depth}_END"
+        if needs_space_before(s, end_replacement_range.start):
+            end_replacement = " " + end_replacement
+        if needs_space_after(s, end_replacement_range.end):
+            end_replacement = end_replacement + " "
+        replacements[end_replacement_range] = end_replacement
+
+    for replacement_range in sorted(
+        replacements.keys(), key=lambda r: r.start, reverse=True
+    ):
+        replacement_text = replacements[replacement_range]
+        s = s.edit(replacement_range.start, replacement_range.end, replacement_text)
+
+    return s
+
+
 def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
     """
-    Extracts plaintext from TeX. Some TeX will be replaced (e.g., "\\\\" with "\n",
-    equations with "<<equation-{id}>>"). Other TeX will be skipped (e.g., macros, braces, and brackets).
+    Extracts plaintext from TeX. Some TeX will be replaced (e.g., "\\\\" with "\n". Other TeX will be
+    skipped (e.g., macros, braces, and brackets).
 
     The returned string is a 'JournaledString', which contains helper functions that allows
     the client to map from character offsets in the plaintext string back to character offsets in
@@ -325,6 +364,14 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
     okay to keep in the text as they only infrequently influence the detected boundaries. To
     support other natural language processing tasks, this extractor may need to be further refined.
     """
+
+    # Patterns of text that should be kept verbatim (i.e., not scanned for the patterns below).
+    KEEP_PATTERNS = [
+        # TeX equations should be kept in tact. The 'EQUATION_DEPTH_*' markers are inserted into
+        # the TeX around all equations as the first step in plaintext extraction.
+        Pattern("equation", "EQUATION_DEPTH_0_START.*?EQUATION_DEPTH_0_END")
+    ]
+
     # Patterns of text that should be replaced with other plaintext.
     REPLACE_PATTERNS = {
         # Separate sections and captions text from the rest of the text.
@@ -336,6 +383,8 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
         Pattern("label", r"\\label\{([^}]+)\}"): "(Label \\1)",
         Pattern("ref", r"\\(?:page|c)?ref\{([^}]+)\}"): "(Ref \\1)",
         Pattern("glossary_term", r"\\gls(?:pl)?\*?\{([^}]+)\}"): "Glossary term (\\1)",
+        # Replace macros with spaces.
+        Pattern("macro", r"\\[a-zA-Z]+\*?[ \t]*"): " ",
         # Replace TeX source spaces with semantic spacing.
         Pattern("linebreak_keep", r"(\\\\|\\linebreak)|\n(\s)*\n\s*"): "\n",
         Pattern("linebreak_ignore", r"\n"): " ",
@@ -353,7 +402,6 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
         # 'doctools' sources at:
         # http://svn.python.org/projects/doctools/converter/converter/tokenizer.py
         Pattern("environment_tags", r"\\(begin|end)\{[^}]*\}"),
-        Pattern("macro", r"\\[a-zA-Z]+\*?[ \t]*"),
         RIGHT_BRACE,
         LEFT_BRACE,
         Pattern("left_bracket", r"\["),
@@ -369,18 +417,16 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
     plaintext = JournaledString(tex)
     equation_extractor = EquationExtractor()
     equations = list(equation_extractor.parse(tex_path, tex))
-    for equation in reversed(equations):
-        plaintext = plaintext.edit(
-            equation.start, equation.end, f"<<equation-{equation.id_}>>"
-        )
+    plaintext = delimit_equations(plaintext, equations)
 
-    patterns = list(REPLACE_PATTERNS.keys()) + SKIP_PATTERNS
+    patterns = KEEP_PATTERNS + list(REPLACE_PATTERNS.keys()) + SKIP_PATTERNS
     scanner = scan_tex(str(plaintext), patterns, include_unmatched=True)
 
     # If the scanner yields a span of text, the span is either:
-    # 1. a pattern to skip
-    # 2. a pattern to replace
-    # 3. some other uncommented text
+    # 1. a pattern to keep
+    # 2. a pattern to skip
+    # 3. a pattern to replace
+    # 4. some other uncommented text
     # If some span of text is not returned by the scanner, then it is a comment,
     # or some other text that the scanner ignores. That text should be removed from the
     # plain text as if it was a pattern to skip.
