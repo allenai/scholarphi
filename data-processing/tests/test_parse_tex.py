@@ -15,9 +15,19 @@ def test_extract_plaintext_with_equations():
     plaintext = extract_plaintext(
         "main.tex", "This sentence includes a symbol $x$ and equation $$y = x$$."
     )
-    assert (
-        plaintext
-        == "This sentence includes a symbol <<equation-0>> and equation <<equation-1>>."
+    assert plaintext == (
+        "This sentence includes a symbol EQUATION_DEPTH_0_START x EQUATION_DEPTH_0_END "
+        + "and equation EQUATION_DEPTH_0_START y = x EQUATION_DEPTH_0_END."
+    )
+
+
+def test_extract_plaintext_with_nested_equations():
+    plaintext = extract_plaintext(
+        "main.tex", r"This sentence contains an equation \(x = \textrm{$y$}\)."
+    )
+    assert plaintext == (
+        r"This sentence contains an equation EQUATION_DEPTH_0_START x = \textrm{ "
+        + "EQUATION_DEPTH_1_START y EQUATION_DEPTH_1_END } EQUATION_DEPTH_0_END."
     )
 
 
