@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import List, Optional
 
 from common.string import JournaledString
@@ -22,6 +22,12 @@ class Sentence(SerializableEntity):
     """
     A guess as to whether this sentence is really a text sentence. It's a guess, because the
     current heuristics used are not always accurate.
+    """
+
+    is_clean: bool
+    """
+    Another guess as to whether the sentence is a text sentence. Based entirely on the contents of
+    the sentence (for example, whether it ends with punctuation, or includes English words).
     """
 
     section_name: Optional[str]

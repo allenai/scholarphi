@@ -146,7 +146,10 @@ def test_ignore_periods_in_equations():
         extractor.parse("main.tex", "This sentence has an $ equation. In $ the middle.")
     )
     assert len(sentences) == 1
-    assert sentences[0].text == "This sentence has an <<equation-0>> the middle."
+    assert sentences[0].text == (
+        "This sentence has an EQUATION_DEPTH_0_START equation. In EQUATION_DEPTH_0_END "
+        + "the middle."
+    )
 
 
 def test_sentence_splitting_end_points():
