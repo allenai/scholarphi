@@ -33,7 +33,10 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
     def process(self, item: ArxivId) -> Iterator[S2Metadata]:
         # XXX(andrewhead): S2 API does not have versions of arXiv papers. I don't think this
         # will be an issue, but it's something to pay attention to.
-        resp = requests.get(f"https://api.semanticscholar.org/v1/paper/arXiv:{item}")
+        versionless_id = self._strip_arxiv_version(item)
+        resp = requests.get(
+            f"https://api.semanticscholar.org/v1/paper/arXiv:{versionless_id}"
+        )
 
         if resp.ok:
             data = resp.json()
@@ -60,7 +63,6 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
         time.sleep(FETCH_DELAY)
 
     def save(self, item: ArxivId, result: S2Metadata) -> None:
-
         s2_metadata_dir = directories.arxiv_subdir("s2-metadata", item)
         if not os.path.exists(s2_metadata_dir):
             os.makedirs(s2_metadata_dir)
@@ -81,3 +83,43 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
         s2_id_path = os.path.join(s2_metadata_dir, "s2_id")
         with open(s2_id_path, "w") as s2_id_file:
             s2_id_file.write(result.s2_id)
+
+    def _strip_arxiv_version(self, item: ArxivId) -> ArxivId:
+        """Remove any version identifier from the passed ArXiv ID.
+        Looks for the last 'v' (case-insensitive) and strips beyond it.
+
+        >>> c._strip_arxiv_version("1703.03400")
+        1703.03400
+        >>> c._strip_arxiv_version("1703.03400v0")
+        1703.03400
+        >>> c._strip_arxiv_version("1703.03400v3")
+        1703.03400
+        >>> c._strip_arxiv_version("1703.03400vasdfa")
+        1703.03400
+        >>> c._strip_arxiv_version("1703.03400asdfa")
+        1703.03400asdfa
+        >>> c._strip_arxiv_version("1703.03400V0")
+        1703.03400
+        >>> c._strip_arxiv_version("1703.03400V0v1")
+        1703.03400V0
+        >>> c._strip_arxiv_version("math.GT/0309123")
+        math.GT/0309123
+        >>> c._strip_arxiv_version("math.GT/0309123v1")
+        math.GT/0309123
+        """
+
+        last_index = None
+
+        if "v" in item:
+            last_index = item.rindex("v")
+
+        if "V" in item:
+            if last_index:
+                last_index = max(last_index, item.rindex("V"))
+            else:
+                last_index = item.rindex("V")
+
+        if last_index:
+            return item[0:last_index]
+
+        return item
