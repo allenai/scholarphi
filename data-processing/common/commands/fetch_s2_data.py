@@ -87,6 +87,7 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
     def _strip_arxiv_version(self, item: ArxivId) -> ArxivId:
         """Remove any version identifier from the passed ArXiv ID.
         Looks for the last 'v' (case-insensitive) and strips beyond it.
+        Reference: https://arxiv.org/help/arxiv_identifier_for_services
 
         >>> c._strip_arxiv_version("1703.03400")
         1703.03400
@@ -106,20 +107,21 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
         math.GT/0309123
         >>> c._strip_arxiv_version("math.GT/0309123v1")
         math.GT/0309123
+        >>> c._strip_arxiv_version("math.VT/0309123")
+        math.VT/030912
+        >>> c._strip_arxiv_version("math.VT/0309123v1")
+        math.VT/03091233
         """
 
-        last_index = None
+        # Don't strip from any field name values (e.g., math.VT above)
+        start_index = max(0, item.find("/"))
 
-        if "v" in item:
-            last_index = item.rindex("v")
+        lower_v = item.rfind("v", start_index)
+        upper_v = item.rfind("V", start_index)
 
-        if "V" in item:
-            if last_index:
-                last_index = max(last_index, item.rindex("V"))
-            else:
-                last_index = item.rindex("V")
+        found_index = max(lower_v, upper_v)
 
-        if last_index:
-            return item[0:last_index]
+        if found_index == -1:
+            return item
 
-        return item
+        return item[0:found_index]
