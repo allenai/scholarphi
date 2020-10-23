@@ -19,6 +19,7 @@ def create_sentence(tex: str, start: int) -> Sentence:
         in_figure=False,
         in_table=False,
         in_itemize=False,
+        is_clean=True,
         label=[],
         ref=[],
         cite=[],

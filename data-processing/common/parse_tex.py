@@ -383,8 +383,6 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
         Pattern("label", r"\\label\{([^}]+)\}"): "(Label \\1)",
         Pattern("ref", r"\\(?:page|c)?ref\{([^}]+)\}"): "(Ref \\1)",
         Pattern("glossary_term", r"\\gls(?:pl)?\*?\{([^}]+)\}"): "Glossary term (\\1)",
-        # Replace macros with spaces.
-        Pattern("macro", r"\\[a-zA-Z]+\*?[ \t]*"): " ",
         # Replace TeX source spaces with semantic spacing.
         Pattern("linebreak_keep", r"(\\\\|\\linebreak)|\n(\s)*\n\s*"): "\n",
         Pattern("linebreak_ignore", r"\n"): " ",
@@ -406,6 +404,7 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
         LEFT_BRACE,
         Pattern("left_bracket", r"\["),
         Pattern("right_bracket", r"\]"),
+        Pattern("macro", r"\\[a-zA-Z]+\*?[ \t]*"),
         # The following macros are a backslash followed by an ASCII symbol. This pattern was
         # written with reference to the command list at:
         # http://www.public.asu.edu/~rjansen/latexdoc/ltx-2.html

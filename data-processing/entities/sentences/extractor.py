@@ -1,16 +1,19 @@
 import logging
-from typing import Iterator, List, Tuple
+import os.path
+from typing import Iterator, List, Optional, Tuple
 
 import pysbd
 import regex
-
 from common.parse_tex import (
     EntityExtractor,
-    extract_plaintext,
     check_for_pysbd_reserved_characters,
+    extract_plaintext,
 )
+from common.types import CharacterRange
 
 from .types import Sentence
+
+DIR_PATH = os.path.dirname(__file__)
 
 
 def get_context(tex: str, before: int, after: int) -> str:
@@ -34,12 +37,20 @@ def extract_text_from_tex_group(tex_unit: str) -> str:
 
 class SentenceExtractor(EntityExtractor):
     def __init__(self, from_named_sections_only: bool = True,) -> None:
-        """
-        Initialize sentence extractor. Optionally a format for the equations that are in the
-        sentence can be specified with 'equation_format'. If the equation format is set to
-        a bag of symbols, then a list of all symbols used must be passed in as 'symbols'.
-        """
         self.from_named_sections_only = from_named_sections_only
+
+        # Initialize a list of English words that can be used later to detect whether a sentence
+        # is likely an English sentence (and not LaTeX junk). The English words come from the
+        # public domain lists of English words of sizes '10' through '35' from the SCOWL project:
+        # http://wordlist.aspell.net/. These lists are small lists of English words recommended
+        # for spell checkers. For more details on how the lists were created, see the README in the
+        # 'english_words' directory.
+        self.english_words = set()
+        for filename in ["english-words.10", "english-words.20", "english-words.35"]:
+            word_list_path = os.path.join(DIR_PATH, "english_words", filename)
+            with open(word_list_path, encoding="iso-8859-1") as english_words_file:
+                for l in english_words_file:
+                    self.english_words.add(l.strip())
 
     """
     Extract plaintext sentences from TeX, with offsets of the characters they correspond to in
@@ -73,20 +84,35 @@ class SentenceExtractor(EntityExtractor):
         # 2. pysbd uses reserved characters for splitting sentences
         #    ex: see PYSBD_RESERVED_CHARACTERS list.
         #    sol: throw a warning if the sentence contains any of these characters.
-        # Issue #1 is addressed in the plaintext extractor by removing consecutive periods.
-        for i, span in enumerate(segmenter.segment(str(plaintext))):
+        sentence_ranges: List[CharacterRange] = []
+        sentence_start: Optional[int] = None
 
-            # Strip leading and trailing whitespace from sentence.
-            plaintext_start = span.start + regex.search(r"^(\s*)", span.sent).end()
-            plaintext_end = span.start + regex.search(r"(\s*)$", span.sent).start()
+        for span in segmenter.segment(str(plaintext)):
+            if sentence_start is None:
+                # Strip leading whitespace from sentence.
+                sentence_start = span.start + regex.search(r"^(\s*)", span.sent).end()
 
-            tex_start, tex_end = plaintext.initial_offsets(plaintext_start, plaintext_end)
+            # Don't find a sentence boundary in the middle of a sentence
+            is_boundary_in_equation = regex.search(
+                r"EQUATION_DEPTH_0_START(?!.*EQUATION_DEPTH_0_END)",
+                str(plaintext[sentence_start : span.end]),
+            )
+            if not is_boundary_in_equation:
+                # Strip trailing whitespace from sentence.
+                end = span.start + regex.search(r"(\s*)$", span.sent).start()
+                sentence_ranges.append(CharacterRange(sentence_start, end))
+                sentence_start = None
+
+        for i, sentence_range in enumerate(sentence_ranges):
+            tex_start, tex_end = plaintext.initial_offsets(
+                sentence_range.start, sentence_range.end
+            )
             if tex_start is None or tex_end is None:
                 logging.warning(  # pylint: disable=logging-not-lazy
                     "The span bounds (%d, %d) from pysbd for a sentence could not be mapped "
                     + "back to character offsets in the LaTeX for an unknown reason.",
-                    plaintext_start,
-                    plaintext_end,
+                    sentence_range.start,
+                    sentence_range.end,
                 )
                 continue
 
@@ -94,7 +120,7 @@ class SentenceExtractor(EntityExtractor):
 
             # Save the sentence as a journaled string, which will allow the mapping of the cleaned
             # sentence text to the original TeX.
-            sentence = plaintext.substring(plaintext_start, plaintext_end)
+            sentence = plaintext.substring(sentence_range.start, sentence_range.end)
             if len(sentence) > 1000:
                 logging.warning(  # pylint: disable=logging-not-lazy
                     "Exceptionally long sentence (length %d). This might indicate the sentence "
@@ -201,6 +227,13 @@ class SentenceExtractor(EntityExtractor):
                 ]
             )
 
+            tokens = regex.split(r"[\s,;.!?()]+", str(sentence))
+            contains_common_english_word = any(
+                [len(t) > 1 and t.lower() in self.english_words for t in tokens]
+            )
+            ends_with_stop = bool(regex.search(r"[,.:;!?]\s*$", str(sentence)))
+            is_clean = contains_common_english_word and ends_with_stop
+
             # Sanitize the text, replacing macros and unwanted TeX with text that will be easier
             # for the text processing algorithms to process.
             sanitized = sentence
@@ -218,7 +251,7 @@ class SentenceExtractor(EntityExtractor):
                 replace_patterns.append((url_text, "URL"))
 
             # Replace references to text elements like figures and tables with a single
-            # known word for each type of element. Currently depens on idiomatic patterns
+            # known word for each type of element. Currently depends on idiomatic patterns
             # for naming elements, like \ref{{fig,tab,sec,eq}:XXX}, to distinguish between
             # element types. Also, the code keeps the token ahead of the reference (e.g.,
             # the word "Table" in "Table\ref{...}"), although it might duplicate the
@@ -261,6 +294,7 @@ class SentenceExtractor(EntityExtractor):
                 tex=sentence_tex,
                 context_tex=context_tex,
                 validity_guess=validity_guess,
+                is_clean=is_clean,
                 section_name=section_name,
                 in_figure=in_figure,
                 in_table=in_table,
