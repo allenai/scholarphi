@@ -8,12 +8,12 @@ from scripts.pipelines import EntityPipeline, register_entity_pipeline
 
 # from .colorize import get_definition_color_positions
 from .commands.detect_definitions import DetectDefinitions
-from .commands.embellish_sentences import EmbellishSentences
+from .commands.tokenize_sentences import TokenizeSentences
 from .types import Definiendum, Definition, TermReference
 from .upload import upload_definitions
 
 # Register directories for output from intermediate pipeline stages.
-directories.register("embellished-sentences")
+directories.register("sentence-tokens")
 directories.register("detected-definitions")
 directories.register("sources-with-colorized-definitions")
 directories.register("compiled-sources-with-colorized-definitions")
@@ -34,7 +34,7 @@ upload_command = make_upload_entities_command(
 
 
 commands: CommandList = [
-    EmbellishSentences,
+    TokenizeSentences,
     DetectDefinitions,
     make_locate_entities_command("definitions"),
     upload_command,

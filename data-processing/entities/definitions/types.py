@@ -26,6 +26,61 @@ class EmbellishedSentence(Sentence):
 
 
 @dataclass(frozen=True)
+class Token:
+    """
+    A token from a sentence extracted from TeX. Note that this token may be taken from a
+    transformed version of the sentence, i.e., one that has been modified to be easier to process.
+    For instance, the token may have been produced by splitting a sentence stored as the
+    'with_symbols_marked' property of the EmbellishedSentence class.
+    """
+
+    text: str
+    " The token. "
+
+    text_for_annotation: Optional[str]
+    """
+    When assembling a text to be annotated, this value will be written to the text to be
+    annotated, instead of the 'text' property. Set this to 'None' if the token should not
+    be written to the text to be annotated at all.
+    """
+
+    tex: str
+    " The original TeX for the token (before any transformations). "
+
+    tex_start: int
+    tex_end: int
+    """
+    Character offsets that bounding where this token appeared (or the text that was transformed into
+    this token) in the original TeX.
+    """
+
+    sentence_transformations: Optional[str]
+    """
+    Optional tag describing types of transformations that had been applied to the sentence before
+    tokens were extracted from it.
+    """
+
+
+@dataclass(frozen=True)
+class OutputToken(Token):
+    " A token output to a transformed copy of a text. "
+
+    start_in_text: int
+    end_in_text: int
+    """
+    Offsets indicating the character positions where the token appears in the output text.
+    """
+
+    start_in_sentence: int
+    end_in_sentence: int
+    """
+    Offsets indicating the character positions where the token appears in the sentence it belongs
+    to in the output text. This is useful for finding the token in the output text if the text
+    is written such that each sentence is listed on its own line.
+    """
+
+
+@dataclass(frozen=True)
 class Definition(SerializableEntity):
     """
     A passage that defines a term. In many cases, this will only include the definiens---the

@@ -229,7 +229,7 @@ class DefinitionDetectionModel:
             abbrev_tokens.append(str(abrv._.long_form).split())
         abbrev_tokens_flattened = [t for at in abbrev_tokens for t in at]
 
-        # (2 Entities
+        # (2) Entities
         entities = [str(e) for e in doc.ents]
         entity_tokens = [e.split() for e in entities]
         entity_tokens_flattened = [t for et in entity_tokens for t in et]
