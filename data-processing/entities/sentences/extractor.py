@@ -92,10 +92,11 @@ class SentenceExtractor(EntityExtractor):
                 # Strip leading whitespace from sentence.
                 sentence_start = span.start + regex.search(r"^(\s*)", span.sent).end()
 
-            # Don't find a sentence boundary in the middle of a sentence
+            # Don't detect a sentence boundary in the middle of a equation
             is_boundary_in_equation = regex.search(
                 r"EQUATION_DEPTH_0_START(?!.*EQUATION_DEPTH_0_END)",
                 str(plaintext[sentence_start : span.end]),
+                flags=regex.DOTALL,
             )
             if not is_boundary_in_equation:
                 # Strip trailing whitespace from sentence.

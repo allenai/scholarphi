@@ -12,6 +12,7 @@ def symbol(tokens, start=-1, end=-1):
         tokens=tokens,
         mathml="<mathml>",
         children=[],
+        parent=None,
         start=start,
         end=end,
     )

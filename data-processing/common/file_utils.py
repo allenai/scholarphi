@@ -357,10 +357,11 @@ def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
             tex=s.tex,
             mathml=s.mathml,
             children=[],
+            parent=None,
             is_definition=s.is_definition,
             equation=s.equation,
             relative_start=s.relative_start,
-            relative_end=s.relative_end
+            relative_end=s.relative_end,
         )
 
     for t in loaded_symbol_tokens:
@@ -372,12 +373,14 @@ def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
         child_id = SymbolId(c.tex_path, c.equation_index, c.child_index)
         try:
             child_symbol = symbols_by_id[child_id]
-            symbols_by_id[parent_id].children.append(child_symbol)
+            parent_symbol = symbols_by_id[parent_id]
+            parent_symbol.children.append(child_symbol)
+            child_symbol.parent = parent_symbol
         except KeyError:
             logging.warning(  # pylint: disable=logging-not-lazy
-                "Could not load child symbol %s for symbol %s for paper %s. "
-                + "There may have been an error in the equation parser, like a failure to "
-                + "find tokens for the child symbol.",
+                "Could not load child symbol %s or parent symbol %s for paper %s when associating "
+                + "the two as parent and child. There may have been an error in the equation "
+                + "parser, like a failure to find tokens for the child symbol.",
                 child_id,
                 parent_id,
                 arxiv_id,
