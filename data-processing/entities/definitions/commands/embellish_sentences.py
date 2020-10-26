@@ -3,27 +3,24 @@ import os.path
 import re
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Dict, Iterator, List, Tuple
+from typing import Dict, Iterator, List
 
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
-from common.types import ArxivId, CharacterRange, Equation, Symbol
+from common.types import ArxivId, Symbol
 from entities.sentences.types import Sentence
 
 from ..types import EmbellishedSentence
 
 TexPath = str
 EquationIndex = int
-Equations = Dict[Tuple[TexPath, EquationIndex], Equation]
-Symbols = Dict[Tuple[TexPath, EquationIndex], List[Symbol]]
 
 
 @dataclass(frozen=True)
 class Task:
     arxiv_id: ArxivId
     sentence: Sentence
-    equations: Equations
-    symbols: Symbols
+    symbols: List[Symbol]
 
 
 class EmbellishSentences(ArxivBatchCommand[Task, EmbellishedSentence]):
@@ -47,34 +44,18 @@ class EmbellishSentences(ArxivBatchCommand[Task, EmbellishedSentence]):
             output_dir = directories.arxiv_subdir("embellished-sentences", arxiv_id)
             file_utils.clean_directory(output_dir)
 
-            # Load equation data.
-            equations: Equations = {}
-            equations_path = os.path.join(
-                directories.arxiv_subdir("detected-equations", arxiv_id), "entities.csv"
-            )
-            try:
-                equation_data = file_utils.load_from_csv(equations_path, Equation)
-                for equation in equation_data:
-                    equations[(equation.tex_path, int(equation.id_))] = equation
-            except FileNotFoundError:
-                logging.warning(  # pylint: disable=logging-not-lazy
-                    "No equation data found for arXiv ID %s. It will not be "
-                    + "possible to expand equations in sentences with symbol data. This should only "
-                    + "be a problem if it's expected that there are no symbols in paper %s.",
-                    arxiv_id,
-                )
-
             # Load symbols, for use in embellishing equations.
-            symbols: Symbols = defaultdict(list)
+            symbols: Dict[str, List[Symbol]] = defaultdict(list)
             symbol_data = file_utils.load_symbols(arxiv_id)
             if symbol_data is not None:
                 for id_, symbol in symbol_data:
-                    symbols[(id_.tex_path, id_.equation_index)].append(symbol)
+                    symbols[id_.tex_path].append(symbol)
             else:
                 logging.warning(  # pylint: disable=logging-not-lazy
                     "No symbol data found for arXiv ID %s. It will not be "
                     + "possible to expand equations in sentences with symbol data. This should only "
                     + "be a problem if it's expected that there are no symbols in paper %s.",
+                    arxiv_id,
                     arxiv_id,
                 )
 
@@ -95,78 +76,50 @@ class EmbellishSentences(ArxivBatchCommand[Task, EmbellishedSentence]):
                 continue
 
             for sentence in sentences:
-                yield Task(arxiv_id, sentence, equations, symbols)
+                yield Task(arxiv_id, sentence, symbols[sentence.tex_path])
 
     def process(self, item: Task) -> Iterator[EmbellishedSentence]:
         sentence = item.sentence
-        equations = item.equations
         symbols = item.symbols
-
-        pattern = r"<<equation-(\d+)>>"
-        regex = re.compile(pattern)
-
-        equation_spans: Dict[int, CharacterRange] = {}
-        equation_indexes_reversed: List[int] = []
-        start = 0
-        while True:
-            match = regex.search(sentence.sanitized, start)
-            if match is None:
-                break
-            start = match.end()
-            equation_index = int(match.group(1))
-            equation_indexes_reversed.insert(0, equation_index)
-            equation_spans[equation_index] = CharacterRange(
-                start=match.start(), end=match.end()
-            )
 
         # Replace equations with more helpful representations.
         # Replace equations in reverse so that earlier replacements don't affect the character
         # offsets for the later replacements.
-        with_symbol_and_formula_tags = sentence.sanitized_journal
-        with_equation_tex = sentence.sanitized_journal
-        with_symbol_tex = sentence.sanitized_journal
-        with_bag_of_symbols = sentence.sanitized_journal
+        with_symbols_marked = sentence.sanitized_journal
         legacy_definition_input = sentence.sanitized_journal
 
-        for ei in equation_indexes_reversed:
+        # To create the legacy input for the definition detector, replace each top-level
+        # equation with the text 'SYMBOL'.
+        equation_matches = list(
+            re.finditer("EQUATION_DEPTH_0_START.*?EQUATION_DEPTH_0_END", sentence.text)
+        )
+        for match in reversed(equation_matches):
+            legacy_definition_input.edit(match.start(), match.end(), "SYMBOL")
 
-            equation = equations[(sentence.tex_path, ei)]
-            equation_symbols = symbols[(equation.tex_path, ei)]
-            span = equation_spans[ei]
+        def is_symbol_in_sentence(symbol: Symbol) -> bool:
+            return symbol.start >= sentence.start and symbol.end <= sentence.end
 
-            # Replace equation with its TeX
-            with_equation_tex = with_equation_tex.edit(
-                span.start, span.end, f"[[FORMULA:{equation.content_tex}]]",
+        symbols_in_sentence = filter(is_symbol_in_sentence, symbols)
+        top_level_symbols = filter(lambda s: s.parent is None, symbols_in_sentence)
+        top_level_symbols_reversed = sorted(
+            top_level_symbols, key=lambda s: s.start, reverse=True
+        )
+
+        # To create a version of the sentence with symbols marked, add triple parentheses and a flag
+        # indicating that a symbol has been found.
+        for symbol in top_level_symbols_reversed:
+            relative_symbol_start = symbol.start - sentence.start
+            relative_symbol_end = symbol.end - sentence.start
+            sanitized_start, sanitized_end = sentence.sanitized_journal.current_offsets(
+                relative_symbol_start, relative_symbol_end
             )
-
-            # Replace equations with tags indicating whether each equation is
-            # a symbol or a formula, and additionally with values for the symbols.
-            is_symbol = count_top_level_symbols(equation_symbols) == 1
-            if is_symbol:
-                with_symbol_and_formula_tags = with_symbol_and_formula_tags.edit(
-                    span.start, span.end, "[[SYMBOL]]"
+            if sanitized_start and sanitized_end:
+                with_symbols_marked = with_symbols_marked.edit(
+                    sanitized_end, sanitized_end, "))) "
                 )
-                with_symbol_tex = with_symbol_tex.edit(
-                    span.start, span.end, f"[[SYMBOL({equation.tex.strip()})]]",
+                with_symbols_marked = with_symbols_marked.edit(
+                    sanitized_start, sanitized_start, " (((SYMBOL:",
                 )
-            else:
-                with_symbol_and_formula_tags = with_symbol_and_formula_tags.edit(
-                    span.start, span.end, "[[FORMULA]]"
-                )
-                with_symbol_tex = with_symbol_tex.edit(
-                    span.start, span.end, "[[FORMULA]]"
-                )
-
-            # Replace each equation with a bag of the symbols that it contains.
-            bag_of_symbols = {s.tex.strip() for s in equation_symbols}
-            with_bag_of_symbols = with_bag_of_symbols.edit(
-                span.start, span.end, f"[[FORMULA:{bag_of_symbols}]]",
-            )
-
-            # Replace each equation with 'SYMBOL'.
-            legacy_definition_input = legacy_definition_input.edit(
-                span.start, span.end, "SYMBOL"
-            )
 
         yield EmbellishedSentence(
             id_=sentence.id_,
@@ -180,6 +133,7 @@ class EmbellishSentences(ArxivBatchCommand[Task, EmbellishedSentence]):
             sanitized=sentence.sanitized,
             sanitized_journal=sentence.sanitized_journal,
             validity_guess=sentence.validity_guess,
+            is_clean=sentence.is_clean,
             section_name=sentence.section_name,
             in_figure=sentence.in_figure,
             in_table=sentence.in_table,
@@ -189,14 +143,8 @@ class EmbellishSentences(ArxivBatchCommand[Task, EmbellishedSentence]):
             cite=sentence.cite,
             url=sentence.url,
             others=sentence.others,
-            with_symbol_and_formula_tags=str(with_symbol_and_formula_tags),
-            with_symbol_and_formula_tags_journal=with_symbol_and_formula_tags,
-            with_equation_tex=str(with_equation_tex),
-            with_equation_tex_journal=with_equation_tex,
-            with_symbol_tex=str(with_symbol_tex),
-            with_symbol_tex_journal=with_symbol_tex,
-            with_bag_of_symbols=str(with_bag_of_symbols),
-            with_bag_of_symbols_journal=with_bag_of_symbols,
+            with_symbols_marked=str(with_symbols_marked),
+            with_symbols_marked_journal=with_symbols_marked,
             legacy_definition_input=str(legacy_definition_input),
             legacy_definition_input_journal=legacy_definition_input,
         )
@@ -207,8 +155,14 @@ class EmbellishSentences(ArxivBatchCommand[Task, EmbellishedSentence]):
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        output_path = os.path.join(output_dir, "sentences.csv")
-        file_utils.append_to_csv(output_path, result)
+        sentence_data_path = os.path.join(output_dir, "sentences.csv")
+        file_utils.append_to_csv(sentence_data_path, result)
+
+        # Write clean sentences to file in a format that is ready for human annotation.
+        sentence_list_path = os.path.join(output_dir, "sentences_for_annotation.txt")
+        with open(sentence_list_path, mode="a", encoding="utf-8") as sentence_list_file:
+            if result.is_clean:
+                sentence_list_file.write(result.with_symbols_marked + "\n")
 
 
 def count_top_level_symbols(symbols: List[Symbol]) -> int:

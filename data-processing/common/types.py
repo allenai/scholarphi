@@ -296,13 +296,17 @@ class TokenWithOrigin(Token):
 MathML = str
 
 
-class Symbol(NamedTuple):
+@dataclass
+class Symbol:
     tokens: List[TokenIndex]
     tex: str
     start: int
     end: int
     mathml: MathML
-    children: List[Any]
+    children: List[
+        Any
+    ]  # Intended to be List[Symbol] (recursive types not supported by mypy)
+    parent: Optional[Any]  # Intended to be Optional[Symbol]
     """
     List of child symbols. Should be of type 'Symbol'. 'children' is a bit of misnomer. These is
     actually a list of all other symbols for which this is the closest ancestor.

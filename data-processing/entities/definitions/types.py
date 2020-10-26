@@ -3,7 +3,6 @@ from typing import List, Optional
 
 from common.string import JournaledString
 from common.types import SerializableEntity, Term
-
 from entities.sentences.types import Sentence
 
 
@@ -11,30 +10,15 @@ from entities.sentences.types import Sentence
 class EmbellishedSentence(Sentence):
     """
     A sentence embellished with additional text to make it easier to detect definitions. For
-    example, one embellishment is including bags of words for the symbols used in definitions.
+    example, one embellishment is surrounding all top-level symbols in a clear delimiter.
     Should share the same 'tex_path' and 'id_' as the sentence it was derived from.
     All embellishments are accompanied with a JournaledString that can be used to recover
     positions of spans in the embellished sentence back to the original TeX.
     """
 
-    with_symbol_and_formula_tags: str
-    " Symbols replaced with [[SYMBOL]], formulas replaced with [[FORMULA]]. "
-    with_symbol_and_formula_tags_journal: JournaledString
-
-    with_equation_tex: str
-    " All equations (including simple symbols) replaced with [[FORMULA:(<TeX>)]]. "
-    with_equation_tex_journal: JournaledString
-
-    with_symbol_tex: str
-    " All symbols replaced with [[SYMBOL:(<TeX>)]], all formulas replaced with [[FORMULA]]. "
-    with_symbol_tex_journal: JournaledString
-
-    with_bag_of_symbols: str
-    """
-    All equations (including simple symbols) replaced with
-    [[FORMULA:(<set of TeX, one for each symbol found in the formula>)]]".
-    """
-    with_bag_of_symbols_journal: JournaledString
+    with_symbols_marked: str
+    " All top-level symbols replaced with (((SYMBOL:<TeX>))). "
+    with_symbols_marked_journal: JournaledString
 
     legacy_definition_input: str
     " All equations replaced with 'SYMBOL'. "
