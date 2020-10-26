@@ -6,12 +6,12 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, Dict, Iterator, List, Optional, Union, cast
 
-from tqdm import tqdm
-
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
 from common.parse_tex import PhraseExtractor, get_containing_entity, overlaps
-from common.types import ArxivId, CharacterRange, FileContents, SerializableEntity
+from common.types import (ArxivId, CharacterRange, FileContents,
+                          SerializableEntity)
+from tqdm import tqdm
 
 from ..nlp import DefinitionDetectionModel
 from ..types import Definiendum, Definition, EmbellishedSentence, TermReference
@@ -220,7 +220,7 @@ class DetectDefinitions(
 
             # Load cleaned sentences for definition detection.
             detected_sentences_path = os.path.join(
-                directories.arxiv_subdir("embellished-sentences", arxiv_id),
+                directories.arxiv_subdir("sentence-tokens", arxiv_id),
                 "sentences.csv",
             )
             try:
