@@ -262,6 +262,13 @@ def test_extract_equation_from_dollar_sign():
     assert equation.tex == "$x + y$"
 
 
+def test_extract_equation_from_dollar_sign_after_newline():
+    # This pattern was observed in arXiv paper 1703.00102.
+    extractor = EquationExtractor()
+    equations = list(extractor.parse("main.tex", r"\\$x$"))
+    assert len(equations) == 1
+
+
 def test_extract_equation_from_equation_environment():
     extractor = EquationExtractor()
     equations = list(extractor.parse("main.tex", "\\begin{equation}x\\end{equation}"))

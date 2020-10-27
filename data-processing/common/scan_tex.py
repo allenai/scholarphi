@@ -41,9 +41,6 @@ PRIVATE_PATTERNS = [COMMENT]
 def scan_tex(
     tex: str, patterns: List[Pattern], include_unmatched: bool = False
 ) -> Iterator[Match]:
-    """
-    TODO(andrewhead): Generally, don't report matches for input patterns when escaped.
-    """
     scanner = TexScanner(tex)
     while True:
         try:
@@ -106,7 +103,16 @@ class TexScanner:
         for p in scan_patterns:
             p_regex = p.regex
             if p.disallow_leading_backslash:
-                p_regex = r"(?<![\\])" + p_regex
+                # XXX(andrewhead): Ignore the pattern if it is preceded by one backslash,
+                # but not two (two backslashes indicates a newline). To be more robust, this
+                # checker should instead count the backslashes backward from the pattern to
+                # make sure there is only an even number of backslashes before the pattern if
+                # there are backslashes. However, such a rule can't be written as a negative
+                # lookahead, as negative lookaheads need to be fixed width. Instead, a more
+                # sophisticated scanning loop could be implemented that checks if a pattern is
+                # preceding by an odd number of backslashes and, if so, removing it from the
+                # list of scan patterns for that iteration of scanning.
+                p_regex = r"(?<!(?<![\\])[\\])" + p_regex
             regexes.append(f"(?P<{p.name}>{p_regex})")
         regex = re.compile("|".join(regexes), flags=re.DOTALL)
 
