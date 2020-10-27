@@ -31,6 +31,17 @@ def test_extract_plaintext_with_nested_equations():
     )
 
 
+def test_extract_plaintext_no_add_space_before_equation_possessive():
+    plaintext = extract_plaintext(
+        "main.tex", "This sentence includes a possessive equation $x$'s."
+    )
+    assert (
+        plaintext
+        == r"This sentence includes a possessive equation EQUATION_DEPTH_0_START x "
+        + "EQUATION_DEPTH_0_END's."
+    )
+
+
 def test_extract_plaintext_remove_comments():
     plaintext = extract_plaintext("main.tex", "% comment\nText% comment\n% comment")
     assert plaintext == "Text"
