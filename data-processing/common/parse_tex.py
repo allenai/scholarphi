@@ -317,7 +317,17 @@ def delimit_equations(s: JournaledString, equations: List[Equation]) -> Journale
         return character_index > 0 and not s[character_index - 1].isspace()
 
     def needs_space_after(s: JournaledString, character_index: int) -> bool:
-        return character_index < len(s) and not s[character_index].isspace()
+        # If equation is used as a possessive (e.g., $x$'s), then don't add a space
+        # after the equation, as it can interfere with pysbd's sentence splitting. While it
+        # requires further investigation, it may be that putting an apostrophe after a space
+        # makes pysbd think that the apostrophe is an opening single quote mark.
+        if (character_index < len(s) - 1) and (
+            s[character_index : character_index + 2] == "'s"
+        ):
+            return False
+        if character_index < len(s) and not s[character_index].isspace():
+            return True
+        return False
 
     for equation in equations:
 
