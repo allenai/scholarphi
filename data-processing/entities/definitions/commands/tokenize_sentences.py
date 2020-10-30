@@ -108,10 +108,16 @@ class TokenizeSentences(ArxivBatchCommand[Task, TokenizedSentence]):
         # To create the legacy input for the definition detector, replace each top-level
         # equation with the text 'SYMBOL'.
         equation_matches = list(
-            re.finditer("EQUATION_DEPTH_0_START.*?EQUATION_DEPTH_0_END", sentence.text)
+            re.finditer(
+                "EQUATION_DEPTH_0_START.*?EQUATION_DEPTH_0_END",
+                sentence.text,
+                flags=re.DOTALL,
+            )
         )
         for match in reversed(equation_matches):
-            legacy_definition_input.edit(match.start(), match.end(), "SYMBOL")
+            legacy_definition_input = legacy_definition_input.edit(
+                match.start(), match.end(), "SYMBOL"
+            )
 
         def is_symbol_in_sentence(symbol: Symbol) -> bool:
             return symbol.start >= sentence.start and symbol.end <= sentence.end
@@ -223,6 +229,11 @@ class TokenizeSentences(ArxivBatchCommand[Task, TokenizedSentence]):
 
     def save(self, item: Task, result: TokenizedSentence) -> None:
 
+        # Only save embellished sentences if they are made from sentences that are 'clean,' i.e.,
+        # that look like they contain natural language.
+        if not item.sentence.is_clean:
+            return
+
         output_dir = directories.arxiv_subdir("sentence-tokens", item.arxiv_id)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
@@ -230,7 +241,7 @@ class TokenizeSentences(ArxivBatchCommand[Task, TokenizedSentence]):
         sentence_data_path = os.path.join(output_dir, "sentences.csv")
         file_utils.append_to_csv(sentence_data_path, result.embellished_sentence)
 
-        # Write tokens simultaneoulsy to a file listing each token, and a file including
+        # Write tokens simultaneously to a file listing each token, and a file including
         # the transformed, cleaned text ready for human annotation.
         token_list_path = os.path.join(output_dir, "tokens.csv")
         sentence_list_path = os.path.join(output_dir, "sentences_for_annotation.txt")
