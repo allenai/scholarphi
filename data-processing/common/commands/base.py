@@ -107,6 +107,8 @@ def add_arxiv_id_filter_args(parser: ArgumentParser) -> None:
         type=str,
         help=(
             "Name of a file containing arXiv IDs to process, with one arXiv ID per line. "
+            + "Each line can also optionally include a comment after the arXiv ID, starting "
+            + "with a hash '#' sign; everything after the hash sign will be ignored."
             + "If both this argument and --arxiv-ids is specified, arXiv IDs from both will be loaded"
         ),
     )
@@ -130,7 +132,15 @@ def read_arxiv_ids_from_file(path: Path) -> List[ArxivId]:
     if not os.path.exists(path):
         raise SystemExit("Error: arXiv IDs %s file not found." % (path,))
     with open(path) as arxiv_ids_file:
-        return [l.strip() for l in arxiv_ids_file.readlines()]
+        arxiv_ids = []
+        for l in arxiv_ids_file:
+            comment_start = l.index("#")
+            if comment_start != -1:
+                arxiv_ids.append(l[:comment_start].strip())
+            else:
+                arxiv_ids.append(l.strip())
+
+        return arxiv_ids
 
 
 class Args:
