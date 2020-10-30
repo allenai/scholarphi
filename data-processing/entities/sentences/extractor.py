@@ -121,7 +121,14 @@ class SentenceExtractor(EntityExtractor):
 
             # Save the sentence as a journaled string, which will allow the mapping of the cleaned
             # sentence text to the original TeX.
-            sentence = plaintext.substring(sentence_range.start, sentence_range.end)
+            sentence = plaintext.substring(
+                sentence_range.start,
+                sentence_range.end,
+                # These truncation options are important for preserving the mapping from offsets in
+                # the edited sentence to the initial offsets before the edits.
+                include_truncated_left=False,
+                include_truncated_right=False,
+            )
             if len(sentence) > 1000:
                 logging.warning(  # pylint: disable=logging-not-lazy
                     "Exceptionally long sentence (length %d). This might indicate the sentence "
