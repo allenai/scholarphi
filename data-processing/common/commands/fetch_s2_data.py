@@ -33,7 +33,10 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
     def process(self, item: ArxivId) -> Iterator[S2Metadata]:
         # XXX(andrewhead): S2 API does not have versions of arXiv papers. I don't think this
         # will be an issue, but it's something to pay attention to.
-        resp = requests.get(f"https://api.semanticscholar.org/v1/paper/arXiv:{item}")
+        versionless_id = self._strip_arxiv_version(item)
+        resp = requests.get(
+            f"https://api.semanticscholar.org/v1/paper/arXiv:{versionless_id}"
+        )
 
         if resp.ok:
             data = resp.json()
@@ -60,7 +63,6 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
         time.sleep(FETCH_DELAY)
 
     def save(self, item: ArxivId, result: S2Metadata) -> None:
-
         s2_metadata_dir = directories.arxiv_subdir("s2-metadata", item)
         if not os.path.exists(s2_metadata_dir):
             os.makedirs(s2_metadata_dir)
@@ -81,3 +83,45 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
         s2_id_path = os.path.join(s2_metadata_dir, "s2_id")
         with open(s2_id_path, "w") as s2_id_file:
             s2_id_file.write(result.s2_id)
+
+    def _strip_arxiv_version(self, item: ArxivId) -> ArxivId:
+        """Remove any version identifier from the passed ArXiv ID.
+        Looks for the last 'v' (case-insensitive) and strips beyond it.
+        Reference: https://arxiv.org/help/arxiv_identifier_for_services
+
+        >>> c._strip_arxiv_version("1703.03400")
+        1703.03400
+        >>> c._strip_arxiv_version("1703.03400v0")
+        1703.03400
+        >>> c._strip_arxiv_version("1703.03400v3")
+        1703.03400
+        >>> c._strip_arxiv_version("1703.03400vasdfa")
+        1703.03400
+        >>> c._strip_arxiv_version("1703.03400asdfa")
+        1703.03400asdfa
+        >>> c._strip_arxiv_version("1703.03400V0")
+        1703.03400
+        >>> c._strip_arxiv_version("1703.03400V0v1")
+        1703.03400V0
+        >>> c._strip_arxiv_version("math.GT/0309123")
+        math.GT/0309123
+        >>> c._strip_arxiv_version("math.GT/0309123v1")
+        math.GT/0309123
+        >>> c._strip_arxiv_version("math.VT/0309123")
+        math.VT/030912
+        >>> c._strip_arxiv_version("math.VT/0309123v1")
+        math.VT/03091233
+        """
+
+        # Don't strip from any field name values (e.g., math.VT above)
+        start_index = max(0, item.find("/"))
+
+        lower_v = item.rfind("v", start_index)
+        upper_v = item.rfind("V", start_index)
+
+        found_index = max(lower_v, upper_v)
+
+        if found_index == -1:
+            return item
+
+        return item[0:found_index]
