@@ -5,17 +5,22 @@ import re
 import subprocess
 from argparse import ArgumentParser
 from dataclasses import dataclass
-from typing import Iterator, List, Optional, Tuple
+from typing import Iterator, List, Optional, Set, Tuple
 
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
 from common.parse_equation import KATEX_ERROR_COLOR, Node, parse_equation
-from common.types import (ArxivId, SerializableChild, SerializableSymbol,
-                          SerializableSymbolToken, SerializableToken)
+from common.types import (
+    ArxivId,
+    SerializableChild,
+    SerializableSymbol,
+    SerializableSymbolToken,
+    SerializableToken,
+)
 
 
 @dataclass(frozen=True)  # pylint: disable=too-many-instance-attributes
-class SymbolData:
+class EquationSymbols:
     arxiv_id: ArxivId
     success: bool
     equation_index: int
@@ -25,7 +30,7 @@ class SymbolData:
     equation_depth: int
     context_tex: str
     symbols: Optional[List[Node]]
-    errorMessage: str
+    error_message: str
 
 
 @dataclass(frozen=True)
@@ -38,7 +43,14 @@ class ParseResult:
     errorMessage: str
 
 
-class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
+@dataclass(frozen=True)
+class SavedSymbol:
+    tex: str
+    start: int
+    end: int
+
+
+class ExtractSymbols(ArxivBatchCommand[ArxivId, List[EquationSymbols]]):
     @staticmethod
     def get_name() -> str:
         return "extract-symbols"
@@ -74,7 +86,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
             )
             yield arxiv_id
 
-    def process(self, item: ArxivId) -> Iterator[SymbolData]:
+    def process(self, item: ArxivId) -> Iterator[List[EquationSymbols]]:
         equations_abs_path = os.path.abspath(
             os.path.join(
                 directories.arxiv_subdir("detected-equations", item), "entities.csv"
@@ -115,8 +127,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
         )
 
         if result.returncode == 0:
-            for symbol_data in _get_symbol_data(item, result.stdout):
-                yield symbol_data
+            yield _get_symbol_data(item, result.stdout)
         else:
             logging.error(
                 "Equation parsing for %s unexpectedly failed.\nStdout: %s\nStderr: %s\n",
@@ -125,7 +136,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                 result.stderr,
             )
 
-    def save(self, item: ArxivId, result: SymbolData) -> None:
+    def save(self, item: ArxivId, result: List[EquationSymbols]) -> None:
         tokens_dir = directories.arxiv_subdir("detected-equation-tokens", item)
         if not os.path.exists(tokens_dir):
             os.makedirs(tokens_dir)
@@ -133,36 +144,57 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
         if not os.path.exists(symbols_dir):
             os.makedirs(symbols_dir)
 
-        if result.success and result.symbols is not None:
-            logging.debug(
-                "Successfully extracted %d symbols for equation %s.",
-                len(result.symbols),
-                result.equation,
-            )
-        else:
-            logging.warning(
-                "Could not parse equation %s. See logs in %s.",
-                result.equation,
-                tokens_dir,
-            )
+        # Before saving any symbol, check that it hasn't already been saved. This check is needed
+        # because sometimes the same symbol is extracted twice or more. This happens when a symbol is
+        # in an equation nested within another equation (e.g., the symbol 'x' in
+        # '\begin{equation}\begin{split}x\end{split}\end{equation}').
+        saved_symbols: Set[SavedSymbol] = set()
 
-        parse_results_path = os.path.join(tokens_dir, "parse_results.csv")
-        file_utils.append_to_csv(
-            parse_results_path,
-            ParseResult(
-                arxiv_id=result.arxiv_id,
-                success=result.success,
-                equation_index=result.equation_index,
-                tex_path=result.tex_path,
-                equation=result.equation,
-                errorMessage=result.errorMessage,
-            ),
+        equations_from_inside_out = sorted(
+            result, key=lambda e: e.equation_depth, reverse=True
         )
+        for equation_symbols in equations_from_inside_out:
 
-        # Save symbol data, including parent-child relationships between symbols, and which tokens
-        # were found in each symbol.
-        if result.symbols is not None and len(result.symbols) > 0:
-            symbols = result.symbols
+            success = equation_symbols.success
+            tex_path = equation_symbols.tex_path
+            equation_index = equation_symbols.equation_index
+            equation = equation_symbols.equation
+            equation_start = equation_symbols.equation_start
+            equation_depth = equation_symbols.equation_depth
+            context_tex = equation_symbols.context_tex
+            symbols = equation_symbols.symbols
+            error_message = equation_symbols.error_message
+
+            if success and symbols is not None:
+                logging.debug(
+                    "Successfully extracted %d symbols for equation %s.",
+                    len(symbols),
+                    equation,
+                )
+            else:
+                logging.warning(
+                    "Could not parse equation %s. See logs in %s.",
+                    equation,
+                    tokens_dir,
+                )
+
+            parse_results_path = os.path.join(tokens_dir, "parse_results.csv")
+            file_utils.append_to_csv(
+                parse_results_path,
+                ParseResult(
+                    arxiv_id=item,
+                    success=success,
+                    equation_index=equation_index,
+                    tex_path=tex_path,
+                    equation=equation,
+                    errorMessage=error_message,
+                ),
+            )
+
+            # Save symbol data, including parent-child relationships between symbols, and which tokens
+            # were found in each symbol.
+            if symbols is None or len(symbols) == 0:
+                continue
 
             tokens_path = os.path.join(tokens_dir, "entities.csv")
             symbols_path = os.path.join(symbols_dir, "entities.csv")
@@ -220,29 +252,31 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
 
                     return (equation[start:end], start, end)
 
-                symbol_tex, relative_start, relative_end = get_tex(
-                    symbol, result.equation
-                )
-                start = result.equation_start + relative_start
-                end = result.equation_start + relative_end
+                symbol_tex, relative_start, relative_end = get_tex(symbol, equation)
+                start = equation_start + relative_start
+                end = equation_start + relative_end
+
+                # Skip this symbol if it has already been saved.
+                if SavedSymbol(symbol_tex, start, end) in saved_symbols:
+                    continue
 
                 # Save a record of this symbol.
                 file_utils.append_to_csv(
                     symbols_path,
                     SerializableSymbol(
-                        id_=f"{result.equation_index}-{symbol_index}",
-                        tex_path=result.tex_path,
-                        equation_index=result.equation_index,
-                        equation=result.equation,
+                        id_=f"{equation_index}-{symbol_index}",
+                        tex_path=tex_path,
+                        equation_index=equation_index,
+                        equation=equation,
                         symbol_index=symbol_index,
                         start=start,
                         end=end,
                         tex=symbol_tex,
-                        context_tex=result.context_tex,
+                        context_tex=context_tex,
                         mathml=str(symbol.element),
                         is_definition=symbol.defined or False,
                         relative_start=relative_start,
-                        relative_end=relative_end
+                        relative_end=relative_end,
                     ),
                 )
 
@@ -252,8 +286,8 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                     file_utils.append_to_csv(
                         symbol_tokens_path,
                         SerializableSymbolToken(
-                            tex_path=result.tex_path,
-                            equation_index=result.equation_index,
+                            tex_path=tex_path,
+                            equation_index=equation_index,
                             symbol_index=symbol_index,
                             token_index=token.token_index,
                         ),
@@ -265,37 +299,41 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, SymbolData]):
                     file_utils.append_to_csv(
                         symbol_children_path,
                         SerializableChild(
-                            tex_path=result.tex_path,
-                            equation_index=result.equation_index,
-                            equation=result.equation,
+                            tex_path=tex_path,
+                            equation_index=equation_index,
+                            equation=equation,
                             symbol_index=symbol_index,
                             child_index=child_index,
                         ),
                     )
+
+                saved_symbols.add(SavedSymbol(symbol_tex, start, end))
 
             # Write record of all tokens to file.
             for token in all_tokens:
                 file_utils.append_to_csv(
                     tokens_path,
                     SerializableToken(
-                        tex_path=result.tex_path,
-                        id_=f"{result.equation_index}-{token.token_index}",
-                        equation_index=result.equation_index,
+                        tex_path=tex_path,
+                        id_=f"{equation_index}-{token.token_index}",
+                        equation_index=equation_index,
                         token_index=token.token_index,
-                        start=result.equation_start + token.start,
-                        end=result.equation_start + token.end,
+                        start=equation_start + token.start,
+                        end=equation_start + token.end,
                         relative_start=token.start,
                         relative_end=token.end,
-                        tex=result.equation[token.start : token.end],
-                        context_tex=result.context_tex,
+                        tex=equation[token.start : token.end],
+                        context_tex=context_tex,
                         text=token.text,
-                        equation=result.equation,
-                        equation_depth=result.equation_depth,
+                        equation=equation,
+                        equation_depth=equation_depth,
                     ),
                 )
 
 
-def _get_symbol_data(arxiv_id: ArxivId, stdout: str) -> Iterator[SymbolData]:
+def _get_symbol_data(arxiv_id: ArxivId, stdout: str) -> List[EquationSymbols]:
+    symbol_data = []
+
     for result in stdout.strip().splitlines():
         data = json.loads(result)
         symbols = None
@@ -304,15 +342,19 @@ def _get_symbol_data(arxiv_id: ArxivId, stdout: str) -> Iterator[SymbolData]:
             mathml = data["mathMl"]
             symbols = parse_equation(mathml)
 
-        yield SymbolData(
-            arxiv_id=arxiv_id,
-            success=data["success"],
-            equation_index=int(data["i"]),
-            tex_path=data["tex_path"],
-            equation=data["equation"],
-            equation_start=int(data["equation_start"]),
-            equation_depth=int(data["equation_depth"]),
-            context_tex=data["context_tex"],
-            errorMessage=data["errorMessage"],
-            symbols=symbols,
+        symbol_data.append(
+            EquationSymbols(
+                arxiv_id=arxiv_id,
+                success=data["success"],
+                equation_index=int(data["i"]),
+                tex_path=data["tex_path"],
+                equation=data["equation"],
+                equation_start=int(data["equation_start"]),
+                equation_depth=int(data["equation_depth"]),
+                context_tex=data["context_tex"],
+                error_message=data["errorMessage"],
+                symbols=symbols,
+            )
         )
+
+    return symbol_data
