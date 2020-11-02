@@ -106,17 +106,17 @@ def get_term_definition_pairs(
 
     # Extract ranges for all abbreviations.
     abbreviation_ranges: List[CharacterRange] = []
-    for (abbreviation_label, a_range) in zip(featurized_text['abbreviation'], ranges):
+    for (abbreviation_label, token_char_range) in zip(featurized_text['abbreviation'], ranges):
         # 1 means the token is a part of abbreviation
         if abbreviation_label == 1:
-            abbreviation_ranges.append(a_range)
+            abbreviation_ranges.append(token_char_range)
 
     # Extract ranges for all entities.
     entity_ranges: List[CharacterRange] = []
-    for (entity_label, a_range) in zip(featurized_text['entity'], ranges):
+    for (entity_label, token_char_range) in zip(featurized_text['entity'], ranges):
         # 1 means the token is a part of abbreviation
         if entity_label == 1:
-            entity_ranges.append(a_range)
+            entity_ranges.append(token_char_range)
 
     # Match pairs of term and definitions sequentially ( O T O O D then (T, D)). This
     # does not handle multi-term / definitions pairs
@@ -152,16 +152,16 @@ def get_term_definition_pairs(
         definition_type = "definition"
 
         # Check whether a term is a part of entity or not.
-        for a_range in entity_ranges:
+        for entity_range in entity_ranges:
             # check whether definiendum contains an entiity.
-            if term_start <= a_range.start and a_range.end <= term_end:
+            if term_start <= entity_range.start and entity_range.end <= term_end:
                 if term_type == "term":
                     term_type = "entity"
 
         # Check whether a term is a part of abbreviation or not.
-        for a_range in abbreviation_ranges:
+        for abbreviation_range in abbreviation_ranges:
             # check whether definiendum contains an abbreviation.
-            if term_start <= a_range.start and a_range.end <= term_end:
+            if term_start <= abbreviation_range.start and abbreviation_range.end <= term_end:
                 # abbreviation over-write entitiy type because entity type is optional
                 if term_type == "term":
                     term_type = "abbreviation"
