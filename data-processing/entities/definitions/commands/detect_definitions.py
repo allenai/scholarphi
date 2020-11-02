@@ -135,15 +135,15 @@ def get_term_definition_pairs(
             num_term_definition_pairs,
         )
 
-        term_a_rangelist = terms[pair_index]
-        definition_a_rangelist = definitions[pair_index]
+        term_rangelist = terms[pair_index]
+        definition_rangelist = definitions[pair_index]
         term_confidence = term_confidence_list[pair_index]
         definition_confidence = definition_confidence_list[pair_index]
 
-        term_start = min([r.start for r in term_a_rangelist])
-        term_end = max([r.end for r in term_a_rangelist]) + 1
-        definition_start = min([r.start for r in definition_a_rangelist])
-        definition_end = max([r.end for r in definition_a_rangelist]) + 1
+        term_start = min([r.start for r in term_rangelist])
+        term_end = max([r.end for r in term_rangelist]) + 1
+        definition_start = min([r.start for r in definition_rangelist])
+        definition_end = max([r.end for r in definition_rangelist]) + 1
 
         # Decide types of terms and definitions.
         #  - Term types: [symbol, term, abbreviation, entity, acrnonym]
