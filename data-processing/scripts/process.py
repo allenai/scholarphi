@@ -3,12 +3,11 @@ import logging
 from typing import Dict, List
 
 from common.commands.base import Command, CommandList
-from common.commands.compile_tex import CompileTexSources
-
-# from common.commands.compute_iou import ComputeIou
+from common.commands.compile_tex import CompileNormalizedTexSources, CompileTexSources
 from common.commands.fetch_arxiv_sources import FetchArxivSources
 from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
 from common.commands.fetch_s2_data import FetchS2Metadata
+from common.commands.normalize_tex import NormalizeTexSources
 from common.commands.raster_pages import RasterPages
 from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import StoreResults
@@ -20,11 +19,12 @@ from common.commands.unpack_sources import UnpackSources
 # The order that these packages are imported will determine the indexes assigned to the output
 # data directories. Earlier imports will have lower indexes for the data directories.
 from entities import citations  # pylint: disable=unused-import
-from entities import sentences  # pylint: disable=unused-import
-from entities import equations  # pylint: disable=unused-import
-from entities import symbols  # pylint: disable=unused-import
 from entities import definitions  # pylint: disable=unused-import
+from entities import equations  # pylint: disable=unused-import
 from entities import glossary_terms  # pylint: disable=unused-import
+from entities import sentences  # pylint: disable=unused-import
+from entities import symbols  # pylint: disable=unused-import
+
 from scripts.pipelines import EntityPipeline, entity_pipelines
 
 PAPER_DISCOVERY_COMMANDS: CommandList = [FetchNewArxivIds]
@@ -36,6 +36,8 @@ TEX_PREPARATION_COMMANDS: CommandList = [
     FetchS2Metadata,
     UnpackSources,
     CompileTexSources,
+    NormalizeTexSources,
+    CompileNormalizedTexSources,
     RasterPages,
 ]
 " Commands for fetching arXiv sources and preparing for entity processing. "

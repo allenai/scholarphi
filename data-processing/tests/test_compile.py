@@ -1,10 +1,27 @@
 from common.compile import (
     did_compilation_fail,
+    get_compiled_tex_files_from_autotex_output,
     get_errors,
     get_last_autotex_compiler,
     get_last_colorized_entity_id,
     is_driver_unimplemented,
 )
+from common.types import CompiledTexFile
+
+
+def test_get_compiled_tex_files():
+    stdout = bytearray(
+        "[verbose]:  ~~~~~~~~~~~ Processing file 'emnlp2020.tex'\n"
+        + "...\n"
+        + "[verbose]:  ~~~~~~~~~~~ Processing file 'annoation-cost.tex'\n"
+        + "..."
+        + "<annoation-cost.tex> appears to be tex-type, but was neither included nor processable:"
+        + "...",
+        "utf-8",
+    )
+    compiled_tex_files = get_compiled_tex_files_from_autotex_output(stdout)
+    assert len(compiled_tex_files) == 1
+    assert CompiledTexFile("emnlp2020.tex") in compiled_tex_files
 
 
 def test_is_not_missing_driver():

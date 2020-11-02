@@ -6,8 +6,12 @@ from typing import Dict, Iterator, List, cast
 
 from common import directories, file_utils
 from common.commands.database import DatabaseUploadCommand
-from common.types import (BoundingBox, CitationData,
-                          EntityInformation, SerializableReference)
+from common.types import (
+    BoundingBox,
+    CitationData,
+    EntityInformation,
+    SerializableReference,
+)
 from common.upload_entities import upload_entities
 
 from ..types import BibitemMatch
@@ -28,7 +32,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
         return "Upload citation information to the database."
 
     def get_arxiv_ids_dirkey(self) -> str:
-        return "sources"
+        return "citations-locations"
 
     def load(self) -> Iterator[CitationData]:
         for arxiv_id in self.arxiv_ids:
