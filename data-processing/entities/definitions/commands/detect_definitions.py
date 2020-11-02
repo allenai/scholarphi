@@ -9,7 +9,6 @@ from dataclasses import dataclass
 from typing import Any, Dict, Iterator, List, Optional, Union, cast
 
 from tqdm import tqdm
-import pdb
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
 from common.parse_tex import PhraseExtractor, get_containing_entity, overlaps
@@ -181,7 +180,7 @@ def get_term_definition_pairs(
 
 
 
-def sanity_check_for_acronym_detection(
+def check_text_contains_acronym_for_sanity(
         acronym_text, expansion_text,
         acronym_start, acronym_end,
         expansion_start, expansion_end):
@@ -199,8 +198,8 @@ def sanity_check_for_acronym_detection(
 
     # check each letter in acronym appears in expansion text
     is_acronym = True
-    for first_letter_in_acronym in acronym_text.lower():
-        if not first_letter_in_acronym in expansion_text.lower():
+    for letter_in_acronym in acronym_text.lower():
+        if letter_in_acronym not in expansion_text.lower():
             is_acronym = False
 
     return is_acronym
@@ -231,7 +230,7 @@ def get_abbreviation_pairs(
         expansion_start = min([r.start for r in expansion_ranges])
         expansion_end = max([r.end for r in expansion_ranges]) + 1
 
-        if not sanity_check_for_acronym_detection(
+        if not check_text_contains_acronym_for_sanity(
                 str(abrv),
                 str(abrv._.long_form),
                 acronym_start, acronym_end,
@@ -261,7 +260,11 @@ def get_abbreviation_pairs(
 
 
 def search_symbol_nickname(tidx, featurized_text, range_, ranges, direction):
-    UNION_POS_SET = ["DT", "JJ", "NN", "NNS", "NNP", "NNPS"]
+    # This function searches for a nickname pattern for a token, in the direction specified
+    # Get all tokens to the left or right of the token that match the allowed POS tags. 
+    # Return symbol and nickname indices and ranges if there are valid POS spans. Else, return None for indices and spans
+    # POS Tag Expansions : https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html
+    UNION_POS_LIST = ["DT", "JJ", "NN", "NNS", "NNP", "NNPS"]
     pos_idxs = []
     pos_tags = []
     pos_ranges = []
@@ -272,12 +275,12 @@ def search_symbol_nickname(tidx, featurized_text, range_, ranges, direction):
         current_idx = tidx - 1
 
 
-    # Exit if the current id is greater than the length of the sentence or below zero
+    # Exit if the current index is greater than the length of the sentence or below zero
     if current_idx >= len(featurized_text["pos"]) or current_idx<0:
         return None, None, None, None
 
     # Search ahead until the POS tag is not in the union set
-    while featurized_text["pos"][current_idx] in UNION_POS_SET:
+    while featurized_text["pos"][current_idx] in UNION_POS_LIST:
         pos_idxs.append(current_idx)
         pos_ranges.append(ranges[current_idx])
         pos_tags.append(featurized_text['pos'][current_idx])
@@ -318,52 +321,51 @@ def search_symbol_nickname(tidx, featurized_text, range_, ranges, direction):
 
 
 def get_symbol_nickname_pairs(text: str, featurized_text: Dict[Any, Any], symbol_texs : Dict[Any, Any]):
-    # Check whether a symbol's definition is nickname of the symbol or not
-    # using heuristic rules below, although they are not pefect for some cases.
+    # Check whether a symbol's definition is a nickname of the symbol or not
+    # using heuristic rules below, although they are not perfect for some cases.
     #  a/DT particular/JJ transcript/NN SYMBOL/NN
     #  the/DT self-interaction/JJ term/JJ SYMBOL/NN
     #  the/DT main/JJ effect/NN of/NN feature/JJ SYMBOL/JJ
 
     # Union set of POS tags in nicknames. Feel free to add more if you have new patterns
+    # If a new algorithm needs to be added, a separate function can be called in the iteration below. Finally, append a pair object to the 'pairs' list.
     ranges = get_token_character_ranges(text, featurized_text["tokens"])
     pairs = []
     if 'SYMBOL' in text:
         symbol_nickname_pairs = []
         for tidx, (token,pos,np,range_) in enumerate(zip(featurized_text['tokens'], featurized_text['pos'],featurized_text['np'],ranges)):
-            # 1. If of the form '*th', check RIGHT pf symbol
+            # 1. If of the form '*th', check RIGHT of symbol
             # 2. If token is a symbol, then:
             #   a. If the symbol tex is present:
             #       i. If single length symbol, first check LEFT then RIGHT
             #       ii. If multi length symbol, check LEFT
             #   b. If symbol tex is not present, just check LEFT
-            if (token == 'SYMBOLth'):
+            if token == 'SYMBOLth':
                 symbol_idx,symbol_range,nickname_idxs, nickname_ranges = search_symbol_nickname(tidx, featurized_text, range_, ranges, 'RIGHT')
                 if symbol_idx != None:
                     symbol_nickname_pairs.append((symbol_idx,symbol_range,nickname_idxs, nickname_ranges))
 
             elif token == 'SYMBOL':
                 # Decide the order of LEFT or RIGHT
-                DIRS = []
+                directions = []
                 if tidx > 0:
                     if tidx < len(featurized_text['pos'])-1:
                         if featurized_text['pos'][tidx + 1] in ['NN']:
-                            DIRS = ['RIGHT','LEFT']
+                            directions = ['RIGHT','LEFT']
                         else:
-                            DIRS = ['LEFT','RIGHT']
+                            directions = ['LEFT','RIGHT']
                     else:
-                        DIRS = ['LEFT']
+                        directions = ['LEFT']
                 elif tidx < len(featurized_text['pos'])-1:
-                    DIRS = ['RIGHT']
+                    directions = ['RIGHT']
 
-                for direction in DIRS:
+                for direction in directions:
                     symbol_idx,symbol_range,nickname_idxs, nickname_ranges = search_symbol_nickname(tidx, featurized_text, range_, ranges, direction)
                     if symbol_idx is not None:
                         symbol_nickname_pairs.append((symbol_idx,symbol_range,nickname_idxs, nickname_ranges))
                         break
 
         for symbol_idx,symbol_range, nickname_idxs, nickname_ranges in symbol_nickname_pairs:
-            # logging.debug("Detected nicknames", symbol_idx, symbol_range, [featurized_text['tokens'][idx] for idx in nickname_idxs], nickname_ranges)
-
             symbol_start = symbol_range.start
             symbol_end = symbol_range.end+1
             nickname_start = min([r.start for r in nickname_ranges])
@@ -513,7 +515,7 @@ class DetectDefinitions(
     ) -> Iterator[Union[Definiendum, Definition, TermReference]]:
         sentences_ordered = sorted(item.sentences, key=lambda s: s.start)
         num_sentences = len(sentences_ordered)
-        end_posiion_of_last_sentence = sentences_ordered[-1].end
+        end_position_of_last_sentence = sentences_ordered[-1].end
 
         if len(item.sentences) == 0:
             logging.warning(  # pylint: disable=logging-not-lazy
@@ -560,7 +562,9 @@ class DetectDefinitions(
                     intents, slots, slots_conf = model.predict_batch(
                         cast(List[Dict[Any, Any]], features)
                     )
-
+                    
+                    # Package extracted terms and definitions into a representation that's
+                    # easier to process.    
                     for s, sentence_features, intent, sentence_slots, sentence_slots_conf in zip(
                         sentences, features, intents, slots, slots_conf
                     ):
@@ -584,7 +588,7 @@ class DetectDefinitions(
                             s.legacy_definition_input, sentence_features, model.nlp
                         )
 
-                        # Only process slots when they includ both 'TERM' and 'DEFINITION'.
+                        # Only process slots when they include both 'TERM' and 'DEFINITION'.
                         if "TERM" not in sentence_slots or "DEF" not in sentence_slots:
                             term_definition_pairs = []
                         else:
@@ -595,8 +599,6 @@ class DetectDefinitions(
                                 sentence_slots_conf
                             )
 
-                        # Package extracted terms and definitions into a representation that's
-                        # easier to process.
                         pairs = term_definition_pairs + symbol_nickname_pairs + abbreviation_pairs
 
 

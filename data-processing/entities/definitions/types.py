@@ -94,10 +94,10 @@ class Definiendum(TermReference):
     " The confidence score of the model's prediction "
 
     position_ratio: float
-    " The relative ratio of the term in the paper. "
+    " The relative ratio of the term in the paper (character ratio of the start of term to the total number of characters). Range is 0 to 100"
 
     section_name: str
-    " The name of section that dfines this term. "
+    " The name of section that defines this term. "
 
 
 
