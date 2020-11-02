@@ -208,7 +208,7 @@ class Trainer(object):
                             dev_score_history.index(result_dict["best_slot_f1_macro"])
                         ]
 
-                        # save log
+                        # Save log
                         filename = os.path.join(
                             "logs",
                             "logs_train_{}_{}.txt".format(
@@ -276,7 +276,7 @@ class Trainer(object):
             # 3. [slot] Replace UNK with O.
             new_slot_pred = ["O" if sp == "UNK" else sp for sp in new_slot_pred]
 
-            # 4. [slot] Fill out missing term/def within threshold
+            # 4. [slot] Fill out missing term/def within threshold.
             temp_new_slot_pred = new_slot_pred.copy()
             for sid, sp in enumerate(temp_new_slot_pred):
                 if sid < len(new_slot_pred) - 2 and sp.endswith("TERM"):
@@ -341,7 +341,7 @@ class Trainer(object):
             dataset, sampler=eval_sampler, batch_size=self.args.eval_batch_size
         )
 
-        # Rune valuation.
+        # Run valuation.
         eval_loss = 0.0
         nb_eval_steps = 0
         intent_preds = None
@@ -404,10 +404,10 @@ class Trainer(object):
             if slot_preds is None:
                 if self.args.use_crf:
                     slot_logits_crf = np.array(self.model.crf.decode(slot_logits))
-                    # decode() in `torchcrf` returns list with best index directly
+                    # Decode() in `torchcrf` returns list with best index directly.
                     slot_preds = slot_logits_crf
-                    # get confidence from softmax
-                    I,J = np.ogrid[:slot_logits_crf.shape[0], :slot_logits_crf.shape[1]]
+                    # Get confidence from softmax.
+                    I, J = np.ogrid[:slot_logits_crf.shape[0], :slot_logits_crf.shape[1]]
                     slot_conf = slot_probs[I, J, slot_logits_crf]
                 else:
                     slot_preds = slot_logits.detach().cpu().numpy()
@@ -417,8 +417,8 @@ class Trainer(object):
                 if self.args.use_crf:
                     slot_logits_crf = np.array(self.model.crf.decode(slot_logits))
                     slot_preds = np.append(slot_preds, slot_logits_crf, axis=0)
-                    # get confidence from softmax
-                    I,J = np.ogrid[:slot_logits_crf.shape[0], :slot_logits_crf.shape[1]]
+                    # Get confidence from softmax.
+                    I, J = np.ogrid[:slot_logits_crf.shape[0], :slot_logits_crf.shape[1]]
                     slot_conf = np.append(slot_conf, slot_probs[I, J, slot_logits_crf], axis=0)
 
 
@@ -436,13 +436,13 @@ class Trainer(object):
 
         eval_loss = eval_loss / nb_eval_steps
 
-        # Finall compute the intent.
+        # Finally compute the intent.
         intent_preds = np.argmax(intent_preds, axis=1)
 
         # Finally compute the slots.
         if not self.args.use_crf:
-            # get confidence from softmax
-            I,J = np.ogrid[:slot_preds.shape[0], :slot_preds.shape[1]]
+            # Get confidence from softmax.
+            I, J = np.ogrid[:slot_preds.shape[0], :slot_preds.shape[1]]
             slot_conf = slot_preds[I, J, np.argmax(slot_preds, axis=2)]
             slot_preds = np.argmax(slot_preds, axis=2)
 
@@ -562,7 +562,7 @@ class Trainer(object):
             if slot_preds is None:
                 if self.args.use_crf:
                     slot_logits_crf = np.array(self.model.crf.decode(slot_logits))
-                    # decode() in `torchcrf` returns list with best index directly
+                    # Decode() in `torchcrf` returns list with best index directly.
                     slot_preds = slot_logits_crf
                     first_dimension_indices,second_dimension_indices = np.ogrid[:slot_logits_crf.shape[0], :slot_logits_crf.shape[1]]
                     # get confidence from softmax
@@ -619,7 +619,7 @@ class Trainer(object):
                     slot_conf_list[i].append(slot_conf[i][j])
 
 
-        # heuristics
+        # Heuristics
         if self.args.use_heuristic:
             intent_preds, slot_preds_list = self.heuristic_filters(
                 intent_preds,
@@ -639,7 +639,7 @@ class Trainer(object):
         return results
 
     def save_model(self) -> None:
-        # Save model checkpoint (Overwrite)
+        # Save model checkpoint (Overwrite).
         output_dir = self.args.output_dir
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
@@ -648,7 +648,7 @@ class Trainer(object):
         )
         model_to_save.save_pretrained(output_dir)
 
-        # Save training arguments together with the trained model
+        # Save training arguments together with the trained model.
         torch.save(self.args, os.path.join(output_dir, "training_args.bin"))  # type: ignore
         logging.info("Saving model checkpoint to %s", output_dir)
 
