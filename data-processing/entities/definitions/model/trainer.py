@@ -564,9 +564,9 @@ class Trainer(object):
                     slot_logits_crf = np.array(self.model.crf.decode(slot_logits))
                     # decode() in `torchcrf` returns list with best index directly
                     slot_preds = slot_logits_crf
-                    I,J = np.ogrid[:slot_logits_crf.shape[0], :slot_logits_crf.shape[1]]
+                    first_dimension_indices,second_dimension_indices = np.ogrid[:slot_logits_crf.shape[0], :slot_logits_crf.shape[1]]
                     # get confidence from softmax
-                    slot_conf = slot_probs[I, J, slot_logits_crf]
+                    slot_conf = slot_probs[first_dimension_indices,second_dimension_indices , slot_logits_crf]
                 else:
                     slot_preds = slot_logits.detach().cpu().numpy()
 
@@ -575,9 +575,9 @@ class Trainer(object):
                 if self.args.use_crf:
                     slot_logits_crf = np.array(self.model.crf.decode(slot_logits))
                     slot_preds = np.append(slot_preds, slot_logits_crf, axis=0)
-                    I,J = np.ogrid[:slot_logits_crf.shape[0], :slot_logits_crf.shape[1]]
+                    first_dimension_indices,second_dimension_indices = np.ogrid[:slot_logits_crf.shape[0], :slot_logits_crf.shape[1]]
                     # get confidence from softmax
-                    slot_conf = np.append(slot_conf, slot_probs[I, J, slot_logits_crf], axis=0)
+                    slot_conf = np.append(slot_conf, slot_probs[first_dimension_indices, second_dimension_indices, slot_logits_crf], axis=0)
                 else:
                     slot_preds = np.append(
                         slot_preds, slot_logits.detach().cpu().numpy(), axis=0
@@ -598,8 +598,8 @@ class Trainer(object):
         # Slot result
         if not self.args.use_crf:
             # get confidence from softmax
-            I,J = np.ogrid[:slot_preds.shape[0], :slot_preds.shape[1]]
-            slot_conf = slot_preds[I, J, np.argmax(slot_preds, axis=2)]
+            first_dimension_indices,second_dimension_indices = np.ogrid[:slot_preds.shape[0], :slot_preds.shape[1]]
+            slot_conf = slot_preds[first_dimension_indices, second_dimension_indices, np.argmax(slot_preds, axis=2)]
             slot_preds = np.argmax(slot_preds, axis=2)
 
         slot_label_map = {i: label for i, label in enumerate(self.slot_label_lst)}
