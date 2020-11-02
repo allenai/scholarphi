@@ -690,9 +690,7 @@ class DetectDefinitions(
                             definition_end = s.start + offsets[1]
 
                             # Extract document-level features from sentence
-                            position_ratio = (
-                                definiendum_start / end_posiion_of_last_sentence * 100.0
-                            )
+                            position_ratio = definiendum_start / end_posiion_of_last_sentence
                             section_name = s.section_name
 
                             try:
