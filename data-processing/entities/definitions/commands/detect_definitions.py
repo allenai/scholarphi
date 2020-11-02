@@ -144,27 +144,23 @@ def get_term_definition_pairs(
         definition_start = min([r.start for r in definition_rangelist])
         definition_end = max([r.end for r in definition_rangelist]) + 1
 
-        # Decide types of terms and definitions.
-        #  - Term types: [symbol, term, abbreviation, entity, acrnonym]
-        #  - definition types: [nickname, definition] for symbol, [definition] for protologism, [expansion] for protologism
-        # Currently, our model doesn't predict [acronym] as a term and its [expansion] as a definition. In case we detect an abbreviation in the detected term, we split it into [acroynm] and [expansion], and make a new pair of term and definintion.
         term_type = "symbol" if "SYMBOL" in text[term_start:term_end] else "term"
         definition_type = "definition"
 
-        # Check whether a term is a part of entity or not.
-        for entity_range in entity_ranges:
-            # check whether definiendum contains an entiity.
-            if term_start <= entity_range.start and entity_range.end <= term_end:
-                if term_type == "term":
-                    term_type = "entity"
+        # # Check whether a term is a part of entity or not.
+        # for entity_range in entity_ranges:
+            # # check whether definiendum contains an entiity.
+            # if term_start <= entity_range.start and entity_range.end <= term_end:
+                # if term_type == "term":
+        #             term_type = "entity"
 
-        # Check whether a term is a part of abbreviation or not.
-        for abbreviation_range in abbreviation_ranges:
-            # check whether definiendum contains an abbreviation.
-            if term_start <= abbreviation_range.start and abbreviation_range.end <= term_end:
-                # abbreviation over-write entitiy type because entity type is optional
-                if term_type == "term":
-                    term_type = "abbreviation"
+        # # Check whether a term is a part of abbreviation or not.
+        # for abbreviation_range in abbreviation_ranges:
+            # # check whether definiendum contains an abbreviation.
+            # if term_start <= abbreviation_range.start and abbreviation_range.end <= term_end:
+                # # abbreviation over-write entitiy type because entity type is optional
+                # if term_type == "term":
+        #             term_type = "abbreviation"
 
         pair = TermDefinitionPair(
             term_start=term_start,
@@ -570,6 +566,11 @@ class DetectDefinitions(
                     ):
                         # Extract TeX for each symbol from a parallel representation of the
                         # sentence, so that the TeX for symbols can be saved.
+                        # Types of [term and definition] pairs.
+                        #   [nickname and definition] for symbols
+                        #   [acronym and expansion] for abbreviations
+                        #   [term and definition] for other types
+
 
                         symbol_texs = get_symbol_texs(
                             s.legacy_definition_input, s.with_equation_tex
