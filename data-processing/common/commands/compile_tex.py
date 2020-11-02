@@ -1,6 +1,7 @@
 import logging
 import os.path
 import shutil
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Iterator, List
 
@@ -26,31 +27,34 @@ class CompilationTask:
     compilation_path: Path
 
 
-class CompileTexSources(ArxivBatchCommand[CompilationTask, CompilationResult]):
+class CompileTexCommand(ArxivBatchCommand[CompilationTask, CompilationResult], ABC):
     """
     Compile a TeX project, first copying it to a new directory.
     """
 
-    @staticmethod
-    def get_name() -> str:
-        return "compile-tex"
+    @abstractmethod
+    def get_sources_dirkey(self) -> str:
+        " Key for data directory containing TeX sources to be compiled. "
 
-    @staticmethod
-    def get_description() -> str:
-        return "Compile original TeX sources."
+    @abstractmethod
+    def get_output_dirkey(self) -> str:
+        " Key for data directory into which sources will be copied and then compiled. "
 
-    def get_arxiv_ids_dirkey(self) -> Path:
-        return "sources"
+    def get_arxiv_ids_dirkey(self) -> str:
+        return self.get_sources_dirkey()
 
     def load(self) -> Iterator[CompilationTask]:
         for arxiv_id in self.arxiv_ids:
-            output_dir = directories.arxiv_subdir("compiled-sources", arxiv_id)
+            output_dir = directories.arxiv_subdir(self.get_output_dirkey(), arxiv_id)
             if os.path.exists(output_dir):
                 logging.warning(
                     "Compilation directory already exists in %s. Deleting.", output_dir,
                 )
                 shutil.rmtree(output_dir)
-            shutil.copytree(directories.arxiv_subdir("sources", arxiv_id), output_dir)
+            shutil.copytree(
+                directories.arxiv_subdir(self.get_sources_dirkey(), arxiv_id),
+                output_dir,
+            )
             yield CompilationTask(arxiv_id, output_dir)
 
     def process(self, item: CompilationTask) -> Iterator[CompilationResult]:
@@ -59,8 +63,40 @@ class CompileTexSources(ArxivBatchCommand[CompilationTask, CompilationResult]):
 
     def save(self, item: CompilationTask, result: CompilationResult) -> None:
         save_compilation_result(
-            "compiled-sources", item.arxiv_id, item.compilation_path, result
+            self.get_output_dirkey(), item.arxiv_id, item.compilation_path, result
         )
+
+
+class CompileTexSources(CompileTexCommand):
+    @staticmethod
+    def get_name() -> str:
+        return "compile-tex"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Compile original TeX sources."
+
+    def get_sources_dirkey(self) -> str:
+        return "sources"
+
+    def get_output_dirkey(self) -> str:
+        return "compiled-sources"
+
+
+class CompileNormalizedTexSources(CompileTexCommand):
+    @staticmethod
+    def get_name() -> str:
+        return "compile-normalized-tex"
+
+    @staticmethod
+    def get_description() -> str:
+        return "Compile normalized TeX sources."
+
+    def get_sources_dirkey(self) -> str:
+        return "normalized-sources"
+
+    def get_output_dirkey(self) -> str:
+        return "compiled-normalized-sources"
 
 
 def save_compilation_result(

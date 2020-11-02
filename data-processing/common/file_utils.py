@@ -398,7 +398,9 @@ def save_compilation_results(path: Path, result: CompilationResult) -> None:
 
     if result.success:
         logging.debug(
-            "Successfully compiled TeX. Generated files: %s", str(result.output_files),
+            "Successfully compiled TeX. Files compiled: %s. Files generated: %s.",
+            str(result.compiled_tex_files),
+            str(result.output_files),
         )
         if len(result.output_files) > 1:
             logging.warning(  # pylint: disable=logging-not-lazy
@@ -417,6 +419,10 @@ def save_compilation_results(path: Path, result: CompilationResult) -> None:
 
     with open(os.path.join(results_dir, "result"), "w") as success_file:
         success_file.write(str(result.success))
+
+    compiled_tex_files_path = os.path.join(results_dir, "compiled_tex_files.csv")
+    for compiled_tex_file in result.compiled_tex_files:
+        append_to_csv(compiled_tex_files_path, compiled_tex_file)
 
     output_files_path = os.path.join(results_dir, "output_files.csv")
     for output_file in result.output_files:

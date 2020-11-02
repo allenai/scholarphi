@@ -7,11 +7,10 @@ from typing import Dict, List, Optional, Set
 import cv2
 import numpy as np
 
+from common import directories
 from common.bounding_box import extract_bounding_boxes
 from common.compile import get_output_files
-from common import directories
-from common.types import BoundingBox
-from common.types import RelativePath, ArxivId
+from common.types import ArxivId, BoundingBox, RelativePath
 
 
 @dataclass(frozen=True)
@@ -30,7 +29,7 @@ def locate_entities(
 
     # Get output file names from results of compiling the uncolorized TeX sources.
     output_files = get_output_files(
-        directories.arxiv_subdir("compiled-sources", arxiv_id)
+        directories.arxiv_subdir("compiled-normalized-sources", arxiv_id)
     )
     output_paths = [f.path for f in output_files]
 

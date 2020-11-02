@@ -52,6 +52,8 @@ register("sources-archives")
 register("s2-metadata")
 register("sources")
 register("compiled-sources")
+register("normalized-sources")
+register("compiled-normalized-sources")
 register("paper-images")
 register("bounding-box-accuracies")
 

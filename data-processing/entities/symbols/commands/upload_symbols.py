@@ -21,7 +21,7 @@ from common.types import (
 from common.upload_entities import upload_entities
 from entities.sentences.types import Context
 
-from ..types import SymbolData, DefiningFormula
+from ..types import DefiningFormula, SymbolData
 
 
 class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
@@ -34,7 +34,7 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
         return "Upload symbols to the database."
 
     def get_arxiv_ids_dirkey(self) -> str:
-        return "sources"
+        return "symbol-locations"
 
     def load(self) -> Iterator[SymbolData]:
         for arxiv_id in self.arxiv_ids:
@@ -189,7 +189,8 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
             for c in matching_contexts:
                 matching_sentence_id = f"{c.tex_path}-{c.sentence_id}"
                 if (
-                    matching_sentence_id not in other_context_sentence_ids
+                    matching_sentence_id
+                    not in other_context_sentence_ids
                     # and c.sentence_id != context.sentence_id
                 ):
                     other_context_texs.append(c.snippet)
@@ -201,7 +202,7 @@ class UploadSymbols(DatabaseUploadCommand[SymbolData, None]):
             other_formula_ids = []
             for f in matching_formulas:
                 equation_id = f"{f.tex_path}-{f.equation_id}"
-                if equation_id not in other_formula_ids :
+                if equation_id not in other_formula_ids:
                     # and (
                     #   :  formula is None or equation_id != formula.equation_id
                     # )
