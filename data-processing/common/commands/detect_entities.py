@@ -5,6 +5,7 @@ from typing import Iterator, Type
 
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
+from common.compile import get_compiled_tex_files
 from common.parse_tex import EntityExtractor
 from common.types import ArxivId, FileContents, RelativePath, SerializableEntity
 
@@ -39,7 +40,7 @@ class DetectEntitiesCommand(ArxivBatchCommand[DetectionTask, SerializableEntity]
 
     @staticmethod
     def get_arxiv_ids_dirkey() -> str:
-        return "sources"
+        return "compiled-normalized-sources"
 
     def load(self) -> Iterator[DetectionTask]:
         for arxiv_id in self.arxiv_ids:
@@ -48,15 +49,22 @@ class DetectEntitiesCommand(ArxivBatchCommand[DetectionTask, SerializableEntity]
             )
             file_utils.clean_directory(output_root)
 
-            original_sources_path = directories.arxiv_subdir("sources", arxiv_id)
-            for tex_path in file_utils.find_files(
-                original_sources_path, [".tex"], relative=True
+            for main_tex_file in get_compiled_tex_files(
+                directories.arxiv_subdir("compiled-normalized-sources", arxiv_id)
             ):
+                # While the directory of compiled sources is inspected to find out which TeX
+                # files were compiled, entities should be detected in the un-compiled sources,
+                # because AutoTeX sometimes modifies the TeX files during compilation, meaning
+                # that character offsets found in compiled TeX files won't match the character
+                # offsets of the same text in the original TeX files downloaded from arXiv.
                 file_contents = file_utils.read_file_tolerant(
-                    os.path.join(original_sources_path, tex_path)
+                    os.path.join(
+                        directories.arxiv_subdir("normalized-sources", arxiv_id),
+                        main_tex_file.path,
+                    )
                 )
                 if file_contents is not None:
-                    yield DetectionTask(arxiv_id, tex_path, file_contents)
+                    yield DetectionTask(arxiv_id, main_tex_file.path, file_contents)
 
     def process(self, item: DetectionTask) -> Iterator[SerializableEntity]:
         ExtractorClass = self.get_extractor_type()

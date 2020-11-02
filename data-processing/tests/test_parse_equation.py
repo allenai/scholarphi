@@ -1,9 +1,9 @@
 import os
 
 from bs4 import BeautifulSoup, Tag
-
-from common.parse_equation import parse_element, parse_equation, NodeType
+from common.parse_equation import NodeType, parse_element, parse_equation
 from common.types import Token
+
 from tests.util import get_test_path
 
 

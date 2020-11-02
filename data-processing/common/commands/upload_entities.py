@@ -72,6 +72,15 @@ class UploadEntitiesCommand(DatabaseUploadCommand[PaperProcessingResult, None]):
                 directories.arxiv_subdir(self.get_hue_locations_dirkey(), arxiv_id),
                 "entity_locations.csv",
             )
+            if not os.path.exists(hue_locations_path):
+                logging.warning(  # pylint: disable=logging-not-lazy
+                    "No locations have been saved for entities in command '%s' for paper %s. No entities "
+                    + "will be uploaded for this paper.",
+                    str(self.get_name()),
+                    arxiv_id,
+                )
+                continue
+
             hue_location_infos = list(
                 file_utils.load_from_csv(hue_locations_path, HueLocationInfo)
             )

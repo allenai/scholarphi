@@ -15,6 +15,7 @@ from common.commands.compile_tex import save_compilation_result
 from common.commands.raster_pages import raster_pages
 from common.compile import (
     compile_tex,
+    get_compiled_tex_files,
     get_last_autotex_compiler,
     get_last_colorized_entity_id,
 )
@@ -28,7 +29,6 @@ from common.types import (
     RelativePath,
     SerializableEntity,
 )
-from common.unpack import unpack
 
 
 @dataclass(frozen=True)
@@ -164,19 +164,24 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                     )
                 )
 
-            original_sources_path = directories.arxiv_subdir("sources", arxiv_id)
-            for tex_path in file_utils.find_files(
-                original_sources_path, [".tex"], relative=True
-            ):
+            main_tex_files = get_compiled_tex_files(
+                directories.arxiv_subdir("compiled-normalized-sources", arxiv_id)
+            )
+            normalized_sources_path = directories.arxiv_subdir(
+                "normalized-sources", arxiv_id
+            )
+            for tex_file in main_tex_files:
                 file_contents = file_utils.read_file_tolerant(
-                    os.path.join(original_sources_path, tex_path)
+                    os.path.join(normalized_sources_path, tex_file.path)
                 )
                 entities_for_tex_path = [
-                    e for e in entities if e.tex_path == tex_path or e.tex_path == "N/A"
+                    e
+                    for e in entities
+                    if e.tex_path == tex_file.path or e.tex_path == "N/A"
                 ]
                 if file_contents is not None:
                     yield LocationTask(
-                        arxiv_id, tex_path, file_contents, entities_for_tex_path
+                        arxiv_id, tex_file.path, file_contents, entities_for_tex_path
                     )
 
     def process(self, item: LocationTask) -> Iterator[HueLocationInfo]:
@@ -186,7 +191,9 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
         # specific place in the TeX, but rather a custom coloring technique based on other
         # entity properties will be used. So entities that have a '-1' for their start and
         # end should still be processed even though they appear to be zero-length.
-        entities_filtered = [e for e in item.entities if e.start == -1 or e.end == -1 or e.start != e.end]
+        entities_filtered = [
+            e for e in item.entities if e.start == -1 or e.end == -1 or e.start != e.end
+        ]
 
         # Sort entities by the order in which they appear in the TeX. This allows the pipeline
         # to keep track of which ones appear first, when trying to recover from errors (i.e., when
@@ -305,14 +312,16 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                 if last_colorized_entity_id is not None:
                     problem_ids = [last_colorized_entity_id]
                     if batch.index(last_colorized_entity_id) < len(batch) - 1:
-                        problem_ids += [batch[batch.index(last_colorized_entity_id) + 1]]
+                        problem_ids += [
+                            batch[batch.index(last_colorized_entity_id) + 1]
+                        ]
 
                     if len(batch) == 1:
                         logging.warning(  # pylint: disable=logging-not-lazy
                             "Failed to compile paper %s with colorized entity %s, even when it was "
                             + "colorized in isolation. The location of this entity will not be detected.",
                             item.arxiv_id,
-                            batch[0]
+                            batch[0],
                         )
                         continue
 
@@ -530,7 +539,9 @@ def get_last_colorized_entity(
     arxiv_id: ArxivId, compilation_path: RelativePath
 ) -> Optional[EntityId]:
 
-    original_compilation_path = directories.arxiv_subdir("compiled-sources", arxiv_id)
+    original_compilation_path = directories.arxiv_subdir(
+        "compiled-normalized-sources", arxiv_id
+    )
     original_autogen_log_path = os.path.join(
         original_compilation_path, "auto_gen_ps.log"
     )
@@ -609,30 +620,27 @@ def save_colorized_tex(
     logging.debug("Outputting colorized TeX to %s.", output_sources_path)
 
     # Each colorization batch gets a new sources directory.
-    unpack_path = unpack(arxiv_id, output_sources_path)
-    sources_unpacked = unpack_path is not None
-    if unpack_path is None:
-        logging.warning("Could not unpack sources into %s.", output_sources_path)
-        return False
+    shutil.copytree(
+        directories.arxiv_subdir("normalized-sources", arxiv_id), output_sources_path,
+    )
 
-    if sources_unpacked:
-        # Rewrite the TeX with the colorized TeX.
-        tex_path = os.path.join(output_sources_path, tex_path)
-        with open(tex_path, "w", encoding=encoding) as tex_file:
-            tex_file.write(tex)
+    # Rewrite the TeX with the colorized TeX.
+    tex_path = os.path.join(output_sources_path, tex_path)
+    with open(tex_path, "w", encoding=encoding) as tex_file:
+        tex_file.write(tex)
 
-        # Save a log of which hues were assigned to which entities.
-        hues_path = os.path.join(output_sources_path, "entity_hues.csv")
-        for entity_id, hue in entity_hues.items():
-            file_utils.append_to_csv(
-                hues_path,
-                ColorizationRecord(
-                    tex_path=tex_path,
-                    iteration=str(iteration),
-                    hue=hue,
-                    entity_id=entity_id,
-                ),
-            )
+    # Save a log of which hues were assigned to which entities.
+    hues_path = os.path.join(output_sources_path, "entity_hues.csv")
+    for entity_id, hue in entity_hues.items():
+        file_utils.append_to_csv(
+            hues_path,
+            ColorizationRecord(
+                tex_path=tex_path,
+                iteration=str(iteration),
+                hue=hue,
+                entity_id=entity_id,
+            ),
+        )
 
     return True
 

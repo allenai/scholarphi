@@ -48,15 +48,26 @@ class OutputFile:
 
     path: RelativePath
     """
-    Path to file relative to the compilation directory. In most cases, this will
-    either be relative to <data-directory>/<arxiv-id>, or to
-    <data-directory>/<arxiv-id>/<iteration>/.
+    Path to file relative to the compilation directory.]
+    """
+
+
+@dataclass(frozen=True)
+class CompiledTexFile:
+    """
+    A TeX file successfully compiled by AutoTeX.
+    """
+
+    path: RelativePath
+    """
+    Path to file relative to the compilation directory.
     """
 
 
 @dataclass(frozen=True)
 class CompilationResult:
     success: bool
+    compiled_tex_files: List[CompiledTexFile]
     output_files: List[OutputFile]
     stdout: bytes
     stderr: bytes

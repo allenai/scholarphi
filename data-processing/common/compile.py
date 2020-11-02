@@ -7,7 +7,7 @@ import subprocess
 from typing import Iterator, List, Optional
 
 from common import file_utils
-from common.types import CompilationResult, OutputFile
+from common.types import CompilationResult, CompiledTexFile, OutputFile, RelativePath
 
 COMPILE_CONFIG = "config.ini"
 PDF_MESSAGE_PREFIX = b"Generated PDF: "
@@ -78,6 +78,7 @@ def compile_tex(sources_dir: str) -> CompilationResult:
         check=False,
     )
 
+    compiled_tex_files: List[CompiledTexFile] = []
     output_files: List[OutputFile] = []
     success = False
     if result.returncode == 0:
@@ -85,27 +86,29 @@ def compile_tex(sources_dir: str) -> CompilationResult:
             output_files.append(OutputFile("pdf", pdf_filename))
         for postscript_filename in _get_generated_postscript_filenames(result.stdout):
             output_files.append(OutputFile("ps", postscript_filename))
+        compiled_tex_files = get_compiled_tex_files_from_autotex_output(result.stdout)
         success = True
 
-    return CompilationResult(success, output_files, result.stdout, result.stderr)
+    return CompilationResult(
+        success, compiled_tex_files, output_files, result.stdout, result.stderr
+    )
 
 
-def get_output_files(compiled_tex_dir: str) -> List[OutputFile]:
-    """
-    Get a list of output files for a directory of compiled TeX.
-    """
-    compilation_results_dir = os.path.join(compiled_tex_dir, "compilation_results")
-    result_path = os.path.join(compilation_results_dir, "result")
-    with open(result_path) as result_file:
-        result = result_file.read().strip()
-        if result == "True":
-            output_files_path = os.path.join(
-                compilation_results_dir, "output_files.csv"
-            )
-            output_files = list(file_utils.load_from_csv(output_files_path, OutputFile))
-            return output_files
-
-    return []
+def get_compiled_tex_files_from_autotex_output(
+    tex_engine_output: bytes,
+) -> List[CompiledTexFile]:
+    processed_tex_files = re.findall(
+        rb"\[verbose\]:  ~~~~~~~~~~~ Processing file '(.*?)'", tex_engine_output
+    )
+    failed_tex_files = re.findall(
+        rb"<(.*?)> appears to be tex-type, but was neither included nor processable:",
+        tex_engine_output,
+    )
+    return [
+        CompiledTexFile(filename.decode("utf-8"))
+        for filename in processed_tex_files
+        if filename not in failed_tex_files
+    ]
 
 
 def get_errors(tex_engine_output: bytes, context: int = 5) -> Iterator[bytes]:
@@ -185,3 +188,45 @@ def get_last_colorized_entity_id(
         return entity_ids[-1]
 
     return None
+
+
+"""
+Below are helpers for inspecting summaries of compilation results saved by the pipeline.
+"""
+
+
+def _get_compilation_results_dir(compiled_tex_dir: RelativePath) -> RelativePath:
+    return os.path.join(compiled_tex_dir, "compilation_results")
+
+
+def _did_compilation_succeed(compiled_tex_dir: RelativePath) -> bool:
+    result_path = os.path.join(_get_compilation_results_dir(compiled_tex_dir), "result")
+    with open(result_path) as result_file:
+        result = result_file.read().strip()
+        return result == "True"
+
+
+def get_output_files(compiled_tex_dir: RelativePath) -> List[OutputFile]:
+    " Get a list of output files for a directory of compiled TeX. "
+    if _did_compilation_succeed(compiled_tex_dir):
+        output_files_path = os.path.join(
+            _get_compilation_results_dir(compiled_tex_dir), "output_files.csv"
+        )
+        output_files = list(file_utils.load_from_csv(output_files_path, OutputFile))
+        return output_files
+
+    return []
+
+
+def get_compiled_tex_files(compiled_tex_dir: RelativePath) -> List[CompiledTexFile]:
+    " Get a list of TeX files that were successfully compiled. "
+    if _did_compilation_succeed(compiled_tex_dir):
+        compiled_tex_files_path = os.path.join(
+            _get_compilation_results_dir(compiled_tex_dir), "compiled_tex_files.csv"
+        )
+        compiled_tex_files = list(
+            file_utils.load_from_csv(compiled_tex_files_path, CompiledTexFile)
+        )
+        return compiled_tex_files
+
+    return []

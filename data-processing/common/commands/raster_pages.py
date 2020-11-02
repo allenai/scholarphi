@@ -44,7 +44,7 @@ class RasterPages(ArxivBatchCommand[RasterTask, None]):
         return "Raster images of pages from the un-colorized papers."
 
     def get_arxiv_ids_dirkey(self) -> str:
-        return "compiled-sources"
+        return "compiled-normalized-sources"
 
     def load(self) -> Iterator[RasterTask]:
 
@@ -54,7 +54,9 @@ class RasterPages(ArxivBatchCommand[RasterTask, None]):
             output_dir_for_arxiv_id = directories.arxiv_subdir("paper-images", arxiv_id)
             file_utils.clean_directory(output_dir_for_arxiv_id)
 
-            paper_abs_path = directories.arxiv_subdir("compiled-sources", arxiv_id)
+            paper_abs_path = directories.arxiv_subdir(
+                "compiled-normalized-sources", arxiv_id
+            )
             output_files = get_output_files(paper_abs_path)
             for output_file in output_files:
                 yield RasterTask(
@@ -66,7 +68,7 @@ class RasterPages(ArxivBatchCommand[RasterTask, None]):
 
     def save(self, item: RasterTask, _: None) -> None:
         raster_pages(
-            directories.arxiv_subdir("compiled-sources", item.arxiv_id),
+            directories.arxiv_subdir("compiled-normalized-sources", item.arxiv_id),
             os.path.join(
                 directories.arxiv_subdir("paper-images", item.arxiv_id),
                 directories.escape_slashes(item.relative_output_file_path),

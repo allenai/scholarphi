@@ -401,11 +401,8 @@ if __name__ == "__main__":
                 if skip_command:
                     continue
             if args.extraction_only:
-                if (
-                    issubclass(CommandClass, LocateEntitiesCommand)
-                    or issubclass(CommandClass, DatabaseUploadCommand)
-                    or CommandClass is CompileTexSources
-                    or CommandClass is RasterPages
+                if issubclass(CommandClass, LocateEntitiesCommand) or issubclass(
+                    CommandClass, DatabaseUploadCommand
                 ):
                     continue
             # Optionally skip over database upload commands.
