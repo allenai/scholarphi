@@ -529,44 +529,6 @@ class DetectDefinitions(
             )
             return
 
-        # Make a cross-doc dictionary files (./data/)
-        cache_directory = "./cache/cross_doc_model"
-        if not os.path.exists(cache_directory):
-            os.makedirs(cache_directory)
-            logging.debug("Created cache directory for models at %s", cache_directory)
-
-            # Download the best model files in ./data/
-            DICTIONARY_URL = "http://dongtae.lti.cs.cmu.edu/data/cross_doc/term_dictionary_use_raw_math=True.pkl"
-            logging.debug(
-                "Downloading cross-term dictionary from %s. Warning: this will take a long time.",
-                DICTIONARY_URL,
-            )
-            cache_file = "term_dictionary_use_raw_math=True.pkl"
-            urllib.request.urlretrieve(
-                DICTIONARY_URL,
-                os.path.join("{}/{}".format(cache_directory, cache_file)),
-            )
-
-            logging.debug("Downloaded dictionary file in directory %s", cache_file)
-
-        else:
-            logging.debug(  # pylint: disable=logging-not-lazy
-                "Cache directory for models already exists at %s. "
-                + "Skipping creation of directory and download of data.",
-                cache_directory,
-            )
-
-        # Load the list of detected defineundum across documents.
-        cross_term_dict = pkl.load(
-            open("cache/cross_doc_model/term_dictionary_use_raw_math=True.pkl", "rb")
-        )
-
-        # Currently, we are using terms in ACL papers only.
-        logging.debug(
-            "Total number of terms in cross-doc term dictionary : %d",
-            len(cross_term_dict),
-        )
-
         # Load the pre-trained definition detection model.
         model = DefinitionDetectionModel()
 
