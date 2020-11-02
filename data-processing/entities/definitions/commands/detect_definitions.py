@@ -83,8 +83,8 @@ def get_term_definition_pairs(
     # Extract ranges for all terms and definitions.
     terms: List[List[CharacterRange]] = []
     definitions: List[List[CharacterRange]] = []
-    term_confidences: List[float] = []
-    definition_confidences: List[float] = []
+    term_confidence_list: List[float] = []
+    definition_confidence_list: List[float] = []
     term_ranges, definition_ranges = [], []
     term_confs, definition_confs = [], []
 
@@ -98,10 +98,10 @@ def get_term_definition_pairs(
         if slot_label == "O":
             if len(term_ranges) > 0:
                 terms.append(term_ranges)
-                term_confidences.append(sum(term_confs)/len(term_confs))
+                term_confidence_list.append(sum(term_confs)/len(term_confs))
             if len(definition_ranges) > 0:
                 definitions.append(definition_ranges)
-                definition_confidences.append(sum(definition_confs)/len(definition_confs))
+                definition_confidence_list.append(sum(definition_confs)/len(definition_confs))
             term_ranges, definition_ranges = [], []
 
     # Extract ranges for all abbreviations.
@@ -136,8 +136,8 @@ def get_term_definition_pairs(
 
         term_a_rangelist = terms[pair_index]
         definition_a_rangelist = definitions[pair_index]
-        term_confidence = term_confidences[pair_index]
-        definition_confidence = definition_confidences[pair_index]
+        term_confidence = term_confidence_list[pair_index]
+        definition_confidence = definition_confidence_list[pair_index]
 
         term_start = min([r.start for r in term_a_rangelist])
         term_end = max([r.end for r in term_a_rangelist]) + 1
