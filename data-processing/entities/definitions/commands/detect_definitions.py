@@ -716,15 +716,6 @@ class DetectDefinitions(
                                     definition_start:definition_end
                                 ]
 
-                            # Check whether the definiendum appears in the cross-doc term dictionary
-                            # and decide whether it is protologism or not
-                            if definiendum_type == 'term':
-                                if not definiendum_text in cross_term_dict and definiendum_text != 'CITATION':
-                                    logging.debug('Protologism detected : %s', definiendum_text )
-                                    definiendum_type = 'protologism'
-                                # else:
-                                # print('\t',term, cross_term_dict[term]['num_definitions'], cross_term_dict[term]['cross_sentence_distance'])
-
 
                             # Save the definition to file.
                             definition = Definition(
