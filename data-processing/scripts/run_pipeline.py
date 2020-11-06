@@ -15,7 +15,6 @@ from common.commands.base import (
     load_arxiv_ids_using_args,
     read_arxiv_ids_from_file,
 )
-from common.commands.compile_tex import CompileTexSources
 from common.commands.database import DatabaseUploadCommand
 from common.commands.fetch_arxiv_sources import (
     DEFAULT_S3_ARXIV_SOURCES_BUCKET,
@@ -23,7 +22,6 @@ from common.commands.fetch_arxiv_sources import (
 )
 from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
 from common.commands.locate_entities import LocateEntitiesCommand
-from common.commands.raster_pages import RasterPages
 from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
 from common.make_digest import make_paper_digest

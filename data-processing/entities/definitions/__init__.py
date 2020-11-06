@@ -6,6 +6,8 @@ from common.commands.upload_entities import make_upload_entities_command
 from entities.common import create_entity_localization_command_sequence
 from scripts.pipelines import EntityPipeline, register_entity_pipeline
 
+from .commands.create_annotation_files import CreateAnnotationFiles
+
 # from .colorize import get_definition_color_positions
 from .commands.detect_definitions import DetectDefinitions
 from .commands.tokenize_sentences import TokenizeSentences
@@ -14,6 +16,7 @@ from .upload import upload_definitions
 
 # Register directories for output from intermediate pipeline stages.
 directories.register("sentence-tokens")
+directories.register("annotation-files")
 directories.register("detected-definitions")
 directories.register("sources-with-colorized-definitions")
 directories.register("compiled-sources-with-colorized-definitions")
@@ -35,6 +38,7 @@ upload_command = make_upload_entities_command(
 
 commands: CommandList = [
     TokenizeSentences,
+    CreateAnnotationFiles,
     DetectDefinitions,
     make_locate_entities_command("definitions"),
     upload_command,

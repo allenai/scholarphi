@@ -39,7 +39,7 @@ class Token:
 
     text_for_annotation: Optional[str]
     """
-    When assembling a text to be annotated, this value will be written to the text to be
+    When assembling a text to be annotated, this value should be written to the text to be
     annotated, instead of the 'text' property. Set this to 'None' if the token should not
     be written to the text to be annotated at all.
     """
@@ -54,6 +54,9 @@ class Token:
     this token) in the original TeX.
     """
 
+    sentence_id: str
+    " ID of the sentence this token belongs to. "
+
     sentence_transformations: Optional[str]
     """
     Optional tag describing types of transformations that had been applied to the sentence before
@@ -62,21 +65,26 @@ class Token:
 
 
 @dataclass(frozen=True)
-class OutputToken(Token):
-    " A token output to a transformed copy of a text. "
-
-    start_in_text: int
-    end_in_text: int
+class AnnotationToken(Token):
     """
-    Offsets indicating the character positions where the token appears in the output text.
+    A token output to a text meant to be annotated. Includes offsets of where the token appears
+    both in the original TeX that it was found in, and the synthesized text to be annotated.
     """
 
-    start_in_sentence: int
-    end_in_sentence: int
+    start_in_text: Optional[int]
+    end_in_text: Optional[int]
+    """
+    Offsets indicating the character positions where the token appears in the output text. Set
+    to 'None' if the token wasn't written to the text to be annotated.
+    """
+
+    start_in_sentence: Optional[int]
+    end_in_sentence: Optional[int]
     """
     Offsets indicating the character positions where the token appears in the sentence it belongs
     to in the output text. This is useful for finding the token in the output text if the text
-    is written such that each sentence is listed on its own line.
+    is written such that each sentence is listed on its own line. Set to 'None' if the token wasn't
+    written to the text to be annotated.
     """
 
 
