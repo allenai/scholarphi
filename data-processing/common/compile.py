@@ -212,6 +212,14 @@ def get_output_files(compiled_tex_dir: RelativePath) -> List[OutputFile]:
         output_files_path = os.path.join(
             _get_compilation_results_dir(compiled_tex_dir), "output_files.csv"
         )
+        if not os.path.exists(output_files_path):
+            logging.warning(  # pylint: disable=logging-not-lazy
+                "Although compilation succeeded for TeX compilation in directory %s, no "
+                + "output files were produced. Something unexpected must have happened during "
+                + "compilation of the TeX.",
+                compiled_tex_dir,
+            )
+            return []
         output_files = list(file_utils.load_from_csv(output_files_path, OutputFile))
         return output_files
 

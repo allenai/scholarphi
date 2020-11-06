@@ -134,7 +134,7 @@ def read_arxiv_ids_from_file(path: Path) -> List[ArxivId]:
     with open(path) as arxiv_ids_file:
         arxiv_ids = []
         for l in arxiv_ids_file:
-            comment_start = l.index("#")
+            comment_start = l.find("#")
             if comment_start != -1:
                 arxiv_ids.append(l[:comment_start].strip())
             else:

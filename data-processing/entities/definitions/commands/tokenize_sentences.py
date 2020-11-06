@@ -11,7 +11,7 @@ from common.commands.base import ArxivBatchCommand
 from common.types import ArxivId, Symbol
 from entities.sentences.types import Sentence
 
-from ..types import EmbellishedSentence, OutputToken, Token
+from ..types import EmbellishedSentence, Token
 
 TexPath = str
 EquationIndex = int
@@ -46,10 +46,9 @@ class TokenizeSentences(ArxivBatchCommand[Task, TokenizedSentence]):
     @staticmethod
     def get_description() -> str:
         return (
-            "Pre-process sentences for NLP annotation and model training. This command produces "
-            + "three related outputs. First, a CSV of embellished sentences. Second, a list of "
-            + "sentences that can be loaded into an annotation program like 'brat.' Third, a list "
-            + "of tokens that can be provided to a model."
+            "Pre-process sentences for into tokens for inference and as data for annotation "
+            + "(if later commands are also run). This command produces a CSV of cleaned "
+            + " sentences, and a list of tokens that can be provided to a model."
         )
 
     def get_arxiv_ids_dirkey(self) -> str:
@@ -87,7 +86,7 @@ class TokenizeSentences(ArxivBatchCommand[Task, TokenizedSentence]):
                 logging.warning(  # pylint: disable=logging-not-lazy
                     "No sentences data found for arXiv paper %s. Try re-running the pipeline, "
                     + "this time enabling the processing of sentences. If that doesn't work, "
-                    + "there is likely an error in detcting sentences for this paper.",
+                    + "there is likely an error in detecting sentences for this paper.",
                     arxiv_id,
                 )
                 continue
@@ -221,6 +220,7 @@ class TokenizeSentences(ArxivBatchCommand[Task, TokenizedSentence]):
                     tex=tex,
                     tex_start=sentence.start + start_in_tex_sentence,
                     tex_end=sentence.start + end_in_tex_sentence,
+                    sentence_id=sentence.id_,
                     sentence_transformations="with_symbols_marked",
                 )
             )
@@ -241,45 +241,6 @@ class TokenizeSentences(ArxivBatchCommand[Task, TokenizedSentence]):
         sentence_data_path = os.path.join(output_dir, "sentences.csv")
         file_utils.append_to_csv(sentence_data_path, result.embellished_sentence)
 
-        # Write tokens simultaneously to a file listing each token, and a file including
-        # the transformed, cleaned text ready for human annotation.
         token_list_path = os.path.join(output_dir, "tokens.csv")
-        sentence_list_path = os.path.join(output_dir, "sentences_for_annotation.txt")
-
-        try:
-            with open(sentence_list_path, encoding="utf-8") as sentence_file:
-                offset_of_sentence = len(sentence_file.read())
-        except FileNotFoundError:
-            offset_of_sentence = 0
-
-        offset_within_sentence = 0
-        with open(sentence_list_path, mode="a", encoding="utf-8") as sentence_file:
-            for token in result.tokens:
-                output_token = OutputToken(
-                    text=token.text,
-                    text_for_annotation=token.text_for_annotation,
-                    tex=token.tex,
-                    tex_start=token.tex_start,
-                    tex_end=token.tex_end,
-                    sentence_transformations=token.sentence_transformations,
-                    start_in_text=offset_of_sentence + offset_within_sentence,
-                    end_in_text=(
-                        offset_of_sentence + offset_within_sentence + len(token.text)
-                    ),
-                    start_in_sentence=offset_within_sentence,
-                    end_in_sentence=offset_within_sentence + len(token.text),
-                )
-
-                # Write token to list of tokens.
-                file_utils.append_to_csv(token_list_path, output_token)
-
-                # Write token to text to be annotated (including spaces between each token).
-                if token.text_for_annotation is not None:
-                    if offset_within_sentence > 0:
-                        sentence_file.write(" ")
-                        offset_within_sentence += 1
-
-                    sentence_file.write(token.text_for_annotation)
-                    offset_within_sentence += len(token.text_for_annotation)
-
-            sentence_file.write("\n")
+        for token in result.tokens:
+            file_utils.append_to_csv(token_list_path, token)
