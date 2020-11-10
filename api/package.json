@@ -4,8 +4,8 @@
   "description": "API for the Semantic Scholar Reader",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node-dev src/index.ts",
-    "start:prod": "node build/index.js",
+    "start": "ts-node-dev --max-http-header-size=65536 src/index.ts",
+    "start:prod": "node --max-http-header-size=65536 build/index.js",
     "test": "jest",
     "build": "tsc --outDir build/"
   },
