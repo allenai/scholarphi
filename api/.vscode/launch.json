@@ -33,8 +33,9 @@
          * Uncomment the following argument to set the API to use an experimental database
          * schema, instead of the default 'public' database schema, for instance 'dev'.
          */
-        "--database:schema=public"
+        // "--database:schema=public"
         // "--database:schema=dev"
+        "--database:schema=ray_error_1"
       ],
       "protocol": "inspector",
       "internalConsoleOptions": "openOnSessionStart",
