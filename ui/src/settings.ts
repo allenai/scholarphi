@@ -189,6 +189,70 @@ const PRESETS: Preset[] = [
     key: "tc",
     initialFocus: "94159",
   },
+  {
+    key: "edit",
+    annotationInteractionEnabled: true,
+    primerPageEnabled: false,
+    glossesEnabled: true,
+    equationDiagramsEnabled: true,
+    declutterEnabled: true,
+    entityEditingEnabled: true,
+    sentenceTexCopyOnOptionClickEnabled: true,
+    useDefinitionsForDiagramLabels: true,
+  },
+  {
+    key: "raymond",
+    annotationInteractionEnabled: true,
+    primerPageEnabled: false,
+    glossesEnabled: true,
+    equationDiagramsEnabled: true,
+    declutterEnabled: true,
+    useDefinitionsForDiagramLabels: true,
+  },
+  {
+    key: "fp1q1",
+    initialFocus: "115077",
+  },
+  {
+    key: "fp1q2",
+    initialFocus: "115121",
+  },
+  {
+    key: "fp1q3",
+    initialFocus: "115121",
+  },
+  {
+    key: "fp1q4",
+    initialFocus: "115119",
+  },
+  {
+    key: "fp1q5",
+    initialFocus: "115117",
+  },
+  {
+    key: "fp1q6",
+    initialFocus: "115019",
+  },
+  {
+    key: "fp2q1",
+    initialFocus: "95326"
+  },
+  {
+    key: "fp2q2",
+    initialFocus: "94126"
+  },
+  {
+    key: "fp2q3",
+    initialFocus: "94156"
+  },
+  {
+    key: "fp2q4",
+    initialFocus: "94189"
+  },
+  {
+    key: "fp2q5",
+    initialFocus: "94179"
+  }
 ];
 
 /**
