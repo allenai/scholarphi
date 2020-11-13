@@ -102,7 +102,6 @@ function(
             annotations: annotations + {
                 'cert-manager.io/cluster-issuer': 'letsencrypt-prod',
                 'kubernetes.io/ingress.class': 'nginx',
-                'nginx.ingress.kubernetes.io/configuration-snippet': 'client_header_buffer_size 64k;\n large_client_header_buffers 4 64k',
                 'nginx.ingress.kubernetes.io/ssl-redirect': 'true'
             }
         },
