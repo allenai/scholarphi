@@ -211,11 +211,11 @@ const PRESETS: Preset[] = [
   },
   {
     key: "fp1q1",
-    initialFocus: "115077",
+    initialFocus: "115121",
   },
   {
     key: "fp1q2",
-    initialFocus: "115121",
+    initialFocus: "115019",
   },
   {
     key: "fp1q3",
@@ -223,36 +223,24 @@ const PRESETS: Preset[] = [
   },
   {
     key: "fp1q4",
-    initialFocus: "115119",
-  },
-  {
-    key: "fp1q5",
-    initialFocus: "115117",
-  },
-  {
-    key: "fp1q6",
-    initialFocus: "115019",
+    initialFocus: "115186",
   },
   {
     key: "fp2q1",
-    initialFocus: "95326"
-  },
-  {
-    key: "fp2q2",
     initialFocus: "94126"
   },
   {
+    key: "fp2q2",
+    initialFocus: "94179"
+  },
+  {
     key: "fp2q3",
-    initialFocus: "94156"
+    initialFocus: "95326"
   },
   {
     key: "fp2q4",
     initialFocus: "94189"
   },
-  {
-    key: "fp2q5",
-    initialFocus: "94179"
-  }
 ];
 
 /**
