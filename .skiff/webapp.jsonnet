@@ -17,7 +17,7 @@ function(
     // We only allow registration of hostnames attached to '*.apps.allenai.org'
     // at this point. If you need a custom domain, contact us: reviz@allenai.org.
     local topLevelDomain = '.apps.allenai.org';
-    local hosts = 
+    local hosts =
         if env == 'prod' then
             [ config.appName + topLevelDomain, 'scholarphi.semanticscholar.org' ]
         else
