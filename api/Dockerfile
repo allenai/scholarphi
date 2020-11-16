@@ -34,4 +34,4 @@ ENV NODE_ENV ${NODE_ENV:-production}
 # Kick things off. We use `npm` instead of `node` directly so that signals
 # are handled properly.
 ENTRYPOINT [ "npm" ]
-CMD [ "run", "start:prod" ]
+CMD [ "run", "start:prod", "--database:schema=ray_error_1" ]
