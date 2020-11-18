@@ -1,13 +1,13 @@
 import logging
 import os.path
 import shutil
-import subprocess
 from dataclasses import dataclass
 from typing import Iterator
 
 from common import directories
 from common.commands.base import ArxivBatchCommand
 from common.compile import get_compiled_tex_files
+from common.normalize_tex import expand_tex
 from common.types import AbsolutePath, ArxivId, CompiledTexFile, Path, RelativePath
 
 CompilationPath = AbsolutePath
@@ -89,43 +89,26 @@ class NormalizeTexSources(ArxivBatchCommand[NormalizationTask, None]):
             )
             yield None
 
-        result = subprocess.run(
-            [
-                # Utility for unifying LaTeX files. Released under BSD.
-                # See https://ctan.org/pkg/latexpand?lang=en.
-                "latexpand",
+        expanded = expand_tex(item.normalized_sources_dir, item.compiled_tex_file.path)
+        if expanded is None:
+            logging.warning(
+                "Could not expand TeX file %s for paper %s.",
                 item.compiled_tex_file.path,
-                "--keep-comments",
-                "--output",
-                "temporary_unified_file.tex",
-            ],
-            cwd=item.normalized_sources_dir,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=False,
-        )
+                item.arxiv_id,
+            )
+            return
 
         # Overwrite the original file with the unified file. This is so that as little as
         # possible will be changed in the sources directory, in the hopes that it will
         # cause AutoTeX to process the unified file the same way as the original file.
-        os.rename(
-            os.path.join(item.normalized_sources_dir, "temporary_unified_file.tex"),
-            tex_path,
-        )
+        with open(tex_path, "w", encoding="utf-8") as tex_file:
+            tex_file.write(expanded)
 
-        if result.returncode == 0:
-            logging.debug(
-                "TeX file %s for paper %s has been unified.",
-                item.compiled_tex_file.path,
-                item.arxiv_id,
-            )
-        else:
-            logging.warning(
-                "Could not unify TeX file %s for paper %s. Error: %s",
-                item.compiled_tex_file.path,
-                item.arxiv_id,
-                result.stderr,
-            )
+        logging.debug(
+            "TeX file %s for paper %s has been expanded.",
+            item.compiled_tex_file.path,
+            item.arxiv_id,
+        )
 
         yield None
 

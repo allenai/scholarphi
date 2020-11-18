@@ -52,8 +52,6 @@ def expand_tex(
     are only expanded if their absolute resolved file path is inside the directory specified by
     'within'. If 'within' is not specified, then it will be set to 'tex_dir'.
 
-    Return the expanded TeX, which can be saved back to the file to unify it.
-
     Based loosely on the code from the Perl latexpand utility in TeXLive, which is distributed under a
     BSD license: https://ctan.org/pkg/latexpand?lang=en
 
@@ -62,6 +60,9 @@ def expand_tex(
     * handling quotation marks around input or included files. In some cases it will work the
       same as LaTeX does, and in some cases it won't. It seems how files are included
       that have quotes differs by LaTeX version https://tex.stackexchange.com/a/515259/198728
+    * expanding files that don't use a 'utf-8'-compatible encoding. TeX files can include
+      multiple input encodings, even within the same file. However, this function will not expand
+      input that fail to open as UTF-8 files.
     """
 
     # Resolve path to TeX file, and make sure it's in a valid directory.
@@ -89,7 +90,7 @@ def expand_tex(
 
     if not os.path.exists(qualified_tex_path):
         logging.warning(  # pylint: disable=logging-not-lazy
-            "Could not find file %s in directory %s. No text will be read from this file.",
+            "Could not find file '%s' in directory '%s'. No text will be read from this file.",
             tex_name,
             tex_dir,
         )
@@ -98,8 +99,8 @@ def expand_tex(
     input_patterns = [
         # Put patterns with braces before those without braces so they have priority in matching.
         Pattern("input_braces", r"\\input\s*{([^}]+)}"),
-        Pattern("input_quotes", r'\\input\s*"([^"]+)"'),
-        Pattern("input", r"\\input\s*(\S+)"),
+        Pattern("input_quotes", r'\\input\s+"([^"]+)"'),
+        Pattern("input", r"\\input\s+(\S+)"),
     ]
     # Note that while it's supported here, '\include' seem to be pretty rare in research papers.
     # In a specific sample of about 120 conference papers, only 5 had '\include' macros, yet
@@ -107,14 +108,23 @@ def expand_tex(
     # The rest of the files used '\include' macros to include macros and usepackage statements.
     include_patterns = [
         Pattern("include_braces", r"\\include\s*{([^}]+)}"),
-        Pattern("include", r"\\include\s*(\S+)"),
+        Pattern("include", r"\\include\s+(\S+)"),
     ]
     endinput_pattern = Pattern("endinput", r"\\endinput( |\t|\b|\{.*?\})")
     patterns = input_patterns + include_patterns + [endinput_pattern]
 
     # Read TeX for a file.
     with open(qualified_tex_path, encoding="utf-8") as tex_file:
-        tex = tex_file.read()
+        try:
+            tex = tex_file.read()
+        except Exception as e:  # pylint: disable=broad-except
+            logging.warning(  # pylint: disable=logging-not-lazy
+                "Could not read file at %s due to error: %s. The TeX for this file will "
+                + "not be expanded",
+                qualified_tex_path,
+                e,
+            )
+            return None
 
     replacements: List[Union[Expansion, EndInput]] = []
     endinputs = []
@@ -157,13 +167,6 @@ def expand_tex(
         # In TeX, paths are specified in Unix format. Convert to platform-specific path format
         # to let the program search for and read the file.
         input_path = input_path.strip().replace(posixpath.sep, os.path.sep)
-        qualified_input_path = (
-            input_path
-            if os.path.isabs(input_path)
-            else os.path.normpath(os.path.join(tex_dir, input_path))
-        )
-        qualified_input_dir = os.path.dirname(qualified_input_path)
-        qualified_input_basename = os.path.basename(qualified_input_path)
 
         # Expand the input by reading in the expanded text in the input file.
         discovery_strategy = (
@@ -172,8 +175,11 @@ def expand_tex(
             else FileDiscoveryStrategy.INPUT
         )
         input_tex = expand_tex(
-            qualified_input_dir,
-            qualified_input_basename,
+            # All inputs from expanded files will be resolved relative to the main
+            # directory of the project (i.e., the one where the TeX executable is invoked):
+            # https://tex.stackexchange.com/a/39084/198728
+            tex_dir,
+            input_path,
             discover_by=discovery_strategy,
             is_input=True,
             # Specify the 'within' parameter to make sure that all expanded files reside
