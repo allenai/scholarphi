@@ -68,7 +68,7 @@ def test_do_not_unify_with_tex_files_outside_of_directory():
         )
 
 
-def test_unify_with_input_in_parent_directory_from_input_in_child_directory():
+def test_unify_with_inputs_from_inputs_in_child_directory():
     with TemporaryDirectory() as tex_dir:
         child_dir = os.path.join(tex_dir, "child_dir")
         os.makedirs(child_dir)
@@ -76,7 +76,7 @@ def test_unify_with_input_in_parent_directory_from_input_in_child_directory():
             tex_dir,
             {"main.tex": r"\input{child_dir/other1}", "other2.tex": "Hello world!"},
         )
-        create_temp_files(child_dir, {"other1.tex": r"\input{../other2.tex}"})
+        create_temp_files(child_dir, {"other1.tex": r"\input{other2.tex}"})
         assert expand_tex(tex_dir, "main.tex") == "Hello world!"
 
 
