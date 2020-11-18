@@ -405,8 +405,6 @@ def get_symbol_texs(
     Returns None if there was an error establishing a mapping, for instance if there are
     a different number of 'SYMBOL' and 'FORMULA' tags between the two versions of the sentence.
     """
-    sentence_with_formula_contents = sentence_with_formula_contents.replace('\n','')
-    sentence_with_symbol_tags = sentence_with_symbol_tags.replace('\n','')
     symbol_starts = [
         m.start() for m in re.finditer(r"SYMBOL", sentence_with_symbol_tags)
     ]
@@ -650,7 +648,7 @@ class DetectDefinitions(
                             definition_end = s.start + offsets[1]
 
                             # Extract document-level features from sentence
-                            position_ratio = definiendum_start / end_posiion_of_last_sentence
+                            position_ratio = definiendum_start / end_position_of_last_sentence
                             section_name = s.section_name
 
                             try:
