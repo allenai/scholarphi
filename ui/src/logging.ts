@@ -96,6 +96,8 @@ class RemoteLogger {
 
 const remoteLoggerInstance = new RemoteLogger();
 
+export default remoteLoggerInstance;
+
 /**
  * Get remote logger singleton.
  */
