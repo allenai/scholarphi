@@ -2,19 +2,18 @@ import Button from "@material-ui/core/Button";
 import Tooltip from "@material-ui/core/Tooltip";
 import SaveIcon from "@material-ui/icons/Bookmark";
 import CiteIcon from "@material-ui/icons/FormatQuote";
-import React from "react";
 import AuthorList from "./AuthorList";
 import FeedbackButton from "./FeedbackButton";
 import ChartIcon from "./icon/ChartIcon";
 import InfluentialCitationIcon from "./icon/InfluentialCitationIcon";
-import { getRemoteLogger } from "./logging";
+import logger from "./logging";
 import { userLibraryUrl } from "./s2-url";
 import S2Link from "./S2Link";
 import { PaperId, UserLibrary } from "./state";
 import { Paper } from "./types/api";
 import { truncateText } from "./utils/ui";
 
-const logger = getRemoteLogger();
+import React from "react";
 
 interface Props {
   paper: Paper;
@@ -36,8 +35,7 @@ function warnOfUnimplementedActionAndTrack(
     "Sorry, that feature isn't implemented yet. Clicking it tells us " +
     "you're interested in the feature, increasing the likelihood that " +
     "it'll be implemented!";
-  message = message || DEFAULT_MESSAGE;
-  alert(message);
+  alert(message || DEFAULT_MESSAGE);
   if (window.heap) {
     window.heap.track("Click on Unimplemented Action", { actionType });
   }
@@ -53,34 +51,18 @@ function trackLibrarySave() {
   }
 }
 
-export class PaperSummary extends React.PureComponent<Props, State> {
-  constructor(props: Props) {
-    super(props);
+export default class PaperSummary extends React.PureComponent<Props, State> {
+  state = {
+    showFullAbstract: false,
+    errorMessage: "",
+  };
 
-    this.state = {
-      showFullAbstract: false,
-      errorMessage: "",
-    };
-  }
-
-  renderLibraryButton(label: string, onClick: () => void) {
-    return (
-      <Button
-        startIcon={<SaveIcon />}
-        className="paper-summary__action"
-        onClick={onClick}
-      >
-        {label}
-      </Button>
-    );
-  }
-
-  async saveToLibrary(
+  saveToLibrary = async (
     userLibrary: UserLibrary | null,
     addToLibrary: Function,
     s2Id: string,
     paperTitle: string
-  ) {
+  ): Promise<void> => {
     if (!userLibrary) {
       warnOfUnimplementedActionAndTrack(
         "save"
@@ -103,7 +85,7 @@ export class PaperSummary extends React.PureComponent<Props, State> {
     }
   }
 
-  render() {
+  render(): React.ReactNode {
     const { paper, userLibrary, handleAddPaperToLibrary } = this.props;
 
     const hasMetrics =
@@ -142,7 +124,7 @@ export class PaperSummary extends React.PureComponent<Props, State> {
               truncatedAbstract === paper.abstract ? (
                 paper.abstract
               ) : (
-                <>
+                <React.Fragment>
                   {truncatedAbstract}
                   <span
                     className="paper-summary__abstract__show-more-label"
@@ -152,7 +134,7 @@ export class PaperSummary extends React.PureComponent<Props, State> {
                   >
                     (show more)
                   </span>
-                </>
+                </React.Fragment>
               )}
             </p>
           </div>
@@ -167,12 +149,12 @@ export class PaperSummary extends React.PureComponent<Props, State> {
                 <Tooltip
                   placement="bottom-start"
                   title={
-                    <>
+                    <React.Fragment>
                       <strong>
                         {paper.influentialCitationCount} influential citation
                         {paper.influentialCitationCount !== 1 ? "s" : ""}
                       </strong>
-                    </>
+                    </React.Fragment>
                   }
                 >
                   <div className="paper-summary__metrics__metric">
@@ -186,13 +168,13 @@ export class PaperSummary extends React.PureComponent<Props, State> {
                 <Tooltip
                   placement="bottom-start"
                   title={
-                    <>
+                    <React.Fragment>
                       <strong>
                         Averaging {paper.citationVelocity} citation
                         {paper.citationVelocity !== 1 ? "s " : " "}
                         per year
                       </strong>
-                    </>
+                    </React.Fragment>
                   }
                 >
                   <div className="paper-summary__metrics__metric">
@@ -217,19 +199,20 @@ export class PaperSummary extends React.PureComponent<Props, State> {
             Cite
           </Button>
           {inLibrary
-            ? this.renderLibraryButton("In Your Library", () => goToLibrary())
-            : this.renderLibraryButton("Save To Library", () => {
-                this.saveToLibrary(
-                  userLibrary,
-                  handleAddPaperToLibrary,
-                  paper.s2Id,
-                  paper.title
-                );
-                logger.log("debug", "citation-action", {
-                  type: "save-to-library",
-                  paper: this.props.paper,
-                });
-              })}
+            ? <LibraryButton label="In Your Library" onClick={() => goToLibrary()}/>
+            : <LibraryButton label="Save To Library" onClick={() => {
+              this.saveToLibrary(
+                userLibrary,
+                handleAddPaperToLibrary,
+                paper.s2Id,
+                paper.title
+              );
+              logger.log("debug", "citation-action", {
+                type: "save-to-library",
+                paper: this.props.paper,
+              });
+            }}/>
+            }
         </div>
 
         <div className="paper-summary__section paper-summary__feedback">
@@ -248,4 +231,15 @@ export class PaperSummary extends React.PureComponent<Props, State> {
   }
 }
 
-export default PaperSummary;
+const LibraryButton = (props: { label: string, onClick: () => void }): React.ReactElement => {
+  const { label, onClick } = props;
+  return (
+    <Button
+        startIcon={<SaveIcon />}
+        className="paper-summary__action"
+        onClick={onClick}
+      >
+      {label}
+    </Button>
+  );
+}
