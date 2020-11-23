@@ -37,7 +37,9 @@ from scripts.process import (
 
 
 def run_commands_for_arxiv_ids(
-    CommandClasses: CommandList, arxiv_id_list: List[str], pipeline_args: Namespace,
+    CommandClasses: CommandList,
+    arxiv_id_list: List[str],
+    pipeline_args: Namespace,
 ) -> PipelineDigest:
     " Run a sequence of pipeline commands for a list of arXiv IDs. "
 
@@ -426,15 +428,17 @@ if __name__ == "__main__":
     pipeline_digest: PipelineDigest = {}
     if args.one_paper_at_a_time:
         for arxiv_id in arxiv_ids:
-            logging.info("Running pipeline for paper %s", arxiv_id)
-            digest_for_paper = run_commands_for_arxiv_ids(
-                filtered_commands, [arxiv_id], args
-            )
-            # The pipeline digest must be updated after each arXiv ID is processed, because the
-            # digest for a paper cannot be computed once the paper's data is deleted.
-            pipeline_digest.update(digest_for_paper)
-            if not args.keep_data:
-                file_utils.delete_data(arxiv_id)
+            try:
+                logging.info("Running pipeline for paper %s", arxiv_id)
+                digest_for_paper = run_commands_for_arxiv_ids(
+                    filtered_commands, [arxiv_id], args
+                )
+                # The pipeline digest must be updated after each arXiv ID is processed, because the
+                # digest for a paper cannot be computed once the paper's data is deleted.
+                pipeline_digest.update(digest_for_paper)
+            finally:
+                if not args.keep_data:
+                    file_utils.delete_data(arxiv_id)
     else:
         logging.info("Running pipeline for papers %s", arxiv_ids)
         digest_for_papers = run_commands_for_arxiv_ids(

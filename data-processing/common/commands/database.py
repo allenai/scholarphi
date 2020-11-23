@@ -14,7 +14,7 @@ class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
 
     def __init__(self, args: Any) -> None:
         super().__init__(args)
-        init_database_connections(schema_name=args.schema, create_tables=True)
+        init_database_connections(schema_name=args.schema, create_tables=False)
 
     @staticmethod
     def init_parser(parser: ArgumentParser) -> None:

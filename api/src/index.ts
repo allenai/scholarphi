@@ -7,9 +7,9 @@ nconf
   .file({ file: process.env.SECRETS_FILE || "config/secret.json" })
   .defaults({
     database: {
-      host: "scholar-reader.c5tvjmptvzlz.us-west-2.rds.amazonaws.com",
+      host: "scholarphi-db-prod.cluster-civm9kvdku8h.us-west-2.rds.amazonaws.com",
       port: 5432,
-      database: "scholar-reader",
+      database: "scholarphi",
       user: "api",
       schema: "public",
     },
