@@ -1,4 +1,4 @@
-<msubsup s2:index="5">
+<msubsup s2:start="0" s2:end="14" s2:index="5">
     <mo>∑</mo>
     <mrow s2:start="5" s2:end="12" s2:index="3">
         <mi s2:start="6" s2:end="7" s2:index="0">i</mi>
