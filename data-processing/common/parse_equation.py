@@ -1,6 +1,6 @@
-from enum import Enum
 import re
 from dataclasses import dataclass
+from enum import Enum
 from typing import List, Optional, Tuple, Union
 
 from bs4 import BeautifulSoup, NavigableString, Tag
@@ -38,6 +38,12 @@ class Node:
 
     children: List["Node"]
     " List of all nodes that are a child of this one. "
+
+    start: int
+    " Offset of the first character this node was parsed from in the equation. "
+
+    end: int
+    " Offset of the last character this node was parsed from in the equation. "
 
     tokens: List[Token]
     """
@@ -220,12 +226,19 @@ def clean_row(elements: List[Tag]) -> List[Tag]:
     # Remove whitespace between elements.
     elements = [e for e in elements if not (isinstance(e, str) and e.isspace())]
 
-    # Remove quantifiers and double bars.
-    elements = [e for e in elements if e.text not in ["∀", "∃"]]
-    elements = [e for e in elements if e.text not in ["|", "∥"]]
+    # Replace quantifiers and double bars with operators.
+    cleaned = []
+    for e in elements:
+        if e.text in ["∀", "∃"] or e.text in ["|", "∥"]:
+            operator = clone_element(e)
+            operator.name = "mo"
+            cleaned.append(operator)
+        else:
+            cleaned.append(e)
+    elements = cleaned
 
     # Remove 'd's and 'δ's used as signs for derivatives.
-    derivatives_cleaned = []
+    cleaned = []
     DERIVATIVE_GLYPHS = ["d", "δ", "∂"]
     for i, e in enumerate(elements):
         is_derivative_symbol = (
@@ -241,11 +254,14 @@ def clean_row(elements: List[Tag]) -> List[Tag]:
                 or elements[i + 2].text in DERIVATIVE_GLYPHS
             )
         )
-        if not is_derivative_symbol:
-            derivatives_cleaned.append(e)
+        if is_derivative_symbol:
+            derivative_operator = clone_element(e)
+            derivative_operator.name = "mo"
+            cleaned.append(derivative_operator)
+        else:
+            cleaned.append(e)
 
-    elements = derivatives_cleaned
-    return elements
+    return cleaned
 
 
 def _is_identifier(element: Tag) -> bool:
@@ -254,6 +270,9 @@ def _is_identifier(element: Tag) -> bool:
     if element.name == "mi":
         # Exclude special math symbols typically used as constants.
         if element.text in ["e"]:
+            return False
+        # Exclude dots, which are parsed as identifiers.
+        if element.text in ["."]:
             return False
         return True
     # Composite symbols like subscripts and superscripts must have multiple children to be
@@ -277,12 +296,19 @@ def parse_identifier(
 ) -> Optional[ParseResult]:
     " Attempt to parse an element as an identifier. "
 
-    if _is_identifier(clean_element):
+    if _is_identifier(clean_element) and _has_s2_offset_annotations(original_element):
 
         tokens = list(tokens)
         tokens.extend(_extract_tokens(original_element))
 
-        node = Node(NodeType.IDENTIFIER, clean_element, children, tokens)
+        node = Node(
+            NodeType.IDENTIFIER,
+            clean_element,
+            children,
+            int(original_element.attrs["s2:start"]),
+            int(original_element.attrs["s2:end"]),
+            tokens,
+        )
         return ParseResult([node], clean_element, tokens)
 
     return None
@@ -301,9 +327,9 @@ def parse_functions(
         return None
 
     new_children = list(children)
-    function_ranges: List[Tuple[int, int]] = []
-    start = -1
-    end = -1
+    function_spans: List[Tuple[int, int]] = []
+    span_start = -1
+    span_end = -1
     parens_depth = 0
 
     # Detect ranges of children than should be combined into functions.
@@ -313,34 +339,34 @@ def parse_functions(
             # Each identifier found in a row could be an identifier for a function,
             # so the last potential function identifier is saved.
             if child.type_ is NodeType.IDENTIFIER:
-                start = i
+                span_start = i
                 continue
             # Start parsing a function when a left parentheses if found.
             elif child.type_ is NodeType.LEFT_PARENS:
-                if start != -1:
+                if span_start != -1:
                     parens_depth += 1
                     continue
             # If this is not an identifier or a left parens, don't consider the
             # current child as a starting point for making a function.
             else:
-                start = -1
+                span_start = -1
 
         if parens_depth > 0:
             if child.type_ is NodeType.RIGHT_PARENS:
                 parens_depth -= 1
                 if parens_depth == 0:
-                    end = i
-                    function_ranges.append((start, end))
-                    start = -1
-                    end = -1
+                    span_end = i
+                    function_spans.append((span_start, span_end))
+                    span_start = -1
+                    span_end = -1
 
     # Nest children that appear to be parts of function in new function nodes.
     function_created = False
-    for r_start, r_end in reversed(function_ranges):
-        if r_start == -1 or r_end == -1:
+    for span_start, span_end in reversed(function_spans):
+        if span_start == -1 or span_end == -1:
             continue
 
-        func_children = children[r_start : r_end + 1]
+        func_children = children[span_start : span_end + 1]
         func_tokens = [t for c in func_children for t in c.tokens]
 
         # Create synthetic MathML row for the function.
@@ -355,8 +381,17 @@ def parse_functions(
                 add_elements = False
                 break
 
-        func_node = Node(NodeType.FUNCTION, func_element, func_children, func_tokens)
-        new_children = new_children[:r_start] + [func_node] + new_children[r_end + 1 :]
+        func_node = Node(
+            NodeType.FUNCTION,
+            func_element,
+            func_children,
+            func_children[0].start,
+            func_children[-1].end,
+            func_tokens,
+        )
+        new_children = (
+            new_children[:span_start] + [func_node] + new_children[span_end + 1 :]
+        )
         function_created = True
 
     if function_created:
@@ -365,7 +400,11 @@ def parse_functions(
 
 
 def parse_parens(clean_element: Tag, original_element: Tag) -> Optional[ParseResult]:
-    if clean_element.name == "mo" and clean_element.text in ["(", ")"]:
+    if (
+        clean_element.name == "mo"
+        and clean_element.text in ["(", ")"]
+        and _has_s2_offset_annotations(original_element)
+    ):
 
         tokens = _extract_tokens(original_element)
 
@@ -375,6 +414,8 @@ def parse_parens(clean_element: Tag, original_element: Tag) -> Optional[ParseRes
             else NodeType.RIGHT_PARENS,
             element=clean_element,
             children=[],
+            start=int(original_element.attrs["s2:start"]),
+            end=int(original_element.attrs["s2:end"]),
             tokens=tokens,
         )
         return ParseResult([node], clean_element, tokens)
@@ -385,18 +426,12 @@ def parse_parens(clean_element: Tag, original_element: Tag) -> Optional[ParseRes
 def parse_definition_operator(
     clean_element: Tag, original_element: Tag
 ) -> Optional[ParseResult]:
-    EQUATION_SIGNS = [
-        "=",
-        "≈",
-        "≥",
-        "≤",
-        "<",
-        ">",
-        "∈",
-        "∼",
-        "≜"
-    ]
-    if clean_element.name != "mo" or clean_element.text not in EQUATION_SIGNS:
+    EQUATION_SIGNS = ["=", "≈", "≥", "≤", "<", ">", "∈", "∼", "≜"]
+    if (
+        clean_element.name != "mo"
+        or clean_element.text not in EQUATION_SIGNS
+        or not _has_s2_offset_annotations(original_element)
+    ):
         return None
 
     tokens = _extract_tokens(original_element)
@@ -404,6 +439,8 @@ def parse_definition_operator(
         type_=NodeType.DEFINITION_OPERATOR,
         element=clean_element,
         children=[],
+        start=int(original_element.attrs["s2:start"]),
+        end=int(original_element.attrs["s2:end"]),
         tokens=tokens,
     )
     return ParseResult([node], clean_element, tokens)
@@ -453,7 +490,7 @@ def _is_token(element: Tag) -> bool:
     # Parentheses, for functions.
     if element.name == "mo" and element.text in ["(", ")"]:
         return True
-    # Text spans comprising only a single word.
+    # Text spans consisting of only a single word.
     if element.name == "mtext" and re.match(r"\w+", element.text):
         return True
 
@@ -462,7 +499,7 @@ def _is_token(element: Tag) -> bool:
 
 def _appears_in_operator_argument(element: Tag) -> bool:
     """
-    Detect whether this element appearns in an argument to an operator. Used to determine, for instance,
+    Detect whether this element appears in an argument to an operator. Used to determine, for instance,
     whether a definition appears in the argument of a summation.
     """
     parent = element
@@ -572,7 +609,7 @@ class MathMlElementMerger:
     def _is_mergeable_type(self, element: Tag) -> bool:
         " Determine if a element is a type that is mergeable with other elements. "
         MERGEABLE_TOKEN_TAGS = ["mn", "mi"]
-        return element.name in MERGEABLE_TOKEN_TAGS and _has_s2_token_annotations(
+        return element.name in MERGEABLE_TOKEN_TAGS and _has_s2_offset_annotations(
             element
         )
 
@@ -636,7 +673,9 @@ class MathMlElementMerger:
         self.to_merge = []  # pylint: disable=attribute-defined-outside-init
 
 
-def _has_s2_token_annotations(soup: BeautifulSoup) -> bool:
-    return (
-        "s2:start" in soup.attrs and "s2:end" in soup.attrs and "s2:index" in soup.attrs
-    )
+def _has_s2_offset_annotations(tag: BeautifulSoup) -> bool:
+    return "s2:start" in tag.attrs and "s2:end" in tag.attrs
+
+
+def _has_s2_token_annotations(tag: BeautifulSoup) -> bool:
+    return "s2:start" in tag.attrs and "s2:end" in tag.attrs and "s2:index" in tag.attrs

@@ -26,6 +26,8 @@ def test_parse_single_symbol():
     assert symbol.type_ == NodeType.IDENTIFIER
     assert symbol.children == []
     assert symbol.tokens == [Token(0, 1, "x", 0)]
+    assert symbol.start == 0
+    assert symbol.end == 1
     assert not symbol.defined
     assert result.tokens == [Token(0, 1, "x", 0)]
 
@@ -61,6 +63,8 @@ def test_parse_node_with_child_nodes():
     symbol = result.symbols[0]
     assert str(symbol.element) == "<msub><mi>x</mi><mi>i</mi></msub>"
     assert len(symbol.children) == 2
+    assert symbol.start == 0
+    assert symbol.end == 3
     assert str(symbol.children[0].element) == "<mi>x</mi>"
     assert str(symbol.children[1].element) == "<mi>i</mi>"
     assert symbol.tokens == [
@@ -103,6 +107,10 @@ def test_ignore_derivative_tokens():
     assert len(result.symbols) == 2
     assert str(result.symbols[0].element) == "<mi>a</mi>"
     assert str(result.symbols[1].element) == "<mi>b</mi>"
+
+    # Make sure that derivatives tokens aren't removed from the MathML.
+    assert any([e.name == "mo" and e.text == "d" for e in result.element])
+    assert any([e.name == "mo" and e.text == "∂" for e in result.element])
 
 
 def test_ignore_quantifiers():
@@ -147,12 +155,6 @@ def test_detect_multiple_definitions():
     assert result.symbols[1].defined
 
 
-def test_detect_definition_with_annotated_operator():
-    result = parse_element(load_fragment_tag("iid.xml"))
-    assert str(result.symbols[0].element) == "<mi>x</mi>"
-    assert result.symbols[0].defined
-
-
 def test_ignore_definition_in_sum_argument():
     result = parse_element(load_fragment_tag("sum_i_equals_0.xml"))
     assert str(result.symbols[0].element) == "<mi>i</mi>"
@@ -165,6 +167,8 @@ def test_detect_function_declaration():
 
     assert symbol.element.text == "p(x;θ,y)"
     assert symbol.type_ == NodeType.FUNCTION
+    assert symbol.start == 0
+    assert symbol.end == 16
     assert (
         Token(1, 2, "(", 1) in symbol.tokens
     ), "function tokens should include parentheses"

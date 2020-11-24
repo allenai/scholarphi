@@ -1,4 +1,4 @@
-<msub s2:index="2">
+<msup s2:start="0" s2:end="3" s2:index="2">
     <mi s2:start="0" s2:end="1" s2:index="0">e</mi>
     <mi s2:start="2" s2:end="3" s2:index="1">x</mi>
-</msub>
+</msup>
