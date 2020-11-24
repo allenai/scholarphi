@@ -6,8 +6,7 @@ from entities.definitions.commands.detect_definitions import *
 @pytest.fixture(scope="module", autouse=True)
 def setup_model():
     """
-    Only set up the extractor once, as it requires the time-consuming initialization
-    of an NLP model.
+    Only set up the model once, as it requires the time-consuming initialization
     """
     global model  # pylint: disable=global-statement
     model = DefinitionDetectionModel()
