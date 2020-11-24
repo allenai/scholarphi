@@ -215,7 +215,7 @@ const PRESETS: Preset[] = [
   },
   {
     key: "fp1q2",
-    initialFocus: "115019",
+    initialFocus: "115121",
   },
   {
     key: "fp1q3",
