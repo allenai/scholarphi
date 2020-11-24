@@ -1,4 +1,4 @@
-FROM node:12.13.0-alpine AS build
+FROM node:14.15.1-alpine3.12 AS build
 
 WORKDIR /app
 
@@ -17,8 +17,8 @@ RUN npm run build
 
 # We use what's called a "multi stage" build to reduce the size of the final
 # image. This allows us to ditch the dependencies and other build time stuff
-# we need to build the image, but don't need at runtime.
-FROM node:12.13.0-alpine AS runtime
+# that aren't needed at runtime.
+FROM node:14.15.1-alpine3.12 AS runtime
 
 WORKDIR /app
 
