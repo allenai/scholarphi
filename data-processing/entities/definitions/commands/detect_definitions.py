@@ -204,7 +204,7 @@ def check_text_contains_acronym_for_sanity(
     """
     Very smooth filter
     """
-    # if acronym and expansion overlaps in positions, ignore them
+    # If acronym and expansion overlaps in positions, ignore them
     if (
         len(
             set(range(acronym_start, acronym_end - 1)).intersection(
@@ -215,11 +215,11 @@ def check_text_contains_acronym_for_sanity(
     ):
         return False
 
-    # if citation patterns are detected (e.g., Citation (CITATION)), ignore them
+    # If citation patterns are detected (e.g., Citation (CITATION)), ignore them
     if "citation" in acronym_text.lower():
         return False
 
-    # check each letter in acronym appears in expansion text
+    # Check each letter in acronym appears in expansion text
     is_acronym = True
     for letter_in_acronym in acronym_text.lower():
         if letter_in_acronym not in expansion_text.lower():
@@ -241,12 +241,12 @@ def get_abbreviation_pairs(
     abbreviation_ranges = get_token_character_ranges(text, featurized_text["tokens"])
 
     for abbreviation in doc._.abbreviations:
-        # acronym (term).
+        # Acronym (term).
         acronym_ranges = abbreviation_ranges[abbreviation.start : abbreviation.end]
         acronym_start = min([acronym_range.start for acronym_range in acronym_ranges])
         acronym_end = max([acronym_range.end for acronym_range in acronym_ranges]) + 1
 
-        # expansion (definition).
+        # Expansion (definition).
         expansion_ranges = abbreviation_ranges[
             abbreviation._.long_form.start : abbreviation._.long_form.end
         ]
@@ -314,7 +314,7 @@ def search_symbol_nickname(token_index, featurized_text, range_, ranges, directi
         elif direction == "LEFT":
             current_index -= 1
 
-    # ignore when the POS tag is [DT] or [IN].
+    # Ignore when the POS tag is [DT] or [IN].
     if len(pos_tags) == 1 and (pos_tags[0] == "DT"):
         return None, None, None, None
 
@@ -350,9 +350,9 @@ def get_symbol_nickname_pairs(
 ):
     # Check whether a symbol's definition is a nickname of the symbol or not
     # using heuristic rules below, although they are not perfect for some cases.
-    #  a/DT particular/JJ transcript/NN SYMBOL/NN
-    #  the/DT self-interaction/JJ term/JJ SYMBOL/NN
-    #  the/DT main/JJ effect/NN of/NN feature/JJ SYMBOL/JJ
+    # a/DT particular/JJ transcript/NN SYMBOL/NN
+    # the/DT self-interaction/JJ term/JJ SYMBOL/NN
+    # the/DT main/JJ effect/NN of/NN feature/JJ SYMBOL/JJ
 
     # Union set of POS tags in nicknames. Feel free to add more if you have new patterns
     # If a new algorithm needs to be added, a separate function can be called in the iteration below. Finally, append a pair object to the 'pairs' list.

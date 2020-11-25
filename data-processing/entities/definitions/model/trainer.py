@@ -341,7 +341,7 @@ class Trainer(object):
             dataset, sampler=eval_sampler, batch_size=self.args.eval_batch_size
         )
 
-        # Run valuation.
+        # Run evaluation.
         eval_loss = 0.0
         nb_eval_steps = 0
         intent_preds = None
@@ -565,7 +565,7 @@ class Trainer(object):
                     # Decode() in `torchcrf` returns list with best index directly.
                     slot_preds = slot_logits_crf
                     first_dimension_indices,second_dimension_indices = np.ogrid[:slot_logits_crf.shape[0], :slot_logits_crf.shape[1]]
-                    # get confidence from softmax
+                    # Get confidence from softmax
                     slot_conf = slot_probs[first_dimension_indices,second_dimension_indices , slot_logits_crf]
                 else:
                     slot_preds = slot_logits.detach().cpu().numpy()
@@ -576,7 +576,7 @@ class Trainer(object):
                     slot_logits_crf = np.array(self.model.crf.decode(slot_logits))
                     slot_preds = np.append(slot_preds, slot_logits_crf, axis=0)
                     first_dimension_indices,second_dimension_indices = np.ogrid[:slot_logits_crf.shape[0], :slot_logits_crf.shape[1]]
-                    # get confidence from softmax
+                    # Get confidence from softmax
                     slot_conf = np.append(slot_conf, slot_probs[first_dimension_indices, second_dimension_indices, slot_logits_crf], axis=0)
                 else:
                     slot_preds = np.append(
@@ -597,7 +597,7 @@ class Trainer(object):
 
         # Slot result
         if not self.args.use_crf:
-            # get confidence from softmax
+            # Get confidence from softmax
             first_dimension_indices,second_dimension_indices = np.ogrid[:slot_preds.shape[0], :slot_preds.shape[1]]
             slot_conf = slot_preds[first_dimension_indices, second_dimension_indices, np.argmax(slot_preds, axis=2)]
             slot_preds = np.argmax(slot_preds, axis=2)
