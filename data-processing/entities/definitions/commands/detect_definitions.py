@@ -72,9 +72,10 @@ def get_token_character_ranges(text: str, tokens: List[str]) -> List[CharacterRa
 
 
 def get_term_definition_pairs(
-    text: str, featurized_text: Dict[Any, Any],
+    text: str,
+    featurized_text: Dict[Any, Any],
     slot_predictions: List[str],
-    slot_prediction_confidences: List[float]
+    slot_prediction_confidences: List[float],
 ) -> List[TermDefinitionPair]:
 
     # Make index from tokens to their character positions.
@@ -88,7 +89,9 @@ def get_term_definition_pairs(
     term_ranges, definition_ranges = [], []
     term_confidences, definition_confidences = [], []
 
-    for (slot_label, slot_confidence, range_) in zip(slot_predictions, slot_prediction_confidences, ranges):
+    for (slot_label, slot_confidence, range_) in zip(
+        slot_predictions, slot_prediction_confidences, ranges
+    ):
         if slot_label == "TERM":
             term_ranges.append(range_)
             term_confidences.append(slot_confidence)
@@ -98,22 +101,28 @@ def get_term_definition_pairs(
         if slot_label == "O":
             if len(term_ranges) > 0:
                 terms.append(term_ranges)
-                term_confidence_list.append(sum(term_confidences)/len(term_confidences))
+                term_confidence_list.append(
+                    sum(term_confidences) / len(term_confidences)
+                )
             if len(definition_ranges) > 0:
                 definitions.append(definition_ranges)
-                definition_confidence_list.append(sum(definition_confidences)/len(definition_confidences))
+                definition_confidence_list.append(
+                    sum(definition_confidences) / len(definition_confidences)
+                )
             term_ranges, definition_ranges = [], []
 
     # Extract ranges for all abbreviations.
     abbreviation_ranges: List[CharacterRange] = []
-    for (abbreviation_label, token_char_range) in zip(featurized_text['abbreviation'], ranges):
+    for (abbreviation_label, token_char_range) in zip(
+        featurized_text["abbreviation"], ranges
+    ):
         # 1 means the token is a part of abbreviation
         if abbreviation_label == 1:
             abbreviation_ranges.append(token_char_range)
 
     # Extract ranges for all entities.
     entity_ranges: List[CharacterRange] = []
-    for (entity_label, token_char_range) in zip(featurized_text['entity'], ranges):
+    for (entity_label, token_char_range) in zip(featurized_text["entity"], ranges):
         # 1 means the token is a part of abbreviation
         if entity_label == 1:
             entity_ranges.append(token_char_range)
@@ -141,25 +150,29 @@ def get_term_definition_pairs(
 
         term_start = min([term_range.start for term_range in term_rangelist])
         term_end = max([term_range.end for term_range in term_rangelist]) + 1
-        definition_start = min([definition_range.start for definition_range in definition_rangelist])
-        definition_end = max([definition_range.end for definition_range in definition_rangelist]) + 1
+        definition_start = min(
+            [definition_range.start for definition_range in definition_rangelist]
+        )
+        definition_end = (
+            max([definition_range.end for definition_range in definition_rangelist]) + 1
+        )
 
         term_type = "symbol" if "SYMBOL" in text[term_start:term_end] else "term"
         definition_type = "definition"
 
         # # Check whether a term is a part of entity or not.
         # for entity_range in entity_ranges:
-            # # check whether definiendum contains an entiity.
-            # if term_start <= entity_range.start and entity_range.end <= term_end:
-                # if term_type == "term":
+        # # check whether definiendum contains an entiity.
+        # if term_start <= entity_range.start and entity_range.end <= term_end:
+        # if term_type == "term":
         #             term_type = "entity"
 
         # # Check whether a term is a part of abbreviation or not.
         # for abbreviation_range in abbreviation_ranges:
-            # # check whether definiendum contains an abbreviation.
-            # if term_start <= abbreviation_range.start and abbreviation_range.end <= term_end:
-                # # abbreviation over-write entitiy type because entity type is optional
-                # if term_type == "term":
+        # # check whether definiendum contains an abbreviation.
+        # if term_start <= abbreviation_range.start and abbreviation_range.end <= term_end:
+        # # abbreviation over-write entitiy type because entity type is optional
+        # if term_type == "term":
         #             term_type = "abbreviation"
 
         pair = TermDefinitionPair(
@@ -180,17 +193,26 @@ def get_term_definition_pairs(
     return pairs
 
 
-
 def check_text_contains_acronym_for_sanity(
-        acronym_text, expansion_text,
-        acronym_start, acronym_end,
-        expansion_start, expansion_end):
+    acronym_text,
+    expansion_text,
+    acronym_start,
+    acronym_end,
+    expansion_start,
+    expansion_end,
+):
     """
     Very smooth filter
     """
     # if acronym and expansion overlaps in positions, ignore them
-    if len(set(range(acronym_start, acronym_end-1)).intersection(
-        range(expansion_start,expansion_end-1))) > 0:
+    if (
+        len(
+            set(range(acronym_start, acronym_end - 1)).intersection(
+                range(expansion_start, expansion_end - 1)
+            )
+        )
+        > 0
+    ):
         return False
 
     # if citation patterns are detected (e.g., Citation (CITATION)), ignore them
@@ -207,9 +229,7 @@ def check_text_contains_acronym_for_sanity(
 
 
 def get_abbreviation_pairs(
-    text: str,
-    featurized_text: Dict[Any, Any],
-    nlp_model
+    text: str, featurized_text: Dict[Any, Any], nlp_model
 ) -> List[TermDefinitionPair]:
 
     pairs: List[TermDefinitionPair] = []
@@ -222,20 +242,29 @@ def get_abbreviation_pairs(
 
     for abbreviation in doc._.abbreviations:
         # acronym (term).
-        acronym_ranges = abbreviation_ranges[abbreviation.start:abbreviation.end]
+        acronym_ranges = abbreviation_ranges[abbreviation.start : abbreviation.end]
         acronym_start = min([acronym_range.start for acronym_range in acronym_ranges])
         acronym_end = max([acronym_range.end for acronym_range in acronym_ranges]) + 1
 
         # expansion (definition).
-        expansion_ranges = abbreviation_ranges[abbreviation._.long_form.start:abbreviation._.long_form.end]
-        expansion_start = min([expansion_range.start for expansion_range in expansion_ranges])
-        expansion_end = max([expansion_range.end for expansion_range in expansion_ranges]) + 1
+        expansion_ranges = abbreviation_ranges[
+            abbreviation._.long_form.start : abbreviation._.long_form.end
+        ]
+        expansion_start = min(
+            [expansion_range.start for expansion_range in expansion_ranges]
+        )
+        expansion_end = (
+            max([expansion_range.end for expansion_range in expansion_ranges]) + 1
+        )
 
         if not check_text_contains_acronym_for_sanity(
-                str(abbreviation),
-                str(abbreviation._.long_form),
-                acronym_start, acronym_end,
-                expansion_start, expansion_end):
+            str(abbreviation),
+            str(abbreviation._.long_form),
+            acronym_start,
+            acronym_end,
+            expansion_start,
+            expansion_end,
+        ):
             continue
 
         pair = TermDefinitionPair(
@@ -248,7 +277,7 @@ def get_abbreviation_pairs(
             definition_end=expansion_end,
             definition_text=text[expansion_start:expansion_end],
             definition_type="expansion",
-            definition_confidence=None
+            definition_confidence=None,
         )
         logging.debug("Found definition-term pair %s", pair)
         pairs.append(pair)
@@ -256,72 +285,69 @@ def get_abbreviation_pairs(
     return pairs
 
 
-
-
-
-
 def search_symbol_nickname(token_index, featurized_text, range_, ranges, direction):
     # This function searches for a nickname pattern for a token, in the direction specified
-    # Get all tokens to the left or right of the token that match the allowed POS tags. 
+    # Get all tokens to the left or right of the token that match the allowed POS tags.
     # Return symbol and nickname indices and ranges if there are valid POS spans. Else, return None for indices and spans
     # POS Tag Expansions : https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html
     UNION_POS_LIST = ["DT", "JJ", "NN", "NNS", "NNP", "NNPS"]
     pos_indexes = []
     pos_tags = []
     pos_ranges = []
-    if direction=='RIGHT':
+    if direction == "RIGHT":
         current_index = token_index + 1
 
-    elif direction=='LEFT':
+    elif direction == "LEFT":
         current_index = token_index - 1
 
-
     # Exit if the current index is greater than the length of the sentence or below zero
-    if current_index >= len(featurized_text["pos"]) or current_index<0:
+    if current_index >= len(featurized_text["pos"]) or current_index < 0:
         return None, None, None, None
 
     # Search ahead until the POS tag is not in the union set
     while featurized_text["pos"][current_index] in UNION_POS_LIST:
         pos_indexes.append(current_index)
         pos_ranges.append(ranges[current_index])
-        pos_tags.append(featurized_text['pos'][current_index])
-        if direction=='RIGHT':
+        pos_tags.append(featurized_text["pos"][current_index])
+        if direction == "RIGHT":
             current_index += 1
-        elif direction=='LEFT':
+        elif direction == "LEFT":
             current_index -= 1
 
     # ignore when the POS tag is [DT] or [IN].
     if len(pos_tags) == 1 and (pos_tags[0] == "DT"):
         return None, None, None, None
 
-    if len(pos_indexes) > 0 :
+    if len(pos_indexes) > 0:
         symbol_index = token_index
         symbol_range = range_
 
-        if direction=='LEFT':
+        if direction == "LEFT":
             nickname_indexes = list(reversed(pos_indexes))
             nickname_ranges = [ppr for ppr in reversed(pos_ranges)]
             nickname_tags = [ppt for ppt in reversed(pos_tags)]
 
-        elif direction=='RIGHT':
+        elif direction == "RIGHT":
             nickname_indexes = pos_indexes
             nickname_ranges = [npr for npr in pos_ranges]
             nickname_tags = [ppt for ppt in pos_tags]
 
-        #Skip 'DT' or 'IN' as first or last nickname tokens
-        if (nickname_tags[0] == "DT"):
+        # Skip 'DT' or 'IN' as first or last nickname tokens
+        if nickname_tags[0] == "DT":
             nickname_ranges = nickname_ranges[1:]
             nickname_indexes = nickname_indexes[1:]
-        elif (nickname_tags[-1] == "DT"):
+        elif nickname_tags[-1] == "DT":
             nickname_ranges = nickname_ranges[:-1]
             nickname_indexes = nickname_indexes[:-1]
 
-        return symbol_index,symbol_range,nickname_indexes, nickname_ranges
+        return symbol_index, symbol_range, nickname_indexes, nickname_ranges
     else:
         return None, None, None, None
 
 
-def get_symbol_nickname_pairs(text: str, featurized_text: Dict[Any, Any], symbol_texs : Dict[Any, Any]):
+def get_symbol_nickname_pairs(
+    text: str, featurized_text: Dict[Any, Any], symbol_texs: Dict[Any, Any]
+):
     # Check whether a symbol's definition is a nickname of the symbol or not
     # using heuristic rules below, although they are not perfect for some cases.
     #  a/DT particular/JJ transcript/NN SYMBOL/NN
@@ -332,45 +358,84 @@ def get_symbol_nickname_pairs(text: str, featurized_text: Dict[Any, Any], symbol
     # If a new algorithm needs to be added, a separate function can be called in the iteration below. Finally, append a pair object to the 'pairs' list.
     ranges = get_token_character_ranges(text, featurized_text["tokens"])
     pairs = []
-    if 'SYMBOL' in text:
+    if "SYMBOL" in text:
         symbol_nickname_pairs = []
-        for token_index, (token,pos,np,range_) in enumerate(zip(featurized_text['tokens'], featurized_text['pos'],featurized_text['np'],ranges)):
+        for token_index, (token, pos, np, range_) in enumerate(
+            zip(
+                featurized_text["tokens"],
+                featurized_text["pos"],
+                featurized_text["np"],
+                ranges,
+            )
+        ):
             # 1. If of the form '*th', check RIGHT of symbol
             # 2. If token is a symbol, then:
             #   a. If the symbol tex is present:
             #       i. If single length symbol, first check LEFT then RIGHT
             #       ii. If multi length symbol, check LEFT
             #   b. If symbol tex is not present, just check LEFT
-            if token == 'SYMBOLth':
-                symbol_index,symbol_range,nickname_indexes, nickname_ranges = search_symbol_nickname(token_index, featurized_text, range_, ranges, 'RIGHT')
+            if token == "SYMBOLth":
+                (
+                    symbol_index,
+                    symbol_range,
+                    nickname_indexes,
+                    nickname_ranges,
+                ) = search_symbol_nickname(
+                    token_index, featurized_text, range_, ranges, "RIGHT"
+                )
                 if symbol_index != None:
-                    symbol_nickname_pairs.append((symbol_index,symbol_range,nickname_indexes, nickname_ranges))
+                    symbol_nickname_pairs.append(
+                        (symbol_index, symbol_range, nickname_indexes, nickname_ranges)
+                    )
 
-            elif token == 'SYMBOL':
+            elif token == "SYMBOL":
                 # Decide the order of LEFT or RIGHT
                 directions = []
                 if token_index > 0:
-                    if token_index < len(featurized_text['pos'])-1:
-                        if featurized_text['pos'][token_index + 1] in ['NN']:
-                            directions = ['RIGHT','LEFT']
+                    if token_index < len(featurized_text["pos"]) - 1:
+                        if featurized_text["pos"][token_index + 1] in ["NN"]:
+                            directions = ["RIGHT", "LEFT"]
                         else:
-                            directions = ['LEFT','RIGHT']
+                            directions = ["LEFT", "RIGHT"]
                     else:
-                        directions = ['LEFT']
-                elif token_index < len(featurized_text['pos'])-1:
-                    directions = ['RIGHT']
+                        directions = ["LEFT"]
+                elif token_index < len(featurized_text["pos"]) - 1:
+                    directions = ["RIGHT"]
 
                 for direction in directions:
-                    symbol_index,symbol_range,nickname_indexes, nickname_ranges = search_symbol_nickname(token_index, featurized_text, range_, ranges, direction)
+                    (
+                        symbol_index,
+                        symbol_range,
+                        nickname_indexes,
+                        nickname_ranges,
+                    ) = search_symbol_nickname(
+                        token_index, featurized_text, range_, ranges, direction
+                    )
                     if symbol_index is not None:
-                        symbol_nickname_pairs.append((symbol_index,symbol_range,nickname_indexes, nickname_ranges))
+                        symbol_nickname_pairs.append(
+                            (
+                                symbol_index,
+                                symbol_range,
+                                nickname_indexes,
+                                nickname_ranges,
+                            )
+                        )
                         break
 
-        for symbol_index,symbol_range, nickname_indexes, nickname_ranges in symbol_nickname_pairs:
+        for (
+            symbol_index,
+            symbol_range,
+            nickname_indexes,
+            nickname_ranges,
+        ) in symbol_nickname_pairs:
             symbol_start = symbol_range.start
-            symbol_end = symbol_range.end+1
-            nickname_start = min([nickname_range.start for nickname_range in nickname_ranges])
-            nickname_end = max([nickname_range.end for nickname_range in nickname_ranges]) + 1
+            symbol_end = symbol_range.end + 1
+            nickname_start = min(
+                [nickname_range.start for nickname_range in nickname_ranges]
+            )
+            nickname_end = (
+                max([nickname_range.end for nickname_range in nickname_ranges]) + 1
+            )
 
             pair = TermDefinitionPair(
                 term_start=symbol_start,
@@ -411,7 +476,9 @@ def get_symbol_texs(
     ]
     symbol_texs = [
         match.group(1)
-        for match in re.finditer(r"\[\[FORMULA:(.*?)\]\]", sentence_with_formula_contents)
+        for match in re.finditer(
+            r"\[\[FORMULA:(.*?)\]\]", sentence_with_formula_contents
+        )
     ]
 
     if len(symbol_starts) != len(symbol_texs):
@@ -424,9 +491,6 @@ def get_symbol_texs(
         )
 
     return dict(zip(symbol_starts, symbol_texs))
-
-
-
 
 
 class DetectDefinitions(
@@ -552,19 +616,26 @@ class DetectDefinitions(
                 sentences.append(sentence)
 
                 # Process sentences in batches.
-                if len(features) >= self.args.batch_size or sentence_index == num_sentences - 1:
+                if (
+                    len(features) >= self.args.batch_size
+                    or sentence_index == num_sentences - 1
+                ):
 
                     # Detect terms and definitions in each sentence with a pre-trained definition
                     # extraction model, from the featurized text.
                     intents, slots, slots_confidence = model.predict_batch(
                         cast(List[Dict[Any, Any]], features)
                     )
-                    
+
                     # Package extracted terms and definitions into a representation that's
-                    # easier to process.    
-                    for sentence, sentence_features, intent, sentence_slots, sentence_slots_confidence in zip(
-                        sentences, features, intents, slots, slots_confidence
-                    ):
+                    # easier to process.
+                    for (
+                        sentence,
+                        sentence_features,
+                        intent,
+                        sentence_slots,
+                        sentence_slots_confidence,
+                    ) in zip(sentences, features, intents, slots, slots_confidence):
                         # Extract TeX for each symbol from a parallel representation of the
                         # sentence, so that the TeX for symbols can be saved.
                         # Types of [term and definition] pairs.
@@ -572,17 +643,20 @@ class DetectDefinitions(
                         #   [acronym and expansion] for abbreviations
                         #   [term and definition] for other types
 
-
                         symbol_texs = get_symbol_texs(
                             sentence.legacy_definition_input, sentence.with_equation_tex
                         )
 
                         symbol_nickname_pairs = get_symbol_nickname_pairs(
-                            sentence.legacy_definition_input, sentence_features, symbol_texs
+                            sentence.legacy_definition_input,
+                            sentence_features,
+                            symbol_texs,
                         )
 
                         abbreviation_pairs = get_abbreviation_pairs(
-                            sentence.legacy_definition_input, sentence_features, model.nlp
+                            sentence.legacy_definition_input,
+                            sentence_features,
+                            model.nlp,
                         )
 
                         # Only process slots when they include both 'TERM' and 'DEFINITION'.
@@ -593,11 +667,14 @@ class DetectDefinitions(
                                 sentence.legacy_definition_input,
                                 sentence_features,
                                 sentence_slots,
-                                sentence_slots_confidence
+                                sentence_slots_confidence,
                             )
 
-                        pairs = term_definition_pairs + symbol_nickname_pairs + abbreviation_pairs
-
+                        pairs = (
+                            term_definition_pairs
+                            + symbol_nickname_pairs
+                            + abbreviation_pairs
+                        )
 
                         for pair in pairs:
                             tex_path = sentence.tex_path
@@ -647,7 +724,9 @@ class DetectDefinitions(
                             definition_end = sentence.start + offsets[1]
 
                             # Extract document-level features from sentence
-                            position_ratio = definiendum_start / end_position_of_last_sentence
+                            position_ratio = (
+                                definiendum_start / end_position_of_last_sentence
+                            )
                             section_name = sentence.section_name
 
                             try:
@@ -677,7 +756,6 @@ class DetectDefinitions(
                                 definition_tex = tex.contents[
                                     definition_start:definition_end
                                 ]
-
 
                             # Save the definition to file.
                             definition = Definition(
@@ -751,16 +829,24 @@ class DetectDefinitions(
 
         # Associate terms with all definitions that apply to them.
         for term, definiendum_list in definiendums.items():
-            definition_ids[term] = [definiendum.definition_id for definiendum in definiendum_list]
+            definition_ids[term] = [
+                definiendum.definition_id for definiendum in definiendum_list
+            ]
             definition_texs[term] = [
-                definitions[definiendum.definition_id].tex for definiendum in definiendum_list
+                definitions[definiendum.definition_id].tex
+                for definiendum in definiendum_list
             ]
             definition_texts[term] = [
-                definitions[definiendum.definition_id].text for definiendum in definiendum_list
+                definitions[definiendum.definition_id].text
+                for definiendum in definiendum_list
             ]
             sources[term] = ["model"] * len(definition_ids[term])
-            position_ratios[term] = [definiendum.position_ratio for definiendum in definiendum_list]
-            section_names[term] = [definiendum.section_name for definiendum in definiendum_list]
+            position_ratios[term] = [
+                definiendum.position_ratio for definiendum in definiendum_list
+            ]
+            section_names[term] = [
+                definiendum.section_name for definiendum in definiendum_list
+            ]
 
         # Associate each definiendum with all applicable definitions, and save them to file.
         for _, definiendum_list in definiendums.items():
@@ -785,7 +871,9 @@ class DetectDefinitions(
                 term_sentence = get_containing_entity(term, sentence_entities)
 
                 # Don't save term references if they are already in the definiendums
-                if any([overlaps(definiendum, term) for definiendum in all_definiendums]):
+                if any(
+                    [overlaps(definiendum, term) for definiendum in all_definiendums]
+                ):
                     continue
 
                 logging.debug(
@@ -811,7 +899,9 @@ class DetectDefinitions(
                     tex_path=term.tex_path,
                     tex=term.tex,
                     context_tex=term.context_tex,
-                    sentence_id=term_sentence.id_ if term_sentence is not None else None,
+                    sentence_id=term_sentence.id_
+                    if term_sentence is not None
+                    else None,
                 )
                 term_index += 1
 
