@@ -12,14 +12,39 @@ def setup_model():
     model = DefinitionDetectionModel()
 
 
+@pytest.mark.parametrize(
+    "text,gold",
+    [
+        # Case 1: Definition before the term
+        (
+            "The technique of learning the underlying data distribution function given labelled examples is known as Supervised Learning in ML literature.",
+            [
+                (
+                    "Supervised Learning",
+                    "The technique of learning the underlying data distribution function given labelled examples",
+                )
+            ],
+        ),
+        # Case 2: Definition after the term
+        (
+            "We evaluate our model on SQuAD, a reading comprehension dataset consisting of questions posed by crowdworkers on a set of Wikipedia articles.",
+            [
+                (
+                    "SQuAD",
+                    "a reading comprehension dataset consisting of questions posed by crowdworkers on a set of Wikipedia articles",
+                )
+            ],
+        ),
+    ],
+)
 def test_extract_term_definition_pairs(text, gold):
     featurized_text = model.featurize(text)
     features = [featurized_text]
-    intents, slots, slots_conf = model.predict_batch(
+    intents, slots, slots_confidence = model.predict_batch(
         cast(List[Dict[Any, Any]], features)
     )
     term_definition_pairs = get_term_definition_pairs(
-        text, features[0], slots[0], slots_conf[0]
+        text, features[0], slots[0], slots_confidence[0]
     )
     assert len(term_definition_pairs) == len(
         gold
@@ -34,6 +59,46 @@ def test_extract_term_definition_pairs(text, gold):
         ), "Definition Incorrect"
 
 
+@pytest.mark.parametrize(
+    "text,tex,gold",
+    [
+        # Case 1: Nickname before symbol
+        (
+            "The agent acts with a policy SYMBOL in each timestep SYMBOL.",
+            "The agent acts with a policy [[FORMULA:\pi]] in each timestep [[FORMULA:t]]",
+            [
+                (
+                    "\pi",
+                    "policy",
+                ),
+                ("t", "timestep"),
+            ],
+        ),
+        # Case 2: Nickname after symbol
+        (
+            "The architecture consists of SYMBOL dense layers trained with SYMBOL learning rate.",
+            "The architecture consists of [[FORMULA:L_d]] dense layers trained with [[FORMULA:\alpha]] learning rate.",
+            [
+                (
+                    "L_d",
+                    "dense layers",
+                ),
+                ("\alpha", "learning rate"),
+            ],
+        ),
+        # Case 3: SYMBOL-th pattern
+        (
+            "This process repeats for every SYMBOLth timestep.",
+            "This process repeats for every [[FORMULA:k]]th timestep.",
+            [
+                (
+                    "k",
+                    "timestep",
+                )
+            ],
+        ),
+    ],
+)
 def test_extract_symbol_nickname_pairs(text, tex, gold):
     featurized_text = model.featurize(text)
     features = [featurized_text]
@@ -58,6 +123,31 @@ def test_extract_symbol_nickname_pairs(text, tex, gold):
         ), "Nickname Incorrect"
 
 
+@pytest.mark.parametrize(
+    "text,gold",
+    [
+        # Case 1: Abbreviation in parentheses
+        (
+            "We use a Convolutional Neural Network (CNN) based architecture in this model, which is an improvement over state-of-the-art.",
+            [
+                (
+                    "CNN",
+                    "Convolutional Neural Network",
+                )
+            ],
+        ),
+        # Case 2: Abbreviation contains multiple lowercase letters
+        (
+            "We propose a new class of architectures called Conductive Networks (CondNets) in this paper.",
+            [
+                (
+                    "CondNets",
+                    "Conductive Networks",
+                )
+            ],
+        ),
+    ],
+)
 def test_extract_abbreviation_expansion_pairs(text, gold):
     featurized_text = model.featurize(text)
     features = [featurized_text]
@@ -71,56 +161,3 @@ def test_extract_abbreviation_expansion_pairs(text, gold):
             text[prediction_pair.definition_start : prediction_pair.definition_end]
             == gold_pair[1]
         ), "Expansion Incorrect"
-
-
-def test_basic():
-    # Test Abbreviation-Expansion detection
-    ## Case 1: Abbreviation in parenthesis
-    text = "We use a Convolutional Neural Network (CNN) based architecture in this model, which is an improvement over state-of-the-art"
-    gold = [("CNN", "Convolutional Neural Network")]
-    test_extract_abbreviation_expansion_pairs(text, gold)
-
-    ## Case 2: Abbreviation contains multiple lowercase letters
-    text = "We propose a new class of architectures called Conductive Networks (CondNets) in this paper."
-    gold = [("CondNets", "Conductive Networks")]
-    test_extract_abbreviation_expansion_pairs(text, gold)
-
-    # Test Symbol-Nickname detection
-    ## Case 1: Nickname before symbol
-    text = "The agent acts with a policy SYMBOL in each timestep SYMBOL."
-    tex = "The agent acts with a policy [[FORMULA:\pi]] in each timestep [[FORMULA:t]]"
-    gold = [("\pi", "policy"), ("t", "timestep")]
-    test_extract_symbol_nickname_pairs(text, tex, gold)
-
-    ## Case 2: Nickname after symbol
-    text = "The architecture consists of SYMBOL dense layers trained with SYMBOL learning rate."
-    tex = "The architecture consists of [[FORMULA:L_d]] dense layers trained with [[FORMULA:\alpha]] learning rate."
-    gold = [("L_d", "dense layers"), ("\alpha", "learning rate")]
-    test_extract_symbol_nickname_pairs(text, tex, gold)
-
-    ## Case 3: SYMBOL-th pattern
-    text = "This process repeats for every SYMBOLth timestep."
-    tex = "This process repeats for every [[FORMULA:k]]th timestep."
-    gold = [("k", "timestep")]
-    test_extract_symbol_nickname_pairs(text, tex, gold)
-
-    # Test Term-Definition detection
-    ## Case 1: Definition before the term
-    text = "The technique of learning the underlying data distribution function given labelled examples is known as Supervised Learning in ML literature."
-    gold = [
-        (
-            "Supervised Learning",
-            "The technique of learning the underlying data distribution function given labelled examples",
-        )
-    ]
-    test_extract_term_definition_pairs(text, gold)
-
-    ## Case 2: Definition after the term
-    text = "We evaluate our model on SQuAD, a reading comprehension dataset consisting of questions posed by crowdworkers on a set of Wikipedia articles."
-    gold = [
-        (
-            "SQuAD",
-            "a reading comprehension dataset consisting of questions posed by crowdworkers on a set of Wikipedia articles",
-        )
-    ]
-    test_extract_term_definition_pairs(text, gold)
