@@ -77,10 +77,10 @@ class TermReference(Term):
     " The original TeX for each definition in 'definitions'. "
 
     position_ratios: List[str]
-    " A list of the term' position ratios in the paper "
+    " A list of the term' position ratios in the paper. "
 
     section_names: List[str]
-    " A list of section names of the term "
+    " A list of section names of the term. "
 
 
 @dataclass(frozen=True)
@@ -91,13 +91,10 @@ class Definiendum(TermReference):
     " The ID for the definiens that defines this term. "
 
     confidence: Optional[float]
-    " The confidence score of the model's prediction "
+    " The confidence score of the model's prediction. "
 
     position_ratio: float
-    " The relative ratio of the term in the paper (character ratio of the start of term to the total number of characters). Range is 0 to 100"
+    " The relative ratio of the term in the paper (character ratio of the start of term to the total number of characters). Range is 0 to 1"
 
     section_name: str
     " The name of section that defines this term. "
-
-
-
