@@ -13,7 +13,7 @@ def setup_model():
 
 
 def test_extract_term_definition_pairs_case_1():
-    # Case 1: Definition before the term
+    # Case 1: Definition before the term.
     text = "The technique of learning the underlying data distribution function given labelled examples is known as Supervised Learning in ML literature."
     gold = [("Supervised Learning","The technique of learning the underlying data distribution function given labelled examples")]
     featurized_text = model.featurize(text)
@@ -38,7 +38,7 @@ def test_extract_term_definition_pairs_case_1():
 
 
 def test_extract_term_definition_pairs_case_2():
-    # Case 2: Definition after the term
+    # Case 2: Definition after the term.
     text = "We evaluate our model on SQuAD, a reading comprehension dataset consisting of questions posed by crowdworkers on a set of Wikipedia articles."
     gold = [
         (
@@ -68,7 +68,7 @@ def test_extract_term_definition_pairs_case_2():
 
 
 def test_extract_symbol_nickname_pairs_case_1():
-    # Case 1: Nickname before symbol
+    # Case 1: Nickname before symbol.
     text = "The agent acts with a policy SYMBOL in each timestep SYMBOL."
     tex = "The agent acts with a policy [[FORMULA:\pi]] in each timestep [[FORMULA:t]]"
     gold = [("\pi", "policy"), ("t", "timestep")]
@@ -96,7 +96,7 @@ def test_extract_symbol_nickname_pairs_case_1():
 
 
 def test_extract_symbol_nickname_pairs_case_2():
-    # Case 2: Nickname after symbol
+    # Case 2: Nickname after symbol.
     text = "The architecture consists of SYMBOL dense layers trained with SYMBOL learning rate."
     tex = "The architecture consists of [[FORMULA:L_d]] dense layers trained with [[FORMULA:\alpha]] learning rate."
     gold = [("L_d", "dense layers"), ("\alpha", "learning rate")]
@@ -124,7 +124,7 @@ def test_extract_symbol_nickname_pairs_case_2():
 
 
 def test_extract_symbol_nickname_pairs_case_3():
-    # Case 3: SYMBOL-th pattern
+    # Case 3: SYMBOL-th pattern.
     text = "This process repeats for every SYMBOLth timestep."
     tex = "TThis process repeats for every [[FORMULA:k]]th timestep."
     gold = [("k", "timestep")]
