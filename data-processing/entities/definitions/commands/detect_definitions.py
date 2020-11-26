@@ -202,7 +202,10 @@ def check_text_contains_acronym_for_sanity(
     expansion_end,
 ):
     """
-    Very smooth filter
+    Very smooth filter:
+    Outputs from our current abbreviation detector include lots of noise
+        e.g., "alpha x (Ref )" or any phrases with parenthesis
+    This function filters out the noise using simple heuristics.
     """
     # If acronym and expansion overlaps in positions, ignore them
     if (
