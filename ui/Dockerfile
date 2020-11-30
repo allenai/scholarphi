@@ -1,4 +1,4 @@
-FROM node:14.15.1 as build
+FROM node:12.20.0 as build
 WORKDIR /ui
 
 # Install dependencies
