@@ -191,6 +191,12 @@ Pytest for the tests. Run the test suite with this command:
 ```bash
 pytest
 ```
+Run specific tests (like `extract_definitions`) tagged by markers, with this command:
+
+```bash
+pytest -m extract_definitions
+```
+Various markers can be found in the pytest.ini file. 
 
 ## Troubleshooting the installation
 
