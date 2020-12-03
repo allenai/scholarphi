@@ -1,8 +1,17 @@
 import pytest
-
-from entities.definitions.commands.detect_definitions import *
-from scispacy.abbreviation import AbbreviationDetector
 import spacy
+from entities.definitions.commands.detect_definitions import (
+    get_abbreviation_pairs,
+    get_symbol_nickname_pairs,
+    get_symbol_texs,
+    get_term_definition_pairs,
+)
+from scispacy.abbreviation import AbbreviationDetector
+
+nlp = None
+
+
+pytestmark = pytest.mark.slow
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -16,7 +25,6 @@ def setup_model():
     nlp.add_pipe(abbreviation_pipe)
 
 
-@pytest.mark.extract_definitions
 def test_extract_term_definition_pairs_case_1():
     # Case 1: Definition before the term.
     text = "The technique of learning the underlying data distribution function given labelled examples is known as Supervised Learning in ML literature."
@@ -127,7 +135,6 @@ def test_extract_term_definition_pairs_case_1():
             ],
         }
     ]
-    intents = [1]
     slots = [
         [
             "DEF",
@@ -195,7 +202,6 @@ def test_extract_term_definition_pairs_case_1():
         ), "Definition Incorrect"
 
 
-@pytest.mark.extract_definitions
 def test_extract_term_definition_pairs_case_2():
     # Case 2: Definition after the term.
     text = "We evaluate our model on SQuAD, a reading comprehension dataset consisting of questions posed by crowdworkers on a set of Wikipedia articles."
@@ -393,7 +399,6 @@ def test_extract_term_definition_pairs_case_2():
             ],
         }
     ]
-    intents = [1]
     slots = [
         [
             "O",
@@ -467,12 +472,11 @@ def test_extract_term_definition_pairs_case_2():
         ), "Definition Incorrect"
 
 
-@pytest.mark.extract_definitions
 def test_extract_symbol_nickname_pairs_case_1():
     # Case 1: Nickname before symbol.
     text = "The agent acts with a policy SYMBOL in each timestep SYMBOL."
-    tex = "The agent acts with a policy [[FORMULA:\pi]] in each timestep [[FORMULA:t]]"
-    gold = [("\pi", "policy"), ("t", "timestep")]
+    tex = r"The agent acts with a policy [[FORMULA:\pi]] in each timestep [[FORMULA:t]]"
+    gold = [(r"\pi", "policy"), ("t", "timestep")]
 
     # Hardcode features for the sake of these tests (which are otherwise obtained from the model).
     features = [
@@ -547,7 +551,6 @@ def test_extract_symbol_nickname_pairs_case_1():
         ), "Nickname Incorrect"
 
 
-@pytest.mark.extract_definitions
 def test_extract_symbol_nickname_pairs_case_2():
     # Case 2: Nickname after symbol.
     text = "The architecture consists of SYMBOL dense layers trained with SYMBOL learning rate."
@@ -629,7 +632,6 @@ def test_extract_symbol_nickname_pairs_case_2():
         ), "Nickname Incorrect"
 
 
-@pytest.mark.extract_definitions
 def test_extract_symbol_nickname_pairs_case_3():
     # Case 3: SYMBOL-th pattern.
     text = "This process repeats for every SYMBOLth timestep."
@@ -687,7 +689,6 @@ def test_extract_symbol_nickname_pairs_case_3():
         ), "Nickname Incorrect"
 
 
-@pytest.mark.extract_definitions
 def test_extract_abbreviation_expansion_pairs_case_1():
     # Case 1: Abbreviation in parentheses.
     text = "We use a Convolutional Neural Network (CNN) based architecture in this model, which is an improvement over state-of-the-art."
@@ -832,7 +833,6 @@ def test_extract_abbreviation_expansion_pairs_case_1():
         ), "Expansion Incorrect"
 
 
-@pytest.mark.extract_definitions
 def test_extract_abbreviation_expansion_pairs_case_2():
     # Case 2 : Abbreviation contains multiple lowercase letters.
     text = "We propose a new class of architectures called Conductive Networks (CondNets) in this paper."

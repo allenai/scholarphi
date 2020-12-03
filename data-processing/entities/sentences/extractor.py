@@ -3,11 +3,10 @@ from typing import Iterator, List, Tuple
 
 import pysbd
 import regex
-
 from common.parse_tex import (
     EntityExtractor,
-    extract_plaintext,
     check_for_pysbd_reserved_characters,
+    extract_plaintext,
 )
 
 from .types import Sentence
@@ -21,7 +20,7 @@ def get_context(tex: str, before: int, after: int) -> str:
     below the the "before" and "after" character indexes.
 
     Given an original `tex` with `labelInTOC]{Convolutional layer}`, its corresponding
-    context might be ` \caption[labelInTOC]{Convolutional layer}`.
+    context might be ` \\caption[labelInTOC]{Convolutional layer}`.
     """
     context_before = " ".join(tex[:before].splitlines()[-2:])
     context_after = " ".join(tex[after:].splitlines()[:2])
@@ -80,7 +79,9 @@ class SentenceExtractor(EntityExtractor):
             plaintext_start = span.start + regex.search(r"^(\s*)", span.sent).end()
             plaintext_end = span.start + regex.search(r"(\s*)$", span.sent).start()
 
-            tex_start, tex_end = plaintext.initial_offsets(plaintext_start, plaintext_end)
+            tex_start, tex_end = plaintext.initial_offsets(
+                plaintext_start, plaintext_end
+            )
             if tex_start is None or tex_end is None:
                 logging.warning(  # pylint: disable=logging-not-lazy
                     "The span bounds (%d, %d) from pysbd for a sentence could not be mapped "

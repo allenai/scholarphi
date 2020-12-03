@@ -91,7 +91,7 @@ def test_extract_phrases_containing_ampersands():
     phrases = list(extractor.parse("main.tex", r"This sentence contains D\&M."))
     assert len(phrases) == 1
     assert phrases[0].text == "D&M"
-    assert phrases[0].tex == "D\&M"
+    assert phrases[0].tex == r"D\&M"
 
 
 def test_extract_phrases_starting_with_symbol():
@@ -354,7 +354,7 @@ def test_documentclass_after_macro():
     # In some TeX files, the documentclass isn't declared until after some initial macros.
     # We still want to detect the documentclass in these documents.
     extractor = DocumentclassExtractor()
-    tex = "\\def\year{2020}\n\\documentclass{article}"
+    tex = "\\def\\year{2020}\n\\documentclass{article}"
     documentclass = extractor.parse(tex)
     assert documentclass is not None
 
