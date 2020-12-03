@@ -24,7 +24,7 @@ def get_context(tex: str, before: int, after: int) -> str:
     below the the "before" and "after" character indexes.
 
     Given an original `tex` with `labelInTOC]{Convolutional layer}`, its corresponding
-    context might be ` \caption[labelInTOC]{Convolutional layer}`.
+    context might be ` \\caption[labelInTOC]{Convolutional layer}`.
     """
     context_before = " ".join(tex[:before].splitlines()[-2:])
     context_after = " ".join(tex[after:].splitlines()[:2])

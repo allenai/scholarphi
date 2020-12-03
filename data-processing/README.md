@@ -191,12 +191,22 @@ Pytest for the tests. Run the test suite with this command:
 ```bash
 pytest
 ```
-Run specific tests (like `extract_definitions`) tagged by markers, with this command:
+
+By default, pytest only runs those tests that are expected
+to complete quickly, to make sure it's fast enough to run
+the suite of tests that no one thinks twice about
+running them. To run _all_ tests, including long-running
+tests that load up NLP models, run this command:
 
 ```bash
-pytest -m extract_definitions
+pytest --all
 ```
-Various markers can be found in the pytest.ini file. 
+
+Alternatively, you can run just the slow tests with:
+
+```bash
+pytest -m slow
+```
 
 ## Troubleshooting the installation
 

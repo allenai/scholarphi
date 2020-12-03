@@ -23,7 +23,7 @@ def adjust_color_positions(entity: SerializableEntity) -> CharacterRange:
     # If the sentence starts with an equation, move the coloring command inside the equation.
     adjusted_start = sentence.start
     first_equation = min(equations, key=lambda e: e.start)
-    first_nonspace = re.search("\S", sentence.tex)
+    first_nonspace = re.search(r"\S", sentence.tex)
     if first_nonspace is not None:
         if first_nonspace.start(0) == first_equation.start:
             adjusted_start = sentence.start + first_equation.content_start
@@ -31,7 +31,7 @@ def adjust_color_positions(entity: SerializableEntity) -> CharacterRange:
     # If the sentence ends with an equation, move the coloring command inside the equation.
     adjusted_end = sentence.end
     last_equation = max(equations, key=lambda e: e.end)
-    last_nonspace = re.search("\S(?=\s*$)", sentence.tex)
+    last_nonspace = re.search(r"\S(?=\s*$)", sentence.tex)
     if last_nonspace is not None:
         if last_nonspace.end(0) == last_equation.end:
             adjusted_end = sentence.start + last_equation.content_end
