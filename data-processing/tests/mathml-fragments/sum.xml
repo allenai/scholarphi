@@ -1,5 +1,5 @@
-<msubsup s2:start="0" s2:end="8" s2:index="2">
+<msubsup s2:start="0" s2:end="8">
     <mo>∑</mo>
-    <mi s2:start="5" s2:end="6" s2:index="0">i</mi>
-    <mi s2:start="7" s2:end="8" s2:index="1">N</mi>
+    <mi s2:start="5" s2:end="6">i</mi>
+    <mi s2:start="7" s2:end="8">N</mi>
 </msubsup>
