@@ -25,11 +25,12 @@ def test_parse_single_symbol():
     assert str(symbol.element) == "<mi>x</mi>"
     assert symbol.type_ == NodeType.IDENTIFIER
     assert symbol.children == []
-    assert symbol.tokens == [Token(0, 1, "x", 0)]
+    assert symbol.tokens == [Token(0, 1, "x", "atom")]
     assert symbol.start == 0
     assert symbol.end == 1
     assert not symbol.defined
-    assert result.tokens == [Token(0, 1, "x", 0)]
+    assert not symbol.contains_affix_token
+    assert result.tokens == [Token(0, 1, "x", "atom")]
 
 
 def test_merge_contiguous_symbols():
@@ -39,7 +40,7 @@ def test_merge_contiguous_symbols():
     assert str(symbol.element) == "<mi>ReLU</mi>"
     assert symbol.children == []
     assert symbol.tokens == [
-        Token(0, 4, "ReLU", 0),
+        Token(0, 4, "ReLU", "atom"),
     ]
 
 
@@ -68,8 +69,8 @@ def test_parse_node_with_child_nodes():
     assert str(symbol.children[0].element) == "<mi>x</mi>"
     assert str(symbol.children[1].element) == "<mi>i</mi>"
     assert symbol.tokens == [
-        Token(0, 1, "x", 0),
-        Token(2, 3, "i", 1),
+        Token(0, 1, "x", "atom"),
+        Token(2, 3, "i", "atom"),
     ]
 
 
@@ -86,7 +87,7 @@ def test_number_is_not_a_symbol():
     result = parse_element(load_fragment_tag("1.xml"))
     assert str(result.element) == "<mn>1</mn>"
     assert result.symbols == []
-    assert result.tokens == [Token(0, 1, "1", 0)]
+    assert result.tokens == [Token(0, 1, "1", "atom")]
 
 
 def test_e_is_not_a_symbol_as_exponent_base():
@@ -99,7 +100,7 @@ def test_d_is_symbol_on_its_own():
     result = parse_element(load_fragment_tag("d.xml"))
     assert len(result.symbols) == 1
     assert str(result.symbols[0].element) == "<mi>d</mi>"
-    assert result.symbols[0].tokens == [Token(0, 1, "d", 0)]
+    assert result.symbols[0].tokens == [Token(0, 1, "d", "atom")]
 
 
 def test_ignore_derivative_tokens():
@@ -125,13 +126,22 @@ def test_parse_prime():
     symbol = result.symbols[0]
     assert len(symbol.children) == 1
     assert str(symbol.children[0].element) == "<mi>x</mi>"
-    assert symbol.tokens == [Token(0, 1, "x", 0), Token(1, 2, "′", 2)]
+    assert symbol.tokens == [Token(0, 1, "x", "atom"), Token(1, 2, "′", "atom")]
 
 
 def test_parse_text_as_symbol():
     result = parse_element(load_fragment_tag("text.xml"))
     assert len(result.symbols) == 1
     assert str(result.element) == "<mtext>text</mtext>"
+
+
+def test_parse_accent():
+    result = parse_element(load_fragment_tag("bar_x.xml"))
+    assert len(result.symbols) == 1
+    assert str(result.element) == '<mover accent="true"><mi>x</mi><mo>ˉ</mo></mover>'
+    symbol = result.symbols[0]
+    assert symbol.contains_affix_token
+    assert symbol.tokens == [Token(5, 6, "x", "atom"), Token(0, 5, "ˉ", "affix")]
 
 
 def test_summation_is_not_symbol():
@@ -170,10 +180,10 @@ def test_detect_function_declaration():
     assert symbol.start == 0
     assert symbol.end == 16
     assert (
-        Token(1, 2, "(", 1) in symbol.tokens
+        Token(1, 2, "(", "atom") in symbol.tokens
     ), "function tokens should include parentheses"
     assert (
-        Token(15, 16, ")", 7) in symbol.tokens
+        Token(15, 16, ")", "atom") in symbol.tokens
     ), "function tokens should include parentheses"
     assert not any(
         [t.text == "," for t in symbol.tokens]

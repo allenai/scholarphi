@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, List, NamedTuple, Optional, Set, Union
 
+from typing_extensions import Literal
+
 """
 FILE PROCESSING
 """
@@ -291,17 +293,15 @@ class Token(Entity):
     text: str
     " Unicode (not TeX) representation of this token, computed by parsing the equation with KaTeX. "
 
-    token_index: TokenIndex
+    type_: Literal["atom", "affix"]
     """
-    Index of this token within the equation. These indexes are guaranteed to be unique within eqach
-    equation; however they will not necessarily be contiguous or in order from left to right.
+    Indicates whether the token is an affix to other tokens in the TeX (e.g., a macro like '\\bar'
+    or '\\arrow'). Affixes can't be located using the typical colorizing method, because TeX fails
+    if affixes are surrounded in a coloring macro. Affixes therefore need to be detected either
+    as parts of colorized symbols containing the affix, or by colorizing both the affix with a
+    salient color and its argument with a neutral color (see for instance
+    https://tex.stackexchange.com/a/46704/198728).
     """
-
-
-@dataclass(frozen=True)
-class TokenWithOrigin(Token):
-    tex_path: str
-    equation: Equation
 
 
 MathML = str

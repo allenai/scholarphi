@@ -1,6 +1,6 @@
 <mrow>
-    <mi mathvariant="normal" s2:start="0" s2:end="9" s2:index="0">∂</mi>
-    <mi s2:start="9" s2:end="10" s2:index="1">a</mi>
-    <mi s2:start="11" s2:end="12" s2:index="2">d</mi>
-    <mi s2:start="12" s2:end="13" s2:index="3">b</mi>
+    <mi mathvariant="normal" s2:start="0" s2:end="9">∂</mi>
+    <mi s2:start="9" s2:end="10">a</mi>
+    <mi s2:start="11" s2:end="12">d</mi>
+    <mi s2:start="12" s2:end="13">b</mi>
 </mrow>
