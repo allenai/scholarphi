@@ -21,7 +21,7 @@ npm start
 To check that the server is running, call:
 
 ```bash
-curl 0.0.0.0:3000/health
+curl 0.0.0.0:3000/api/health
 ```
 
 And you should see a response of 👍.
