@@ -154,5 +154,24 @@ export const plugin = {
         },
       },
     });
+
+    server.route({
+      method: "GET",
+      path: "papers/arxiv:{arxivId}/version",
+      handler: async (request, h) => {
+        const arxivId = request.params.arxivId;
+        const version = await dbConnection.getLatestProcessedArxivVersion({ arxiv_id: arxivId });
+        if (!version) {
+          // We don't have version info for this ID
+          return h.response().code(404);
+        }
+        return h.response({ version }).code(200);
+      },
+      options: {
+        validate: {
+          params: validation.arxivId,
+        },
+      },
+    });
   },
 };

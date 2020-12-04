@@ -14,7 +14,7 @@ import EntityCreationToolbar, {
 import EntityPageMask from "./EntityPageMask";
 import EquationDiagram from "./EquationDiagram";
 import FindBar, { FindQuery } from "./FindBar";
-import { getRemoteLogger } from "./logging";
+import logger from "./logging";
 import MasterControlPanel from "./MasterControlPanel";
 import PageOverlay from "./PageOverlay";
 import PdfjsToolbar from "./PdfjsToolbar";
@@ -58,20 +58,17 @@ import * as stateUtils from "./utils/state";
 import * as uiUtils from "./utils/ui";
 import ViewerOverlay from "./ViewerOverlay";
 
-const logger = getRemoteLogger();
-
 interface Props {
   paperId?: PaperId;
   presets?: string[];
   context?: any;
 }
 
-class ScholarReader extends React.PureComponent<Props, State> {
+export default class ScholarReader extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
     const settings = getSettings(props.presets);
-    const logger = getRemoteLogger();
     const loggingContext: any = { ...props.context };
     if (props.presets) {
       loggingContext.presets = props.presets;
@@ -122,81 +119,39 @@ class ScholarReader extends React.PureComponent<Props, State> {
 
       ...settings,
     };
-
-    /**
-     * Bind state-changing handlers so that they will be called with 'this' as its context.
-     * See https://reactjs.org/docs/faq-functions.html#how-do-i-bind-a-function-to-a-component-instance
-     */
-    this.toggleControlPanelShowing = this.toggleControlPanelShowing.bind(this);
-    this.toggleAnnotationHints = this.toggleAnnotationHints.bind(this);
-    this.closeControlPanel = this.closeControlPanel.bind(this);
-    this.handleChangeSetting = this.handleChangeSetting.bind(this);
-    this.setAnnotationHintsEnabled = this.setAnnotationHintsEnabled.bind(this);
-    this.setGlossStyle = this.setGlossStyle.bind(this);
-
-    this.createEntity = this.createEntity.bind(this);
-    this.createParentSymbol = this.createParentSymbol.bind(this);
-    this.updateEntity = this.updateEntity.bind(this);
-    this.deleteEntity = this.deleteEntity.bind(this);
-    this.addToLibrary = this.addToLibrary.bind(this);
-
-    this.setTextSelection = this.setTextSelection.bind(this);
-    this.selectEntity = this.selectEntity.bind(this);
-    this.selectEntityAnnotation = this.selectEntityAnnotation.bind(this);
-    this.jumpToEntity = this.jumpToEntity.bind(this);
-    this.jumpToEntityWithBackMessage = this.jumpToEntityWithBackMessage.bind(
-      this
-    );
-    this.clearEntitySelection = this.clearEntitySelection.bind(this);
-
-    this.setMultiselectEnabled = this.setMultiselectEnabled.bind(this);
-    this.showSnackbarMessage = this.showSnackbarMessage.bind(this);
-    this.closeSnackbar = this.closeSnackbar.bind(this);
-    this.openDrawer = this.openDrawer.bind(this);
-    this.closeDrawer = this.closeDrawer.bind(this);
-    this.startTextSearch = this.startTextSearch.bind(this);
-    this.setFindMatchCount = this.setFindMatchCount.bind(this);
-    this.setFindMatchIndex = this.setFindMatchIndex.bind(this);
-    this.setFindQuery = this.setFindQuery.bind(this);
-    this.closeFindBar = this.closeFindBar.bind(this);
-    this.setEntityCreationType = this.setEntityCreationType.bind(this);
-    this.setEntityCreationAreaSelectionMethod = this.setEntityCreationAreaSelectionMethod.bind(
-      this
-    );
-    this.setPropagateEntityEdits = this.setPropagateEntityEdits.bind(this);
   }
 
-  toggleControlPanelShowing() {
+  toggleControlPanelShowing = (): void => {
     this.setState((prevState) => ({
       controlPanelShowing: !prevState.controlPanelShowing,
     }));
   }
 
-  toggleAnnotationHints() {
+  toggleAnnotationHints = (): void => {
     this.setState((prevState) => ({
       annotationHintsEnabled: !prevState.annotationHintsEnabled,
     }));
   }
 
-  setAnnotationHintsEnabled(enabled: boolean) {
+  setAnnotationHintsEnabled = (enabled: boolean): void => {
     this.setState({ annotationHintsEnabled: enabled });
   }
 
-  setGlossStyle(style: GlossStyle) {
+  setGlossStyle = (style: GlossStyle): void => {
     this.setState({ glossStyle: style });
   }
 
-  closeControlPanel() {
+  closeControlPanel = (): void => {
     this.setState({ controlPanelShowing: false });
   }
 
-  handleChangeSetting(setting: ConfigurableSetting, value: any) {
+  handleChangeSetting = (setting: ConfigurableSetting, value: any): void => {
     this.setState({
       [setting.key]: value,
     } as State);
   }
 
-  async addToLibrary(paperId: string, paperTitle: string) {
+  addToLibrary = async (paperId: string, paperTitle: string): Promise<void> => {
     if (this.props.paperId) {
       const response = await api.addLibraryEntry(paperId, paperTitle);
 
@@ -213,22 +168,22 @@ class ScholarReader extends React.PureComponent<Props, State> {
     }
   }
 
-  setTextSelection(selection: Selection | null) {
+  setTextSelection = (selection: Selection | null): void => {
     this.setState({
       textSelection: selection,
       textSelectionChangeMs: Date.now(),
     });
   }
 
-  selectEntity(id: string) {
+  selectEntity = (id: string): void => {
     this.selectEntityAnnotation(id);
   }
 
-  selectEntityAnnotation(
+  selectEntityAnnotation = (
     entityId: string,
     annotationId?: string,
     annotationSpanId?: string
-  ) {
+  ): void => {
     logger.log("debug", "select-entity", {
       entityId,
       annotationId,
@@ -343,7 +298,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     });
   }
 
-  clearEntitySelection() {
+  clearEntitySelection = (): void => {
     logger.log("debug", "clear-entity-selection");
 
     /*
@@ -366,15 +321,15 @@ class ScholarReader extends React.PureComponent<Props, State> {
     });
   }
 
-  setEntityCreationType(type: KnownEntityType) {
+  setEntityCreationType = (type: KnownEntityType): void => {
     this.setState({ entityCreationType: type });
   }
 
-  setEntityCreationAreaSelectionMethod(method: AreaSelectionMethod) {
+  setEntityCreationAreaSelectionMethod = (method: AreaSelectionMethod): void => {
     this.setState({ entityCreationAreaSelectionMethod: method });
   }
 
-  async createEntity(data: EntityCreateData) {
+  createEntity = async (data: EntityCreateData): Promise<string | null> => {
     if (this.props.paperId !== undefined) {
       const createdEntity = await api.postEntity(this.props.paperId.id, data);
       if (createdEntity !== null) {
@@ -401,7 +356,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     return null;
   }
 
-  async createParentSymbol(childSymbols: Symbol[]) {
+  createParentSymbol = async (childSymbols: Symbol[]): Promise<boolean> => {
     /*
      * Parent bounding box is the union of child bounding boxes.
      */
@@ -480,11 +435,11 @@ class ScholarReader extends React.PureComponent<Props, State> {
     return true;
   }
 
-  async updateEntity(
+  updateEntity = async (
     entity: Entity,
     updateData: EntityUpdateData,
     propagateEdits?: boolean
-  ): Promise<boolean> {
+  ): Promise<boolean> => {
     const { paperId } = this.props;
     if (paperId === undefined) {
       return false;
@@ -562,7 +517,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     return completeSuccess;
   }
 
-  async deleteEntity(id: string) {
+  deleteEntity = async (id: string): Promise<boolean> => {
     if (this.props.paperId !== undefined) {
       const result = await api.deleteEntity(this.props.paperId.id, id);
       if (result) {
@@ -601,7 +556,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     return false;
   }
 
-  showSnackbarMessage(message: string) {
+  showSnackbarMessage = (message: string): void => {
     this.setState({
       snackbarMode: "open",
       snackbarActivationTimeMs: Date.now(),
@@ -609,7 +564,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     });
   }
 
-  closeSnackbar() {
+  closeSnackbar = (): void => {
     this.setState({
       snackbarMode: "closed",
       snackbarActivationTimeMs: null,
@@ -617,7 +572,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     });
   }
 
-  openDrawer(drawerContentType: DrawerContentType) {
+  openDrawer = (drawerContentType: DrawerContentType): void => {
     logger.log("debug", "request-open-drawer", { drawerContentType });
     this.setState({
       drawerMode: "open",
@@ -625,22 +580,22 @@ class ScholarReader extends React.PureComponent<Props, State> {
     });
   }
 
-  closeDrawer() {
+  closeDrawer = (): void => {
     logger.log("debug", "close-drawer");
     this.setState({ drawerMode: "closed" });
   }
 
-  setMultiselectEnabled(enabled: boolean) {
+  setMultiselectEnabled = (enabled: boolean): void => {
     this.setState({ multiselectEnabled: enabled });
   }
 
-  setPropagateEntityEdits(propagate: boolean) {
+  setPropagateEntityEdits = (propagate: boolean): void => {
     this.setState({
       propagateEntityEdits: propagate,
     });
   }
 
-  startTextSearch() {
+  startTextSearch = (): void => {
     logger.log("debug", "start-text-search");
     this.setState({
       isFindActive: true,
@@ -649,12 +604,12 @@ class ScholarReader extends React.PureComponent<Props, State> {
     });
   }
 
-  setFindMatchCount(findMatchCount: number | null) {
+  setFindMatchCount = (findMatchCount: number | null): void => {
     logger.log("debug", "find-match-count-updated", { count: findMatchCount });
     this.setState({ findMatchCount });
   }
 
-  setFindMatchIndex(findMatchIndex: number | null) {
+  setFindMatchIndex = (findMatchIndex: number | null): void => {
     logger.log("debug", "find-match-index-updated", {
       index: findMatchIndex,
       count: this.state.findMatchCount,
@@ -673,7 +628,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     });
   }
 
-  setFindQuery(findQuery: FindQuery) {
+  setFindQuery = (findQuery: FindQuery): void => {
     this.setState((state) => {
       if (state.findMode === "symbol" && state.entities !== null) {
         const selectedSymbolIds = selectors.symbolIds(
@@ -709,7 +664,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     });
   }
 
-  closeFindBar() {
+  closeFindBar = (): void => {
     logger.log("debug", "find-close");
     this.setState({
       isFindActive: false,
@@ -722,7 +677,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     });
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     waitForPDFViewerInitialization().then((application) => {
       logger.log("debug", "application-loaded");
       /*
@@ -737,7 +692,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     this.loadDataFromApi();
   }
 
-  subscribeToPDFViewerStateChanges(pdfViewerApplication: PDFViewerApplication) {
+  subscribeToPDFViewerStateChanges = (pdfViewerApplication: PDFViewerApplication): void => {
     const { eventBus, pdfDocument, pdfViewer } = pdfViewerApplication;
 
     if (pdfDocument !== null) {
@@ -768,7 +723,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     });
   }
 
-  async loadDataFromApi() {
+  loadDataFromApi = async (): Promise<void> => {
     if (this.props.paperId !== undefined) {
       if (this.props.paperId.type === "arxiv") {
         const entities = await api.getEntities(this.props.paperId.id);
@@ -796,15 +751,14 @@ class ScholarReader extends React.PureComponent<Props, State> {
         if (userData) {
           this.setState({ userLibrary: userData.userLibrary });
           if (userData.email) {
-            const remoteLogger = getRemoteLogger();
-            remoteLogger.setUsername(userData.email);
+            logger.setUsername(userData.email);
           }
         }
       }
     }
   }
 
-  jumpToEntityWithBackMessage(id: string) {
+  jumpToEntityWithBackMessage = (id: string): void => {
     const success = this.jumpToEntity(id);
 
     if (success && !this._backButtonHintShown) {
@@ -815,7 +769,7 @@ class ScholarReader extends React.PureComponent<Props, State> {
     }
   }
 
-  jumpToEntity(id: string): boolean {
+  jumpToEntity = (id: string): boolean => {
     /*
      * In a past version, these offsets were based roughly off those in the pdf.js "find" functionality:
      * https://github.com/mozilla/pdf.js/blob/16ae7c6960c1296370c1600312f283a68e82b137/web/pdf_find_controller.js#L28-L29
@@ -1262,5 +1216,3 @@ async function waitForPDFViewerInitialization() {
     check();
   });
 }
-
-export default ScholarReader;

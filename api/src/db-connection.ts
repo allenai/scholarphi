@@ -103,13 +103,37 @@ export class Connection {
       }));
   }
 
-  async getLatestPaperDataVersion(paperSelector: PaperSelector) {
+  async getLatestPaperDataVersion(paperSelector: PaperSelector): Promise<number | null> {
     const rows = await this._knex("version")
       .max("index")
       .join("paper", { "paper.s2_id": "version.paper_id" })
       .where(paperSelector);
     const version = Number(rows[0].max);
     return isNaN(version) ? null : version;
+  }
+
+  async getLatestProcessedArxivVersion(paperSelector: PaperSelector): Promise<number | null> {
+    if (isS2Selector(paperSelector)) {
+      return null;
+    }
+    // Provided arXiv IDs might have a version suffix, but ignore that for this check.
+    const versionDelimiterIndex = paperSelector.arxiv_id.indexOf('v');
+    const arxivId = versionDelimiterIndex > -1 ? paperSelector.arxiv_id.substring(0, versionDelimiterIndex) : paperSelector.arxiv_id;
+
+    // TODO(mjlangan): This won't support arXiv IDs prior to 03/2007 as written
+    const response = await this._knex.raw<{ rows: { arxiv_version: number }[] }>(`
+      SELECT CAST((REGEXP_MATCHES(arxiv_id,'^\\d{4}\\.\\d{4,5}v(\\d+)$'))[1] AS integer) AS arxiv_version
+        FROM paper
+        WHERE arxiv_id ilike ?
+        ORDER BY arxiv_version DESC
+        LIMIT 1
+    `, [`${arxivId}%`]);
+
+    if (response.rows.length > 0) {
+      return response.rows[0].arxiv_version;
+    }
+
+    return null;
   }
 
   createBoundingBoxes(
@@ -597,4 +621,12 @@ interface ArxivIdPaperSelector {
 
 interface S2IdPaperSelector {
   s2_id: string;
+}
+
+function isArxivSelector(selector: PaperSelector): selector is ArxivIdPaperSelector {
+  return (selector as ArxivIdPaperSelector).arxiv_id !== undefined;
+}
+
+function isS2Selector(selector: PaperSelector): selector is S2IdPaperSelector {
+  return (selector as S2IdPaperSelector).s2_id !== undefined;
 }
