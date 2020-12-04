@@ -112,17 +112,17 @@ export class Connection {
     return isNaN(version) ? null : version;
   }
 
-  async getLatestProcessedArxivVersion(paperSelector: PaperSelector): Promise<number> {
+  async getLatestProcessedArxivVersion(paperSelector: PaperSelector): Promise<number | null> {
     if (isS2Selector(paperSelector)) {
-      // TODO (mjlangan): Error, or maybe null, think about this
-      return -1;
+      return null;
     }
     // Provided arXiv IDs might have a version suffix, but ignore that for this check.
     const versionDelimiterIndex = paperSelector.arxiv_id.indexOf('v');
     const arxivId = versionDelimiterIndex > -1 ? paperSelector.arxiv_id.substring(0, versionDelimiterIndex) : paperSelector.arxiv_id;
 
+    // TODO(mjlangan): This won't support arXiv IDs prior to 03/2007 as written
     const response = await this._knex.raw<{ rows: { arxiv_version: number }[] }>(`
-      SELECT CAST((REGEXP_MATCHES(arxiv_id,'^\\d{4}\\.\\d{5}v(\\d+)$'))[1] AS integer) AS arxiv_version
+      SELECT CAST((REGEXP_MATCHES(arxiv_id,'^\\d{4}\\.\\d{4,5}v(\\d+)$'))[1] AS integer) AS arxiv_version
         FROM paper
         WHERE arxiv_id ilike ?
         ORDER BY arxiv_version DESC
@@ -133,8 +133,7 @@ export class Connection {
       return response.rows[0].arxiv_version;
     }
 
-    // TODO (mjlangan): Error, or maybe null, think about this
-    return -1;
+    return null;
   }
 
   createBoundingBoxes(
