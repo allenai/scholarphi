@@ -46,10 +46,10 @@ describe("API", () => {
     await server.destroy();
   });
 
-  test("GET /health", async () => {
+  test("GET /api/health", async () => {
     const response = await server.inject({
       method: "get",
-      url: "/health",
+      url: "/api/health",
     });
     expect(response.statusCode).toEqual(200);
   });

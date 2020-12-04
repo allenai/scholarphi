@@ -169,12 +169,7 @@ function(
                             image: apiImage,
                             readinessProbe: {
                                 httpGet: apiHealthCheck + {
-                                    path: '/health?check=rdy'
-                                }
-                            },
-                            livenessProbe: {
-                                httpGet: apiHealthCheck + {
-                                    path: '/health?check=rdy'
+                                    path: '/api/health'
                                 }
                             },
                             resources: {
@@ -205,11 +200,6 @@ function(
                                     path: '/?check=rdy'
                                 }
                             },
-                            livenessProbe: {
-                                httpGet: uiHealthCheck + {
-                                    path: '/?check=live'
-                                }
-                            },
                             resources: {
                                 requests: {
                                    cpu: '0.2',
@@ -223,11 +213,6 @@ function(
                             readinessProbe: {
                                 httpGet: ingressHealthCheck + {
                                     path: '/?check=rdy'
-                                }
-                            },
-                            livenessProbe: {
-                                httpGet: ingressHealthCheck + {
-                                    path: '/?check=live'
                                 }
                             },
                             resources: {

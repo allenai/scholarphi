@@ -49,7 +49,7 @@ class ApiServer {
       },
     });
 
-    this._server.route({ method: "GET", path: "/health", handler: () => "👍" });
+    this._server.route({ method: "GET", path: "/api/health", handler: () => "👍" });
 
     this._server.route({
       method: "POST",
