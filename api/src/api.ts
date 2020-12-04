@@ -161,18 +161,15 @@ export const plugin = {
       handler: async (request, h) => {
         const arxivId = request.params.arxivId;
         const version = await dbConnection.getLatestProcessedArxivVersion({ arxiv_id: arxivId });
-        if (version < 0) {
+        if (!version) {
           // We don't have version info for this ID
           return h.response().code(404);
         }
-        // TODO (mjlangan): solidify the response structure (maybe 'maxVersion' or 'latestVersion'?)
         return h.response({ version }).code(200);
       },
       options: {
         validate: {
-          params: validation.arxivId.append({
-            arxivId: Joi.string().required(),
-          }),
+          params: validation.arxivId,
         },
       },
     });
