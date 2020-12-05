@@ -69,15 +69,15 @@ def get_token_character_ranges(text: str, tokens: List[str]) -> List[CharacterRa
     return ranges
 
 
-def get_term_definition_pairs(
+def consolidate_term_definitions(
     text: str,
-    featurized_text: Dict[Any, Any],
+    tokens: List[str],
     slot_predictions: List[str],
     slot_prediction_confidences: List[float],
 ) -> List[TermDefinitionPair]:
 
     # Make index from tokens to their character positions.
-    ranges = get_token_character_ranges(text, featurized_text["tokens"])
+    ranges = get_token_character_ranges(text, tokens)
 
     # Extract ranges for all terms and definitions.
     terms: List[List[CharacterRange]] = []
@@ -109,22 +109,6 @@ def get_term_definition_pairs(
                 )
             term_ranges, definition_ranges = [], []
 
-    # Extract ranges for all abbreviations.
-    abbreviation_ranges: List[CharacterRange] = []
-    for (abbreviation_label, token_char_range) in zip(
-        featurized_text["abbreviation"], ranges
-    ):
-        # 1 means the token is a part of abbreviation.
-        if abbreviation_label == 1:
-            abbreviation_ranges.append(token_char_range)
-
-    # Extract ranges for all entities.
-    entity_ranges: List[CharacterRange] = []
-    for (entity_label, token_char_range) in zip(featurized_text["entity"], ranges):
-        # 1 means the token is a part of abbreviation.
-        if entity_label == 1:
-            entity_ranges.append(token_char_range)
-
     # Match pairs of term and definitions sequentially ( O T O O D then (T, D)). This
     # does not handle multi-term / definitions pairs.
     num_term_definition_pairs = min(len(terms), len(definitions))
@@ -132,7 +116,7 @@ def get_term_definition_pairs(
     for pair_index in range(num_term_definition_pairs):
         logging.debug(
             "Found slot predictions for tokens: (tokens: %s), (slots: %s)",
-            featurized_text["tokens"],
+            tokens,
             slot_predictions,
         )
         logging.debug(
@@ -214,8 +198,8 @@ def check_text_contains_acronym_for_sanity(
     return is_acronym
 
 
-def get_abbreviation_pairs(
-    text: str, featurized_text: Dict[Any, Any], nlp_model: Any
+def get_abbreviations(
+    text: str, tokens: List[str], nlp_model: Any
 ) -> List[TermDefinitionPair]:
 
     pairs: List[TermDefinitionPair] = []
@@ -223,7 +207,7 @@ def get_abbreviation_pairs(
     doc = nlp_model(text)
 
     # Make index from tokens to their character positions.
-    abbreviation_ranges = get_token_character_ranges(text, featurized_text["tokens"])
+    abbreviation_ranges = get_token_character_ranges(text, tokens)
 
     for abbreviation in doc._.abbreviations:
         # Acronym (term).
@@ -643,18 +627,23 @@ class DetectDefinitions(
                         )
 
                         symbol_nickname_pairs = get_symbol_nickname_pairs(
-                            s.legacy_definition_input, sentence_features,
+                            s.legacy_definition_input,
+                            sentence_features["tokens"],
+                            sentence_features["pos"],
+                            symbol_texs,
                         )
 
-                        abbreviation_pairs = get_abbreviation_pairs(
-                            s.legacy_definition_input, sentence_features, model.nlp,
+                        abbreviation_pairs = get_abbreviations(
+                            s.legacy_definition_input,
+                            sentence_features["tokens"],
+                            model.nlp,
                         )
 
                         # Only process slots when they include both 'TERM' and 'DEFINITION'.
                         if "TERM" not in sentence_slots or "DEF" not in sentence_slots:
                             term_definition_pairs = []
                         else:
-                            term_definition_pairs = get_term_definition_pairs(
+                            term_definition_pairs = consolidate_term_definitions(
                                 s.legacy_definition_input,
                                 sentence_features,
                                 sentence_slots,
