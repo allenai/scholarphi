@@ -1,11 +1,10 @@
 import json
 import logging
 import os.path
-import re
 import subprocess
 from argparse import ArgumentParser
 from dataclasses import dataclass
-from typing import Iterator, List, Optional, Set, Tuple
+from typing import Iterator, List, Optional, Set
 
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
@@ -213,51 +212,11 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, List[EquationSymbols]]):
                 if len(symbol.tokens) == 0:
                     continue
 
-                # Collect extra information about the symbol.
-                def get_tex(s: Node, equation: str) -> Tuple[str, int, int]:
-                    """
-                    Extract approximate TeX for the symbol. It's estimated to be the span of TeX
-                    that covers all of the tokens, including extra curly braces needed to close
-                    opened curly braces (which often aren't included in the token start and end
-                    character indexes). While these positions aren't used for colorization (and
-                    hence don't have to be super precise), they are useful for:
-                    1. Ordering the symbols
-                    2. Rendering the symbols in the user interface
-                    Hence it is a good thing if a complete subset of the TeX can be extracted that
-                    can be used to render the symbol.
-                    """
-                    start = min([t.start for t in s.tokens])
-                    end = max([t.end for t in s.tokens])
-
-                    # Grab the macro right before the symbol if there is one. This ensures that the
-                    # rendered 'tex' field will include, for instance, `\mathrm` commands that are
-                    # used to style the math.
-                    for match in re.finditer(r"\\((math|text)\w+)\{", equation):
-                        if match.end() == start:
-                            start = match.start()
-
-                    # Adjust the end position to after curly braces are closed.
-                    open_brace_count = 0
-                    for i, c in enumerate(equation[start:], start=start):
-                        open_brace_count = (
-                            open_brace_count + 1
-                            if c == "{"
-                            else open_brace_count - 1
-                            if c == "}" and open_brace_count > 0
-                            else open_brace_count
-                        )
-                        if (i + 1) >= end and open_brace_count == 0:
-                            end = i + 1
-                            break
-
-                    return (equation[start:end], start, end)
-
-                symbol_tex, relative_start, relative_end = get_tex(symbol, equation)
-                start = equation_start + relative_start
-                end = equation_start + relative_end
-
                 # Skip this symbol if it has already been saved.
-                if SavedSymbol(symbol_tex, start, end) in saved_symbols:
+                symbol_tex = equation[symbol.start : symbol.end]
+                start_in_file = equation_start + symbol.start
+                end_in_file = equation_start + symbol.end
+                if SavedSymbol(symbol_tex, start_in_file, end_in_file) in saved_symbols:
                     continue
 
                 # Save a record of this symbol.
@@ -269,14 +228,15 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, List[EquationSymbols]]):
                         equation_index=equation_index,
                         equation=equation,
                         symbol_index=symbol_index,
-                        start=start,
-                        end=end,
+                        start=start_in_file,
+                        end=end_in_file,
                         tex=symbol_tex,
                         context_tex=context_tex,
                         mathml=str(symbol.element),
                         is_definition=symbol.defined or False,
-                        relative_start=relative_start,
-                        relative_end=relative_end,
+                        relative_start=symbol.start,
+                        relative_end=symbol.end,
+                        contains_affix=symbol.contains_affix_token,
                     ),
                 )
 
@@ -289,7 +249,8 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, List[EquationSymbols]]):
                             tex_path=tex_path,
                             equation_index=equation_index,
                             symbol_index=symbol_index,
-                            token_index=token.token_index,
+                            start=token.start,
+                            end=token.end,
                         ),
                     )
 
@@ -307,7 +268,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, List[EquationSymbols]]):
                         ),
                     )
 
-                saved_symbols.add(SavedSymbol(symbol_tex, start, end))
+                saved_symbols.add(SavedSymbol(symbol_tex, start_in_file, end_in_file))
 
             # Write record of all tokens to file.
             for token in all_tokens:
@@ -315,13 +276,13 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, List[EquationSymbols]]):
                     tokens_path,
                     SerializableToken(
                         tex_path=tex_path,
-                        id_=f"{equation_index}-{token.token_index}",
+                        id_=f"{equation_index}-{token.start}-{token.end}",
                         equation_index=equation_index,
-                        token_index=token.token_index,
                         start=equation_start + token.start,
                         end=equation_start + token.end,
                         relative_start=token.start,
                         relative_end=token.end,
+                        type_=token.type_,
                         tex=equation[token.start : token.end],
                         context_tex=context_tex,
                         text=token.text,

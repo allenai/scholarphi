@@ -285,7 +285,8 @@ class SymbolId:
 class TokenId:
     tex_path: str
     equation_index: EquationIndex
-    token_index: TokenIndex
+    start: int
+    end: int
 
 
 @dataclass(frozen=True)
@@ -309,7 +310,7 @@ MathML = str
 
 @dataclass
 class Symbol:
-    tokens: List[TokenIndex]
+    tokens: List[Token]
     tex: str
     start: int
     end: int
@@ -376,6 +377,12 @@ class SerializableSymbol(SerializableEntity, SymbolId):
 
     relative_start: int
     relative_end: int
+
+    contains_affix: bool
+    """
+    Whether the symbol contains an affix token (e.g., an arrow or bar) and therefore whether
+    the symbol's position needs to be determined by coloring it in its entirety.
+    """
 
 
 @dataclass(frozen=True)
