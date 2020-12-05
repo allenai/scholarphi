@@ -123,7 +123,7 @@ class TermReference(Term):
     definition_texs: List[str]
     " The original TeX for each definition in 'definitions'. "
 
-    position_ratios: List[str]
+    position_ratios: List[float]
     " A list of the term' position ratios in the paper. "
 
     section_names: List[str]
@@ -143,5 +143,5 @@ class Definiendum(TermReference):
     position_ratio: float
     " The relative ratio of the term in the paper (character ratio of the start of term to the total number of characters). Range is 0 to 1"
 
-    section_name: str
+    section_name: Optional[str]
     " The name of section that defines this term. "
