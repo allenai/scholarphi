@@ -31,6 +31,7 @@ from common.types import (
     Symbol,
     SymbolId,
     SymbolWithId,
+    Token,
     TokenId,
 )
 
@@ -177,7 +178,7 @@ def load_from_csv(
                     ]:
                         is_optional = True
                         type_ = (
-                            bool
+                            bool  # type: ignore
                             if type_ == Optional[bool]
                             else int
                             if type_ == Optional[int]
@@ -324,12 +325,18 @@ def load_tokens(arxiv_id: ArxivId) -> Optional[List[SerializableToken]]:
 
 def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
 
-    data_dir = directories.arxiv_subdir("detected-symbols", arxiv_id)
-    symbols_path = os.path.join(data_dir, "entities.csv")
-    symbol_tokens_path = os.path.join(data_dir, "symbol_tokens.csv")
-    symbol_children_path = os.path.join(data_dir, "symbol_children.csv")
+    tokens_dir = directories.arxiv_subdir("detected-equation-tokens", arxiv_id)
+    tokens_path = os.path.join(tokens_dir, "entities.csv")
+
+    symbols_dir = directories.arxiv_subdir("detected-symbols", arxiv_id)
+    symbols_path = os.path.join(symbols_dir, "entities.csv")
+    symbol_tokens_path = os.path.join(symbols_dir, "symbol_tokens.csv")
+    symbol_children_path = os.path.join(symbols_dir, "symbol_children.csv")
 
     file_not_found = False
+    if not os.path.exists(tokens_path):
+        logging.info("Tokens data missing for paper %s. Skipping.", arxiv_id)
+        file_not_found = True
     if not os.path.exists(symbols_path):
         logging.info("Symbols data missing for paper %s. Skipping.", arxiv_id)
         file_not_found = True
@@ -343,9 +350,17 @@ def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
     if file_not_found:
         return None
 
+    loaded_tokens = load_from_csv(tokens_path, SerializableToken)
     loaded_symbols = load_from_csv(symbols_path, SerializableSymbol)
     loaded_symbol_tokens = load_from_csv(symbol_tokens_path, SerializableSymbolToken)
     loaded_symbol_children = load_from_csv(symbol_children_path, SerializableChild)
+
+    tokens_by_id: Dict[TokenId, Token] = {}
+    for t in loaded_tokens:
+        token_id = TokenId(t.tex_path, t.equation_index, t.start, t.end)
+        tokens_by_id[token_id] = Token(
+            start=t.start, end=t.end, text=t.text, type_=t.type_
+        )
 
     symbols_by_id: Dict[SymbolId, Symbol] = {}
     for s in loaded_symbols:
@@ -364,9 +379,11 @@ def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
             relative_end=s.relative_end,
         )
 
-    for t in loaded_symbol_tokens:
-        symbol_id = SymbolId(t.tex_path, t.equation_index, t.symbol_index)
-        symbols_by_id[symbol_id].tokens.append(t.token_index)
+    for st in loaded_symbol_tokens:
+        symbol_id = SymbolId(st.tex_path, st.equation_index, st.symbol_index)
+        token_id = TokenId(st.tex_path, st.equation_index, st.start, st.end)
+        if token_id in tokens_by_id and symbol_id in symbols_by_id:
+            symbols_by_id[symbol_id].tokens.append(tokens_by_id[token_id])
 
     for c in loaded_symbol_children:
         parent_id = SymbolId(c.tex_path, c.equation_index, c.symbol_index)
@@ -495,8 +512,8 @@ def load_equation_token_locations(
         return None
 
     for record in load_from_csv(token_locations_path, HueLocationInfo):
-        equation_index, token_index = [int(t) for t in record.entity_id.split("-")]
-        token_id = TokenId(record.tex_path, equation_index, token_index)
+        equation_index, start, end = [int(t) for t in record.entity_id.split("-")]
+        token_id = TokenId(record.tex_path, equation_index, start, end)
         box = BoundingBox(
             page=int(record.page),
             left=record.left,
