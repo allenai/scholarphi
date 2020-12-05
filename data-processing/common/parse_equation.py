@@ -465,7 +465,7 @@ def _extract_tokens(element: Tag) -> List[Token]:
     Get the tokens defined in this element. Tokens are characters or spans of text that
     make up symbols. There should be a token returned for each glyph in a symbol that needs
     to be detected separately (e.g., a symbol's base and its subscript are different tokens).
-    
+
     Tokens are only found in low-level elements like "<mi>" and "<mn>". This function will
     not find tokens in higher-level nodes that solely group other low-level elements (like
     "<mrow>" and "<msub>").
