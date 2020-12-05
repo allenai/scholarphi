@@ -16,9 +16,14 @@ def pytest_collection_modifyitems(
     config: Any, items: List[pytest.Item]  # pylint: disable=unused-argument
 ) -> None:
 
-    # If the caller indicated specific tests they want to run with markers or keywords, use
-    # the default behavior for filtering tests.
+    # If the caller indicated specific tests they want to run with markers or keywords, or
+    # paths, use the default behavior for filtering tests.
     if config.option.markexpr or config.option.keyword:
+        return
+
+    if config.option.file_or_dir and any(
+        ["::" in fod for fod in config.option.file_or_dir]
+    ):
         return
 
     # If running all tests, skip slow tests unless the '--all' flag is provided.

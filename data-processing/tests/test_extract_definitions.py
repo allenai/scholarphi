@@ -11,10 +11,7 @@ from scispacy.abbreviation import AbbreviationDetector
 nlp = None
 
 
-pytestmark = pytest.mark.slow
-
-
-@pytest.fixture(scope="module", autouse=True)
+@pytest.fixture(scope="module")
 def setup_model():
     """
     Only set up the model once, as it requires the time-consuming initialization
@@ -25,13 +22,21 @@ def setup_model():
     nlp.add_pipe(abbreviation_pipe)
 
 
-def test_extract_term_definition_pairs_case_1():
+# All tests that require the setup of the model should both:
+# 1. Take 'setup_model' as an argument, and
+# 2. Be marked with 'pytest.mark.slow' so the test is omitted when running typical unit tests.
+@pytest.mark.slow
+def test_extract_term_definition_pairs_case_1(setup_model):
     # Case 1: Definition before the term.
-    text = "The technique of learning the underlying data distribution function given labelled examples is known as Supervised Learning in ML literature."
+    text = (
+        "The technique of learning the underlying data distribution function given labelled "
+        + "examples is known as Supervised Learning in ML literature."
+    )
     gold = [
         (
             "Supervised Learning",
-            "The technique of learning the underlying data distribution function given labelled examples",
+            "The technique of learning the underlying data distribution function given labelled "
+            + "examples",
         )
     ]
 
@@ -202,7 +207,8 @@ def test_extract_term_definition_pairs_case_1():
         ), "Definition Incorrect"
 
 
-def test_extract_term_definition_pairs_case_2():
+@pytest.mark.slow
+def test_extract_term_definition_pairs_case_2(setup_model):
     # Case 2: Definition after the term.
     text = "We evaluate our model on SQuAD, a reading comprehension dataset consisting of questions posed by crowdworkers on a set of Wikipedia articles."
     gold = [
@@ -472,221 +478,99 @@ def test_extract_term_definition_pairs_case_2():
         ), "Definition Incorrect"
 
 
-def test_extract_symbol_nickname_pairs_case_1():
-    # Case 1: Nickname before symbol.
+def test_extract_nicknames_from_before_symbols():
     text = "The agent acts with a policy SYMBOL in each timestep SYMBOL."
-    tex = r"The agent acts with a policy [[FORMULA:\pi]] in each timestep [[FORMULA:t]]"
-    gold = [(r"\pi", "policy"), ("t", "timestep")]
+    symbol_texs = [r"\pi", "t"]
+    tokens, pos = list(
+        zip(
+            *[
+                ("The", "DT"),
+                ("agent", "NN"),
+                ("acts", "VBZ"),
+                ("with", "IN"),
+                ("a", "DT"),
+                ("policy", "NN"),
+                ("SYMBOL", "NN"),
+                ("in", "IN"),
+                ("each", "DT"),
+                ("timestep", "NN"),
+                ("SYMBOL", "NN"),
+                (".", "."),
+            ]
+        )
+    )
 
-    # Hardcode features for the sake of these tests (which are otherwise obtained from the model).
-    features = [
-        {
-            "tokens": [
-                "The",
-                "agent",
-                "acts",
-                "with",
-                "a",
-                "policy",
-                "SYMBOL",
-                "in",
-                "each",
-                "timestep",
-                "SYMBOL",
-                ".",
-            ],
-            "pos": [
-                "DT",
-                "NN",
-                "VBZ",
-                "IN",
-                "DT",
-                "NN",
-                "NN",
-                "IN",
-                "DT",
-                "NN",
-                "NN",
-                ".",
-            ],
-            "head": [
-                "agent",
-                "acts",
-                "acts",
-                "acts",
-                "SYMBOL",
-                "SYMBOL",
-                "with",
-                "acts",
-                "SYMBOL",
-                "SYMBOL",
-                "in",
-                "acts",
-            ],
-            "entity": [0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0],
-            "np": [1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0],
-            "vp": [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "abbreviation": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        }
-    ]
+    symbol_nickname_pairs = get_symbol_nickname_pairs(text, tokens, pos, symbol_texs)
+    assert len(symbol_nickname_pairs) == 2
 
-    symbol_texs = get_symbol_texs(text, tex)
-    symbol_nickname_pairs = get_symbol_nickname_pairs(text, features[0], symbol_texs)
-    assert len(symbol_nickname_pairs) == len(
-        gold
-    ), "Incorrect number of Symbol-Nicknames"
-    for prediction_pair, gold_pair in zip(symbol_nickname_pairs, gold):
-        if symbol_texs is not None and prediction_pair.term_start in symbol_texs:
-            assert (
-                symbol_texs[prediction_pair.term_start] == gold_pair[0]
-            ), "Symbol Incorrect"
-        else:
-            assert (
-                text[prediction_pair.term_start : prediction_pair.term_end]
-                == gold_pair[0]
-            ), "Symbol Incorrect"
-        assert (
-            text[prediction_pair.definition_start : prediction_pair.definition_end]
-            == gold_pair[1]
-        ), "Nickname Incorrect"
+    nickname0 = symbol_nickname_pairs[0]
+    assert nickname0.term_text == r"\pi"
+    assert nickname0.definition_text == "policy"
+
+    nickname1 = symbol_nickname_pairs[1]
+    assert nickname1.term_text == "t"
+    assert nickname1.definition_text == "timestep"
 
 
-def test_extract_symbol_nickname_pairs_case_2():
-    # Case 2: Nickname after symbol.
+def test_extract_nicknames_from_after_symbols():
     text = "The architecture consists of SYMBOL dense layers trained with SYMBOL learning rate."
-    tex = "The architecture consists of [[FORMULA:L_d]] dense layers trained with [[FORMULA:\alpha]] learning rate."
-    gold = [("L_d", "dense layers"), ("\alpha", "learning rate")]
+    tokens, pos = list(
+        zip(
+            *[
+                ("The", "DT"),
+                ("architecture", "NN"),
+                ("consists", "VBZ"),
+                ("of", "IN"),
+                ("SYMBOL", "NN"),
+                ("dense", "JJ"),
+                ("layers", "NNS"),
+                ("trained", "VBN"),
+                ("with", "IN"),
+                ("SYMBOL", "NN"),
+                ("learning", "NN"),
+                ("rate", "NN"),
+                (".", "."),
+            ]
+        )
+    )
+    symbol_texs = ["L_d", r"\alpha"]
 
-    # Hardcode features for the sake of these tests (which are otherwise obtained from the model).
-    features = [
-        {
-            "tokens": [
-                "The",
-                "architecture",
-                "consists",
-                "of",
-                "SYMBOL",
-                "dense",
-                "layers",
-                "trained",
-                "with",
-                "SYMBOL",
-                "learning",
-                "rate",
-                ".",
-            ],
-            "pos": [
-                "DT",
-                "NN",
-                "VBZ",
-                "IN",
-                "NN",
-                "JJ",
-                "NNS",
-                "VBN",
-                "IN",
-                "NN",
-                "NN",
-                "NN",
-                ".",
-            ],
-            "head": [
-                "architecture",
-                "consists",
-                "consists",
-                "consists",
-                "layers",
-                "layers",
-                "of",
-                "layers",
-                "trained",
-                "rate",
-                "rate",
-                "with",
-                "consists",
-            ],
-            "entity": [0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0],
-            "np": [1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0],
-            "vp": [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            "abbreviation": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        }
-    ]
-    symbol_texs = get_symbol_texs(text, tex)
-    symbol_nickname_pairs = get_symbol_nickname_pairs(text, features[0], symbol_texs)
-    assert len(symbol_nickname_pairs) == len(
-        gold
-    ), "Incorrect number of Symbol-Nicknames"
-    for prediction_pair, gold_pair in zip(symbol_nickname_pairs, gold):
-        if symbol_texs is not None and prediction_pair.term_start in symbol_texs:
-            assert (
-                symbol_texs[prediction_pair.term_start] == gold_pair[0]
-            ), "Symbol Incorrect"
-        else:
-            assert (
-                text[prediction_pair.term_start : prediction_pair.term_end]
-                == gold_pair[0]
-            ), "Symbol Incorrect"
-        assert (
-            text[prediction_pair.definition_start : prediction_pair.definition_end]
-            == gold_pair[1]
-        ), "Nickname Incorrect"
+    symbol_nickname_pairs = get_symbol_nickname_pairs(text, tokens, pos, symbol_texs)
+    assert len(symbol_nickname_pairs) == 2
+
+    nickname0 = symbol_nickname_pairs[0]
+    assert nickname0.term_text == "L_d"
+    assert nickname0.definition_text == "dense layers"
+
+    nickname1 = symbol_nickname_pairs[1]
+    assert nickname1.term_text == r"\alpha"
+    assert nickname1.definition_text == "learning rate"
 
 
-def test_extract_symbol_nickname_pairs_case_3():
-    # Case 3: SYMBOL-th pattern.
+def test_extract_nickname_for_th_index_pattern():
     text = "This process repeats for every SYMBOLth timestep."
-    tex = "This process repeats for every [[FORMULA:k]]th timestep."
-    gold = [("k", "timestep")]
+    symbol_texs = ["k"]
+    tokens, pos = list(
+        zip(
+            *[
+                ("This", "DT"),
+                ("process", "NN"),
+                ("repeats", "NNS"),
+                ("for", "IN"),
+                ("every", "DT"),
+                ("SYMBOLth", "JJ"),
+                ("timestep", "NN"),
+                (".", "."),
+            ]
+        )
+    )
 
-    # Hardcode features for the sake of these tests (which are otherwise obtained from the model).
-    features = [
-        {
-            "tokens": [
-                "This",
-                "process",
-                "repeats",
-                "for",
-                "every",
-                "SYMBOLth",
-                "timestep",
-                ".",
-            ],
-            "pos": ["DT", "NN", "NNS", "IN", "DT", "JJ", "NN", "."],
-            "head": [
-                "repeats",
-                "repeats",
-                "repeats",
-                "timestep",
-                "timestep",
-                "timestep",
-                "repeats",
-                "repeats",
-            ],
-            "entity": [0, 1, 1, 0, 0, 1, 1, 0],
-            "np": [1, 1, 1, 0, 0, 0, 0, 0],
-            "vp": [0, 0, 0, 0, 0, 0, 0, 0],
-            "abbreviation": [0, 0, 0, 0, 0, 0, 0, 0],
-        }
-    ]
-    symbol_texs = get_symbol_texs(text, tex)
-    symbol_nickname_pairs = get_symbol_nickname_pairs(text, features[0], symbol_texs)
-    assert len(symbol_nickname_pairs) == len(
-        gold
-    ), "Incorrect number of Symbol-Nicknames"
-    for prediction_pair, gold_pair in zip(symbol_nickname_pairs, gold):
-        if symbol_texs is not None and prediction_pair.term_start in symbol_texs:
-            assert (
-                symbol_texs[prediction_pair.term_start] == gold_pair[0]
-            ), "Symbol Incorrect"
-        else:
-            assert (
-                text[prediction_pair.term_start : prediction_pair.term_end]
-                == gold_pair[0]
-            ), "Symbol Incorrect"
-        assert (
-            text[prediction_pair.definition_start : prediction_pair.definition_end]
-            == gold_pair[1]
-        ), "Nickname Incorrect"
+    symbol_nickname_pairs = get_symbol_nickname_pairs(text, tokens, pos, symbol_texs)
+    assert len(symbol_nickname_pairs) == 1
+
+    nickname0 = symbol_nickname_pairs[0]
+    assert nickname0.term_text == "k"
+    assert nickname0.definition_text == "timestep"
 
 
 def test_extract_abbreviation_expansion_pairs_case_1():
@@ -833,7 +717,8 @@ def test_extract_abbreviation_expansion_pairs_case_1():
         ), "Expansion Incorrect"
 
 
-def test_extract_abbreviation_expansion_pairs_case_2():
+@pytest.mark.slow
+def test_extract_abbreviation_expansion_pairs_case_2(setup_model):
     # Case 2 : Abbreviation contains multiple lowercase letters.
     text = "We propose a new class of architectures called Conductive Networks (CondNets) in this paper."
     gold = [("CondNets", "Conductive Networks")]
