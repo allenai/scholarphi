@@ -2,7 +2,7 @@ import colorsys
 import logging
 import os
 from dataclasses import dataclass
-from typing import Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Tuple
+from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple
 
 import numpy as np
 
@@ -243,8 +243,6 @@ def colorize_entities(
 
     insert_color_macros = options.insert_color_macros
     preset_hue = options.preset_hue
-    when = options.when
-    preset_hue = options.preset_hue
     adjust_color_positions = options.adjust_color_positions
     braces = options.braces
 
@@ -269,10 +267,6 @@ def colorize_entities(
 
     colorized_tex = tex
     for e in entities_reverse_order:
-
-        # Decide whether or not to color this entity
-        if when is not None and not when(e):
-            continue
 
         # Get a hue to color this entity
         if preset_hue is not None:
