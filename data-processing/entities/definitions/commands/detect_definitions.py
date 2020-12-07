@@ -69,6 +69,45 @@ def get_token_character_ranges(text: str, tokens: List[str]) -> List[CharacterRa
     return ranges
 
 
+StringOffset = int
+
+
+def get_symbol_texs(
+    sentence_with_symbol_tags: str, sentence_with_formula_contents: str
+) -> Optional[Dict[StringOffset, str]]:
+    """
+    Get a map from the character offsets of the word 'SYMBOL' in the first input string
+    to the TeX for that symbol, found from the second input string.  Example:
+
+    Input: get_symbol_texs("Add SYMBOL to SYMBOL.", "Add [[FORMULA:x]] to [[FORMULA:y]]")
+    Output: { 4: "x", 14: "y" }
+
+    Returns None if there was an error establishing a mapping, for instance if there are
+    a different number of 'SYMBOL' and 'FORMULA' tags between the two versions of the sentence.
+    """
+    symbol_starts = [
+        match.start() for match in re.finditer(r"SYMBOL", sentence_with_symbol_tags)
+    ]
+    symbol_texs = [
+        match.group(1)
+        for match in re.finditer(
+            r"\[\[FORMULA:(.*?)\]\]", sentence_with_formula_contents
+        )
+    ]
+
+    if len(symbol_starts) != len(symbol_texs):
+        logging.warning(  # pylint: disable=logging-not-lazy
+            "The two representations of a sentence %s and %s were detected as having differing "
+            + "numbers of symbols. A lookup table for symbol TeX cannot be built. The TeX for "
+            + "symbols in these equations may not be correct in the output.",
+            sentence_with_symbol_tags,
+            sentence_with_formula_contents,
+        )
+        return None
+
+    return dict(zip(symbol_starts, symbol_texs))
+
+
 def consolidate_term_definitions(
     text: str,
     tokens: List[str],
@@ -335,7 +374,7 @@ class SymbolNickname(NamedTuple):
 
 
 def get_symbol_nickname_pairs(
-    text: str, tokens: List[str], pos: List[str], symbol_texs: List[str]
+    text: str, tokens: List[str], pos: List[str], symbol_texs: Dict[StringOffset, str]
 ) -> List[TermDefinitionPair]:
     # Check whether a symbol's definition is a nickname of the symbol or not
     # using heuristic rules below, although they are not perfect for some cases.
@@ -361,10 +400,10 @@ def get_symbol_nickname_pairs(
             #   b. If symbol tex is not present, just check LEFT.
             if token == "SYMBOLth":
                 nickname = search_symbol_nickname(token_index, pos, ranges, "RIGHT")
-                if nickname is not None:
+                if nickname is not None and range_.start in symbol_texs:
                     symbol_nickname_pairs.append(
                         SymbolNickname(
-                            symbol_texs[symbol_index],
+                            symbol_texs[range_.start],
                             token_index,
                             range_,
                             nickname.token_indexes,
@@ -390,10 +429,10 @@ def get_symbol_nickname_pairs(
                     nickname = search_symbol_nickname(
                         token_index, pos, ranges, direction
                     )
-                    if nickname is not None:
+                    if nickname is not None and range_.start in symbol_texs:
                         symbol_nickname_pairs.append(
                             SymbolNickname(
-                                symbol_texs[symbol_index],
+                                symbol_texs[range_.start],
                                 token_index,
                                 range_,
                                 nickname.token_indexes,
@@ -431,44 +470,6 @@ def get_symbol_nickname_pairs(
             pairs.append(pair)
 
     return pairs
-
-
-StringOffset = int
-
-
-def get_symbol_texs(
-    sentence_with_symbol_tags: str, sentence_with_formula_contents: str
-) -> Optional[Dict[StringOffset, str]]:
-    """
-    Get a map from the character offsets of the word 'SYMBOL' in the first input string
-    to the TeX for that symbol, found from the second input string.  Example:
-
-    Input: get_symbol_texs("Add SYMBOL to SYMBOL.", "Add [[FORMULA:x]] to [[FORMULA:y]]")
-    Output: { 4: "x", 14: "y" }
-
-    Returns None if there was an error establishing a mapping, for instance if there are
-    a different number of 'SYMBOL' and 'FORMULA' tags between the two versions of the sentence.
-    """
-    symbol_starts = [
-        match.start() for match in re.finditer(r"SYMBOL", sentence_with_symbol_tags)
-    ]
-    symbol_texs = [
-        match.group(1)
-        for match in re.finditer(
-            r"\[\[FORMULA:(.*?)\]\]", sentence_with_formula_contents
-        )
-    ]
-
-    if len(symbol_starts) != len(symbol_texs):
-        logging.warning(  # pylint: disable=logging-not-lazy
-            "The two representations of a sentence %s and %s were detected as having differing "
-            + "numbers of symbols. A lookup table for symbol TeX cannot be built. The TeX for "
-            + "symbols in these equations may not be correct in the output.",
-            sentence_with_symbol_tags,
-            sentence_with_formula_contents,
-        )
-
-    return dict(zip(symbol_starts, symbol_texs))
 
 
 class DetectDefinitions(
@@ -624,13 +625,15 @@ class DetectDefinitions(
                         symbol_texs = get_symbol_texs(
                             s.legacy_definition_input, s.with_equation_tex
                         )
-
-                        symbol_nickname_pairs = get_symbol_nickname_pairs(
-                            s.legacy_definition_input,
-                            sentence_features["tokens"],
-                            sentence_features["pos"],
-                            symbol_texs,
-                        )
+                        if symbol_texs is None:
+                            symbol_nickname_pairs = []
+                        else:
+                            symbol_nickname_pairs = get_symbol_nickname_pairs(
+                                s.legacy_definition_input,
+                                sentence_features["tokens"],
+                                sentence_features["pos"],
+                                symbol_texs,
+                            )
 
                         abbreviation_pairs = get_abbreviations(
                             s.legacy_definition_input,
@@ -644,7 +647,7 @@ class DetectDefinitions(
                         else:
                             term_definition_pairs = consolidate_term_definitions(
                                 s.legacy_definition_input,
-                                sentence_features,
+                                sentence_features["tokens"],
                                 sentence_slots,
                                 sentence_slots_confidence,
                             )
