@@ -62,6 +62,7 @@ class EmbellishSentences(ArxivBatchCommand[Task, EmbellishedSentence]):
                     + "possible to expand equations in sentences with symbol data. This should only "
                     + "be a problem if it's expected that there are no symbols in paper %s.",
                     arxiv_id,
+                    arxiv_id,
                 )
 
             # Load symbols, for use in embellishing equations.
@@ -75,6 +76,7 @@ class EmbellishSentences(ArxivBatchCommand[Task, EmbellishedSentence]):
                     "No symbol data found for arXiv ID %s. It will not be "
                     + "possible to expand equations in sentences with symbol data. This should only "
                     + "be a problem if it's expected that there are no symbols in paper %s.",
+                    arxiv_id,
                     arxiv_id,
                 )
 
