@@ -53,7 +53,7 @@ def test_extract_term_definition_pairs_case_1():
 
 def test_extract_nicknames_from_before_symbols():
     text = "The agent acts with a policy SYMBOL in each timestep SYMBOL."
-    symbol_texs = [r"\pi", "t"]
+    symbol_texs = {29: r"\pi", 53: "t"}
     tokens, pos = list(
         zip(
             *[
@@ -87,6 +87,7 @@ def test_extract_nicknames_from_before_symbols():
 
 def test_extract_nicknames_from_after_symbols():
     text = "The architecture consists of SYMBOL dense layers trained with SYMBOL learning rate."
+    symbol_texs = {29: "L_d", 62: r"\alpha"}
     tokens, pos = list(
         zip(
             *[
@@ -106,7 +107,6 @@ def test_extract_nicknames_from_after_symbols():
             ]
         )
     )
-    symbol_texs = ["L_d", r"\alpha"]
 
     symbol_nickname_pairs = get_symbol_nickname_pairs(text, tokens, pos, symbol_texs)
     assert len(symbol_nickname_pairs) == 2
@@ -122,7 +122,7 @@ def test_extract_nicknames_from_after_symbols():
 
 def test_extract_nickname_for_th_index_pattern():
     text = "This process repeats for every SYMBOLth timestep."
-    symbol_texs = ["k"]
+    symbol_texs = {31: "k"}
     tokens, pos = list(
         zip(
             *[
@@ -146,6 +146,7 @@ def test_extract_nickname_for_th_index_pattern():
     assert nickname0.definition_text == "timestep"
 
 
+@pytest.mark.slow
 def test_extract_abbreviation_acronym(model):
     text = "We use a Convolutional Neural Network (CNN) based architecture."
     tokens = [
