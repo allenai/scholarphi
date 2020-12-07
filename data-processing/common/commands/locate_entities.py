@@ -106,7 +106,12 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
         """
 
     def get_arxiv_ids_dirkey(self) -> str:
-        return f"detected-{self.get_entity_name()}"
+        return self.get_input_dirkey()
+
+    @staticmethod
+    @abstractmethod
+    def get_input_dirkey() -> str:
+        " Get the key for the directory that contains data about entities to be localized. "
 
     @staticmethod
     def get_detected_entity_type() -> Type[SerializableEntity]:
@@ -144,7 +149,6 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
 
     def load(self) -> Iterator[LocationTask]:
 
-        entity_name = self.get_entity_name()
         for arxiv_id in self.arxiv_ids:
             for output_base_dir in self.output_base_dirs.values():
                 file_utils.clean_directory(
@@ -156,7 +160,7 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
             # In that case, the colorizer colorizes all entities from all of these files.
             # Earlier entity extractor commands should include enough information in the entity IDs
             # so that the type of entities can be inferred from the entity ID in later commands.
-            entities_dir = directories.arxiv_subdir(f"detected-{entity_name}", arxiv_id)
+            entities_dir = directories.arxiv_subdir(self.get_input_dirkey(), arxiv_id)
             entities: List[SerializableEntity] = []
             for entities_path in glob.glob(os.path.join(entities_dir, "entities*.csv")):
                 entities.extend(
@@ -175,13 +179,17 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                 file_contents = file_utils.read_file_tolerant(
                     os.path.join(normalized_sources_path, tex_file.path)
                 )
+                options = self.get_colorize_options()
                 entities_for_tex_path = [
                     e
                     for e in entities
                     if e.tex_path == tex_file.path or e.tex_path == "N/A"
                 ]
+                if options.when is not None:
+                    entities_for_tex_path = list(
+                        filter(options.when, entities_for_tex_path)
+                    )
                 if file_contents is not None:
-                    options = self.get_colorize_options()
                     group_func = options.group or (lambda entities: [entities])
                     for group_index, entity_group in enumerate(
                         group_func(entities_for_tex_path)
@@ -375,6 +383,9 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
             raster_output_dir = directories.iteration(
                 self.output_base_dirs["paper-images"], item.arxiv_id, iteration_id
             )
+            diffs_output_dir = directories.iteration(
+                self.output_base_dirs["diffed-images"], item.arxiv_id, iteration_id
+            )
             for output_file in output_files:
                 raster_success = raster_pages(
                     compiled_tex_dir,
@@ -394,9 +405,6 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                     )
                     continue
 
-                diffs_output_dir = directories.iteration(
-                    self.output_base_dirs["diffed-images"], item.arxiv_id, iteration_id
-                )
                 diff_success = diff_images_in_raster_dirs(
                     output_files, raster_output_dir, diffs_output_dir, item.arxiv_id,
                 )
@@ -664,6 +672,7 @@ def save_colorized_tex(
 
 def make_locate_entities_command(
     entity_name: str,
+    input_entity_name: Optional[str] = None,
     DetectedEntityType: Optional[Type[SerializableEntity]] = None,
     colorize_options: ColorizeOptions = ColorizeOptions(),
     colorize_func: Optional[ColorizeFunc] = None,
@@ -672,6 +681,11 @@ def make_locate_entities_command(
     """
     Create a command for locating the bounding boxes for entities. Help the command cast
     the entities loaded into the right data type by providing a 'DetectedEntityType'.
+
+    In order to know what entities to locate, the command will first try to read data from a
+    data directory called '{##}-detected-{input_entity_name}' if the 'input_entity_name' command
+    is defined. Otherwise, it will read from '{##}-detected-{entity_name}'.
+
     Colorization of entities can be customized, either by providing a unique 'colorize_func',
     or by providing a set of 'colorize_options'. Specify 'sanity_check_images' to force
     visual validation of image differences. Bounding boxes will be omitted for entities
@@ -690,6 +704,10 @@ def make_locate_entities_command(
         @staticmethod
         def get_entity_name() -> str:
             return entity_name
+
+        @staticmethod
+        def get_input_dirkey() -> str:
+            return f"detected-{input_entity_name or entity_name}"
 
         @staticmethod
         def get_detected_entity_type() -> Type[SerializableEntity]:
