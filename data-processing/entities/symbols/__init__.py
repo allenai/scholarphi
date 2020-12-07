@@ -1,8 +1,7 @@
-from typing import Any, cast
+from typing import Any, List, cast
 
 from common import directories
-from common.colorize_tex import ColorizeOptions
-from common.commands.base import CommandList
+from common.colorize_tex import ColorizeOptions, overlaps
 from common.commands.locate_entities import make_locate_entities_command
 from common.make_digest import make_default_paper_digest
 from common.types import (
@@ -32,16 +31,55 @@ directories.register("paper-images-with-colorized-equation-tokens")
 directories.register("diffed-images-with-colorized-equation-tokens")
 directories.register("equation-tokens-locations")
 directories.register("symbol-locations")
+directories.register("sources-with-colorized-symbols-with-affixes")
+directories.register("compiled-sources-with-colorized-symbols-with-affixes")
+directories.register("paper-images-with-colorized-symbols-with-affixes")
+directories.register("diffed-images-with-colorized-symbols-with-affixes")
+directories.register("symbols-with-affixes-locations")
 
 
 def filter_atom_tokens(entity: SerializableEntity) -> bool:
     """
-    Don't localize non-atom tokes (i.e., affixes like arrows and hats) using the typical
-    localization process, because they cannot be colorized by wrapping them in colorization
-    commands (that causes syntax errors).
+    When locating tokens for equations, only detect atom tokens (i.e., skipping affix tokens like
+    arrows and hats), because affixes be colorized by wrapping them in colorization commands.
     """
     token = cast(SerializableToken, entity)
     return token.type_ == "atom"
+
+
+def filter_symbols_with_affixes(entity: SerializableEntity) -> bool:
+    """
+    Detect symbols that contain affixes differently from those that only contain atomic tokens.
+    """
+    symbol = cast(SerializableSymbol, entity)
+    return symbol.contains_affix
+
+
+def divide_symbols_into_nonoverlapping_groups(
+    entities: List[SerializableEntity],
+) -> List[List[SerializableEntity]]:
+    """
+    Symbols containing affixes need to be colored on their own, though they can overlap (e.g., a
+    bar can appear above a symbol that is a subscript to another symbol). To avoid compliation
+    issues, all overlapping entities are colorized in separate batches.
+    """
+
+    symbols = cast(List[SerializableSymbol], entities)
+    groups: List[List[SerializableSymbol]] = [[]]
+
+    for symbol in symbols:
+
+        group_assigned = False
+        for group in groups:
+            if not any([overlaps(symbol, other) for other in group]):
+                group.append(symbol)
+                group_assigned = True
+                break
+
+        if not group_assigned:
+            groups.append([symbol])
+
+    return cast(List[List[SerializableEntity]], groups)
 
 
 def entity_key_for_contexts(entity: SerializableEntity) -> Any:
@@ -71,6 +109,17 @@ commands = [
             adjust_color_positions=adjust_color_positions,
             braces=True,
             when=filter_atom_tokens,
+        ),
+    ),
+    make_locate_entities_command(
+        "symbols-with-affixes",
+        input_entity_name="symbols",
+        DetectedEntityType=SerializableSymbol,
+        colorize_options=ColorizeOptions(
+            adjust_color_positions=adjust_color_positions,
+            braces=True,
+            when=filter_symbols_with_affixes,
+            group=divide_symbols_into_nonoverlapping_groups,
         ),
     ),
     LocateCompositeSymbols,
