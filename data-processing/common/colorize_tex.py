@@ -2,7 +2,7 @@ import colorsys
 import logging
 import os
 from dataclasses import dataclass
-from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple
+from typing import Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Tuple
 
 import numpy as np
 
@@ -167,6 +167,7 @@ def _get_color_end_tex(entity_id: str) -> str:
 
 
 ColorWhenFunc = Callable[[SerializableEntity], bool]
+GroupEntitiesFunc = Callable[[List[SerializableEntity]], List[List[SerializableEntity]]]
 ColorPositionsFunc = Callable[[SerializableEntity], CharacterRange]
 
 
@@ -188,6 +189,13 @@ class ColorizeOptions:
 
     when: Optional[ColorWhenFunc] = None
     " Filter that decides whether to color a particular entity. "
+
+    group: Optional[GroupEntitiesFunc] = None
+    """
+    Callback to split entities in groups that will be colorized independently. Define this,
+    for instance, to ensure that overlapping entities (e.g., symbols and their subsymbols)
+    aren't colorized in the same batch.
+    """
 
     adjust_color_positions: Optional[ColorPositionsFunc] = None
     """

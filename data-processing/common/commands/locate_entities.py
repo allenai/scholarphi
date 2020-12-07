@@ -37,6 +37,7 @@ class LocationTask:
     tex_path: RelativePath
     file_contents: FileContents
     entities: List[SerializableEntity]
+    group: int
 
 
 ColorizeFunc = Callable[[str, List[SerializableEntity], ColorizeOptions], ColorizedTex]
@@ -180,9 +181,18 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                     if e.tex_path == tex_file.path or e.tex_path == "N/A"
                 ]
                 if file_contents is not None:
-                    yield LocationTask(
-                        arxiv_id, tex_file.path, file_contents, entities_for_tex_path
-                    )
+                    options = self.get_colorize_options()
+                    group_func = options.group or (lambda entities: [entities])
+                    for group_index, entity_group in enumerate(
+                        group_func(entities_for_tex_path)
+                    ):
+                        yield LocationTask(
+                            arxiv_id,
+                            tex_file.path,
+                            file_contents,
+                            entity_group,
+                            group_index,
+                        )
 
     def process(self, item: LocationTask) -> Iterator[HueLocationInfo]:
 
@@ -223,12 +233,15 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
             # Fetch the next batch of entities to process.
             batch_index += 1
             logging.debug(
-                "Locating bounding boxes for batch %d of entities of type %s for paper %s.",
+                "Locating bounding boxes for batch %d-%d of entities of type %s for paper %s.",
+                item.group,
                 batch_index,
                 self.get_entity_name(),
                 item.arxiv_id,
             )
-            iteration_id = directories.tex_iteration(item.tex_path, str(batch_index))
+            iteration_id = directories.tex_iteration(
+                item.tex_path, f"{item.group}-{batch_index}"
+            )
             batch = next_batch()
             entities: List[SerializableEntity] = [entities_by_id[id_] for id_ in batch]
 
@@ -240,10 +253,11 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                 )
                 if len(colorized_tex.entity_hues) == 0:
                     logging.info(  # pylint: disable=logging-not-lazy
-                        "Custom colorization function colored nothing for entity batch %d of "
+                        "Custom colorization function colored nothing for entity batch %d-%d of "
                         + "paper %s when coloring file %s. The function probably decide there was "
                         + "nothing to do for this file, and will hopefullly colorize these "
                         + "entities in another file. Skipping this batch for this file.",
+                        item.group,
                         batch_index,
                         item.arxiv_id,
                         item.file_contents.path,
@@ -258,9 +272,10 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
             # overlapped with each other, add them back to the work queue.
             if colorized_tex.skipped is not None and len(colorized_tex.skipped) > 0:
                 logging.info(  # pylint: disable=logging-not-lazy
-                    "Entities %s were skipped during colorization batch %d for paper "
+                    "Entities %s were skipped during colorization batch %d-%d for paper "
                     + "%s. They will be processed in a later batch.",
                     [e.id_ for e in colorized_tex.skipped],
+                    item.group,
                     batch_index,
                     item.arxiv_id,
                 )
@@ -441,11 +456,12 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                     if len(batch) > 1:
                         logging.info(  # pylint: disable=logging-not-lazy
                             "Entity %s has been marked as being the potential cause of shifting in "
-                            + "the colorized document for paper %s batch %d. It will be processed "
+                            + "the colorized document for paper %s batch %d-%d. It will be processed "
                             + "later on its own. The other shifted entities in %s will be queued to "
                             + "process as a group in an upcoming batch.",
                             first_shifted_entity_id,
                             item.arxiv_id,
+                            item.group,
                             batch_index,
                             location_result.shifted_entities,
                         )
@@ -488,9 +504,10 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                 else:
                     logging.warning(  # pylint: disable=logging-not-lazy
                         "Could not find a single entity that was likely responsible for shifting in "
-                        + "the colorized version of paper %s batch %d. All entities in batch %s will "
+                        + "the colorized version of paper %s batch %d-%d. All entities in batch %s will "
                         + "be processed on their own.",
                         item.arxiv_id,
+                        item.group,
                         batch_index,
                         batch,
                     )
