@@ -9,6 +9,7 @@ import dataclasses
 import json
 import logging
 import os
+import re
 import shutil
 from typing import Any, Dict, Iterator, List, Optional, Type, TypeVar
 
@@ -203,8 +204,9 @@ def load_from_csv(
                     # Handle other primitive values.
                     elif type_ in [int, float, str]:
                         data[field.name] = type_(row[field.name])
-                    # XXX(andrewhead): It's not guaranteed that type-checks like this one will work
-                    # as the 'typing' library evolves. At the time of writing, it looked like calls
+                    # XXX(andrewhead): It's not guaranteed that type-checks like the following will work
+                    # as the 'typing' library evolves.
+                    # 1. Lists: At the time of writing, it looked like calls
                     # to the '__eq__' method of classes that extend GenericMeta (like List, Tuple)
                     # should work (i.e., comparing a type with '=='). See:
                     # https://github.com/python/typing/blob/c85016137eab6d0784b76252460235638087f468/src/typing.py#L1093-L1098
@@ -214,6 +216,12 @@ def load_from_csv(
                     # type for types of interest (like StrList) and compare the ID of the newly defined type.
                     elif field.type == List[str]:
                         data[field.name] = ast.literal_eval(row[field.name])
+                    # 2. String literals. This check is based on the '__repr__' string representation of
+                    # the literal, and checks that all options for the literal are strings. Based
+                    # on the unit tests for the Literal type at:
+                    # https://github.com/python/typing/blob/a522554e2551b2d1ad46d287b428b2e3856d4c70/python2/test_typing.py#L1952-L1953
+                    elif re.match(r".*Literal\[('[^']*')(, '[^']*')*\]", repr(type_)):
+                        data[field.name] = str(row[field.name])
                     else:
                         logging.warning(  # pylint: disable=logging-not-lazy
                             "Could not decode data for field %s of type %s . "
@@ -357,9 +365,11 @@ def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
 
     tokens_by_id: Dict[TokenId, Token] = {}
     for t in loaded_tokens:
-        token_id = TokenId(t.tex_path, t.equation_index, t.start, t.end)
+        token_id = TokenId(
+            t.tex_path, t.equation_index, t.relative_start, t.relative_end
+        )
         tokens_by_id[token_id] = Token(
-            start=t.start, end=t.end, text=t.text, type_=t.type_
+            start=t.relative_start, end=t.relative_end, text=t.text, type_=t.type_
         )
 
     symbols_by_id: Dict[SymbolId, Symbol] = {}
@@ -377,6 +387,7 @@ def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
             equation=s.equation,
             relative_start=s.relative_start,
             relative_end=s.relative_end,
+            contains_affix=s.contains_affix,
         )
 
     for st in loaded_symbol_tokens:

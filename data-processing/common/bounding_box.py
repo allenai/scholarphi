@@ -238,8 +238,10 @@ def get_symbol_bounding_box(
     symbol: Symbol, symbol_id: SymbolId, token_boxes: TokenLocations
 ) -> Optional[BoundingBox]:
     boxes = []
-    for token_index in symbol.tokens:
-        token_id = TokenId(symbol_id.tex_path, symbol_id.equation_index, token_index)
+    for token in symbol.tokens:
+        token_id = TokenId(
+            symbol_id.tex_path, symbol_id.equation_index, token.start, token.end
+        )
         boxes.extend(token_boxes.get(token_id, []))
 
     if len(boxes) == 0:
