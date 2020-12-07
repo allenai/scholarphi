@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, NamedTuple, Optional, Set, Union
+from typing import Callable, Dict, List, NamedTuple, Optional, Set, Union
 
 from typing_extensions import Literal
 
@@ -290,7 +290,7 @@ class TokenId:
 
 
 @dataclass(frozen=True)
-class Token(Entity):
+class Token:
     text: str
     " Unicode (not TeX) representation of this token, computed by parsing the equation with KaTeX. "
 
@@ -304,6 +304,11 @@ class Token(Entity):
     https://tex.stackexchange.com/a/46704/198728).
     """
 
+    start: int
+    " 'start' and 'end' are measured relative to the start of the equation."
+
+    end: int
+
 
 MathML = str
 
@@ -315,15 +320,14 @@ class Symbol:
     start: int
     end: int
     mathml: MathML
-    children: List[
-        Any
-    ]  # Intended to be List[Symbol] (recursive types not supported by mypy)
-    parent: Optional[Any]  # Intended to be Optional[Symbol]
+    children: List["Symbol"]
     """
     List of child symbols. Should be of type 'Symbol'. 'children' is a bit of misnomer. These is
     actually a list of all other symbols for which this is the closest ancestor.
     """
 
+    parent: Optional["Symbol"]
+    contains_affix: bool
     is_definition: bool = False
     equation: Optional[str] = None
     relative_start: Optional[int] = None

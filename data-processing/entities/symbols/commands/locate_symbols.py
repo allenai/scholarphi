@@ -1,5 +1,6 @@
 import os.path
-from typing import Iterator, NamedTuple
+from dataclasses import dataclass
+from typing import Iterator
 
 from common import directories, file_utils
 from common.bounding_box import get_symbol_bounding_box
@@ -13,13 +14,14 @@ from common.types import (
 )
 
 
-class LocationTask(NamedTuple):
+@dataclass(frozen=True)
+class LocationTask:
     arxiv_id: ArxivId
     token_locations: TokenLocations
     symbol_with_id: SymbolWithId
 
 
-class LocateSymbols(ArxivBatchCommand[LocationTask, BoundingBox]):
+class LocateCompositeSymbols(ArxivBatchCommand[LocationTask, BoundingBox]):
     @staticmethod
     def get_name() -> str:
         return "locate-symbols"
@@ -27,7 +29,7 @@ class LocateSymbols(ArxivBatchCommand[LocationTask, BoundingBox]):
     @staticmethod
     def get_description() -> str:
         return (
-            "Find locations of symbols based on locations of equation tokens. "
+            "Find locations symbols that are composed entirely of atomic tokens. "
             + "Requires 'locate-equation-token-hues' to have been run."
         )
 
@@ -50,11 +52,15 @@ class LocateSymbols(ArxivBatchCommand[LocationTask, BoundingBox]):
                 continue
 
             for symbol_with_id in symbols_with_ids:
-                yield LocationTask(
-                    arxiv_id=arxiv_id,
-                    token_locations=token_locations,
-                    symbol_with_id=symbol_with_id,
-                )
+                # Symbols with affixes (e.g., arrows, hats) cannot be localized by taking the union
+                # of their tokens' bounding boxes, because the bounding boxes of affix tokens
+                # cannot be detected on their own.
+                if not symbol_with_id.symbol.contains_affix:
+                    yield LocationTask(
+                        arxiv_id=arxiv_id,
+                        token_locations=token_locations,
+                        symbol_with_id=symbol_with_id,
+                    )
 
     def process(self, item: LocationTask) -> Iterator[BoundingBox]:
         symbol = item.symbol_with_id.symbol

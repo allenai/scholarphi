@@ -19,7 +19,7 @@ from scripts.pipelines import EntityPipeline, register_entity_pipeline
 from .colorize import adjust_color_positions
 from .commands.extract_symbols import ExtractSymbols
 from .commands.find_symbol_matches import FindSymbolMatches
-from .commands.locate_symbols import LocateSymbols
+from .commands.locate_symbols import LocateCompositeSymbols
 from .commands.upload_symbols import UploadSymbols
 
 directories.register("detected-equation-tokens")
@@ -32,6 +32,16 @@ directories.register("paper-images-with-colorized-equation-tokens")
 directories.register("diffed-images-with-colorized-equation-tokens")
 directories.register("equation-tokens-locations")
 directories.register("symbol-locations")
+
+
+def filter_atom_tokens(entity: SerializableEntity) -> bool:
+    """
+    Don't localize non-atom tokes (i.e., affixes like arrows and hats) using the typical
+    localization process, because they cannot be colorized by wrapping them in colorization
+    commands (that causes syntax errors).
+    """
+    token = cast(SerializableToken, entity)
+    return token.type_ == "atom"
 
 
 def entity_key_for_contexts(entity: SerializableEntity) -> Any:
@@ -58,10 +68,12 @@ commands = [
         "equation-tokens",
         DetectedEntityType=SerializableToken,
         colorize_options=ColorizeOptions(
-            adjust_color_positions=adjust_color_positions, braces=True
+            adjust_color_positions=adjust_color_positions,
+            braces=True,
+            when=filter_atom_tokens,
         ),
     ),
-    LocateSymbols,
+    LocateCompositeSymbols,
     UploadSymbols,
 ]
 
