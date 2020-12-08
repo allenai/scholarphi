@@ -8,8 +8,8 @@ from common import directories, file_utils
 from common.commands.database import DatabaseUploadCommand
 from common.types import (
     EntityAndLocation,
+    EntityLocationInfo,
     EntityUploadCallable,
-    HueLocationInfo,
     PaperProcessingResult,
     SerializableEntity,
 )
@@ -81,8 +81,8 @@ class UploadEntitiesCommand(DatabaseUploadCommand[PaperProcessingResult, None]):
                 )
                 continue
 
-            hue_location_infos = list(
-                file_utils.load_from_csv(hue_locations_path, HueLocationInfo)
+            entity_location_infos = list(
+                file_utils.load_from_csv(hue_locations_path, EntityLocationInfo)
             )
 
             # Group each entity with its location. Pass the entity information, and the detected
@@ -90,7 +90,7 @@ class UploadEntitiesCommand(DatabaseUploadCommand[PaperProcessingResult, None]):
             localized_enitites = []
             for entity in entities:
                 matching_locations = []
-                for h in hue_location_infos:
+                for h in entity_location_infos:
                     if h.entity_id == entity.id_ and h.tex_path == entity.tex_path:
                         matching_locations.append(h)
 

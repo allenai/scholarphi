@@ -8,7 +8,7 @@ from common.commands.base import ArxivBatchCommand
 from common.types import (
     ArxivId,
     BoundingBox,
-    SymbolLocation,
+    EntityLocationInfo,
     SymbolWithId,
     TokenLocations,
 )
@@ -24,13 +24,14 @@ class LocationTask:
 class LocateCompositeSymbols(ArxivBatchCommand[LocationTask, BoundingBox]):
     @staticmethod
     def get_name() -> str:
-        return "locate-symbols"
+        return "locate-composite-symbols"
 
     @staticmethod
     def get_description() -> str:
         return (
-            "Find locations symbols that are composed entirely of atomic tokens. "
-            + "Requires 'locate-equation-token-hues' to have been run."
+            "Find locations symbols that are composed entirely of atomic tokens (i.e., which do "
+            + "not contain accents like hats or bars. Requires 'locate-equation-token-hues' to "
+            + "have been run."
         )
 
     def get_arxiv_ids_dirkey(self) -> str:
@@ -40,7 +41,9 @@ class LocateCompositeSymbols(ArxivBatchCommand[LocationTask, BoundingBox]):
 
         for arxiv_id in self.arxiv_ids:
 
-            output_dir = directories.arxiv_subdir("symbol-locations", arxiv_id)
+            output_dir = directories.arxiv_subdir(
+                "composite-symbols-locations", arxiv_id
+            )
             file_utils.clean_directory(output_dir)
 
             token_locations = file_utils.load_equation_token_locations(arxiv_id)
@@ -70,7 +73,9 @@ class LocateCompositeSymbols(ArxivBatchCommand[LocationTask, BoundingBox]):
             yield box
 
     def save(self, item: LocationTask, result: BoundingBox) -> None:
-        output_dir = directories.arxiv_subdir("symbol-locations", item.arxiv_id)
+        output_dir = directories.arxiv_subdir(
+            "composite-symbols-locations", item.arxiv_id
+        )
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
@@ -78,10 +83,9 @@ class LocateCompositeSymbols(ArxivBatchCommand[LocationTask, BoundingBox]):
         symbol_id = item.symbol_with_id.symbol_id
         file_utils.append_to_csv(
             locations_path,
-            SymbolLocation(
+            EntityLocationInfo(
                 tex_path=symbol_id.tex_path,
-                equation_index=symbol_id.equation_index,
-                symbol_index=symbol_id.symbol_index,
+                entity_id=f"{symbol_id.equation_index}-{symbol_id.symbol_index}",
                 page=result.page,
                 left=result.left,
                 top=result.top,
