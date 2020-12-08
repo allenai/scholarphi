@@ -100,6 +100,9 @@ def upload_entities(
                     of_list = False
                     values.append(value)
 
+                if len(values) == 0:
+                    continue
+
                 value_types = {type(v) for v in values}
                 if not len(value_types) == 1:
                     logging.warning(  # pylint: disable=logging-not-lazy

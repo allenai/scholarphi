@@ -3,6 +3,7 @@ from typing import Any, List, cast
 from common import directories
 from common.colorize_tex import ColorizeOptions, overlaps
 from common.commands.locate_entities import make_locate_entities_command
+from common.commands.upload_entities import make_upload_entities_command
 from common.make_digest import make_default_paper_digest
 from common.types import (
     ArxivId,
@@ -16,10 +17,11 @@ from entities.sentences.types import TexWrapper
 from scripts.pipelines import EntityPipeline, register_entity_pipeline
 
 from .colorize import adjust_color_positions
+from .commands.collect_symbol_locations import CollectSymbolLocations
 from .commands.extract_symbols import ExtractSymbols
 from .commands.find_symbol_matches import FindSymbolMatches
-from .commands.locate_symbols import LocateCompositeSymbols
-from .commands.upload_symbols import UploadSymbols
+from .commands.locate_composite_symbols import LocateCompositeSymbols
+from .upload import upload_symbols
 
 directories.register("detected-equation-tokens")
 directories.register("detected-symbols")
@@ -30,12 +32,13 @@ directories.register("compiled-sources-with-colorized-equation-tokens")
 directories.register("paper-images-with-colorized-equation-tokens")
 directories.register("diffed-images-with-colorized-equation-tokens")
 directories.register("equation-tokens-locations")
-directories.register("symbol-locations")
+directories.register("composite-symbols-locations")
 directories.register("sources-with-colorized-symbols-with-affixes")
 directories.register("compiled-sources-with-colorized-symbols-with-affixes")
 directories.register("paper-images-with-colorized-symbols-with-affixes")
 directories.register("diffed-images-with-colorized-symbols-with-affixes")
 directories.register("symbols-with-affixes-locations")
+directories.register("symbols-locations")
 
 
 def filter_atom_tokens(entity: SerializableEntity) -> bool:
@@ -123,7 +126,10 @@ commands = [
         ),
     ),
     LocateCompositeSymbols,
-    UploadSymbols,
+    CollectSymbolLocations,
+    make_upload_entities_command(
+        "symbols", upload_symbols, DetectedEntityType=SerializableSymbol
+    ),
 ]
 
 
