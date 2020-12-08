@@ -14,7 +14,7 @@
   "license": "UNLICENSED",
   "dependencies": {
     "commander": "^3.0.2",
-    "fast-csv": "^3.4.0",
+    "fast-csv": "^4.3.6",
     "traverse": "^0.6.6",
     "ts-node": "^8.4.1"
   },
