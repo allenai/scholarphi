@@ -427,11 +427,6 @@ class ColorizationRecord:
     " Should match the ID on a 'SerializableEntity'"
 
 
-@dataclass(frozen=True)
-class EquationTokenColorizationRecord(ColorizationRecord, ColorizedTokenWithOrigin):
-    pass
-
-
 """
 SEARCH
 """
@@ -509,8 +504,15 @@ class BoundingBoxAndHue:
 
 
 @dataclass(frozen=True)
-class HueLocationInfo(BoundingBox, ColorizationRecord):
-    pass
+class EntityLocationInfo(BoundingBox):
+    tex_path: str
+    entity_id: str
+
+
+@dataclass(frozen=True)
+class HueLocationInfo(EntityLocationInfo):
+    iteration: str
+    hue: float
 
 
 TokenLocations = Dict[TokenId, List[BoundingBox]]
@@ -529,11 +531,6 @@ class CitationData:
     citation_locations: Dict[str, Dict[int, Set[CitationLocation]]]
     key_s2_ids: Dict[str, str]
     s2_data: Dict[S2Id, SerializableReference]
-
-
-@dataclass(frozen=True)
-class SymbolLocation(SymbolId, BoundingBox):
-    pass
 
 
 """
@@ -580,7 +577,7 @@ class EntityInformation:
 @dataclass(frozen=True)
 class EntityAndLocation:
     entity: SerializableEntity
-    locations: List[HueLocationInfo]
+    locations: List[EntityLocationInfo]
 
 
 @dataclass(frozen=True)
