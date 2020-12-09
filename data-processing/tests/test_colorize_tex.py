@@ -180,7 +180,6 @@ def token(
     equation_tex: str,
     id_: str = "1",
     equation_index: int = 0,
-    token_index: int = 1,
     text: str = "symbol text",
     equation_depth: int = 0,
 ) -> SerializableToken:
@@ -193,7 +192,6 @@ def token(
         context_tex="context",
         equation=equation_tex,
         equation_index=equation_index,
-        token_index=token_index,
         text=text,
         equation_depth=equation_depth,
         relative_start=relative_start,

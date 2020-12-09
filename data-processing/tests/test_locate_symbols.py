@@ -1,9 +1,9 @@
 from common.bounding_box import get_symbol_bounding_box
-from common.types import BoundingBox, Symbol, SymbolId, TokenId
+from common.types import BoundingBox, Symbol, SymbolId, Token, TokenId
 
 
-def token_id(token_index: int) -> TokenId:
-    return TokenId("tex-path", 0, token_index)
+def token_id(start: int, end: int) -> TokenId:
+    return TokenId("tex-path", 0, start, end)
 
 
 def symbol(tokens, start=-1, end=-1):
@@ -15,6 +15,7 @@ def symbol(tokens, start=-1, end=-1):
         parent=None,
         start=start,
         end=end,
+        contains_affix=False,
     )
 
 
@@ -30,24 +31,24 @@ def test_get_none_if_no_matching_tokens():
 
 
 def test_get_token_bounding_box():
-    s = symbol(tokens=[0])
-    token_locations = {token_id(0): [BoundingBox(0.01, 0.01, 0.01, 0.01, 0)]}
+    s = symbol(tokens=[Token("x", "atom", 0, 1)])
+    token_locations = {token_id(0, 1): [BoundingBox(0.01, 0.01, 0.01, 0.01, 0)]}
     box = get_symbol_bounding_box(s, symbol_id(), token_locations)
     assert box == BoundingBox(0.01, 0.01, 0.01, 0.01, 0)
 
 
 def test_merge_bounding_boxes():
-    s = symbol(tokens=[0, 1])
+    s = symbol(tokens=[Token("x", "atom", 0, 1), Token("y", "atom", 2, 3)])
     token_locations = {
-        token_id(0): [
+        token_id(0, 1): [
             BoundingBox(0.01, 0.01, 0.01, 0.01, 0),
             # Expand the bounding box downward .01 of the page
             BoundingBox(0.01, 0.02, 0.01, 0.01, 0),
         ],
         # Expand the bounding box rightward 10 pixels
-        token_id(1): [BoundingBox(0.02, 0.01, 0.01, 0.01, 0)],
+        token_id(2, 3): [BoundingBox(0.02, 0.01, 0.01, 0.01, 0)],
         # Ignore this bounding box for an irrelevant token
-        token_id(2): [BoundingBox(0.03, 0.01, 0.01, 0.01, 0)],
+        token_id(4, 5): [BoundingBox(0.03, 0.01, 0.01, 0.01, 0)],
     }
     box = get_symbol_bounding_box(s, symbol_id(), token_locations)
     assert box.left == 0.01
