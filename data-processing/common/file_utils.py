@@ -216,6 +216,10 @@ def load_from_csv(
                     # type for types of interest (like StrList) and compare the ID of the newly defined type.
                     elif field.type == List[str]:
                         data[field.name] = ast.literal_eval(row[field.name])
+                    elif field.type == List[float]:
+                        data[field.name] = [
+                            float(_) for _ in ast.literal_eval(row[field.name])
+                        ]
                     # 2. String literals. This check is based on the '__repr__' string representation of
                     # the literal, and checks that all options for the literal are strings. Based
                     # on the unit tests for the Literal type at:
