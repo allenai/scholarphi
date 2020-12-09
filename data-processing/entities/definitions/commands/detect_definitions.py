@@ -79,7 +79,7 @@ def get_symbol_texs(
     Get a map from the character offsets of the word 'SYMBOL' in the first input string
     to the TeX for that symbol, found from the second input string.  Example:
 
-    Input: get_symbol_texs("Add SYMBOL to SYMBOL.", "Add (((SYMBOL:x))) to (((SYMBOL:y)))")
+    Input: get_symbol_texs("Add SYMBOL to SYMBOL.", "Add (((FORMULA:x))) to (((FORMULA:y)))")
     Output: { 4: "x", 14: "y" }
 
     Returns None if there was an error establishing a mapping, for instance if there are
@@ -91,7 +91,7 @@ def get_symbol_texs(
     symbol_texs = [
         match.group(1)
         for match in re.finditer(
-            r"\(\(\(SYMBOL:(.*?)\)\)\)", sentence_with_formula_contents
+            r"\(\(\(FORMULA:(.*?)\)\)\)", sentence_with_formula_contents
         )
     ]
 
@@ -623,7 +623,7 @@ class DetectDefinitions(
                         #   [term and definition] for other types.
 
                         symbol_texs = get_symbol_texs(
-                            s.legacy_definition_input, s.with_symbols_marked
+                            s.legacy_definition_input, s.with_formulas_marked
                         )
                         if symbol_texs is None:
                             symbol_nickname_pairs = []

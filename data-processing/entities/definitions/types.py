@@ -16,13 +16,17 @@ class EmbellishedSentence(Sentence):
     positions of spans in the embellished sentence back to the original TeX.
     """
 
-    with_symbols_marked: str
-    " All top-level symbols replaced with (((SYMBOL:<TeX>))). "
-    with_symbols_marked_journal: JournaledString
-
     legacy_definition_input: str
     " All equations replaced with 'SYMBOL'. "
     legacy_definition_input_journal: JournaledString
+
+    with_formulas_marked: str
+    " All equations replaced with '(((FORMULA:<TeX>)))'. "
+    with_formulas_marked_journal: JournaledString
+
+    with_symbols_marked: str
+    " All top-level symbols surrounded with SYMBOL_START and SYMBOL_END tokens. "
+    with_symbols_marked_journal: JournaledString
 
 
 @dataclass(frozen=True)

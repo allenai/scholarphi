@@ -102,20 +102,25 @@ class TokenizeSentences(ArxivBatchCommand[Task, TokenizedSentence]):
         # Replace equations in reverse so that earlier replacements don't affect the character
         # offsets for the later replacements.
         with_symbols_marked = sentence.sanitized_journal
+        with_formulas_marked = sentence.sanitized_journal
         legacy_definition_input = sentence.sanitized_journal
 
         # To create the legacy input for the definition detector, replace each top-level
         # equation with the text 'SYMBOL'.
         equation_matches = list(
             re.finditer(
-                "EQUATION_DEPTH_0_START.*?EQUATION_DEPTH_0_END",
+                "EQUATION_DEPTH_0_START\s*(.*?)\s*EQUATION_DEPTH_0_END",
                 sentence.text,
                 flags=re.DOTALL,
             )
         )
         for match in reversed(equation_matches):
+            formula = match.group(1)
             legacy_definition_input = legacy_definition_input.edit(
                 match.start(), match.end(), "SYMBOL"
+            )
+            with_formulas_marked = with_formulas_marked.edit(
+                match.start(), match.end(), f"(((FORMULA:{formula})))"
             )
 
         def is_symbol_in_sentence(symbol: Symbol) -> bool:
@@ -165,10 +170,12 @@ class TokenizeSentences(ArxivBatchCommand[Task, TokenizedSentence]):
             cite=sentence.cite,
             url=sentence.url,
             others=sentence.others,
-            with_symbols_marked=str(with_symbols_marked),
-            with_symbols_marked_journal=with_symbols_marked,
             legacy_definition_input=str(legacy_definition_input),
             legacy_definition_input_journal=legacy_definition_input,
+            with_formulas_marked=str(with_formulas_marked),
+            with_formulas_marked_journal=with_formulas_marked,
+            with_symbols_marked=str(with_symbols_marked),
+            with_symbols_marked_journal=with_symbols_marked,
         )
 
         # Make sure that symbols aren't split by the tokenizer (i.e., if a subscript includes
