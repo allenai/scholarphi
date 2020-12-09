@@ -11,7 +11,7 @@ nconf
       port: 5432,
       database: "scholar-reader",
       user: "api",
-      schema: "public",
+      schema: "ray_error_1",
     },
   });
 
