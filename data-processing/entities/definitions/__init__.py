@@ -1,14 +1,14 @@
+from typing import cast
+
 from common import directories
-from common.commands.base import Command, CommandList
-from common.commands.detect_entities import make_detect_entities_command
+from common.colorize_tex import ColorizeOptions
+from common.commands.base import CommandList
 from common.commands.locate_entities import make_locate_entities_command
 from common.commands.upload_entities import make_upload_entities_command
-from entities.common import create_entity_localization_command_sequence
+from common.types import SerializableEntity
 from scripts.pipelines import EntityPipeline, register_entity_pipeline
 
 from .commands.create_annotation_files import CreateAnnotationFiles
-
-# from .colorize import get_definition_color_positions
 from .commands.detect_definitions import DetectDefinitions
 from .commands.tokenize_sentences import TokenizeSentences
 from .types import Definiendum, Definition, TermReference
@@ -36,11 +36,21 @@ upload_command = make_upload_entities_command(
 )
 
 
+def exclude_nicknames(entity: SerializableEntity) -> bool:
+    definition = cast(Definition, entity)
+    return definition.type_ == "nickname"
+
+
 commands: CommandList = [
     TokenizeSentences,
     CreateAnnotationFiles,
     DetectDefinitions,
-    make_locate_entities_command("definitions"),
+    make_locate_entities_command(
+        "definitions",
+        # Do not locate symbols (i.e., definitions that are 'nicknames'), because these will
+        # already be detect more robustly in dedicated commands for symbol localization.
+        colorize_options=ColorizeOptions(when=exclude_nicknames),
+    ),
     upload_command,
 ]
 
