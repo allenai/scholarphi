@@ -9,7 +9,8 @@ from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Union, cast
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
 from common.parse_tex import PhraseExtractor, get_containing_entity, overlaps
-from common.types import ArxivId, CharacterRange, FileContents, SerializableEntity
+from common.types import (ArxivId, CharacterRange, FileContents,
+                          SerializableEntity)
 from tqdm import tqdm
 from typing_extensions import Literal
 
@@ -91,7 +92,12 @@ def get_symbol_texs(
     symbol_texs = [
         match.group(1)
         for match in re.finditer(
-            r"\(\(\(FORMULA:(.*?)\)\)\)", sentence_with_formula_contents
+            # The extra '[)]*]' before the ending triple-parentheses ensures that
+            # closing parentheses that were part of the original equation (e.g., for
+            # a symbol like 'f(x)') are included in the symbol, rather than being read as part
+            # of the triple-parens formula delimiter.
+            r"\(\(\(FORMULA:(.*?[)]*)\)\)\)",
+            sentence_with_formula_contents,
         )
     ]
 
@@ -199,11 +205,11 @@ def consolidate_term_definitions(
     return pairs
 
 
-def check_text_contains_acronym_for_sanity(
-    acronym_text: str,
+def check_text_contains_abbreviation_for_sanity(
+    abbreviation_text: str,
     expansion_text: str,
-    acronym_start: int,
-    acronym_end: int,
+    abbreviation_start: int,
+    abbreviation_end: int,
     expansion_start: int,
     expansion_end: int,
 ) -> bool:
@@ -213,10 +219,10 @@ def check_text_contains_acronym_for_sanity(
         e.g., "alpha x (Ref )" or any phrases with parenthesis
     This function filters out the noise using simple heuristics.
     """
-    # If acronym and expansion overlaps in positions, ignore them.
+    # If abbreviation and expansion overlaps in positions, ignore them.
     if (
         len(
-            set(range(acronym_start, acronym_end - 1)).intersection(
+            set(range(abbreviation_start, abbreviation_end - 1)).intersection(
                 range(expansion_start, expansion_end - 1)
             )
         )
@@ -225,16 +231,16 @@ def check_text_contains_acronym_for_sanity(
         return False
 
     # If citation patterns are detected (e.g., Citation (CITATION)), ignore them.
-    if "citation" in acronym_text.lower():
+    if "citation" in abbreviation_text.lower():
         return False
 
-    # Check each letter in acronym appears in expansion text.
-    is_acronym = True
-    for letter_in_acronym in acronym_text.lower():
-        if letter_in_acronym not in expansion_text.lower():
-            is_acronym = False
+    # Check each letter in abbreviation appears in expansion text.
+    is_abbreviation = True
+    for letter_in_abbreviation in abbreviation_text.lower():
+        if letter_in_abbreviation not in expansion_text.lower():
+            is_abbreviation = False
 
-    return is_acronym
+    return is_abbreviation
 
 
 def get_abbreviations(
@@ -249,10 +255,10 @@ def get_abbreviations(
     abbreviation_ranges = get_token_character_ranges(text, tokens)
 
     for abbreviation in doc._.abbreviations:
-        # Acronym (term).
-        acronym_ranges = abbreviation_ranges[abbreviation.start : abbreviation.end]
-        acronym_start = min([acronym_range.start for acronym_range in acronym_ranges])
-        acronym_end = max([acronym_range.end for acronym_range in acronym_ranges]) + 1
+        # Abbreviation (term).
+        abbreviation_ranges = abbreviation_ranges[abbreviation.start : abbreviation.end]
+        abbreviation_start = min([r.start for r in abbreviation_ranges])
+        abbreviation_end = max([r.end for r in abbreviation_ranges]) + 1
 
         # Expansion (definition).
         expansion_ranges = abbreviation_ranges[
@@ -265,21 +271,21 @@ def get_abbreviations(
             max([expansion_range.end for expansion_range in expansion_ranges]) + 1
         )
 
-        if not check_text_contains_acronym_for_sanity(
+        if not check_text_contains_abbreviation_for_sanity(
             str(abbreviation),
             str(abbreviation._.long_form),
-            acronym_start,
-            acronym_end,
+            abbreviation_start,
+            abbreviation_end,
             expansion_start,
             expansion_end,
         ):
             continue
 
         pair = TermDefinitionPair(
-            term_start=acronym_start,
-            term_end=acronym_end,
-            term_text=text[acronym_start:acronym_end],
-            term_type="acronym",
+            term_start=abbreviation_start,
+            term_end=abbreviation_end,
+            term_text=text[abbreviation_start:abbreviation_end],
+            term_type="abbreviation",
             term_confidence=None,
             definition_start=expansion_start,
             definition_end=expansion_end,
@@ -619,7 +625,7 @@ class DetectDefinitions(
                         # sentence, so that the TeX for symbols can be saved.
                         # Types of [term and definition] pairs.
                         #   [nickname and definition] for symbols.
-                        #   [acronym and expansion] for abbreviations.
+                        #   [abbreviation and expansion] for abbreviations.
                         #   [term and definition] for other types.
 
                         symbol_texs = get_symbol_texs(

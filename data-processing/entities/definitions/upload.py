@@ -14,6 +14,13 @@ from .types import Definition, TermReference
 def upload_definitions(
     processing_summary: PaperProcessingResult, data_version: Optional[int]
 ) -> None:
+    upload_term_definitions(processing_summary, data_version)
+
+
+def upload_term_definitions(
+    processing_summary: PaperProcessingResult, data_version: Optional[int]
+) -> None:
+    " Upload textual terms and their definitions. "
 
     term_infos = []
     definition_infos = []
@@ -56,7 +63,7 @@ def upload_definitions(
                     "definitions": term.definitions,
                     "definition_texs": term.definition_texs,
                     "sources": term.sources,
-                    "term_type": term.type_ or "unknown"
+                    "term_type": term.type_ or "unknown",
                 },
                 relationships={
                     "sentence": EntityReference(
@@ -84,3 +91,4 @@ def upload_definitions(
     upload_entities(
         processing_summary.s2_id, processing_summary.arxiv_id, term_infos, data_version,
     )
+
