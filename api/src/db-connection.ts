@@ -82,13 +82,15 @@ export class Connection {
       SELECT paper.*,
              (
                 SELECT COUNT(*)
-                  FROM citation
-                 WHERE citation.paper_id = paper.s2_id
+                  FROM entity
+                 WHERE entity.paper_id = paper.s2_id
+                   AND type = 'citation'
              ) AS citations,
              (
                 SELECT COUNT(*)
-                  FROM symbol
-                 WHERE symbol.paper_id = paper.s2_id
+                  FROM entity
+                 WHERE entity.paper_id = paper.s2_id
+                   AND type = 'symbol'
              ) AS symbols
         FROM paper
     ORDER BY symbols DESC, citations DESC

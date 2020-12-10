@@ -134,6 +134,7 @@ const PaperList = () => {
     })();
     return () => setViewState({ papers: [], state: ViewState.LOADING });
   }, []); // The empty array makes the inner callback only execute once
+
   return (
     <>
       <CssBaseline />
@@ -162,17 +163,7 @@ const PaperList = () => {
             <TableBody>
               {papers
                 .filter((paper) => {
-                  return (
-                    paper.arxivId !== undefined &&
-                    [
-                      "1508.07252",
-                      "1706.03762",
-                      "1811.12160",
-                      "1010.2823",
-                      "1309.7440",
-                      "1404.6635",
-                    ].indexOf(paper.arxivId) !== -1
-                  );
+                  return paper.arxivId !== undefined;
                 })
                 .map((paper) => (
                   <TableRow key={paper.s2Id}>
