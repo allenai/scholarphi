@@ -163,7 +163,7 @@ const PaperList = () => {
             <TableBody>
               {papers
                 .filter((paper) => {
-                  return paper.arxivId !== undefined;
+                  return !!paper.arxivId;
                 })
                 .map((paper) => (
                   <TableRow key={paper.s2Id}>
