@@ -58,6 +58,7 @@ def run_commands_for_arxiv_ids(
         command_args.batch_size = pipeline_args.entity_batch_size
         command_args.log_names = [log_filename]
         command_args.schema = pipeline_args.database_schema
+        command_args.create_tables = pipeline_args.database_create_tables
         command_args.data_version = pipeline_args.data_version
         if CommandCls == FetchArxivSources:
             command_args.s3_bucket = pipeline_args.s3_arxiv_sources_bucket
@@ -287,6 +288,14 @@ if __name__ == "__main__":
             + "follow the naming rules for Postgres identifiers "
             + "(see https://www.postgresql.org/docs/9.2/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS)."
         ),
+    )
+    parser.add_argument(
+        "--database-create-tables",
+        type=bool,
+        default=False,
+        help="""
+        When True (default False) try to create a database schema (requires running as admin DB user)
+        """,
     )
     parser.add_argument(
         "--data-version",
