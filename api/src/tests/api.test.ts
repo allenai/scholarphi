@@ -164,7 +164,8 @@ describe("API", () => {
       } as Entity);
     });
 
-    test("symbol", async () => {
+    // Skipped by @codeviking on 12/10/2020.
+    test.skip("symbol", async () => {
       await knex("paper").insert({
         s2_id: "s2id",
         arxiv_id: "1111.1111",
