@@ -291,10 +291,10 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--database-create-tables",
-        type=bool,
         default=False,
+        action="store_true",
         help="""
-        When True (default False) try to create a database schema (requires running as admin DB user)
+        When provied as flag try to create a database schema (requires running as admin DB user)
         """,
     )
     parser.add_argument(
