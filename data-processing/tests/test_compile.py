@@ -11,17 +11,19 @@ from common.types import CompiledTexFile
 
 def test_get_compiled_tex_files():
     stdout = bytearray(
-        "[verbose]:  ~~~~~~~~~~~ Processing file 'emnlp2020.tex'\n"
+        "[verbose]:  ~~~~~~~~~~~ Processing file 'main.tex'\n" + "...\n"
+        # DVI files that are successfully processed should not be considered TeX files.
+        + "[verbose]:  ~~~~~~~~~~~ Processing file 'main.dvi'\n"
         + "...\n"
-        + "[verbose]:  ~~~~~~~~~~~ Processing file 'annoation-cost.tex'\n"
+        + "[verbose]:  ~~~~~~~~~~~ Processing file 'other.tex'\n"
         + "..."
-        + "<annoation-cost.tex> appears to be tex-type, but was neither included nor processable:"
+        + "<other.tex> appears to be tex-type, but was neither included nor processable:"
         + "...",
         "utf-8",
     )
     compiled_tex_files = get_compiled_tex_files_from_autotex_output(stdout)
     assert len(compiled_tex_files) == 1
-    assert CompiledTexFile("emnlp2020.tex") in compiled_tex_files
+    assert CompiledTexFile("main.tex") in compiled_tex_files
 
 
 def test_is_not_missing_driver():
