@@ -78,9 +78,6 @@ export class Connection {
   }
 
   async getAllPapers() {
-    // The doubly-nested subqueries below are probably kind of slow, and might be a lot faster
-    // via some joins and clever SQL acrobatics. I leave this for a future DB guru. For now
-    // the sub-queries are (at least to me) easier to read.
     const response = await this._knex.raw<{ rows: PaperWithEntityCounts[] }>(`
         WITH version AS (SELECT MAX(version) AS latest FROM entity)
       SELECT paper.*,
