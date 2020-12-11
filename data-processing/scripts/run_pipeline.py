@@ -38,7 +38,9 @@ from scripts.process import (
 
 
 def run_commands_for_arxiv_ids(
-    CommandClasses: CommandList, arxiv_id_list: List[str], pipeline_args: Namespace,
+    CommandClasses: CommandList,
+    arxiv_id_list: List[str],
+    pipeline_args: Namespace,
 ) -> PipelineDigest:
     " Run a sequence of pipeline commands for a list of arXiv IDs. "
 
@@ -57,6 +59,7 @@ def run_commands_for_arxiv_ids(
         command_args.batch_size = pipeline_args.entity_batch_size
         command_args.log_names = [log_filename]
         command_args.schema = pipeline_args.database_schema
+        command_args.create_tables = pipeline_args.database_create_tables
         command_args.data_version = pipeline_args.data_version
         if CommandCls == FetchArxivSources:
             command_args.s3_bucket = pipeline_args.s3_arxiv_sources_bucket
@@ -288,6 +291,14 @@ if __name__ == "__main__":
         ),
     )
     parser.add_argument(
+        "--database-create-tables",
+        default=False,
+        action="store_true",
+        help="""
+        When provied as flag try to create a database schema (requires running as admin DB user)
+        """,
+    )
+    parser.add_argument(
         "--data-version",
         type=int,
         help=(
@@ -427,15 +438,17 @@ if __name__ == "__main__":
     pipeline_digest: PipelineDigest = {}
     if args.one_paper_at_a_time:
         for arxiv_id in arxiv_ids:
-            logging.info("Running pipeline for paper %s", arxiv_id)
-            digest_for_paper = run_commands_for_arxiv_ids(
-                filtered_commands, [arxiv_id], args
-            )
-            # The pipeline digest must be updated after each arXiv ID is processed, because the
-            # digest for a paper cannot be computed once the paper's data is deleted.
-            pipeline_digest.update(digest_for_paper)
-            if not args.keep_data:
-                file_utils.delete_data(arxiv_id)
+            try:
+                logging.info("Running pipeline for paper %s", arxiv_id)
+                digest_for_paper = run_commands_for_arxiv_ids(
+                    filtered_commands, [arxiv_id], args
+                )
+                # The pipeline digest must be updated after each arXiv ID is processed, because the
+                # digest for a paper cannot be computed once the paper's data is deleted.
+                pipeline_digest.update(digest_for_paper)
+            finally:
+                if not args.keep_data:
+                    file_utils.delete_data(arxiv_id)
     else:
         logging.info("Running pipeline for papers %s", arxiv_ids)
         digest_for_papers = run_commands_for_arxiv_ids(
