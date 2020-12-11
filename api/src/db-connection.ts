@@ -99,7 +99,6 @@ export class Connection {
     ORDER BY symbols DESC, citations DESC
     `);
     return response.rows
-      .filter((row) => parseInt(row.citations) > 0 || parseInt(row.symbols) > 0)
       .map((row) => ({
         s2Id: row.s2_id,
         arxivId: row.arxiv_id,
