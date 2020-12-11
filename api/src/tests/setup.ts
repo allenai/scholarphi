@@ -5,7 +5,7 @@ import { createQueryBuilder, extractConnectionParams } from "../db-connection";
 import { default as APIServer } from "../server";
 
 /**
- * Configure the tests to connect to a test database instead of thte production database.
+ * Configure the tests to connect to a test database instead of the production database.
  * Compare this configuration to the one initalized in 'index.ts'.
  * Make sure you run `./bin/start_local_db.sh` before running this.
  */
@@ -43,7 +43,7 @@ export async function setupTestDatabase() {
     await knex.raw("DROP SCHEMA IF EXISTS test CASCADE;");
     await knex.raw(createTestTablesSql);
     console.log("Initialization of database schema for tests was successful.");
-  } catch(err) {
+  } catch (err) {
     console.log("Error initializing test schema:", err);
   }
   knex.destroy();
