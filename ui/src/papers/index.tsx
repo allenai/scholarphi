@@ -14,6 +14,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
 import Table from "@material-ui/core/Table";
+import TablePagination from "@material-ui/core/TablePagination";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
@@ -25,7 +26,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { listPapers } from "../api";
-import { PaperIdWithCounts } from "../types/api";
+import { PaperIdWithEntityCounts } from "../types/api";
 
 enum ViewState {
   LOADING,
@@ -36,11 +37,14 @@ enum ViewState {
 interface PaperListState {
   state: ViewState;
   papers: PaperWithMeta[];
+  offset: number;
+  size: number;
+  total: number;
 }
 
 export interface S2ApiPaper {
   abstract: string;
-  arxivId?: string;
+  arxiv_id?: string;
   authors: S2ApiAuthor[];
   doi: string;
   title: string;
@@ -57,7 +61,7 @@ interface S2ApiAuthor {
 
 // We only retain the fields from S2ApiPaper that we need, as otherwise
 // we can very easily overflow localStorage.
-interface PaperWithMeta extends PaperIdWithCounts {
+interface PaperWithMeta extends PaperIdWithEntityCounts {
   title: string;
   authors: S2ApiAuthor[];
   venue?: string;
@@ -77,22 +81,22 @@ interface CachedPaperWithMeta {
  * reader API in the future.
  */
 async function getPaperInfoFromS2(
-  paper: PaperIdWithCounts
+  paper: PaperIdWithEntityCounts
 ): Promise<PaperWithMeta> {
   const disableCache = new URLSearchParams(window.location.search).has('nocache');
   if (localStorage && !disableCache) {
-    const maybeItem = localStorage.getItem(paper.s2Id);
+    const maybeItem = localStorage.getItem(paper.s2_id);
     if (maybeItem) {
       const parsedItem: CachedPaperWithMeta = JSON.parse(maybeItem);
       if (parsedItem.expires > Date.now()) {
-        console.debug(`Using cached paper:${paper.s2Id}`);
+        console.debug(`Using cached paper:${paper.s2_id}`);
         return Promise.resolve(parsedItem.paper);
       } else {
-        console.debug(`Paper ${paper.s2Id} is cached but has expired.`);
+        console.debug(`Paper ${paper.s2_id} is cached but has expired.`);
       }
     }
   }
-  const s2ApiUrl = `https://api.semanticscholar.org/v1/paper/${paper.s2Id}`;
+  const s2ApiUrl = `https://api.semanticscholar.org/v1/paper/${paper.s2_id}`;
   const { data: s2Paper } = await axios.get<S2ApiPaper>(s2ApiUrl);
   const paperWithMeta = Object.assign(paper, {
     title: s2Paper.title,
@@ -102,7 +106,7 @@ async function getPaperInfoFromS2(
   });
   if (localStorage) {
     localStorage.setItem(
-      paper.s2Id,
+      paper.s2_id,
       JSON.stringify({
         // cache for 24 hours, JavaScript timestamps are expressed in ms
         expires: Date.now() + 24 * 60 * 60 * 1000,
@@ -113,28 +117,72 @@ async function getPaperInfoFromS2(
   return paperWithMeta;
 }
 
+/**
+ * TODO: These methods allow us to update the URL as the size / offset is changed,
+ * and read them from the URL when the page is first loaded. Longer term these should be
+ * replaced with the APIs afforded by a routing solution, like `react-router`.
+ */
+function updateBrowserURL(offset: number, size: number) {
+  if (window.history && URL) {
+    const u = new URL(document.location.toString());
+    u.searchParams.set("offset", `${offset}`);
+    u.searchParams.set("size", `${size}`);
+    window.history.pushState(null, '', u.toString());
+  }
+}
+
+function getOffsetFromURL(defaultOffset: number): number {
+  if (URL) {
+    const u = new URL(document.location.toString());
+    const o = parseInt(u.searchParams.get("offset") || "");
+    if (isNaN(o)) {
+      return defaultOffset;
+    }
+    return o;
+  }
+  return defaultOffset;
+}
+
+function getSizeFromURL(defaultSize: number): number {
+  if (URL) {
+    const u = new URL(document.location.toString());
+    const s = parseInt(u.searchParams.get("size") || "");
+    if (isNaN(s)) {
+      return defaultSize;
+    }
+    return s;
+  }
+  return defaultSize;
+}
+
 const PaperList = () => {
-  const [{ state, papers }, setViewState] = useState<PaperListState>({
+  const [{ state, papers, offset, size, total }, setViewState] = useState<PaperListState>({
     papers: [],
     state: ViewState.LOADING,
+    offset: getOffsetFromURL(0),
+    size: getSizeFromURL(10),
+    total: 0
   });
   useEffect(() => {
     (async () => {
-      const allPapers = await listPapers();
+      setViewState({ papers: [], state: ViewState.LOADING, offset, size, total });
+      const allPapers = await listPapers(offset, size);
       if (allPapers === null) {
-        setViewState({ papers: [], state: ViewState.ERROR });
+        setViewState({ papers: [], state: ViewState.ERROR, offset: 0, size: 0, total: 0 });
         return;
       }
       const allPapersWithTitle = await Promise.all(
-        allPapers.map(getPaperInfoFromS2)
+        allPapers.rows.map(getPaperInfoFromS2)
       );
       setViewState({
         papers: allPapersWithTitle,
         state: ViewState.READY,
+        offset: allPapers.offset,
+        size: allPapers.size,
+        total: allPapers.total
       });
     })();
-    return () => setViewState({ papers: [], state: ViewState.LOADING });
-  }, []); // The empty array makes the inner callback only execute once
+  }, [ offset, size ]); // The empty array makes the inner callback only execute once
 
   return (
     <>
@@ -158,55 +206,92 @@ const PaperList = () => {
                 <TableCell>ArXiv ID</TableCell>
                 <TableCell>Symbols</TableCell>
                 <TableCell>Citations</TableCell>
+                <TableCell>Equations</TableCell>
+                <TableCell>Definitions</TableCell>
+                <TableCell>Terms</TableCell>
+                <TableCell>Sentences</TableCell>
+                <TableCell>Total Entities</TableCell>
+                <TableCell>Entity Version</TableCell>
                 <TableCell>Reader Link</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {papers
-                .filter((paper) => {
-                  return !!paper.arxivId;
-                })
-                .map((paper) => (
-                  <TableRow key={paper.s2Id}>
-                    <TableCell>
-                      <Typography variant="subtitle1">
-                        <strong>
-                          <a
-                            href={`https://semanticscholar.org/paper/${paper.s2Id}`}
-                          >
-                            {paper.title || paper.s2Id}
-                          </a>
-                        </strong>
-                      </Typography>
-                      {paper.authors.map((author, idx) => (
-                        <React.Fragment key={author.url}>
-                          <a href={author.url}>{author.name}</a>
-                          {idx !== paper.authors.length - 1 ? ", " : null}
-                        </React.Fragment>
-                      ))}
-                      {paper.venue && ` • ${paper.venue}`}
-                      {" •"} {paper.year}
-                    </TableCell>
-                    <TableCell>
-                      {paper.arxivId ? (
-                        <a href={`https://arxiv.org/abs/${paper.arxivId}`}>
-                          {paper.arxivId}
-                        </a>
-                      ) : null}
-                    </TableCell>
-                    <TableCell>{paper.extractedSymbolCount}</TableCell>
-                    <TableCell>{paper.extractedCitationCount}</TableCell>
-                    <TableCell>
-                      {paper.arxivId ? (
+              {papers.map((paper) => (
+                <TableRow key={paper.s2_id}>
+                  <TableCell>
+                    <Typography variant="subtitle1">
+                      <strong>
                         <a
-                          href={`/?file=https://arxiv.org/pdf/${paper.arxivId}.pdf`}
+                          href={`https://semanticscholar.org/paper/${paper.s2_id}`}
                         >
-                          Read
+                          {paper.title || paper.s2_id}
                         </a>
-                      ) : null}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      </strong>
+                    </Typography>
+                    {paper.authors.map((author, idx) => (
+                      <React.Fragment key={author.url}>
+                        <a href={author.url}>{author.name}</a>
+                        {idx !== paper.authors.length - 1 ? ", " : null}
+                      </React.Fragment>
+                    ))}
+                    {paper.venue && ` • ${paper.venue}`}
+                    {" •"} {paper.year}
+                  </TableCell>
+                  <TableCell>
+                    {paper.arxiv_id ? (
+                      <a href={`https://arxiv.org/abs/${paper.arxiv_id}`}>
+                        {paper.arxiv_id}
+                      </a>
+                    ) : null}
+                  </TableCell>
+                  <TableCell>{paper.symbol_count}</TableCell>
+                  <TableCell>{paper.citation_count}</TableCell>
+                  <TableCell>{paper.equation_count}</TableCell>
+                  <TableCell>{paper.definition_count}</TableCell>
+                  <TableCell>{paper.term_count}</TableCell>
+                  <TableCell>{paper.sentence_count}</TableCell>
+                  <TableCell>{paper.entity_count}</TableCell>
+                  <TableCell>{paper.version}</TableCell>
+                  <TableCell>
+                    {paper.arxiv_id ? (
+                      <a
+                        href={`/?file=https://arxiv.org/pdf/${paper.arxiv_id}.pdf`}
+                      >
+                        Read
+                      </a>
+                    ) : null}
+                  </TableCell>
+                </TableRow>
+              ))}
+              <TableRow>
+                <TablePagination
+                  count={total}
+                  page={Math.floor(offset/size)}
+                  rowsPerPage={size}
+                  rowsPerPageOptions={[10, 20, 30]}
+                  onChangePage={(_, p) => {
+                    const newOffset = p * size;
+                    updateBrowserURL(newOffset, size);
+                    setViewState({
+                     total,
+                     papers,
+                     size,
+                     state: ViewState.LOADING,
+                     offset: newOffset
+                    })
+                  }}
+                  onChangeRowsPerPage={(e) => {
+                    const newSize = parseInt(e.target.value);
+                    updateBrowserURL(0, newSize);
+                    setViewState({
+                     total,
+                     papers,
+                     offset: 0,
+                     state: ViewState.LOADING,
+                     size: newSize
+                    })
+                  }} />
+              </TableRow>
             </TableBody>
           </Table>
         )}

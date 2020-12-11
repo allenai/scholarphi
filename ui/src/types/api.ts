@@ -12,13 +12,6 @@
  * into other projects, all of the types are available to the client code.
  */
 
-export interface PaperIdWithCounts {
-  s2Id: string;
-  arxivId?: string;
-  extractedSymbolCount: number;
-  extractedCitationCount: number;
-}
-
 /**
  * Format of returned papers loosely follows that for the S2 API:
  * https://api.semanticscholar.org/
@@ -348,11 +341,24 @@ export interface BoundingBox {
   height: number;
 }
 
-export interface PaperWithEntityCounts {
+export interface Paginated<T> {
+    rows: T[];
+    offset: number;
+    size: number;
+    total: number;
+}
+
+export interface PaperIdWithEntityCounts {
   s2_id: string;
   arxiv_id?: string;
-  citations: string;
-  symbols: string;
+  version: number;
+  symbol_count: number;
+  citation_count: number;
+  sentence_count: number;
+  term_count: number;
+  equation_count: number;
+  definition_count: number;
+  entity_count: number;
 }
 
 /**
