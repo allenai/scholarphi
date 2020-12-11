@@ -12,11 +12,24 @@
  * into other projects, all of the types are available to the client code.
  */
 
-export interface PaperIdWithCounts {
-  s2Id: string;
-  arxivId?: string;
-  extractedSymbolCount: number;
-  extractedCitationCount: number;
+export interface Paginated<T> {
+    rows: T[];
+    offset: number;
+    size: number;
+    total: number;
+}
+
+export interface PaperIdWithEntityCounts {
+  s2_id: string;
+  arxiv_id?: string;
+  version: number;
+  symbol_count: number;
+  citation_count: number;
+  sentence_count: number;
+  term_count: number;
+  equation_count: number;
+  definition_count: number;
+  entity_count: number;
 }
 
 /**
@@ -346,13 +359,6 @@ export interface BoundingBox {
   top: number;
   width: number;
   height: number;
-}
-
-export interface PaperWithEntityCounts {
-  s2_id: string;
-  arxiv_id?: string;
-  citations: string;
-  symbols: string;
 }
 
 /**

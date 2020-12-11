@@ -21,8 +21,30 @@ export const plugin = {
     server.route({
       method: "GET",
       path: "papers/list",
-      handler: async () => {
-        const papers = await dbConnection.getAllPapers();
+      handler: async (request) => {
+        let offset;
+        if ('offset' in request.query) {
+          const o = parseInt(
+            Array.isArray(request.query.offset)
+              ? request.query.offset[0]
+              : request.query.offset
+          );
+          if (!isNaN(o)) {
+            offset = o;
+          }
+        }
+        let size;
+        if ('size' in request.query) {
+          const s = parseInt(
+            Array.isArray(request.query.size)
+              ? request.query.size[0]
+              : request.query.size
+          );
+          if (!isNaN(s)) {
+            size = Math.min(s, 100);
+          }
+        }
+        const papers = await dbConnection.getAllPapers(offset, size);
         return papers;
       },
     });

@@ -8,11 +8,14 @@ import {
   EntityUpdateData,
   EntityUpdatePayload,
   Paper,
-  PaperIdWithCounts,
+  Paginated,
+  PaperIdWithEntityCounts,
 } from "./types/api";
 
-export async function listPapers() {
-  return await doGet<PaperIdWithCounts[]>(axios.get("/api/v0/papers/list"));
+export async function listPapers(offset: number = 0, size: number = 25) {
+  return await doGet<Paginated<PaperIdWithEntityCounts>>(
+      axios.get("/api/v0/papers/list", { params: { offset, size }})
+  );
 }
 
 /**

@@ -7,7 +7,8 @@ import {
   EntityUpdateData,
   GenericAttributes,
   GenericRelationships,
-  PaperWithEntityCounts,
+  Paginated,
+  PaperIdWithEntityCounts,
   Relationship,
 } from "./types/api";
 import * as validation from "./types/validation";
@@ -77,30 +78,61 @@ export class Connection {
     return await this._knex("logentry").insert(logEntry);
   }
 
-  async getAllPapers() {
-    const response = await this._knex.raw<{ rows: PaperWithEntityCounts[] }>(`
-      SELECT paper.*,
-             (
-                SELECT COUNT(*)
-                  FROM citation
-                 WHERE citation.paper_id = paper.s2_id
-             ) AS citations,
-             (
-                SELECT COUNT(*)
-                  FROM symbol
-                 WHERE symbol.paper_id = paper.s2_id
-             ) AS symbols
+  async getAllPapers(offset: number = 0, size: number = 25): Promise<Paginated<PaperIdWithEntityCounts>> {
+    // We use a local type to capture the fact that counts will come across the wire
+    // as a string.
+    type Row = PaperIdWithEntityCounts & {
+        symbol_count: string;
+        citation_count: string;
+        sentence_count: string;
+        term_count: string;
+        equation_count: string;
+        definition_count: string;
+        entity_count: string;
+        total_count: string;
+    };
+    const response = await this._knex.raw<{ rows: Row[] }>(`
+      SELECT paper.arxiv_id,
+             paper.s2_id,
+             version.index AS version,
+             SUM(CASE WHEN entity.type = 'symbol' THEN 1 ELSE 0 END) AS symbol_count,
+             SUM(CASE WHEN entity.type = 'citation' THEN 1 ELSE 0 END) AS citation_count,
+             SUM(CASE WHEN entity.type = 'sentence' THEN 1 ELSE 0 END) AS sentence_count,
+             SUM(CASE WHEN entity.type = 'term' THEN 1 ELSE 0 END) AS term_count,
+             SUM(CASE WHEN entity.type = 'equation' THEN 1 ELSE 0 END) AS equation_count,
+             SUM(CASE WHEN entity.type = 'definition' THEN 1 ELSE 0 END) AS definition_count,
+             COUNT(entity.*) AS entity_count,
+             COUNT(*) OVER() as total_count
         FROM paper
-    ORDER BY symbols DESC, citations DESC
+        JOIN ( SELECT MAX(index) AS index,
+                      paper_id
+                 FROM version
+             GROUP BY paper_id ) AS version
+          ON version.paper_id = paper.s2_id
+   LEFT JOIN entity
+          ON entity.paper_id = paper.s2_id
+         AND entity.version = version.index
+    GROUP BY paper.s2_id,
+             paper.arxiv_id,
+             version.index
+    ORDER BY entity_count DESC, version.index DESC
+      OFFSET ${offset}
+       LIMIT ${size}
     `);
-    return response.rows
-      .filter((row) => parseInt(row.citations) > 0 || parseInt(row.symbols) > 0)
-      .map((row) => ({
-        s2Id: row.s2_id,
-        arxivId: row.arxiv_id,
-        extractedCitationCount: parseInt(row.citations),
-        extractedSymbolCount: parseInt(row.symbols),
-      }));
+    const rows = response.rows.map(r => ({
+        arxiv_id: r.arxiv_id,
+        s2_id: r.s2_id,
+        version: r.version,
+        symbol_count: parseInt(r.symbol_count),
+        citation_count: parseInt(r.citation_count),
+        sentence_count: parseInt(r.sentence_count),
+        term_count: parseInt(r.term_count),
+        equation_count: parseInt(r.equation_count),
+        definition_count: parseInt(r.definition_count),
+        entity_count: parseInt(r.entity_count)
+    }));
+    const total = parseInt(response.rows[0].total_count);
+    return { rows, offset, size, total };
   }
 
   async getLatestPaperDataVersion(paperSelector: PaperSelector): Promise<number | null> {
