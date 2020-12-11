@@ -28,5 +28,5 @@ jobs:
         with:
           node-version: 12.20.0
       - run: npm install
-      - run: ../bin/start_local_db.sh
+      - run: ./bin/start_local_db.sh
       - run: npm test
