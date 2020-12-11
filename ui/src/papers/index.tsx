@@ -169,6 +169,11 @@ const PaperList = () => {
     size: getSizeFromURL(10),
     total: 0
   });
+  const rowsPerPageOptions = [ 10, 20, 30 ];
+  if (rowsPerPageOptions.indexOf(size) === -1) {
+    rowsPerPageOptions.push(size);
+    rowsPerPageOptions.sort();
+  }
   useEffect(() => {
     (async () => {
       setViewState({ papers: [], state: ViewState.LOADING, offset, size, total });
@@ -189,7 +194,6 @@ const PaperList = () => {
       });
     })();
   }, [ offset, size ]); // The empty array makes the inner callback only execute once
-
   return (
     <>
       <CssBaseline />
@@ -272,9 +276,9 @@ const PaperList = () => {
               <TableRow>
                 <TablePagination
                   count={total}
-                  page={Math.floor(offset/size)}
+                  page={offset/size}
                   rowsPerPage={size}
-                  rowsPerPageOptions={[10, 20, 30]}
+                  rowsPerPageOptions={rowsPerPageOptions}
                   onChangePage={(_, p) => {
                     const newOffset = p * size;
                     updateBrowserURL(newOffset, size);
