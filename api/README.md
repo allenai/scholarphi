@@ -75,4 +75,3 @@ After you're done you can stop the database like so:
 docker stop scholarphi-db
 ```
 
-
