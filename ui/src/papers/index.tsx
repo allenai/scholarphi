@@ -73,6 +73,12 @@ interface CachedPaperWithMeta {
   paper: PaperWithMeta;
 }
 
+function cacheKey(paperId: string) {
+    // We append a version prefix so that we can bust the cache in clients when we release
+    // updates.
+    return `v0/${paperId}`; 
+}
+
 /**
  * This wrapper returns paper metadata from a local cache for up to 24 hours.
  *
@@ -85,7 +91,7 @@ async function getPaperInfoFromS2(
 ): Promise<PaperWithMeta> {
   const disableCache = new URLSearchParams(window.location.search).has('nocache');
   if (localStorage && !disableCache) {
-    const maybeItem = localStorage.getItem(paper.s2_id);
+    const maybeItem = localStorage.getItem(cacheKey(paper.s2_id));
     if (maybeItem) {
       const parsedItem: CachedPaperWithMeta = JSON.parse(maybeItem);
       if (parsedItem.expires > Date.now()) {
@@ -106,7 +112,7 @@ async function getPaperInfoFromS2(
   });
   if (localStorage) {
     localStorage.setItem(
-      paper.s2_id,
+      cacheKey(paper.s2_id),
       JSON.stringify({
         // cache for 24 hours, JavaScript timestamps are expressed in ms
         expires: Date.now() + 24 * 60 * 60 * 1000,
