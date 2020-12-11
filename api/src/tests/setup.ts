@@ -7,24 +7,19 @@ import { default as APIServer } from "../server";
 /**
  * Configure the tests to connect to a test database instead of the production database.
  * Compare this configuration to the one initalized in 'index.ts'.
+ * Make sure you run `./bin/start_local_db.sh` before running this.
  */
 nconf
   .argv()
   .env()
-  .file({ file: process.env.SECRETS_FILE || "config/secret.json" })
   .defaults({
-    /**
-     * By default, tests will run in the shared remote database. This will cause problems if
-     * multiple people are running tests simultaneously. In that case, each developer should
-     * create their own local version of the test database, and use environment variables to
-     * point the tests to the test database.
-     */
     database: {
-      host: "scholar-reader.c5tvjmptvzlz.us-west-2.rds.amazonaws.com",
-      port: 5432,
-      database: "scholar-reader-test",
-      user: "api",
-      schema: "test",
+      host: "localhost",
+      port: 5555,
+      database: "scholar-reader",
+      user: "postgres",
+      password: "pdfsarefun",
+      schema: "test"
     },
   });
 
@@ -45,7 +40,7 @@ export async function setupTestDatabase() {
 
   console.log("Initializing database schema for tests...");
   try {
-    await knex.raw("DROP SCHEMA IF EXISTS test CASCADE");
+    await knex.raw("DROP SCHEMA IF EXISTS test CASCADE;");
     await knex.raw(createTestTablesSql);
     console.log("Initialization of database schema for tests was successful.");
   } catch (err) {

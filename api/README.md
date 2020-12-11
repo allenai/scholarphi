@@ -50,3 +50,28 @@ contents:
 
 Once you have, you can relaunch the server, and it should be 
 capable of querying for data from the database.
+
+## Running the Tests
+
+The tests use a local database that's ran in in [docker](https://www.docker.com/).
+If you don't have `docker` installed, you'll need to install it to
+run the tests.
+
+First, start the local database:
+
+```
+./bin/start_local_db.sh
+```
+
+Then run the tests:
+
+```
+npm test
+```
+
+After you're done you can stop the database like so:
+
+```
+docker stop scholarphi-db
+```
+
