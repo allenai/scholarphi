@@ -79,7 +79,8 @@ interface CachedPaperWithMeta {
 async function getPaperInfoFromS2(
   paper: PaperIdWithCounts
 ): Promise<PaperWithMeta> {
-  if (localStorage) {
+  const disableCache = new URLSearchParams(window.location.search).has('nocache');
+  if (localStorage && !disableCache) {
     const maybeItem = localStorage.getItem(paper.s2Id);
     if (maybeItem) {
       const parsedItem: CachedPaperWithMeta = JSON.parse(maybeItem);

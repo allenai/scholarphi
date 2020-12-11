@@ -82,30 +82,21 @@ export class Connection {
     // via some joins and clever SQL acrobatics. I leave this for a future DB guru. For now
     // the sub-queries are (at least to me) easier to read.
     const response = await this._knex.raw<{ rows: PaperWithEntityCounts[] }>(`
+        WITH version AS (SELECT MAX(version) AS latest FROM entity)
       SELECT paper.*,
              (
                 SELECT COUNT(*)
                   FROM entity
                  WHERE entity.paper_id = paper.s2_id
                    AND type = 'citation'
-                   AND version = (
-                        SELECT MAX(version)
-                          FROM entity
-                         WHERE type = 'citation'
-                           AND entity.paper_id = paper.s2_id
-                   )
+                   AND version = (SELECT latest FROM version)
              ) AS citations,
              (
                 SELECT COUNT(*)
                   FROM entity
                  WHERE entity.paper_id = paper.s2_id
                    AND type = 'symbol'
-                   AND version = (
-                        SELECT MAX(version)
-                          FROM entity
-                         WHERE type = 'symbol'
-                           AND entity.paper_id = paper.s2_id
-                   )
+                   AND version = (SELECT latest FROM version)
              ) AS symbols
         FROM paper
     ORDER BY symbols DESC, citations DESC
