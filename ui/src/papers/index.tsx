@@ -10,6 +10,7 @@
 
 import AppBar from "@material-ui/core/AppBar";
 import Box from "@material-ui/core/Box";
+import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
@@ -213,6 +214,7 @@ const PaperList = () => {
             <TableHead>
               <TableRow>
                 <TableCell>Paper</TableCell>
+                <TableCell>Reader Link</TableCell>
                 <TableCell>ArXiv ID</TableCell>
                 <TableCell>Symbols</TableCell>
                 <TableCell>Citations</TableCell>
@@ -222,7 +224,6 @@ const PaperList = () => {
                 <TableCell>Sentences</TableCell>
                 <TableCell>Total Entities</TableCell>
                 <TableCell>Entity Version</TableCell>
-                <TableCell>Reader Link</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -249,6 +250,16 @@ const PaperList = () => {
                   </TableCell>
                   <TableCell>
                     {paper.arxiv_id ? (
+                      <Button
+                        variant="outlined"
+                        href={`/?file=https://arxiv.org/pdf/${paper.arxiv_id}.pdf`}
+                      >
+                        Read
+                      </Button>
+                    ) : null}
+                  </TableCell>
+                  <TableCell>
+                    {paper.arxiv_id ? (
                       <a href={`https://arxiv.org/abs/${paper.arxiv_id}`}>
                         {paper.arxiv_id}
                       </a>
@@ -262,15 +273,6 @@ const PaperList = () => {
                   <TableCell>{paper.sentence_count}</TableCell>
                   <TableCell>{paper.entity_count}</TableCell>
                   <TableCell>{paper.version}</TableCell>
-                  <TableCell>
-                    {paper.arxiv_id ? (
-                      <a
-                        href={`/?file=https://arxiv.org/pdf/${paper.arxiv_id}.pdf`}
-                      >
-                        Read
-                      </a>
-                    ) : null}
-                  </TableCell>
                 </TableRow>
               ))}
               <TableRow>
