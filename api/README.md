@@ -1,9 +1,9 @@
 # Scholar Reader API
 
-The API server for the Scholar Reader application. For a 
-given paper, the application needs to know about the 
-citations, symbols, and other entities in that paper and 
-where they are located. This server provides that data upon 
+The API server for the Scholar Reader application. For a
+given paper, the application needs to know about the
+citations, symbols, and other entities in that paper and
+where they are located. This server provides that data upon
 request.
 
 To run the server, first install the dependencies:
@@ -26,36 +26,38 @@ curl 0.0.0.0:3000/api/health
 
 And you should see a response of 👍.
 
-Examples of valid API calls can be found by looking at the 
-routes in the `api.ts` script, or at the API calls made from 
+Examples of valid API calls can be found by looking at the
+routes in the `api.ts` script, or at the API calls made from
 the `ui` code in the `ScholarReader.tsx` file.
 
-## Configuring the server to access the database
+## One Time Setup
 
-Several of the API endpoints assume the server has access to 
-a private database. The server code already includes _some_ 
-login information. However, you must get the password from 
-one of the database administrators (at the time of writing 
-this, andrewhead@berkeley.edu). Once you have this password, 
-create a file named `config/secret.json` with these 
-contents:
+The API uses several secrets at runtime to:
 
-```json
-{
-  "database": {
-    "password": "<password>"
-  }
-}
-```
+- Access a database, where information about the papers and
+  the entities we extract from them is stored.
+- Query [Semantic Scholar's Public API](https://api.semanticscholar.org/).
 
-Once you have, you can relaunch the server, and it should be 
-capable of querying for data from the database.
+The API queries work without an API key, but will get rate
+limited if you make more than 100 queries in 5 minutes.
+This can happen relatively quickly during normal use of the
+application.
+
+The database won't workout without the appropriate
+configuration.
+
+You can get these values by getting in touch with an administrator.
+At the time of writing this, [andrewhead@berkeley.edu](mailto:andrewhead@berkeley.edu)
+is one. Once you have the values, put them in a file called
+`config/secret.json`, after which your application should
+be able to to query the database and Semantic Scholar's public
+API.
 
 ## Running the Tests
 
-The tests use a local database that's ran in in [docker](https://www.docker.com/).
-If you don't have `docker` installed, you'll need to install it to
-run the tests.
+The tests use a local database that's run in [docker](https://www.docker.com/).
+If you don't have `docker` installed, you'll need to install
+it first.
 
 First, start the local database:
 

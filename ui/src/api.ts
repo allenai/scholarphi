@@ -13,8 +13,9 @@ import {
 } from "./types/api";
 
 export async function listPapers(offset: number = 0, size: number = 25) {
-  return await doGet<Paginated<PaperIdWithEntityCounts>>(
-      axios.get("/api/v0/papers/list", { params: { offset, size }})
+  return axios.get<Paginated<PaperIdWithEntityCounts>>(
+    "/api/v0/papers/list",
+    { params: { offset, size } }
   );
 }
 
