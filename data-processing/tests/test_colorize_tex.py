@@ -5,11 +5,10 @@ from common.colorize_tex import (
     COLOR_MACROS_BASE_MACROS,
     COLOR_MACROS_LATEX_IMPORTS,
     COLOR_MACROS_TEX_IMPORTS,
-    ColorizeOptions,
     add_color_macros,
     colorize_entities,
 )
-from common.types import SerializableEntity, SerializableToken
+from common.types import ColorizeOptions, SerializableEntity, SerializableToken
 from entities.citations.colorize import colorize_citations
 from entities.citations.types import Bibitem
 from entities.symbols.colorize import (

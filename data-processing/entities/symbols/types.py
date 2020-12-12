@@ -1,8 +1,15 @@
 from dataclasses import dataclass
 from typing import Dict, List, Set
 
-from common.types import ArxivId, BoundingBox, Matches, S2Id, SymbolId, SymbolWithId
-from entities.sentences.types import Context
+from common.types import (
+    ArxivId,
+    BoundingBox,
+    Context,
+    Matches,
+    S2Id,
+    SymbolId,
+    SymbolWithId,
+)
 
 
 @dataclass(frozen=True)

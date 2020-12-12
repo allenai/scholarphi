@@ -1,5 +1,4 @@
-from common.colorize_tex import ColorizeOptions
-from common.types import Term
+from common.types import ColorizeOptions, Term
 from entities.common import create_entity_localization_command_sequence
 from scripts.pipelines import EntityPipeline, register_entity_pipeline
 
