@@ -252,16 +252,16 @@ def get_abbreviations(
     doc = nlp_model(text)
 
     # Make index from tokens to their character positions.
-    abbreviation_ranges = get_token_character_ranges(text, tokens)
+    token_ranges = get_token_character_ranges(text, tokens)
 
     for abbreviation in doc._.abbreviations:
         # Abbreviation (term).
-        abbreviation_ranges = abbreviation_ranges[abbreviation.start : abbreviation.end]
+        abbreviation_ranges = token_ranges[abbreviation.start : abbreviation.end]
         abbreviation_start = min([r.start for r in abbreviation_ranges])
         abbreviation_end = max([r.end for r in abbreviation_ranges]) + 1
 
         # Expansion (definition).
-        expansion_ranges = abbreviation_ranges[
+        expansion_ranges = token_ranges[
             abbreviation._.long_form.start : abbreviation._.long_form.end
         ]
         expansion_start = min(
@@ -580,6 +580,8 @@ class DetectDefinitions(
         sentences: List[EmbellishedSentence] = []
 
         definiendums: Dict[TermName, List[Definiendum]] = defaultdict(list)
+        term_phrases: List[str] = []
+        abbreviations: List[str] = []
         definitions: Dict[DefinitionId, Definition] = {}
 
         with tqdm(
@@ -794,6 +796,11 @@ class DetectDefinitions(
                                 section_names=[],
                             )
                             definiendums[definiendum_text].append(definiendum)
+                            if definiendum.type_ == "term":
+                                term_phrases.append(definiendum.text)
+                            if definiendum.type_ == "abbreviation":
+                                abbreviations.append(definiendum.text)
+
                             definition_index += 1
 
                     features = []
@@ -807,7 +814,7 @@ class DetectDefinitions(
         all_definiendums: List[Definiendum] = []
         for _, definiendum_list in definiendums.items():
             all_definiendums.extend(definiendum_list)
-        term_phrases: List[TermName] = list(definiendums.keys())
+
         definition_ids: Dict[TermName, List[DefinitionId]] = {}
         definition_texs: Dict[TermName, List[str]] = {}
         definition_texts: Dict[TermName, List[str]] = {}
@@ -856,7 +863,7 @@ class DetectDefinitions(
         )
 
         for tex_path, file_contents in item.tex_by_file.items():
-            term_extractor = PhraseExtractor(term_phrases)
+            term_extractor = PhraseExtractor(term_phrases + abbreviations)
             for t in term_extractor.parse(tex_path, file_contents.contents):
                 term_sentence = get_containing_entity(t, sentence_entities)
 
@@ -872,10 +879,17 @@ class DetectDefinitions(
                     t.tex_path,
                     item.arxiv_id,
                 )
+                type_ = (
+                    "abbreviation"
+                    if t.text in abbreviations
+                    else "term"
+                    if t.text in term_phrases
+                    else "unknown"
+                )
                 yield TermReference(
                     id_=f"term-{t.tex_path}-{term_index}",
                     text=t.text,
-                    type_=None,
+                    type_=type_,
                     definition_ids=definition_ids[t.text],
                     definitions=definition_texts[t.text],
                     definition_texs=definition_texs[t.text],

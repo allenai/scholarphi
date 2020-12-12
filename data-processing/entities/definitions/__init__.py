@@ -6,6 +6,7 @@ from common.commands.base import CommandList
 from common.commands.locate_entities import make_locate_entities_command
 from common.commands.upload_entities import make_upload_entities_command
 from common.types import SerializableEntity
+from entities.sentences.commands.extract_contexts import make_extract_contexts_command
 from scripts.pipelines import EntityPipeline, register_entity_pipeline
 
 from .commands.create_annotation_files import CreateAnnotationFiles
@@ -18,6 +19,7 @@ from .upload import upload_definitions
 directories.register("sentence-tokens")
 directories.register("annotation-files")
 directories.register("detected-definitions")
+directories.register("contexts-for-definitions")
 directories.register("sources-with-colorized-definitions")
 directories.register("compiled-sources-with-colorized-definitions")
 directories.register("paper-images-with-colorized-definitions")
@@ -36,20 +38,26 @@ upload_command = make_upload_entities_command(
 )
 
 
-def exclude_nicknames(entity: SerializableEntity) -> bool:
-    definition = cast(Definition, entity)
-    return definition.type_ == "nickname"
+def exclude_symbols(entity: SerializableEntity) -> bool:
+    if entity.id_.startswith("definiendum"):
+        definiendum = cast(Definiendum, entity)
+        return definiendum.type_ != "symbol"
+    if entity.id_.startswith("term"):
+        term_reference = cast(TermReference, entity)
+        return term_reference.type_ != "symbol"
+    return True
 
 
 commands: CommandList = [
     TokenizeSentences,
     CreateAnnotationFiles,
     DetectDefinitions,
+    make_extract_contexts_command(entity_name="definitions"),
     make_locate_entities_command(
         "definitions",
-        # Do not locate symbols (i.e., definitions that are 'nicknames'), because these will
-        # already be detect more robustly in dedicated commands for symbol localization.
-        colorize_options=ColorizeOptions(when=exclude_nicknames),
+        # Do not locate terms that are symbols because these will already be detect more
+        # robustly in dedicated commands for symbol localization.
+        colorize_options=ColorizeOptions(when=exclude_symbols),
     ),
     upload_command,
 ]
