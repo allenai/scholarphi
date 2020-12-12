@@ -99,7 +99,6 @@ commands = [
     FindSymbolMatches,
     make_extract_contexts_command(
         "symbols",
-        EntityType=SerializableSymbol,
         entity_key=entity_key_for_contexts,
         tex_wrapper=TexWrapper(
             before=r"\htmlClass{match-highlight}{", after="}", braces=True

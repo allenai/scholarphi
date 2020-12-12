@@ -92,3 +92,12 @@ def upload_term_definitions(
         processing_summary.s2_id, processing_summary.arxiv_id, term_infos, data_version,
     )
 
+
+def upload_symbol_definitions(
+    processing_summary: PaperProcessingResult, data_version: Optional[int]
+) -> None:
+
+    # Load in all symbols
+
+    # For each definition...
+    pass

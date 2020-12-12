@@ -1,3 +1,4 @@
+import glob
 import logging
 import os.path
 from abc import abstractmethod
@@ -8,6 +9,7 @@ from typing import Any, Callable, Dict, Iterator, List, Optional, Type
 from common import directories, file_utils
 from common.colorize_tex import wrap_span
 from common.commands.base import ArxivBatchCommand
+from common.parse_tex import overlaps
 from common.types import ArxivId, RelativePath, SerializableEntity
 
 from ..types import Context, Sentence, TexWrapper
@@ -34,16 +36,6 @@ class ExtractContextsCommand(ArxivBatchCommand[Task, Context]):
     @abstractmethod
     def get_entity_name(self) -> str:
         " Get the key for the type of entity for which contexts will be extracted. "
-
-    @staticmethod
-    def get_entity_type() -> Type[SerializableEntity]:
-        """
-        Override this method if you need access to entity data that are present on a subclass of
-        'SerializableEntity'. For example, to have access to the MathML property on a symbol during
-        comparison of symbols in the 'compare' callback, override this method to return the type
-        'SerializableSymbol'.
-        """
-        return SerializableEntity
 
     @abstractmethod
     def get_wrapper(
@@ -73,15 +65,17 @@ class ExtractContextsCommand(ArxivBatchCommand[Task, Context]):
             file_utils.clean_directory(output_dir)
 
             # Load entities from file.
-            entities_path = os.path.join(
-                directories.arxiv_subdir(
-                    f"detected-{self.get_entity_name()}", arxiv_id
-                ),
-                "entities.csv",
+            # Load in all extracted entities. See note in 'colorize_tex.py' for why entities
+            # might be saved in multiple files. If they are, for this upload function to work,
+            # each of the entities need to have a unique pair of 'ID' and 'tex_path'.
+            entities_dir = directories.arxiv_subdir(
+                f"detected-{self.get_entity_name()}", arxiv_id
             )
-            entities = list(
-                file_utils.load_from_csv(entities_path, self.get_entity_type())
-            )
+            entities: List[SerializableEntity] = []
+            for entities_path in glob.glob(os.path.join(entities_dir, "entities*.csv")):
+                entities.extend(
+                    file_utils.load_from_csv(entities_path, SerializableEntity)
+                )
 
             # Load sentences from file.
             sentences_path = os.path.join(
@@ -159,15 +153,18 @@ class ExtractContextsCommand(ArxivBatchCommand[Task, Context]):
             for entity_key in sentence_entities[sentence_id]:
                 entities = sentence_entities[sentence_id][entity_key]
 
-                # Assemble a snippet for this sentences with entity appearances highlighted.
+                # Assemble a snippet for this sentence with entity appearances highlighted.
                 # Wrap all repeat appearances of the same entity in a tag that can be used
                 # by the KaTeX browser-based LaTeX renderer to style the matches.
                 snippet = sentence.tex
+                wrapped_entities: List[SerializableEntity] = []
                 for entity in sorted(entities, key=lambda e: e.start, reverse=True):
                     start_in_snippet = entity.start - sentence.start
                     end_in_snippet = entity.end - sentence.start
                     tex_wrapper = self.get_wrapper(entity)
-                    if tex_wrapper is not None:
+                    if tex_wrapper is not None and not any(
+                        [overlaps(entity, e) for e in wrapped_entities]
+                    ):
                         snippet = wrap_span(
                             snippet,
                             start_in_snippet,
@@ -176,6 +173,7 @@ class ExtractContextsCommand(ArxivBatchCommand[Task, Context]):
                             after=tex_wrapper.after,
                             braces=tex_wrapper.braces,
                         )
+                        wrapped_entities.append(entity)
 
                 for entity in entities:
                     neighbor_ids = [e.id_ for e in entities if e != entity]
@@ -204,8 +202,7 @@ EntityKeyFunc = Callable[[SerializableEntity], Any]
 def make_extract_contexts_command(
     entity_name: str,
     entity_key: Optional[EntityKeyFunc] = None,
-    tex_wrapper: Optional[TexWrapper] = None,
-    EntityType: Optional[Type[SerializableEntity]] = None,
+    tex_wrapper: Optional[TexWrapper] = TexWrapper(before="**", after="**"),
 ) -> Type[ExtractContextsCommand]:
     class C(ExtractContextsCommand):
         @staticmethod
@@ -214,12 +211,6 @@ def make_extract_contexts_command(
 
         def get_entity_name(self) -> str:
             return entity_name
-
-        @staticmethod
-        def get_entity_type() -> Type[SerializableEntity]:
-            if EntityType is None:
-                return super(C, C).get_entity_type()
-            return EntityType
 
         def get_key(self, entity: SerializableEntity) -> Any:
             if entity_key is None:
@@ -234,12 +225,6 @@ def make_extract_contexts_command(
             return f"Extract contexts for each appearance of {entity_name}."
 
         def get_arxiv_ids_dirkey(self) -> str:
-            return self.get_detected_entities_dirkey()
-
-        def get_detected_entities_dirkey(self) -> str:
             return f"detected-{entity_name}"
-
-        def get_output_base_dirkey(self) -> str:
-            return f"sentences-for-{entity_name}"
 
     return C
