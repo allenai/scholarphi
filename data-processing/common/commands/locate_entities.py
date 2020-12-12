@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from typing import Any, Callable, Deque, Dict, Iterator, List, Optional, Type
 
 from common import directories, file_utils
-from common.colorize_tex import ColorizedTex, ColorizeOptions, colorize_entities
+from common.colorize_tex import ColorizedTex, colorize_entities
 from common.commands.base import ArxivBatchCommand
 from common.commands.compile_tex import save_compilation_result
 from common.commands.raster_pages import raster_pages
@@ -24,6 +24,7 @@ from common.locate_entities import locate_entities
 from common.types import (
     ArxivId,
     ColorizationRecord,
+    ColorizeOptions,
     FileContents,
     HueLocationInfo,
     RelativePath,
@@ -101,8 +102,8 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
     @abstractmethod
     def get_entity_name() -> str:
         """
-        Get the name of the type of entity that will be batch processed in these commands.
-        This command will be used to determine the names of output directories.
+        Get the name of the type of entity that will be batch processed in this command.
+        This name will be used to determine the names of output directories.
         """
 
     def get_arxiv_ids_dirkey(self) -> str:

@@ -7,7 +7,7 @@ from common.models import BoundingBox as BoundingBoxModel
 from common.models import Entity
 from common.models import EntityData as EntityDataModel
 from common.models import Paper, Version, output_database, session_id
-from common.types import ArxivId, EntityInformation, EntityReference, S2Id
+from common.types import ArxivId, EntityReference, EntityUploadInfo, S2Id
 
 
 def get_or_create_data_version(paper_id: str) -> int:
@@ -36,7 +36,7 @@ def get_or_create_data_version(paper_id: str) -> int:
 def upload_entities(
     s2_id: S2Id,
     arxiv_id: ArxivId,
-    entities: List[EntityInformation],
+    entities: List[EntityUploadInfo],
     data_version: Optional[int] = None,
 ) -> None:
     """

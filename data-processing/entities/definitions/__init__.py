@@ -1,11 +1,11 @@
+from dataclasses import dataclass
 from typing import cast
 
 from common import directories
-from common.colorize_tex import ColorizeOptions
 from common.commands.base import CommandList
 from common.commands.locate_entities import make_locate_entities_command
 from common.commands.upload_entities import make_upload_entities_command
-from common.types import SerializableEntity
+from common.types import ColorizeOptions, SerializableEntity
 from entities.sentences.commands.extract_contexts import make_extract_contexts_command
 from scripts.pipelines import EntityPipeline, register_entity_pipeline
 
@@ -38,13 +38,14 @@ upload_command = make_upload_entities_command(
 )
 
 
+@dataclass(frozen=True)
+class EntityWithType(SerializableEntity):
+    type_: str
+
+
 def exclude_symbols(entity: SerializableEntity) -> bool:
-    if entity.id_.startswith("definiendum"):
-        definiendum = cast(Definiendum, entity)
-        return definiendum.type_ != "symbol"
-    if entity.id_.startswith("term"):
-        term_reference = cast(TermReference, entity)
-        return term_reference.type_ != "symbol"
+    if entity.id_.startswith("definiendum") or entity.id_.startswith("term"):
+        return cast(EntityWithType, entity).type_ != "symbol"
     return True
 
 
@@ -55,6 +56,7 @@ commands: CommandList = [
     make_extract_contexts_command(entity_name="definitions"),
     make_locate_entities_command(
         "definitions",
+        DetectedEntityType=EntityWithType,
         # Do not locate terms that are symbols because these will already be detect more
         # robustly in dedicated commands for symbol localization.
         colorize_options=ColorizeOptions(when=exclude_symbols),

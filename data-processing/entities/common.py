@@ -1,13 +1,12 @@
 from typing import List, Optional, Type
 
 from common import directories
-from common.colorize_tex import ColorizeOptions
 from common.commands.base import Command, CommandList
 from common.commands.detect_entities import make_detect_entities_command
 from common.commands.locate_entities import ColorizeFunc, make_locate_entities_command
 from common.commands.upload_entities import make_upload_entities_command
 from common.parse_tex import EntityExtractor
-from common.types import EntityUploadCallable, SerializableEntity
+from common.types import ColorizeOptions, EntityUploadCallable, SerializableEntity
 from entities.sentences.commands.extract_contexts import make_extract_contexts_command
 from entities.sentences.types import TexWrapper
 

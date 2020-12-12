@@ -2,17 +2,18 @@ from typing import List
 
 from common.colorize_tex import (
     ColorizedTex,
-    ColorizeOptions,
-    generate_hues,
-    add_color_macros,
     _get_tex_color,
+    add_color_macros,
+    generate_hues,
 )
 from common.parse_tex import DocumentclassExtractor
-from common.types import SerializableEntity
+from common.types import ColorizeOptions, SerializableEntity
 
 
 def colorize_citations(
-    tex: str, bibitems: List[SerializableEntity], options: ColorizeOptions = ColorizeOptions()
+    tex: str,
+    bibitems: List[SerializableEntity],
+    options: ColorizeOptions = ColorizeOptions(),
 ) -> ColorizedTex:
     """
     To save time, this function only attempts to add colorization commands to the main document file,

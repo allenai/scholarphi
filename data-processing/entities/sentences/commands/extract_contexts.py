@@ -10,9 +10,9 @@ from common import directories, file_utils
 from common.colorize_tex import wrap_span
 from common.commands.base import ArxivBatchCommand
 from common.parse_tex import overlaps
-from common.types import ArxivId, RelativePath, SerializableEntity
+from common.types import ArxivId, Context, RelativePath, SerializableEntity
 
-from ..types import Context, Sentence, TexWrapper
+from ..types import Sentence, TexWrapper
 
 
 @dataclass(frozen=True)
@@ -36,6 +36,16 @@ class ExtractContextsCommand(ArxivBatchCommand[Task, Context]):
     @abstractmethod
     def get_entity_name(self) -> str:
         " Get the key for the type of entity for which contexts will be extracted. "
+
+    @staticmethod
+    @abstractmethod
+    def get_entity_type() -> Type[SerializableEntity]:
+        """
+        Override this method if you need access to entity data that are present on a subclass of
+        'SerializableEntity'. For example, to have access to the MathML property on a symbol during
+        comparison of symbols in the 'compare' callback, override this method to return the type
+        'SerializableSymbol'.
+        """
 
     @abstractmethod
     def get_wrapper(
@@ -74,7 +84,7 @@ class ExtractContextsCommand(ArxivBatchCommand[Task, Context]):
             entities: List[SerializableEntity] = []
             for entities_path in glob.glob(os.path.join(entities_dir, "entities*.csv")):
                 entities.extend(
-                    file_utils.load_from_csv(entities_path, SerializableEntity)
+                    file_utils.load_from_csv(entities_path, self.get_entity_type())
                 )
 
             # Load sentences from file.
@@ -201,6 +211,7 @@ EntityKeyFunc = Callable[[SerializableEntity], Any]
 
 def make_extract_contexts_command(
     entity_name: str,
+    EntityType: Type[SerializableEntity] = SerializableEntity,
     entity_key: Optional[EntityKeyFunc] = None,
     tex_wrapper: Optional[TexWrapper] = TexWrapper(before="**", after="**"),
 ) -> Type[ExtractContextsCommand]:
@@ -211,6 +222,10 @@ def make_extract_contexts_command(
 
         def get_entity_name(self) -> str:
             return entity_name
+
+        @staticmethod
+        def get_entity_type() -> Type[SerializableEntity]:
+            return EntityType
 
         def get_key(self, entity: SerializableEntity) -> Any:
             if entity_key is None:
