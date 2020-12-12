@@ -8,9 +8,8 @@ from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Union, cast
 
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
-from common.parse_tex import PhraseExtractor, get_containing_entity, overlaps
-from common.types import (ArxivId, CharacterRange, FileContents,
-                          SerializableEntity)
+from common.parse_tex import PhraseExtractor, overlaps
+from common.types import ArxivId, CharacterRange, FileContents
 from tqdm import tqdm
 from typing_extensions import Literal
 
@@ -758,7 +757,6 @@ class DetectDefinitions(
                                 tex=definition_tex,
                                 text=pair.definition_text,
                                 context_tex=sentence.context_tex,
-                                sentence_id=sentence.id_,
                                 intent=bool(intent),
                                 confidence=definition_confidence,
                             )
@@ -788,7 +786,6 @@ class DetectDefinitions(
                                 tex_path=tex_path,
                                 tex=definiendum_tex,
                                 context_tex=sentence.context_tex,
-                                sentence_id=sentence.id_,
                                 # Document-level features below.
                                 position_ratio=position_ratio,
                                 position_ratios=[],
@@ -858,14 +855,10 @@ class DetectDefinitions(
 
         # Detect all other references to the defined terms.
         term_index = 0
-        sentence_entities: List[SerializableEntity] = cast(
-            List[SerializableEntity], item.sentences
-        )
 
         for tex_path, file_contents in item.tex_by_file.items():
             term_extractor = PhraseExtractor(term_phrases + abbreviations)
             for t in term_extractor.parse(tex_path, file_contents.contents):
-                term_sentence = get_containing_entity(t, sentence_entities)
 
                 # Don't save term references if they are already in the definiendums.
                 if any([overlaps(definiendum, t) for definiendum in all_definiendums]):
@@ -901,9 +894,6 @@ class DetectDefinitions(
                     tex_path=t.tex_path,
                     tex=t.tex,
                     context_tex=t.context_tex,
-                    sentence_id=term_sentence.id_
-                    if term_sentence is not None
-                    else None,
                 )
                 term_index += 1
 

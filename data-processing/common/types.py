@@ -225,7 +225,6 @@ class Phrase(SerializableEntity):
 @dataclass(frozen=True)
 class Term(SerializableEntity):
     text: str
-    sentence_id: Optional[str]
 
     type_: Optional[str]
     " Type of term (e.g., symbol, protologism, abbreviation). "
