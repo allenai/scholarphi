@@ -65,7 +65,7 @@ def upload_term_definitions(
         entity = entity_summary.entity
         context = entity_summary.context
 
-        if not (is_textual_term(entity)):
+        if not is_textual_term(entity):
             continue
 
         term = cast(TermReference, entity)
