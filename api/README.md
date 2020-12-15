@@ -49,8 +49,24 @@ configuration.
 You can get these values by getting in touch with an administrator.
 At the time of writing this, [andrewhead@berkeley.edu](mailto:andrewhead@berkeley.edu)
 is one. Once you have the values, put them in a file called
-`config/secret.json`, after which your application should
-be able to to query the database and Semantic Scholar's public
+`config/secret.json`. The result will look something like this:
+
+```json
+{
+  "database": {
+    "password": "<password>"
+    "host": "<hostname>",
+    "database": "<dbname>",
+    "user": "<user>"
+  },
+  "s2": {
+    "apiKey": "<key>"
+  }
+}
+```
+
+After doing this you can start your API server, which should now
+have the ability to freely query the database or S2's Public
 API.
 
 ## Running the Tests
