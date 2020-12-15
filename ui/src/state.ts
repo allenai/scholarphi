@@ -62,6 +62,12 @@ export interface State extends Settings {
   /*
    * *** USER INTERFACE STATE ***
    */
+
+  /*
+   * ~ Loading states ~
+   */
+
+  areCitationsLoading: boolean;
   /*
    * ~ App control panel ~
    */
@@ -106,7 +112,7 @@ export interface State extends Settings {
   snackbarActivationTimeMs: number | null;
   snackbarMessage: string | null;
 
-  /* 
+  /*
    * ~ Find bar state ~
   /**
    * When 'isFindActive' is false, the rest of the properties for finding should be set to null.
