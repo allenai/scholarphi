@@ -38,7 +38,6 @@ export class Config {
     static fromConfig(conf: nconf.Provider) {
         const db = conf.get("database");
         const s2 = conf.get("s2"); 
-        const algolia = conf.get("algolia");
         return new Config(
             new DBConfig(db.host, db.database, db.user, db.password, db.port, db.schema),
             new S2APIConfig(s2 && s2.apiKey)
