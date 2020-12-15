@@ -54,7 +54,7 @@ is one. Once you have the values, put them in a file called
 ```json
 {
   "database": {
-    "password": "<password>"
+    "password": "<password>",
     "host": "<hostname>",
     "database": "<dbname>",
     "user": "<user>"
