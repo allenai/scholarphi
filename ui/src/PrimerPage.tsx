@@ -18,6 +18,7 @@ interface Props {
   annotationHintsEnabled: boolean;
   termGlossesEnabled: boolean;
   scrollToPageOnLoad?: boolean;
+  isCitationsLoading?: boolean;
   handleSetAnnotationHintsEnabled: (enabled: boolean) => void;
 }
 
@@ -67,6 +68,7 @@ class PrimerPage extends React.PureComponent<Props> {
       entities,
       showInstructions,
       termGlossesEnabled,
+      isCitationsLoading,
     } = this.props;
 
     /*
@@ -83,8 +85,9 @@ class PrimerPage extends React.PureComponent<Props> {
     }
     this._element.style.width = width;
 
-    const terms = entities !== null ? glossaryTerms(entities) : [];
-    const symbols = entities !== null ? glossarySymbols(entities) : [];
+    const isEntitiesLoaded = (entities: Entities | null): entities is Entities => ( entities !== null );
+    const terms = isEntitiesLoaded(entities) ? glossaryTerms(entities) : [];
+    const symbols = isEntitiesLoaded(entities) ? glossarySymbols(entities) : [];
 
     return ReactDOM.createPortal(
       <>
@@ -161,15 +164,32 @@ class PrimerPage extends React.PureComponent<Props> {
               </div>
             </>
           )}
-          {entities === null ? (
-            <>
-              <p className="primer-page__header">
-                Building a glossary of key terms and symbols for this paper...
-              </p>
-              <p>Please wait... Scanning paper...</p>
-              <LinearProgress />
-            </>
-          ) : (
+          {
+            (isCitationsLoading || !isEntitiesLoaded(entities)) && (
+              <>
+                <p className="primer-page__header">
+                  Preparing paper for interactive viewing...
+                </p>
+                {
+                  isCitationsLoading && (
+                    <>
+                      <p>Loading citation data...</p>
+                      <LinearProgress />
+                    </>
+                  )
+                }
+                {
+                  !isEntitiesLoaded(entities) && (
+                    <>
+                      <p>Building a glossary of key terms and symbols..</p>
+                      <LinearProgress />
+                    </>
+                  )
+                }
+              </>
+            )
+          }
+          {isEntitiesLoaded(entities) && (
             <>
               {termGlossesEnabled && terms.length > 0 ? (
                 <>
