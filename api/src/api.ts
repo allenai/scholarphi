@@ -52,7 +52,7 @@ export const plugin = {
         // We fetch metadata about each paper (it's title, author names, etc) from S2's public
         // API and merged them into the result set.
         const s2PaperInfoByPaperId: { [pid: string]: Paper } = {};
-        for (const s2Paper of await s2Api.getPapers(paperIds, config.s2.apiKey, true)) {
+        for (const s2Paper of await s2Api.getPapers(paperIds, config.s2.apiKey, false)) {
           if (!s2Paper) {
             continue;
           }
