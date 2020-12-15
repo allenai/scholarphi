@@ -28,7 +28,6 @@ export interface PaperIdWithEntityCounts {
   sentence_count: number;
   term_count: number;
   equation_count: number;
-  definition_count: number;
   entity_count: number;
 }
 
@@ -44,6 +43,17 @@ export interface Paper {
   url: string;
   venue: string;
   year: number | null;
+  influentialCitationCount?: number;
+  citationVelocity?: number;
+}
+
+export interface PaperWithEntityCounts extends PaperIdWithEntityCounts {
+  abstract?: string;
+  authors?: Author[];
+  title?: string;
+  url?: string;
+  venue?: string;
+  year?: number | null;
   influentialCitationCount?: number;
   citationVelocity?: number;
 }

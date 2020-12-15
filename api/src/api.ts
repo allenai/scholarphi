@@ -2,11 +2,32 @@ import * as Hapi from "@hapi/hapi";
 import * as Joi from "@hapi/joi";
 import { Connection } from "./db-connection";
 import * as s2Api from "./s2-api";
-import { EntityCreatePayload, EntityUpdatePayload, Paper } from "./types/api";
+import {
+  EntityCreatePayload,
+  EntityUpdatePayload,
+  Paper,
+  PaperWithEntityCounts,
+  Paginated
+} from "./types/api";
 import * as validation from "./types/validation";
+import * as conf from "./conf";
 
 interface ApiOptions {
   connection: Connection;
+  config: conf.Config;
+}
+
+function firstQueryStringValue(request: Hapi.Request, name: string): string | undefined {
+  const v = request.query[name];
+  return Array.isArray(v) ? v.shift() : v;
+}
+
+function firstIntOrDefault(request: Hapi.Request, name: string, defaultValue: number): number {
+  const v = parseInt(firstQueryStringValue(request, name) || "");
+  if (isNaN(v)) {
+    return defaultValue;
+  }
+  return v;
 }
 
 /**
@@ -16,36 +37,48 @@ export const plugin = {
   name: "API",
   version: "0.0.2",
   register: async function (server: Hapi.Server, options: ApiOptions) {
-    const { connection: dbConnection } = options;
+    const { connection: dbConnection, config } = options;
 
     server.route({
       method: "GET",
       path: "papers/list",
       handler: async (request) => {
-        let offset;
-        if ('offset' in request.query) {
-          const o = parseInt(
-            Array.isArray(request.query.offset)
-              ? request.query.offset[0]
-              : request.query.offset
-          );
-          if (!isNaN(o)) {
-            offset = o;
-          }
-        }
-        let size;
-        if ('size' in request.query) {
-          const s = parseInt(
-            Array.isArray(request.query.size)
-              ? request.query.size[0]
-              : request.query.size
-          );
-          if (!isNaN(s)) {
-            size = Math.min(s, 100);
-          }
-        }
+        const offset = firstIntOrDefault(request, "offset", 0);
+        const size = firstIntOrDefault(request, "size", 25);
+
         const papers = await dbConnection.getAllPapers(offset, size);
-        return papers;
+        const paperIds = papers.rows.map(p => p.s2_id);
+
+        // We fetch metadata about each paper (it's title, author names, etc) from S2's public
+        // API and merged them into the result set.
+        const s2PaperInfoByPaperId: { [pid: string]: Paper } = {};
+        for (const s2Paper of await s2Api.getPapers(paperIds, config.s2.apiKey, false)) {
+          if (!s2Paper) {
+            continue;
+          }
+          if (s2Paper.s2Id in s2PaperInfoByPaperId) {
+            console.warn(`Duplicate paper id: ${s2Paper.s2Id}`);
+            continue;
+          }
+          s2PaperInfoByPaperId[s2Paper.s2Id] = s2Paper;
+        }
+        const mergedPapers: PaperWithEntityCounts[] = [];
+        for (const paper of papers.rows) {
+          const maybeS2Paper = s2PaperInfoByPaperId[paper.s2_id];
+          mergedPapers.push({
+            ...paper,
+            abstract: maybeS2Paper?.abstract,
+            authors: maybeS2Paper?.authors,
+            title: maybeS2Paper?.title,
+            url: maybeS2Paper?.url,
+            venue: maybeS2Paper?.venue,
+            year: maybeS2Paper?.year,
+            influentialCitationCount: maybeS2Paper?.influentialCitationCount,
+            citationVelocity: maybeS2Paper?.citationVelocity
+          });
+        }
+        const response: Paginated<PaperWithEntityCounts> = { ...papers, ...{ rows: mergedPapers } };
+        return response;
       },
     });
 
@@ -63,7 +96,7 @@ export const plugin = {
         const uniqueIds = ids.filter((id, index) => {
           return ids.indexOf(id) === index;
         });
-        const data = (await s2Api.getPapers(uniqueIds))
+        const data = (await s2Api.getPapers(uniqueIds, config.s2.apiKey))
           .filter((paper) => paper !== undefined)
           .map((paper) => paper as Paper)
           .map((paper) => ({

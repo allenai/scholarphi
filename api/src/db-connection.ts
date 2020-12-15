@@ -1,5 +1,4 @@
 import * as Knex from "knex";
-import * as nconf from "nconf";
 import {
   BoundingBox,
   Entity,
@@ -12,29 +11,12 @@ import {
   Relationship,
 } from "./types/api";
 import * as validation from "./types/validation";
-
-/**
- * Extract connection parameters from the application-wide configuration.
- */
-export function extractConnectionParams(
-  config: nconf.Provider
-): ConnectionParams {
-  return config.get("database");
-}
-
-interface ConnectionParams {
-  host: string;
-  port: number;
-  database: string;
-  user: string;
-  password: string;
-  schema?: string;
-}
+import { DBConfig } from "./conf";
 
 /**
  * Create a Knex query builder that can be used to submit queries to the database.
  */
-export function createQueryBuilder(params: ConnectionParams) {
+export function createQueryBuilder(params: DBConfig) {
   const { host, port, database, user, password } = params;
   const config: Knex.Config = {
     client: "pg",
@@ -66,7 +48,7 @@ export class EntityLoadError extends Error {
  * An interface to the database. Performs queries and returns santized, typed objects.
  */
 export class Connection {
-  constructor(params: ConnectionParams) {
+  constructor(params: DBConfig) {
     this._knex = createQueryBuilder(params);
   }
 
@@ -87,7 +69,6 @@ export class Connection {
         sentence_count: string;
         term_count: string;
         equation_count: string;
-        definition_count: string;
         entity_count: string;
         total_count: string;
     };
@@ -100,7 +81,6 @@ export class Connection {
              SUM(CASE WHEN entity.type = 'sentence' THEN 1 ELSE 0 END) AS sentence_count,
              SUM(CASE WHEN entity.type = 'term' THEN 1 ELSE 0 END) AS term_count,
              SUM(CASE WHEN entity.type = 'equation' THEN 1 ELSE 0 END) AS equation_count,
-             SUM(CASE WHEN entity.type = 'definition' THEN 1 ELSE 0 END) AS definition_count,
              COUNT(entity.*) AS entity_count,
              COUNT(*) OVER() as total_count
         FROM paper
@@ -128,7 +108,6 @@ export class Connection {
         sentence_count: parseInt(r.sentence_count),
         term_count: parseInt(r.term_count),
         equation_count: parseInt(r.equation_count),
-        definition_count: parseInt(r.definition_count),
         entity_count: parseInt(r.entity_count)
     }));
     const total = parseInt(response.rows[0].total_count);

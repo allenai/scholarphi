@@ -1,16 +1,22 @@
 import { Server, ServerInjectOptions } from "@hapi/hapi";
 import * as nconf from "nconf";
 import * as api from "./api";
-import { Connection, extractConnectionParams } from "./db-connection";
+import { Connection } from "./db-connection";
 import { LogEntryCreatePayload } from "./types/api";
 import * as validation from "./types/validation";
 import { debugFailAction } from "./types/validation";
+import * as conf from "./conf";
 
 /**
  * Wrapper around hapi server that takes care of stateful server start and stop operations.
  */
 class ApiServer {
-  constructor(config: nconf.Provider, debug?: boolean) {
+  private _debug: boolean;
+  private _config: conf.Config;
+  private _server: Server | null = null;
+  private _dbConnection: Connection | null = null;
+
+  constructor(config: conf.Config, debug?: boolean) {
     this._config = config;
     this._debug = debug || false;
   }
@@ -34,8 +40,7 @@ class ApiServer {
      * in the plugin code, because a reference to the connection needs to be saved
      * so that the connection can be closed when the server is shut down.
      */
-    const connectionParams = extractConnectionParams(this._config);
-    const dbConnection = new Connection(connectionParams);
+    const dbConnection = new Connection(this._config.db);
     this._dbConnection = dbConnection;
 
     /**
@@ -43,7 +48,11 @@ class ApiServer {
      */
     await this._server.register({
       plugin: api.plugin,
-      options: { connection: dbConnection, debug: this._debug },
+      options: {
+        connection: dbConnection,
+        debug: this._debug,
+        config: this._config
+      },
       routes: {
         prefix: "/api/v0/",
       },
@@ -130,10 +139,7 @@ class ApiServer {
     return this._server.inject(options);
   }
 
-  private _debug: boolean;
-  private _config: nconf.Provider;
-  private _server: Server | null = null;
-  private _dbConnection: Connection | null = null;
+
 }
 
 export default ApiServer;

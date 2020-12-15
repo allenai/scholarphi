@@ -1,8 +1,9 @@
 import * as fs from "fs";
 import * as Knex from "knex";
 import * as nconf from "nconf";
-import { createQueryBuilder, extractConnectionParams } from "../db-connection";
+import { createQueryBuilder } from "../db-connection";
 import { default as APIServer } from "../server";
+import * as conf from "../conf";
 
 /**
  * Configure the tests to connect to a test database instead of the production database.
@@ -23,16 +24,14 @@ nconf
     },
   });
 
-const connectionParams = extractConnectionParams(nconf);
-const connectionParamsWithoutSchema = { ...connectionParams };
-delete connectionParamsWithoutSchema.schema;
+const config = conf.Config.fromConfig(nconf);
 
 export async function setupTestDatabase() {
   /**
    * When initializing the test database, the default schema used in the tests (named 'test')
    * doesn't yet exist. So the schema property should be left out from this first database connection.
    */
-  let knex = createQueryBuilder(connectionParamsWithoutSchema);
+  let knex = createQueryBuilder(config.db.withoutSchema());
 
   const createTestTablesSql = fs
     .readFileSync("src/tests/create_test_tables.sql")
@@ -66,7 +65,7 @@ export async function truncateTables(knex: Knex, tables?: string[]) {
 }
 
 export async function teardownTestDatabase() {
-  const knex = createQueryBuilder(connectionParamsWithoutSchema);
+  const knex = createQueryBuilder(config.db.withoutSchema());
   await knex.raw("DROP SCHEMA IF EXISTS test CASCADE");
   knex.destroy();
 }
@@ -75,11 +74,11 @@ export async function teardownTestDatabase() {
  * Get a query builder that can be used to insert or inspect test data.
  */
 export function createDefaultQueryBuilder() {
-  return createQueryBuilder(connectionParams);
+  return createQueryBuilder(config.db);
 }
 
 export async function initServer() {
-  const server = new APIServer(nconf, true);
+  const server = new APIServer(config, true);
   await server.init();
   return server;
 }
