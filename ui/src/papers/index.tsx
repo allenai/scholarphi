@@ -85,10 +85,6 @@ function getSizeFromURL(defaultSize: number): number {
   return s;
 }
 
-/**
- * SAM TO DO:
- * - Display Algolia logo on search results (or update to paid account)
- */
 const PaperList = () => {
   const [ query, setListRequest ] = useState<ListRequest>(new ListRequest(
     getOffsetFromURL(0),
