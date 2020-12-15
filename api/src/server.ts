@@ -42,7 +42,7 @@ class ApiServer {
      */
     const dbConnection = new Connection(this._config.db);
     this._dbConnection = dbConnection;
-    console.log(`Using database at ${connectionParams.host}`);
+    console.log(`Using database at ${this._config.db.host}`);
 
     /**
      * Register API endpoints.
