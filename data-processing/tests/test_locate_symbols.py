@@ -8,6 +8,9 @@ def token_id(start: int, end: int) -> TokenId:
 
 def symbol(tokens, start=-1, end=-1):
     return Symbol(
+        tex_path="main.tex",
+        equation_index=0,
+        symbol_index=0,
         tex="<symbol-tex>",
         tokens=tokens,
         mathml="<mathml>",

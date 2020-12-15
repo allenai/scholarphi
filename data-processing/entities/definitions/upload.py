@@ -1,16 +1,16 @@
+import logging
 from collections import defaultdict
-from typing import Dict, List, Optional, cast
+from typing import Dict, List, Optional, Tuple, cast
 
+from common import file_utils
 from common.colorize_tex import EntityId
-from common.types import (
-    BoundingBox,
-    Context,
-    EntityReference,
-    EntityUploadInfo,
-    PaperProcessingResult,
-    SerializableEntity,
-)
-from common.upload_entities import upload_entities
+from common.models import EntityData as EntityDataModel
+from common.types import (BoundingBox, Context, EntityData, EntityReference,
+                          EntityRelationships, EntityUploadInfo, MathML,
+                          PaperProcessingResult, SerializableEntity, Symbol)
+from common.upload_entities import (fetch_existing_entities, make_data_models,
+                                    make_relationship_models, upload_entities)
+from entities.symbols.upload import sid
 
 from .types import Definiendum, TermReference
 
@@ -19,6 +19,7 @@ def upload_definitions(
     processing_summary: PaperProcessingResult, data_version: Optional[int]
 ) -> None:
     upload_term_definitions(processing_summary, data_version)
+    upload_symbol_definitions(processing_summary, data_version)
 
 
 TermName = str
@@ -123,11 +124,142 @@ def upload_term_definitions(
     )
 
 
+TexPath = str
+EquationIndex = int
+
+
 def upload_symbol_definitions(
     processing_summary: PaperProcessingResult, data_version: Optional[int]
 ) -> None:
+    " Upload symbols and their definitions. "
 
-    # Load in all symbols
+    # Associate definitions with symbols as follows:
+    # Definitions will be associated with entire equations as per the current implementation
+    # of the definition detector. Conservatively, associate a definition for an equation
+    # with a single symbol only if that symbol is the *only* top-level symbol in that equation.
 
-    # For each definition...
-    pass
+    # Load symbols from files. Group symbols by equation to make it easy to detect whether a
+    # symbol is the only top-level symbol in the equation.
+    symbols_by_equation: Dict[
+        Tuple[TexPath, EquationIndex], List[Symbol]
+    ] = defaultdict(list)
+    symbols: List[Symbol] = []
+
+    symbols_with_ids = file_utils.load_symbols(processing_summary.arxiv_id)
+    if symbols_with_ids is None:
+        logging.info(  # pylint: disable=logging-not-lazy
+            "No symbols were loaded for paper %s. Therefore, no definitions for symbols "
+            + "will be uploaded for this paper.",
+            processing_summary.arxiv_id,
+        )
+        return
+
+    for _, symbol in symbols_with_ids:
+        symbols_by_equation[symbol.tex_path, symbol.equation_index].append(symbol)
+        symbols.append(symbol)
+
+    # Group symbols by their MathML. These groups will be used to propagate definitions from
+    # one defined symbol to all other appearances of that symbol.
+    symbols_by_mathml: Dict[MathML, List[Symbol]] = defaultdict(list)
+    for symbol in symbols:
+        symbols_by_mathml[symbol.mathml].append(symbol)
+
+    # Construct map from definitions to the sentences that contain them.
+    contexts_by_definition: Dict[EntityId, Context] = {}
+    for entity_summary in processing_summary.entities:
+        entity_id = entity_summary.entity.id_
+        context = entity_summary.context
+        if (entity_id.startswith("definition")) and context is not None:
+            contexts_by_definition[entity_id] = context
+
+    # Fetch rows for all entities for this paper that have already been uploaded to the database.
+    # This allows lookup of the row IDs for the sentence that contain definitions of symbols.
+    entity_models = fetch_existing_entities(processing_summary.s2_id, data_version)
+
+    # Create a list of rows to insert into the database containing definition data.
+    entity_data_models: List[EntityDataModel] = []
+    for entity_summary in processing_summary.entities:
+        entity = entity_summary.entity
+        if not entity.id_.startswith("definiendum"):
+            continue
+
+        # Attempt to match definienda (defined terms) to symbols that are being defined.
+        definiendum = cast(Definiendum, entity)
+        defined_symbol = None
+        for symbol in symbols:
+            # Is the definiendum an equation?
+            if definiendum.type_ != "symbol":
+                continue
+            # Does the symbol fall within in the range of characters being defined?
+            if symbol.start < definiendum.start or symbol.end > definiendum.end:
+                continue
+            # Is the symbol a top-level symbol?
+            if symbol.parent is not None:
+                continue
+            # Is it the *only* top-level symbol in its equation?
+            top_level_symbols_in_equation = filter(
+                lambda s: s.parent is not None,
+                symbols_by_equation[(symbol.tex_path, symbol.equation_index)],
+            )
+            if len(list(top_level_symbols_in_equation)) > 1:
+                continue
+
+            defined_symbol = symbol
+            logging.debug(  # pylint: disable=logging-not-lazy
+                "Matched definiedum %s at position (%d, %d) to symbol %s at position "
+                + "(%s, %s) for paper %s. A definition for this symbol will be uploaded.",
+                definiendum.tex,
+                definiendum.start,
+                definiendum.end,
+                symbol.tex,
+                symbol.start,
+                symbol.end,
+                processing_summary.arxiv_id,
+            )
+            break
+
+        if defined_symbol is None:
+            continue
+
+        # Assemble data about definitions for the symbol.
+        definitions = definiendum.definitions
+        definition_texs = definiendum.definition_texs
+        sources = definiendum.sources
+        definition_sentence_ids: List[Optional[str]] = []
+        for definition_id in definiendum.definition_ids:
+            context = contexts_by_definition.get(definition_id)
+            if context is None:
+                definition_sentence_ids.append(None)
+            else:
+                definition_sentence_ids.append(
+                    f"{context.tex_path}-{context.sentence_id}"
+                )
+
+        # Find all symbols that are the same (i.e., that have the same MathML representation).
+        # Then save definition data so that it applies all of those symbols.
+        matching_symbols = symbols_by_mathml.get(defined_symbol.mathml)
+        if matching_symbols is not None:
+            for s in matching_symbols:
+                symbol_entity_model = entity_models.get(("symbol", sid(s)))
+                data: EntityData = {
+                    "definitions": definitions,
+                    "definition_texs": definition_texs,
+                    "sources": sources
+                }
+                entity_data_models.extend(
+                    make_data_models(symbol_entity_model, None, data)
+                )
+
+                relationships: EntityRelationships = {
+                    "definition_sentences": [
+                        EntityReference(type_="sentence", id_=id_)
+                        for id_ in definition_sentence_ids
+                    ],
+                }
+                entity_data_models.extend(
+                    make_relationship_models(
+                        ("symbol", sid(s)), relationships, entity_models
+                    )
+                )
+
+    EntityDataModel.bulk_create(entity_data_models, 200)
