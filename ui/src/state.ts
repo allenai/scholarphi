@@ -67,7 +67,7 @@ export interface State extends Settings {
    * ~ Loading states ~
    */
 
-  isCitationsLoading: boolean;
+  areCitationsLoading: boolean;
   /*
    * ~ App control panel ~
    */

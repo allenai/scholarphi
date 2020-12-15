@@ -18,7 +18,7 @@ interface Props {
   annotationHintsEnabled: boolean;
   termGlossesEnabled: boolean;
   scrollToPageOnLoad?: boolean;
-  isCitationsLoading?: boolean;
+  areCitationsLoading?: boolean;
   handleSetAnnotationHintsEnabled: (enabled: boolean) => void;
 }
 
@@ -68,7 +68,7 @@ class PrimerPage extends React.PureComponent<Props> {
       entities,
       showInstructions,
       termGlossesEnabled,
-      isCitationsLoading,
+      areCitationsLoading,
     } = this.props;
 
     /*
@@ -165,13 +165,13 @@ class PrimerPage extends React.PureComponent<Props> {
             </>
           )}
           {
-            (isCitationsLoading || !isEntitiesLoaded(entities)) && (
+            (areCitationsLoading || !isEntitiesLoaded(entities)) && (
               <>
                 <p className="primer-page__header">
                   Preparing paper for interactive viewing...
                 </p>
                 {
-                  isCitationsLoading && (
+                  areCitationsLoading && (
                     <>
                       <p>Loading citation data...</p>
                       <LinearProgress />

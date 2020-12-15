@@ -91,7 +91,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
       controlPanelShowing: false,
 
-      isCitationsLoading: false,
+      areCitationsLoading: false,
 
       selectedAnnotationIds: [],
       selectedAnnotationSpanIds: [],
@@ -729,7 +729,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     if (this.props.paperId !== undefined) {
       if (this.props.paperId.type === "arxiv") {
         this.setState({
-          isCitationsLoading: true
+          areCitationsLoading: true
         });
         const entities = await api.getEntities(this.props.paperId.id);
         this.setState({
@@ -749,7 +749,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
             },
             {} as { [s2Id: string]: Paper }
           );
-          this.setState({ papers, isCitationsLoading: false });
+          this.setState({ papers, areCitationsLoading: false });
         }
 
         const userData = await api.getUserLibraryInfo();
@@ -1015,7 +1015,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
             showInstructions={this.state.primerInstructionsEnabled}
             scrollToPageOnLoad={this.state.initialFocus === null}
             handleSetAnnotationHintsEnabled={this.setAnnotationHintsEnabled}
-            isCitationsLoading={this.state.isCitationsLoading}
+            areCitationsLoading={this.state.areCitationsLoading}
           />
         ) : null}
         {
