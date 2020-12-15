@@ -1,7 +1,7 @@
 import logging
 import os.path
 from collections import defaultdict
-from typing import Dict, List, Optional, Set, cast
+from typing import Dict, List, Optional, Set, Union, cast
 
 from common import directories, file_utils
 from common.colorize_tex import wrap_span
@@ -17,6 +17,7 @@ from common.types import (
     PaperProcessingResult,
     SerializableChild,
     SerializableSymbol,
+    Symbol,
 )
 from common.upload_entities import upload_entities
 from entities.symbols.types import DefiningFormula
@@ -24,7 +25,7 @@ from entities.symbols.types import DefiningFormula
 SymbolId = str
 
 
-def sid(symbol: SerializableSymbol) -> SymbolId:
+def sid(symbol: Union[SerializableSymbol, Symbol]) -> SymbolId:
     return f"{symbol.tex_path}-{symbol.equation_index}-{symbol.symbol_index}"
 
 

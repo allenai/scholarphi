@@ -314,6 +314,9 @@ MathML = str
 
 @dataclass
 class Symbol:
+    tex_path: str
+    equation_index: int
+    symbol_index: int
     tokens: List[Token]
     tex: str
     start: int

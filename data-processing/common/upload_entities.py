@@ -7,7 +7,14 @@ from common.models import BoundingBox as BoundingBoxModel
 from common.models import Entity
 from common.models import EntityData as EntityDataModel
 from common.models import Paper, Version, output_database, session_id
-from common.types import ArxivId, EntityReference, EntityUploadInfo, S2Id
+from common.types import (
+    ArxivId,
+    EntityData,
+    EntityReference,
+    EntityRelationships,
+    EntityUploadInfo,
+    S2Id,
+)
 
 
 def get_or_create_data_version(paper_id: str) -> int:
@@ -86,62 +93,9 @@ def upload_entities(
             )
             bounding_box_models.append(box_model)
 
-        # Create models for each field in the entity data.
+        # Create models for all entity data.
         if entity.data is not None:
-            for key, value in entity.data.items():
-
-                # The value may have been specified as a list, or as a single scalar value.
-                # Unpack all of the values for this key into a list.
-                values: List[Any] = []
-                if isinstance(value, list):
-                    of_list = True
-                    values.extend(value)
-                else:
-                    of_list = False
-                    values.append(value)
-
-                if len(values) == 0:
-                    continue
-
-                value_types = {type(v) for v in values}
-                if not len(value_types) == 1:
-                    logging.warning(  # pylint: disable=logging-not-lazy
-                        "Attempted to upload multiple primitive types of data for key %s. "
-                        + "Types were %s. Not permitted. Skipping this value.",
-                        key,
-                        value_types,
-                    )
-                    continue
-
-                # Create a new row for each value, with information of the base data type
-                # and whether that row belongs to a list. If casting of values needs to occur
-                # for values based on type to make them appropriate for insertion in Postgres
-                # (e.g., casting booleans to 0 / 1), that should happen here.
-                for v in values:
-                    type_ = None
-                    # Check for boolean needs to come before check for int, because booleans
-                    # will pass the check 'isinstance(v, int)'.
-                    if isinstance(v, bool):
-                        type_ = "boolean"
-                        v = 1 if v else 0
-                    if isinstance(v, int):
-                        type_ = "integer"
-                    elif isinstance(v, float):
-                        type_ = "float"
-                    elif isinstance(v, str):
-                        type_ = "string"
-
-                    if type_ is not None:
-                        entity_data_models.append(
-                            EntityDataModel(
-                                entity=entity_model,
-                                key=key,
-                                value=v,
-                                item_type=type_,
-                                of_list=of_list,
-                                relation_id=None,
-                            )
-                        )
+            entity_data_models.extend(make_data_models(entity_model, None, entity.data))
 
     # Save models. This will assign unique IDs to each entity.
     with output_database.atomic():
@@ -155,73 +109,193 @@ def upload_entities(
     # should happen after the entity models are created, because the relationships may include
     # references between entities (e.g., some symbols may be children of others), and we need to
     # know the row IDs of the uploaded entities to make links between them in the database.
-    uploaded_entity_models: Dict[Tuple[str, str], Entity] = {}
+    uploaded_entities = fetch_existing_entities(s2_id, data_version)
 
-    # Build a map from the within-paper entity IDs to database row IDs. It is assumed that the
-    # number of entities already uploaded for this paper won't be so many that they can't all
-    # be stored in memory.
+    entity_relationship_models: List[EntityDataModel] = []
+    for entity in entities:
+        if entity.relationships is not None:
+            entity_relationship_models.extend(
+                make_relationship_models(
+                    (entity.type_, entity.id_), entity.relationships, uploaded_entities
+                )
+            )
+
+    EntityDataModel.bulk_create(entity_relationship_models, 200)
+
+
+EntityType = str
+WithinPaperId = str
+EntityIdentifier = Tuple[EntityType, WithinPaperId]
+EntityModels = Dict[EntityIdentifier, Entity]
+
+
+def fetch_existing_entities(
+    s2_id: str, data_version: Optional[int] = None
+) -> EntityModels:
+    """
+    Build a map from the within-paper entity IDs to database row IDs. It is assumed that the
+    number of entities already uploaded for this paper won't be so many that they can't all
+    be stored in memory.
+    """
+
+    if data_version is None:
+        data_version = get_or_create_data_version(s2_id)
+
+    entity_models: EntityModels = {}
     uploaded_entities = Entity.select().where(
         Entity.paper_id == s2_id, Entity.version == data_version
     )
     for entity_model in uploaded_entities:
-        uploaded_entity_models[
-            (entity_model.type, entity_model.within_paper_id)
-        ] = entity_model
+        entity_models[(entity_model.type, entity_model.within_paper_id)] = entity_model
 
-    def resolve_model(entity_type: str, within_paper_id: str) -> Optional[Entity]:
+    return entity_models
+
+
+def make_data_models(
+    entity_model: Optional[Entity], entity_model_id: Optional[str], data: EntityData
+) -> List[EntityDataModel]:
+    " Either 'entity_model' or 'entity_model_id' must be defined. "
+
+    if entity_model is None and entity_model_id is None:
+        logging.warning(  # pylint: disable=logging-not-lazy
+            "Attempted to create data models without providing an entity model or explicit ID. "
+            + "At least one of these must be provided to determine which entity the data should "
+            + "be associated with."
+        )
+        return []
+
+    models: List[EntityDataModel] = []
+
+    # Create models for each field in the entity data.
+    for key, value in data.items():
+
+        # The value may have been specified as a list, or as a single scalar value.
+        # Unpack all of the values for this key into a list.
+        values: List[Any] = []
+        if isinstance(value, list):
+            of_list = True
+            values.extend(value)
+        else:
+            of_list = False
+            values.append(value)
+
+        if len(values) == 0:
+            continue
+
+        value_types = {type(v) for v in values}
+        if not len(value_types) == 1:
+            logging.warning(  # pylint: disable=logging-not-lazy
+                "Attempted to upload multiple primitive types of data for key %s. "
+                + "Types were %s. Not permitted. Skipping this value.",
+                key,
+                value_types,
+            )
+            continue
+
+        # Create a new row for each value, with information of the base data type
+        # and whether that row belongs to a list. If casting of values needs to occur
+        # for values based on type to make them appropriate for insertion in Postgres
+        # (e.g., casting booleans to 0 / 1), that should happen here.
+        for v in values:
+            type_ = None
+            # Check for boolean needs to come before check for int, because booleans
+            # will pass the check 'isinstance(v, int)'.
+            if isinstance(v, bool):
+                type_ = "boolean"
+                v = 1 if v else 0
+            if isinstance(v, int):
+                type_ = "integer"
+            elif isinstance(v, float):
+                type_ = "float"
+            elif isinstance(v, str):
+                type_ = "string"
+
+            if type_ is not None:
+                if entity_model is not None:
+                    models.append(
+                        EntityDataModel(
+                            entity=entity_model,
+                            key=key,
+                            value=v,
+                            item_type=type_,
+                            of_list=of_list,
+                            relation_id=None,
+                        )
+                    )
+                elif entity_model_id is not None:
+                    models.append(
+                        EntityDataModel(
+                            entity_id=entity_model_id,
+                            key=key,
+                            value=v,
+                            item_type=type_,
+                            of_list=of_list,
+                            relation_id=None,
+                        )
+                    )
+
+    return models
+
+
+def make_relationship_models(
+    entity_identifier: EntityIdentifier,
+    relationships: EntityRelationships,
+    entity_models: EntityModels,
+) -> List[EntityDataModel]:
+    def resolve_model(entity_identifier: EntityIdentifier) -> Optional[Entity]:
         " Helper for resolving an entity ID into a database row ID. "
         try:
-            return uploaded_entity_models[(entity_type, within_paper_id)]
+            return entity_models[entity_identifier]
         except KeyError:
+            type_, within_paper_id = entity_identifier
             logging.warning(  # pylint: disable=logging-not-lazy
                 "Could not upload reference to entity %s of type "
                 + "%s, because no database row ID could be found for the entity %s of type "
                 + "%s. Check to make sure the data for entities of type %s have been uploaded.",
                 within_paper_id,
-                entity_type,
+                type_,
                 within_paper_id,
-                entity_type,
-                entity_type,
+                type_,
+                type_,
             )
             return None
 
-    entity_relationship_models: List[EntityDataModel] = []
-    for entity in entities:
+    models: List[EntityDataModel] = []
 
-        # Get the row ID for the entity.
-        model = resolve_model(entity.type_, entity.id_)
-        if model is None or entity.relationships is None:
-            continue
+    # Get the model for the entity for which relationships will be saved.
+    entity_model = resolve_model(entity_identifier)
+    if entity_model is None:
+        return []
 
-        for k, v in entity.relationships.items():
-            if isinstance(v, EntityReference):
-                referenced_model = resolve_model(v.type_, v.id_)
+    for k, v in relationships.items():
+        if isinstance(v, EntityReference) and v.id_ is not None:
+            referenced_model = resolve_model((v.type_, v.id_))
+            if referenced_model is not None:
+                models.append(
+                    EntityDataModel(
+                        entity_id=entity_model.id,
+                        key=k,
+                        value=referenced_model.id,
+                        item_type="relation-id",
+                        of_list=False,
+                        relation_type=v.type_,
+                    )
+                )
+        elif isinstance(v, list) and len(v) > 0 and isinstance(v[0], EntityReference):
+            for reference in v:
+                if reference.id_ is None:
+                    continue
+                referenced_model = resolve_model((reference.type_, reference.id_))
                 if referenced_model is not None:
-                    entity_relationship_models.append(
+                    models.append(
                         EntityDataModel(
-                            entity_id=model,
+                            entity_id=entity_model,
                             key=k,
                             value=referenced_model.id,
                             item_type="relation-id",
-                            of_list=False,
-                            relation_type=v.type_,
+                            of_list=True,
+                            relation_type=reference.type_,
                         )
                     )
-            elif (
-                isinstance(v, list) and len(v) > 0 and isinstance(v[0], EntityReference)
-            ):
-                for reference in v:
-                    referenced_model = resolve_model(reference.type_, reference.id_)
-                    if referenced_model is not None:
-                        entity_relationship_models.append(
-                            EntityDataModel(
-                                entity_id=model,
-                                key=k,
-                                value=referenced_model.id,
-                                item_type="relation-id",
-                                of_list=True,
-                                relation_type=reference.type_,
-                            )
-                        )
 
-    EntityDataModel.bulk_create(entity_relationship_models, 200)
+    return models

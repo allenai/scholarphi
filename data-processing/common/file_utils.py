@@ -15,26 +15,12 @@ from typing import Any, Dict, Iterator, List, Optional, Type, TypeVar
 
 from common import directories
 from common.string import JournaledString
-from common.types import (
-    ArxivId,
-    BoundingBox,
-    CompilationResult,
-    Equation,
-    EquationId,
-    FileContents,
-    HueIteration,
-    HueLocationInfo,
-    Path,
-    SerializableChild,
-    SerializableSymbol,
-    SerializableSymbolToken,
-    SerializableToken,
-    Symbol,
-    SymbolId,
-    SymbolWithId,
-    Token,
-    TokenId,
-)
+from common.types import (ArxivId, BoundingBox, CompilationResult, Equation,
+                          EquationId, FileContents, HueIteration,
+                          HueLocationInfo, Path, SerializableChild,
+                          SerializableSymbol, SerializableSymbolToken,
+                          SerializableToken, Symbol, SymbolId, SymbolWithId,
+                          Token, TokenId)
 
 Contents = str
 Encoding = str
@@ -380,6 +366,9 @@ def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
     for s in loaded_symbols:
         symbol_id = SymbolId(s.tex_path, s.equation_index, s.symbol_index)
         symbols_by_id[symbol_id] = Symbol(
+            tex_path=s.tex_path,
+            equation_index=s.equation_index,
+            symbol_index=s.symbol_index,
             tokens=[],
             start=s.start,
             end=s.end,
