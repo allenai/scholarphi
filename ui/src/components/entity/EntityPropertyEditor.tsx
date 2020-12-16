@@ -1,15 +1,16 @@
-import Button from "@material-ui/core/Button";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Switch from "@material-ui/core/Switch";
-import katex from "katex";
-import React from "react";
 import EntityPropertyField from "./EntityPropertyField";
 import {
   Entity,
   EntityUpdateData,
   GenericAttributes,
   GenericRelationships,
-} from "./types/api";
+} from "../../api/types";
+
+import Button from "@material-ui/core/Button";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
+import katex from "katex";
+import React from "react";
 
 interface Props {
   entity: Entity | null;

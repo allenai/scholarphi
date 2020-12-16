@@ -10,7 +10,7 @@ import {
   Sentence,
   Symbol,
   Term,
-} from "../types/api";
+} from "../api/types";
 import { Rectangle } from "../types/ui";
 
 export function selectedEntityType(

@@ -1,11 +1,12 @@
-import React from "react";
 import { createCreateEntityDataWithBoxes } from "./EntityCreationToolbar";
 import { Point } from "./Selection";
 import SelectionCanvas from "./SelectionCanvas";
-import { KnownEntityType } from "./state";
-import { EntityCreateData } from "./types/api";
-import { PDFPageView } from "./types/pdfjs-viewer";
-import * as uiUtils from "./utils/ui";
+import { KnownEntityType } from "../../../state";
+import { EntityCreateData } from "../../../api/types";
+import { PDFPageView } from "../../../types/pdfjs-viewer";
+import * as uiUtils from "../../../utils/ui";
+
+import React from "react";
 
 interface Props {
   pageNumber: number;

@@ -1,6 +1,7 @@
-import React from "react";
 import S2Link from "./S2Link";
-import { Author } from "./types/api";
+import { Author } from "../../../api/types";
+
+import React from "react";
 
 interface Props {
   authors: Author[];

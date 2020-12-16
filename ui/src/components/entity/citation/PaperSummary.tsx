@@ -1,18 +1,17 @@
+import AuthorList from "./AuthorList";
+import FeedbackButton from "./FeedbackButton";
+import { ChartIcon, InfluentialCitationIcon } from "../../icon";
+import logger from "../../../logging";
+import { userLibraryUrl } from "../../../api/s2-url";
+import S2Link from "./S2Link";
+import { PaperId, UserLibrary } from "../../../state";
+import { Paper } from "../../../api/types";
+import { truncateText } from "../../../utils/ui";
+
 import Button from "@material-ui/core/Button";
 import Tooltip from "@material-ui/core/Tooltip";
 import SaveIcon from "@material-ui/icons/Bookmark";
 import CiteIcon from "@material-ui/icons/FormatQuote";
-import AuthorList from "./AuthorList";
-import FeedbackButton from "./FeedbackButton";
-import ChartIcon from "./icon/ChartIcon";
-import InfluentialCitationIcon from "./icon/InfluentialCitationIcon";
-import logger from "./logging";
-import { userLibraryUrl } from "./s2-url";
-import S2Link from "./S2Link";
-import { PaperId, UserLibrary } from "./state";
-import { Paper } from "./types/api";
-import { truncateText } from "./utils/ui";
-
 import React from "react";
 
 interface Props {

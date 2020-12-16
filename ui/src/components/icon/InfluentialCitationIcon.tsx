@@ -5,7 +5,7 @@ interface Props {
   height: string;
 }
 
-const InfluentialCitationIcon = ({ width, height }: Props) => (
+export const InfluentialCitationIcon = ({ width, height }: Props) => (
   <svg viewBox="0 0 32 32" width={width} height={height}>
     <g>
       <path d="M15.003,30.835c1.543,0.006,2.703-0.713,3.544-2.062h-7.055C12.334,30.105,13.475,30.829,15.003,30.835z" />
@@ -14,5 +14,3 @@ const InfluentialCitationIcon = ({ width, height }: Props) => (
     </g>
   </svg>
 );
-
-export default InfluentialCitationIcon;

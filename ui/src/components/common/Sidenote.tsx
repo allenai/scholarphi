@@ -1,9 +1,9 @@
 import Card from "@material-ui/core/Card";
 import classNames from "classnames";
 import React from "react";
-import { BoundingBox } from "./types/api";
-import { PDFPageView } from "./types/pdfjs-viewer";
-import * as uiUtils from "./utils/ui";
+import { BoundingBox } from "../../api/types";
+import { PDFPageView } from "../../types/pdfjs-viewer";
+import * as uiUtils from "../../utils/ui";
 
 interface Props {
   /**
@@ -28,7 +28,7 @@ interface Props {
 /**
  * A side note shown in the margin of a page.
  */
-class Sidenote extends React.PureComponent<Props> {
+export class Sidenote extends React.PureComponent<Props> {
   render() {
     const { pageView, anchor } = this.props;
 
@@ -81,5 +81,3 @@ class Sidenote extends React.PureComponent<Props> {
     );
   }
 }
-
-export default Sidenote;

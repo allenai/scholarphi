@@ -1,12 +1,11 @@
 import classNames from "classnames";
 import React from "react";
-import { getRemoteLogger } from "./logging";
-import { GlossStyle } from "./settings";
-import Sidenote from "./Sidenote";
-import Tooltip, { TooltipPlacement } from "./Tooltip";
-import { BoundingBox } from "./types/api";
-import { PDFPageView } from "./types/pdfjs-viewer";
-import * as uiUtils from "./utils/ui";
+import { getRemoteLogger } from "../../logging";
+import { GlossStyle } from "../../settings";
+import { Sidenote, Tooltip, TooltipPlacement } from "../common";
+import { BoundingBox } from "../../api/types";
+import { PDFPageView } from "../../types/pdfjs-viewer";
+import * as uiUtils from "../../utils/ui";
 
 const logger = getRemoteLogger();
 

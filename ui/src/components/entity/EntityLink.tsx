@@ -1,6 +1,7 @@
+import { getRemoteLogger } from "../../logging";
+
 import classNames from "classnames";
 import React from "react";
-import { getRemoteLogger } from "./logging";
 
 const logger = getRemoteLogger();
 

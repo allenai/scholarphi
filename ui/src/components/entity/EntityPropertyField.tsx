@@ -1,3 +1,6 @@
+import { Property } from "./EntityPropertyEditor";
+import { RichText } from "../common";
+
 import Card from "@material-ui/core/Card";
 import IconButton from "@material-ui/core/IconButton";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -7,8 +10,6 @@ import Add from "@material-ui/icons/Add";
 import DeleteForever from "@material-ui/icons/DeleteForever";
 import katex from "katex";
 import React from "react";
-import { Property } from "./EntityPropertyEditor";
-import RichText from "./RichText";
 
 interface RichTextPreviewProps {
   children: string;

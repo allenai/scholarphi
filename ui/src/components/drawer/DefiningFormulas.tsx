@@ -1,11 +1,12 @@
+import EntityLink from "../entity/EntityLink";
+import { getRemoteLogger } from "../../logging";
+import { RichText } from "../common";
+import * as selectors from "../../selectors";
+import { Entities } from "../../state";
+import { Entity, isSymbol } from "../../api/types";
+
 import classNames from "classnames";
 import React from "react";
-import EntityLink from "./EntityLink";
-import { getRemoteLogger } from "./logging";
-import RichText from "./RichText";
-import * as selectors from "./selectors";
-import { Entities } from "./state";
-import { Entity, isSymbol } from "./types/api";
 
 const logger = getRemoteLogger();
 

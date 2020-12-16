@@ -1,13 +1,11 @@
-import classNames from "classnames";
-import React from "react";
-import CitationGloss from "./CitationGloss";
-import { DrawerContentType } from "./Drawer";
+import CitationGloss from "../entity/citation/CitationGloss";
+import { DrawerContentType } from "../drawer/Drawer";
 import EntityAnnotation from "./EntityAnnotation";
-import * as selectors from "./selectors";
-import { GlossStyle } from "./settings";
+import * as selectors from "../../selectors";
+import { GlossStyle } from "../../settings";
 import SimpleSymbolGloss from "./SimpleSymbolGloss";
 import SimpleTermGloss from "./SimpleTermGloss";
-import { Entities, PaperId, Papers, UserLibrary } from "./state";
+import { Entities, PaperId, Papers, UserLibrary } from "../../state";
 import {
   Entity,
   isCitation,
@@ -15,9 +13,12 @@ import {
   isSentence,
   isSymbol,
   isTerm,
-} from "./types/api";
-import { PDFPageView } from "./types/pdfjs-viewer";
-import * as uiUtils from "./utils/ui";
+} from "../../api/types";
+import { PDFPageView } from "../../types/pdfjs-viewer";
+import * as uiUtils from "../../utils/ui";
+
+import classNames from "classnames";
+import React from "react";
 
 export type SymbolUnderlineMethod = "top-level-symbols" | "defined-symbols";
 

@@ -1,6 +1,7 @@
-import React from "react";
 import EquationDiagramGloss from "./EquationDiagramGloss";
-import { Dimensions } from "./types/ui";
+import { Dimensions } from "../../../types/ui";
+
+import React from "react";
 
 interface Props {
   /**

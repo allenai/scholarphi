@@ -1,8 +1,9 @@
-import React from "react";
 import PageMask from "./PageMask";
-import { Entities } from "./state";
-import { PDFPageView } from "./types/pdfjs-viewer";
-import * as uiUtils from "./utils/ui";
+import { Entities } from "../../state";
+import { PDFPageView } from "../../types/pdfjs-viewer";
+import * as uiUtils from "../../utils/ui";
+
+import React from "react";
 
 interface Props {
   pageView: PDFPageView;

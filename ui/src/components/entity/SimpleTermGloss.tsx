@@ -1,16 +1,17 @@
+import { DrawerContentType } from "../drawer/Drawer";
+import EntityPageLink from "./EntityPageLink";
+import { getRemoteLogger } from "../../logging";
+import { RichText } from "../common";
+import * as selectors from "../../selectors";
+import { Entities } from "../../state";
+import { Term } from "../../api/types";
+
 import IconButton from "@material-ui/core/IconButton";
 import MuiTooltip from "@material-ui/core/Tooltip";
 import Close from "@material-ui/icons/Close";
 import Toc from "@material-ui/icons/Toc";
 import classNames from "classnames";
 import React from "react";
-import { DrawerContentType } from "./Drawer";
-import EntityPageLink from "./EntityPageLink";
-import { getRemoteLogger } from "./logging";
-import RichText from "./RichText";
-import * as selectors from "./selectors";
-import { Entities } from "./state";
-import { Term } from "./types/api";
 
 const logger = getRemoteLogger();
 

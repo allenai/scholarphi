@@ -1,7 +1,8 @@
+import PaperClipping from "./PaperClipping";
+import { Sentence, Symbol } from "../../api/types";
+
 import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
-import PaperClipping from "./PaperClipping";
-import { Sentence, Symbol } from "./types/api";
 
 interface Props {
   pdfDocument: PDFDocumentProxy;

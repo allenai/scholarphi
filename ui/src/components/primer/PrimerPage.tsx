@@ -1,14 +1,15 @@
+import { Entities, Pages } from "../../state";
+import SymbolDefinitionGloss from "./SymbolDefinitionGloss";
+import TermDefinitionGloss from "./TermDefinitionGloss";
+import { isSymbol, isTerm, Symbol, Term } from "../../api/types";
+import { PDFViewer } from "../../types/pdfjs-viewer";
+
 import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Switch from "@material-ui/core/Switch";
 import React from "react";
 import ReactDOM from "react-dom";
-import { Entities, Pages } from "./state";
-import SymbolDefinitionGloss from "./SymbolDefinitionGloss";
-import TermDefinitionGloss from "./TermDefinitionGloss";
-import { isSymbol, isTerm, Symbol, Term } from "./types/api";
-import { PDFViewer } from "./types/pdfjs-viewer";
 
 interface Props {
   pdfViewer: PDFViewer;

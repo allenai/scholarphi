@@ -1,3 +1,13 @@
+import { getRemoteLogger } from "../../logging";
+import { PdfjsFindQueryWidget } from "./PdfjsFindQueryWidget";
+import * as selectors from "../../selectors";
+import { SymbolFilters } from "../../state";
+import { SymbolFindQueryWidget } from "./SymbolFindQueryWidget";
+import TermFindQueryWidget from "./TermFindQueryWidget";
+import { Symbol, Term } from "../../api/types";
+import { PDFViewerApplication } from "../../types/pdfjs-viewer";
+import * as uiUtils from "../../utils/ui";
+
 import Card from "@material-ui/core/Card";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import IconButton from "@material-ui/core/IconButton";
@@ -6,15 +16,6 @@ import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import classNames from "classnames";
 import React from "react";
-import { getRemoteLogger } from "./logging";
-import { PdfjsFindQueryWidget } from "./PdfjsFindQueryWidget";
-import * as selectors from "./selectors";
-import { SymbolFilters } from "./state";
-import { SymbolFindQueryWidget } from "./SymbolFindQueryWidget";
-import TermFindQueryWidget from "./TermFindQueryWidget";
-import { Symbol, Term } from "./types/api";
-import { PDFViewerApplication } from "./types/pdfjs-viewer";
-import * as uiUtils from "./utils/ui";
 
 const logger = getRemoteLogger();
 

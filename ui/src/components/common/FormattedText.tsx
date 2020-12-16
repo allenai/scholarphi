@@ -96,7 +96,7 @@ interface Props {
  * Formats text using a simple, limited custom markup language. Used to assign a set of
  * known styles for highlighting and hiding parts of the text using text contents alone.
  */
-class FormattedText extends React.PureComponent<Props> {
+export class FormattedText extends React.PureComponent<Props> {
   render() {
     const text = this.props.children;
     const spans = extractSpans(text);
@@ -118,5 +118,3 @@ class FormattedText extends React.PureComponent<Props> {
     );
   }
 }
-
-export default FormattedText;

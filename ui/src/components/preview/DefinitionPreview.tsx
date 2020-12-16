@@ -1,13 +1,14 @@
+import * as selectors from "../../selectors";
+import { Entities, Pages } from "../../state";
+import SymbolPreview from "./SymbolPreview";
+import { BoundingBox, isSentence, Sentence, Symbol } from "../../api/types";
+import { PDFViewer } from "../../types/pdfjs-viewer";
+import * as uiUtils from "../../utils/ui";
+
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
-import * as selectors from "./selectors";
-import { Entities, Pages } from "./state";
-import SymbolPreview from "./SymbolPreview";
-import { BoundingBox, isSentence, Sentence, Symbol } from "./types/api";
-import { PDFViewer } from "./types/pdfjs-viewer";
-import * as uiUtils from "./utils/ui";
 
 interface Props {
   pdfViewer: PDFViewer;

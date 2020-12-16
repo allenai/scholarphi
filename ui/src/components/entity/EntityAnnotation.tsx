@@ -1,10 +1,10 @@
 import classNames from "classnames";
 import React from "react";
 import Annotation from "./Annotation";
-import { GlossStyle } from "./settings";
-import { TooltipPlacement } from "./Tooltip";
-import { Entity } from "./types/api";
-import { PDFPageView } from "./types/pdfjs-viewer";
+import { GlossStyle } from "../../settings";
+import { TooltipPlacement } from "../common";
+import { Entity } from "../../api/types";
+import { PDFPageView } from "../../types/pdfjs-viewer";
 
 interface Props {
   className?: string;

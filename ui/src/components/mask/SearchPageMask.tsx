@@ -1,10 +1,11 @@
 import React from "react";
+import * as selectors from "../../selectors";
+import { Entities } from "../../state";
+import { BoundingBox } from "../../api/types";
+import { PDFPageView } from "../../types/pdfjs-viewer";
+import * as uiUtils from "../../utils/ui";
+
 import PageMask from "./PageMask";
-import * as selectors from "./selectors";
-import { Entities } from "./state";
-import { BoundingBox } from "./types/api";
-import { PDFPageView } from "./types/pdfjs-viewer";
-import * as uiUtils from "./utils/ui";
 
 interface Props {
   pageView: PDFPageView;

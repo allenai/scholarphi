@@ -1,7 +1,8 @@
+import { getRemoteLogger } from "../../logging";
+
 import IconButton from "@material-ui/core/IconButton";
 import ThumbsUp from "@material-ui/icons/ThumbUpSharp";
 import React from "react";
-import { getRemoteLogger } from "./logging";
 
 interface Props {
   /**
@@ -17,7 +18,7 @@ interface State {
 
 const logger = getRemoteLogger();
 
-class VoteButton extends React.PureComponent<Props, State> {
+export class VoteButton extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = { checked: false };
@@ -49,5 +50,3 @@ class VoteButton extends React.PureComponent<Props, State> {
     );
   }
 }
-
-export default VoteButton;

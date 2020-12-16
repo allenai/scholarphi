@@ -1,5 +1,5 @@
 import { Entities } from "../state";
-import { isTerm, Term } from "../types/api";
+import { isTerm, Term } from "../api/types";
 import { orderByPosition } from "./entity";
 
 /**

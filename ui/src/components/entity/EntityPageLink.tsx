@@ -1,7 +1,8 @@
-import React from "react";
 import EntityLink from "./EntityLink";
-import * as selectors from "./selectors";
-import { Entity } from "./types/api";
+import * as selectors from "../../selectors";
+import { Entity } from "../../api/types";
+
+import React from "react";
 
 interface Props {
   id?: string;

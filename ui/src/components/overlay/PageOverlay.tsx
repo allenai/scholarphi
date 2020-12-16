@@ -1,6 +1,7 @@
+import { PDFPageView } from "../../types/pdfjs-viewer";
+
 import React from "react";
 import ReactDOM from "react-dom";
-import { PDFPageView } from "./types/pdfjs-viewer";
 
 interface Props {
   pageView: PDFPageView;

@@ -1,8 +1,8 @@
 import React from "react";
 import PaperSummary from "./PaperSummary";
-import { PaperId, UserLibrary } from "./state";
-import { Citation, Paper } from "./types/api";
-import VoteButton from "./VoteButton";
+import { PaperId, UserLibrary } from "../../../state";
+import { Citation, Paper } from "../../../api/types";
+import { VoteButton } from "../../common";
 
 interface Props {
   paper: Paper;

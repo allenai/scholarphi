@@ -1,9 +1,10 @@
-import React from "react";
-import * as selectors from "./selectors";
+import * as selectors from "../../selectors";
 import Snippet from "./Snippet";
-import { Entities } from "./state";
-import { isSymbol, isTerm, Symbol, Term } from "./types/api";
-import * as uiUtils from "./utils/ui";
+import { Entities } from "../../state";
+import { isSymbol, isTerm, Symbol, Term } from "../../api/types";
+import * as uiUtils from "../../utils/ui";
+
+import React from "react";
 
 interface Props {
   selectedEntityIds: string[];

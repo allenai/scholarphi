@@ -1,7 +1,7 @@
 import katex from "katex";
 import React from "react";
-import FormattedText from "./FormattedText";
-import LatexPreview from "./LatexPreview";
+import { FormattedText } from "./FormattedText";
+import { LatexPreview } from "./LatexPreview";
 
 interface Props {
   children: string;
@@ -12,7 +12,7 @@ interface Props {
 /**
  * Renderer or rich text. Formats rich text tags and a subset of LaTeX for equations.
  */
-class RichText extends React.PureComponent<Props> {
+export class RichText extends React.PureComponent<Props> {
   render() {
     return this.props.children === null ? null : (
       <LatexPreview
@@ -24,5 +24,3 @@ class RichText extends React.PureComponent<Props> {
     );
   }
 }
-
-export default RichText;

@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { addLibraryEntryUrl, userInfoUrl } from "./s2-url";
-import { UserInfo, UserLibrary } from "./state";
+import { UserInfo, UserLibrary } from "../state";
 import {
   Entity,
   EntityCreateData,

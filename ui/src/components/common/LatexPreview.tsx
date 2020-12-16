@@ -23,7 +23,7 @@ interface Props {
  * for rendering of LaTeX formulas is limited to the support provided by KaTeX
  * (https://katex.org/).
  */
-class LatexPreview extends React.PureComponent<Props> {
+export class LatexPreview extends React.PureComponent<Props> {
   componentDidMount() {
     this.renderLatex();
   }
@@ -174,5 +174,3 @@ class LatexPreview extends React.PureComponent<Props> {
   private _latexContainer: HTMLElement | null = null;
   private _progressContainer: HTMLElement | null = null;
 }
-
-export default LatexPreview;

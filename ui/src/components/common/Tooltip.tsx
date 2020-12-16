@@ -1,8 +1,8 @@
 import Card from "@material-ui/core/Card";
 import React from "react";
-import { BoundingBox } from "./types/api";
-import { PDFPageView } from "./types/pdfjs-viewer";
-import * as uiUtils from "./utils/ui";
+import { BoundingBox } from "../../api/types";
+import { PDFPageView } from "../../types/pdfjs-viewer";
+import * as uiUtils from "../../utils/ui";
 
 export type TooltipPlacement = "above" | "below";
 
@@ -32,7 +32,7 @@ interface Props {
  * providing a faster tooltip than the one provided by Material UI, for which placement
  * is less buggy when placed on a page.
  */
-class Tooltip extends React.PureComponent<Props> {
+export class Tooltip extends React.PureComponent<Props> {
   static defaultProps = {
     placement: "below",
   };
@@ -73,5 +73,3 @@ class Tooltip extends React.PureComponent<Props> {
     );
   }
 }
-
-export default Tooltip;

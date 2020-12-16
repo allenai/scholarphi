@@ -1,6 +1,7 @@
+import { RichText } from "../common";
+import { Term } from "../../api/types";
+
 import React from "react";
-import RichText from "./RichText";
-import { Term } from "./types/api";
 
 interface Props {
   term: Term;

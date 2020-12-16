@@ -1,8 +1,9 @@
+import { PaperId } from "../../../state";
+
 import Button from "@material-ui/core/Button";
 import FeedbackIcon from "@material-ui/icons/FeedbackOutlined";
 import queryString from "querystring";
 import React from "react";
-import { PaperId } from "./state";
 
 interface Props {
   paperId?: PaperId;

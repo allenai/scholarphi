@@ -1,16 +1,17 @@
+import { DefiningFormulas } from "./DefiningFormulas";
+import Definitions from "./Definitions";
+import EntityPropertyEditor from "../entity/EntityPropertyEditor";
+import { getRemoteLogger } from "../../logging";
+import { Entities } from "../../state";
+import { Entity, EntityUpdateData } from "../../api/types";
+import { PDFViewer } from "../../types/pdfjs-viewer";
+import Usages from "./Usages";
+import * as uiUtils from "../../utils/ui";
+
 import MuiDrawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import React from "react";
-import { DefiningFormulas } from "./DefiningFormulas";
-import Definitions from "./Definitions";
-import EntityPropertyEditor from "./EntityPropertyEditor";
-import { getRemoteLogger } from "./logging";
-import { Entities } from "./state";
-import { Entity, EntityUpdateData } from "./types/api";
-import { PDFViewer } from "./types/pdfjs-viewer";
-import Usages from "./Usages";
-import * as uiUtils from "./utils/ui";
 
 const logger = getRemoteLogger();
 

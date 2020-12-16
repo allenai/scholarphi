@@ -1,7 +1,8 @@
+import Selection, { Point } from "./Selection";
+import * as uiUtils from "../../../utils/ui";
+
 import classNames from "classnames";
 import React from "react";
-import Selection, { Point } from "./Selection";
-import * as uiUtils from "./utils/ui";
 
 interface Props {
   /**

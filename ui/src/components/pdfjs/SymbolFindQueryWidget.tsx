@@ -1,8 +1,8 @@
 import Button from "@material-ui/core/Button";
 import React from "react";
 import { SymbolFilter } from "./FindBar";
-import RichText from "./RichText";
-import { SymbolFilters } from "./state";
+import { RichText } from "../common";
+import { SymbolFilters } from "../../state";
 
 interface Props {
   filters: SymbolFilters;

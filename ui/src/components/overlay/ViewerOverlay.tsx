@@ -1,7 +1,8 @@
+import { getRemoteLogger } from "../../logging";
+import { PDFViewer } from "../../types/pdfjs-viewer";
+import * as uiUtils from "../../utils/ui";
+
 import React from "react";
-import { getRemoteLogger } from "./logging";
-import { PDFViewer } from "./types/pdfjs-viewer";
-import * as uiUtils from "./utils/ui";
 
 const logger = getRemoteLogger();
 

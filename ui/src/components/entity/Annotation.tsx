@@ -1,11 +1,12 @@
+import AnnotationSpan from "./AnnotationSpan";
+import { GlossStyle } from "../../settings";
+import { TooltipPlacement } from "../common";
+import { BoundingBox } from "../../api/types";
+import { PDFPageView } from "../../types/pdfjs-viewer";
+import * as uiUtils from "../../utils/ui";
+
 import classNames from "classnames";
 import React from "react";
-import AnnotationSpan from "./AnnotationSpan";
-import { GlossStyle } from "./settings";
-import { TooltipPlacement } from "./Tooltip";
-import { BoundingBox } from "./types/api";
-import { PDFPageView } from "./types/pdfjs-viewer";
-import * as uiUtils from "./utils/ui";
 
 interface Props {
   /*

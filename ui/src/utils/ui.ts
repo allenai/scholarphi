@@ -1,7 +1,7 @@
 import { PDFPageProxy } from "pdfjs-dist";
 import React from "react";
 import { PageModel, Pages } from "../state";
-import { BoundingBox } from "../types/api";
+import { BoundingBox } from "../api/types";
 import { PDFPageView } from "../types/pdfjs-viewer";
 import { Dimensions, Rectangle } from "../types/ui";
 

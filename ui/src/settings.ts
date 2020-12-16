@@ -1,4 +1,4 @@
-import { SymbolUnderlineMethod } from "./EntityAnnotationLayer";
+import { SymbolUnderlineMethod } from "./components/entity/EntityAnnotationLayer";
 
 /**
  * Configurable app-wide settings. Whenever an experimental feature is added that should be

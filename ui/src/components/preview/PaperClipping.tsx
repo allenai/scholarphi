@@ -1,6 +1,7 @@
+import { BoundingBox, Sentence } from "../../api/types";
+
 import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
-import { BoundingBox, Sentence } from "./types/api";
 
 interface Props {
   pdfDocument: PDFDocumentProxy;

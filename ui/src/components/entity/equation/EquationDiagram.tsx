@@ -1,15 +1,16 @@
-import Labella from "labella";
-import React from "react";
 import EquationDiagramGloss from "./EquationDiagramGloss";
 import LabelRenderer from "./LabelRenderer";
-import { getRemoteLogger } from "./logging";
-import { Point } from "./Selection";
-import * as selectors from "./selectors";
-import { Entities } from "./state";
-import { Equation } from "./types/api";
-import { PDFPageView } from "./types/pdfjs-viewer";
-import { Dimensions, Rectangle } from "./types/ui";
-import * as uiUtils from "./utils/ui";
+import { getRemoteLogger } from "../../../logging";
+import { Point } from "../creation/Selection";
+import * as selectors from "../../../selectors";
+import { Entities } from "../../../state";
+import { Equation } from "../../../api/types";
+import { PDFPageView } from "../../../types/pdfjs-viewer";
+import { Dimensions, Rectangle } from "../../../types/ui";
+import * as uiUtils from "../../../utils/ui";
+
+import Labella from "labella";
+import React from "react";
 
 const logger = getRemoteLogger();
 

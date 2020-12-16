@@ -1,7 +1,8 @@
+import { getRemoteLogger } from "../../logging";
+import * as uiUtils from "../../utils/ui";
+
 import Snackbar from "@material-ui/core/Snackbar";
 import React from "react";
-import { getRemoteLogger } from "./logging";
-import * as uiUtils from "./utils/ui";
 
 const logger = getRemoteLogger();
 

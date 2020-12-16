@@ -1,13 +1,14 @@
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Switch from "@material-ui/core/Switch";
-import TextField from "@material-ui/core/TextField";
-import React from "react";
-import { getRemoteLogger } from "./logging";
+import { getRemoteLogger } from "../../logging";
 import {
   EventBus,
   PdfJsFindControllerState,
   PDFViewerApplication,
-} from "./types/pdfjs-viewer";
+} from "../../types/pdfjs-viewer";
+
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
+import TextField from "@material-ui/core/TextField";
+import React from "react";
 
 const logger = getRemoteLogger();
 
