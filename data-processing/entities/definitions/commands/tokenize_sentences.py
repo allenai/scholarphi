@@ -80,9 +80,7 @@ class TokenizeSentences(ArxivBatchCommand[Task, TokenizedSentence]):
                 directories.arxiv_subdir("detected-sentences", arxiv_id),
                 "entities.csv",
             )
-            try:
-                sentences = file_utils.load_from_csv(detected_sentences_path, Sentence)
-            except FileNotFoundError:
+            if not os.path.exists(detected_sentences_path):
                 logging.warning(  # pylint: disable=logging-not-lazy
                     "No sentences data found for arXiv paper %s. Try re-running the pipeline, "
                     + "this time enabling the processing of sentences. If that doesn't work, "
@@ -91,6 +89,7 @@ class TokenizeSentences(ArxivBatchCommand[Task, TokenizedSentence]):
                 )
                 continue
 
+            sentences = file_utils.load_from_csv(detected_sentences_path, Sentence)
             for sentence in sentences:
                 yield Task(arxiv_id, sentence, symbols[sentence.tex_path])
 

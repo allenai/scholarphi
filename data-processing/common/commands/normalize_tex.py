@@ -40,6 +40,15 @@ class NormalizeTexSources(ArxivBatchCommand[NormalizationTask, None]):
 
     def load(self) -> Iterator[NormalizationTask]:
         for arxiv_id in self.arxiv_ids:
+            sources_dir = directories.arxiv_subdir("sources", arxiv_id)
+            if not os.path.exists(sources_dir):
+                logging.warning(  # pylint: disable=logging-not-lazy
+                    "No directory of TeX sources could be found for paper %s. The TeX for "
+                    + "this paper will not be normalized.",
+                    arxiv_id,
+                )
+                continue
+
             output_dir = directories.arxiv_subdir("normalized-sources", arxiv_id)
             if os.path.exists(output_dir):
                 logging.warning(
@@ -47,6 +56,7 @@ class NormalizeTexSources(ArxivBatchCommand[NormalizationTask, None]):
                     output_dir,
                 )
                 shutil.rmtree(output_dir)
+
             shutil.copytree(directories.arxiv_subdir("sources", arxiv_id), output_dir)
 
             compiled_tex_dir = directories.arxiv_subdir("compiled-sources", arxiv_id)
