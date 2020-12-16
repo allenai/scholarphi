@@ -10,7 +10,7 @@ import {
   Paper,
   Paginated,
   PaperIdWithEntityCounts,
-} from "./types/api";
+} from "./types";
 
 export async function listPapers(offset: number = 0, size: number = 25) {
   return axios.get<Paginated<PaperIdWithEntityCounts>>(
