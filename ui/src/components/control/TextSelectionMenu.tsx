@@ -2,9 +2,9 @@ import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import React from "react";
 import ReactDOM from "react-dom";
-import { getRemoteLogger } from "./logging";
-import { Pages } from "./state";
-import * as uiUtils from "./utils/ui";
+import { getRemoteLogger } from "../../logging";
+import { Pages } from "../../state";
+import * as uiUtils from "../../utils/ui";
 
 interface Props {
   pages: Pages;

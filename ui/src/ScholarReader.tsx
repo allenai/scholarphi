@@ -35,7 +35,7 @@ import {
   SymbolFilters,
 } from "./state";
 import "./style/index.less";
-import TextSelectionMenu from "./TextSelectionMenu";
+import TextSelectionMenu from "./components/control/TextSelectionMenu";
 import {
   Entity,
   EntityCreateData,
