@@ -1,25 +1,23 @@
-import classNames from "classnames";
-import React from "react";
-import * as api from "./api";
-import AppOverlay from "./AppOverlay";
-import Control from "./Control";
-import DefinitionPreview from "./DefinitionPreview";
-import { Drawer, DrawerContentType } from "./Drawer";
-import EntityAnnotationLayer from "./EntityAnnotationLayer";
-import EntityCreationCanvas from "./EntityCreationCanvas";
+import * as api from "./api/api";
+import AppOverlay from "./components/overlay/AppOverlay";
+import Control from "./components/control/Control";
+import DefinitionPreview from "./components/preview/DefinitionPreview";
+import { Drawer, DrawerContentType } from "./components/drawer/Drawer";
+import EntityAnnotationLayer from "./components/entity/EntityAnnotationLayer";
+import EntityCreationCanvas from "./components/control/EntityCreationCanvas";
 import EntityCreationToolbar, {
   AreaSelectionMethod,
   createCreateEntityDataWithBoxes,
-} from "./EntityCreationToolbar";
-import EntityPageMask from "./EntityPageMask";
-import EquationDiagram from "./EquationDiagram";
-import FindBar, { FindQuery } from "./FindBar";
+} from "./components/control/EntityCreationToolbar";
+import EntityPageMask from "./components/mask/EntityPageMask";
+import EquationDiagram from "./components/entity/equation/EquationDiagram";
+import FindBar, { FindQuery } from "./components/search/FindBar";
 import logger from "./logging";
-import MasterControlPanel from "./MasterControlPanel";
-import PageOverlay from "./PageOverlay";
-import PdfjsToolbar from "./PdfjsToolbar";
-import PrimerPage from "./PrimerPage";
-import SearchPageMask from "./SearchPageMask";
+import MasterControlPanel from "./components/control/MasterControlPanel";
+import PageOverlay from "./components/overlay/PageOverlay";
+import PdfjsToolbar from "./components/pdfjs/PdfjsToolbar";
+import PrimerPage from "./components/primer/PrimerPage";
+import SearchPageMask from "./components/mask/SearchPageMask";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
 import {
@@ -37,7 +35,7 @@ import {
   SymbolFilters,
 } from "./state";
 import "./style/index.less";
-import TextSelectionMenu from "./TextSelectionMenu";
+import TextSelectionMenu from "./components/control/TextSelectionMenu";
 import {
   Entity,
   EntityCreateData,
@@ -48,7 +46,7 @@ import {
   isTerm,
   Paper,
   Symbol,
-} from "./types/api";
+} from "./api/types";
 import {
   DocumentLoadedEvent,
   PageRenderedEvent,
@@ -56,7 +54,10 @@ import {
 } from "./types/pdfjs-viewer";
 import * as stateUtils from "./utils/state";
 import * as uiUtils from "./utils/ui";
-import ViewerOverlay from "./ViewerOverlay";
+import ViewerOverlay from "./components/overlay/ViewerOverlay";
+
+import classNames from "classnames";
+import React from "react";
 
 interface Props {
   paperId?: PaperId;

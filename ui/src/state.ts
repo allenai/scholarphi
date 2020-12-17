@@ -1,15 +1,16 @@
-import { PDFDocumentProxy } from "pdfjs-dist";
-import { SnackbarMode } from "./AppOverlay";
-import { DrawerContentType, DrawerMode } from "./Drawer";
-import { AreaSelectionMethod } from "./EntityCreationToolbar";
-import { FindMode, FindQuery, SymbolFilter } from "./FindBar";
+import { SnackbarMode } from "./components/overlay/AppOverlay";
+import { DrawerContentType, DrawerMode } from "./components/drawer/Drawer";
+import { AreaSelectionMethod } from "./components/control/EntityCreationToolbar";
+import { FindMode, FindQuery, SymbolFilter } from "./components/search/FindBar";
 import { Settings } from "./settings";
-import { Entity, Paper } from "./types/api";
+import { Entity, Paper } from "./api/types";
 import {
   PDFPageView,
   PDFViewer,
   PDFViewerApplication,
 } from "./types/pdfjs-viewer";
+
+import { PDFDocumentProxy } from "pdfjs-dist";
 
 /**
  * An object containing all the shared global state. It is designed to be used as follows:

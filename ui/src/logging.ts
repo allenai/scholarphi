@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LogEntryCreatePayload } from "./types/api";
+import { LogEntryCreatePayload } from "./api/types";
 
 type LogLevel = "error" | "warning" | "info" | "debug";
 

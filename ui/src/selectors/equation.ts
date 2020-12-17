@@ -1,7 +1,8 @@
-import { defaultMemoize } from "reselect";
 import { Entities } from "../state";
-import { isSymbol } from "../types/api";
+import { isSymbol } from "../api/types";
 import { isTopLevelSymbol } from "./symbol";
+
+import { defaultMemoize } from "reselect";
 
 export const equationSymbols = defaultMemoize(
   (equationId: string, entities: Entities) => {
