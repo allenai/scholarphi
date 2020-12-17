@@ -1,4 +1,4 @@
-import { Entities, KnownEntityType, Pages } from "../../../state";
+import { Entities, KnownEntityType, Pages } from "../../state";
 import {
   BoundingBox,
   CitationAttributes,
@@ -10,8 +10,8 @@ import {
   SymbolRelationships,
   TermAttributes,
   TermRelationships,
-} from "../../../api/types";
-import * as uiUtils from "../../../utils/ui";
+} from "../../api/types";
+import * as uiUtils from "../../utils/ui";
 
 import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";

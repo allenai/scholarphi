@@ -12,7 +12,7 @@ interface Props {
   handleJumpToEntity: (entityId: string) => void;
 }
 
-class EntityLink extends React.PureComponent<Props> {
+export class EntityLink extends React.PureComponent<Props> {
   constructor(props: Props) {
     super(props);
     this.onClick = this.onClick.bind(this);
@@ -45,5 +45,3 @@ class EntityLink extends React.PureComponent<Props> {
     );
   }
 }
-
-export default EntityLink;

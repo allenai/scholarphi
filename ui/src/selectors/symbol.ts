@@ -1,4 +1,4 @@
-import { SymbolFilter } from "../components/pdfjs/FindBar";
+import { SymbolFilter } from "../components/search/FindBar";
 import { Entities } from "../state";
 import { isSentence, isSymbol, Relationship, Symbol } from "../api/types";
 import {

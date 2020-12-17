@@ -1,3 +1,5 @@
+export * from './EntityLink';
+export * from './EntityPageLink';
 export * from './FormattedText';
 export * from './LatexPreview';
 export * from './RichText';

@@ -1,5 +1,5 @@
 import { RichText } from "../../common";
-import { Point } from "../creation/Selection";
+import { Point } from "../../control/Selection";
 import * as uiUtils from "../../../utils/ui";
 
 import Card from "@material-ui/core/Card";

@@ -1,7 +1,6 @@
 import { DrawerContentType } from "../drawer/Drawer";
-import EntityPageLink from "./EntityPageLink";
 import { getRemoteLogger } from "../../logging";
-import { RichText } from "../common";
+import { EntityPageLink, RichText } from "../common";
 import * as selectors from "../../selectors";
 import { Entities } from "../../state";
 import { Term } from "../../api/types";

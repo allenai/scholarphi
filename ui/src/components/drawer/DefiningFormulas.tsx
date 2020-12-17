@@ -1,6 +1,5 @@
-import EntityLink from "../entity/EntityLink";
 import { getRemoteLogger } from "../../logging";
-import { RichText } from "../common";
+import { EntityLink, RichText } from "../common";
 import * as selectors from "../../selectors";
 import { Entities } from "../../state";
 import { Entity, isSymbol } from "../../api/types";

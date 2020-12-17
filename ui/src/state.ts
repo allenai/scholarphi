@@ -1,7 +1,7 @@
 import { SnackbarMode } from "./components/overlay/AppOverlay";
 import { DrawerContentType, DrawerMode } from "./components/drawer/Drawer";
-import { AreaSelectionMethod } from "./components/entity/creation/EntityCreationToolbar";
-import { FindMode, FindQuery, SymbolFilter } from "./components/pdfjs/FindBar";
+import { AreaSelectionMethod } from "./components/control/EntityCreationToolbar";
+import { FindMode, FindQuery, SymbolFilter } from "./components/search/FindBar";
 import { Settings } from "./settings";
 import { Entity, Paper } from "./api/types";
 import {

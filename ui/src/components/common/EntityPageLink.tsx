@@ -1,4 +1,4 @@
-import EntityLink from "./EntityLink";
+import { EntityLink } from "./EntityLink";
 import * as selectors from "../../selectors";
 import { Entity } from "../../api/types";
 
@@ -10,7 +10,7 @@ interface Props {
   handleJumpToEntity: (entityId: string) => void;
 }
 
-class EntityPageLink extends React.PureComponent<Props> {
+export class EntityPageLink extends React.PureComponent<Props> {
   render() {
     return (
       <span id={this.props.id} className="entity-page-link">
@@ -28,5 +28,3 @@ class EntityPageLink extends React.PureComponent<Props> {
     );
   }
 }
-
-export default EntityPageLink;

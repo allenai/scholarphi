@@ -1,6 +1,6 @@
 import { DefiningFormulas } from "./DefiningFormulas";
 import Definitions from "./Definitions";
-import EntityPropertyEditor from "../entity/EntityPropertyEditor";
+import EntityPropertyEditor from "../control/EntityPropertyEditor";
 import { getRemoteLogger } from "../../logging";
 import { Entities } from "../../state";
 import { Entity, EntityUpdateData } from "../../api/types";

@@ -4,14 +4,14 @@ import Control from "./components/control/Control";
 import DefinitionPreview from "./components/preview/DefinitionPreview";
 import { Drawer, DrawerContentType } from "./components/drawer/Drawer";
 import EntityAnnotationLayer from "./components/entity/EntityAnnotationLayer";
-import EntityCreationCanvas from "./components/entity/creation/EntityCreationCanvas";
+import EntityCreationCanvas from "./components/control/EntityCreationCanvas";
 import EntityCreationToolbar, {
   AreaSelectionMethod,
   createCreateEntityDataWithBoxes,
-} from "./components/entity/creation/EntityCreationToolbar";
+} from "./components/control/EntityCreationToolbar";
 import EntityPageMask from "./components/mask/EntityPageMask";
 import EquationDiagram from "./components/entity/equation/EquationDiagram";
-import FindBar, { FindQuery } from "./components/pdfjs/FindBar";
+import FindBar, { FindQuery } from "./components/search/FindBar";
 import logger from "./logging";
 import MasterControlPanel from "./components/control/MasterControlPanel";
 import PageOverlay from "./components/overlay/PageOverlay";

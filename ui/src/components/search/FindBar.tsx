@@ -1,5 +1,5 @@
 import { getRemoteLogger } from "../../logging";
-import { PdfjsFindQueryWidget } from "./PdfjsFindQueryWidget";
+import { PdfjsFindQueryWidget } from "../pdfjs/PdfjsFindQueryWidget";
 import * as selectors from "../../selectors";
 import { SymbolFilters } from "../../state";
 import { SymbolFindQueryWidget } from "./SymbolFindQueryWidget";

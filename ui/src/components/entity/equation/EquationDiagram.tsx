@@ -1,7 +1,7 @@
 import EquationDiagramGloss from "./EquationDiagramGloss";
 import LabelRenderer from "./LabelRenderer";
 import { getRemoteLogger } from "../../../logging";
-import { Point } from "../creation/Selection";
+import { Point } from "../../control/Selection";
 import * as selectors from "../../../selectors";
 import { Entities } from "../../../state";
 import { Equation } from "../../../api/types";
