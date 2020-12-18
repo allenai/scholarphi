@@ -19,7 +19,7 @@ from common.types import (
     Symbol,
 )
 from common.upload_entities import (
-    fetch_entity_row_ids,
+    fetch_entity_models,
     make_data_models,
     make_relationship_models,
     upload_entities,
@@ -203,7 +203,7 @@ def upload_symbol_definitions(
 
     # Fetch rows for all entities for this paper that have already been uploaded to the database.
     # This allows lookup of the row IDs for the sentence that contain definitions of symbols.
-    row_ids = fetch_entity_row_ids(processing_summary.s2_id, data_version)
+    entity_models = fetch_entity_models(processing_summary.s2_id, data_version)
 
     # Create a list of rows to insert into the database containing definition data.
     entity_data_models: List[EntityDataModel] = []
@@ -269,13 +269,13 @@ def upload_symbol_definitions(
         matching_symbols = symbols_by_mathml.get(defined_symbol.mathml)
         if matching_symbols is not None:
             for s in matching_symbols:
-                symbol_row_id = row_ids.get(("symbol", sid(s)))
+                entity_model = entity_models.get(("symbol", sid(s)))
                 data: EntityData = {
                     "definitions": definitions,
                     "definition_texs": definition_texs,
                     "sources": sources,
                 }
-                entity_data_models.extend(make_data_models(None, symbol_row_id, data))
+                entity_data_models.extend(make_data_models(None, entity_model, data))
 
                 relationships: EntityRelationships = {
                     "definition_sentences": [
@@ -284,7 +284,9 @@ def upload_symbol_definitions(
                     ],
                 }
                 entity_data_models.extend(
-                    make_relationship_models(("symbol", sid(s)), relationships, row_ids)
+                    make_relationship_models(
+                        ("symbol", sid(s)), relationships, entity_models
+                    )
                 )
 
     with output_database.atomic():
