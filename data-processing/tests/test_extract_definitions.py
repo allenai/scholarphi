@@ -85,6 +85,70 @@ def test_extract_nicknames_from_before_symbols():
     assert nickname1.definition_text == "timestep"
 
 
+def test_extract_nicknames_symbols_separated_by_colon():
+    text = "The agent acts with SYMBOL in each timestep SYMBOL, where SYMBOL : policy."
+    symbol_texs = {20: r"\pi", 44: "t", 58: r"\pi"}
+    tokens, pos = list(
+        zip(
+            *[
+                ("The", "DT"),
+                ("agent", "NN"),
+                ("acts", "VBZ"),
+                ("with", "IN"),
+                ("SYMBOL", "NN"),
+                ("in", "IN"),
+                ("each", "DT"),
+                ("timestep", "NN"),
+                ("SYMBOL", "NN"),
+                (",", ","),
+                ("where", ""),
+                ("SYMBOL", "NN"),
+                (":", ":"),
+                ("policy", "NN"),
+                (".", "."),
+            ]
+        )
+    )
+
+    symbol_nickname_pairs = get_symbol_nickname_pairs(text, tokens, pos, symbol_texs)
+    assert len(symbol_nickname_pairs) == 2
+
+    nickname0 = symbol_nickname_pairs[0]
+    assert nickname0.term_text == "t"
+    assert nickname0.definition_text == "timestep"
+
+    nickname1 = symbol_nickname_pairs[1]
+    assert nickname1.term_text == r"\pi"
+    assert nickname1.definition_text == "policy"
+
+def test_extract_nicknames_symbols_filter():
+    text = "The agent acts with SYMBOL SYMBOL in each timestep SYMBOL."
+    symbol_texs = {20: r"\pi", 27: "p", 51: "t"}
+    tokens, pos = list(
+        zip(
+            *[
+                ("The", "DT"),
+                ("agent", "NN"),
+                ("acts", "VBZ"),
+                ("with", "IN"),
+                ("SYMBOL", "NN"),
+                ("SYMBOL", "NN"),
+                ("in", "IN"),
+                ("each", "DT"),
+                ("timestep", "NN"),
+                ("SYMBOL", "NN"),
+                (".", "."),
+            ]
+        )
+    )
+
+    symbol_nickname_pairs = get_symbol_nickname_pairs(text, tokens, pos, symbol_texs)
+    assert len(symbol_nickname_pairs) == 1
+
+    nickname0 = symbol_nickname_pairs[0]
+    assert nickname0.term_text == "t"
+    assert nickname0.definition_text == "timestep"
+
 def test_extract_nicknames_from_after_symbols():
     text = "The architecture consists of SYMBOL dense layers trained with SYMBOL learning rate."
     symbol_texs = {29: "L_d", 62: r"\alpha"}
