@@ -1,30 +1,31 @@
 import logging
 import os.path
 from collections import defaultdict
-from typing import Dict, List, Optional, Set, cast
+from typing import Dict, List, Optional, Set, Union, cast
 
 from common import directories, file_utils
 from common.colorize_tex import wrap_span
 from common.types import (
     BoundingBox,
+    Context,
     EntityData,
-    EntityInformation,
     EntityReference,
     EntityRelationships,
+    EntityUploadInfo,
     Match,
     Matches,
     PaperProcessingResult,
     SerializableChild,
     SerializableSymbol,
+    Symbol,
 )
 from common.upload_entities import upload_entities
-from entities.sentences.types import Context
 from entities.symbols.types import DefiningFormula
 
 SymbolId = str
 
 
-def sid(symbol: SerializableSymbol) -> SymbolId:
+def sid(symbol: Union[SerializableSymbol, Symbol]) -> SymbolId:
     return f"{symbol.tex_path}-{symbol.equation_index}-{symbol.symbol_index}"
 
 
@@ -33,11 +34,11 @@ def upload_symbols(
 ) -> None:
 
     arxiv_id = processing_summary.arxiv_id
-    entities = [el.entity for el in processing_summary.localized_entities]
+    entities = [es.entity for es in processing_summary.entities]
     symbols = cast(List[SerializableSymbol], entities)
     symbols_by_id = {sid(s): s for s in symbols}
 
-    entity_infos: List[EntityInformation] = []
+    entity_infos: List[EntityUploadInfo] = []
 
     # Load MathML matches for partially matching of symbols.
     matches: Matches = {}
@@ -123,7 +124,7 @@ def upload_symbols(
             mathml_formulas[symbol.mathml].add(formula)
 
     entity_infos = []
-    for localized_entity in processing_summary.localized_entities:
+    for localized_entity in processing_summary.entities:
 
         symbol = cast(SerializableSymbol, localized_entity.entity)
         boxes = [
@@ -196,7 +197,7 @@ def upload_symbols(
         }
 
         # Save all data for this symbol
-        entity_information = EntityInformation(
+        entity_information = EntityUploadInfo(
             id_=sid(symbol),
             type_="symbol",
             bounding_boxes=boxes,

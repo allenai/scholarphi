@@ -138,6 +138,8 @@ class TermReference(Term):
 class Definiendum(TermReference):
     " A term that appears in a definition. "
 
+    sentence_id: str
+
     definition_id: str
     " The ID for the definiens that defines this term. "
 

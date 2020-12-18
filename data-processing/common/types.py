@@ -225,7 +225,6 @@ class Phrase(SerializableEntity):
 @dataclass(frozen=True)
 class Term(SerializableEntity):
     text: str
-    sentence_id: Optional[str]
 
     type_: Optional[str]
     " Type of term (e.g., symbol, protologism, abbreviation). "
@@ -315,6 +314,9 @@ MathML = str
 
 @dataclass
 class Symbol:
+    tex_path: str
+    equation_index: int
+    symbol_index: int
     tokens: List[Token]
     tex: str
     start: int
@@ -401,10 +403,54 @@ class SerializableSymbolToken(SymbolId, TokenId):
 
 
 """
-COLORIZATION RECORDS
+COLORIZATION
 """
 
 Hue = float
+
+
+ColorWhenFunc = Callable[[SerializableEntity], bool]
+GroupEntitiesFunc = Callable[[List[SerializableEntity]], List[List[SerializableEntity]]]
+ColorPositionsFunc = Callable[[SerializableEntity], CharacterRange]
+
+
+@dataclass(frozen=True)
+class ColorizeOptions:
+    """
+    Options to alter the behavior of the 'colorize_entities' function.
+    """
+
+    insert_color_macros: bool = True
+    """
+    Whether to insert definitions of color macros at the top of each file in which
+    entities are colorized. One reason to set this value to 'False' is when testing
+    the 'colorize_text' method
+    """
+
+    preset_hue: Optional[float] = None
+    " If defined, all entities will be colored this single hue. "
+
+    when: Optional[ColorWhenFunc] = None
+    " Filter that decides whether to color a particular entity. "
+
+    group: Optional[GroupEntitiesFunc] = None
+    """
+    Callback to split entities in groups that will be colorized independently. Define this,
+    for instance, to ensure that overlapping entities (e.g., symbols and their subsymbols)
+    aren't colorized in the same batch.
+    """
+
+    adjust_color_positions: Optional[ColorPositionsFunc] = None
+    """
+    Callback that maps an entity to a range of characters that should be colorized in a TeX file.
+    If not defined, the range of characters that will be colored will be the span of the entity.
+    """
+
+    braces: bool = False
+    """
+    Whether to surround the colorized entity in curly braces. This seems to be important for
+    preventing compilation errors for certaint types of entities, like equation tokens.
+    """
 
 
 @dataclass(frozen=True)
@@ -539,6 +585,45 @@ DATABASE UPLOADS
 
 
 @dataclass(frozen=True)
+class Context:
+    " A context that an entity appears in within a paper. "
+    tex_path: str
+    entity_id: str
+    " Together, 'tex_path' and 'entity_id' specify the entity that the context is for. "
+
+    sentence_id: str
+    " ID of the sentence that the entity appears in. "
+
+    snippet: str
+    """
+    A snippet of human-readable text optimized to show the entity in context. This may include HTML
+    or LaTeX, depending on the context the snippet is meant to appear in.
+    """
+
+    neighbor_entity_ids: List[str]
+    """
+    A list of entity IDs for entities of the same type that also appear in the same sentence. For
+    example, this could include IDs of other symbols of the same name in the same sentence.
+    """
+
+
+@dataclass(frozen=True)
+class EntityExtractionResult:
+    " An aggregate class containing information for an entity extracted from the pipeline. "
+    entity: SerializableEntity
+    locations: List[EntityLocationInfo]
+    context: Optional[Context] = None
+
+
+@dataclass(frozen=True)
+class PaperProcessingResult:
+    " Contains information about all entities processed for a paper. "
+    arxiv_id: ArxivId
+    s2_id: S2Id
+    entities: List[EntityExtractionResult]
+
+
+@dataclass(frozen=True)
 class EntityReference:
     """
     Reference to another entity within the same paper. The combination of entity ID and type should
@@ -564,7 +649,7 @@ EntityRelationships = Dict[str, Union[EntityReference, List[EntityReference]]]
 
 
 @dataclass(frozen=True)
-class EntityInformation:
+class EntityUploadInfo:
     id_: str
     type_: str
     " Together, the 'id' and the 'type' should provide a unique ID for this entity within the paper. "
@@ -572,19 +657,10 @@ class EntityInformation:
     bounding_boxes: List[BoundingBox]
     data: Optional[EntityData] = None
     relationships: Optional[EntityRelationships] = None
-
-
-@dataclass(frozen=True)
-class EntityAndLocation:
-    entity: SerializableEntity
-    locations: List[EntityLocationInfo]
-
-
-@dataclass(frozen=True)
-class PaperProcessingResult:
-    arxiv_id: ArxivId
-    s2_id: S2Id
-    localized_entities: List[EntityAndLocation]
+    """
+    Mappings from this entity to other entities it's related to. For example, this could contain
+    lists of IDs of other sentences where the entity appears.
+    """
 
 
 VersionNumber = int

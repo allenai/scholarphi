@@ -1,12 +1,13 @@
 from typing import Any, List, cast
 
 from common import directories
-from common.colorize_tex import ColorizeOptions, overlaps
+from common.colorize_tex import overlaps
 from common.commands.locate_entities import make_locate_entities_command
 from common.commands.upload_entities import make_upload_entities_command
 from common.make_digest import make_default_paper_digest
 from common.types import (
     ArxivId,
+    ColorizeOptions,
     EntityProcessingDigest,
     SerializableEntity,
     SerializableSymbol,

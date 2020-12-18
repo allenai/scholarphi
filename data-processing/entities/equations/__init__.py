@@ -1,9 +1,7 @@
 from typing import cast
 
-from common.colorize_tex import ColorizeOptions
-from common.commands.base import CommandList
 from common.parse_tex import EquationExtractor
-from common.types import CharacterRange, Equation, SerializableEntity
+from common.types import CharacterRange, ColorizeOptions, Equation, SerializableEntity
 from entities.common import create_entity_localization_command_sequence
 from scripts.pipelines import EntityPipeline, register_entity_pipeline
 
@@ -23,7 +21,7 @@ def adjust_color_positions(entity: SerializableEntity) -> CharacterRange:
 commands = create_entity_localization_command_sequence(
     "equations",
     EquationExtractor,
-    Equation,
+    DetectedEntityType=Equation,
     colorize_options=ColorizeOptions(
         when=colorize_equation_when, adjust_color_positions=adjust_color_positions
     ),

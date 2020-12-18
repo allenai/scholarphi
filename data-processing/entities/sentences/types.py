@@ -42,29 +42,6 @@ class Sentence(SerializableEntity):
 
 
 @dataclass(frozen=True)
-class Context:
-    " A context that an entity appears in within a paper. "
-    tex_path: str
-    entity_id: str
-    " Together, 'tex_path' and 'entity_id' specify the entity that the context is for. "
-
-    sentence_id: str
-    " ID of the sentence that the entity appears in. "
-
-    snippet: str
-    """
-    A snippet of human-readable text optimized to show the entity in context. This may include HTML
-    or LaTeX, depending on the context the snippet is meant to appear in.
-    """
-
-    neighbor_entity_ids: List[str]
-    """
-    A list of entity IDs for entities of the same type that also appear in the same sentence. For
-    example, this could include IDs of other symbols of the same name in the same sentence.
-    """
-
-
-@dataclass(frozen=True)
 class TexWrapper:
     " Instructions for how to wrap an entity appearance in extracted TeX. "
 

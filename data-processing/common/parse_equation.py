@@ -540,7 +540,7 @@ def _is_affix_token(element: Tag) -> bool:
     return (
         bool(parent.name == "mover")
         and bool(element.find_previous("mi"))
-        and (parent.attrs["accent"] == "true")
+        and (parent.attrs.get("accent") == "true")
     )
 
 

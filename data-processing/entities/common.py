@@ -1,18 +1,20 @@
 from typing import List, Optional, Type
 
 from common import directories
-from common.colorize_tex import ColorizeOptions
 from common.commands.base import Command, CommandList
 from common.commands.detect_entities import make_detect_entities_command
 from common.commands.locate_entities import ColorizeFunc, make_locate_entities_command
 from common.commands.upload_entities import make_upload_entities_command
 from common.parse_tex import EntityExtractor
-from common.types import EntityUploadCallable, SerializableEntity
+from common.types import ColorizeOptions, EntityUploadCallable, SerializableEntity
+from entities.sentences.commands.extract_contexts import make_extract_contexts_command
+from entities.sentences.types import TexWrapper
 
 
 def create_entity_localization_command_sequence(
     entity_name: str,
     EntityExtractorType: Type[EntityExtractor],
+    extract_contexts: bool = False,
     DetectedEntityType: Optional[Type[SerializableEntity]] = None,
     upload_func: Optional[EntityUploadCallable] = None,
     colorize_options: ColorizeOptions = ColorizeOptions(),
@@ -27,24 +29,32 @@ def create_entity_localization_command_sequence(
     LaTeX, raster the pages, and locate the colors in the pages. You may define additional
     paramters (e.g., 'colorize_options') to fine-tune the commands.
 
+    To extract the contexts for an entity (i.e., the sentences in which the entities appear),
+    set 'extract_contexts' to True.
+
     If you are trying to find the locations of a new type of entity, it is highly recommended that
     you use this convenience methods instead of creating new commands yourself.
     """
 
-    # Register directories for output from intermediate pipeline stages.
+    commands: CommandList = []
+
     directories.register(f"detected-{entity_name}")
+    commands.append(make_detect_entities_command(entity_name, EntityExtractorType))
+
+    if extract_contexts:
+        directories.register(f"contexts-for-{entity_name}")
+        commands.append(make_extract_contexts_command(entity_name))
+
     directories.register(f"sources-with-colorized-{entity_name}")
     directories.register(f"compiled-sources-with-colorized-{entity_name}")
     directories.register(f"paper-images-with-colorized-{entity_name}")
     directories.register(f"diffed-images-with-colorized-{entity_name}")
     directories.register(f"{entity_name}-locations")
-
-    commands: CommandList = [
-        make_detect_entities_command(entity_name, EntityExtractorType),
+    commands.append(
         make_locate_entities_command(
             entity_name, None, DetectedEntityType, colorize_options, colorize_func
-        ),
-    ]
+        )
+    )
 
     if upload_func is not None:
         upload_command = make_upload_entities_command(

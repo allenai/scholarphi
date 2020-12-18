@@ -2,12 +2,12 @@ import colorsys
 import logging
 import os
 from dataclasses import dataclass
-from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple
+from typing import Dict, Iterator, List, Optional, Sequence, Tuple
 
 import numpy as np
 
 from common.parse_tex import BeginDocumentExtractor, DocumentclassExtractor, overlaps
-from common.types import CharacterRange, Hue, SerializableEntity
+from common.types import CharacterRange, ColorizeOptions, Hue, SerializableEntity
 
 """
 Most TeX coloring operations follow the same process.
@@ -164,50 +164,6 @@ def _get_color_end_tex(entity_id: str) -> str:
     were successfully colorized before errors were encountered.
     """
     return rf"\scholarrevertcolor{{}}\message{{S2: Colorized entity '{entity_id}'.}}"
-
-
-ColorWhenFunc = Callable[[SerializableEntity], bool]
-GroupEntitiesFunc = Callable[[List[SerializableEntity]], List[List[SerializableEntity]]]
-ColorPositionsFunc = Callable[[SerializableEntity], CharacterRange]
-
-
-@dataclass(frozen=True)
-class ColorizeOptions:
-    """
-    Options to alter the behavior of the 'colorize_entities' function.
-    """
-
-    insert_color_macros: bool = True
-    """
-    Whether to insert definitions of color macros at the top of each file in which
-    entities are colorized. One reason to set this value to 'False' is when testing
-    the 'colorize_text' method
-    """
-
-    preset_hue: Optional[float] = None
-    " If defined, all entities will be colored this single hue. "
-
-    when: Optional[ColorWhenFunc] = None
-    " Filter that decides whether to color a particular entity. "
-
-    group: Optional[GroupEntitiesFunc] = None
-    """
-    Callback to split entities in groups that will be colorized independently. Define this,
-    for instance, to ensure that overlapping entities (e.g., symbols and their subsymbols)
-    aren't colorized in the same batch.
-    """
-
-    adjust_color_positions: Optional[ColorPositionsFunc] = None
-    """
-    Callback that maps an entity to a range of characters that should be colorized in a TeX file.
-    If not defined, the range of characters that will be colored will be the span of the entity.
-    """
-
-    braces: bool = False
-    """
-    Whether to surround the colorized entity in curly braces. This seems to be important for
-    preventing compilation errors for certaint types of entities, like equation tokens.
-    """
 
 
 EntityId = str

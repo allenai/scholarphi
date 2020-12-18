@@ -107,7 +107,7 @@ def get_compiled_tex_files_from_autotex_output(
     return [
         CompiledTexFile(filename.decode("utf-8"))
         for filename in processed_tex_files
-        if filename not in failed_tex_files
+        if filename not in failed_tex_files and not filename.endswith(b".dvi")
     ]
 
 
@@ -201,6 +201,8 @@ def _get_compilation_results_dir(compiled_tex_dir: RelativePath) -> RelativePath
 
 def _did_compilation_succeed(compiled_tex_dir: RelativePath) -> bool:
     result_path = os.path.join(_get_compilation_results_dir(compiled_tex_dir), "result")
+    if not os.path.exists(result_path):
+        return False
     with open(result_path) as result_file:
         result = result_file.read().strip()
         return result == "True"
@@ -232,6 +234,14 @@ def get_compiled_tex_files(compiled_tex_dir: RelativePath) -> List[CompiledTexFi
         compiled_tex_files_path = os.path.join(
             _get_compilation_results_dir(compiled_tex_dir), "compiled_tex_files.csv"
         )
+        if not os.path.exists(compiled_tex_files_path):
+            logging.warning(  # pylint: disable=logging-not-lazy
+                "Although compilation succeeded for TeX compilation in directory %s, no "
+                + "specific TeX files were logged as having been compiled. Something "
+                + "unexpected must have happened during compilation of the TeX.",
+                compiled_tex_dir,
+            )
+            return []
         compiled_tex_files = list(
             file_utils.load_from_csv(compiled_tex_files_path, CompiledTexFile)
         )

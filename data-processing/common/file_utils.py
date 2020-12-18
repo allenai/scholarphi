@@ -155,7 +155,25 @@ def load_from_csv(
     """
     with open(csv_path, encoding=encoding, newline="") as csv_file:
         reader = csv.DictReader(csv_file, quoting=csv.QUOTE_MINIMAL)
-        for row in reader:
+
+        while True:
+            try:
+                row = next(reader)
+            except csv.Error as e:
+                # One type of error that may occur is the data being larger than the CSV field size
+                # (see https://stackoverflow.com/questions/15063936).
+                # Rather than increasing the field size limit, this code skips those rows, as this
+                # does not require anticipation of the maximum size that data for a row can be.
+                logging.warning(  # pylint: disable=logging-not-lazy
+                    "Could not load row from CSV file %s. Error: %s. The rest of this file "
+                    + "will be skipped as the CSV reader has lost its place.",
+                    csv_path,
+                    e,
+                )
+                break
+            except StopIteration:
+                break
+
             data: Dict[str, Any] = {}
             # Transfer data from the row into a dictionary of arguments. By only including the
             # fields for D, we skip over columns that can't be used to initialize D. At the
@@ -380,6 +398,9 @@ def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
     for s in loaded_symbols:
         symbol_id = SymbolId(s.tex_path, s.equation_index, s.symbol_index)
         symbols_by_id[symbol_id] = Symbol(
+            tex_path=s.tex_path,
+            equation_index=s.equation_index,
+            symbol_index=s.symbol_index,
             tokens=[],
             start=s.start,
             end=s.end,

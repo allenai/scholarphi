@@ -6,13 +6,13 @@ from common import directories, file_utils
 from common.bounding_box import cluster_boxes
 from common.types import (
     BoundingBox,
-    EntityInformation,
+    Context,
     EntityReference,
+    EntityUploadInfo,
     PaperProcessingResult,
     Term,
 )
 from common.upload_entities import upload_entities
-from entities.sentences.types import Context
 
 
 def upload_terms(
@@ -31,24 +31,24 @@ def upload_terms(
 
     # Assemble contexts that should be shown for each term.
     contexts_by_term: Dict[str, List[Context]] = defaultdict(list)
-    for entity_and_location in processing_summary.localized_entities:
-        term = cast(Term, entity_and_location.entity)
+    for entity_summary in processing_summary.entities:
+        term = cast(Term, entity_summary.entity)
         if (term.tex_path, term.id_) in contexts_by_entity:
             contexts_by_term[term.text].append(
                 contexts_by_entity[(term.tex_path, term.id_)]
             )
 
     entity_infos = []
-    for entity_and_location in processing_summary.localized_entities:
-        term = cast(Term, entity_and_location.entity)
+    for entity_summary in processing_summary.entities:
+        term = cast(Term, entity_summary.entity)
         context = contexts_by_entity.get((term.tex_path, term.id_))
-        boxes = [cast(BoundingBox, l) for l in entity_and_location.locations]
+        boxes = [cast(BoundingBox, l) for l in entity_summary.locations]
 
         # Cluster bounding boxes, in case any of these terms are defined as a macro (in which)
         # case all appearances of that term on the same page will have been lumped together.
         clusters = cluster_boxes(boxes, vertical_split=0.005)
         for i, cluster in enumerate(clusters):
-            entity_info = EntityInformation(
+            entity_info = EntityUploadInfo(
                 id_=f"{term.tex_path}-{term.id_}-{i}",
                 type_="term",
                 bounding_boxes=list(cluster),

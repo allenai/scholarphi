@@ -1,7 +1,6 @@
-import { defaultMemoize } from "reselect";
-import { SymbolFilter } from "../FindBar";
+import { SymbolFilter } from "../components/search/FindBar";
 import { Entities } from "../state";
-import { isSentence, isSymbol, Relationship, Symbol } from "../types/api";
+import { isSentence, isSymbol, Relationship, Symbol } from "../api/types";
 import {
   adjacentContext,
   adjacentDefinition,
@@ -11,6 +10,8 @@ import {
   orderByPosition,
   orderExcerpts,
 } from "./entity";
+
+import { defaultMemoize } from "reselect";
 
 export function diagramLabel(
   symbol: Symbol,

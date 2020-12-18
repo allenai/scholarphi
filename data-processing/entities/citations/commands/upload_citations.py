@@ -9,7 +9,7 @@ from common.commands.database import DatabaseUploadCommand
 from common.types import (
     BoundingBox,
     CitationData,
-    EntityInformation,
+    EntityUploadInfo,
     SerializableReference,
 )
 from common.upload_entities import upload_entities
@@ -114,7 +114,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
 
             for cluster_index, location_set in locations.items():
                 boxes = cast(List[BoundingBox], list(location_set))
-                entity_info = EntityInformation(
+                entity_info = EntityUploadInfo(
                     id_=f"{citation_key}-{cluster_index}",
                     type_="citation",
                     bounding_boxes=boxes,

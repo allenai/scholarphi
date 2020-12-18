@@ -7,6 +7,8 @@
  * Accordingly the code and visual appearance differs from that used within
  * the general reader interface slightly.
  */
+import { listPapers } from "../api/api";
+import { Paginated, PaperWithEntityCounts } from "../api/types";
 
 import AppBar from "@material-ui/core/AppBar";
 import Box from "@material-ui/core/Box";
@@ -25,8 +27,6 @@ import Typography from "@material-ui/core/Typography";
 import ErrorIcon from "@material-ui/icons/Error";
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { listPapers } from "../api";
-import { Paginated, PaperWithEntityCounts } from "../types/api";
 
 enum ViewState {
   Loading, Success, Failure
