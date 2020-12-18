@@ -5,11 +5,24 @@ from typing import Dict, List, Optional, Tuple, cast
 from common import file_utils
 from common.colorize_tex import EntityId
 from common.models import EntityData as EntityDataModel
-from common.types import (BoundingBox, Context, EntityData, EntityReference,
-                          EntityRelationships, EntityUploadInfo, MathML,
-                          PaperProcessingResult, SerializableEntity, Symbol)
-from common.upload_entities import (fetch_existing_entities, make_data_models,
-                                    make_relationship_models, upload_entities)
+from common.types import (
+    BoundingBox,
+    Context,
+    EntityData,
+    EntityReference,
+    EntityRelationships,
+    EntityUploadInfo,
+    MathML,
+    PaperProcessingResult,
+    SerializableEntity,
+    Symbol,
+)
+from common.upload_entities import (
+    fetch_existing_entities,
+    make_data_models,
+    make_relationship_models,
+    upload_entities,
+)
 from entities.symbols.upload import sid
 
 from .types import Definiendum, TermReference
@@ -18,6 +31,12 @@ from .types import Definiendum, TermReference
 def upload_definitions(
     processing_summary: PaperProcessingResult, data_version: Optional[int]
 ) -> None:
+
+    # Separate out txtual terms and symbols and process them separately. While references
+    # to textual terms are found by a set of commands for textual definitions, references to
+    # symbols are found in a separate set of commands that exclusively detect symbols.
+    # The 'upload_symbol_definitions' function, therefore, needs to integrate data extracted
+    # from the definition commands and symbols commands.
     upload_term_definitions(processing_summary, data_version)
     upload_symbol_definitions(processing_summary, data_version)
 
@@ -98,19 +117,28 @@ def upload_term_definitions(
                 "definitions": term.definitions,
                 "definition_texs": term.definition_texs,
                 "sources": term.sources,
+                # A list of all other sentences the term appearse elsewhere in the paper.
                 "snippets": snippets,
             },
             relationships={
+                # Link the term to the sentence it belongs to. This link is necessary to enable
+                # visual filtering in the UI where, when a term is clicked, the sentence is
+                # highlighted and all others are lowlighted.
                 "sentence": EntityReference(
                     type_="sentence",
                     id_=f"{context.tex_path}-{context.sentence_id}"
                     if context is not None
                     else None,
                 ),
+                # IDs of the sentences that contain each of the definitions for a term. These IDs
+                # can be used to establish links that take a user to the site of a definition.
                 "definition_sentences": [
                     EntityReference(type_="sentence", id_=id_)
                     for id_ in definition_sentences
                 ],
+                # The IDs of each sentence where the term appears elsewhere in the paper (i.e.,
+                # for each of the 'snippets' in the entity data above. Used to link from a snippet
+                # that is shown in a list of snippets to where that snippet appears in the paper.
                 "snippet_sentences": [
                     EntityReference(type_="sentence", id_=id_)
                     for id_ in snippet_sentences
@@ -244,7 +272,7 @@ def upload_symbol_definitions(
                 data: EntityData = {
                     "definitions": definitions,
                     "definition_texs": definition_texs,
-                    "sources": sources
+                    "sources": sources,
                 }
                 entity_data_models.extend(
                     make_data_models(symbol_entity_model, None, data)

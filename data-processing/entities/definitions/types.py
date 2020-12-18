@@ -103,6 +103,7 @@ class Definition(SerializableEntity):
     """
 
     text: str
+    sentence_id: str
 
     definiendum: str
     " The name of the term that this definition defines. "
@@ -136,6 +137,8 @@ class TermReference(Term):
 @dataclass(frozen=True)
 class Definiendum(TermReference):
     " A term that appears in a definition. "
+
+    sentence_id: str
 
     definition_id: str
     " The ID for the definiens that defines this term. "

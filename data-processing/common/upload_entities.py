@@ -209,6 +209,13 @@ def make_data_models(
                 type_ = "float"
             elif isinstance(v, str):
                 type_ = "string"
+            else:
+                logging.debug(  # pylint: disable=logging-not-lazy
+                    "When create a row of entity data, a primitive type could not be "
+                    + "determined for a value with the key '%s'. Make sure that all "
+                    + "entity data is either a primitive type or a list of primitive types. "
+                    + "No row will be created for this data value."
+                )
 
             if type_ is not None:
                 if entity_model is not None:
