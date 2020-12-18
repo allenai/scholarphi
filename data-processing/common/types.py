@@ -657,6 +657,10 @@ class EntityUploadInfo:
     bounding_boxes: List[BoundingBox]
     data: Optional[EntityData] = None
     relationships: Optional[EntityRelationships] = None
+    """
+    Mappings from this entity to other entities it's related to. For example, this could contain
+    lists of IDs of other sentences where the entity appears.
+    """
 
 
 VersionNumber = int
