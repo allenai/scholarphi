@@ -36,11 +36,11 @@ from scripts.process import (
     run_command,
 )
 
+DEFAULT_ENTITIES = ["citations", "symbols", "definitions"]
+
 
 def run_commands_for_arxiv_ids(
-    CommandClasses: CommandList,
-    arxiv_id_list: List[str],
-    pipeline_args: Namespace,
+    CommandClasses: CommandList, arxiv_id_list: List[str], pipeline_args: Namespace,
 ) -> PipelineDigest:
     " Run a sequence of pipeline commands for a list of arXiv IDs. "
 
@@ -129,12 +129,24 @@ if __name__ == "__main__":
         "--entities",
         help=(
             "What type of entities to process. Commands that do not process the specified entities "
-            + "will be skipped. Defaults to all entities. You can specify multiple entity types. "
+            + f"will be skipped. Defaults to {DEFAULT_ENTITIES}. You can specify multiple entity types. "
             + "If specifying multiple entity types, use the format '--entities <type1> <type2> "
             + "without an equal sign after '--entities'."
         ),
         choices=ENTITY_NAMES,
         nargs="+",
+    )
+    parser.add_argument(
+        "--commands",
+        type=str,
+        nargs="+",
+        help=(
+            "Which commands to run. Typically when '--commands' is set, only those commands "
+            + "will be run. However, if other command filters are set (e.g., "
+            + "'--entities', '--start', or '--end', then all commands specified by the other "
+            + "filters will be run, _in addition to_ those in '--commands'."
+        ),
+        choices=command_names,
     )
     parser.add_argument(
         "--start",
@@ -143,18 +155,6 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--end", help="Command to stop running the pipeline at.", choices=command_names
-    )
-    parser.add_argument(
-        "--commands",
-        type=str,
-        nargs="+",
-        help=(
-            "Which commands to run. Commands in this list will be run even if they don't belong "
-            + "to the pipelines in '--entities' or fit between '--start' and '--end'. If no other "
-            + "entity filters are set (--entities, --start, --end), then only the commands "
-            + "specified will be run."
-        ),
-        choices=command_names,
     )
     add_arxiv_id_filter_args(parser)
     parser.add_argument(
@@ -377,9 +377,19 @@ if __name__ == "__main__":
     if args.store_log:
         command_classes.append(StorePipelineLog)
 
+    # Determine what commands should be run.
     filtered_commands = []
 
+    # Determine the entities that will be processed. If no entities were specified,
+    # then set the entities to the default (or empty if a list of commands was provided).
+    entities: List[str] = []
+    if args.entities is not None:
+        entities = args.entities
+    elif args.commands is None or (args.start or args.end):
+        entities = DEFAULT_ENTITIES
+
     start_reached = True if args.start is None else False
+    end_reached = False
     for CommandClass in command_classes:
         command_name = CommandClass.get_name()
         # Run any command that the user explicitly requested to run.
@@ -389,8 +399,10 @@ if __name__ == "__main__":
                 continue
             # If no other command filters have been specified and the user didn't
             # request this command, skip it.
-            if args.start is None and args.end is None and args.entities is None:
+            if args.start is None and args.end is None and entities == []:
                 continue
+        if end_reached:
+            continue
         if not start_reached and args.start is not None:
             if command_name == args.start:
                 start_reached = True
@@ -400,13 +412,10 @@ if __name__ == "__main__":
             # Skip over irrelevant entity-processing commands.
             if CommandClass in ENTITY_COMMANDS:
                 skip_command = True
-                if args.entities is None:
-                    skip_command = False
-                else:
-                    for entity_type in args.entities:
-                        if CommandClass in commands_by_entity[entity_type]:
-                            skip_command = False
-                            break
+                for entity_type in entities:
+                    if CommandClass in commands_by_entity[entity_type]:
+                        skip_command = False
+                        break
                 if skip_command:
                     continue
             if args.extraction_only:
@@ -420,7 +429,7 @@ if __name__ == "__main__":
                     continue
             filtered_commands.append(CommandClass)
             if args.end is not None and command_name == args.end:
-                break
+                end_reached = True
 
     if args.max_papers is not None:
         logging.debug(
