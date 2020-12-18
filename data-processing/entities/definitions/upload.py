@@ -5,6 +5,7 @@ from typing import Dict, List, Optional, Tuple, cast
 from common import file_utils
 from common.colorize_tex import EntityId
 from common.models import EntityData as EntityDataModel
+from common.models import output_database
 from common.types import (
     BoundingBox,
     Context,
@@ -18,7 +19,7 @@ from common.types import (
     Symbol,
 )
 from common.upload_entities import (
-    fetch_existing_entities,
+    fetch_entity_row_ids,
     make_data_models,
     make_relationship_models,
     upload_entities,
@@ -202,7 +203,7 @@ def upload_symbol_definitions(
 
     # Fetch rows for all entities for this paper that have already been uploaded to the database.
     # This allows lookup of the row IDs for the sentence that contain definitions of symbols.
-    entity_models = fetch_existing_entities(processing_summary.s2_id, data_version)
+    row_ids = fetch_entity_row_ids(processing_summary.s2_id, data_version)
 
     # Create a list of rows to insert into the database containing definition data.
     entity_data_models: List[EntityDataModel] = []
@@ -268,15 +269,13 @@ def upload_symbol_definitions(
         matching_symbols = symbols_by_mathml.get(defined_symbol.mathml)
         if matching_symbols is not None:
             for s in matching_symbols:
-                symbol_entity_model = entity_models.get(("symbol", sid(s)))
+                symbol_row_id = row_ids.get(("symbol", sid(s)))
                 data: EntityData = {
                     "definitions": definitions,
                     "definition_texs": definition_texs,
                     "sources": sources,
                 }
-                entity_data_models.extend(
-                    make_data_models(symbol_entity_model, None, data)
-                )
+                entity_data_models.extend(make_data_models(None, symbol_row_id, data))
 
                 relationships: EntityRelationships = {
                     "definition_sentences": [
@@ -285,9 +284,8 @@ def upload_symbol_definitions(
                     ],
                 }
                 entity_data_models.extend(
-                    make_relationship_models(
-                        ("symbol", sid(s)), relationships, entity_models
-                    )
+                    make_relationship_models(("symbol", sid(s)), relationships, row_ids)
                 )
 
-    EntityDataModel.bulk_create(entity_data_models, 200)
+    with output_database.atomic():
+        EntityDataModel.bulk_create(entity_data_models, 200)
