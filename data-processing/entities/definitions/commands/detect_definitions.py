@@ -757,6 +757,7 @@ class DetectDefinitions(
                                 tex=definition_tex,
                                 text=pair.definition_text,
                                 context_tex=sentence.context_tex,
+                                sentence_id=sentence.id_,
                                 intent=bool(intent),
                                 confidence=definition_confidence,
                             )
@@ -786,6 +787,7 @@ class DetectDefinitions(
                                 tex_path=tex_path,
                                 tex=definiendum_tex,
                                 context_tex=sentence.context_tex,
+                                sentence_id=sentence.id_,
                                 # Document-level features below.
                                 position_ratio=position_ratio,
                                 position_ratios=[],
@@ -853,7 +855,9 @@ class DetectDefinitions(
                 definiendum.section_names.extend(section_names[definiendum.text])
                 yield definiendum
 
-        # Detect all other references to the defined terms.
+        # Detect all other references to the defined terms. Only detect references to textual
+        # terms and abbreviations, but not symbols. References to symbols will already be
+        # detected by another stage of the pipeline.
         term_index = 0
 
         for tex_path, file_contents in item.tex_by_file.items():
