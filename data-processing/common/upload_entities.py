@@ -109,14 +109,18 @@ def upload_entities(
     # should happen after the entity models are created, because the relationships may include
     # references between entities (e.g., some symbols may be children of others), and we need to
     # know the row IDs of the uploaded entities to make links between them in the database.
-    row_ids = fetch_entity_row_ids(s2_id, data_version)
+    all_entity_models = fetch_entity_models(s2_id, data_version)
+    for entity_model in entity_models:
+        all_entity_models[
+            (entity_model.type, entity_model.within_paper_id)
+        ] = entity_model
 
     entity_relationship_models: List[EntityDataModel] = []
     for entity in entities:
         if entity.relationships is not None:
             entity_relationship_models.extend(
                 make_relationship_models(
-                    (entity.type_, entity.id_), entity.relationships, row_ids
+                    (entity.type_, entity.id_), entity.relationships, all_entity_models
                 )
             )
 
@@ -127,13 +131,10 @@ def upload_entities(
 EntityType = str
 WithinPaperId = str
 EntityIdentifier = Tuple[EntityType, WithinPaperId]
-RowId = str
-EntityRowIds = Dict[EntityIdentifier, RowId]
+EntityModels = Dict[EntityIdentifier, Entity]
 
 
-def fetch_entity_row_ids(
-    s2_id: str, data_version: Optional[int] = None
-) -> EntityRowIds:
+def fetch_entity_models(s2_id: str, data_version: Optional[int] = None) -> EntityModels:
     """
     Build a map from the within-paper entity IDs to database row IDs. It is assumed that the
     number of entities already uploaded for this paper won't be so many that they can't all
@@ -143,16 +144,14 @@ def fetch_entity_row_ids(
     if data_version is None:
         data_version = get_or_create_data_version(s2_id)
 
-    row_ids: EntityRowIds = {}
-    rows = (
-        Entity.select(Entity.type, Entity.within_paper_id, Entity.id)
-        .where(Entity.paper_id == s2_id, Entity.version == data_version)
-        .dicts()
+    entity_models: EntityModels = {}
+    rows = Entity.select(Entity.type, Entity.within_paper_id, Entity.id).where(
+        Entity.paper_id == s2_id, Entity.version == data_version
     )
-    for row in rows:
-        row_ids[(row["type"], row["within_paper_id"])] = row["id"]
+    for entity_model in rows:
+        entity_models[(entity_model.type, entity_model.within_paper_id)] = entity_model
 
-    return row_ids
+    return entity_models
 
 
 def make_data_models(
@@ -251,12 +250,12 @@ def make_data_models(
 def make_relationship_models(
     entity_identifier: EntityIdentifier,
     relationships: EntityRelationships,
-    row_ids: EntityRowIds,
+    entity_models: EntityModels,
 ) -> List[EntityDataModel]:
-    def resolve_model(entity_identifier: EntityIdentifier) -> Optional[RowId]:
+    def resolve_model(entity_identifier: EntityIdentifier) -> Optional[Entity]:
         " Helper for resolving an entity ID into a database row ID. "
         try:
-            return row_ids[entity_identifier]
+            return entity_models[entity_identifier]
         except KeyError:
             type_, within_paper_id = entity_identifier
             logging.warning(  # pylint: disable=logging-not-lazy
@@ -274,19 +273,19 @@ def make_relationship_models(
     models: List[EntityDataModel] = []
 
     # Get the model for the entity for which relationships will be saved.
-    row_id = resolve_model(entity_identifier)
-    if row_id is None:
+    entity = resolve_model(entity_identifier)
+    if entity is None:
         return []
 
     for k, v in relationships.items():
         if isinstance(v, EntityReference) and v.id_ is not None:
-            referenced_row_id = resolve_model((v.type_, v.id_))
-            if referenced_row_id is not None:
+            referenced_entity = resolve_model((v.type_, v.id_))
+            if referenced_entity is not None:
                 models.append(
                     EntityDataModel(
-                        entity_id=row_id,
+                        entity=entity,
                         key=k,
-                        value=referenced_row_id,
+                        value=referenced_entity.id,
                         item_type="relation-id",
                         of_list=False,
                         relation_type=v.type_,
@@ -296,13 +295,13 @@ def make_relationship_models(
             for reference in v:
                 if reference.id_ is None:
                     continue
-                referenced_row_id = resolve_model((reference.type_, reference.id_))
-                if referenced_row_id is not None:
+                referenced_entity = resolve_model((reference.type_, reference.id_))
+                if referenced_entity is not None:
                     models.append(
                         EntityDataModel(
-                            entity_id=row_id,
+                            entity=entity,
                             key=k,
-                            value=referenced_row_id,
+                            value=referenced_entity.id,
                             item_type="relation-id",
                             of_list=True,
                             relation_type=reference.type_,
