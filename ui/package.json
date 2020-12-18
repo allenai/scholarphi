@@ -20,9 +20,9 @@
     "reselect": "^4.0.0"
   },
   "scripts": {
-    "start": "node scripts/start.js",
+    "start": "webpack serve",
     "dev": "PROXY='http://localhost:3000' node scripts/start.js",
-    "build": "node scripts/build.js",
+    "build": "webpack --mode production",
     "test": "react-scripts test --env=jsdom"
   },
   "eslintConfig": {
@@ -97,11 +97,20 @@
     "@types/pdfjs-dist": "^2.1.2",
     "@types/react": "^16.8.23",
     "@types/react-dom": "^16.8.5",
+    "copy-webpack-plugin": "^6.4.1",
+    "css-loader": "^5.0.1",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^4.5.0",
     "less": "^3.10.3",
-    "less-loader": "^5.0.0",
+    "less-loader": "^7.1.0",
     "node-sass": "^4.13.1",
     "react-scripts": "^3.3.0",
     "rewire": "^4.0.1",
-    "typescript": "^3.5.3"
+    "style-loader": "^2.0.0",
+    "ts-loader": "^8.0.12",
+    "typescript": "^3.5.3",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^4.2.0",
+    "webpack-dev-server": "^3.11.0"
   }
 }
