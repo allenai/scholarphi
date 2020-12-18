@@ -11,7 +11,6 @@ from .commands.upload_citations import UploadCitations
 from .make_digest import make_digest
 from .types import Bibitem
 
-
 directories.register("detected-citations")
 directories.register("bibitem-resolutions")
 directories.register("sources-with-colorized-citations")
@@ -27,7 +26,7 @@ commands: CommandList = [
     ExtractBibitems,
     ResolveBibitems,
     make_locate_entities_command(
-        "citations", Bibitem, colorize_func=colorize_citations
+        "citations", DetectedEntityType=Bibitem, colorize_func=colorize_citations
     ),
     LocateCitations,
     UploadCitations,
