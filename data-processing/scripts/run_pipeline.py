@@ -383,9 +383,9 @@ if __name__ == "__main__":
     # Determine the entities that will be processed. If no entities were specified,
     # then set the entities to the default (or empty if a list of commands was provided).
     entities: List[str] = []
-    if args.entities is not None:
+    if args.entities:
         entities = args.entities
-    elif args.commands is None or (args.start or args.end):
+    elif not args.commands or args.start or args.end:
         entities = DEFAULT_ENTITIES
 
     start_reached = True if args.start is None else False
@@ -399,7 +399,7 @@ if __name__ == "__main__":
                 continue
             # If no other command filters have been specified and the user didn't
             # request this command, skip it.
-            if args.start is None and args.end is None and entities == []:
+            if not args.start and not args.end and not entities:
                 continue
         if end_reached:
             continue
