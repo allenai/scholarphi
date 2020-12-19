@@ -320,7 +320,7 @@ def search_symbol_nickname(
 
     # Union set of POS tags in nicknames. Feel free to add more if you have new patterns.
     # POS Tag Expansions : https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html.
-    UNION_POS_LIST = ["DT", "JJ", "NN", "NNS", "NNP", "NNPS", ":"]
+    UNION_POS_LIST = ["DT", "JJ", "NN", "NNS", "NNP", "NNPS", ":", "-LRB-"]
     pos_indexes = []
     pos_tags = []
     pos_ranges = []
@@ -347,8 +347,8 @@ def search_symbol_nickname(
             if current_index < 0:
                 break
 
-    # Ignore when the POS tag is among ["DT", ":"].
-    if len(pos_tags) == 1 and (pos_tags[0] in ["DT", ":"]):
+    # Ignore when the POS tag is among ["DT", ":", "-LRB-"].
+    if len(pos_tags) == 1 and (pos_tags[0] in ["DT", ":", "-LRB-"]):
         return None
 
     if len(pos_indexes) > 0:
@@ -361,11 +361,11 @@ def search_symbol_nickname(
             nickname_ranges = list(pos_ranges)
             nickname_tags = list(pos_tags)
 
-        # Skip ["DT", ":"] as first or last nickname tokens.
-        if nickname_tags[0] in ["DT", ":"]:
+        # Skip ["DT", ":", "-LRB-"] as first or last nickname tokens.
+        if nickname_tags[0] in ["DT", ":", "-LRB-"]:
             nickname_ranges = nickname_ranges[1:]
             nickname_indexes = nickname_indexes[1:]
-        elif nickname_tags[-1] in ["DT", ":"]:
+        elif nickname_tags[-1] in ["DT", ":", "-LRB-"]:
             nickname_ranges = nickname_ranges[:-1]
             nickname_indexes = nickname_indexes[:-1]
 
@@ -381,24 +381,6 @@ class SymbolNickname(NamedTuple):
     nickname_indexes: List[int]
     nickname_ranges: List[CharacterRange]
 
-def get_filtered_symbol_nickname_pairs(
-    pairs: List[SymbolNickname],
-    text: str
-) -> List[SymbolNickname]:
-    # Filter symbol-nickname pairs based on the following conditions.
-    # 1. The nickname of a symbol is another symbol.
-    filtered_pairs: List[SymbolNickname] = []
-    for sn in pairs:
-        nickname_start = min(
-            [nickname_range.start for nickname_range in sn.nickname_ranges]
-        )
-        nickname_end = (
-            max([nickname_range.end for nickname_range in sn.nickname_ranges]) + 1
-        )
-        nickname_text=text[nickname_start:nickname_end]
-        if nickname_text != 'SYMBOL':
-            filtered_pairs.append(sn)
-    return filtered_pairs
 
 def get_symbol_nickname_pairs(
     text: str, tokens: List[str], pos: List[str], symbol_texs: Dict[StringOffset, str]
@@ -458,6 +440,25 @@ def get_symbol_nickname_pairs(
                         token_index, pos, ranges, direction
                     )
                     if nickname is not None and range_.start in symbol_texs:
+                        nickname_start = min(
+                            [
+                                nickname_range.start
+                                for nickname_range in nickname.token_ranges
+                            ]
+                        )
+                        nickname_end = (
+                            max(
+                                [
+                                    nickname_range.end
+                                    for nickname_range in nickname.token_ranges
+                                ]
+                            )
+                            + 1
+                        )
+                        nickname_text = text[nickname_start:nickname_end]
+                        # Reject a nickname if the nickname text is "SYMBOL".
+                        if nickname_text == "SYMBOL":
+                            continue
                         symbol_nickname_pairs.append(
                             SymbolNickname(
                                 symbol_texs[range_.start],
@@ -472,7 +473,6 @@ def get_symbol_nickname_pairs(
             if "SYMBOL" in token:
                 symbol_index += 1
 
-        symbol_nickname_pairs = get_filtered_symbol_nickname_pairs(symbol_nickname_pairs, text)
         for sn in symbol_nickname_pairs:
             symbol_start = sn.symbol_range.start
             symbol_end = sn.symbol_range.end + 1
@@ -557,7 +557,8 @@ class DetectDefinitions(
 
             # Load cleaned sentences for definition detection.
             detected_sentences_path = os.path.join(
-                directories.arxiv_subdir("sentence-tokens", arxiv_id), "sentences.csv",
+                directories.arxiv_subdir("sentence-tokens", arxiv_id),
+                "sentences.csv",
             )
             try:
                 sentences = list(
