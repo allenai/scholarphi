@@ -440,25 +440,6 @@ def get_symbol_nickname_pairs(
                         token_index, pos, ranges, direction
                     )
                     if nickname is not None and range_.start in symbol_texs:
-                        nickname_start = min(
-                            [
-                                nickname_range.start
-                                for nickname_range in nickname.token_ranges
-                            ]
-                        )
-                        nickname_end = (
-                            max(
-                                [
-                                    nickname_range.end
-                                    for nickname_range in nickname.token_ranges
-                                ]
-                            )
-                            + 1
-                        )
-                        nickname_text = text[nickname_start:nickname_end]
-                        # Reject a nickname if the nickname text is "SYMBOL".
-                        if nickname_text == "SYMBOL":
-                            continue
                         symbol_nickname_pairs.append(
                             SymbolNickname(
                                 symbol_texs[range_.start],
@@ -482,7 +463,11 @@ def get_symbol_nickname_pairs(
             nickname_end = (
                 max([nickname_range.end for nickname_range in sn.nickname_ranges]) + 1
             )
-
+            nickname_text = text[nickname_start:nickname_end]
+            # Reject a nickname if the nickname text is "SYMBOL".
+            if nickname_text == "SYMBOL":
+                continue
+            
             pair = TermDefinitionPair(
                 term_start=symbol_start,
                 term_end=symbol_end,
@@ -491,7 +476,7 @@ def get_symbol_nickname_pairs(
                 term_confidence=None,
                 definition_start=nickname_start,
                 definition_end=nickname_end,
-                definition_text=text[nickname_start:nickname_end],
+                definition_text=nickname_text,
                 definition_type="nickname",
                 definition_confidence=None,
             )
