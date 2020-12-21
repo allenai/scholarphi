@@ -21,12 +21,14 @@ class AuthorList extends React.PureComponent<Props, {}> {
             textConnector = ", ";
           }
           return (
-            <span key={author.id}>
+            <span key={author.id || `author-${i}`}>
               {textConnector}
-              {this.props.showLinks && (
+              {this.props.showLinks && author.url && (
                 <S2Link url={author.url}>{author.name}</S2Link>
               )}
-              {!this.props.showLinks && <>{author.name}</>}
+              {(!this.props.showLinks || author.url === null) && (
+                <>{author.name}</>
+              )}
             </span>
           );
         })}

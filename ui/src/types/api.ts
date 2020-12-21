@@ -18,7 +18,7 @@
  */
 export interface Paper {
   s2Id: string;
-  abstract: string;
+  abstract: string | null;
   authors: Author[];
   title: string;
   url: string;
@@ -29,9 +29,9 @@ export interface Paper {
 }
 
 export interface Author {
-  id: string;
+  id: string | null;
   name: string;
-  url: string;
+  url: string | null;
 }
 
 export interface EntityGetResponse {
@@ -342,10 +342,10 @@ export interface BoundingBox {
 }
 
 export interface Paginated<T> {
-    rows: T[];
-    offset: number;
-    size: number;
-    total: number;
+  rows: T[];
+  offset: number;
+  size: number;
+  total: number;
 }
 
 export interface PaperIdWithEntityCounts {
