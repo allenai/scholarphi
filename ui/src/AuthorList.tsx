@@ -1,5 +1,4 @@
 import React from "react";
-import S2Link from "./S2Link";
 import { Author } from "./types/api";
 
 interface Props {
@@ -23,9 +22,7 @@ class AuthorList extends React.PureComponent<Props, {}> {
           return (
             <span key={author.id || `author-${i}`}>
               {textConnector}
-              {this.props.showLinks && author.url && (
-                <S2Link url={author.url}>{author.name}</S2Link>
-              )}
+              {this.props.showLinks && author.url && author.name}
               {(!this.props.showLinks || author.url === null) && (
                 <>{author.name}</>
               )}

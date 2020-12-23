@@ -1,19 +1,15 @@
 import Button from "@material-ui/core/Button";
 import Tooltip from "@material-ui/core/Tooltip";
 import SaveIcon from "@material-ui/icons/Bookmark";
-import CiteIcon from "@material-ui/icons/FormatQuote";
+import React from "react";
 import AuthorList from "./AuthorList";
-import FeedbackButton from "./FeedbackButton";
 import ChartIcon from "./icon/ChartIcon";
 import InfluentialCitationIcon from "./icon/InfluentialCitationIcon";
 import logger from "./logging";
 import { userLibraryUrl } from "./s2-url";
-import S2Link from "./S2Link";
 import { PaperId, UserLibrary } from "./state";
 import { Paper } from "./types/api";
 import { truncateText } from "./utils/ui";
-
-import React from "react";
 
 interface Props {
   paper: Paper;
@@ -32,9 +28,7 @@ function warnOfUnimplementedActionAndTrack(
   message?: string
 ) {
   const DEFAULT_MESSAGE =
-    "Sorry, that feature isn't implemented yet. Clicking it tells us " +
-    "you're interested in the feature, increasing the likelihood that " +
-    "it'll be implemented!";
+    "Sorry, this feature is not supported in this demo, as this demo is meant to stand alone as an archival artifact.";
   alert(message || DEFAULT_MESSAGE);
   if (window.heap) {
     window.heap.track("Click on Unimplemented Action", { actionType });
@@ -83,7 +77,7 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
         });
       }
     }
-  }
+  };
 
   render(): React.ReactNode {
     const { paper, userLibrary, handleAddPaperToLibrary } = this.props;
@@ -101,9 +95,7 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
       <div className="paper-summary">
         {/* Paper details */}
         <div className="paper-summary__section">
-          <p className="paper-summary__title">
-            <S2Link url={paper.url}>{paper.title}</S2Link>
-          </p>
+          <p className="paper-summary__title">{paper.title}</p>
         </div>
         <div className="paper-summary__section">
           <p>
@@ -185,7 +177,7 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
               ) : null}
             </div>
           ) : null}
-          <Button
+          {/* <Button
             startIcon={<CiteIcon />}
             className="paper-summary__action"
             onClick={() => {
@@ -197,31 +189,38 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
             }}
           >
             Cite
-          </Button>
-          {inLibrary
-            ? <LibraryButton label="In Your Library" onClick={() => goToLibrary()}/>
-            : <LibraryButton label="Save To Library" onClick={() => {
-              this.saveToLibrary(
-                userLibrary,
-                handleAddPaperToLibrary,
-                paper.s2Id,
-                paper.title
-              );
-              logger.log("debug", "citation-action", {
-                type: "save-to-library",
-                paper: this.props.paper,
-              });
-            }}/>
-            }
+          </Button> */}
+          {inLibrary ? (
+            <LibraryButton
+              label="In Your Library"
+              onClick={() => goToLibrary()}
+            />
+          ) : (
+            <LibraryButton
+              label="Save To Library"
+              onClick={() => {
+                this.saveToLibrary(
+                  userLibrary,
+                  handleAddPaperToLibrary,
+                  paper.s2Id,
+                  paper.title
+                );
+                logger.log("debug", "citation-action", {
+                  type: "save-to-library",
+                  paper: this.props.paper,
+                });
+              }}
+            />
+          )}
         </div>
 
-        <div className="paper-summary__section paper-summary__feedback">
+        {/* <div className="paper-summary__section paper-summary__feedback">
           Does something look wrong? Give us feedback.
           <FeedbackButton
             paperId={this.props.openedPaperId}
             extraContext={{ paperId: paper.s2Id }}
           />
-        </div>
+        </div> */}
 
         <div className="paper-summary__library-error">
           {this.state.errorMessage && this.state.errorMessage}
@@ -231,15 +230,18 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
   }
 }
 
-const LibraryButton = (props: { label: string, onClick: () => void }): React.ReactElement => {
+const LibraryButton = (props: {
+  label: string;
+  onClick: () => void;
+}): React.ReactElement => {
   const { label, onClick } = props;
   return (
     <Button
-        startIcon={<SaveIcon />}
-        className="paper-summary__action"
-        onClick={onClick}
-      >
+      startIcon={<SaveIcon />}
+      className="paper-summary__action"
+      onClick={onClick}
+    >
       {label}
     </Button>
   );
-}
+};
