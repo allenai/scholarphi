@@ -730,38 +730,35 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   loadDataFromApi = async (): Promise<void> => {
-    if (this.props.paperId !== undefined) {
-      if (this.props.paperId.type === "arxiv") {
-        const entities = ENTITIES;
-        this.setState({
-          entities: stateUtils.createRelationalStoreFromArray(entities, "id"),
-        });
+    // if (this.props.paperId !== undefined) {
+    //   if (this.props.paperId.type === "arxiv") {
+    const entities = ENTITIES;
+    this.setState({
+      entities: stateUtils.createRelationalStoreFromArray(entities, "id"),
+    });
 
-        const citationS2Ids = entities
-          .filter(isCitation)
-          .map((c) => c.attributes.paper_id)
-          .filter((id) => id !== null)
-          .map((id) => id as string);
-        if (citationS2Ids.length >= 1) {
-          const papers = PAPERS.map((p) => p.attributes).reduce(
-            (papers, paper) => {
-              papers[paper.s2Id] = paper;
-              return papers;
-            },
-            {} as { [s2Id: string]: Paper }
-          );
-          this.setState({ papers });
-        }
-
-        // const userData = await api.getUserLibraryInfo();
-        // if (userData) {
-        //   this.setState({ userLibrary: userData.userLibrary });
-        //   if (userData.email) {
-        //     logger.setUsername(userData.email);
-        //   }
-        // }
-      }
+    const citationS2Ids = entities
+      .filter(isCitation)
+      .map((c) => c.attributes.paper_id)
+      .filter((id) => id !== null)
+      .map((id) => id as string);
+    if (citationS2Ids.length >= 1) {
+      const papers = PAPERS.map((p) => p.attributes).reduce((papers, paper) => {
+        papers[paper.s2Id] = paper;
+        return papers;
+      }, {} as { [s2Id: string]: Paper });
+      this.setState({ papers });
     }
+
+    // const userData = await api.getUserLibraryInfo();
+    // if (userData) {
+    //   this.setState({ userLibrary: userData.userLibrary });
+    //   if (userData.email) {
+    //     logger.setUsername(userData.email);
+    //   }
+    // }
+    //   }
+    // }
   };
 
   jumpToEntityWithBackMessage = (id: string): void => {
