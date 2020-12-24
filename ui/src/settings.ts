@@ -93,6 +93,12 @@ export interface Settings {
    * disabled as it interferes with built-in text selection in pdf.js.
    */
   sentenceTexCopyOnOptionClickEnabled: boolean;
+  /**
+   * Enable rapid annotation creation. Enableds features like disabling all other entities as
+   * click targets to make it possible to draw entities overlapping others without accidentally
+   * selecting the overlapped entities.
+   */
+  rapidAnnotationEnabled: boolean;
 }
 
 /**
@@ -216,6 +222,7 @@ export function getSettings(presets?: string[]) {
     entityEditingEnabled: false,
     sentenceTexCopyOnOptionClickEnabled: false,
     glossEvaluationEnabled: false,
+    rapidAnnotationEnabled: false,
   };
 
   let settings = DEFAULT_SETTINGS;
