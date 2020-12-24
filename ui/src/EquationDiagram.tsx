@@ -270,6 +270,7 @@ class EquationDiagram extends React.PureComponent<Props, State> {
 
           return (
             <div
+              key={l.feature.id}
               className="equation-diagram__label-container"
               onMouseEnter={() => this.onMouseEnterLabel(l.feature.id)}
               onMouseLeave={() => this.onMouseLeaveLabel(l.feature.id)}
