@@ -105,91 +105,7 @@ interface Preset extends Partial<Settings> {
 /**
  * Define new presets for settings here.
  */
-const PRESETS: Preset[] = [
-  {
-    key: "demo",
-    primerInstructionsEnabled: false,
-    useDefinitionsForDiagramLabels: true,
-  },
-  {
-    key: "sab",
-    termGlossesEnabled: false,
-    citationGlossesEnabled: true,
-    symbolUnderlineMethod: "defined-symbols",
-    primerInstructionsEnabled: true,
-  },
-  {
-    key: "sab-lite",
-    symbolUnderlineMethod: "top-level-symbols",
-    equationDiagramsEnabled: false,
-  },
-  {
-    key: "study",
-    primerInstructionsEnabled: false,
-    citationGlossesEnabled: false,
-    termGlossesEnabled: true,
-    symbolUnderlineMethod: "defined-symbols",
-    useDefinitionsForDiagramLabels: true,
-  },
-  /*
-   * No interactivity for terms and symbols.
-   */
-  {
-    key: "ca",
-    annotationHintsEnabled: false,
-    annotationInteractionEnabled: false,
-    primerPageEnabled: false,
-    equationDiagramsEnabled: false,
-    glossesEnabled: false,
-    declutterEnabled: false,
-  },
-  /*
-   * Show declutter, not glosses.
-   */
-  {
-    key: "cc",
-    annotationInteractionEnabled: true,
-    primerPageEnabled: false,
-    glossesEnabled: false,
-    equationDiagramsEnabled: false,
-    declutterEnabled: true,
-  },
-  /*
-   * Enable all of the interactive features.
-   */
-  {
-    key: "cd",
-    annotationInteractionEnabled: true,
-    primerPageEnabled: true,
-    glossesEnabled: true,
-    equationDiagramsEnabled: true,
-    declutterEnabled: true,
-  },
-  {
-    key: "focused-reading",
-    annotationInteractionEnabled: true,
-    primerPageEnabled: true,
-    glossesEnabled: true,
-    equationDiagramsEnabled: true,
-    declutterEnabled: true,
-  },
-  {
-    key: "tp",
-    initialFocus: "94185",
-  },
-  {
-    key: "ta",
-    initialFocus: "94247",
-  },
-  {
-    key: "tb",
-    initialFocus: "94110",
-  },
-  {
-    key: "tc",
-    initialFocus: "94159",
-  },
-];
+const PRESETS: Preset[] = [];
 
 /**
  * Get app settings, merging presets matching the key 'preset' with the default settings.
@@ -211,7 +127,7 @@ export function getSettings(presets?: string[]) {
     declutterEnabled: true,
     definitionPreviewEnabled: false,
     equationDiagramsEnabled: true,
-    useDefinitionsForDiagramLabels: false,
+    useDefinitionsForDiagramLabels: true,
     entityCreationEnabled: false,
     entityEditingEnabled: false,
     sentenceTexCopyOnOptionClickEnabled: false,
