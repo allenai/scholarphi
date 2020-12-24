@@ -31,12 +31,14 @@ interface Props {
   entityType: KnownEntityType;
   selectionMethod: AreaSelectionMethod;
   rapidAnnotationEnabled: boolean;
+  powerDeleteEnabled: boolean;
   handleShowSnackbarMessage: (message: string) => void;
   handleSelectEntityType: (entityCreationType: KnownEntityType) => void;
   handleSelectSelectionMethod: (selectionMethod: AreaSelectionMethod) => void;
   handleCreateEntity: (entity: EntityCreateData) => Promise<string | null>;
   handleCreateParentSymbol: (symbols: Symbol[]) => Promise<boolean>;
   handleSetRapidAnnotationEnabled: (enabled: boolean) => void;
+  handleSetPowerDeleteEnabled: (enabled: boolean) => void;
 }
 
 interface State {
@@ -256,8 +258,14 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
     });
   }
 
-  onChangeRapidAnnotation = (event: React.ChangeEvent<HTMLInputElement>) => {
+  onChangeRapidAnnotationEnabled = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     this.props.handleSetRapidAnnotationEnabled(event.target.checked);
+  };
+
+  onChangePowerDeleteEnabled = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.props.handleSetPowerDeleteEnabled(event.target.checked);
   };
 
   render() {
@@ -332,15 +340,24 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
           </Button>
         ) : null}
         <FormControlLabel
-          className="control-panel-toolbar__switch-label"
           control={
             <Switch
               checked={this.props.rapidAnnotationEnabled}
               color="primary"
-              onChange={this.onChangeRapidAnnotation}
+              onChange={this.onChangeRapidAnnotationEnabled}
             />
           }
-          label={"Rapid annotation mode?"}
+          label={"Power add"}
+        />
+        <FormControlLabel
+          control={
+            <Switch
+              checked={this.props.powerDeleteEnabled}
+              color="primary"
+              onChange={this.onChangePowerDeleteEnabled}
+            />
+          }
+          label={"Power delete?"}
         />
         <span className="entity-creation-toolbar__selection-message">
           {selectionMethod === "text-selection" && textSelection !== null

@@ -186,6 +186,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     annotationId?: string,
     annotationSpanId?: string
   ): void => {
+    if (this.state.powerDeletionEnabled) {
+      this.deleteEntity(entityId);
+      return;
+    }
+
     logger.log("debug", "select-entity", {
       entityId,
       annotationId,
@@ -335,6 +340,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
   setRapidAnnotationEnabled = (enabled: boolean): void => {
     this.setState({ rapidAnnotationEnabled: enabled });
+  };
+
+  setPowerDeletionEnabled = (enabled: boolean): void => {
+    this.setState({ powerDeletionEnabled: enabled });
   };
 
   createEntity = async (data: EntityCreateData): Promise<string | null> => {
@@ -875,6 +884,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               snackbarActivationTimeMs={this.state.snackbarActivationTimeMs}
               snackbarMessage={this.state.snackbarMessage}
               rapidAnnotationEnabled={this.state.rapidAnnotationEnabled}
+              powerDeletionEnabled={this.state.powerDeletionEnabled}
               handleToggleControlPanelShowing={this.toggleControlPanelShowing}
               handleSetMultiselectEnabled={this.setMultiselectEnabled}
               handleStartTextSearch={this.startTextSearch}
@@ -956,6 +966,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       this.state.entityCreationAreaSelectionMethod
                     }
                     rapidAnnotationEnabled={this.state.rapidAnnotationEnabled}
+                    powerDeleteEnabled={this.state.powerDeletionEnabled}
                     handleShowSnackbarMessage={this.showSnackbarMessage}
                     handleSelectEntityType={this.setEntityCreationType}
                     handleSelectSelectionMethod={
@@ -966,6 +977,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     handleSetRapidAnnotationEnabled={
                       this.setRapidAnnotationEnabled
                     }
+                    handleSetPowerDeleteEnabled={this.setPowerDeletionEnabled}
                   />
                 ) : null}
                 {this.props.children}

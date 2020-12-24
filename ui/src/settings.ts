@@ -99,6 +99,10 @@ export interface Settings {
    * selecting the overlapped entities.
    */
   rapidAnnotationEnabled: boolean;
+  /**
+   * Make it very fast to delete annotations from a paper, by supporting deletion on click.
+   */
+  powerDeletionEnabled: boolean;
 }
 
 /**
@@ -223,6 +227,7 @@ export function getSettings(presets?: string[]) {
     sentenceTexCopyOnOptionClickEnabled: false,
     glossEvaluationEnabled: false,
     rapidAnnotationEnabled: false,
+    powerDeletionEnabled: false,
   };
 
   let settings = DEFAULT_SETTINGS;

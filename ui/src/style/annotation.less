@@ -60,17 +60,22 @@ body.rapid-annotation .scholar-reader-annotation-span {
   background: none !important;
   border: 1px dotted grey !important;
   pointer-events: none !important;
+}
 
-  &.citation-annotation {
-    background-color: rgba(255, 0, 0, 0.1) !important;
-  }
+body.rapid-annotation,
+body.power-deletion {
+  .scholar-reader-annotation-span {
+    &.citation-annotation {
+      background-color: rgba(255, 0, 0, 0.1) !important;
+    }
 
-  &.sentence-annotation {
-    // background-color: rgba(0, 255, 0, 0.1) !important;
-  }
+    &.sentence-annotation {
+      background-color: rgba(50, 50, 50, 0.1) !important;
+    }
 
-  &.symbol-annotation {
-    background-color: rgba(0, 0, 255, 0.1) !important;
+    &.symbol-annotation {
+      background-color: rgba(0, 0, 255, 0.1) !important;
+    }
   }
 }
 

@@ -16,6 +16,7 @@ interface Props {
   snackbarActivationTimeMs: number | null;
   snackbarMessage: string | null;
   rapidAnnotationEnabled: boolean;
+  powerDeletionEnabled: boolean;
   handleToggleControlPanelShowing: () => void;
   handleCloseSnackbar: () => void;
   handleCloseDrawer: () => void;
@@ -126,7 +127,11 @@ class AppOverlay extends React.PureComponent<Props> {
   }
 
   render() {
-    const { rapidAnnotationEnabled, appContainer } = this.props;
+    const {
+      powerDeletionEnabled,
+      rapidAnnotationEnabled,
+      appContainer,
+    } = this.props;
     if (rapidAnnotationEnabled) {
       if (!appContainer.classList.contains("rapid-annotation")) {
         appContainer.classList.add("rapid-annotation");
@@ -134,6 +139,16 @@ class AppOverlay extends React.PureComponent<Props> {
     } else {
       if (appContainer.classList.contains("rapid-annotation")) {
         appContainer.classList.remove("rapid-annotation");
+      }
+    }
+
+    if (powerDeletionEnabled) {
+      if (!appContainer.classList.contains("power-deletion")) {
+        appContainer.classList.add("power-deletion");
+      }
+    } else {
+      if (appContainer.classList.contains("power-deletion")) {
+        appContainer.classList.remove("power-deletion");
       }
     }
 
