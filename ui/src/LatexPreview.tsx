@@ -3,11 +3,11 @@
  * from the KaTeX team on importing KaTeX in a Node environment.
  */
 
-import LinearProgress from "@material-ui/core/LinearProgress";
 import katex, { TrustContext } from "katex";
 import renderMathInElement from "katex/dist/contrib/auto-render";
 import "katex/dist/katex.min.css"; // KaTeX styles necessary for styling formulas.
 import React from "react";
+import LinearProgress from "./backport/LinearProgress";
 
 interface Props {
   /**
