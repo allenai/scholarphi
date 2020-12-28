@@ -2,21 +2,18 @@ import classNames from "classnames";
 import React from "react";
 import * as api from "./api";
 import AppOverlay from "./AppOverlay";
-import Control from "./Control";
-import DefinitionPreview from "./DefinitionPreview";
 import { Drawer, DrawerContentType } from "./Drawer";
 import EntityAnnotationLayer from "./EntityAnnotationLayer";
 import EntityCreationCanvas from "./EntityCreationCanvas";
-import EntityCreationToolbar, {
+import {
   AreaSelectionMethod,
-  createCreateEntityDataWithBoxes,
+  createCreateEntityDataWithBoxes
 } from "./EntityCreationToolbar";
 import EntityPageMask from "./EntityPageMask";
 import { ENTITIES } from "./entity_data";
 import EquationDiagram from "./EquationDiagram";
 import FindBar, { FindQuery } from "./FindBar";
 import logger from "./logging";
-import MasterControlPanel from "./MasterControlPanel";
 import PageOverlay from "./PageOverlay";
 import { PAPERS } from "./paper_data";
 import PdfjsToolbar from "./PdfjsToolbar";
@@ -24,19 +21,14 @@ import PrimerPage from "./PrimerPage";
 import SearchPageMask from "./SearchPageMask";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
-import {
-  ConfigurableSetting,
-  CONFIGURABLE_SETTINGS,
-  getSettings,
-  GlossStyle,
-} from "./settings";
+import { ConfigurableSetting, getSettings, GlossStyle } from "./settings";
 import {
   Entities,
   KnownEntityType,
   Pages,
   PaperId,
   State,
-  SymbolFilters,
+  SymbolFilters
 } from "./state";
 import "./style/index.less";
 import TextSelectionMenu from "./TextSelectionMenu";
@@ -49,12 +41,12 @@ import {
   isSymbol,
   isTerm,
   Paper,
-  Symbol,
+  Symbol
 } from "./types/api";
 import {
   DocumentLoadedEvent,
   PageRenderedEvent,
-  PDFViewerApplication,
+  PDFViewerApplication
 } from "./types/pdfjs-viewer";
 import * as stateUtils from "./utils/state";
 import * as uiUtils from "./utils/ui";
@@ -893,21 +885,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                   "snackbar-showing": this.state.snackbarMode === "open",
                 })}
               >
-                {this.state.controlPanelShowing ? (
-                  <MasterControlPanel
-                    className="scholar-reader-toolbar"
-                    handleClose={this.closeControlPanel}
-                  >
-                    {CONFIGURABLE_SETTINGS.map((setting) => (
-                      <Control
-                        key={setting.label}
-                        setting={setting}
-                        value={this.state[setting.key]}
-                        handleChange={this.handleChangeSetting}
-                      />
-                    ))}
-                  </MasterControlPanel>
-                ) : null}
                 {this.state.isFindActive &&
                 this.state.findActivationTimeMs !== null &&
                 (this.state.findMode !== "symbol" ||
@@ -931,26 +908,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     handleChangeMatchIndex={this.setFindMatchIndex}
                     handleChangeQuery={this.setFindQuery}
                     handleClose={this.closeFindBar}
-                  />
-                ) : null}
-                {this.state.entityCreationEnabled &&
-                this.state.pages !== null ? (
-                  <EntityCreationToolbar
-                    className="scholar-reader-toolbar"
-                    pages={this.state.pages}
-                    entities={this.state.entities}
-                    selectedEntityIds={this.state.selectedEntityIds}
-                    entityType={this.state.entityCreationType}
-                    selectionMethod={
-                      this.state.entityCreationAreaSelectionMethod
-                    }
-                    handleShowSnackbarMessage={this.showSnackbarMessage}
-                    handleSelectEntityType={this.setEntityCreationType}
-                    handleSelectSelectionMethod={
-                      this.setEntityCreationAreaSelectionMethod
-                    }
-                    handleCreateEntity={this.createEntity}
-                    handleCreateParentSymbol={this.createParentSymbol}
                   />
                 ) : null}
                 {this.props.children}
@@ -986,18 +943,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 handleDeleteEntity={this.deleteEntity}
                 handleSetPropagateEntityEdits={this.setPropagateEntityEdits}
               />
-              {this.state.definitionPreviewEnabled &&
-              this.state.pages !== null &&
-              this.state.pdfDocument !== null &&
-              this.state.entities !== null ? (
-                <DefinitionPreview
-                  pdfViewer={this.state.pdfViewer}
-                  pdfDocument={this.state.pdfDocument}
-                  pages={this.state.pages}
-                  entities={this.state.entities}
-                  selectedEntityIds={this.state.selectedEntityIds}
-                />
-              ) : null}
             </ViewerOverlay>
           </>
         ) : null}

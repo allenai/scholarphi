@@ -4,7 +4,6 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import React from "react";
 import { DefiningFormulas } from "./DefiningFormulas";
 import Definitions from "./Definitions";
-import EntityPropertyEditor from "./EntityPropertyEditor";
 import { getRemoteLogger } from "./logging";
 import { Entities } from "./state";
 import { Entity, EntityUpdateData } from "./types/api";
@@ -135,25 +134,6 @@ export class Drawer extends React.PureComponent<Props> {
           </div>
         </div>
         <div className="drawer__content">
-          {contentType === "entity-property-editor" && (
-            <EntityPropertyEditor
-              /*
-               * When the selected entity changes, clear the property editor.
-               */
-              key={
-                firstSelectedEntity !== null
-                  ? firstSelectedEntity.id
-                  : undefined
-              }
-              entity={firstSelectedEntity}
-              propagateEntityEdits={this.props.propagateEntityEdits}
-              handleSetPropagateEntityEdits={
-                this.props.handleSetPropagateEntityEdits
-              }
-              handleSaveChanges={this.props.handleUpdateEntity}
-              handleDeleteEntity={this.props.handleDeleteEntity}
-            />
-          )}
           {contentType === "defining-formulas" && entities !== null && (
             <DefiningFormulas
               selectedEntityIds={selectedEntityIds}
