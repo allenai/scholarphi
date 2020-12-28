@@ -151,6 +151,11 @@ function areBoxesVerticallyAligned(box1: BoundingBox, box2: BoundingBox) {
  * be able to sort symbols by their order in the prose instead of their position.
  */
 export function compareBoxes(box1: BoundingBox, box2: BoundingBox) {
+  if (box1 === undefined || box2 === undefined) {
+    console.log(box1)
+    console.log(box2)
+    return -1.0;
+  }
   if (box1.page !== box2.page) {
     return box1.page - box2.page;
   }
