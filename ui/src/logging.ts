@@ -1,6 +1,3 @@
-import axios from "axios";
-import { LogEntryCreatePayload } from "./types/api";
-
 type LogLevel = "error" | "warning" | "info" | "debug";
 
 /**
@@ -53,6 +50,7 @@ class RemoteLogger {
   }
 
   async _log(level: LogLevel, eventType?: string, data?: any) {
+    /*
     const logData = this._prepareData(data);
     return axios
       .post("/api/log", {
@@ -74,6 +72,7 @@ class RemoteLogger {
           this._receivedPostError = true;
         }
       });
+      */
   }
 
   private _prepareData(data: any) {

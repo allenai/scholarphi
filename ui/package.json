@@ -2,7 +2,6 @@
   "name": "scholarphi",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://s2-reader.apps.allenai.org",
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.5.1",
