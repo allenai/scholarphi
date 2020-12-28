@@ -277,7 +277,7 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { selectionMethod } = this.props;
+    const { selectionMethod, selectedEntityIds } = this.props;
     const { textSelection } = this.state;
 
     return (
@@ -388,7 +388,7 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
             }
             label={"Power delete"}
           />
-          <span className="entity-creation-toolbar__selection-message">
+          <p className="entity-creation-toolbar__selection-message">
             {selectionMethod === "text-selection" && textSelection !== null
               ? `Selected text: "${uiUtils.truncateText(
                   textSelection.toString(),
@@ -398,7 +398,13 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
             {selectionMethod === "rectangular-selection"
               ? "Select area on page"
               : null}
-          </span>
+          </p>
+          <p className="entity-creation-toolbar__selection-message">
+            Selected entities:{" "}
+            {selectedEntityIds.length > 0
+              ? selectedEntityIds.join(", ")
+              : "none"}
+          </p>
         </FormGroup>
       </Card>
     );

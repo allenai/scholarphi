@@ -1229,6 +1229,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                         copySentenceOnClick={
                           this.state.sentenceTexCopyOnOptionClickEnabled
                         }
+                        entityCreationEnabled={this.state.entityCreationEnabled}
+                        entityCreationType={this.state.entityCreationType}
                         handleSelectEntityAnnotation={
                           this.selectEntityAnnotation
                         }
