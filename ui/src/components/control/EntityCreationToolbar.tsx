@@ -2,6 +2,7 @@ import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormGroup from "@material-ui/core/FormGroup";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
@@ -30,6 +31,7 @@ interface Props {
   selectedEntityIds: string[];
   entityType: KnownEntityType;
   selectionMethod: AreaSelectionMethod;
+  highlightEntities: boolean;
   rapidAnnotationEnabled: boolean;
   powerDeleteEnabled: boolean;
   handleShowSnackbarMessage: (message: string) => void;
@@ -37,6 +39,7 @@ interface Props {
   handleSelectSelectionMethod: (selectionMethod: AreaSelectionMethod) => void;
   handleCreateEntity: (entity: EntityCreateData) => Promise<string | null>;
   handleCreateParentSymbol: (symbols: Symbol[]) => Promise<boolean>;
+  handleHighlightEntities: (highlight: boolean) => void;
   handleSetRapidAnnotationEnabled: (enabled: boolean) => void;
   handleSetPowerDeleteEnabled: (enabled: boolean) => void;
   handleGroupSelectedEntities: () => void;
@@ -259,6 +262,10 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
     });
   }
 
+  onChangeHighlightEntities = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.props.handleHighlightEntities(event.target.checked);
+  };
+
   onChangeRapidAnnotationEnabled = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -278,109 +285,121 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
         className={classNames("entity-creation-toolbar", this.props.className)}
         raised={true}
       >
-        <FormControl style={{ minWidth: "6em" }}>
-          <InputLabel className="entity-creation-toolbar__type-select-label">
-            Entity type
-          </InputLabel>
-          <Select
-            labelId="entity-creation-toolbar__type-select-label"
-            value={this.props.entityType}
-            onChange={this.onChangeEntityType}
-            disabled={this.state.state !== "interactive"}
-          >
-            <MenuItem value="term">Term</MenuItem>
-            <MenuItem value="symbol">Symbol</MenuItem>
-            <MenuItem value="citation">Citation</MenuItem>
-            <MenuItem value="equation">Equation</MenuItem>
-            <MenuItem value="sentence">Sentence</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl style={{ minWidth: "8em" }}>
-          <InputLabel className="entity-creation-toolbar__selection-method-select-label">
-            Selection method
-          </InputLabel>
-          <Select
-            labelId="entity-creation-toolbar__selection-method-select-label"
-            value={selectionMethod}
-            onChange={this.onChangeSelectionMethod}
-            disabled={this.state.state !== "interactive"}
-          >
-            <MenuItem value="text-selection">Text</MenuItem>
-            <MenuItem value="rectangular-selection">Rectangular</MenuItem>
-          </Select>
-        </FormControl>
-        {this.props.selectionMethod === "text-selection" ? (
-          <Button
-            className="entity-creation-toolbar__action-button"
-            onClick={this.onClickCreateEntity}
-            disabled={
-              textSelection === null ||
-              textSelection.isCollapsed === true ||
-              this.state.state !== "interactive"
-            }
-            color="primary"
-            variant="contained"
-          >
-            {this.state.state === "interactive"
-              ? "Create entity from text selection"
-              : null}
-            {this.state.state === "creating-entity"
-              ? "Creating entity..."
-              : null}
-          </Button>
-        ) : null}
-        {this.props.entityType === "symbol" ? (
-          <Button
-            className="entity-creation-toolbar__action-button"
-            onClick={this.onClickCreateParentSymbol}
-            disabled={!this.canCreateParentSymbol()}
-            color="primary"
-            variant="contained"
-          >
-            Create Parent Symbol
-          </Button>
-        ) : null}
+        <FormGroup>
+          <FormControl style={{ minWidth: "6em" }}>
+            <InputLabel className="entity-creation-toolbar__type-select-label">
+              Entity type
+            </InputLabel>
+            <Select
+              labelId="entity-creation-toolbar__type-select-label"
+              value={this.props.entityType}
+              onChange={this.onChangeEntityType}
+              disabled={this.state.state !== "interactive"}
+            >
+              <MenuItem value="term">Term</MenuItem>
+              <MenuItem value="symbol">Symbol</MenuItem>
+              <MenuItem value="citation">Citation</MenuItem>
+              <MenuItem value="equation">Equation</MenuItem>
+              <MenuItem value="sentence">Sentence</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl style={{ minWidth: "8em" }}>
+            <InputLabel className="entity-creation-toolbar__selection-method-select-label">
+              Selection method
+            </InputLabel>
+            <Select
+              labelId="entity-creation-toolbar__selection-method-select-label"
+              value={selectionMethod}
+              onChange={this.onChangeSelectionMethod}
+              disabled={this.state.state !== "interactive"}
+            >
+              <MenuItem value="text-selection">Text</MenuItem>
+              <MenuItem value="rectangular-selection">Rectangular</MenuItem>
+            </Select>
+          </FormControl>
+          {this.props.selectionMethod === "text-selection" ? (
+            <Button
+              className="entity-creation-toolbar__action-button"
+              onClick={this.onClickCreateEntity}
+              disabled={
+                textSelection === null ||
+                textSelection.isCollapsed === true ||
+                this.state.state !== "interactive"
+              }
+              color="primary"
+              variant="contained"
+            >
+              {this.state.state === "interactive"
+                ? "Create entity from text selection"
+                : null}
+              {this.state.state === "creating-entity"
+                ? "Creating entity..."
+                : null}
+            </Button>
+          ) : null}
+          {this.props.entityType === "symbol" ? (
+            <Button
+              className="entity-creation-toolbar__action-button"
+              onClick={this.onClickCreateParentSymbol}
+              disabled={!this.canCreateParentSymbol()}
+              color="primary"
+              variant="contained"
+            >
+              Create Parent Symbol
+            </Button>
+          ) : null}
 
-        <Button
-          className="entity-creation-toolbar__action-button"
-          onClick={this.props.handleGroupSelectedEntities}
-          disabled={this.props.selectedEntityIds.length < 2}
-          color="primary"
-          variant="contained"
-        >
-          Group Entities
-        </Button>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={this.props.rapidAnnotationEnabled}
-              color="primary"
-              onChange={this.onChangeRapidAnnotationEnabled}
-            />
-          }
-          label={"Power add"}
-        />
-        <FormControlLabel
-          control={
-            <Switch
-              checked={this.props.powerDeleteEnabled}
-              color="primary"
-              onChange={this.onChangePowerDeleteEnabled}
-            />
-          }
-          label={"Power delete?"}
-        />
-        <span className="entity-creation-toolbar__selection-message">
-          {selectionMethod === "text-selection" && textSelection !== null
-            ? `Selected text: "${uiUtils.truncateText(
-                textSelection.toString(),
-                40
-              )}"`
-            : null}
-          {selectionMethod === "rectangular-selection"
-            ? "Select area on page"
-            : null}
-        </span>
+          <Button
+            className="entity-creation-toolbar__action-button"
+            onClick={this.props.handleGroupSelectedEntities}
+            disabled={this.props.selectedEntityIds.length < 2}
+            color="primary"
+            variant="contained"
+          >
+            Group Entities
+          </Button>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={this.props.highlightEntities}
+                color="primary"
+                onChange={this.onChangeHighlightEntities}
+              />
+            }
+            label={"Highlight entities"}
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={this.props.rapidAnnotationEnabled}
+                color="primary"
+                onChange={this.onChangeRapidAnnotationEnabled}
+              />
+            }
+            label={"Power add"}
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={this.props.powerDeleteEnabled}
+                color="primary"
+                onChange={this.onChangePowerDeleteEnabled}
+              />
+            }
+            label={"Power delete"}
+          />
+          <span className="entity-creation-toolbar__selection-message">
+            {selectionMethod === "text-selection" && textSelection !== null
+              ? `Selected text: "${uiUtils.truncateText(
+                  textSelection.toString(),
+                  40
+                )}"`
+              : null}
+            {selectionMethod === "rectangular-selection"
+              ? "Select area on page"
+              : null}
+          </span>
+        </FormGroup>
       </Card>
     );
   }

@@ -15,8 +15,8 @@ interface Props {
   snackbarMode: SnackbarMode;
   snackbarActivationTimeMs: number | null;
   snackbarMessage: string | null;
+  highlightEntities: boolean;
   rapidAnnotationEnabled: boolean;
-  powerDeletionEnabled: boolean;
   handleToggleControlPanelShowing: () => void;
   handleCloseSnackbar: () => void;
   handleCloseDrawer: () => void;
@@ -128,10 +128,20 @@ class AppOverlay extends React.PureComponent<Props> {
 
   render() {
     const {
-      powerDeletionEnabled,
+      highlightEntities,
       rapidAnnotationEnabled,
       appContainer,
     } = this.props;
+    if (highlightEntities) {
+      if (!appContainer.classList.contains("highlight-entities")) {
+        appContainer.classList.add("highlight-entities");
+      }
+    } else {
+      if (appContainer.classList.contains("highlight-entities")) {
+        appContainer.classList.remove("highlight-entities");
+      }
+    }
+
     if (rapidAnnotationEnabled) {
       if (!appContainer.classList.contains("rapid-annotation")) {
         appContainer.classList.add("rapid-annotation");
@@ -139,16 +149,6 @@ class AppOverlay extends React.PureComponent<Props> {
     } else {
       if (appContainer.classList.contains("rapid-annotation")) {
         appContainer.classList.remove("rapid-annotation");
-      }
-    }
-
-    if (powerDeletionEnabled) {
-      if (!appContainer.classList.contains("power-deletion")) {
-        appContainer.classList.add("power-deletion");
-      }
-    } else {
-      if (appContainer.classList.contains("power-deletion")) {
-        appContainer.classList.remove("power-deletion");
       }
     }
 

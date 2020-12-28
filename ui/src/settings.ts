@@ -94,6 +94,10 @@ export interface Settings {
    */
   sentenceTexCopyOnOptionClickEnabled: boolean;
   /**
+   * Highlight all entities. Meant as a tool to aid in annotating entities.
+   */
+  highlightEntities: boolean;
+  /**
    * Enable rapid annotation creation. Enableds features like disabling all other entities as
    * click targets to make it possible to draw entities overlapping others without accidentally
    * selecting the overlapped entities.
@@ -226,6 +230,7 @@ export function getSettings(presets?: string[]) {
     entityEditingEnabled: false,
     sentenceTexCopyOnOptionClickEnabled: false,
     glossEvaluationEnabled: false,
+    highlightEntities: false,
     rapidAnnotationEnabled: false,
     powerDeletionEnabled: false,
   };

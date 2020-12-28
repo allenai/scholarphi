@@ -338,6 +338,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.setState({ entityCreationAreaSelectionMethod: method });
   };
 
+  setHighlightEntities = (highlight: boolean): void => {
+    this.setState({ highlightEntities: highlight });
+  };
+
   setRapidAnnotationEnabled = (enabled: boolean): void => {
     this.setState({ rapidAnnotationEnabled: enabled });
   };
@@ -929,8 +933,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               snackbarMode={this.state.snackbarMode}
               snackbarActivationTimeMs={this.state.snackbarActivationTimeMs}
               snackbarMessage={this.state.snackbarMessage}
+              highlightEntities={this.state.highlightEntities}
               rapidAnnotationEnabled={this.state.rapidAnnotationEnabled}
-              powerDeletionEnabled={this.state.powerDeletionEnabled}
               handleToggleControlPanelShowing={this.toggleControlPanelShowing}
               handleSetMultiselectEnabled={this.setMultiselectEnabled}
               handleStartTextSearch={this.startTextSearch}
@@ -1011,6 +1015,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     selectionMethod={
                       this.state.entityCreationAreaSelectionMethod
                     }
+                    highlightEntities={this.state.highlightEntities}
                     rapidAnnotationEnabled={this.state.rapidAnnotationEnabled}
                     powerDeleteEnabled={this.state.powerDeletionEnabled}
                     handleShowSnackbarMessage={this.showSnackbarMessage}
@@ -1020,6 +1025,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     }
                     handleCreateEntity={this.createEntity}
                     handleCreateParentSymbol={this.createParentSymbol}
+                    handleHighlightEntities={this.setHighlightEntities}
                     handleSetRapidAnnotationEnabled={
                       this.setRapidAnnotationEnabled
                     }
