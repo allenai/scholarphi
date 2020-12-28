@@ -39,6 +39,7 @@ interface Props {
   handleCreateParentSymbol: (symbols: Symbol[]) => Promise<boolean>;
   handleSetRapidAnnotationEnabled: (enabled: boolean) => void;
   handleSetPowerDeleteEnabled: (enabled: boolean) => void;
+  handleGroupSelectedEntities: () => void;
 }
 
 interface State {
@@ -339,6 +340,16 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
             Create Parent Symbol
           </Button>
         ) : null}
+
+        <Button
+          className="entity-creation-toolbar__action-button"
+          onClick={this.props.handleGroupSelectedEntities}
+          disabled={this.props.selectedEntityIds.length < 2}
+          color="primary"
+          variant="contained"
+        >
+          Group Entities
+        </Button>
         <FormControlLabel
           control={
             <Switch

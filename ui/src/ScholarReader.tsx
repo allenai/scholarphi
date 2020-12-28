@@ -373,6 +373,52 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     return null;
   };
 
+  groupSelectedEntities = async (): Promise<boolean> => {
+    const { entities, selectedEntityIds } = this.state;
+    if (entities === null) {
+      return false;
+    }
+
+    const selectedEntities = selectedEntityIds
+      .map((id) => entities.byId[id])
+      .filter((e) => e !== undefined);
+
+    if (selectedEntities.length < 2) {
+      return false;
+    }
+
+    const mainEntity = selectedEntities[0];
+    const boundingBoxes = selectedEntities
+      .map((e) => e.attributes.bounding_boxes)
+      .flat();
+
+    const updated = this.updateEntity(
+      mainEntity,
+      {
+        id: mainEntity.id,
+        type: mainEntity.type,
+        attributes: {
+          source: "chi-annotations",
+          bounding_boxes: boundingBoxes,
+        },
+      },
+      false
+    );
+
+    if (!updated) {
+      return false;
+    }
+
+    for (const mergedEntity of selectedEntities.slice(1)) {
+      const deleted = this.deleteEntity(mergedEntity.id);
+      if (!deleted) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   createParentSymbol = async (childSymbols: Symbol[]): Promise<boolean> => {
     /*
      * Parent bounding box is the union of child bounding boxes.
@@ -978,6 +1024,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       this.setRapidAnnotationEnabled
                     }
                     handleSetPowerDeleteEnabled={this.setPowerDeletionEnabled}
+                    handleGroupSelectedEntities={this.groupSelectedEntities}
                   />
                 ) : null}
                 {this.props.children}
