@@ -447,6 +447,16 @@ def test_extract_bibitem_stop_at_newline():
     assert bibitems[0].text == "token1"
 
 
+def test_extract_bibitem_include_hyperref_contents():
+    tex = "\n".join(
+        ["\\bibitem[label]{key1}", r"token1 \hyperref{https://url.com}{token2}"]
+    )
+    extractor = BibitemExtractor()
+    bibitems = list(extractor.parse(tex))
+    assert len(bibitems) == 1
+    assert bibitems[0].text == "token1 token2"
+
+
 def test_extract_macro():
     tex = "\\macro"
     extractor = MacroExtractor()
