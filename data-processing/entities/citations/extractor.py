@@ -54,7 +54,7 @@ class BibitemExtractor:
                 text += content.string
             elif (
                 isinstance(content, TexNode)
-                and content.name == "hyperref"
+                and content.name == "href"
                 and len(content.args) >= 2
                 and isinstance(content.args[1], RArg)
             ):

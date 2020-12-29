@@ -1,11 +1,6 @@
-from common.parse_tex import (
-    BeginDocumentExtractor,
-    DocumentclassExtractor,
-    EquationExtractor,
-    MacroExtractor,
-    PhraseExtractor,
-    extract_plaintext,
-)
+from common.parse_tex import (BeginDocumentExtractor, DocumentclassExtractor,
+                              EquationExtractor, MacroExtractor,
+                              PhraseExtractor, extract_plaintext)
 from common.types import MacroDefinition
 from entities.citations.extractor import BibitemExtractor
 from entities.sentences.extractor import SentenceExtractor
@@ -449,7 +444,7 @@ def test_extract_bibitem_stop_at_newline():
 
 def test_extract_bibitem_include_hyperref_contents():
     tex = "\n".join(
-        ["\\bibitem[label]{key1}", r"token1 \hyperref{https://url.com}{token2}"]
+        ["\\bibitem[label]{key1}", r"token1 \href{https://url.com}{token2}"]
     )
     extractor = BibitemExtractor()
     bibitems = list(extractor.parse(tex))
