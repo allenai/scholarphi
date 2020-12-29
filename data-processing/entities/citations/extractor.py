@@ -52,6 +52,13 @@ class BibitemExtractor:
         for content in list(bibitem.contents)[1:]:
             if isinstance(content, TexNode) and content.string is not None:
                 text += content.string
+            elif (
+                isinstance(content, TexNode)
+                and content.name == "hyperref"
+                and len(content.args) >= 2
+                and isinstance(content.args[1], RArg)
+            ):
+                text += content.args[1].value
             # One common pattern in TeX is to force capitalization for a bibliography entry by
             # surrounding tokens with curly braces. This gets interpreted (incorrectly)
             # by TeXSoup as an RArg. Here, the contents of an RArg are extracted as literal
