@@ -102,9 +102,9 @@ class AppOverlay extends React.PureComponent<Props> {
       this.props.handleTerminateSearch();
       this.props.handleCloseDrawer();
     }
-    if (event.ctrlKey && event.shiftKey && event.key === "C") {
-      this.props.handleToggleControlPanelShowing();
-    }
+    // if (event.ctrlKey && event.shiftKey && event.key === "C") {
+    //   this.props.handleToggleControlPanelShowing();
+    // }
     if (event.keyCode === 16 || event.key === "Shift") {
       this.props.handleSetMultiselectEnabled(false);
     }

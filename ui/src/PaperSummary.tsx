@@ -28,7 +28,9 @@ function warnOfUnimplementedActionAndTrack(
   message?: string
 ) {
   const DEFAULT_MESSAGE =
-    "Sorry, this feature is not supported in this demo, as this demo is meant to stand alone as an archival artifact.";
+    "Sorry, this feature is not supported in this demo. " +
+    "Stay tuned to this project at https://scholarphi.org to hear about " +
+    "future deployments of this tool with this feature.";
   alert(message || DEFAULT_MESSAGE);
   if (window.heap) {
     window.heap.track("Click on Unimplemented Action", { actionType });

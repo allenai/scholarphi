@@ -15,7 +15,10 @@
 .primer-page__contents {
   max-width: 800px;
   margin: 0 auto;
-  padding: @padding * 4;
+  padding-top: @padding * 5;
+  padding-bottom: @padding * 5;
+  padding-left: @padding * 6;
+  padding-right: @padding * 6;
 
   /*
    * Distance between child elements
@@ -30,6 +33,23 @@
 
   ul.feature-list li {
     margin-left: 1.5em;
+    margin-bottom: 0.3em;
+  }
+
+  a {
+    text-decoration: none;
+    color: @s2-link-default;
+
+    &:hover {
+      color: darken(@s2-link-default, 20);
+    }
+
+    &:visited {
+      color: @s2-link-visited;
+      &:hover {
+        color: darken(@s2-link-visited, 20);
+      }
+    }
   }
 
   /*
@@ -62,7 +82,8 @@
  * Primer fonts
  */
 .primer-page__contents {
-  font-family: @s2-font-family;
+  font-family: "Palatino Linotype", "Palatino", "EB Garamond", "Times New Roman",
+    "Times", serif;
   font-weight: lighter;
   font-size: @medium;
   color: @s2-text-default;

@@ -1,7 +1,4 @@
-import FormControl from "@material-ui/core/FormControl";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import Switch from "@material-ui/core/Switch";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Entities, Pages } from "./state";
@@ -91,52 +88,56 @@ class PrimerPage extends React.PureComponent<Props> {
         <div className="primer-page__contents">
           {showInstructions && (
             <>
-              <p className="primer-page__header">This paper is interactive.</p>
+              <p className="primer-page__header">Welcome to ScholarPhi.</p>
               <p>
-                Sometimes it can be hard to understand a paper. The citations
-                can be poorly explained. Symbols can be cryptic. Terms can be
-                confusing. What if your reading application helped explain these
-                parts of a paper?
+                ScholarPhi is an interface that helps you understand scientific
+                papers. The current version of the tool reveals definitions of
+                technical terms and symbols in scientific papers.
               </p>
               <p>
-                This reading application, called <b>ScholarPhi</b>, explains
-                confusing things in papers. You can click on citations, symbols,
-                and terms to look up explanations of them. Anything that has a{" "}
-                <span style={{ borderBottom: "1px dotted" }}>
-                  dotted underline
-                </span>{" "}
-                can be clicked to access an explanation.
+                Below, you can try out ScholarPhi on an example paper. Look for:
               </p>
-              <p>The main features are:</p>
               <ul className="feature-list">
-                <li>Click a citation to see the abstract for that citation</li>
                 <li>
-                  Click a symbol to see its definitions <i>and</i> search for
-                  that symbol elsewhere in the paper
+                  Tooltips that reveal the definitions of technical terms and
+                  symbols,
                 </li>
                 <li>
-                  Click a display equation to see a diagram with definitions of
-                  key symbols.
+                  Equation diagrams that reveal definitions of many symbols at
+                  once,
                 </li>
+                <li>
+                  A glossary of key terms and symbols at the top of the
+                  document,
+                </li>
+                <li>...as well as other features.</li>
               </ul>
               <p>
-                Subsymbols of big, complex symbols can be selected by clicking
-                first on the complex symbol, and then on its subsymbol. If you
-                want to hide the explanations, just click anywhere on the page
-                that isn't underlined.
+                Get started by looking for terms and symbols{" "}
+                <span style={{ borderBottom: "1px dotted" }}>
+                  underlined with a dotted line
+                </span>
+                . Click on these terms and symbols to view their definitions.
+                Then try clicking on some of the buttons in the tooltip, and
+                clicking on entire equations, and citations.
               </p>
+              <p>To learn more about the project, read the ScholarPhi paper:</p>
               <p>
-                Your use of this application is entirely voluntary and you may
-                exit it at any time. By using this tool, you consent to have
-                your interactions with the tool logged with your IP address.
-                Your interactions and responses to the form will be analyzed as
-                part of on-going research conducted by post-doc{" "}
-                <a href="mailto:andrewhead@berkeley.edu">Andrew Head</a> and PI{" "}
-                <a href="mailto:hears@berkeley.edu">Marti Hearst</a> at UC
-                Berkeley. Contact the researchers if you have any questions.
+                Andrew Head, Kyle Lo, Dongyeop Kang, Raymond Fok, Sam
+                Skjonsberg, Daniel S. Weld, and Marti A. Hearst. "
+                <a href="https://arxiv.org/abs/2009.14237">
+                  Augmenting Scientific Papers with Just-in-Time,
+                  Position-Sensitive Definitions of Terms and Symbols
+                </a>
+                ". In:{" "}
+                <i>
+                  Proceedings of the CHI Conference on Human Factors in
+                  Computing Systems
+                </i>
+                . 2021. (<a href="https://youtu.be/y8Kuyf9jygs">Demo video</a>).
               </p>
               <hr />
-              <p className="primer-page__header">Reading settings</p>
+              {/* <p className="primer-page__header">Reading settings</p>
               <div>
                 <FormControl>
                   <FormControlLabel
@@ -158,7 +159,7 @@ class PrimerPage extends React.PureComponent<Props> {
                     }
                   />
                 </FormControl>
-              </div>
+              </div> */}
             </>
           )}
           {entities === null ? (
