@@ -13,14 +13,23 @@ from common.colorize_tex import ColorizedTex, colorize_entities
 from common.commands.base import ArxivBatchCommand
 from common.commands.compile_tex import save_compilation_result
 from common.commands.raster_pages import raster_pages
-from common.compile import (compile_tex, get_compiled_tex_files,
-                            get_last_autotex_compiler,
-                            get_last_colorized_entity_id)
+from common.compile import (
+    compile_tex,
+    get_compiled_tex_files,
+    get_last_autotex_compiler,
+    get_last_colorized_entity_id,
+)
 from common.diff_images import diff_images_in_raster_dirs
 from common.locate_entities import locate_entities
-from common.types import (ArxivId, ColorizationRecord, ColorizeOptions,
-                          FileContents, HueLocationInfo, RelativePath,
-                          SerializableEntity)
+from common.types import (
+    ArxivId,
+    ColorizationRecord,
+    ColorizeOptions,
+    FileContents,
+    HueLocationInfo,
+    RelativePath,
+    SerializableEntity,
+)
 
 
 @dataclass(frozen=True)
@@ -401,7 +410,7 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                 )
                 if not raster_success:
                     logging.error(  # pylint: disable=logging-not-lazy
-                        "Failed to rasterize pages for %s iteration %d. The locations for entities "
+                        "Failed to rasterize pages for %s iteration %s. The locations for entities "
                         + "with IDs %s with not be detected.",
                         item.arxiv_id,
                         iteration_id,
@@ -410,7 +419,7 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                     continue
 
                 logging.debug(
-                    "Attempting to diff rastered pages for paper %s iteration %d.",
+                    "Attempting to diff rastered pages for paper %s iteration %s.",
                     item.arxiv_id,
                     iteration_id,
                 )
@@ -418,7 +427,7 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                     output_files, raster_output_dir, diffs_output_dir, item.arxiv_id,
                 )
                 logging.debug(
-                    "Finished diffing attempt for paper %s iteration %d. Success? %s.",
+                    "Finished diffing attempt for paper %s iteration %s. Success? %s.",
                     item.arxiv_id,
                     iteration_id,
                     diff_success,
@@ -426,7 +435,7 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                 if not diff_success:
                     logging.error(  # pylint: disable=logging-not-lazy
                         "Failed to difference images of original and colorized versions of "
-                        + "papers %s in batch processing iteration %d. The locations for entities with IDs "
+                        + "papers %s in batch processing iteration %s. The locations for entities with IDs "
                         + "%s will not be detected.",
                         item.arxiv_id,
                         iteration_id,
@@ -436,7 +445,7 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
 
             # Locate the entities in the diffed images.
             logging.debug(
-                "Attempting to locate entities using image differences for paper %s iteration %d.",
+                "Attempting to locate entities using image differences for paper %s iteration %s.",
                 item.arxiv_id,
                 iteration_id,
             )
@@ -542,7 +551,7 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                     to_process_alone.extend(batch)
 
             logging.debug(
-                "Finished attempt at locating entities with image diffs for paper %s iteration %d",
+                "Finished attempt at locating entities with image diffs for paper %s iteration %s.",
                 item.arxiv_id,
                 iteration_id,
             )
