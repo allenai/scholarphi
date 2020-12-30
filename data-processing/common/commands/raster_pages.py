@@ -115,18 +115,21 @@ def raster_pages(
         for arg in args
     ]
 
+    logging.debug(
+        "Attempting to raster pages for file %s.", resolved_compiled_file_path
+    )
     result = subprocess.run(
         args_resolved, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False,
     )
     if result.returncode == 0:
         logging.debug(
-            "Successfully rastered pages for file %s using command %s",
+            "Successfully rastered pages for file %s using command %s.",
             resolved_compiled_file_path,
             args_resolved,
         )
     else:
         logging.error(
-            "Error rastering file %s using command %s: (Stdout: %s), (Stderr: %s)",
+            "Error rastering file %s using command %s: (Stdout: %s), (Stderr: %s).",
             resolved_compiled_file_path,
             args_resolved,
             result.stdout,

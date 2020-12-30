@@ -53,7 +53,7 @@ def compile_tex(sources_dir: str) -> CompilationResult:
     Compile TeX sources into PDFs. Requires running an external script to attempt to compile
     the TeX. See README.md for dependencies.
     """
-    logging.debug("Compiling sources in %s", sources_dir)
+    logging.debug("Compiling sources in %s.", sources_dir)
     _set_sources_dir_permissions(sources_dir)
 
     config = configparser.ConfigParser()
@@ -88,6 +88,12 @@ def compile_tex(sources_dir: str) -> CompilationResult:
             output_files.append(OutputFile("ps", postscript_filename))
         compiled_tex_files = get_compiled_tex_files_from_autotex_output(result.stdout)
         success = True
+
+    logging.debug(
+        "Finished compilation attempt for sources in %s. Success? %s.",
+        sources_dir,
+        success,
+    )
 
     return CompilationResult(
         success, compiled_tex_files, output_files, result.stdout, result.stderr
