@@ -75,12 +75,6 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
             most_similar_reference = None
             for reference in item.references:
                 similarity = ngram_sim(reference.title, bibitem.text)
-                logging.debug(
-                    "Computed similarity of %f between reference '%s' and bibitem text '%s'",
-                    similarity,
-                    reference.title,
-                    bibitem.text,
-                )
                 if similarity > SIMILARITY_THRESHOLD and similarity > max_similarity:
                     max_similarity = similarity
                     most_similar_reference = reference

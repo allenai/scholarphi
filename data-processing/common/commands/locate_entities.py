@@ -13,23 +13,14 @@ from common.colorize_tex import ColorizedTex, colorize_entities
 from common.commands.base import ArxivBatchCommand
 from common.commands.compile_tex import save_compilation_result
 from common.commands.raster_pages import raster_pages
-from common.compile import (
-    compile_tex,
-    get_compiled_tex_files,
-    get_last_autotex_compiler,
-    get_last_colorized_entity_id,
-)
+from common.compile import (compile_tex, get_compiled_tex_files,
+                            get_last_autotex_compiler,
+                            get_last_colorized_entity_id)
 from common.diff_images import diff_images_in_raster_dirs
 from common.locate_entities import locate_entities
-from common.types import (
-    ArxivId,
-    ColorizationRecord,
-    ColorizeOptions,
-    FileContents,
-    HueLocationInfo,
-    RelativePath,
-    SerializableEntity,
-)
+from common.types import (ArxivId, ColorizationRecord, ColorizeOptions,
+                          FileContents, HueLocationInfo, RelativePath,
+                          SerializableEntity)
 
 
 @dataclass(frozen=True)
@@ -256,6 +247,12 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
 
             # Colorize the TeX for all the entities.
             custom_colorize_func = self.get_colorize_func()
+            logging.debug(
+                "Attempting to colorize entities in TeX for entity batch %d-%d of paper %s.",
+                item.group,
+                batch_index,
+                item.arxiv_id,
+            )
             if custom_colorize_func is not None:
                 colorized_tex = custom_colorize_func(
                     item.file_contents.contents, entities, self.get_colorize_options()
@@ -309,6 +306,12 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                 colorized_tex.tex,
                 item.file_contents.encoding,
                 colorized_tex.entity_hues,
+            )
+            logging.debug(
+                "Finished attempting to colorize entities for entity batch %d-%d of paper %s.",
+                item.group,
+                batch_index,
+                item.arxiv_id,
             )
             if not save_success:
                 logging.error(  # pylint: disable=logging-not-lazy
@@ -398,7 +401,7 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                 )
                 if not raster_success:
                     logging.error(  # pylint: disable=logging-not-lazy
-                        "Failed to rasterize pages %s iteration %d. The locations for entities "
+                        "Failed to rasterize pages for %s iteration %d. The locations for entities "
                         + "with IDs %s with not be detected.",
                         item.arxiv_id,
                         iteration_id,
@@ -406,8 +409,19 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                     )
                     continue
 
+                logging.debug(
+                    "Attempting to diff rastered pages for paper %s iteration %d.",
+                    item.arxiv_id,
+                    iteration_id,
+                )
                 diff_success = diff_images_in_raster_dirs(
                     output_files, raster_output_dir, diffs_output_dir, item.arxiv_id,
+                )
+                logging.debug(
+                    "Finished diffing attempt for paper %s iteration %d. Success? %s.",
+                    item.arxiv_id,
+                    iteration_id,
+                    diff_success,
                 )
                 if not diff_success:
                     logging.error(  # pylint: disable=logging-not-lazy
@@ -421,6 +435,11 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                     continue
 
             # Locate the entities in the diffed images.
+            logging.debug(
+                "Attempting to locate entities using image differences for paper %s iteration %d.",
+                item.arxiv_id,
+                iteration_id,
+            )
             entity_hues = colorized_tex.entity_hues
             location_result = locate_entities(
                 item.arxiv_id, raster_output_dir, diffs_output_dir, entity_hues
@@ -521,6 +540,12 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                         batch,
                     )
                     to_process_alone.extend(batch)
+
+            logging.debug(
+                "Finished attempt at locating entities with image diffs for paper %s iteration %d",
+                item.arxiv_id,
+                iteration_id,
+            )
 
             # The code above is responsible for filter 'batch' to ensure that it doesn't include
             # any entity IDs that shouldn't be save to file, for example if the client has asked that

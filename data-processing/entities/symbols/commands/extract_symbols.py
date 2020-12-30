@@ -164,13 +164,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, List[EquationSymbols]]):
             symbols = equation_symbols.symbols
             error_message = equation_symbols.error_message
 
-            if success and symbols is not None:
-                logging.debug(
-                    "Successfully extracted %d symbols for equation %s.",
-                    len(symbols),
-                    equation,
-                )
-            else:
+            if not success or not symbols:
                 logging.warning(
                     "Could not parse equation %s. See logs in %s.",
                     equation,
