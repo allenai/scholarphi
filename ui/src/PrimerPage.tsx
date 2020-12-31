@@ -28,19 +28,27 @@ interface Props {
 class PrimerPage extends React.PureComponent<Props> {
   constructor(props: Props) {
     super(props);
-    this._element = document.createElement("div");
-    this._element.classList.add("primer-page");
+    this._welcomeElement = document.createElement("div");
+    this._welcomeElement.classList.add("primer-page");
+    this._glossaryElement = document.createElement("div");
+    this._glossaryElement.classList.add("primer-page");
+
     this.onAnnotationHintsEnabledChanged = this.onAnnotationHintsEnabledChanged.bind(
       this
     );
   }
 
   componentDidMount() {
+    /*
+     * TODO(andrewhead): Also attach the glossary page.
+     */
     const { viewer } = this.props.pdfViewer;
     if (viewer.children.length === 0) {
-      viewer.appendChild(this._element);
+      viewer.appendChild(this._welcomeElement);
+      viewer.appendChild(this._glossaryElement);
     } else {
-      viewer.insertBefore(this._element, viewer.children[0]);
+      viewer.insertBefore(this._glossaryElement, viewer.children[0]);
+      viewer.insertBefore(this._welcomeElement, viewer.children[0]);
     }
     if (this.props.scrollToPageOnLoad) {
       this.props.pdfViewer.container.scrollTop = 0;
@@ -49,8 +57,17 @@ class PrimerPage extends React.PureComponent<Props> {
 
   componentWillUnmount() {
     const { viewer } = this.props.pdfViewer;
-    if (document.body.contains(viewer) && viewer.contains(this._element)) {
-      viewer.removeChild(this._element);
+    if (
+      document.body.contains(viewer) &&
+      viewer.contains(this._welcomeElement)
+    ) {
+      viewer.removeChild(this._welcomeElement);
+    }
+    if (
+      document.body.contains(viewer) &&
+      viewer.contains(this._glossaryElement)
+    ) {
+      viewer.removeChild(this._glossaryElement);
     }
   }
 
@@ -59,12 +76,7 @@ class PrimerPage extends React.PureComponent<Props> {
   }
 
   render() {
-    const {
-      pages,
-      entities,
-      showInstructions,
-      termGlossesEnabled,
-    } = this.props;
+    const { pages, entities, termGlossesEnabled } = this.props;
 
     /*
      * The width of the primer should be the same as the width of the first page. The height of
@@ -78,153 +90,133 @@ class PrimerPage extends React.PureComponent<Props> {
     if (width === undefined) {
       return null;
     }
-    this._element.style.width = width;
+    this._welcomeElement.style.width = width;
+    this._glossaryElement.style.width = width;
 
     const terms = entities !== null ? glossaryTerms(entities) : [];
     const symbols = entities !== null ? glossarySymbols(entities) : [];
 
-    return ReactDOM.createPortal(
+    const welcomeComponent = ReactDOM.createPortal(
+      <div className="welcome-page primer-page__contents">
+        <p className="primer-page__header">Welcome to ScholarPhi.</p>
+        <p>
+          ScholarPhi is an interface that helps you understand scientific
+          papers. The current version of the tool reveals definitions of
+          technical terms and mathematical symbols.
+        </p>
+        <p>
+          Below, you can try out ScholarPhi on an example paper. Get started by
+          clicking on a term or symbol{" "}
+          <span style={{ borderBottom: "1px dotted" }}>
+            underlined with a dotted line
+          </span>
+          , and see what appears. Then click on buttons in the tooltips that
+          appear. Then, try clicking equations and citations.
+        </p>
+        <p>This demo of ScholarPhi offers the following features:</p>
+        <ul className="feature-list">
+          <li>
+            Tooltips that reveal the definitions of technical terms and symbols,
+          </li>
+          <li>
+            Equation diagrams that reveal definitions of many symbols at once,
+          </li>
+          <li>
+            A glossary of key terms and symbols at the top of the document,
+          </li>
+          <li>...and several others.</li>
+        </ul>
+        <p>To learn more about the project, read the ScholarPhi paper:</p>
+        <p>
+          Andrew Head, Kyle Lo, Dongyeop Kang, Raymond Fok, Sam Skjonsberg,
+          Daniel S. Weld, and Marti A. Hearst. "
+          <a href="https://arxiv.org/abs/2009.14237">
+            Augmenting Scientific Papers with Just-in-Time, Position-Sensitive
+            Definitions of Terms and Symbols
+          </a>
+          ". In:{" "}
+          <i>
+            Proceedings of the CHI Conference on Human Factors in Computing
+            Systems
+          </i>
+          . 2021. (<a href="https://youtu.be/y8Kuyf9jygs">Demo video</a>).
+        </p>
+      </div>,
+      this._welcomeElement
+    );
+
+    const glossaryComponent = ReactDOM.createPortal(
+      <div className="primer-page__contents">
+        {entities === null ? (
+          <>
+            <p className="primer-page__header">
+              Building a glossary of key terms and symbols for this paper...
+            </p>
+            <p>Please wait... Scanning paper...</p>
+            <LinearProgress />
+          </>
+        ) : (
+          <>
+            {termGlossesEnabled && terms.length > 0 ? (
+              <>
+                <p className="primer-page__header">Glossary of key terms</p>
+                <p className="primer-page__subheader">
+                  Listed in order of appearance.
+                </p>
+                <div className="primer-page__glossary">
+                  <ul>
+                    {terms
+                      .filter((t) => t.attributes.term_type !== "symbol")
+                      .map((t) => (
+                        <li key={t.id}>
+                          <TermDefinitionGloss term={t} />
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              </>
+            ) : null}
+            {symbols.length > 0 ? (
+              <>
+                <p className="primer-page__header">
+                  Glossary of key {terms.length === 0 && "terms and "} symbols
+                </p>
+                <p className="primer-page__subheader">
+                  Listed in order of appearance.
+                </p>
+                <div className="primer-page__glossary">
+                  <ul>
+                    {symbols
+                      .filter(
+                        (s) =>
+                          s.attributes.definitions.length > 0 ||
+                          s.attributes.nicknames.length > 0
+                      )
+                      .map((s) => (
+                        <li key={s.id}>
+                          <SymbolDefinitionGloss symbol={s} />
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              </>
+            ) : null}
+          </>
+        )}
+      </div>,
+      this._glossaryElement
+    );
+
+    return (
       <>
-        <div className="primer-page__contents">
-          {showInstructions && (
-            <>
-              <p className="primer-page__header">Welcome to ScholarPhi.</p>
-              <p>
-                ScholarPhi is an interface that helps you understand scientific
-                papers. The current version of the tool reveals definitions of
-                technical terms and symbols in scientific papers.
-              </p>
-              <p>
-                Below, you can try out ScholarPhi on an example paper. Look for:
-              </p>
-              <ul className="feature-list">
-                <li>
-                  Tooltips that reveal the definitions of technical terms and
-                  symbols,
-                </li>
-                <li>
-                  Equation diagrams that reveal definitions of many symbols at
-                  once,
-                </li>
-                <li>
-                  A glossary of key terms and symbols at the top of the
-                  document,
-                </li>
-                <li>...as well as other features.</li>
-              </ul>
-              <p>
-                Get started by looking for terms and symbols{" "}
-                <span style={{ borderBottom: "1px dotted" }}>
-                  underlined with a dotted line
-                </span>
-                . Click on these terms and symbols to view their definitions.
-                Then try clicking on some of the buttons in the tooltip, and
-                clicking on entire equations, and citations.
-              </p>
-              <p>To learn more about the project, read the ScholarPhi paper:</p>
-              <p>
-                Andrew Head, Kyle Lo, Dongyeop Kang, Raymond Fok, Sam
-                Skjonsberg, Daniel S. Weld, and Marti A. Hearst. "
-                <a href="https://arxiv.org/abs/2009.14237">
-                  Augmenting Scientific Papers with Just-in-Time,
-                  Position-Sensitive Definitions of Terms and Symbols
-                </a>
-                ". In:{" "}
-                <i>
-                  Proceedings of the CHI Conference on Human Factors in
-                  Computing Systems
-                </i>
-                . 2021. (<a href="https://youtu.be/y8Kuyf9jygs">Demo video</a>).
-              </p>
-              <hr />
-              {/* <p className="primer-page__header">Reading settings</p>
-              <div>
-                <FormControl>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={this.props.annotationHintsEnabled}
-                        color="primary"
-                        onChange={this.onAnnotationHintsEnabledChanged}
-                      />
-                    }
-                    label={
-                      <>
-                        Mark explainable things with a{" "}
-                        <span style={{ borderBottom: "1px dotted" }}>
-                          dotted underline
-                        </span>{" "}
-                        (recommended).
-                      </>
-                    }
-                  />
-                </FormControl>
-              </div> */}
-            </>
-          )}
-          {entities === null ? (
-            <>
-              <p className="primer-page__header">
-                Building a glossary of key terms and symbols for this paper...
-              </p>
-              <p>Please wait... Scanning paper...</p>
-              <LinearProgress />
-            </>
-          ) : (
-            <>
-              {termGlossesEnabled && terms.length > 0 ? (
-                <>
-                  <p className="primer-page__header">Glossary of key terms</p>
-                  <p className="primer-page__subheader">
-                    Listed in order of appearance.
-                  </p>
-                  <div className="primer-page__glossary">
-                    <ul>
-                      {terms
-                        .filter((t) => t.attributes.term_type !== "symbol")
-                        .map((t) => (
-                          <li key={t.id}>
-                            <TermDefinitionGloss term={t} />
-                          </li>
-                        ))}
-                    </ul>
-                  </div>
-                </>
-              ) : null}
-              {symbols.length > 0 ? (
-                <>
-                  <p className="primer-page__header">
-                    Glossary of key {terms.length === 0 && "terms and "} symbols
-                  </p>
-                  <p className="primer-page__subheader">
-                    Listed in order of appearance.
-                  </p>
-                  <div className="primer-page__glossary">
-                    <ul>
-                      {symbols
-                        .filter(
-                          (s) =>
-                            s.attributes.definitions.length > 0 ||
-                            s.attributes.nicknames.length > 0
-                        )
-                        .map((s) => (
-                          <li key={s.id}>
-                            <SymbolDefinitionGloss symbol={s} />
-                          </li>
-                        ))}
-                    </ul>
-                  </div>
-                </>
-              ) : null}
-            </>
-          )}
-        </div>
-      </>,
-      this._element
+        {welcomeComponent}
+        {glossaryComponent}
+      </>
     );
   }
 
-  private _element: HTMLDivElement;
+  private _welcomeElement: HTMLDivElement;
+  private _glossaryElement: HTMLDivElement;
 }
 
 /**

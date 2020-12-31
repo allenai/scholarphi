@@ -42,6 +42,7 @@
 
     &:hover {
       color: darken(@s2-link-default, 20);
+      text-decoration: underline;
     }
 
     &:visited {
@@ -78,12 +79,15 @@
   }
 }
 
+.welcome-page {
+  font-family: "Palatino Linotype", "Palatino", "EB Garamond", "Times New Roman",
+    "Times", serif;
+}
+
 /**
  * Primer fonts
  */
 .primer-page__contents {
-  font-family: "Palatino Linotype", "Palatino", "EB Garamond", "Times New Roman",
-    "Times", serif;
   font-weight: lighter;
   font-size: @medium;
   color: @s2-text-default;
@@ -112,6 +116,7 @@
     // column-count: 3;
     li {
       list-style: none;
+      margin-right: @padding;
     }
 
     /*
