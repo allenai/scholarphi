@@ -1,17 +1,17 @@
-PAPER_LATEX_DIRNAME = '/data-processing/data/06-normalized-sources/'
-NEW_STY_FILENAME = 'something-private.sty'
-DEMACRO_BIN_PATH = '/de-macro/de-macro'
-
-LATEX_COMMAND_NAMES = ['newcommand', 'renewcommand']  #or 'newenvironment' in line or 'renewenvironment' in line
 
 from typing import List, Optional
 
+from tqdm import tqdm
+import json
 import os
 from glob import glob
 from shutil import copyfile
 
 from collections import defaultdict
 import subprocess
+
+
+LATEX_COMMAND_NAMES = ['newcommand', 'renewcommand']  # or 'newenvironment' in line or 'renewenvironment' in line
 
 
 # TODO: doesnt catch:
@@ -25,6 +25,7 @@ def find_macro_lines(lines: List[str]) -> List[int]:
         if not is_comment and is_command:
             out.append(i)
     return out
+
 
 
 def _find_multiline_command(lines: List[str], index_search_start: int, index_search_stop: int) -> List[int]:
@@ -95,21 +96,16 @@ def _find_multiline_command(lines: List[str], index_search_start: int, index_sea
 
 
 
-def prep_demacro_tex_file(infile: str) -> None:
+def _prep_demacro_tex_file(infile: str) -> None:
     """Written sorta assuming a single *.tex file"""
-    #
-    #  backup original
-    #
-    copyfile(src=infile, dst=f"{infile}.backup")
-    #
-    #  read original
-    #
+    # copyfile(src=infile, dst=f"{infile}.backup")
+
+    #  read original latex file
     with open(infile) as f_in:
         old_lines = [line for line in f_in]
         index_macro_lines = find_macro_lines(lines=old_lines)
-    #
-    #  create new tex file
-    #
+
+    #  create new tex file by commenting out old commands
     inserted_sty_import = False
     new_lines = []
     for i, old_line in enumerate(old_lines):
@@ -123,9 +119,8 @@ def prep_demacro_tex_file(infile: str) -> None:
     with open(infile, 'w') as f_out:
         for new_line in new_lines:
             f_out.write(new_line)
-    #
+
     #  create new sty file; append (handles multi TeX directories)
-    #
     sty_file = os.path.join(os.path.dirname(infile), NEW_STY_FILENAME)
     with open(sty_file, 'a+') as f_out:
         for j in index_macro_lines:
@@ -133,7 +128,7 @@ def prep_demacro_tex_file(infile: str) -> None:
 
 
 
-def run_demacro(infile: str) -> str:
+def _run_demacro_binary(infile: str) -> str:
     result = subprocess.run(
         [
             DEMACRO_BIN_PATH,
@@ -173,21 +168,48 @@ def inspect(indir: str):
     print()
 
 
-# if __name__ == '__main__':
-succeeded = set()
-fail_to_errors = defaultdict(list)
-for infile in glob(os.path.join(PAPER_LATEX_DIRNAME, '*/*.tex')):
-    arxiv_id = os.path.basename(os.path.dirname(infile))
-    prep_demacro_tex_file(infile=infile)
-    try:
-        new_infile = run_demacro(infile=infile)
-        if validate_worked(infile=new_infile):
-            succeeded.add(arxiv_id)
-            print(f'Demacro success on {infile}')
-        else:
-            fail_to_errors[arxiv_id].append(f'Demacro ran but no output on {infile}')
-    except Exception as e:
-        fail_to_errors[arxiv_id].append(f'Demacro failed on {infile} with error {e}')
+if __name__ == '__main__':
+    INPUT_LATEX_DIRNAME = '/data-processing/data/06-normalized-sources/'
+    BACKUP_INPUT_DIRNAME = '/data-processing/data/backup-06-normalized-sources/'
+    ARXIV_ID_TO_MAIN_TEX_FILENAME = '/data-processing/data/arxiv_id_to_filename.json'
 
-print(f'Num all success: {len(succeeded)}')
-print(f'Num failed: {len(fail_to_errors)}')
+    NEW_STY_FILENAME = 'something-private.sty'
+    DEMACRO_BIN_PATH = '/de-macro/de-macro'
+
+    # TODO: if resetting experiment, manually overwrite the directory w/ backed-up version
+
+    # in order to test whether the pipeline's latex compilation will work, we need to directly modify the files in PAPER_LATEX_DIRNAME
+    # therefore, first thing is to make a backup of the input directory before messing w/ it
+    # subprocess.run(
+    #     ['cp', '-r', INPUT_LATEX_DIRNAME, BACKUP_INPUT_DIRNAME],
+    #     stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False
+    # )
+
+    # open up the mapping file
+    with open(ARXIV_ID_TO_MAIN_TEX_FILENAME) as f_in:
+        arxiv_id_to_main_tex_filename = json.load(f_in)
+
+    # for each arxiv ID in mapping file, perform de-macro
+    for arxiv_id, main_tex_filename in tqdm(arxiv_id_to_main_tex_filename.items()):
+
+
+        _run_demacro_binary(infile=os.path.join(INPUT_LATEX_DIRNAME, arxiv_id, main_tex_filename))
+
+
+    succeeded = set()
+    fail_to_errors = defaultdict(list)
+    for infile in glob(os.path.join(INPUT_LATEX_DIRNAME, '*/*.tex')):
+        arxiv_id = os.path.basename(os.path.dirname(infile))
+        _prep_demacro_tex_file(infile=infile)
+        try:
+            new_infile = _run_demacro_binary(infile=infile)
+            if validate_worked(infile=new_infile):
+                succeeded.add(arxiv_id)
+                print(f'Demacro success on {infile}')
+            else:
+                fail_to_errors[arxiv_id].append(f'Demacro ran but no output on {infile}')
+        except Exception as e:
+            fail_to_errors[arxiv_id].append(f'Demacro failed on {infile} with error {e}')
+
+    print(f'Num all success: {len(succeeded)}')
+    print(f'Num failed: {len(fail_to_errors)}')
