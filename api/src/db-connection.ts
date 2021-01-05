@@ -114,6 +114,12 @@ export class Connection {
     return { rows, offset, size, total };
   }
 
+  async checkPaper(paperSelector: PaperSelector): Promise<boolean> {
+    const rows = await this._knex("paper")
+      .where(paperSelector);
+    return rows.length > 0;
+  }
+
   async getLatestPaperDataVersion(paperSelector: PaperSelector): Promise<number | null> {
     const rows = await this._knex("version")
       .max("index")
