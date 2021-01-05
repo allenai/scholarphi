@@ -52,6 +52,9 @@ class BibitemExtractor:
         for content in list(bibitem.contents)[1:]:
             if isinstance(content, TexNode) and content.string is not None:
                 text += content.string
+           # Extract text from hyperlinks, e.g., extract the reference text from 
+           # `\href{<LINK>}{<Reference text...>}`. Some conferences like ACL
+           # frequently typeset some parts of references, like titles, as hyperlinks.
             elif (
                 isinstance(content, TexNode)
                 and content.name == "href"
