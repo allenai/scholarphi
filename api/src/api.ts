@@ -123,6 +123,36 @@ export const plugin = {
 
     server.route({
       method: "GET",
+      path: "papers/{s2Id}",
+      handler: async (request, h) => {
+        const s2Id = request.params.s2Id;
+        const exists = await dbConnection.checkPaper({ s2_id: s2Id });
+        return exists ? h.response().code(204) : h.response().code(404);
+      },
+      options: {
+        validate: {
+          params: validation.s2Id,
+        },
+      },
+    })
+
+    server.route({
+      method: "GET",
+      path: "papers/arxiv:{arxivId}",
+      handler: async (request, h) => {
+        const arxivId = request.params.arxivId;
+        const exists = await dbConnection.checkPaper({ arxiv_id: arxivId });
+        return exists ? h.response().code(204) : h.response().code(404);
+      },
+      options: {
+        validate: {
+          params: validation.arxivId,
+        },
+      },
+    });
+
+    server.route({
+      method: "GET",
       path: "papers/{s2Id}/entities",
       handler: (request) => {
         const s2Id = request.params.s2Id;
