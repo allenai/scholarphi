@@ -30,7 +30,7 @@ class ApiServer {
       },
       routes: {
         cors: {
-          origin: ['*.semanticscholar.org', '*.allenai.org'],
+          origin: ['*'], // TODO: This is really insecure
         },
         validate: {
           failAction: this._debug ? debugFailAction : undefined,
