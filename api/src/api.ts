@@ -253,9 +253,6 @@ export const plugin = {
         return h.response({ version }).code(200);
       },
       options: {
-        cors: {
-          origin: ['*.semanticscholar.org', '*.allenai.org'],
-        },
         validate: {
           params: validation.arxivId,
         },
