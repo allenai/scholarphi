@@ -29,6 +29,9 @@ class ApiServer {
         request: ["error"],
       },
       routes: {
+        cors: {
+          origin: ['*.semanticscholar.org', '*.allenai.org', '*.allenai.org:8080'],
+        },
         validate: {
           failAction: this._debug ? debugFailAction : undefined,
         },
