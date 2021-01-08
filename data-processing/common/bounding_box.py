@@ -503,36 +503,6 @@ def iou(
     return intersection_area / union_area
 
 
-def iou_per_rectangle(
-    rects: Iterable[FrozenSet[FloatRectangle]], other_rects: Iterable[FloatRectangle]
-) -> Dict[FrozenSet[FloatRectangle], float]:
-    """
-    Compute the intersection between each rectangle in 'rects' and all rectangles that overlap
-    with it in 'other_rects'.
-    """
-    other_rects = list(other_rects)
-    ious: Dict[FrozenSet[FloatRectangle], float] = {}
-
-    for rect_set in rects:
-
-        def filter_fn(
-            other_rect: FloatRectangle, rs: FrozenSet[FloatRectangle] = rect_set
-        ) -> bool:
-            return any([are_intersecting(r, other_rect) for r in rs])
-
-        overlapping_rects = filter(filter_fn, other_rects)
-        rect_iou = iou(rect_set, overlapping_rects)
-        logging.debug(
-            "Detection summary: %s, %s, %f",
-            rect_set,
-            list(filter(filter_fn, other_rects)),
-            rect_iou,
-        )
-        ious[rect_set] = rect_iou
-
-    return ious
-
-
 def iou_per_region(
     regions: Iterable[FrozenSet[FloatRectangle]],
     other_regions: Iterable[FrozenSet[FloatRectangle]],
@@ -540,7 +510,7 @@ def iou_per_region(
 ) -> Dict[Tuple[FrozenSet[FloatRectangle], FrozenSet[FloatRectangle]], float]:
     """
     Match all regions in one set to regions in another set. Each rectangle set in
-    'rects' can me matched to only one rectangle set in 'other_rects' and vice versa. This
+    'regions' can me matched to only one rectangle set in 'other_regions' and vice versa. This
     function solves the unbalanced assignment problem
     https://en.wikipedia.org/wiki/Assignment_problem#Unbalanced_assignment: it is
     guaranteed to maximum number of regions in the two sets will be matched. Two regions
@@ -592,15 +562,13 @@ def iou_per_region(
 
 def compute_accuracy(
     actual: Iterable[FrozenSet[FloatRectangle]],
-    expected: Iterable[FloatRectangle],
+    expected: Iterable[FrozenSet[FloatRectangle]],
     minimum_iou: float = 0.5,
 ) -> Tuple[float, float]:
 
-    expected = list(expected)
-    actual = list(actual)
-    ious = iou_per_rectangle(actual, expected)
+    ious = iou_per_region(actual, expected, minimum_iou)
 
-    count_found = len(list(filter(lambda i: i >= minimum_iou, ious.values())))
+    count_found = len(ious)
     precision = float(count_found) / len(actual)
     recall = float(count_found) / len(expected)
 

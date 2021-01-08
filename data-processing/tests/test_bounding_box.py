@@ -8,7 +8,6 @@ from common.bounding_box import (
     find_boxes_with_color,
     intersect,
     iou,
-    iou_per_rectangle,
     iou_per_region,
     subtract,
     subtract_multiple,
@@ -209,23 +208,6 @@ def fs(*rects: Rectangle) -> FrozenSet[Rectangle]:
     return frozenset(rects)
 
 
-def test_compute_iou_per_rectangle():
-    # There's a 10px-wide overlap between rect1 and rect2; the algorithm for IOU should use the
-    # union of the areas of the input rects.
-    rects = [
-        fs(Rectangle(0, 0, 20, 20)),
-        fs(Rectangle(10, 0, 30, 20)),
-        fs(Rectangle(40, 10, 10, 10), Rectangle(40, 0, 10, 10)),
-    ]
-    other_rects = [Rectangle(10, 0, 20, 20), Rectangle(35, 0, 20, 20)]
-    ious = iou_per_rectangle(rects, other_rects)
-    assert ious[fs(Rectangle(0, 0, 20, 20))] == float(10) / 30
-    assert ious[fs(Rectangle(10, 0, 30, 20))] == float(25) / 45
-    assert (
-        ious[fs(Rectangle(40, 10, 10, 10), Rectangle(40, 0, 10, 10))] == float(10) / 20
-    )
-
-
 def test_compute_iou_per_rectangle_set():
     regions = [
         fs(Rectangle(0, 0, 20, 20)),
@@ -244,7 +226,7 @@ def test_compute_iou_per_rectangle_set():
 
 def test_rectangle_precision_recall():
     expected = [fs(Rectangle(0, 0, 20, 20)), fs(Rectangle(10, 0, 30, 20))]
-    actual = [Rectangle(10, 0, 20, 20), Rectangle(35, 0, 20, 20)]
+    actual = [fs(Rectangle(10, 0, 20, 20)), fs(Rectangle(35, 0, 20, 20))]
     # The threshold value is set to the level where rectangle 1 in 'expected' does not have a
     # a match in 'actual', and rectangle 2 in 'expected' only has a match if you consider
     # its overlap with *all* rectangles in 'actual'.
