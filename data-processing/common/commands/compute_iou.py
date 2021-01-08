@@ -1,12 +1,15 @@
 import logging
 import os.path
+from collections import defaultdict
 from dataclasses import dataclass
 from typing import Dict, FrozenSet, Iterator, List, Tuple
 
 from common import directories, file_utils
 from common.bounding_box import compute_accuracy, iou, iou_per_rectangle, sum_areas
 from common.commands.database import DatabaseReadCommand
-from common.models import Annotation, Paper
+from common.models import BoundingBox as BoundingBoxModel
+from common.models import Entity as EntityModel
+from common.models import Paper
 from common.types import ArxivId, BoundingBox, FloatRectangle
 
 CitationKey = str
@@ -15,7 +18,7 @@ S2Id = str
 
 
 @dataclass(frozen=True)
-class EntityKeyPair:
+class EntityKeys:
     pipeline_key: str
     " Name of entity in the pipeline output data directory. "
 
@@ -89,34 +92,39 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
 
             actual: Dict[
                 Tuple[PageNumber, EntityType], List[FrozenSet[FloatRectangle]]
-            ] = {}
+            ] = defaultdict(list)
 
-            entity_types = [
-                EntityKeyPair("citations", "citation"),
-                EntityKeyPair("equations", "equation"),
-                EntityKeyPair("equation-tokens", "symbol"),
+            entity_keys = [
+                EntityKeys("citations", "citation"),
+                EntityKeys("equations", "equation"),
+                EntityKeys("symbols", "symbol"),
+                EntityKeys("sentences", "sentence"),
             ]
-            for type_ in entity_types:
-                entity_locations = file_utils.load_hue_locations(
-                    arxiv_id, type_.pipeline_key
-                )
+
+            # Load the bounding boxes found by the pipeline from local storage.
+            for keys in entity_keys:
+                pipeline_key = keys.pipeline_key
+                database_key = keys.database_key
+
+                entity_locations = file_utils.load_locations(arxiv_id, pipeline_key)
                 if entity_locations is None:
                     continue
+
                 for bounding_boxes in entity_locations.values():
                     # Entities may cross pages. For instance, citations may be detected on multiple
                     # pages, as we give all instances of a citation for the same reference the same
                     # color. Here, we group entity bounding boxes by page so that we know what
                     # truth bounding boxes to compare them to.
-                    by_page: Dict[PageNumber, List[BoundingBox]] = {}
+                    # TODO(andrewhead): I don't think it's quite right to lump all of these bounding
+                    # boxes together. I think they should be grouped. Start by making actual and
+                    # expected into lists of sets of rectangles.
+                    assert False
+                    by_page: Dict[PageNumber, List[BoundingBox]] = defaultdict(list)
                     for box in bounding_boxes:
-                        if not box.page in by_page:
-                            by_page[box.page] = []
                         by_page[box.page].append(box)
 
                     for page, page_boxes in by_page.items():
-                        key = (page, type_.database_key)
-                        if key not in actual:
-                            actual[key] = []
+                        key = (page, database_key)
                         rectangles = frozenset(
                             [
                                 FloatRectangle(b.left, b.top, b.width, b.height)
@@ -128,28 +136,32 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
                         # appearances of the citation together as 'one citation'.
                         actual[key].append(rectangles)
 
-            annotation_models = (
-                Annotation.select().join(Paper).where(Paper.arxiv_id == arxiv_id)
+            # Load gold bounding boxes from the database.
+            entity_models = (
+                EntityModel.select()
+                .join(Paper)
+                .join(BoundingBoxModel)
+                .where(Paper.arxiv_id == arxiv_id)
             )
-            expected: Dict[Tuple[PageNumber, EntityType], List[FloatRectangle]] = {}
-            for annotation in annotation_models:
-                key = (annotation.page, annotation.type)
-                if key not in expected:
-                    expected[key] = []
+            expected: Dict[
+                Tuple[PageNumber, EntityType], List[FloatRectangle]
+            ] = defaultdict(list)
+            for entity in entity_models:
+                key = (entity.page, entity.type)
+                assert False
+                # TODO(andrewhead): Will also ideally group these by entity ID too.
                 expected[key].append(
                     FloatRectangle(
-                        annotation.left,
-                        annotation.top,
-                        annotation.width,
-                        annotation.height,
+                        entity.left, entity.top, entity.width, entity.height,
                     )
                 )
 
             for key in expected:
                 page_number, entity_type = key
                 if key not in actual:
-                    logging.warning(
-                        "No bounding boxes found on page %d of paper %s with type %s. Won't be able to compute accuracy for this page.",
+                    logging.warning(  # pylint: disable=logging-not-lazy
+                        "No bounding boxes found on page %d of paper %s with type %s. Won't be "
+                        + "able to compute accuracy for this page.",
                         page_number,
                         arxiv_id,
                         entity_type,

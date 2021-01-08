@@ -2,7 +2,6 @@ import os.path
 from typing import FrozenSet
 
 import cv2
-
 from common.bounding_box import (
     cluster_boxes,
     compute_accuracy,
@@ -10,6 +9,7 @@ from common.bounding_box import (
     intersect,
     iou,
     iou_per_rectangle,
+    iou_per_region,
     subtract,
     subtract_multiple,
     subtract_multiple_from_multiple,
@@ -18,6 +18,7 @@ from common.bounding_box import (
 from common.types import BoundingBox
 from common.types import FloatRectangle as Rectangle
 from common.types import Rectangle as IntRectangle
+
 from tests.util import get_test_path
 
 
@@ -208,7 +209,7 @@ def fs(*rects: Rectangle) -> FrozenSet[Rectangle]:
     return frozenset(rects)
 
 
-def test_compute_iou_per_rectangle_set():
+def test_compute_iou_per_rectangle():
     # There's a 10px-wide overlap between rect1 and rect2; the algorithm for IOU should use the
     # union of the areas of the input rects.
     rects = [
@@ -223,6 +224,22 @@ def test_compute_iou_per_rectangle_set():
     assert (
         ious[fs(Rectangle(40, 10, 10, 10), Rectangle(40, 0, 10, 10))] == float(10) / 20
     )
+
+
+def test_compute_iou_per_rectangle_set():
+    regions = [
+        fs(Rectangle(0, 0, 20, 20)),
+        fs(Rectangle(10, 0, 30, 20)),
+        fs(Rectangle(40, 0, 10, 10)),
+    ]
+    other_regions = [
+        fs(Rectangle(0, 0, 10, 10), Rectangle(10, 0, 10, 10)),  # overlaps 1
+        fs(Rectangle(10, 0, 20, 20)),  # overlaps both 1 and 2
+    ]
+    ious = iou_per_region(regions, other_regions, minimum_iou=0.25)
+    assert len(ious) == 2
+    assert ious[(regions[0], other_regions[0])] == float(10) / 20
+    assert ious[(regions[1], other_regions[1])] == float(20) / 30
 
 
 def test_rectangle_precision_recall():
