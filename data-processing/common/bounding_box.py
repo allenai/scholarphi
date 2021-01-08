@@ -13,6 +13,7 @@ from typing import (
 
 import cv2
 import numpy as np
+from scipy.optimize import linear_sum_assignment
 
 from common.types import (
     BoundingBox,
@@ -530,6 +531,63 @@ def iou_per_rectangle(
         ious[rect_set] = rect_iou
 
     return ious
+
+
+def iou_per_region(
+    regions: Iterable[FrozenSet[FloatRectangle]],
+    other_regions: Iterable[FrozenSet[FloatRectangle]],
+    minimum_iou: float = 0.5,
+) -> Dict[Tuple[FrozenSet[FloatRectangle], FrozenSet[FloatRectangle]], float]:
+    """
+    Match all regions in one set to regions in another set. Each rectangle set in
+    'rects' can me matched to only one rectangle set in 'other_rects' and vice versa. This
+    function solves the unbalanced assignment problem
+    https://en.wikipedia.org/wiki/Assignment_problem#Unbalanced_assignment: it is
+    guaranteed to maximum number of regions in the two sets will be matched. Two regions
+    are considered as matching if they surpass the 'minimum_iou'.
+    """
+
+    regions_list = list(regions)
+    other_regions_list = list(other_regions)
+
+    num_regions = len(regions_list)
+    num_other_regions = len(other_regions_list)
+    ious = np.zeros((num_regions, num_other_regions))
+
+    for i, region1 in enumerate(regions_list):
+        for j, region2 in enumerate(other_regions_list):
+
+            intersecting = False
+            for rect in region1:
+                for other_rect in region2:
+                    if are_intersecting(rect, other_rect):
+                        intersecting = True
+                        break
+
+            if not intersecting:
+                continue
+
+            pair_iou = iou(region1, region2)
+            if pair_iou > minimum_iou:
+                ious[i, j] = pair_iou
+
+    # Assign maximum number of regions in one set to the other.
+    overlaps = np.where(ious > 0, 1, ious)
+    cost = 1 - overlaps
+    match_rows, match_cols = linear_sum_assignment(cost)
+
+    matches = {}
+    for i, j in zip(match_rows, match_cols):
+        if overlaps[i, j]:
+            matches[(regions_list[i], other_regions_list[j])] = ious[i, j]
+
+    logging.debug(
+        "Matched %d regions from sets of sizes %d and %d",
+        len(matches),
+        num_regions,
+        num_other_regions,
+    )
+    return matches
 
 
 def compute_accuracy(

@@ -11,30 +11,18 @@ import logging
 import os
 import re
 import shutil
+from collections import defaultdict
 from typing import Any, Dict, Iterator, List, Optional, Type, TypeVar
 
 from common import directories
+from common.colorize_tex import EntityId
 from common.string import JournaledString
-from common.types import (
-    ArxivId,
-    BoundingBox,
-    CompilationResult,
-    Equation,
-    EquationId,
-    FileContents,
-    HueIteration,
-    HueLocationInfo,
-    Path,
-    SerializableChild,
-    SerializableSymbol,
-    SerializableSymbolToken,
-    SerializableToken,
-    Symbol,
-    SymbolId,
-    SymbolWithId,
-    Token,
-    TokenId,
-)
+from common.types import (ArxivId, BoundingBox, CompilationResult, Equation,
+                          EquationId, FileContents, HueIteration,
+                          HueLocationInfo, Path, SerializableChild,
+                          SerializableSymbol, SerializableSymbolToken,
+                          SerializableToken, Symbol, SymbolId, SymbolWithId,
+                          Token, TokenId)
 
 Contents = str
 Encoding = str
@@ -488,16 +476,15 @@ def save_compilation_results(path: Path, result: CompilationResult) -> None:
         stderr_file.write(result.stderr)
 
 
-def load_hue_locations(
+def load_locations(
     arxiv_id: ArxivId, entity_name: str
-) -> Optional[Dict[HueIteration, List[BoundingBox]]]:
+) -> Optional[Dict[EntityId, List[BoundingBox]]]:
     """
-    Load bounding boxes for each entity. Entities are indexes by the hue they were colored and
-    the iteraction of coloring in which they were assigned that hue. Entities can have multiple
-    bounding boxes (e.g., if they are split over multiple lines).
+    Load bounding boxes for each entity. Entities can have multiple bounding boxes (as will
+    be the case if they are split over multiple lines).
     """
 
-    boxes_by_hue_iteration: Dict[HueIteration, List[BoundingBox]] = {}
+    boxes_by_entity_id: Dict[EntityId, List[BoundingBox]] = defaultdict(list)
     bounding_boxes_path = os.path.join(
         directories.arxiv_subdir(f"{entity_name}-locations", arxiv_id),
         "entity_locations.csv",
@@ -518,18 +505,15 @@ def load_hue_locations(
             width=hue_info.width,
             height=hue_info.height,
         )
-        hue_iteration = HueIteration(hue_info.hue, hue_info.iteration)
-        if hue_iteration not in boxes_by_hue_iteration:
-            boxes_by_hue_iteration[hue_iteration] = []
-        boxes_by_hue_iteration[hue_iteration].append(box)
+        boxes_by_entity_id[hue_info.entity_id].append(box)
 
-    return boxes_by_hue_iteration
+    return boxes_by_entity_id
 
 
-def load_citation_hue_locations(
+def load_citation_locations(
     arxiv_id: ArxivId,
-) -> Optional[Dict[HueIteration, List[BoundingBox]]]:
-    return load_hue_locations(arxiv_id, "citations")
+) -> Optional[Dict[EntityId, List[BoundingBox]]]:
+    return load_locations(arxiv_id, "citations")
 
 
 def load_equation_token_locations(

@@ -1,18 +1,12 @@
 import logging
 import os.path
 from dataclasses import dataclass
-from typing import Dict, Iterator, List
+from typing import Iterator, List
 
 from common import directories, file_utils
 from common.bounding_box import cluster_boxes
 from common.commands.base import ArxivBatchCommand
-from common.types import (
-    ArxivId,
-    BoundingBox,
-    CitationLocation,
-    ColorizationRecord,
-    HueIteration,
-)
+from common.types import ArxivId, BoundingBox, CitationLocation
 
 
 @dataclass(frozen=True)
@@ -38,40 +32,14 @@ class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
 
         for arxiv_id in self.arxiv_ids:
 
-            output_dir = directories.arxiv_subdir("citation-cluster-locations", arxiv_id)
+            output_dir = directories.arxiv_subdir(
+                "citation-cluster-locations", arxiv_id
+            )
             file_utils.clean_directory(output_dir)
 
-            boxes_by_hue_iteration = file_utils.load_citation_hue_locations(arxiv_id)
-            if boxes_by_hue_iteration is None:
+            boxes_by_citation_key = file_utils.load_citation_locations(arxiv_id)
+            if boxes_by_citation_key is None:
                 continue
-
-            boxes_by_citation_key: Dict[str, List[BoundingBox]] = {}
-            for iteration in directories.iteration_names(
-                "sources-with-colorized-citations", arxiv_id
-            ):
-                citation_hues_path = os.path.join(
-                    directories.iteration(
-                        "sources-with-colorized-citations", arxiv_id, iteration,
-                    ),
-                    "entity_hues.csv",
-                )
-                if not os.path.exists(citation_hues_path):
-                    logging.warning(
-                        "Could not find citation hue colors for %s iteration %s. Skipping",
-                        arxiv_id,
-                        iteration,
-                    )
-                    continue
-                for record in file_utils.load_from_csv(
-                    citation_hues_path, ColorizationRecord
-                ):
-                    key = record.entity_id
-                    if key not in boxes_by_citation_key:
-                        boxes_by_citation_key[key] = []
-                    hue_iteration = HueIteration(record.hue, iteration)
-                    boxes_by_citation_key[key].extend(
-                        boxes_by_hue_iteration.get(hue_iteration, [])
-                    )
 
             for key, boxes in boxes_by_citation_key.items():
                 yield LocationTask(
@@ -98,7 +66,9 @@ class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
                 )
 
     def save(self, item: LocationTask, result: CitationLocation) -> None:
-        output_dir = directories.arxiv_subdir("citation-cluster-locations", item.arxiv_id)
+        output_dir = directories.arxiv_subdir(
+            "citation-cluster-locations", item.arxiv_id
+        )
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
