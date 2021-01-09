@@ -4,12 +4,12 @@ import re
 from typing import Dict, Optional, Set
 
 from common import directories, file_utils
-from common.types import ArxivId, CitationLocation
+from common.types import ArxivId, EntityLocationInfo
 
 CitationKey = str
 LocationIndex = int
 
-Citations = Dict[CitationKey, Dict[LocationIndex, Set[CitationLocation]]]
+Citations = Dict[CitationKey, Dict[LocationIndex, Set[EntityLocationInfo]]]
 
 
 def extract_ngrams(s: str, n: int = 3) -> Set[str]:
@@ -32,18 +32,23 @@ def ngram_sim(s1: str, s2: str) -> float:
 def load_located_citations(arxiv_id: ArxivId) -> Optional[Citations]:
     citation_locations: Citations = {}
     citation_locations_path = os.path.join(
-        directories.arxiv_subdir("citation-cluster-locations", arxiv_id),
-        "citation_locations.csv",
+        directories.arxiv_subdir("citations-locations", arxiv_id),
+        "entity_locations.csv",
     )
     if not os.path.exists(citation_locations_path):
         logging.warning("Could not find citation locations for %s. Skipping", arxiv_id)
         return None
 
-    for location in file_utils.load_from_csv(citation_locations_path, CitationLocation):
-        if not location.key in citation_locations:
-            citation_locations[location.key] = {}
-        if not location.cluster_index in citation_locations[location.key]:
-            citation_locations[location.key][location.cluster_index] = set()
-        citation_locations[location.key][location.cluster_index].add(location)
+    for location in file_utils.load_from_csv(
+        citation_locations_path, EntityLocationInfo
+    ):
+        id_tokens = location.entity_id.rsplit("-", maxsplit=1)
+        key = id_tokens[0]
+        cluster_index = int(id_tokens[1])
+        if key not in citation_locations:
+            citation_locations[key] = {}
+        if not cluster_index in citation_locations[key]:
+            citation_locations[key][cluster_index] = set()
+        citation_locations[key][cluster_index].add(location)
 
     return citation_locations

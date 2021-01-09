@@ -565,16 +565,10 @@ TokenLocations = Dict[TokenId, List[BoundingBox]]
 
 
 @dataclass(frozen=True)
-class CitationLocation(BoundingBox):
-    key: str
-    cluster_index: int
-
-
-@dataclass(frozen=True)
 class CitationData:
     arxiv_id: ArxivId
     s2_id: S2Id
-    citation_locations: Dict[str, Dict[int, Set[CitationLocation]]]
+    citation_locations: Dict[str, Dict[int, Set[EntityLocationInfo]]]
     key_s2_ids: Dict[str, str]
     s2_data: Dict[S2Id, SerializableReference]
 

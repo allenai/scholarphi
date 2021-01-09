@@ -17,12 +17,27 @@ from typing import Any, Dict, Iterator, List, Optional, Type, TypeVar
 from common import directories
 from common.colorize_tex import EntityId
 from common.string import JournaledString
-from common.types import (ArxivId, BoundingBox, CompilationResult, Equation,
-                          EquationId, FileContents, HueIteration,
-                          HueLocationInfo, Path, SerializableChild,
-                          SerializableSymbol, SerializableSymbolToken,
-                          SerializableToken, Symbol, SymbolId, SymbolWithId,
-                          Token, TokenId)
+from common.types import (
+    ArxivId,
+    BoundingBox,
+    CompilationResult,
+    EntityLocationInfo,
+    Equation,
+    EquationId,
+    FileContents,
+    HueIteration,
+    HueLocationInfo,
+    Path,
+    SerializableChild,
+    SerializableSymbol,
+    SerializableSymbolToken,
+    SerializableToken,
+    Symbol,
+    SymbolId,
+    SymbolWithId,
+    Token,
+    TokenId,
+)
 
 Contents = str
 Encoding = str
@@ -497,7 +512,7 @@ def load_locations(
         )
         return None
 
-    for hue_info in load_from_csv(bounding_boxes_path, HueLocationInfo):
+    for hue_info in load_from_csv(bounding_boxes_path, EntityLocationInfo):
         box = BoundingBox(
             page=hue_info.page,
             left=hue_info.left,
@@ -510,10 +525,10 @@ def load_locations(
     return boxes_by_entity_id
 
 
-def load_citation_locations(
+def load_citation_fragment_locations(
     arxiv_id: ArxivId,
 ) -> Optional[Dict[EntityId, List[BoundingBox]]]:
-    return load_locations(arxiv_id, "citations")
+    return load_locations(arxiv_id, "citation-fragments")
 
 
 def load_equation_token_locations(
