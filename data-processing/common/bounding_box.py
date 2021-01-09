@@ -503,11 +503,14 @@ def iou(
     return intersection_area / union_area
 
 
+RegionMatches = Dict[Tuple[FrozenSet[FloatRectangle], FrozenSet[FloatRectangle]], float]
+
+
 def iou_per_region(
     regions: Iterable[FrozenSet[FloatRectangle]],
     other_regions: Iterable[FrozenSet[FloatRectangle]],
     minimum_iou: float = 0.5,
-) -> Dict[Tuple[FrozenSet[FloatRectangle], FrozenSet[FloatRectangle]], float]:
+) -> RegionMatches:
     """
     Match all regions in one set to regions in another set. Each rectangle set in
     'regions' can me matched to only one rectangle set in 'other_regions' and vice versa. This

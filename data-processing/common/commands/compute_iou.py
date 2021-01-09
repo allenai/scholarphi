@@ -2,10 +2,11 @@ import logging
 import os.path
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Dict, FrozenSet, Iterator, List, Tuple
+from typing import Dict, FrozenSet, Iterator, List, Optional, Tuple
 
 from common import directories, file_utils
-from common.bounding_box import compute_accuracy, iou, iou_per_rectangle, sum_areas
+from common.bounding_box import (RegionMatches, compute_accuracy, iou,
+                                 iou_per_region, sum_areas)
 from common.commands.database import DatabaseReadCommand
 from common.models import BoundingBox as BoundingBoxModel
 from common.models import Entity as EntityModel
@@ -26,11 +27,17 @@ class EntityKeys:
     " Name of entity in the database models. "
 
 
+PageNumber = int
+EntityType = str
+Regions = List[FrozenSet[FloatRectangle]]
+RegionsByPageAndType = Dict[Tuple[PageNumber, EntityType], Regions]
+
+
 @dataclass(frozen=True)
 class IouJob:
     arxiv_id: ArxivId
-    actual: List[FrozenSet[FloatRectangle]]
-    expected: List[FloatRectangle]
+    actual: Regions
+    expected: Regions
     page: int
     entity_type: str
 
@@ -40,7 +47,7 @@ class IouResults:
     page_iou: float
     precision: float
     recall: float
-    rectangle_ious: Dict[FrozenSet[FloatRectangle], float]
+    matches: RegionMatches
 
 
 @dataclass(frozen=True)
@@ -64,10 +71,14 @@ class EntityMatchInfo:
     rect_set: str
     sum_areas: float
     rectangle_ious: str
+    match: Optional[str]
 
 
-PageNumber = int
-EntityType = str
+def group_by_page(boxes: List[BoundingBox]) -> Dict[PageNumber, List[BoundingBox]]:
+    by_page: Dict[PageNumber, List[BoundingBox]] = defaultdict(list)
+    for box in boxes:
+        by_page[box.page].append(box)
+    return by_page
 
 
 class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
@@ -90,10 +101,6 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
             output_root = directories.arxiv_subdir("bounding-box-accuracies", arxiv_id)
             file_utils.clean_directory(output_root)
 
-            actual: Dict[
-                Tuple[PageNumber, EntityType], List[FrozenSet[FloatRectangle]]
-            ] = defaultdict(list)
-
             entity_keys = [
                 EntityKeys("citations", "citation"),
                 EntityKeys("equations", "equation"),
@@ -102,6 +109,7 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
             ]
 
             # Load the bounding boxes found by the pipeline from local storage.
+            actual: RegionsByPageAndType = defaultdict(list)
             for keys in entity_keys:
                 pipeline_key = keys.pipeline_key
                 database_key = keys.database_key
@@ -115,14 +123,7 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
                     # pages, as we give all instances of a citation for the same reference the same
                     # color. Here, we group entity bounding boxes by page so that we know what
                     # truth bounding boxes to compare them to.
-                    # TODO(andrewhead): I don't think it's quite right to lump all of these bounding
-                    # boxes together. I think they should be grouped. Start by making actual and
-                    # expected into lists of sets of rectangles.
-                    assert False
-                    by_page: Dict[PageNumber, List[BoundingBox]] = defaultdict(list)
-                    for box in bounding_boxes:
-                        by_page[box.page].append(box)
-
+                    by_page = group_by_page(bounding_boxes)
                     for page, page_boxes in by_page.items():
                         key = (page, database_key)
                         rectangles = frozenset(
@@ -131,30 +132,34 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
                                 for b in page_boxes
                             ]
                         )
-                        # XXX(andrewhead): we may want to unpack citations; a citation may appear
+                        # XXX(andrewhead): we may want to split citations; a citation may appear
                         # multiple times on the same page, and we're currently grouping all of those
                         # appearances of the citation together as 'one citation'.
                         actual[key].append(rectangles)
 
             # Load gold bounding boxes from the database.
+            expected: RegionsByPageAndType = defaultdict(list)
             entity_models = (
                 EntityModel.select()
                 .join(Paper)
                 .join(BoundingBoxModel)
                 .where(Paper.arxiv_id == arxiv_id)
             )
-            expected: Dict[
-                Tuple[PageNumber, EntityType], List[FloatRectangle]
-            ] = defaultdict(list)
             for entity in entity_models:
-                key = (entity.page, entity.type)
-                assert False
-                # TODO(andrewhead): Will also ideally group these by entity ID too.
-                expected[key].append(
-                    FloatRectangle(
-                        entity.left, entity.top, entity.width, entity.height,
+                bounding_boxes = [
+                    BoundingBox(box.left, box.top, box.width, box.height, box.page)
+                    for box in entity.bounding_boxes
+                ]
+                by_page = group_by_page(bounding_boxes)
+                for page, page_boxes in by_page.items():
+                    key = (entity.page, entity.type)
+                    rectangles = frozenset(
+                        [
+                            FloatRectangle(b.left, b.top, b.width, b.height)
+                            for b in page_boxes
+                        ]
                     )
-                )
+                    expected[key].append(rectangles)
 
             for key in expected:
                 page_number, entity_type = key
@@ -172,10 +177,15 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
                 )
 
     def process(self, job: IouJob) -> Iterator[IouResults]:
+
+        # Compute total overlap between all expected and all actual bounding boxes.
         all_actual_rects = [r for rect_set in job.actual for r in rect_set]
-        page_iou = iou(all_actual_rects, job.expected)
+        all_expected_rects = [r for rect_set in job.expected for r in rect_set]
+        page_iou = iou(all_actual_rects, all_expected_rects)
+
+        # Compute accuracy per region (i.e., per entity).
         precision, recall = compute_accuracy(job.actual, job.expected, minimum_iou=0.35)
-        rectangle_ious = iou_per_rectangle(job.actual, job.expected)
+        matches = iou_per_region(job.actual, job.expected)
         logging.debug(
             "Computed accuracy for paper %s page %d entity type %s: Precision: %f, Recall: %f, Page IOU: %f",
             job.arxiv_id,
@@ -185,7 +195,7 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
             recall,
             page_iou,
         )
-        yield IouResults(page_iou, precision, recall, rectangle_ious)
+        yield IouResults(page_iou, precision, recall, matches)
 
     def save(self, item: IouJob, result: IouResults) -> None:
 
@@ -214,6 +224,15 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
 
         entity_iou_path = os.path.join(bounding_box_accuracies_path, "entity_ious.csv")
         for i, rect_set in enumerate(item.actual):
+            match_iou = 0.
+            match = None
+
+            for (region, other_region), pair_iou in result.matches.items():
+                if region == rect_set:
+                    match_iou = pair_iou
+                    match = other_region
+                    break
+
             file_utils.append_to_csv(
                 entity_iou_path,
                 EntityMatchInfo(
@@ -223,6 +242,7 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
                     i=i,
                     rect_set=str(rect_set),
                     sum_areas=sum_areas(rect_set),
-                    rectangle_ious=str(result.rectangle_ious[rect_set]),
+                    rectangle_ious=str(match_iou),
+                    match=str(match) if match is None else None,
                 ),
             )
