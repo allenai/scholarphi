@@ -6,7 +6,7 @@ from typing import Iterator, List
 from common import directories, file_utils
 from common.bounding_box import cluster_boxes
 from common.commands.base import ArxivBatchCommand
-from common.types import ArxivId, BoundingBox, CitationLocation
+from common.types import ArxivId, BoundingBox, EntityLocationInfo
 
 
 @dataclass(frozen=True)
@@ -16,7 +16,7 @@ class LocationTask:
     citation_key: str
 
 
-class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
+class LocateCitations(ArxivBatchCommand[LocationTask, EntityLocationInfo]):
     @staticmethod
     def get_name() -> str:
         return "locate-citations"
@@ -26,18 +26,18 @@ class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
         return "Find locations of citations. Requires 'locate-citation-hues' to have been run."
 
     def get_arxiv_ids_dirkey(self) -> str:
-        return "citations-locations"
+        return "citation-fragments-locations"
 
     def load(self) -> Iterator[LocationTask]:
 
         for arxiv_id in self.arxiv_ids:
 
-            output_dir = directories.arxiv_subdir(
-                "citation-cluster-locations", arxiv_id
-            )
+            output_dir = directories.arxiv_subdir("citations-locations", arxiv_id)
             file_utils.clean_directory(output_dir)
 
-            boxes_by_citation_key = file_utils.load_citation_locations(arxiv_id)
+            boxes_by_citation_key = file_utils.load_citation_fragment_locations(
+                arxiv_id
+            )
             if boxes_by_citation_key is None:
                 continue
 
@@ -46,7 +46,7 @@ class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
                     arxiv_id=arxiv_id, citation_key=key, boxes=boxes,
                 )
 
-    def process(self, item: LocationTask) -> Iterator[CitationLocation]:
+    def process(self, item: LocationTask) -> Iterator[EntityLocationInfo]:
         for i, cluster in enumerate(cluster_boxes(item.boxes)):
             logging.debug(
                 "Found cluster of %d box(es) for citations of key %s for paper %s",
@@ -55,9 +55,9 @@ class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
                 item.arxiv_id,
             )
             for box in cluster:
-                yield CitationLocation(
-                    key=item.citation_key,
-                    cluster_index=i,
+                yield EntityLocationInfo(
+                    tex_path="N/A",
+                    entity_id=f"{item.citation_key}-{i}",
                     page=box.page,
                     left=box.left,
                     top=box.top,
@@ -65,12 +65,10 @@ class LocateCitations(ArxivBatchCommand[LocationTask, CitationLocation]):
                     height=box.height,
                 )
 
-    def save(self, item: LocationTask, result: CitationLocation) -> None:
-        output_dir = directories.arxiv_subdir(
-            "citation-cluster-locations", item.arxiv_id
-        )
+    def save(self, item: LocationTask, result: EntityLocationInfo) -> None:
+        output_dir = directories.arxiv_subdir("citations-locations", item.arxiv_id)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        locations_path = os.path.join(output_dir, "citation_locations.csv")
+        locations_path = os.path.join(output_dir, "entity_locations.csv")
         file_utils.append_to_csv(locations_path, result)
