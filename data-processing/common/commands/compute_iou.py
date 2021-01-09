@@ -5,10 +5,14 @@ from dataclasses import dataclass
 from typing import Dict, FrozenSet, Iterator, List, Optional, Tuple
 
 from common import directories, file_utils
-from common.bounding_box import (RegionMatches, compute_accuracy, iou,
-                                 iou_per_region, sum_areas)
+from common.bounding_box import (
+    RegionMatches,
+    compute_accuracy,
+    iou,
+    iou_per_region,
+    sum_areas,
+)
 from common.commands.database import DatabaseReadCommand
-from common.models import BoundingBox as BoundingBoxModel
 from common.models import Entity as EntityModel
 from common.models import Paper
 from common.types import ArxivId, BoundingBox, FloatRectangle
@@ -140,19 +144,17 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
             # Load gold bounding boxes from the database.
             expected: RegionsByPageAndType = defaultdict(list)
             entity_models = (
-                EntityModel.select()
-                .join(Paper)
-                .join(BoundingBoxModel)
-                .where(Paper.arxiv_id == arxiv_id)
+                EntityModel.select().join(Paper).where(Paper.arxiv_id == arxiv_id)
             )
             for entity in entity_models:
+                print("Entity: ", entity.id)
                 bounding_boxes = [
                     BoundingBox(box.left, box.top, box.width, box.height, box.page)
                     for box in entity.bounding_boxes
                 ]
                 by_page = group_by_page(bounding_boxes)
                 for page, page_boxes in by_page.items():
-                    key = (entity.page, entity.type)
+                    key = (page, entity.type)
                     rectangles = frozenset(
                         [
                             FloatRectangle(b.left, b.top, b.width, b.height)
@@ -224,7 +226,7 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
 
         entity_iou_path = os.path.join(bounding_box_accuracies_path, "entity_ious.csv")
         for i, rect_set in enumerate(item.actual):
-            match_iou = 0.
+            match_iou = 0.0
             match = None
 
             for (region, other_region), pair_iou in result.matches.items():
