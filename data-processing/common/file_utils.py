@@ -25,7 +25,6 @@ from common.types import (
     Equation,
     EquationId,
     FileContents,
-    HueIteration,
     HueLocationInfo,
     Path,
     SerializableChild,
