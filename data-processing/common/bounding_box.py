@@ -564,8 +564,8 @@ def iou_per_region(
 
 
 def compute_accuracy(
-    actual: Iterable[FrozenSet[FloatRectangle]],
-    expected: Iterable[FrozenSet[FloatRectangle]],
+    actual: List[FrozenSet[FloatRectangle]],
+    expected: List[FrozenSet[FloatRectangle]],
     minimum_iou: float = 0.5,
 ) -> Tuple[float, float]:
 
