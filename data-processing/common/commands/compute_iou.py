@@ -1,5 +1,6 @@
 import logging
 import os.path
+from argparse import ArgumentParser
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Dict, FrozenSet, Iterator, List, Optional, Tuple
@@ -14,7 +15,7 @@ from common.bounding_box import (
 )
 from common.commands.database import DatabaseReadCommand
 from common.models import Entity as EntityModel
-from common.models import Paper
+from common.models import Paper, Version
 from common.types import ArxivId, BoundingBox, FloatRectangle
 
 CitationKey = str
@@ -96,6 +97,18 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
             "Compute intersection-over-union for bounding boxes extracted from papers."
         )
 
+    @staticmethod
+    def init_parser(parser: ArgumentParser) -> None:
+        super(ComputeIou, ComputeIou).init_parser(parser)
+        parser.add_argument(
+            "--data-version",
+            type=int,
+            help=(
+                "Version number of the gold (expected) data in the database. Defaults to the "
+                + "most recent version."
+            ),
+        )
+
     def get_arxiv_ids_dirkey(self) -> str:
         return "sources"
 
@@ -143,11 +156,32 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
 
             # Load gold bounding boxes from the database.
             expected: RegionsByPageAndType = defaultdict(list)
+
+            # Discover the most recent version of data in the database for the paper.
+            version_index = self.args.data_version
+            if version_index is None:
+                version = (
+                    Version.select()
+                    .join(Paper)
+                    .where(Paper.arxiv_id == arxiv_id)
+                    .first()
+                )
+                if version is None:
+                    logging.warning(  # pylint: disable=logging-not-lazy
+                        "No entity data was found for paper %s. The accuracy for this "
+                        + "paper will not be computed.",
+                        arxiv_id,
+                    )
+                    continue
+                version_index = int(version.index)
+
+            # Load bounding boxes from rows in the tables.
             entity_models = (
-                EntityModel.select().join(Paper).where(Paper.arxiv_id == arxiv_id)
+                EntityModel.select()
+                .join(Paper)
+                .where(EntityModel.version == version_index, Paper.arxiv_id == arxiv_id)
             )
             for entity in entity_models:
-                print("Entity: ", entity.id)
                 bounding_boxes = [
                     BoundingBox(box.left, box.top, box.width, box.height, box.page)
                     for box in entity.bounding_boxes
@@ -245,6 +279,6 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
                     rect_set=str(rect_set),
                     sum_areas=sum_areas(rect_set),
                     rectangle_ious=str(match_iou),
-                    match=str(match) if match is None else None,
+                    match=str(match) if match is not None else None,
                 ),
             )
