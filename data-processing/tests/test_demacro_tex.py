@@ -9,7 +9,7 @@ import posixpath
 from tempfile import TemporaryDirectory
 from typing import Dict
 
-from common.demacro_tex import locate_macro_definitions
+from common.demacro_tex import locate_macro_def_start, locate_macro_usage
 from common.types import Path, RelativePath
 
 
@@ -28,12 +28,11 @@ def test_locate_macro_definitions_simple():
         "Body text",
         "\\end{document}",
     ]
-    tex = "\n".join(tex_lines)
-    spans = locate_macro_definitions(tex=tex)
-    assert tex_lines[spans[0][0]][spans[0][1]:spans[0][2]] == "\\newcommand{\\R}"
-    assert tex_lines[spans[1][0]][spans[1][1]:spans[1][2]] == "\\renewcommand{\\vector}"
-    assert tex_lines[spans[2][0]][spans[2][1]:spans[2][2]] == "\\newcommand{\\avector}"
-    assert tex_lines[spans[3][0]][spans[3][1]:spans[3][2]] == "\\DeclareMathOperator*{\\minimize}"
+    spans = locate_macro_def_start(tex_lines=tex_lines)
+    assert tex_lines[spans[0].line][spans[0].start:spans[0].end] == "\\newcommand{\\R}"
+    assert tex_lines[spans[1].line][spans[1].start:spans[1].end] == "\\renewcommand{\\vector}"
+    assert tex_lines[spans[2].line][spans[2].start:spans[2].end] == "\\newcommand{\\avector}"
+    assert tex_lines[spans[3].line][spans[3].start:spans[3].end] == "\\DeclareMathOperator*{\\minimize}"
 
 
 def test_locate_macro_definitions_skip_commented():
@@ -47,8 +46,7 @@ def test_locate_macro_definitions_skip_commented():
         "Body text",
         "\\end{document}",
     ]
-    tex = "\n".join(tex_lines)
-    spans = locate_macro_definitions(tex=tex)
+    spans = locate_macro_def_start(tex_lines=tex_lines)
     assert len(spans) == 0
 
 
