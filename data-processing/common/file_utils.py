@@ -505,7 +505,7 @@ def load_locations(
     )
     if not os.path.exists(bounding_boxes_path):
         logging.warning(
-            "Could not find bounding boxes information entity of type %s for paper %s. Skipping.",
+            "Could not find bounding boxes information for entity of type %s for paper %s. Skipping.",
             entity_name,
             arxiv_id,
         )
