@@ -14,9 +14,11 @@ from common.bounding_box import (
     sum_areas,
 )
 from common.commands.database import DatabaseReadCommand
+from common.models import BoundingBox as BoundingBoxModel
 from common.models import Entity as EntityModel
 from common.models import Paper, Version
 from common.types import ArxivId, BoundingBox, FloatRectangle
+from peewee import fn
 
 CitationKey = str
 CitationKeys = Tuple[CitationKey]
@@ -65,6 +67,7 @@ class IouAccuracySummary:
     recall: float
     num_actual: int
     num_expected: int
+    num_matches: int
 
 
 @dataclass(frozen=True)
@@ -119,10 +122,10 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
             file_utils.clean_directory(output_root)
 
             entity_keys = [
-                EntityKeys("citations", "citation"),
-                EntityKeys("equations", "equation"),
+                # EntityKeys("citations", "citation"),
+                # EntityKeys("equations", "equation"),
                 EntityKeys("symbols", "symbol"),
-                EntityKeys("sentences", "sentence"),
+                # EntityKeys("sentences", "sentence"),
             ]
 
             # Load the bounding boxes found by the pipeline from local storage.
@@ -161,10 +164,10 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
             version_index = self.args.data_version
             if version_index is None:
                 version = (
-                    Version.select()
+                    Version.select(fn.Max(Version.index))
                     .join(Paper)
                     .where(Paper.arxiv_id == arxiv_id)
-                    .first()
+                    .scalar()
                 )
                 if version is None:
                     logging.warning(  # pylint: disable=logging-not-lazy
@@ -173,22 +176,43 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
                         arxiv_id,
                     )
                     continue
-                version_index = int(version.index)
+                version_index = int(version)
 
             # Load bounding boxes from rows in the tables.
-            entity_models = (
-                EntityModel.select()
+            rows = (
+                EntityModel.select(
+                    EntityModel.id,
+                    EntityModel.type,
+                    BoundingBoxModel.left,
+                    BoundingBoxModel.top,
+                    BoundingBoxModel.width,
+                    BoundingBoxModel.height,
+                    BoundingBoxModel.page,
+                )
                 .join(Paper)
+                .switch(EntityModel)
+                .join(BoundingBoxModel)
                 .where(EntityModel.version == version_index, Paper.arxiv_id == arxiv_id)
+                .dicts()
             )
-            for entity in entity_models:
-                bounding_boxes = [
-                    BoundingBox(box.left, box.top, box.width, box.height, box.page)
-                    for box in entity.bounding_boxes
-                ]
+            boxes_by_entity_db_id: Dict[str, List[BoundingBox]] = defaultdict(list)
+            types_by_entity_db_id: Dict[str, str] = {}
+            for row in rows:
+                boxes_by_entity_db_id[row["id"]].append(
+                    BoundingBox(
+                        row["left"],
+                        row["top"],
+                        row["width"],
+                        row["height"],
+                        row["page"],
+                    )
+                )
+                types_by_entity_db_id[row["id"]] = row["type"]
+
+            for db_id, bounding_boxes in boxes_by_entity_db_id.items():
                 by_page = group_by_page(bounding_boxes)
                 for page, page_boxes in by_page.items():
-                    key = (page, entity.type)
+                    key = (page, types_by_entity_db_id[db_id])
                     rectangles = frozenset(
                         [
                             FloatRectangle(b.left, b.top, b.width, b.height)
@@ -222,7 +246,7 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
         # Compute accuracy per region (i.e., per entity).
         precision, recall = compute_accuracy(job.actual, job.expected, minimum_iou=0.35)
         matches = iou_per_region(job.actual, job.expected)
-        logging.debug(
+        logging.info(
             "Computed accuracy for paper %s page %d entity type %s: Precision: %f, Recall: %f, Page IOU: %f",
             job.arxiv_id,
             job.page,
@@ -255,6 +279,7 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
                 recall=result.recall,
                 num_actual=len(item.actual),
                 num_expected=len(item.expected),
+                num_matches=len(result.matches),
             ),
         )
 
