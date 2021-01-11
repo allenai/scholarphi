@@ -107,8 +107,8 @@ def expand_tex(
     # many more had '\input' commands). Only 1 used an '\include' macro to read in text.
     # The rest of the files used '\include' macros to include macros and usepackage statements.
     include_patterns = [
-        Pattern("include_braces", r"\\include\s*{([^}]+)}"),
-        Pattern("include", r"\\include\s+(\S+)"),
+        # Pattern("include_braces", r"\\include\s*{([^}]+)}"),
+        # Pattern("include", r"\\include\s+(\S+)"),
     ]
     endinput_pattern = Pattern("endinput", r"\\endinput( |\t|\b|\{.*?\})")
     patterns = input_patterns + include_patterns + [endinput_pattern]
