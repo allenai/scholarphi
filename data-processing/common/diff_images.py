@@ -24,7 +24,7 @@ def diff_images_in_raster_dirs(
     compilation_output_files: List[OutputFile],
     comparison_rasters_base_dir: RelativePath,
     diffs_output_dir: RelativePath,
-    arxiv_id: ArxivId
+    arxiv_id: ArxivId,
 ) -> bool:
     """
     Diff images from a modified rendering of TeX files versus the original rendering.
@@ -44,6 +44,17 @@ def diff_images_in_raster_dirs(
     for output_file in compilation_output_files:
         relative_file_path = output_file.path
         original_images_path = os.path.join(original_images_dir, relative_file_path)
+        if not os.path.exists(original_images_path):
+            logging.warning(  # pylint: disable=logging-not-lazy
+                "Could not find expected directory of images from the compiled original sources "
+                + "at %s. One cause of this error is when the original sources have multiple main "
+                + "TeX files merged into one synthetic file, and the modified sources fail to "
+                + "compile, resulting in a different main output file. Check the modified sources "
+                + "for paper %s for errors.",
+                original_images_path,
+                arxiv_id,
+            )
+            return False
         for img_name in os.listdir(original_images_path):
             original_img_path = os.path.join(original_images_path, img_name)
             modified_img_path = os.path.join(
