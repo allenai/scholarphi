@@ -3,18 +3,18 @@
  * in the database. Correspond to schemas in 'data-processing/common/models.py'
  */
 
-interface PaperRow {
+export interface PaperRow {
   s2_id: string;
   arxiv_id: string;
 }
 
-interface VersionRow {
+export interface VersionRow {
   id: number;
   paper_id: string;
   index: number;
 }
 
-interface EntityRow {
+export interface EntityRow {
   paper_id: string;
   id: number;
   version: number;
@@ -22,9 +22,9 @@ interface EntityRow {
   source: string;
 }
 
-type EntityRowUpdates = Omit<EntityRow, "id" | "type" | "paper_id">;
+export type EntityRowUpdates = Omit<EntityRow, "id" | "type" | "paper_id">;
 
-interface BoundingBoxRow {
+export interface BoundingBoxRow {
   id: number;
   entity_id: number;
   source: string;
@@ -35,7 +35,7 @@ interface BoundingBoxRow {
   height: number;
 }
 
-interface EntityDataRow {
+export interface EntityDataRow {
   id: number;
   entity_id: number;
   source: string;
@@ -46,14 +46,14 @@ interface EntityDataRow {
   relation_type: string | null;
 }
 
-type EntityDataRowType =
+export type EntityDataRowType =
   | "boolean"
   | "integer"
   | "float"
   | "string"
   | "relation-id";
 
-interface LogEntryRow {
+export interface LogEntryRow {
   ip_address: string;
   username: string | null;
   level: string;

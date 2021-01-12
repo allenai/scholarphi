@@ -12,6 +12,14 @@ import {
 } from "./types/api";
 import * as validation from "./types/validation";
 import { DBConfig } from "./conf";
+import {
+  LogEntryRow,
+  BoundingBoxRow,
+  EntityDataRow,
+  EntityRow,
+  EntityDataRowType,
+  EntityRowUpdates,
+} from "./types/db";
 
 /**
  * Create a Knex query builder that can be used to submit queries to the database.

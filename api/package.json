@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@types/hapi__hapi": "^18.2.5",
-    "@types/hapi__joi": "^16.0.2",
+    "@types/hapi__joi": "^17.1.6",
     "@types/jest": "^26.0.3",
     "@types/nconf": "^0.10.0",
     "@types/pg": "^7.14.7",
