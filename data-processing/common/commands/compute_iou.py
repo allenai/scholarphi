@@ -3,7 +3,7 @@ import os.path
 from argparse import ArgumentParser
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Dict, FrozenSet, Iterator, List, Optional, Tuple
+from typing import Dict, FrozenSet, Iterator, List, Optional, Set, Tuple
 
 from common import directories, file_utils
 from common.bounding_box import (
@@ -52,8 +52,8 @@ class IouJob:
 @dataclass(frozen=True)
 class IouResults:
     page_iou: float
-    precision: float
-    recall: float
+    precision: Optional[float]
+    recall: Optional[float]
     matches: RegionMatches
 
 
@@ -63,8 +63,8 @@ class IouAccuracySummary:
     entity_type: str
     page: int
     page_iou: float
-    precision: float
-    recall: float
+    precision: Optional[float]
+    recall: Optional[float]
     num_actual: int
     num_expected: int
     num_matches: int
@@ -122,11 +122,12 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
             file_utils.clean_directory(output_root)
 
             entity_keys = [
-                # EntityKeys("citations", "citation"),
-                # EntityKeys("equations", "equation"),
+                EntityKeys("citations", "citation"),
+                EntityKeys("equations", "equation"),
                 EntityKeys("symbols", "symbol"),
-                # EntityKeys("sentences", "sentence"),
+                EntityKeys("sentences", "sentence"),
             ]
+            database_types = [k.database_key for k in entity_keys]
 
             # Load the bounding boxes found by the pipeline from local storage.
             actual: RegionsByPageAndType = defaultdict(list)
@@ -198,6 +199,8 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
             boxes_by_entity_db_id: Dict[str, List[BoundingBox]] = defaultdict(list)
             types_by_entity_db_id: Dict[str, str] = {}
             for row in rows:
+                if row["type"] not in database_types:
+                    continue
                 boxes_by_entity_db_id[row["id"]].append(
                     BoundingBox(
                         row["left"],
@@ -221,20 +224,20 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
                     )
                     expected[key].append(rectangles)
 
-            for key in expected:
+            key_set: Set[Tuple[int, str]] = set()
+            key_set.update(list(expected.keys()), list(actual.keys()))
+            for key in sorted(key_set, key=lambda k: (k[1], k[0])):
                 page_number, entity_type = key
-                if key not in actual:
-                    logging.warning(  # pylint: disable=logging-not-lazy
-                        "No bounding boxes found on page %d of paper %s with type %s. Won't be "
-                        + "able to compute accuracy for this page.",
-                        page_number,
+                actual_regions = actual.get(key, [])
+                expected_regions = expected.get(key, [])
+                if actual_regions or expected_regions:
+                    yield IouJob(
                         arxiv_id,
+                        actual_regions,
+                        expected_regions,
+                        page_number,
                         entity_type,
                     )
-                    continue
-                yield IouJob(
-                    arxiv_id, actual[key], expected[key], page_number, entity_type
-                )
 
     def process(self, job: IouJob) -> Iterator[IouResults]:
 
@@ -244,10 +247,11 @@ class ComputeIou(DatabaseReadCommand[IouJob, IouResults]):
         page_iou = iou(all_actual_rects, all_expected_rects)
 
         # Compute accuracy per region (i.e., per entity).
-        precision, recall = compute_accuracy(job.actual, job.expected, minimum_iou=0.35)
-        matches = iou_per_region(job.actual, job.expected)
+        precision, recall, matches = compute_accuracy(
+            job.actual, job.expected, minimum_iou=0.35
+        )
         logging.info(
-            "Computed accuracy for paper %s page %d entity type %s: Precision: %f, Recall: %f, Page IOU: %f",
+            "Computed accuracy for paper %s page %d entity type %s: Precision: %s, Recall: %s, Page IOU: %s",
             job.arxiv_id,
             job.page,
             job.entity_type,
