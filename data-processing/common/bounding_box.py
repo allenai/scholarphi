@@ -567,12 +567,12 @@ def compute_accuracy(
     actual: List[FrozenSet[FloatRectangle]],
     expected: List[FrozenSet[FloatRectangle]],
     minimum_iou: float = 0.5,
-) -> Tuple[float, float]:
+) -> Tuple[Optional[float], Optional[float], RegionMatches]:
 
     ious = iou_per_region(actual, expected, minimum_iou)
 
     count_found = len(ious)
-    precision = float(count_found) / len(actual)
-    recall = float(count_found) / len(expected)
+    precision = float(count_found) / len(actual) if len(actual) > 0 else None
+    recall = float(count_found) / len(expected) if len(expected) > 0 else None
 
-    return (precision, recall)
+    return (precision, recall, ious)
