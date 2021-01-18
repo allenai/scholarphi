@@ -230,6 +230,6 @@ def test_rectangle_precision_recall():
     # The threshold value is set to the level where rectangle 1 in 'expected' does not have a
     # a match in 'actual', and rectangle 2 in 'expected' only has a match if you consider
     # its overlap with *all* rectangles in 'actual'.
-    precision, recall = compute_accuracy(expected, actual, minimum_iou=0.5)
+    precision, recall, _ = compute_accuracy(expected, actual, minimum_iou=0.5)
     assert precision == 0.5
     assert recall == 0.5
