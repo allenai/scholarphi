@@ -106,7 +106,9 @@ def expand_tex(
     # In a specific sample of about 120 conference papers, only 5 had '\include' macros, yet
     # many more had '\input' commands). Only 1 used an '\include' macro to read in text.
     # The rest of the files used '\include' macros to include macros and usepackage statements.
-    include_patterns = [
+    # XXX(andrewhead): The 'includes' patterns are currently disabled because the TeX that is
+    # being inserted in their place is incorrect (i.e., it causes compilation errors).
+    include_patterns: List[Pattern] = [
         # Pattern("include_braces", r"\\include\s*{([^}]+)}"),
         # Pattern("include", r"\\include\s+(\S+)"),
     ]
