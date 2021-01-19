@@ -135,9 +135,9 @@ def expand_tex(
     # Scan file for input macros, expanding them.
     for match in scan_tex(tex, patterns):
 
-        # If a file is being read as input, and the '\endinput' macro is reached, end output
-        # at the end of the line that \endinput appears on. See the TeXBook for a description of
-        # the how \endinput is expanded.
+        # If a file is being read and the '\endinput' macro is reached, end output at the end of
+        # the line that \endinput appears on. See the TeXBook for a description of the how
+        # \endinput macro is handled.
         if match.pattern is endinput_pattern:
             endinput = EndInput(start=match.start, end=match.end)
             replacements.append(endinput)
