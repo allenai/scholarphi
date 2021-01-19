@@ -2,10 +2,9 @@ import logging
 import re
 from typing import Iterator, List, Optional, Set
 
-from TexSoup import RArg, TexNode, TexSoup, TokenWithPosition
-
 from common.parse_tex import TexSoupParseError, parse_soup
 from common.scan_tex import Pattern, scan_tex
+from TexSoup import RArg, TexNode, TexSoup, TokenWithPosition
 
 from .types import Bibitem
 
@@ -24,7 +23,7 @@ class BibitemExtractor:
                 bibitem_soup = parse_soup(bibitem.text)
             except TexSoupParseError:
                 continue
-            key = self._extract_key(bibitem_soup)
+            key = self._extract_key(bibitem.text)
             tokens = self._extract_text(bibitem_soup)
             if key is None:
                 logging.warning(
@@ -41,20 +40,35 @@ class BibitemExtractor:
                 context_tex="N/A",
             )
 
-    def _extract_key(self, bibitem: TexSoup) -> Optional[str]:
-        for arg in bibitem[0].args:
-            if isinstance(arg, RArg):
-                return str(arg.value)
-        return None
+    def _extract_key(self, bibitem_text: TexSoup) -> Optional[str]:
+        # The format of a bibitem control sequence is:
+        # \bibitem[label]{key}
+        # where the "[label]" is optional. See the "LaTeX 2ε Sources" manual by Braams et al.
+        # There may be spaces (but not more than two newlines) before each of the arguments
+        # to the '\bibitem'. There often are these spaces in automatically-generated .bbl files.
+        match = re.search(
+            (
+                r"\\bibitem"  # 'bibitem' control sequence
+                + r"(?:\s*|%.*?$)*"  # space or comments
+                + r"\[[^\]].*?\]"  # label
+                + r"(?:\s*|%.*?$)*"  # space or comments
+                + r"\{([^}]*?)\}"  # key (capture)
+            ),
+            bibitem_text,
+            flags=re.MULTILINE,
+        )
+        if match is None:
+            return None
+        return match.group(1)  # type: ignore
 
     def _extract_text(self, bibitem: TexSoup) -> str:
         text = ""
         for content in list(bibitem.contents)[1:]:
             if isinstance(content, TexNode) and content.string is not None:
                 text += content.string
-           # Extract text from hyperlinks, e.g., extract the reference text from 
-           # `\href{<LINK>}{<Reference text...>}`. Some conferences like ACL
-           # frequently typeset some parts of references, like titles, as hyperlinks.
+            # Extract text from hyperlinks, e.g., extract the reference text from
+            # `\href{<LINK>}{<Reference text...>}`. Some conferences like ACL
+            # frequently typeset some parts of references, like titles, as hyperlinks.
             elif (
                 isinstance(content, TexNode)
                 and content.name == "href"
