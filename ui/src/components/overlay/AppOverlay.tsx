@@ -1,8 +1,7 @@
-import { getRemoteLogger } from "../../logging";
-import * as uiUtils from "../../utils/ui";
-
 import Snackbar from "@material-ui/core/Snackbar";
 import React from "react";
+import { getRemoteLogger } from "../../logging";
+import * as uiUtils from "../../utils/ui";
 
 const logger = getRemoteLogger();
 
@@ -16,6 +15,8 @@ interface Props {
   snackbarMode: SnackbarMode;
   snackbarActivationTimeMs: number | null;
   snackbarMessage: string | null;
+  highlightEntities: boolean;
+  rapidAnnotationEnabled: boolean;
   handleToggleControlPanelShowing: () => void;
   handleCloseSnackbar: () => void;
   handleCloseDrawer: () => void;
@@ -126,6 +127,31 @@ class AppOverlay extends React.PureComponent<Props> {
   }
 
   render() {
+    const {
+      highlightEntities,
+      rapidAnnotationEnabled,
+      appContainer,
+    } = this.props;
+    if (highlightEntities) {
+      if (!appContainer.classList.contains("highlight-entities")) {
+        appContainer.classList.add("highlight-entities");
+      }
+    } else {
+      if (appContainer.classList.contains("highlight-entities")) {
+        appContainer.classList.remove("highlight-entities");
+      }
+    }
+
+    if (rapidAnnotationEnabled) {
+      if (!appContainer.classList.contains("rapid-annotation")) {
+        appContainer.classList.add("rapid-annotation");
+      }
+    } else {
+      if (appContainer.classList.contains("rapid-annotation")) {
+        appContainer.classList.remove("rapid-annotation");
+      }
+    }
+
     return (
       <>
         {/*

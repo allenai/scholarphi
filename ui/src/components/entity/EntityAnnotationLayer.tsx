@@ -1,11 +1,5 @@
-import CitationGloss from "../entity/citation/CitationGloss";
-import { DrawerContentType } from "../drawer/Drawer";
-import EntityAnnotation from "./EntityAnnotation";
-import * as selectors from "../../selectors";
-import { GlossStyle } from "../../settings";
-import SimpleSymbolGloss from "./SimpleSymbolGloss";
-import SimpleTermGloss from "./SimpleTermGloss";
-import { Entities, PaperId, Papers, UserLibrary } from "../../state";
+import classNames from "classnames";
+import React from "react";
 import {
   Entity,
   isCitation,
@@ -14,11 +8,22 @@ import {
   isSymbol,
   isTerm,
 } from "../../api/types";
+import * as selectors from "../../selectors";
+import { GlossStyle } from "../../settings";
+import {
+  Entities,
+  KnownEntityType,
+  PaperId,
+  Papers,
+  UserLibrary,
+} from "../../state";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
-
-import classNames from "classnames";
-import React from "react";
+import { DrawerContentType } from "../drawer/Drawer";
+import CitationGloss from "../entity/citation/CitationGloss";
+import EntityAnnotation from "./EntityAnnotation";
+import SimpleSymbolGloss from "./SimpleSymbolGloss";
+import SimpleTermGloss from "./SimpleTermGloss";
 
 export type SymbolUnderlineMethod = "top-level-symbols" | "defined-symbols";
 
@@ -44,6 +49,8 @@ interface Props {
   symbolUnderlineMethod: SymbolUnderlineMethod;
   equationDiagramsEnabled: boolean;
   copySentenceOnClick: boolean;
+  entityCreationEnabled: boolean;
+  entityCreationType: KnownEntityType;
   handleSelectEntityAnnotation: (
     entityId: string,
     annotationId: string,
@@ -175,6 +182,8 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
       termAnnotationsEnabled,
       equationDiagramsEnabled,
       copySentenceOnClick,
+      entityCreationEnabled,
+      entityCreationType,
       handleAddPaperToLibrary,
       handleSelectEntityAnnotation,
     } = this.props;
@@ -439,7 +448,10 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 id={annotationId}
                 pageView={pageView}
                 entity={entity}
-                active={annotationInteractionEnabled && copySentenceOnClick}
+                active={
+                  (annotationInteractionEnabled && copySentenceOnClick) ||
+                  (entityCreationEnabled && entityCreationType === "sentence")
+                }
                 underline={false}
                 selected={false}
                 selectedSpanIds={null}

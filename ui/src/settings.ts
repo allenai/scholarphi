@@ -93,6 +93,20 @@ export interface Settings {
    * disabled as it interferes with built-in text selection in pdf.js.
    */
   sentenceTexCopyOnOptionClickEnabled: boolean;
+  /**
+   * Highlight all entities. Meant as a tool to aid in annotating entities.
+   */
+  highlightEntities: boolean;
+  /**
+   * Enable rapid annotation creation. Enableds features like disabling all other entities as
+   * click targets to make it possible to draw entities overlapping others without accidentally
+   * selecting the overlapped entities.
+   */
+  rapidAnnotationEnabled: boolean;
+  /**
+   * Make it very fast to delete annotations from a paper, by supporting deletion on click.
+   */
+  powerDeletionEnabled: boolean;
 }
 
 /**
@@ -216,6 +230,9 @@ export function getSettings(presets?: string[]) {
     entityEditingEnabled: false,
     sentenceTexCopyOnOptionClickEnabled: false,
     glossEvaluationEnabled: false,
+    highlightEntities: false,
+    rapidAnnotationEnabled: false,
+    powerDeletionEnabled: false,
   };
 
   let settings = DEFAULT_SETTINGS;
