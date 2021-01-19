@@ -12,6 +12,25 @@
  * into other projects, all of the types are available to the client code.
  */
 
+export interface Paginated<T> {
+  rows: T[];
+  offset: number;
+  size: number;
+  total: number;
+}
+
+export interface PaperIdWithEntityCounts {
+  s2_id: string;
+  arxiv_id?: string;
+  version: number;
+  symbol_count: number;
+  citation_count: number;
+  sentence_count: number;
+  term_count: number;
+  equation_count: number;
+  entity_count: number;
+}
+
 /**
  * Format of returned papers loosely follows that for the S2 API:
  * https://api.semanticscholar.org/
@@ -24,6 +43,17 @@ export interface Paper {
   url: string;
   venue: string;
   year: number | null;
+  influentialCitationCount?: number;
+  citationVelocity?: number;
+}
+
+export interface PaperWithEntityCounts extends PaperIdWithEntityCounts {
+  abstract?: string;
+  authors?: Author[];
+  title?: string;
+  url?: string;
+  venue?: string;
+  year?: number | null;
   influentialCitationCount?: number;
   citationVelocity?: number;
 }
@@ -65,6 +95,18 @@ export interface BaseEntityAttributes {
   version: number;
   source: string;
   bounding_boxes: BoundingBox[];
+  /**
+   * Additional data for this entity in the form of arbitrary strings. For instance, there could be
+   * a tag for a term entity conveying whether it is a 'key term'. As another example, and entity
+   * can be tagged as having irregular bounding boxes, so it should be hidden.
+   *
+   * For stable attributes of entities, they should be added as new named properties on the entity
+   * attributes types, instead of being stored as a tag. This is because it helps type-checking and
+   * code completion be more precise. That said, adding tags to store entity attributes is suitable
+   * when prototyping new features, as it allows the data to be changed in the database without
+   * continually updating these types.
+   */
+  tags: string[];
 }
 
 /**
@@ -247,11 +289,6 @@ export interface TermAttributes extends BaseEntityAttributes {
    * Additional passages that help explain what this term means.
    */
   snippets: string[];
-  /**
-   * Additional metadata for this term. For instance, one tag could be whether a term has been
-   * identified as a 'key term', to indicate that the term should be displayed in a special way.
-   */
-  tags: string[];
 }
 
 export interface TermRelationships {
@@ -339,36 +376,6 @@ export interface BoundingBox {
   top: number;
   width: number;
   height: number;
-}
-
-export interface Paginated<T> {
-    rows: T[];
-    offset: number;
-    size: number;
-    total: number;
-}
-
-export interface PaperIdWithEntityCounts {
-  s2_id: string;
-  arxiv_id?: string;
-  version: number;
-  symbol_count: number;
-  citation_count: number;
-  sentence_count: number;
-  term_count: number;
-  equation_count: number;
-  entity_count: number;
-}
-
-export interface PaperWithEntityCounts extends PaperIdWithEntityCounts {
-  abstract?: string;
-  authors?: Author[];
-  title?: string;
-  url?: string;
-  venue?: string;
-  year?: number | null;
-  influentialCitationCount?: number;
-  citationVelocity?: number;
 }
 
 /**
