@@ -1,6 +1,11 @@
-from common.parse_tex import (BeginDocumentExtractor, DocumentclassExtractor,
-                              EquationExtractor, MacroExtractor,
-                              PhraseExtractor, extract_plaintext)
+from common.parse_tex import (
+    BeginDocumentExtractor,
+    DocumentclassExtractor,
+    EquationExtractor,
+    MacroExtractor,
+    PhraseExtractor,
+    extract_plaintext,
+)
 from common.types import MacroDefinition
 from entities.citations.extractor import BibitemExtractor
 from entities.sentences.extractor import SentenceExtractor
@@ -450,6 +455,14 @@ def test_extract_bibitem_include_hyperref_contents():
     bibitems = list(extractor.parse(tex))
     assert len(bibitems) == 1
     assert bibitems[0].text == "token1 token2"
+
+
+def test_extract_bibitem_wrapping_key():
+    tex = "\n".join([r"\bibitem[label]%", r"    {key}", r"    token"])
+    extractor = BibitemExtractor()
+    bibitems = list(extractor.parse(tex))
+    assert len(bibitems) == 1
+    assert "token" in bibitems[0].text
 
 
 def test_extract_macro():
