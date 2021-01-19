@@ -110,6 +110,9 @@ const PRESETS: Preset[] = [
     key: "demo",
     primerInstructionsEnabled: false,
     useDefinitionsForDiagramLabels: true,
+    termGlossesEnabled: true,
+    declutterEnabled: true,
+    equationDiagramsEnabled: true,
   },
   {
     key: "sab",
@@ -122,72 +125,6 @@ const PRESETS: Preset[] = [
     key: "sab-lite",
     symbolUnderlineMethod: "top-level-symbols",
     equationDiagramsEnabled: false,
-  },
-  {
-    key: "study",
-    primerInstructionsEnabled: false,
-    citationGlossesEnabled: false,
-    termGlossesEnabled: true,
-    symbolUnderlineMethod: "defined-symbols",
-    useDefinitionsForDiagramLabels: true,
-  },
-  /*
-   * No interactivity for terms and symbols.
-   */
-  {
-    key: "ca",
-    annotationHintsEnabled: false,
-    annotationInteractionEnabled: false,
-    primerPageEnabled: false,
-    equationDiagramsEnabled: false,
-    glossesEnabled: false,
-    declutterEnabled: false,
-  },
-  /*
-   * Show declutter, not glosses.
-   */
-  {
-    key: "cc",
-    annotationInteractionEnabled: true,
-    primerPageEnabled: false,
-    glossesEnabled: false,
-    equationDiagramsEnabled: false,
-    declutterEnabled: true,
-  },
-  /*
-   * Enable all of the interactive features.
-   */
-  {
-    key: "cd",
-    annotationInteractionEnabled: true,
-    primerPageEnabled: true,
-    glossesEnabled: true,
-    equationDiagramsEnabled: true,
-    declutterEnabled: true,
-  },
-  {
-    key: "focused-reading",
-    annotationInteractionEnabled: true,
-    primerPageEnabled: true,
-    glossesEnabled: true,
-    equationDiagramsEnabled: true,
-    declutterEnabled: true,
-  },
-  {
-    key: "tp",
-    initialFocus: "94185",
-  },
-  {
-    key: "ta",
-    initialFocus: "94247",
-  },
-  {
-    key: "tb",
-    initialFocus: "94110",
-  },
-  {
-    key: "tc",
-    initialFocus: "94159",
   },
 ];
 
@@ -205,12 +142,12 @@ export function getSettings(presets?: string[]) {
     glossStyle: "tooltip",
     textSelectionMenuEnabled: false,
     citationGlossesEnabled: true,
-    termGlossesEnabled: true,
+    termGlossesEnabled: false,
     symbolUnderlineMethod: "defined-symbols",
     symbolSearchEnabled: true,
-    declutterEnabled: true,
+    declutterEnabled: false,
     definitionPreviewEnabled: false,
-    equationDiagramsEnabled: true,
+    equationDiagramsEnabled: false,
     useDefinitionsForDiagramLabels: false,
     entityCreationEnabled: false,
     entityEditingEnabled: false,
