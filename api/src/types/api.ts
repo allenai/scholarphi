@@ -13,10 +13,10 @@
  */
 
 export interface Paginated<T> {
-    rows: T[];
-    offset: number;
-    size: number;
-    total: number;
+  rows: T[];
+  offset: number;
+  size: number;
+  total: number;
 }
 
 export interface PaperIdWithEntityCounts {
@@ -95,6 +95,18 @@ export interface BaseEntityAttributes {
   version: number;
   source: string;
   bounding_boxes: BoundingBox[];
+  /**
+   * Additional data for this entity in the form of arbitrary strings. For instance, there could be
+   * a tag for a term entity conveying whether it is a 'key term'. As another example, and entity
+   * can be tagged as having irregular bounding boxes, so it should be hidden.
+   *
+   * For stable attributes of entities, they should be added as new named properties on the entity
+   * attributes types, instead of being stored as a tag. This is because it helps type-checking and
+   * code completion be more precise. That said, adding tags to store entity attributes is suitable
+   * when prototyping new features, as it allows the data to be changed in the database without
+   * continually updating these types.
+   */
+  tags: string[];
 }
 
 /**
@@ -277,11 +289,6 @@ export interface TermAttributes extends BaseEntityAttributes {
    * Additional passages that help explain what this term means.
    */
   snippets: string[];
-  /**
-   * Additional metadata for this term. For instance, one tag could be whether a term has been
-   * identified as a 'key term', to indicate that the term should be displayed in a special way.
-   */
-  tags: string[];
 }
 
 export interface TermRelationships {
