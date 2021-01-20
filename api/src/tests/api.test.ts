@@ -978,28 +978,6 @@ describe("API", () => {
           source: "test",
         },
       ] as EntityRow[]);
-      await knex.batchInsert("boundingbox", [
-        {
-          entity_id: 1,
-          source: "test",
-          page: 0,
-          left: 0,
-          top: 0,
-          width: 0.1,
-          height: 0.05,
-        },
-      ] as BoundingBoxRow[]);
-      await knex.batchInsert("entitydata", [
-        {
-          entity_id: 1,
-          source: "test",
-          key: "key",
-          value: "value",
-          item_type: "string",
-          of_list: false,
-          relation_type: null,
-        },
-      ] as EntityDataRow[]);
 
       const response = await server.inject({
         method: "get",
