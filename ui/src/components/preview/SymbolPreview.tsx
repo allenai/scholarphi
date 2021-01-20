@@ -1,8 +1,7 @@
-import PaperClipping from "./PaperClipping";
-import { Sentence, Symbol } from "../../api/types";
-
 import { PDFDocumentProxy } from "pdfjs-dist";
 import React from "react";
+import { Sentence, Symbol } from "../../api/types";
+import PaperClipping from "./PaperClipping";
 
 interface Props {
   pdfDocument: PDFDocumentProxy;
@@ -39,6 +38,13 @@ export class SymbolPreview extends React.PureComponent<Props> {
 
   render() {
     const { symbol } = this.props;
+    if (symbol.attributes.bounding_boxes.length === 0) {
+      return (
+        <div className="symbol-preview empty">
+          There are no locations associated with this symbol.
+        </div>
+      );
+    }
     return (
       <div ref={(ref) => (this.element = ref)} className="symbol-preview">
         <PaperClipping
