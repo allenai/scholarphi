@@ -957,4 +957,81 @@ describe("API", () => {
       expect(await knex("entitydata").select()).toHaveLength(0);
     });
   });
+
+  describe("GET /api/v0/papers/arxiv:{arxivId}/version", () => {
+    test("paper with entity data", async () => {
+      await knex("paper").insert({
+        s2_id: "s2id",
+        arxiv_id: "1111.1111",
+      } as PaperRow);
+      await knex("version").insert({
+        id: 1,
+        paper_id: "s2id",
+        index: 0,
+      } as VersionRow);
+      await knex.batchInsert("entity", [
+        {
+          id: 1,
+          paper_id: "s2id",
+          version: 0,
+          type: "unknown",
+          source: "test",
+        },
+      ] as EntityRow[]);
+      await knex.batchInsert("boundingbox", [
+        {
+          entity_id: 1,
+          source: "test",
+          page: 0,
+          left: 0,
+          top: 0,
+          width: 0.1,
+          height: 0.05,
+        },
+      ] as BoundingBoxRow[]);
+      await knex.batchInsert("entitydata", [
+        {
+          entity_id: 1,
+          source: "test",
+          key: "key",
+          value: "value",
+          item_type: "string",
+          of_list: false,
+          relation_type: null,
+        },
+      ] as EntityDataRow[]);
+
+      const response = await server.inject({
+        method: "get",
+        url: "/api/v0/papers/arxiv:1111.1111/version",
+      });
+
+      expect(response.statusCode).toEqual(200);
+      expect(response.result).toEqual({ version: 0 });
+    });
+
+    test("paper with no entity data", async () => {
+      await knex("paper").insert({
+        s2_id: "s2id",
+        arxiv_id: "1111.1111",
+      } as PaperRow);
+      const response = await server.inject({
+        method: "get",
+        url: "/api/v0/papers/arxiv:1111.1111/version",
+      });
+
+      expect(response.statusCode).toEqual(404);
+      expect(response.result).toBeNull();
+    });
+
+    test("unknown paper", async () => {
+      const response = await server.inject({
+        method: "get",
+        url: "/api/v0/papers/arxiv:1111.1111/version",
+      });
+
+      expect(response.statusCode).toEqual(404);
+      expect(response.result).toBeNull();
+    });
+  });
 });
