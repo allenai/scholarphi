@@ -114,7 +114,7 @@ export class Connection {
     return { rows, offset, size, total };
   }
 
-  async getPaperEntityCount(paperSelector: PaperSelector): Promise<{paper: PaperSelector, count: number} | null> {
+  async getPaperEntityCount(paperSelector: PaperSelector): Promise<number | null> {
     const idField = isS2Selector(paperSelector) ? 'p.s2_id' : 'p.arxiv_id';
     const idValue = isS2Selector(paperSelector) ? paperSelector.s2_id : `${paperSelector.arxiv_id}%`;
     const whereClause = `${idField} ${isS2Selector(paperSelector) ? '=' : 'ilike'} ?`
@@ -125,16 +125,13 @@ export class Connection {
       join (
         select paper_id, max(version) as max_version
         from entity
-        group by paper_id order by paper_id
+        group by paper_id
       ) as maximum on maximum.paper_id = e.paper_id
       where e.version = maximum.max_version and ${whereClause}
       group by p.s2_id
     `, [idValue]);
     if (response.rows.length > 0) {
-      return {
-        paper: paperSelector,
-        count: response.rows[0].count,
-      };
+      return response.rows[0].count;
     }
     return null;
   }

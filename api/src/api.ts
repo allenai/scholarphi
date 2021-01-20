@@ -247,7 +247,7 @@ export const plugin = {
         const paperSelector = { arxiv_id: request.params.arxivId };
         const version = await dbConnection.getLatestProcessedArxivVersion(paperSelector);
         const entityCount = await dbConnection.getPaperEntityCount(paperSelector);
-        if (!version || (!entityCount || entityCount?.count === 0)) {
+        if (!version || !entityCount) {
           // We don't have version info for this ID, or no entities were extracted.
           return h.response().code(404);
         }
