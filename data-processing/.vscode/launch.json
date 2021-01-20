@@ -12,8 +12,10 @@
       "console": "integratedTerminal",
       "args": [
         "-v",
-        "--entities",
-        "citations",
+        "--arxiv-ids",
+        "1601.00978"
+        // "--entities",
+        // "citations",
         // "symbols",
         // "sentences",
         // "definitions",
@@ -22,19 +24,16 @@
         // "extract-symbols",
         // "embellish-sentences",
         // "--extraction-only",
-        "--entity-batch-size",
-        "3",
-        "--start",
+        // "--entity-batch-size",
+        // "3",
+        // "--start",
         // "raster-pages",
-        "locate-bounding-boxes-for-citations",
+        // "locate-bounding-boxes-for-citations",
         // "unpack-sources",
         // "--end",
         // "extract-symbols",
         // "--commands",
-        // "locate-hues-for-equation-tokens",
-        "--arxiv-ids",
-        // "2002.04138"
-        "1601.00978"
+        // "extract-symbols",
       ],
       "cwd": "${workspaceFolder}",
       "env": {
@@ -42,16 +41,22 @@
         "PATH": "/Users/andrew/.nvm/versions/node/v10.16.0/bin/"
       }
     },
-    /*
-     * Example of how to add launch configuration for a single stage of the pipeline.
-     */
     {
-      "name": "Colorize Citations",
+      "name": "Compute Accuracy",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}/scripts/process.py",
+      "program": "${workspaceFolder}/scripts/compute_accuracy.py",
       "console": "integratedTerminal",
-      "args": ["-v", "colorize-citations"],
+      "args": [
+        "--arxiv-ids",
+        "1906.08632",
+        "--actual-schema",
+        "chi_evaluation_2",
+        "--expected-schema",
+        "chi_evaluation_3",
+        "--entity-types",
+        "symbol"
+      ],
       "cwd": "${workspaceFolder}",
       "env": {
         "PYTHONPATH": "."
