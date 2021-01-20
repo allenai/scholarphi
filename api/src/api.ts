@@ -244,10 +244,11 @@ export const plugin = {
       method: "GET",
       path: "papers/arxiv:{arxivId}/version",
       handler: async (request, h) => {
-        const arxivId = request.params.arxivId;
-        const version = await dbConnection.getLatestProcessedArxivVersion({ arxiv_id: arxivId });
-        if (!version) {
-          // We don't have version info for this ID
+        const paperSelector = { arxiv_id: request.params.arxivId };
+        const version = await dbConnection.getLatestProcessedArxivVersion(paperSelector);
+        const entityCount = await dbConnection.getPaperEntityCount(paperSelector);
+        if (!version || !entityCount) {
+          // We don't have version info for this ID, or no entities were extracted.
           return h.response().code(404);
         }
         return h.response({ version }).code(200);

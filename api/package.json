@@ -16,7 +16,8 @@
   "author": "Andrew Head <andrewhead@allenai.org>",
   "license": "Apache-2.0",
   "jest": {
-    "preset": "ts-jest"
+    "preset": "ts-jest",
+    "testPathIgnorePatterns": ["<rootDir>/build/", "<rootDir>/node_modules/"]
   },
   "devDependencies": {
     "@types/hapi__hapi": "^18.2.5",
