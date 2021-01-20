@@ -1,5 +1,4 @@
 import { defaultMemoize } from "reselect";
-import { Entities } from "../state";
 import {
   BoundingBox,
   Entity,
@@ -11,6 +10,7 @@ import {
   Symbol,
   Term,
 } from "../api/types";
+import { Entities } from "../state";
 import { Rectangle } from "../types/ui";
 
 export function selectedEntityType(
@@ -211,6 +211,12 @@ export const orderByPosition = defaultMemoize(
       const symbol1TopBox = symbol1Boxes.sort(compareBoxes)[0];
       const symbol2Boxes = entities.byId[sId2].attributes.bounding_boxes;
       const symbol2TopBox = symbol2Boxes.sort(compareBoxes)[0];
+      if (symbol1Boxes.length === 0) {
+        return -1;
+      }
+      if (symbol2Boxes.length === 0) {
+        return 1;
+      }
       return compareBoxes(symbol1TopBox, symbol2TopBox);
     });
     return sorted;
