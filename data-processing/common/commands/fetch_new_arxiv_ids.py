@@ -6,7 +6,7 @@ from typing import Any, Iterator
 from common import directories
 from common.commands.base import Command
 from common.fetch_arxiv import fetch_new_arxiv_ids
-from common.models import init_database_connections
+from common.models import setup_database_connections
 from common.types import ArxivId
 
 
@@ -15,7 +15,7 @@ class FetchNewArxivIds(
 ):  # pylint: disable=unsubscriptable-object
     def __init__(self, args: Any) -> None:
         super().__init__(args)
-        init_database_connections()
+        setup_database_connections()
 
     @staticmethod
     def get_name() -> str:
