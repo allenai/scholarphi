@@ -629,9 +629,12 @@ def get_last_colorized_entity(
         )
         return None
 
-    with open(original_autogen_log_path) as file_:
+    # If TeX can process data that is not utf-8, then that non-utf-8 data can also be printed
+    # out to the AutoTeX log. Therefore, when reading the AutoTeX log, the files need to be opened
+    # in a way that is permissive of non-utf-8 data.
+    with open(original_autogen_log_path, errors="surrogateescape") as file_:
         original_autogen_log = file_.read()
-    with open(new_autogen_log_path) as file_:
+    with open(new_autogen_log_path, errors="surrogateescape") as file_:
         new_autogen_log = file_.read()
 
     # Get the name of the TeX compiler that successfully compiled the original TeX.
