@@ -45,6 +45,7 @@ def fetch_boxes(
                 arxiv_id,
                 schema,
             )
+            return None
         version = int(version_number)
 
     # Load bounding boxes from rows in the tables.
@@ -134,19 +135,32 @@ def compute_accuracy_for_paper(
                 )
             )
 
-    print(f"Displaying page-by-page bounding box accuracies for paper {arxiv_id}.")
+    print(f"Computing page-by-page bounding box accuracies for paper {arxiv_id}....")
+    total_expected = 0
+    total_actual = 0
+    total_matches = 0
     for pair in expected_actual_pairs:
         precision, recall, matches = compute_accuracy(
             pair.actual, pair.expected, minimum_iou=0.35
         )
-        print(f"Accuracy for page {pair.page} entities of type {pair.entity_type}")
-        print(
-            f"Precision: {precision}, "
-            + f"Recall: {recall}, "
-            + f"# Actual: {len(pair.actual)}, "
-            + f"# Expected: {len(pair.expected)}"
-            + f"# Matched: {len(matches)}."
-        )
+        print(f"Accuracy for page {pair.page} entities of type {pair.entity_type}:")
+        print(f"Precision: {precision}")
+        print(f"Recall: {recall}")
+        print(f"# Actual: {len(pair.actual)}")
+        print(f"# Expected: {len(pair.expected)}")
+        print(f"# Matched: {len(matches)}")
+        print()
+
+        total_actual += len(pair.expected)
+        total_expected += len(pair.actual)
+        total_matches += len(matches)
+
+    print("Summary statistics for paper:")
+    overall_precision = total_matches / total_actual if total_actual > 0 else None
+    overall_recall = total_matches / total_expected if total_expected > 0 else None
+    print(f"Precision: {overall_precision}")
+    print(f"Recall: {overall_recall}")
+    print()
 
 
 if __name__ == "__main__":
@@ -183,11 +197,12 @@ if __name__ == "__main__":
         ),
     )
     parser.add_argument(
-        "--entities",
+        "--entity-types",
         nargs="+",
         type=str,
         help="Types of entities for which to compute bounding box accuracy.",
         default=["citation", "symbol", "sentence", "equation"],
+        choices=["citation", "symbol", "sentence", "equation"],
     )
     args = parser.parse_args()
 
@@ -200,7 +215,7 @@ if __name__ == "__main__":
     for id_ in arxiv_ids:
         compute_accuracy_for_paper(
             id_,
-            args.entities,
+            args.entity_types,
             args.expected_schema,
             args.expected_version,
             args.actual_schema,
