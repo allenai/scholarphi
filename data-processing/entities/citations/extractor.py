@@ -46,20 +46,20 @@ class BibitemExtractor:
         # where the "[label]" is optional. See the "LaTeX 2ε Sources" manual by Braams et al.
         # There may be spaces (but not more than two newlines) before each of the arguments
         # to the '\bibitem'. There often are these spaces in automatically-generated .bbl files.
-        match = re.search(
-            (
-                r"\\bibitem"  # 'bibitem' control sequence
-                + r"(?:\s*|%.*?$)*"  # space or comments
-                + r"\[[^\]]*?\]"  # label
-                + r"(?:\s*|%.*?$)*"  # space or comments
-                + r"\{([^}]*?)\}"  # key (capture)
-            ),
-            bibitem_text,
-            flags=re.MULTILINE,
-        )
-        if match is None:
+
+        # Remove comments from bibitem TeX. In some generated bibliographies, the key may begin
+        # only after a comment and a newline. TexSoup fails to parse key arguments that come
+        # after comments, newlines, and tabs, even though they are valid keys.
+        normalized_tex = re.sub(r"%.*?$\s*", "", bibitem_text, flags=re.MULTILINE)
+        try:
+            bibitem = parse_soup(normalized_tex)
+        except TexSoupParseError:
             return None
-        return match.group(1)  # type: ignore
+
+        for arg in bibitem[0].args:
+            if isinstance(arg, RArg):
+                return str(arg.value)
+        return None
 
     def _extract_text(self, bibitem: TexSoup) -> str:
         text = ""
