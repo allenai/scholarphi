@@ -100,17 +100,18 @@ class PrimerPage extends React.PureComponent<Props> {
       <div className="welcome-page primer-page__contents">
         <p className="primer-page__header">Welcome to ScholarPhi.</p>
         <p>
-          ScholarPhi is an interface that helps you understand scientific
-          papers. The current version of the tool reveals definitions of
-          technical terms and mathematical symbols.
+          This is a demonstration of ScholarPhi, the goal of which is to improve
+          the reading of scientific papers by helping readers see the meanings
+          of mathematical symbols, technical terms, and other information
+          directly where they are used within the paper.
         </p>
         <p>
-          Below, you can try out ScholarPhi on an example paper. Get started by
-          clicking on a term or symbol{" "}
+          Below, you can try out the demonstration on an example paper. Get
+          started by clicking on a term or symbol {" "}
           <span style={{ borderBottom: "1px dotted" }}>
             underlined with a dotted line
           </span>
-          , and see what appears. Then click on buttons in the tooltips that
+          , and see what appears. Then click on the buttons in the tooltips that
           appear. Then, try clicking equations and citations.
         </p>
         <p>This demo of ScholarPhi offers the following features:</p>
@@ -124,9 +125,16 @@ class PrimerPage extends React.PureComponent<Props> {
           <li>
             A glossary of key terms and symbols at the top of the document,
           </li>
+          <li>
+            Links from citations to the titles, authors, and abstracts of the
+            cited papers,
+          </li>
           <li>...and several others.</li>
         </ul>
-        <p>To learn more about the project, read the ScholarPhi paper:</p>
+        <p>
+          To learn more about this demonstration read the ScholarPhi user
+          interface paper:
+        </p>
         <p>
           Andrew Head, Kyle Lo, Dongyeop Kang, Raymond Fok, Sam Skjonsberg,
           Daniel S. Weld, and Marti A. Hearst. "
@@ -140,6 +148,14 @@ class PrimerPage extends React.PureComponent<Props> {
             Systems
           </i>
           . 2021. (<a href="https://youtu.be/y8Kuyf9jygs">Demo video</a>).
+        </p>
+        <p>
+          To learn more about this project, visit the ScholarPhi website:{" "}
+          <a>https://scholarphi.org</a>.
+        </p>
+        <p>
+          This project was supported by a partnership with AI2 and the Alfred P.
+          Sloan Foundation.
         </p>
       </div>,
       this._welcomeElement

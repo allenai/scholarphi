@@ -5,7 +5,6 @@ import React from "react";
 import AuthorList from "./AuthorList";
 import ChartIcon from "./icon/ChartIcon";
 import InfluentialCitationIcon from "./icon/InfluentialCitationIcon";
-import logger from "./logging";
 import { userLibraryUrl } from "./s2-url";
 import { PaperId, UserLibrary } from "./state";
 import { Paper } from "./types/api";
@@ -192,7 +191,7 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
           >
             Cite
           </Button> */}
-          {inLibrary ? (
+          {/* {inLibrary ? (
             <LibraryButton
               label="In Your Library"
               onClick={() => goToLibrary()}
@@ -213,7 +212,7 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
                 });
               }}
             />
-          )}
+          )} */}
         </div>
 
         {/* <div className="paper-summary__section paper-summary__feedback">
