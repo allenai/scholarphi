@@ -50,7 +50,7 @@ class BibitemExtractor:
             (
                 r"\\bibitem"  # 'bibitem' control sequence
                 + r"(?:\s*|%.*?$)*"  # space or comments
-                + r"\[[^\]].*?\]"  # label
+                + r"\[[^\]]*?\]"  # label
                 + r"(?:\s*|%.*?$)*"  # space or comments
                 + r"\{([^}]*?)\}"  # key (capture)
             ),

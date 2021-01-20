@@ -458,11 +458,24 @@ def test_extract_bibitem_include_hyperref_contents():
 
 
 def test_extract_bibitem_wrapping_key():
-    tex = "\n".join([r"\bibitem[label]%", r"    {key}", r"    token"])
+    tex = "\n".join(
+        [
+            r"\bibitem[\protect\citeauthoryear{Grossman, Chevalier, and Kazi}{Grossman",
+            r"  et~al\mbox{.}}{2015}]%",
+            r"        {ref:grossman2015your}",
+            r"\bibfield{author}{\bibinfo{person}{Tovi Grossman}, \bibinfo{person}{Fanny",
+            r"  Chevalier}, {and} \bibinfo{person}{Rubaiat~Habib Kazi}.}",
+            r"  \bibinfo{year}{2015}\natexlab{}.",
+            r"\newblock \showarticletitle{Your Paper is Dead! Bringing Life to Research",
+            r"  Articles with Animated Figures}. In \bibinfo{booktitle}{\emph{\confchi}}.",
+            r"  \bibinfo{publisher}{ACM}, \bibinfo{pages}{461--475}.",
+            r"\newblock.",
+        ]
+    )
     extractor = BibitemExtractor()
     bibitems = list(extractor.parse(tex))
     assert len(bibitems) == 1
-    assert "token" in bibitems[0].text
+    assert "Animated" in bibitems[0].text
 
 
 def test_extract_macro():
