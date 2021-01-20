@@ -152,7 +152,7 @@ class Entity(TimestampsMixin, OutputModel):
 
 class BoundingBox(TimestampsMixin, OutputModel):
 
-    entity = ForeignKeyField(Entity, on_delete="CASCADE")
+    entity = ForeignKeyField(Entity, on_delete="CASCADE", backref="bounding_boxes")
     source = TextField(index=True, default="tex-pipeline")
     page = IntegerField()
 

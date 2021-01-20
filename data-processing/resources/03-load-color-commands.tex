@@ -165,11 +165,12 @@ scholarcolor@\scholar@current@citation@key%
 }}%
 }%
 \scholar@wrap@citecolor{}%
+\scholarifdefined{hypersetup}{%
 \let\scholar@inner@hypersetup\hypersetup%
 \def\hypersetup#1{%
 \scholar@inner@hypersetup{#1}%
 \scholar@wrap@citecolor{}%
-}%
+}}%
 \message{Defined S2 LaTeX coloring commands.}%
 }}%
 

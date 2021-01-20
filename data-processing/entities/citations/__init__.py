@@ -13,12 +13,12 @@ from .types import Bibitem
 
 directories.register("detected-citations")
 directories.register("bibitem-resolutions")
-directories.register("sources-with-colorized-citations")
-directories.register("compiled-sources-with-colorized-citations")
-directories.register("paper-images-with-colorized-citations")
-directories.register("diffed-images-with-colorized-citations")
+directories.register("sources-with-colorized-citation-fragments")
+directories.register("compiled-sources-with-colorized-citation-fragments")
+directories.register("paper-images-with-colorized-citation-fragments")
+directories.register("diffed-images-with-colorized-citation-fragments")
+directories.register("citation-fragments-locations")
 directories.register("citations-locations")
-directories.register("citation-cluster-locations")
 directories.register("sources-with-annotated-symbols")
 
 
@@ -26,7 +26,10 @@ commands: CommandList = [
     ExtractBibitems,
     ResolveBibitems,
     make_locate_entities_command(
-        "citations", DetectedEntityType=Bibitem, colorize_func=colorize_citations
+        entity_name="citation-fragments",
+        input_entity_name="citations",
+        DetectedEntityType=Bibitem,
+        colorize_func=colorize_citations,
     ),
     LocateCitations,
     UploadCitations,

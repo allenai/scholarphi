@@ -4,6 +4,7 @@ from typing import Dict, List
 
 from common.commands.base import Command, CommandList
 from common.commands.compile_tex import CompileNormalizedTexSources, CompileTexSources
+from common.commands.compute_iou import ComputeIou
 from common.commands.fetch_arxiv_sources import FetchArxivSources
 from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
 from common.commands.fetch_s2_data import FetchS2Metadata
@@ -105,7 +106,7 @@ STORE_RESULTS_COMMANDS: CommandList = [
 ]
 
 EVALUATION_COMMANDS: CommandList = [
-    #     ComputeIou,
+    ComputeIou,
 ]
 
 ALL_COMMANDS = (

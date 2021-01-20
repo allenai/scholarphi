@@ -106,9 +106,11 @@ def expand_tex(
     # In a specific sample of about 120 conference papers, only 5 had '\include' macros, yet
     # many more had '\input' commands). Only 1 used an '\include' macro to read in text.
     # The rest of the files used '\include' macros to include macros and usepackage statements.
-    include_patterns = [
-        Pattern("include_braces", r"\\include\s*{([^}]+)}"),
-        Pattern("include", r"\\include\s+(\S+)"),
+    # XXX(andrewhead): The 'includes' patterns are currently disabled because the TeX that is
+    # being inserted in their place is incorrect (i.e., it causes compilation errors).
+    include_patterns: List[Pattern] = [
+        # Pattern("include_braces", r"\\include\s*{([^}]+)}"),
+        # Pattern("include", r"\\include\s+(\S+)"),
     ]
     endinput_pattern = Pattern("endinput", r"\\endinput( |\t|\b|\{.*?\})")
     patterns = input_patterns + include_patterns + [endinput_pattern]
@@ -133,23 +135,24 @@ def expand_tex(
     # Scan file for input macros, expanding them.
     for match in scan_tex(tex, patterns):
 
-        # If a file is being read as input, and the '\endinput' macro is reached, end output
-        # the end of the line that \endinput appears on. See the TeXBook for a description of
-        # the how \endinput is expanded.
-        if is_input and match.pattern is endinput_pattern:
-
+        # If a file is being read and the '\endinput' macro is reached, end output at the end of
+        # the line that \endinput appears on. See the TeXBook for a description of the how
+        # \endinput macro is handled.
+        if match.pattern is endinput_pattern:
             endinput = EndInput(start=match.start, end=match.end)
             replacements.append(endinput)
             endinputs.append(endinput)
 
             # Find the newline after the \endinput, after which no more inputs should be expanded
             # and the file should be truncated.
-            end_of_line = re.compile("$", flags=re.MULTILINE)
-            end_of_line_match = end_of_line.search(tex, pos=match.end)
-            if end_of_line_match:
-                end_file_at = end_of_line_match.start()
-                continue
+            if end_file_at is None:
+                end_of_line = re.compile("$", flags=re.MULTILINE)
+                end_of_line_match = end_of_line.search(tex, pos=match.end)
+                if end_of_line_match:
+                    end_file_at = end_of_line_match.start()
+                    continue
 
+        # For input macros (e.g., '\input', '\include', ...)
         # Re-run the pattern against the matched text to extract the path to the file
         # that is meant to be included.
         match_with_groups = re.match(match.pattern.regex, match.text)
@@ -202,13 +205,14 @@ def expand_tex(
 
         replacements.append(Expansion(start=match.start, end=match.end, tex=input_tex))
 
-    # Apply the expansions to the TeX.
+    # Truncate the TeX file after the end of a line where the first '\endinput' macro appears.
     expanded = tex
     if end_file_at is not None:
         expanded = expanded[:end_file_at]
 
+    # Apply the expansions to the TeX.
     for replacement in reversed(replacements):
-        if end_file_at is not None and replacement.start > end_file_at:
+        if end_file_at is not None and replacement.start >= end_file_at:
             continue
         if isinstance(replacement, EndInput):
             expanded = expanded[: replacement.start] + "" + expanded[replacement.end :]

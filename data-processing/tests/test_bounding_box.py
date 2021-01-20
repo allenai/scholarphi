@@ -2,14 +2,13 @@ import os.path
 from typing import FrozenSet
 
 import cv2
-
 from common.bounding_box import (
     cluster_boxes,
     compute_accuracy,
     find_boxes_with_color,
     intersect,
     iou,
-    iou_per_rectangle,
+    iou_per_region,
     subtract,
     subtract_multiple,
     subtract_multiple_from_multiple,
@@ -18,6 +17,7 @@ from common.bounding_box import (
 from common.types import BoundingBox
 from common.types import FloatRectangle as Rectangle
 from common.types import Rectangle as IntRectangle
+
 from tests.util import get_test_path
 
 
@@ -209,28 +209,27 @@ def fs(*rects: Rectangle) -> FrozenSet[Rectangle]:
 
 
 def test_compute_iou_per_rectangle_set():
-    # There's a 10px-wide overlap between rect1 and rect2; the algorithm for IOU should use the
-    # union of the areas of the input rects.
-    rects = [
+    regions = [
         fs(Rectangle(0, 0, 20, 20)),
         fs(Rectangle(10, 0, 30, 20)),
-        fs(Rectangle(40, 10, 10, 10), Rectangle(40, 0, 10, 10)),
+        fs(Rectangle(40, 0, 10, 10)),
     ]
-    other_rects = [Rectangle(10, 0, 20, 20), Rectangle(35, 0, 20, 20)]
-    ious = iou_per_rectangle(rects, other_rects)
-    assert ious[fs(Rectangle(0, 0, 20, 20))] == float(10) / 30
-    assert ious[fs(Rectangle(10, 0, 30, 20))] == float(25) / 45
-    assert (
-        ious[fs(Rectangle(40, 10, 10, 10), Rectangle(40, 0, 10, 10))] == float(10) / 20
-    )
+    other_regions = [
+        fs(Rectangle(0, 0, 10, 10), Rectangle(10, 0, 10, 10)),  # overlaps 1
+        fs(Rectangle(10, 0, 20, 20)),  # overlaps both 1 and 2
+    ]
+    ious = iou_per_region(regions, other_regions, minimum_iou=0.25)
+    assert len(ious) == 2
+    assert ious[(regions[0], other_regions[0])] == float(10) / 20
+    assert ious[(regions[1], other_regions[1])] == float(20) / 30
 
 
 def test_rectangle_precision_recall():
     expected = [fs(Rectangle(0, 0, 20, 20)), fs(Rectangle(10, 0, 30, 20))]
-    actual = [Rectangle(10, 0, 20, 20), Rectangle(35, 0, 20, 20)]
+    actual = [fs(Rectangle(10, 0, 20, 20)), fs(Rectangle(35, 0, 20, 20))]
     # The threshold value is set to the level where rectangle 1 in 'expected' does not have a
     # a match in 'actual', and rectangle 2 in 'expected' only has a match if you consider
     # its overlap with *all* rectangles in 'actual'.
-    precision, recall = compute_accuracy(expected, actual, minimum_iou=0.5)
+    precision, recall, _ = compute_accuracy(expected, actual, minimum_iou=0.5)
     assert precision == 0.5
     assert recall == 0.5

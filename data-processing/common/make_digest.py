@@ -2,8 +2,13 @@ import os
 from typing import Iterable, Optional
 
 from common import directories, file_utils
-from common.types import (ArxivId, EntityProcessingDigest, HueLocationInfo,
-                          PaperProcessingDigest, SerializableEntity)
+from common.types import (
+    ArxivId,
+    EntityLocationInfo,
+    EntityProcessingDigest,
+    PaperProcessingDigest,
+    SerializableEntity,
+)
 from scripts.pipelines import EntityPipeline
 
 
@@ -91,7 +96,7 @@ def count_hues_located(
         )
         if os.path.exists(hue_locations_path):
             num_hues_located = len(
-                list(file_utils.load_from_csv(hue_locations_path, HueLocationInfo))
+                list(file_utils.load_from_csv(hue_locations_path, EntityLocationInfo))
             )
 
     return num_hues_located
