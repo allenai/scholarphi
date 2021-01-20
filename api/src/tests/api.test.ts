@@ -962,7 +962,7 @@ describe("API", () => {
     test("paper with entity data", async () => {
       await knex("paper").insert({
         s2_id: "s2id",
-        arxiv_id: "1111.1111",
+        arxiv_id: "1111.1111v1",
       } as PaperRow);
       await knex("version").insert({
         id: 1,
@@ -1007,17 +1007,17 @@ describe("API", () => {
       });
 
       expect(response.statusCode).toEqual(200);
-      expect(response.result).toEqual({ version: 0 });
+      expect(response.result).toEqual({ version: 1 });
     });
 
     test("paper with no entity data", async () => {
       await knex("paper").insert({
         s2_id: "s2id",
-        arxiv_id: "1111.1111",
+        arxiv_id: "1111.1112v1",
       } as PaperRow);
       const response = await server.inject({
         method: "get",
-        url: "/api/v0/papers/arxiv:1111.1111/version",
+        url: "/api/v0/papers/arxiv:1111.1112/version",
       });
 
       expect(response.statusCode).toEqual(404);
@@ -1027,7 +1027,7 @@ describe("API", () => {
     test("unknown paper", async () => {
       const response = await server.inject({
         method: "get",
-        url: "/api/v0/papers/arxiv:1111.1111/version",
+        url: "/api/v0/papers/arxiv:1111.1113/version",
       });
 
       expect(response.statusCode).toEqual(404);
