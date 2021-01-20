@@ -1,18 +1,22 @@
-import requests
 import logging
-from typing import List, Dict
-import sys
-from tempfile import TemporaryDirectory
 import subprocess
+import sys
 import time
+from tempfile import TemporaryDirectory
+from typing import Dict, List
+
+import requests
+from common.models import BoundingBox as BoundingBoxModel
+from common.models import setup_database_connections
+from common.types import (BoundingBox, CitationData, CitationLocation, Match,
+                          Matches, SerializableReference, Symbol)
+from entities.citations.utils import (extract_ngrams, ngram_sim,
+                                      upload_citations)
+from entities.symbols.types import SymbolData, SymbolId, SymbolWithId
+from entities.symbols.utils import upload_symbols
 
 import pdf.grobid_client
-from common.models import BoundingBox as BoundingBoxModel
-from common.models import init_database_connections
-from common.types import CitationData, CitationLocation, SerializableReference, BoundingBox, Matches, Match, Symbol
-from entities.symbols.types import SymbolData, SymbolWithId, SymbolId
-from entities.citations.utils import upload_citations, extract_ngrams, ngram_sim
-from entities.symbols.utils import upload_symbols
+
 
 class PdfStructureParser:
     def __init__(self, pdf_hash, structure_map):
@@ -217,7 +221,7 @@ if __name__ == '__main__':
     if sys.argv[1:]:
         pdf_hashes = [s.strip() for s in open(sys.argv[1]).readlines()]
 
-    init_database_connections('public')
+    setup_database_connections('public')
     with TemporaryDirectory() as tempdir:
         for pdf_hash in pdf_hashes:
             start_time = time.time()

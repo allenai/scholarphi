@@ -1,17 +1,11 @@
-import argparse
-import logging
 from typing import Dict, List
 
 from common.commands.base import Command, CommandList
 from common.commands.compile_tex import CompileNormalizedTexSources, CompileTexSources
-from common.commands.compute_iou import ComputeIou
 from common.commands.fetch_arxiv_sources import FetchArxivSources
-from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
 from common.commands.fetch_s2_data import FetchS2Metadata
 from common.commands.normalize_tex import NormalizeTexSources
 from common.commands.raster_pages import RasterPages
-from common.commands.store_pipeline_log import StorePipelineLog
-from common.commands.store_results import StoreResults
 from common.commands.unpack_sources import UnpackSources
 
 # Force the importing of modules for entity processing. This forces a call from each of the entity
@@ -28,10 +22,7 @@ from entities import symbols  # pylint: disable=unused-import
 
 from scripts.pipelines import EntityPipeline, entity_pipelines
 
-PAPER_DISCOVERY_COMMANDS: CommandList = [FetchNewArxivIds]
-" Commands for discovering which arXiv papers to process. "
-
-
+# Commands for fetching arXiv sources and preparing for entity processing.
 TEX_PREPARATION_COMMANDS: CommandList = [
     FetchArxivSources,
     FetchS2Metadata,
@@ -41,11 +32,10 @@ TEX_PREPARATION_COMMANDS: CommandList = [
     CompileNormalizedTexSources,
     RasterPages,
 ]
-" Commands for fetching arXiv sources and preparing for entity processing. "
 
 
+# Commands for processing entities.
 ENTITY_COMMANDS: CommandList = []
-" Commands for processing entities. "
 
 
 # Order commands for processing entities based on dependencies between entities. For example,
@@ -100,51 +90,7 @@ for pipeline in entity_pipelines:
                 commands_by_entity[entity_name].append(c)
 
 
-STORE_RESULTS_COMMANDS: CommandList = [
-    StoreResults,
-    StorePipelineLog,
-]
-
-EVALUATION_COMMANDS: CommandList = [
-    ComputeIou,
-]
-
-ALL_COMMANDS = (
-    PAPER_DISCOVERY_COMMANDS
-    + TEX_PREPARATION_COMMANDS
-    + ENTITY_COMMANDS
-    + STORE_RESULTS_COMMANDS
-    + EVALUATION_COMMANDS
-)
-
-
 def run_command(cmd: Command) -> None:  # type: ignore
     for item in cmd.load():
         for result in cmd.process(item):
             cmd.save(item, result)
-
-
-if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser(description="Process arXiv papers.")
-    parser.add_argument("-v", help="print debugging information", action="store_true")
-    subparsers = parser.add_subparsers(help="data processing commands")
-
-    for CommandClass in ALL_COMMANDS:
-        command_parser = subparsers.add_parser(
-            CommandClass.get_name(), help=CommandClass.get_description()
-        )
-        command_parser.set_defaults(command_class=CommandClass)
-        CommandClass.init_parser(command_parser)
-
-    args = parser.parse_args()
-    if not hasattr(args, "command_class"):
-        parser.print_help()
-        raise SystemExit
-
-    if args.v:
-        logging.basicConfig(level=logging.DEBUG)
-
-    CommandClass = args.command_class
-    command = CommandClass(args)
-    run_command(command)

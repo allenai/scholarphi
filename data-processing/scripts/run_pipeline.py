@@ -27,14 +27,14 @@ from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
 from common.make_digest import make_paper_digest
 from common.types import PipelineDigest
 
-from scripts.job_config import fetch_config, load_job_from_s3
-from scripts.pipelines import entity_pipelines
-from scripts.process import (
+from scripts.commands import (
     ENTITY_COMMANDS,
     TEX_PREPARATION_COMMANDS,
     commands_by_entity,
     run_command,
 )
+from scripts.job_config import fetch_config, load_job_from_s3
+from scripts.pipelines import entity_pipelines
 
 DEFAULT_ENTITIES = ["citations", "symbols", "definitions"]
 

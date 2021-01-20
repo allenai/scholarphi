@@ -255,7 +255,7 @@ def init_database(
     )
 
 
-def init_database_connections(
+def setup_database_connections(
     schema_name: Optional[str] = None, create_tables: bool = False
 ) -> None:
     """

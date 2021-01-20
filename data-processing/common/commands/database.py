@@ -3,7 +3,7 @@ from argparse import ArgumentParser
 from typing import Any
 
 from common.commands.base import ArxivBatchCommand, I, R
-from common.models import init_database_connections
+from common.models import setup_database_connections
 
 
 class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
@@ -14,7 +14,7 @@ class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
 
     def __init__(self, args: Any) -> None:
         super().__init__(args)
-        init_database_connections(
+        setup_database_connections(
             schema_name=args.schema, create_tables=args.create_tables
         )
 
@@ -44,7 +44,7 @@ class DatabaseReadCommand(ArxivBatchCommand[I, R], ABC):
 
     def __init__(self, args: Any) -> None:
         super().__init__(args)
-        init_database_connections(schema_name=args.schema)
+        setup_database_connections(schema_name=args.schema)
 
     @staticmethod
     def init_parser(parser: ArgumentParser) -> None:
