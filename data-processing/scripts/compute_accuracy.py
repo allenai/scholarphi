@@ -26,6 +26,16 @@ class ExpectedActualPair:
     entity_type: str
 
 
+@dataclass
+class AccuracyResults:
+    arxiv_id: ArxivId
+    num_matched: int
+    num_expected: int
+    num_actual: int
+    precision: Optional[float]
+    recall: Optional[float]
+
+
 def fetch_boxes(
     arxiv_id: ArxivId, schema: str, version: Optional[int], types: List[str]
 ) -> Optional[RegionsByPageAndType]:
@@ -106,20 +116,20 @@ def compute_accuracy_for_paper(
     expected_version: Optional[int],
     actual_schema: str,
     actual_version: Optional[int],
-) -> None:
+) -> Optional[AccuracyResults]:
     """ 'actual_version' and 'expected_version' default to the latest version if not provided. """
 
     # Load extracted bounding boxes from the database.
     actual = fetch_boxes(arxiv_id, actual_schema, actual_version, entity_types)
     if not actual:
         logging.warning("Failed to load extracted bounding boxes.")
-        return
+        return None
 
     # Load gold bounding boxes from the database.
     expected = fetch_boxes(arxiv_id, expected_schema, expected_version, entity_types)
     if not expected:
         logging.warning("Failed to load ground truth bounding boxes.")
-        return
+        return None
 
     expected_actual_pairs = []
     key_set: Set[Tuple[int, str]] = set()
@@ -151,16 +161,28 @@ def compute_accuracy_for_paper(
         print(f"# Matched: {len(matches)}")
         print()
 
-        total_actual += len(pair.expected)
-        total_expected += len(pair.actual)
+        total_actual += len(pair.actual)
+        total_expected += len(pair.expected)
         total_matches += len(matches)
 
-    print("Summary statistics for paper:")
+    print(f"Summary statistics for paper {arxiv_id}:")
     overall_precision = total_matches / total_actual if total_actual > 0 else None
     overall_recall = total_matches / total_expected if total_expected > 0 else None
+    print(f"# Actual: {total_actual}")
+    print(f"# Expected: {total_expected}")
+    print(f"# Matches: {total_matches}")
     print(f"Precision: {overall_precision}")
     print(f"Recall: {overall_recall}")
     print()
+
+    return AccuracyResults(
+        arxiv_id,
+        total_matches,
+        total_expected,
+        total_actual,
+        overall_precision,
+        overall_recall,
+    )
 
 
 if __name__ == "__main__":
@@ -212,8 +234,14 @@ if __name__ == "__main__":
             "Could not load arXiv IDs from the command line arguments provided."
         )
 
+    processing_failures = 0
+    missing_expected_boxes = 0
+    missing_actual_boxes = 0
+    precisions: List[float] = []
+    recalls: List[float] = []
+
     for id_ in arxiv_ids:
-        compute_accuracy_for_paper(
+        accuracy = compute_accuracy_for_paper(
             id_,
             args.entity_types,
             args.expected_schema,
@@ -221,4 +249,27 @@ if __name__ == "__main__":
             args.actual_schema,
             args.actual_version,
         )
+
+        if accuracy is None:
+            processing_failures += 1
+            continue
+
+        if accuracy.num_actual > 0 and accuracy.precision:
+            precisions.append(accuracy.precision)
+        else:
+            missing_actual_boxes += 1
+
+        if accuracy.num_expected > 0 and accuracy.recall:
+            recalls.append(accuracy.recall)
+        else:
+            missing_expected_boxes += 1
+
+    print("Summary accuracy for all papers processed:")
+    print(f"# papers that could not be processed: {processing_failures}")
+    print(f"# papers missing actual boxes: {missing_actual_boxes}")
+    print(f"# papers missing expected boxes: {missing_expected_boxes}")
+    print(f"Average precision: {sum(precisions) / len(precisions)}")
+    print(f"Average recall: {sum(recalls) / len(recalls)}")
+    print(f"Minimum precision: {min(precisions)}")
+    print(f"Minimum recall: {min(recalls)}")
 
