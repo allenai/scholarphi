@@ -139,6 +139,9 @@ class PrimerPage extends React.PureComponent<Props> {
                 <a href="mailto:hears@berkeley.edu">Marti Hearst</a> at UC
                 Berkeley. Contact the researchers if you have any questions.
               </p>
+              <p>
+                If you have feedback on how to improve ScholarPhi or want to report a bug, please join our Slack channel <a href="https://join.slack.com/share/zt-kzpbfz5x-5xVGrzxORdkdNI_RIjS52A">#s2-scholarphi-users</a>.
+              </p>
               <hr />
               <p className="primer-page__header">Reading settings</p>
               <div>
