@@ -145,13 +145,6 @@ def test_ignore_quantifiers():
     assert str(result.symbols[0].element) == "<mi>x</mi>"
 
 
-def test_dot_is_an_operator():
-    result = parse_element(load_fragment_tag("dot.xml"))
-    assert len(result.symbols) == 1
-    assert str(result.symbols[0].element) == "<mo>.</mo>"
-    assert result.symbols[0].type_ == NodeType.OPERATOR
-
-
 def test_detect_definition():
     result = parse_element(load_fragment_tag("x_equals_1.xml"))
     assert str(result.symbols[0].element) == "<mi>x</mi>"
