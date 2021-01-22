@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Optional, Tuple, Union, cast
+from typing import Callable, List, Optional, Tuple, Union, cast
 
 from bs4 import BeautifulSoup, NavigableString, Tag
 
@@ -21,6 +21,7 @@ class NodeType(Enum):
     LEFT_PARENS = "left-parens"
     RIGHT_PARENS = "right-parens"
     DEFINITION_OPERATOR = "definition-operator"
+    OPERATOR = "operator"
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__, self.name}"
@@ -132,6 +133,105 @@ class ParseResult:
         return [n for n in self.nodes if n.is_symbol]
 
 
+def walk_postorder(element: Tag, func: Callable[[Tag], None]) -> None:
+    for child in element.children:
+        if isinstance(child, Tag):
+            walk_postorder(child, func)
+    func(element)
+
+
+def repair_operator_tags(element: Tag) -> None:
+    """
+    Some elements that are frequently operators (like dots) are parsed by KaTeX as identifiers
+    instead of operators. This function changes those identifiers into operators.
+    """
+
+    if element.name != "mi":
+        return
+
+    if element.text in ["∀", "∃", "|", "∥", "."]:
+        operator = clone_element(element)
+        operator.name = "mo"
+        element.replace_with(operator)
+
+
+def make_derivatives_into_operators(element: Tag) -> None:
+    """
+    Transform symbols like 'd's and 'δ's that are probably used as signs for derivatives
+    into operators, rather than identifiers.
+    """
+
+    DERIVATIVE_GLYPHS = ["d", "δ", "∂"]
+
+    if element.name != "mrow":
+        return
+
+    elements = [e for e in element.children if isinstance(e, Tag)]
+    for i, e in enumerate(elements):
+        is_derivative_symbol = (
+            # Is the glyph a derivative sign?
+            e.name == "mi"
+            and e.text in DERIVATIVE_GLYPHS
+            # Is the next element a symbol?
+            and (i < len(elements) - 1 and _is_identifier(elements[i + 1]))
+            # Is the element after that either not a symbol, or another derivative sign?
+            and (
+                i == len(elements) - 2
+                or not _is_identifier(elements[i + 2])
+                or elements[i + 2].text in DERIVATIVE_GLYPHS
+            )
+        )
+        if is_derivative_symbol:
+            derivative_operator = clone_element(e)
+            derivative_operator.name = "mo"
+            e.replace_with(derivative_operator)
+
+
+def remove_empty_strings(element: Tag) -> None:
+    for child in element.children:
+        if isinstance(child, NavigableString) and child.isspace():
+            child.decompose()
+
+
+def merge_row_elements(element: Tag) -> None:
+    """
+    If an element is an 'mrow' produced by KaTeX, its children are probably needlessly fragmented. For
+    instance, the word 'true' will contain four '<mi>' elements, one for 't', 'r', 'u', and 'e'
+    each. Merge such elements into single elements.
+    """
+
+    if element.name != "mrow":
+        return
+
+    elements = [e for e in element.children if isinstance(e, Tag)]
+    merger = MathMlElementMerger()
+    merged = merger.merge(elements)
+
+    # If the 'mrow' only contains one element after its children are merged, simplify the
+    # MathML tree replacing this node with its merged child.
+    if len(merged) == 1:
+        element.replace_with(merged)
+    else:
+        for e in elements:
+            e.decompose()
+        for m in merged:
+            element.append(m)
+
+
+def clean_equation_tree(root: Tag) -> Tag:
+    """
+    This method does not destroy the tree passed in as an argument. Rather, it clones the tree,
+    cleans the cloned tree, and then returns it.
+    """
+
+    walk_postorder(root, remove_empty_strings)
+    walk_postorder(root, make_derivatives_into_operators)
+    walk_postorder(root, repair_operator_tags)
+    walk_postorder(root, merge_row_elements)
+
+    assert False, "Note that this could be a good place to group nodes into functions."
+
+
 def parse_element(element: Tag) -> ParseResult:
     """
     Extract symbol nodes from an element in a BeautifulSoup MathML parse tree. This function
@@ -144,21 +244,7 @@ def parse_element(element: Tag) -> ParseResult:
     if _is_error_element(element):
         return ParseResult([], None, [])
 
-    # If this is an 'mrow' produced by KaTeX, its children are probably needlessly fragmented. For
-    # instance, the word 'true' will contain four '<mi>' elements, one for 't', 'r', 'u', and 'e'
-    # each. Merge such elements into single elements.
     soup_children = list(element.children)
-    if element.name == "mrow":
-        cleaned_children = clean_row(soup_children)
-        merged_children = merge_mathml_elements(cleaned_children)
-
-        # If the 'mrow' only contains one element after its children are merged, simplify the
-        # MathML tree replacing this node with its merged child.
-        if len(merged_children) == 1:
-            element = merged_children[0]
-            soup_children = element.children
-        else:
-            soup_children = merged_children
 
     # Parse each child element. As of BeautifulSoup version 4.8.2, the 'element.children' property
     # ensures that children are visited in order.
@@ -223,61 +309,10 @@ def parse_element(element: Tag) -> ParseResult:
     return ParseResult(children, clean_element, tokens)
 
 
-def clean_row(elements: List[Tag]) -> List[Tag]:
-    """
-    Clean MathML row, removing children that should not be considered tokens or child symbols.
-    One example of cleaning that should take place here is removing 'd' and 'δ' signs that are
-    used as derivatives, instead of as identifiers.
-    """
-
-    # Remove whitespace between elements.
-    elements = [e for e in elements if not (isinstance(e, str) and e.isspace())]
-
-    # Replace quantifiers and double bars with operators.
-    cleaned = []
-    for e in elements:
-        if e.text in ["∀", "∃"] or e.text in ["|", "∥"]:
-            operator = clone_element(e)
-            operator.name = "mo"
-            cleaned.append(operator)
-        else:
-            cleaned.append(e)
-    elements = cleaned
-
-    # Remove 'd's and 'δ's used as signs for derivatives.
-    cleaned = []
-    DERIVATIVE_GLYPHS = ["d", "δ", "∂"]
-    for i, e in enumerate(elements):
-        is_derivative_symbol = (
-            # Is the glyph a derivative sign?
-            e.name == "mi"
-            and e.text in DERIVATIVE_GLYPHS
-            # Is the next element a symbol?
-            and (i < len(elements) - 1 and _is_identifier(elements[i + 1]))
-            # Is the element after that either not a symbol, or another derivative sign?
-            and (
-                i == len(elements) - 2
-                or not _is_identifier(elements[i + 2])
-                or elements[i + 2].text in DERIVATIVE_GLYPHS
-            )
-        )
-        if is_derivative_symbol:
-            derivative_operator = clone_element(e)
-            derivative_operator.name = "mo"
-            cleaned.append(derivative_operator)
-        else:
-            cleaned.append(e)
-
-    return cleaned
-
-
 def _is_identifier(element: Tag) -> bool:
     " Determine whether an element represents identifier. "
 
     if element.name == "mi":
-        # Exclude special math symbols typically used as constants.
-        if element.text in ["e"]:
-            return False
         # Exclude dots, which are parsed as identifiers.
         if element.text in ["."]:
             return False
@@ -613,11 +648,6 @@ def create_element(tag_name: str) -> Tag:
 
     # A dummy BeautifulSoup object is created to access to the 'new_tag' function.
     return BeautifulSoup("", "lxml").new_tag(tag_name)
-
-
-def merge_mathml_elements(elements: List[Tag]) -> List[Tag]:
-    merger = MathMlElementMerger()
-    return merger.merge(elements)
 
 
 class MathMlElementMerger:

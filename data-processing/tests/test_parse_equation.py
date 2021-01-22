@@ -90,12 +90,6 @@ def test_number_is_not_a_symbol():
     assert result.tokens == [Token("1", "atom", 0, 1)]
 
 
-def test_e_is_not_a_symbol_as_exponent_base():
-    result = parse_element(load_fragment_tag("e_sup_x.xml"))
-    assert len(result.symbols) == 1
-    assert str(result.symbols[0].element) == "<mi>x</mi>"
-
-
 def test_d_is_symbol_on_its_own():
     result = parse_element(load_fragment_tag("d.xml"))
     assert len(result.symbols) == 1
@@ -112,12 +106,6 @@ def test_ignore_derivative_tokens():
     # Make sure that derivatives tokens aren't removed from the MathML.
     assert any([e.name == "mo" and e.text == "d" for e in result.element])
     assert any([e.name == "mo" and e.text == "∂" for e in result.element])
-
-
-def test_ignore_quantifiers():
-    result = parse_element(load_fragment_tag("forall.xml"))
-    assert len(result.symbols) == 1
-    assert str(result.symbols[0].element) == "<mi>x</mi>"
 
 
 def test_parse_prime():
@@ -149,6 +137,19 @@ def test_summation_is_not_symbol():
     assert len(result.symbols) == 2
     assert str(result.symbols[0].element) == "<mi>i</mi>"
     assert str(result.symbols[1].element) == "<mi>N</mi>"
+
+
+def test_ignore_quantifiers():
+    result = parse_element(load_fragment_tag("forall.xml"))
+    assert len(result.symbols) == 1
+    assert str(result.symbols[0].element) == "<mi>x</mi>"
+
+
+def test_dot_is_an_operator():
+    result = parse_element(load_fragment_tag("dot.xml"))
+    assert len(result.symbols) == 1
+    assert str(result.symbols[0].element) == "<mo>.</mo>"
+    assert result.symbols[0].type_ == NodeType.OPERATOR
 
 
 def test_detect_definition():
