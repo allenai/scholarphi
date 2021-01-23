@@ -56,12 +56,13 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
     errorMessage: "",
   };
 
-  saveToLibrary = async (
-    userLibrary: UserLibrary | null,
-    addToLibrary: Function,
-    s2Id: string,
-    paperTitle: string
-  ): Promise<void> => {
+  saveToLibrary = async (): Promise<void> => {
+    const { paper, userLibrary, handleAddPaperToLibrary } = this.props;
+    logger.log("debug", "citation-action", {
+      type: "save-to-library",
+      paper: paper,
+    });
+
     if (!userLibrary) {
       warnOfUnimplementedActionAndTrack(
         "save"
@@ -71,7 +72,7 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
       );
     } else {
       try {
-        await addToLibrary(s2Id, paperTitle);
+        await handleAddPaperToLibrary(paper.s2Id, paper.title);
         trackLibrarySave();
         this.setState({
           errorMessage: "",
@@ -85,7 +86,7 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
   }
 
   render(): React.ReactNode {
-    const { paper, userLibrary, handleAddPaperToLibrary } = this.props;
+    const { paper, userLibrary } = this.props;
 
     const hasMetrics =
       paper.citationVelocity !== 0 || paper.influentialCitationCount !== 0;
@@ -198,19 +199,8 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
             Cite
           </Button>
           {inLibrary
-            ? <LibraryButton label="In Your Library" onClick={() => goToLibrary()}/>
-            : <LibraryButton label="Save To Library" onClick={() => {
-              this.saveToLibrary(
-                userLibrary,
-                handleAddPaperToLibrary,
-                paper.s2Id,
-                paper.title
-              );
-              logger.log("debug", "citation-action", {
-                type: "save-to-library",
-                paper: this.props.paper,
-              });
-            }}/>
+            ? <LibraryButton label="In Your Library" onClick={goToLibrary}/>
+            : <LibraryButton label="Save To Library" onClick={this.saveToLibrary}/>
             }
         </div>
 
