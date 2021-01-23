@@ -120,7 +120,7 @@ class Block:
                 sent_char_spans.append((start, end))
                 start = doc[i].idx
         # handle ending
-        sent_char_spans.append((start, len(doc)))
+        sent_char_spans.append((start, len(self.text)))
         return sent_char_spans
 
     def _compute_token_char_spans(self) -> List[Tuple]:
