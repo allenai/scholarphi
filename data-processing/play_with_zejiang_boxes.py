@@ -13,6 +13,9 @@ from common.bounding_box import BoundingBox
 from collections import defaultdict
 
 import numpy as np
+from functools import cmp_to_key
+
+from argparse import ArgumentParser
 
 import spacy
 nlp = spacy.load("en_core_sci_md")
@@ -263,28 +266,36 @@ def process_page_for_blocks(page_dict: Dict) -> List[Block]:
     return blocks
 
 
+# def sort_blocks(blocks: List[Block]) -> List[Block]:
+#     sorted_blocks = sorted(
+#         blocks, key=cmp_to_key(lambda x, y: 1 if block.bbox.page < block.bbox.page else (
+#             1 if block.bbox.left < block.bbox.left else (
+#                 1 if block.bbox.
+#             )
+#         ))
+#     )
+
+
 if __name__ == '__main__':
-    with open('paper_arxiv_v4.json') as f_in:
+    parser = ArgumentParser()
+    parser.add_argument("--infile", help="Path to input Scienceparse+ JSON", required=True, type=str)
+    parser.add_argument("--outfile", help="Path to output JSON file", required=True, type=str)
+    args = parser.parse_args()
+
+
+    with open(args.infile) as f_in:
         page_dicts = json.load(f_in)
         all_blocks: List[Block] = []
         for page_dict in tqdm(page_dicts):
             blocks: List[Block] = process_page_for_blocks(page_dict=page_dict)
             all_blocks.extend(blocks)
 
+    with open(args.outfile, 'w') as f_out:
+        out = []
         for block in all_blocks:
-            if block.type == 'paragraph':
-                print(block)
-
-            if page_text['sections']:
-                print('******' + str(page_text['sections']) + '**********\n')
-            print('-------------')
-            print('\n'.join(page_text['paragraphs']))
-            print('-------------')
-
-
-    for paragraph in paragraphs:
-        print(paragraph)
-
-
-
+            if block.type in {'figure', 'table'}:
+                continue
+            out.append(block.to_json())
+            del out[-1]['tokens']
+        json.dump(out, f_out, indent=4)
 
