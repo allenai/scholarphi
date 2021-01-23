@@ -115,13 +115,13 @@ export async function deleteEntity(
 }
 
 export async function addLibraryEntry(paperId: string, paperTitle: string) {
-  const tags: string[] = [];
+  const folders: string[] = [];
   const response = await axios.post(
     addLibraryEntryUrl,
     {
       paperId,
       paperTitle,
-      tags,
+      folders,
     },
     { withCredentials: true }
   );
