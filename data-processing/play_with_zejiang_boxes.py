@@ -18,13 +18,8 @@ import spacy
 nlp = spacy.load("en_core_sci_md")
 
 
-with open('paper_arxiv_v4.json') as f_in:
-    page_dicts = json.load(f_in)
-
-# unique block types:
-# {'paragraph', 'figure', 'table', 'reference', 'section', 'title', 'abstract', 'caption', 'equation', 'list', 'author', 'footer'}
-
-
+def bbox_to_json(bbox: BoundingBox) -> List:
+    return [bbox.left, bbox.top, bbox.width, bbox.height, bbox.page]
 
 class SppBbox:
     def __init__(self, left: float, top: float, right: float, bottom: float, page_id: int):
@@ -41,29 +36,40 @@ class TokenWithBBox:
         self.bbox = bbox
 
     def __str__(self):
-        return f"{self.text}\t(left={self.bbox.left:.3f}, top={self.bbox.top:.3f}, width={self.bbox.width:.3f}, height={self.bbox.height:.3f}, page={self.bbox.page})"
+        return f"{self.text}    (left={self.bbox.left:.3f}, top={self.bbox.top:.3f}, width={self.bbox.width:.3f}, height={self.bbox.height:.3f}, page={self.bbox.page})"
 
     def __repr__(self):
         return self.__str__()
+
+    def to_json(self) -> Dict:
+        return {
+            'text': self.text,
+            'bbox': bbox_to_json(bbox=self.bbox)
+        }
 
 
 class SentenceWithBbox:
-    def __init__(self, text: str, bboxes: List[BoundingBox], tokens: List[TokenWithBBox]):
+    def __init__(self, text: str, bboxes: List[BoundingBox]):
         self.text = text
         self.bboxes = bboxes
-        self.tokens = tokens
 
     def __str__(self):
-        s = []
+        s = ''
         for bbox in self.bboxes:
-            s.append(f"(left={bbox.left:.2f}, top={bbox.top:.2f}, width={bbox.width:.2f}, height={bbox.height:.2f}, page={bbox.page})")
-        return f"{self.text}\t" + '\t'.join(s)
+            s += f"    (left={bbox.left:.2f}, top={bbox.top:.2f}, width={bbox.width:.2f}, height={bbox.height:.2f}, page={bbox.page})\n"
+        return f"text={self.text}\n{s}"
 
     def __repr__(self):
         return self.__str__()
 
+    def to_json(self) -> Dict:
+        return {
+            'text': self.text,
+            'bboxes': [bbox_to_json(bbox=bbox) for bbox in self.bboxes]
+        }
 
-class BlockWithBbox:
+
+class Block:
     def __init__(self, tokens: List[TokenWithBBox], bbox: BoundingBox, type: str):
         self.tokens = tokens
         self.bbox = bbox
@@ -71,8 +77,8 @@ class BlockWithBbox:
 
         # 1) compute what the entire text block looks like & use it to represent tokens & sentences in a shared char index space
         self.text: str = ' '.join([t.text for t in self.tokens])
-        self.token_char_spans: List[Tuple] = self._compute_token_char_spans()
-        self.sent_char_spans: List[Tuple] = self._compute_sent_char_spans()
+        self.token_char_spans: List[Tuple] = self._compute_token_char_spans()       # O(num_tokens)
+        self.sent_char_spans: List[Tuple] = self._compute_sent_char_spans()         # O(num_sents)
 
         # 2) use these spans to align tokens to sentences
         #       [[0, 1, 2], [3, 4, 5], ...] means the first 3 tokens (0, 1, 2) belong in sentence 0, next 3 in sentence 1, etc.
@@ -83,10 +89,22 @@ class BlockWithBbox:
         self.token_row_clusters: List[List[int]] = self._cluster_tokens_by_row()
 
         # 4) using the rows, compute bboxes for sentences
+        self.sents: List[SentenceWithBbox] = self._build_sentences()
 
+    def __str__(self):
+        ss = '\n'.join([str(s) for s in self.sents])
+        return f"**type={self.type}**\n\n{ss}"
 
-        # self.sents: List[str] = [self.text[start:end] for start, end in self.sent_char_spans]
+    def __repr__(self):
+        return self.__str__()
 
+    def to_json(self) -> Dict:
+        return {
+            'text': self.text,
+            'type': self.type,
+            'tokens': [token.to_json() for token in self.tokens],
+            'sents': [sent.to_json() for sent in self.sents],
+        }
 
     #
     #   Methods for step (1)
@@ -101,6 +119,8 @@ class BlockWithBbox:
                 end = doc[i - 1].idx + len(doc[i - 1].text)
                 sent_char_spans.append((start, end))
                 start = doc[i].idx
+        # handle ending
+        sent_char_spans.append((start, len(doc)))
         return sent_char_spans
 
     def _compute_token_char_spans(self) -> List[Tuple]:
@@ -132,12 +152,11 @@ class BlockWithBbox:
         return int(idx_best_sent)
 
     def _cluster_tokens_by_sents(self) -> List[List[int]]:
-        sent_clustered_token_idx = [[] for _ in range(len(self.sents))]
+        sent_clustered_token_idx = [[] for _ in range(len(self.sent_char_spans))]
         for token_idx, (token_start, token_end) in enumerate(self.token_char_spans):
             sent_idx = self._find_sent_idx_for_this_token_char_span(token_start=token_start, token_end=token_end)
             sent_clustered_token_idx[sent_idx].append(token_idx)
         return sent_clustered_token_idx
-
 
     #
     #   Methods for step (3)
@@ -157,11 +176,35 @@ class BlockWithBbox:
                 clusters.append([token_idx])
         return clusters
 
-
     #
     #   Methods for step (4)
     #
-    
+
+    def _compute_sent_bboxes(self, token_sent_cluster: List[int]) -> List[BoundingBox]:
+        """
+        For input, you provide all the tokens belonging to this sentence.
+
+        In this method, we keep the tokens clustered by rows, but only consider tokens that are in this sentence.
+        This allows us to compute a bounding box for this row (or sub-row) to associate w/ this sentence.
+
+        The sentence bboxes overall are then composed of all the disjoint bounding boxes for each row (or sub-row).
+        """
+        sent_bboxes = []
+        for token_row_cluster in self.token_row_clusters:
+            tokens_in_this_row_and_this_sent = [token_idx for token_idx in token_row_cluster if token_idx in token_sent_cluster]
+            if tokens_in_this_row_and_this_sent:
+                unioned_bbox = _union_bboxes(bboxes=[self.tokens[i].bbox for i in tokens_in_this_row_and_this_sent])
+                sent_bboxes.append(unioned_bbox)
+        return sent_bboxes
+
+    def _build_sentences(self) -> List[SentenceWithBbox]:
+        sents = []
+        for token_sent_cluster, (sent_start, sent_end) in zip(self.token_sent_clusters, self.sent_char_spans):
+            sent_bboxes = self._compute_sent_bboxes(token_sent_cluster=token_sent_cluster)
+            sent = SentenceWithBbox(text=self.text[sent_start:sent_end], bboxes=sent_bboxes)
+            sents.append(sent)
+        return sents
+
 
 def normalize_spp_bbox_json(spp_bbox_json: Dict, page_id: int, spp_page_height: float, spp_page_width: float) -> BoundingBox:
     left, top, right, bottom = spp_bbox_json
@@ -182,59 +225,66 @@ def _are_same_row(bbox1: BoundingBox, bbox2: BoundingBox) -> bool:
     # )
 
 
-def _union_bboxes(bbox1: BoundingBox, bbox2: BoundingBox) -> BoundingBox:
+def _union_bboxes(bboxes: List[BoundingBox]) -> BoundingBox:
     """Taken from https://github.com/allenai/scholarphi/blob/381eea6cf540fdc130fc10f032b883fa0ef64af4/data-processing/pdf/process_pdf.py#L48"""
-    x1 = min(bbox1.left, bbox2.left)
-    y1 = min(bbox1.top, bbox2.top)
-    x2 = max(bbox1.left + bbox1.width, bbox2.left + bbox2.width)
-    y2 = max(bbox1.top + bbox1.height, bbox2.top + bbox2.height)
-    return BoundingBox(page = bbox1.page, left = x1, top = y1, width = x2 - x1, height=y2 - y1)
+    assert len({bbox.page for bbox in bboxes}) == 1
+    x1 = min([bbox.left for bbox in bboxes])
+    y1 = min([bbox.top for bbox in bboxes])
+    x2 = max([bbox.left + bbox.width for bbox in bboxes])
+    y2 = max([bbox.top + bbox.height for bbox in bboxes])
+    return BoundingBox(page=bboxes[0].page, left=x1, top=y1, width=x2 - x1, height=y2 - y1)
 
 
-
-def process_page(page_dict: dict) -> dict:
+def process_page_for_blocks(page_dict: Dict) -> List[Block]:
     page_height = page_dict['height']
     page_width = page_dict['width']
     page_id = page_dict['index']
     block_dicts = page_dict['layout']['bundles']  # wtf are remaining_tokens?
 
+    blocks: List[Block] = []
     for block_dict in block_dicts:
-        # TODO: not used for anything right now... but maybe later (block ordering is currently out of order)
         block_bbox: BoundingBox = normalize_spp_bbox_json(spp_bbox_json=block_dict['bbox'],
                                                           page_id=page_id,
                                                           spp_page_height=page_height,
                                                           spp_page_width=page_width)
         block_tokens: List[TokenWithBBox] = [
-            TokenWithBBox(
-                text=token_dict['text'],
-                bbox=normalize_spp_bbox_json(spp_bbox_json=token_dict['bbox'],
-                                             page_id=page_id,
-                                             spp_page_height=page_height,
-                                             spp_page_width=page_width)
-            )
+            TokenWithBBox(text=token_dict['text'],
+                          bbox=normalize_spp_bbox_json(spp_bbox_json=token_dict['bbox'],
+                                                       page_id=page_id,
+                                                       spp_page_height=page_height,
+                                                       spp_page_width=page_width))
             for token_dict in block_dict['tokens']
         ]
+        block = Block(tokens=block_tokens, bbox=block_bbox, type=block_dict['type'])
+        blocks.append(block)
 
-        block = BlockWithBbox(tokens=block_tokens, bbox=block_bbox, type=block_dict['type'])
+    # TODO: blocks are currently out of reading order.  maybe do some processing here.
 
-        # TODO: stopped here -- double-checking that the token clusters form proper sentences
-        for sent_idx, token_sent_cluster in enumerate(block.token_sent_clusters):
-            print(f"\tSent {sent_idx}\t{' '.join([block.tokens[token_idx].text for token_idx in token_sent_cluster])}")
-
-        # TODO; to get proper bbox clusters for sents, need to group token bboxes into rows
+    return blocks
 
 
+if __name__ == '__main__':
+    with open('paper_arxiv_v4.json') as f_in:
+        page_dicts = json.load(f_in)
+        all_blocks: List[Block] = []
+        for page_dict in tqdm(page_dicts):
+            blocks: List[Block] = process_page_for_blocks(page_dict=page_dict)
+            all_blocks.extend(blocks)
 
-for page_dict in tqdm(page_dicts):
-    page_text = process_page(page_dict=page_dict)
-    if page_text['sections']:
-        print('******' + str(page_text['sections']) + '**********\n')
-    print('-------------')
-    print('\n'.join(page_text['paragraphs']))
-    print('-------------')
+        for block in all_blocks:
+            if block.type == 'paragraph':
+                print(block)
+
+            if page_text['sections']:
+                print('******' + str(page_text['sections']) + '**********\n')
+            print('-------------')
+            print('\n'.join(page_text['paragraphs']))
+            print('-------------')
 
 
-for paragraph in paragraphs:
-    print(paragraph)
+    for paragraph in paragraphs:
+        print(paragraph)
+
+
 
 
