@@ -8,6 +8,7 @@ from typing import *
 import json
 import os
 from tqdm import tqdm
+import csv
 
 from common.bounding_box import BoundingBox
 from collections import defaultdict
@@ -16,6 +17,10 @@ import numpy as np
 from functools import cmp_to_key
 
 from argparse import ArgumentParser
+
+from entities.sentences import upload
+from common.types import EntityUploadInfo
+from common.models import init_database_connections
 
 import spacy
 nlp = spacy.load("en_core_sci_md")
@@ -280,22 +285,72 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument("--infile", help="Path to input Scienceparse+ JSON", required=True, type=str)
     parser.add_argument("--outfile", help="Path to output JSON file", required=True, type=str)
+    parser.add_argument("--outdir", help="Path to output bunch of CSV files for uploading", type=str)
     args = parser.parse_args()
-
 
     with open(args.infile) as f_in:
         page_dicts = json.load(f_in)
-        all_blocks: List[Block] = []
+        blocks: List[Block] = []
         for page_dict in tqdm(page_dicts):
-            blocks: List[Block] = process_page_for_blocks(page_dict=page_dict)
-            all_blocks.extend(blocks)
+            blocks.extend(process_page_for_blocks(page_dict=page_dict))
+
+
 
     with open(args.outfile, 'w') as f_out:
         out = []
-        for block in all_blocks:
+        for block in blocks:
             if block.type in {'figure', 'table'}:
                 continue
             out.append(block.to_json())
             del out[-1]['tokens']
         json.dump(out, f_out, indent=4)
+
+    # init database
+    init_database_connections(schema_name='kyle_spp', create_tables=True)
+
+    # upload entities
+    entity_infos = []
+    for block_idx, block in enumerate(blocks):
+        for sent_idx, sent in enumerate(block.sents):
+            entity_info = EntityUploadInfo(
+                id_=f"{block_idx}-{sent_idx}",
+                type_="sentence",
+                bounding_boxes=sent.bboxes,
+                data={
+                    "text": sent.text,
+                    "tex": 'NO_LATEX',
+                    "tex_start": -1,
+                    "tex_end": -1,
+                },
+            )
+            entity_infos.append(entity_info)
+    upload.upload_entities(s2_id='9c5c794094fbf5da8c48df5c3242615dc0b1d245',
+                           arxiv_id='1811.12359',
+                           entities=entity_infos,
+                           data_version=None)       # uploads to next version
+
+    # if args.outdir:
+    #     os.makedirs(args.outdir, exist_ok=True)
+    #     with open(os.path.join(args.outdir, 'boundingbox.csv'), 'w') as f_out:
+    #         writer = csv.DictWriter(f_out, fieldnames=['entity_id', 'source', 'page', 'left', 'top', 'width', 'height'])
+    #         writer.writeheader()
+    #         for block in blocks:
+    #             for sent in block.sents:
+    #                 writer.writerow({'entity_id': 0, 'source': 'kyle_pdf', 'page': block.bbox.page,
+    #                                  'left': block.bbox.left, 'top': block.bbox.top,
+    #                                  'width': block.bbox.width, 'height': block.bbox.height})
+    #
+    #     with open(os.path.join(args.outdir, 'entity.csv'), 'w') as f_out:
+    #         writer = csv.DictWriter(f_out, fieldnames=['paper_id', 'version', 'type', 'within_paper_id', 'source'])
+    #         writer.writeheader()
+    #         for block in blocks:
+    #             writer.writerow({})
+    #
+    #
+    #     with open(os.path.join(args.outdir, 'entitydata.csv', 'w')) as f_out:
+    #         pass
+    #
+    #     with open(os.path.join(args.outdir, 'version.csv', 'w')) as f_out:
+    #         writer = csv.DictWriter(f_out, fieldnames=['paper_id', 'index'])
+    #         pass
 
