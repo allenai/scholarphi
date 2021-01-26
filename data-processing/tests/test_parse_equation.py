@@ -1,7 +1,7 @@
 import os
 
 from bs4 import BeautifulSoup, Tag
-from common.parse_equation import NodeType, parse_element, parse_equation
+from common.parse_equation import parse_element, parse_equation
 from common.types import Token
 
 from tests.util import get_test_path
@@ -23,7 +23,7 @@ def test_parse_single_symbol():
     assert len(result.symbols) == 1
     symbol = result.symbols[0]
     assert str(symbol.element) == "<mi>x</mi>"
-    assert symbol.type_ == NodeType.IDENTIFIER
+    assert symbol.type_ == "identifier"
     assert symbol.children == []
     assert symbol.tokens == [Token("x", "atom", 0, 1)]
     assert symbol.start == 0
@@ -47,9 +47,10 @@ def test_merge_contiguous_symbols():
 def test_merge_contigous_symbols_delimit_at_operator():
     result = parse_element(load_fragment_tag("var1_plus_var2.xml"))
     assert str(result.element) == "<mrow><mi>var1</mi><mo>+</mo><mi>var2</mi></mrow>"
-    assert len(result.symbols) == 2
+    assert len(result.symbols) == 3
     assert str(result.symbols[0].element) == "<mi>var1</mi>"
-    assert str(result.symbols[1].element) == "<mi>var2</mi>"
+    assert str(result.symbols[1].element) == "<mo>+</mo>"
+    assert str(result.symbols[2].element) == "<mi>var2</mi>"
 
 
 def test_do_not_parse_error_node():
@@ -77,10 +78,11 @@ def test_parse_node_with_child_nodes():
 def test_parent_symbol_inherits_children_from_row():
     result = parse_element(load_fragment_tag("x_sub_a_plus_b.xml"))
     symbol = result.symbols[0]
-    assert len(symbol.children) == 3
+    assert len(symbol.children) == 4
     assert str(symbol.children[0].element) == "<mi>x</mi>"
     assert str(symbol.children[1].element) == "<mi>a</mi>"
-    assert str(symbol.children[2].element) == "<mi>b</mi>"
+    assert str(symbol.children[2].element) == "<mo>+</mo>"
+    assert str(symbol.children[3].element) == "<mi>b</mi>"
 
 
 def test_number_is_not_a_symbol():
@@ -99,9 +101,11 @@ def test_d_is_symbol_on_its_own():
 
 def test_ignore_derivative_tokens():
     result = parse_element(load_fragment_tag("delta_a_d_b.xml"))
-    assert len(result.symbols) == 2
-    assert str(result.symbols[0].element) == "<mi>a</mi>"
-    assert str(result.symbols[1].element) == "<mi>b</mi>"
+    assert len(result.symbols) == 4
+    assert str(result.symbols[0].element) == "<mo>∂</mo>"
+    assert str(result.symbols[1].element) == "<mi>a</mi>"
+    assert str(result.symbols[2].element) == "<mo>d</mo>"
+    assert str(result.symbols[3].element) == "<mi>b</mi>"
 
     # Make sure that derivatives tokens aren't removed from the MathML.
     assert any([e.name == "mo" and e.text == "d" for e in result.element])
@@ -112,7 +116,7 @@ def test_parse_prime():
     result = parse_element(load_fragment_tag("x_prime.xml"))
     assert len(result.symbols) == 1
     symbol = result.symbols[0]
-    assert len(symbol.children) == 1
+    assert len(symbol.children) == 2
     assert str(symbol.children[0].element) == "<mi>x</mi>"
     assert symbol.tokens == [Token("x", "atom", 0, 1), Token("′", "atom", 1, 2)]
 
@@ -139,10 +143,18 @@ def test_summation_is_not_symbol():
     assert str(result.symbols[1].element) == "<mi>N</mi>"
 
 
-def test_ignore_quantifiers():
+def test_quantifiers_are_operators():
     result = parse_element(load_fragment_tag("forall.xml"))
+    assert len(result.symbols) == 2
+    assert str(result.symbols[0].element) == "<mo>∀</mo>"
+    assert str(result.symbols[1].element) == "<mi>x</mi>"
+
+
+def test_dot_is_an_operator():
+    result = parse_element(load_fragment_tag("dot.xml"))
     assert len(result.symbols) == 1
-    assert str(result.symbols[0].element) == "<mi>x</mi>"
+    assert str(result.symbols[0].element) == "<mo>.</mo>"
+    assert result.symbols[0].type_ == "operator"
 
 
 def test_detect_definition():
@@ -153,10 +165,10 @@ def test_detect_definition():
 
 def test_detect_multiple_definitions():
     result = parse_element(load_fragment_tag("multiple_definitions.xml"))
-    assert str(result.symbols[0].element) == "<mi>x</mi>"
-    assert result.symbols[0].defined
-    assert str(result.symbols[1].element) == "<mi>y</mi>"
-    assert result.symbols[1].defined
+    defined_symbols = list(filter(lambda s: s.defined, result.symbols))
+    assert len(defined_symbols) == 2
+    assert str(defined_symbols[0].element) == "<mi>x</mi>"
+    assert str(defined_symbols[1].element) == "<mi>y</mi>"
 
 
 def test_ignore_definition_in_sum_argument():
@@ -170,7 +182,7 @@ def test_detect_function_declaration():
     symbol = result.symbols[0]
 
     assert symbol.element.text == "p(x;θ,y)"
-    assert symbol.type_ == NodeType.FUNCTION
+    assert symbol.type_ == "function"
     assert symbol.start == 0
     assert symbol.end == 16
     assert (
@@ -187,17 +199,17 @@ def test_detect_function_declaration():
     ), "function tokens should not include semicolons"
 
     child_symbols = symbol.child_symbols
-    assert len(child_symbols) == 4
+    assert len(child_symbols) == 6
     assert str(child_symbols[0].element) == "<mi>p</mi>"
     assert str(child_symbols[1].element) == "<mi>x</mi>"
-    assert str(child_symbols[2].element) == "<mi>θ</mi>"
-    assert str(child_symbols[3].element) == "<mi>y</mi>"
+    assert str(child_symbols[3].element) == "<mi>θ</mi>"
+    assert str(child_symbols[5].element) == "<mi>y</mi>"
 
 
 def test_detect_definition_of_function():
     result = parse_element(load_fragment_tag("function_definition.xml"))
     symbol = result.symbols[0]
-    assert symbol.type_ == NodeType.FUNCTION
+    assert symbol.type_ == "function"
     assert symbol.defined
 
 

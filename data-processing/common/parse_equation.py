@@ -1,11 +1,11 @@
 import re
 from dataclasses import dataclass
-from enum import Enum
 from typing import Callable, List, Optional, Tuple, Union, cast
 
 from bs4 import BeautifulSoup, NavigableString, Tag
+from typing_extensions import Literal
 
-from common.types import Token
+from common.types import NodeType, Token
 
 KATEX_ERROR_COLOR = "#ffffff"
 """
@@ -13,18 +13,6 @@ KaTeX error color is set to white because this is a color where we'll minimize t
 misdetecting colored equations as errors---anything that's set to 'white' in a paper would be
 invisible and we wouldn't want to detect it anyway.
 """
-
-
-class NodeType(Enum):
-    IDENTIFIER = "identifier"
-    FUNCTION = "function"
-    LEFT_PARENS = "left-parens"
-    RIGHT_PARENS = "right-parens"
-    DEFINITION_OPERATOR = "definition-operator"
-    OPERATOR = "operator"
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__, self.name}"
 
 
 @dataclass
@@ -65,7 +53,7 @@ class Node:
         Whether this node should be considered a 'symbol', i.e., an entity in an equation that
         has meaning and needs an explanation.
         """
-        return self.type_ in [NodeType.IDENTIFIER, NodeType.FUNCTION]
+        return self.type_ in ["identifier", "function", "operator"]
 
     @property
     def child_symbols(self) -> List["Node"]:
@@ -293,7 +281,6 @@ def _parse_element(element: Tag) -> ParseResult:
     # * the element, if they need to extract tokens from the element;
     # * the list of all tokens parsed in the parses of child elements, because some tokens will have been found that
     #   don't have a corresponding node in 'children' (for instance, numbers, etc.).
-    original_element = element
     identifier = parse_identifier(element, children, tokens)
     if identifier is not None:
         return identifier
@@ -306,15 +293,18 @@ def _parse_element(element: Tag) -> ParseResult:
     definition_operator = parse_definition_operator(element)
     if definition_operator is not None:
         return definition_operator
+    generic_operator = parse_operator(element)
+    if generic_operator is not None:
+        return generic_operator
 
-    # Now that the sequence of children has been transformed by sanitizers and parsers, check
-    # to see if any of the children in the sequence have been defined.
+    # Determine whether any of the children in the sequence have been defined. This occurs
+    # after the parsing above, because the parsing may regroup children in a way that makes it
+    # possible to capture definitions that would not otherwise be detected (for instance, by
+    # grouping some consecutive tokens into functions).
     for i, c in enumerate(children):
-        if c.type_ == NodeType.DEFINITION_OPERATOR and i >= 1:
+        if c.type_ == "definition-operator" and i >= 1:
             previous_child = children[i - 1]
-            if previous_child.is_symbol and not _appears_in_operator_argument(
-                original_element
-            ):
+            if previous_child.is_symbol and not _appears_in_operator_argument(element):
                 previous_child.defined = True
 
     # If a specific type of node can't be parsed, then return a generic type of node,
@@ -327,9 +317,6 @@ def _is_identifier(element: Tag) -> bool:
     " Determine whether an element represents identifier. "
 
     if element.name == "mi":
-        # Exclude dots, which are parsed as identifiers.
-        if element.text in ["."]:
-            return False
         return True
     # Composite symbols like subscripts and superscripts must have multiple children to be
     # considered a symbol, and their base (i.e., first argument) must be a symbol. In most cases,
@@ -365,7 +352,7 @@ def parse_identifier(
         tokens.extend(_extract_tokens(element))
 
         node = Node(
-            NodeType.IDENTIFIER,
+            "identifier",
             element,
             children,
             int(element.attrs["s2:start"]),
@@ -401,11 +388,11 @@ def parse_functions(
         if parens_depth == 0:
             # Each identifier found in a row could be an identifier for a function,
             # so the last potential function identifier is saved.
-            if child.type_ is NodeType.IDENTIFIER:
+            if child.type_ == "identifier":
                 span_start = i
                 continue
             # Start parsing a function when a left parentheses if found.
-            elif child.type_ is NodeType.LEFT_PARENS:
+            if child.type_ == "left-parens":
                 if span_start != -1:
                     parens_depth += 1
                     continue
@@ -415,7 +402,7 @@ def parse_functions(
                 span_start = -1
 
         if parens_depth > 0:
-            if child.type_ is NodeType.RIGHT_PARENS:
+            if child.type_ == "right-parens":
                 parens_depth -= 1
                 if parens_depth == 0:
                     span_end = i
@@ -445,7 +432,7 @@ def parse_functions(
                 break
 
         func_node = Node(
-            NodeType.FUNCTION,
+            "function",
             func_element,
             func_children,
             func_children[0].start,
@@ -472,9 +459,9 @@ def parse_parens(element: Tag) -> Optional[ParseResult]:
         tokens = _extract_tokens(element)
 
         node = Node(
-            type_=NodeType.LEFT_PARENS
+            type_="left-parens"
             if element.text == "("
-            else NodeType.RIGHT_PARENS,
+            else "right-parens",
             element=element,
             children=[],
             start=int(element.attrs["s2:start"]),
@@ -497,7 +484,23 @@ def parse_definition_operator(element: Tag) -> Optional[ParseResult]:
 
     tokens = _extract_tokens(element)
     node = Node(
-        type_=NodeType.DEFINITION_OPERATOR,
+        type_="definition-operator",
+        element=element,
+        children=[],
+        start=int(element.attrs["s2:start"]),
+        end=int(element.attrs["s2:end"]),
+        tokens=tokens,
+    )
+    return ParseResult([node], element, tokens)
+
+
+def parse_operator(element: Tag) -> Optional[ParseResult]:
+    if element.name != "mo" or not _has_s2_offset_annotations(element):
+        return None
+
+    tokens = _extract_tokens(element)
+    node = Node(
+        type_="operator",
         element=element,
         children=[],
         start=int(element.attrs["s2:start"]),
