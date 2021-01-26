@@ -372,10 +372,21 @@ class SerializableToken(SerializableEntity, Token):
     " See 'relative_start'. "
 
 
+NodeType = Literal[
+    "identifier",
+    "function",
+    "left-parens",
+    "right-parens",
+    "definition-operator",
+    "operator",
+]
+
+
 @dataclass(frozen=True)
 class SerializableSymbol(SerializableEntity, SymbolId):
     equation: str
     mathml: str
+    type_: NodeType
     is_definition: bool
     """
     Whether this appearance of the symbol is a definition of the symbol.
