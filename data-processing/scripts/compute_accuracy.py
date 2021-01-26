@@ -268,8 +268,14 @@ if __name__ == "__main__":
     print(f"# papers that could not be processed: {processing_failures}")
     print(f"# papers missing actual boxes: {missing_actual_boxes}")
     print(f"# papers missing expected boxes: {missing_expected_boxes}")
-    print(f"Average precision: {sum(precisions) / len(precisions)}")
-    print(f"Average recall: {sum(recalls) / len(recalls)}")
-    print(f"Minimum precision: {min(precisions)}")
-    print(f"Minimum recall: {min(recalls)}")
+
+    avg_precision = sum(precisions) / len(precisions) if precisions else None
+    avg_recall = sum(recalls) / len(recalls) if recalls else None
+    min_precision = min(precisions) if precisions else None
+    min_recall = min(recalls) if recalls else None
+
+    print(f"Average precision: {avg_precision}")
+    print(f"Average recall: {avg_recall}")
+    print(f"Minimum precision: {min_precision}")
+    print(f"Minimum recall: {min_recall}")
 
