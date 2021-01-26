@@ -199,11 +199,11 @@ def test_detect_function_declaration():
     ), "function tokens should not include semicolons"
 
     child_symbols = symbol.child_symbols
-    assert len(child_symbols) == 6
+    assert len(child_symbols) == 8
     assert str(child_symbols[0].element) == "<mi>p</mi>"
-    assert str(child_symbols[1].element) == "<mi>x</mi>"
-    assert str(child_symbols[3].element) == "<mi>θ</mi>"
-    assert str(child_symbols[5].element) == "<mi>y</mi>"
+    assert str(child_symbols[2].element) == "<mi>x</mi>"
+    assert str(child_symbols[4].element) == "<mi>θ</mi>"
+    assert str(child_symbols[6].element) == "<mi>y</mi>"
 
 
 def test_detect_definition_of_function():

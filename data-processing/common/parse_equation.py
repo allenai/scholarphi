@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import Callable, List, Optional, Tuple, Union, cast
+from typing import Callable, List, Optional, Union, cast
 
 from bs4 import BeautifulSoup, NavigableString, Tag
 from typing_extensions import Literal
@@ -206,6 +206,89 @@ def merge_row_elements(element: Tag) -> None:
             element.append(m)
 
 
+def merge_functions(element: Tag) -> None:
+    """
+    Detect contiguous elements than should be combined into functions. Because this function
+    processes rows of elements ('mrow'), it might find multiple functions, for example if two
+    functions are multiplied by each other (e.g., 'f(x)g(x)').
+    """
+
+    if not element.name == "mrow":
+        return
+
+    children = element.children
+    to_extract = []
+    braces_stack: List[str] = []
+
+    OPENING_BRACES = ["(", "[", "{"]
+    CLOSING_BRACES = {"(": ")", "[": "]", "{": "}"}
+
+    for child in children:
+
+        # If a function is not currently being extracted...
+        if not braces_stack:
+            # Each identifier found in a row could be an identifier for a function,
+            # so the latest potential function identifier is saved.
+            if child.name == "mi":
+                to_extract = [child]
+                continue
+            # Start parsing a function when an opening brace if found.
+            if child.name == "mo" and child.text in OPENING_BRACES:
+                if to_extract:
+                    braces_stack.append(child.text)
+                    to_extract.append(child)
+                    continue
+            # If this is not an identifier or a left parens, don't consider the
+            # current child as a starting point for making a function.
+            else:
+                to_extract = []
+
+        # If a function is currently being extracted...
+        elif braces_stack:
+            to_extract.append(child)
+
+            # Search for closing braces that match those that have been opened so far.
+            # If all braces are closed, create an element for the function.
+            if child.name == "mo" and child.text == CLOSING_BRACES[braces_stack[-1]]:
+                braces_stack.pop()
+                if braces_stack:
+                    continue
+
+                start = None
+                end = None
+                for e in to_extract:
+                    if isinstance(e, Tag):
+                        try:
+                            e_start = int(e.attrs.get("s2:start"))
+                            e_end = int(e.attrs.get("s2:end"))
+                        except TypeError:
+                            continue
+                        if e_start is not None and (start is None or e_start < start):
+                            start = e_start
+                        if e_end is not None and (end is None or e_end > end):
+                            end = e_end
+
+                # If there is no start or end position for any of the tokens in the function,
+                # something has gone seriously wrong and a function should not be created.
+                if start is None or end is None:
+                    continue
+
+                function = create_element("mrow")
+                function.attrs["s2:start"] = start
+                function.attrs["s2:end"] = end
+                function.attrs["s2:is_function"] = True
+
+                first_extracted = to_extract[0].replace_with(function)
+                extracted = [first_extracted] + [e.extract() for e in to_extract[1:]]
+                function.extend(extracted)
+
+    # Special case: if the row now contains just one function as its only child, replace it with
+    # that function to remove unnecessary nesting.
+    updated_children = list(element.children)
+    if len(updated_children) == 1 and updated_children[0].attrs.get("s2:is_function"):
+        element.replace_with(updated_children[0])
+
+
 def clean_equation_document(root: Tag) -> Tag:
     """
     This method does not destroy the tree passed in as an argument. Rather, it clones the tree,
@@ -224,6 +307,7 @@ def clean_equation_document(root: Tag) -> Tag:
     walk_postorder(parent, make_derivatives_into_operators)
     walk_postorder(parent, repair_operator_tags)
     walk_postorder(parent, merge_row_elements)
+    walk_postorder(parent, merge_functions)
 
     return list(parent.children)[0]
 
@@ -276,27 +360,6 @@ def _parse_element(element: Tag) -> ParseResult:
             children.extend(child_parse_result.nodes)
             tokens.extend(child_parse_result.tokens)
 
-    # Attempt to parse nodes of specific types from the current element. Node type-specific
-    # parsers are responsible returning a parse resul. Type-specific parsers may take in:
-    # * the element, if they need to extract tokens from the element;
-    # * the list of all tokens parsed in the parses of child elements, because some tokens will have been found that
-    #   don't have a corresponding node in 'children' (for instance, numbers, etc.).
-    identifier = parse_identifier(element, children, tokens)
-    if identifier is not None:
-        return identifier
-    functions = parse_functions(element, children, tokens)
-    if functions is not None:
-        children = functions.nodes
-    parens = parse_parens(element)
-    if parens is not None:
-        return parens
-    definition_operator = parse_definition_operator(element)
-    if definition_operator is not None:
-        return definition_operator
-    generic_operator = parse_operator(element)
-    if generic_operator is not None:
-        return generic_operator
-
     # Determine whether any of the children in the sequence have been defined. This occurs
     # after the parsing above, because the parsing may regroup children in a way that makes it
     # possible to capture definitions that would not otherwise be detected (for instance, by
@@ -306,6 +369,24 @@ def _parse_element(element: Tag) -> ParseResult:
             previous_child = children[i - 1]
             if previous_child.is_symbol and not _appears_in_operator_argument(element):
                 previous_child.defined = True
+
+    # Attempt to parse nodes of specific types from the current element. Node type-specific
+    # parsers are responsible returning a parse resul. Type-specific parsers may take in:
+    # * the element, if they need to extract tokens from the element;
+    # * the list of all tokens parsed in the parses of child elements, because some tokens will have been found that
+    #   don't have a corresponding node in 'children' (for instance, numbers, etc.).
+    identifier = parse_identifier(element, children, tokens)
+    if identifier is not None:
+        return identifier
+    function = parse_function(element, children, tokens)
+    if function is not None:
+        return function
+    definition_operator = parse_definition_operator(element)
+    if definition_operator is not None:
+        return definition_operator
+    generic_operator = parse_operator(element)
+    if generic_operator is not None:
+        return generic_operator
 
     # If a specific type of node can't be parsed, then return a generic type of node,
     # comprising of all the children and tokens found in this element.
@@ -364,113 +445,26 @@ def parse_identifier(
     return None
 
 
-def parse_functions(
+def parse_function(
     element: Tag, children: List[Node], tokens: List[Token]
 ) -> Optional[ParseResult]:
-    """
-    Attempt to parse an row of children into functions. Because this function processes rows of
-    elements ('mrow'), it might find multiple functions, for example if two functions are
-    multiplied by each other (e.g., 'f(x)g(x)').
-    """
 
-    if not element.name == "mrow":
+    if (
+        not element.name == "mrow"
+        or not element.get("s2:is_function")
+        or not _has_s2_offset_annotations(element)
+    ):
         return None
 
-    new_children = list(children)
-    function_spans: List[Tuple[int, int]] = []
-    span_start = -1
-    span_end = -1
-    parens_depth = 0
-
-    # Detect ranges of children than should be combined into functions.
-    for i, child in enumerate(children):
-
-        if parens_depth == 0:
-            # Each identifier found in a row could be an identifier for a function,
-            # so the last potential function identifier is saved.
-            if child.type_ == "identifier":
-                span_start = i
-                continue
-            # Start parsing a function when a left parentheses if found.
-            if child.type_ == "left-parens":
-                if span_start != -1:
-                    parens_depth += 1
-                    continue
-            # If this is not an identifier or a left parens, don't consider the
-            # current child as a starting point for making a function.
-            else:
-                span_start = -1
-
-        if parens_depth > 0:
-            if child.type_ == "right-parens":
-                parens_depth -= 1
-                if parens_depth == 0:
-                    span_end = i
-                    function_spans.append((span_start, span_end))
-                    span_start = -1
-                    span_end = -1
-
-    # Nest children that appear to be parts of function in new function nodes.
-    function_created = False
-    for span_start, span_end in reversed(function_spans):
-        if span_start == -1 or span_end == -1:
-            continue
-
-        func_children = children[span_start : span_end + 1]
-        func_tokens = [t for c in func_children for t in c.tokens]
-
-        # Create synthetic MathML row for the function.
-        func_element = create_empty_element_copy(element)
-        add_elements = False
-        for child_element in element.children:
-            if child_element is func_children[0].element:
-                add_elements = True
-            if add_elements:
-                func_element.append(clone_element(child_element))
-            if child_element is func_children[-1].element:
-                add_elements = False
-                break
-
-        func_node = Node(
-            "function",
-            func_element,
-            func_children,
-            func_children[0].start,
-            func_children[-1].end,
-            func_tokens,
-        )
-        new_children = (
-            new_children[:span_start] + [func_node] + new_children[span_end + 1 :]
-        )
-        function_created = True
-
-    if function_created:
-        return ParseResult(new_children, element, tokens)
-    return None
-
-
-def parse_parens(element: Tag) -> Optional[ParseResult]:
-    if (
-        element.name == "mo"
-        and element.text in ["(", ")"]
-        and _has_s2_offset_annotations(element)
-    ):
-
-        tokens = _extract_tokens(element)
-
-        node = Node(
-            type_="left-parens"
-            if element.text == "("
-            else "right-parens",
-            element=element,
-            children=[],
-            start=int(element.attrs["s2:start"]),
-            end=int(element.attrs["s2:end"]),
-            tokens=tokens,
-        )
-        return ParseResult([node], element, tokens)
-
-    return None
+    node = Node(
+        "function",
+        element,
+        children,
+        int(element["s2:start"]),
+        int(element["s2:end"]),
+        tokens,
+    )
+    return ParseResult([node], element, tokens)
 
 
 def parse_definition_operator(element: Tag) -> Optional[ParseResult]:
@@ -634,7 +628,8 @@ def create_empty_element_copy(element: Tag) -> Tag:
     Create a new BeautifulSoup element that will be a cleaned (empty) clone of the element.
     Create the clone by creating a new tag, rather than using 'copy.copy', because edits made
     to copies of elements will modify the contents of the original element, which may be in
-    use by other parts of the code.
+    use by other parts of the code. Cloned element will have all of the same attributes (but
+    none of the children) of the original element.
     """
     clone = create_element(element.name)
     for key, value in element.attrs.items():
