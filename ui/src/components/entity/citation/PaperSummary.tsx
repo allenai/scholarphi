@@ -11,7 +11,6 @@ import { truncateText } from "../../../utils/ui";
 import Button from "@material-ui/core/Button";
 import Tooltip from "@material-ui/core/Tooltip";
 import SaveIcon from "@material-ui/icons/Bookmark";
-import CiteIcon from "@material-ui/icons/FormatQuote";
 import React from "react";
 
 interface Props {
@@ -185,19 +184,6 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
               ) : null}
             </div>
           ) : null}
-          <Button
-            startIcon={<CiteIcon />}
-            className="paper-summary__action"
-            onClick={() => {
-              warnOfUnimplementedActionAndTrack("cite");
-              logger.log("debug", "citation-action", {
-                type: "cite",
-                paper: this.props.paper,
-              });
-            }}
-          >
-            Cite
-          </Button>
           {inLibrary
             ? <LibraryButton label="In Your Library" onClick={goToLibrary}/>
             : <LibraryButton label="Save To Library" onClick={this.saveToLibrary}/>
