@@ -373,12 +373,7 @@ class SerializableToken(SerializableEntity, Token):
 
 
 NodeType = Literal[
-    "identifier",
-    "function",
-    "left-parens",
-    "right-parens",
-    "definition-operator",
-    "operator",
+    "identifier", "function", "definition-operator", "operator",
 ]
 
 
