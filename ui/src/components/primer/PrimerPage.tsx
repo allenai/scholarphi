@@ -103,7 +103,7 @@ class PrimerPage extends React.PureComponent<Props> {
                 parts of a paper?
               </p>
               <p>
-                This reading application, called <b>ScholarPhi</b>, explains
+                This reading application, called <b>Semantic Reader</b>, explains
                 confusing things in papers. You can click on citations, symbols,
                 and terms to look up explanations of them. Anything that has a{" "}
                 <span style={{ borderBottom: "1px dotted" }}>
@@ -140,7 +140,7 @@ class PrimerPage extends React.PureComponent<Props> {
                 Berkeley. Contact the researchers if you have any questions.
               </p>
               <p>
-                If you have feedback on how to improve ScholarPhi or want to report a bug, please join our Slack channel <a href="https://join.slack.com/share/zt-kzpbfz5x-5xVGrzxORdkdNI_RIjS52A">#s2-scholarphi-users</a>.
+                If you have feedback on how to improve Semantic Reader or want to report a bug, please join our Slack channel <a href="https://join.slack.com/share/zt-kzpbfz5x-5xVGrzxORdkdNI_RIjS52A">#s2-scholarphi-users</a>.
               </p>
               <hr />
               <p className="primer-page__header">Reading settings</p>

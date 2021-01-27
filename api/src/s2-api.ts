@@ -77,7 +77,7 @@ async function getPaper(s2Id: string, apiKey?: string): Promise<Paper | undefine
 
   const conf: AxiosRequestConfig = {
     headers: {
-      'user-agent': 'ScholarPhi API Client (https://scholarphi.semanticscholar.org)'
+      'user-agent': 'Semantic Reader API Client (https://scholarphi.semanticscholar.org)'
     }
   };
   if (apiKey) {
