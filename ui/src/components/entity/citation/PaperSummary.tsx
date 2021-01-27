@@ -189,7 +189,7 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
           {this.state.showLoginMessage && (
             <React.Fragment>
               Before you can save papers to your library, you must be logged into Semantic Scholar.
-              Visit <ExternalLink href="https://www.semanticscholar.org" allowReferrer>https://semanticscholar.org</ExternalLink> to log in.
+              Visit <ExternalLink href="https://www.semanticscholar.org/me/library" allowReferrer>Semantic Scholar</ExternalLink> to log in.
               Then refresh this page and try again.
             </React.Fragment>
           )}
