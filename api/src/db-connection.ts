@@ -79,7 +79,6 @@ export class Connection {
       SELECT paper.arxiv_id,
              paper.s2_id,
              version.index AS version,
-             to_json(MAX(entity.updated_at)) AS updated_at,
              SUM(CASE WHEN entity.type = 'symbol' THEN 1 ELSE 0 END) AS symbol_count,
              SUM(CASE WHEN entity.type = 'citation' THEN 1 ELSE 0 END) AS citation_count,
              SUM(CASE WHEN entity.type = 'sentence' THEN 1 ELSE 0 END) AS sentence_count,
@@ -99,7 +98,7 @@ export class Connection {
     GROUP BY paper.s2_id,
              paper.arxiv_id,
              version.index
-    ORDER BY updated_at DESC
+    ORDER BY paper.arxiv_id DESC
       OFFSET ${offset}
        LIMIT ${size}
     `);
