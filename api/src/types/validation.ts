@@ -65,6 +65,7 @@ export let attributes = Joi.object({
    */
   source: Joi.string().required(),
   bounding_boxes: Joi.array().items(boundingBox),
+  tags: Joi.array().items(Joi.string()),
 });
 
 /**
