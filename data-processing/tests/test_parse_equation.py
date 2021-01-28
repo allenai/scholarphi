@@ -33,7 +33,7 @@ def test_parse_single_symbol():
     assert result.tokens == [Token("x", "atom", 0, 1)]
 
 
-def test_merge_contiguous_symbols():
+def test_merge_contiguous_identifiers():
     result = parse_element(load_fragment_tag("relu.xml"))
     assert str(result.element) == "<mi>ReLU</mi>"
     symbol = result.symbols[0]
@@ -42,6 +42,31 @@ def test_merge_contiguous_symbols():
     assert symbol.tokens == [
         Token("ReLU", "atom", 0, 4),
     ]
+
+
+def test_merge_contiguous_styled_identifiers():
+    result = parse_element(load_fragment_tag("bold_relu.xml"))
+    assert str(result.element) == '<mi mathvariant="bold">ReLU</mi>'
+    symbol = result.symbols[0]
+    assert symbol.start == 0
+    assert symbol.end == 14
+
+
+def test_keep_identifiers_with_different_styles_separate():
+    result = parse_element(load_fragment_tag("script_x_regular_y.xml"))
+    assert len(result.symbols) == 2
+    assert str(result.symbols[0].element) == '<mi mathvariant="script">X</mi>'
+    assert str(result.symbols[1].element) == "<mi>Y</mi>"
+
+
+def test_merge_contiguous_identifiers_into_one_with_script():
+    result = parse_element(load_fragment_tag("word_sub_i.xml"))
+    assert False
+
+
+def test_merge_contiguous_operators():
+    result = parse_element(load_fragment_tag("double_bar.xml"))
+    assert False
 
 
 def test_merge_contigous_symbols_delimit_at_operator():
