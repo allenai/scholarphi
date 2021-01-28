@@ -171,6 +171,7 @@ def upload_symbols(
             "tex": f"${symbol.tex}$",
             "tex_start": symbol.start,
             "tex_end": symbol.end,
+            "type": symbol.type_,
             "mathml": symbol.mathml,
             "mathml_near_matches": [m.matching_mathml for m in matches[symbol.mathml]],
             "snippets": other_context_texs,

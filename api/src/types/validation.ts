@@ -112,8 +112,9 @@ attributes = attributes
       {
         is: "symbol",
         then: Joi.object().keys({
-          mathml: stringAttribute,
           tex: stringAttribute,
+          type: stringAttribute,
+          mathml: stringAttribute,
           nicknames: stringListAttribute,
           diagram_label: stringAttribute,
           is_definition: booleanAttribute,
