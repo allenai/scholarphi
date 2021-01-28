@@ -162,6 +162,7 @@ export interface Symbol extends BaseEntity {
 
 export interface SymbolAttributes extends BaseEntityAttributes {
   tex: string | null;
+  type: "identifier" | "function" | "operator";
   mathml: string | null;
   mathml_near_matches: string[];
   is_definition: boolean | null;
@@ -342,10 +343,10 @@ export interface BoundingBox {
 }
 
 export interface Paginated<T> {
-    rows: T[];
-    offset: number;
-    size: number;
-    total: number;
+  rows: T[];
+  offset: number;
+  size: number;
+  total: number;
 }
 
 export interface PaperIdWithEntityCounts {

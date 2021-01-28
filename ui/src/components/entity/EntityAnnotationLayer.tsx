@@ -1,11 +1,5 @@
-import CitationGloss from "../entity/citation/CitationGloss";
-import { DrawerContentType } from "../drawer/Drawer";
-import EntityAnnotation from "./EntityAnnotation";
-import * as selectors from "../../selectors";
-import { GlossStyle } from "../../settings";
-import SimpleSymbolGloss from "./SimpleSymbolGloss";
-import SimpleTermGloss from "./SimpleTermGloss";
-import { Entities, PaperId, Papers, UserLibrary } from "../../state";
+import classNames from "classnames";
+import React from "react";
 import {
   Entity,
   isCitation,
@@ -14,11 +8,16 @@ import {
   isSymbol,
   isTerm,
 } from "../../api/types";
+import * as selectors from "../../selectors";
+import { GlossStyle } from "../../settings";
+import { Entities, PaperId, Papers, UserLibrary } from "../../state";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
-
-import classNames from "classnames";
-import React from "react";
+import { DrawerContentType } from "../drawer/Drawer";
+import CitationGloss from "../entity/citation/CitationGloss";
+import EntityAnnotation from "./EntityAnnotation";
+import SimpleSymbolGloss from "./SimpleSymbolGloss";
+import SimpleTermGloss from "./SimpleTermGloss";
 
 export type SymbolUnderlineMethod = "top-level-symbols" | "defined-symbols";
 
@@ -309,6 +308,14 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
               />
             );
           } else if (isSymbol(entity)) {
+            /*
+             * Only show annotations for identifiers and functions (i.e., not operators).
+             */
+            const ANNOTATED_SYMBOL_TYPES = ["identifier", "function"];
+            if (ANNOTATED_SYMBOL_TYPES.indexOf(entity.attributes.type) === -1) {
+              return null;
+            }
+
             /*
              * If the symbol appears in a selected equation, don't render it; the
              * equation diagram provides its own targets to click.

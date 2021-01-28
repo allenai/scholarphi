@@ -1,4 +1,11 @@
-import { Entities, KnownEntityType, Pages } from "../../state";
+import Button from "@material-ui/core/Button";
+import Card from "@material-ui/core/Card";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import Select from "@material-ui/core/Select";
+import classNames from "classnames";
+import React from "react";
 import {
   BoundingBox,
   CitationAttributes,
@@ -11,16 +18,8 @@ import {
   TermAttributes,
   TermRelationships,
 } from "../../api/types";
+import { Entities, KnownEntityType, Pages } from "../../state";
 import * as uiUtils from "../../utils/ui";
-
-import Button from "@material-ui/core/Button";
-import Card from "@material-ui/core/Card";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-import classNames from "classnames";
-import React from "react";
 
 interface Props {
   className?: string;
@@ -94,6 +93,7 @@ export function createCreateEntityDataWithBoxes(
     data.attributes = {
       ...data.attributes,
       mathml: null,
+      type: "identifier",
       tex: text ? `$${text}$` : null,
       nicknames: [],
       diagram_label: null,
