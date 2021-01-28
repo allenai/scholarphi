@@ -137,7 +137,7 @@ def repair_operator_tags(element: Tag) -> None:
     if element.name != "mi":
         return
 
-    if element.text in ["∀", "∃", "|", "∥", "."]:
+    if element.text in ["∀", "∃", "|", "∣", "∥", ".", "/", "%"]:
         operator = clone_element(element)
         operator.name = "mo"
         element.replace_with(operator)
