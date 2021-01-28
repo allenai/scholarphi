@@ -1,4 +1,5 @@
 import AuthorList from "./AuthorList";
+import ExternalLink from '../../common/ExternalLink';
 import FeedbackButton from "./FeedbackButton";
 import { ChartIcon, InfluentialCitationIcon } from "../../icon";
 import logger from "../../../logging";
@@ -22,21 +23,8 @@ interface Props {
 
 interface State {
   showFullAbstract: boolean;
+  showLoginMessage: boolean;
   errorMessage: string;
-}
-
-function warnOfUnimplementedActionAndTrack(
-  actionType: string,
-  message?: string
-) {
-  const DEFAULT_MESSAGE =
-    "Sorry, that feature isn't implemented yet. Clicking it tells us " +
-    "you're interested in the feature, increasing the likelihood that " +
-    "it'll be implemented!";
-  alert(message || DEFAULT_MESSAGE);
-  if (window.heap) {
-    window.heap.track("Click on Unimplemented Action", { actionType });
-  }
 }
 
 function goToLibrary() {
@@ -52,6 +40,7 @@ function trackLibrarySave() {
 export default class PaperSummary extends React.PureComponent<Props, State> {
   state = {
     showFullAbstract: false,
+    showLoginMessage: false,
     errorMessage: "",
   };
 
@@ -63,12 +52,9 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
     });
 
     if (!userLibrary) {
-      warnOfUnimplementedActionAndTrack(
-        "save"
-        // "Before you can save papers to your library, you must be logged " +
-        //   "into Semantic Scholar. Visit https://semanticscholar.org to log in. " +
-        //   "Then refresh this page and try again."
-      );
+      this.setState({
+        showLoginMessage: true
+      });
     } else {
       try {
         await handleAddPaperToLibrary(paper.s2Id, paper.title);
@@ -199,7 +185,14 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
         </div>
 
         <div className="paper-summary__library-error">
-          {this.state.errorMessage && this.state.errorMessage}
+          {!!this.state.errorMessage && this.state.errorMessage}
+          {this.state.showLoginMessage && (
+            <React.Fragment>
+              Before you can save papers to your library, you must be logged into Semantic Scholar.
+              Visit <ExternalLink href="https://www.semanticscholar.org/me/library" allowReferrer>Semantic Scholar</ExternalLink> to log in.
+              Then refresh this page and try again.
+            </React.Fragment>
+          )}
         </div>
       </div>
     );
