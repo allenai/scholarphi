@@ -157,6 +157,11 @@ def upload_symbols(
                 other_formula_ids.append(equation_id)
 
         # Package up data for the symbol.
+        tags: List[str] = []
+        MAX_BOX_HEIGHT = 0.1
+        if any(b.height > MAX_BOX_HEIGHT for b in boxes):
+            tags.append("large")
+
         data: EntityData = {
             "tex": f"${symbol.tex}$",
             "tex_start": symbol.start,
@@ -166,6 +171,7 @@ def upload_symbols(
             "snippets": other_context_texs,
             "defining_formulas": other_formula_texs,
             "is_definition": symbol.is_definition or False,
+            "tags": tags,
         }
 
         # Create links between this symbol, its sentence, and related symbols.
