@@ -7,52 +7,51 @@ from typing import Iterator
 from common import directories
 from common.commands.base import ArxivBatchCommand
 from common.compile import get_compiled_tex_files
-from common.normalize_tex import expand_tex
+from common.expand_tex import expand_tex
 from common.types import AbsolutePath, ArxivId, CompiledTexFile, Path, RelativePath
 
 CompilationPath = AbsolutePath
 
 
 @dataclass(frozen=True)
-class NormalizationTask:
+class ExpansionTask:
     arxiv_id: ArxivId
-    normalized_sources_dir: RelativePath
+    expanded_sources_dir: RelativePath
     compiled_tex_file: CompiledTexFile
 
 
-class NormalizeTexSources(ArxivBatchCommand[NormalizationTask, None]):
+class ExpandInputs(ArxivBatchCommand[ExpansionTask, None]):
     """
-    Normalize TeX sources to make them easier to process. One example of operation performed
-    by this command is to unify all TeX files into one, so that later stages can infer the
+    Expand main TeX files. This allows later stages to infer the
     order of entities from the order they appear in the TeX file.
     """
 
     @staticmethod
     def get_name() -> str:
-        return "normalize-tex"
+        return "expand-inputs"
 
     @staticmethod
     def get_description() -> str:
-        return "Normalize TeX sources (e.g., unifying TeX files into a single file)."
+        return "Expand TeX sources, inlining inputs into main TeX files."
 
     def get_arxiv_ids_dirkey(self) -> Path:
         return "compiled-sources"
 
-    def load(self) -> Iterator[NormalizationTask]:
+    def load(self) -> Iterator[ExpansionTask]:
         for arxiv_id in self.arxiv_ids:
             sources_dir = directories.arxiv_subdir("sources", arxiv_id)
             if not os.path.exists(sources_dir):
                 logging.warning(  # pylint: disable=logging-not-lazy
                     "No directory of TeX sources could be found for paper %s. The TeX for "
-                    + "this paper will not be normalized.",
+                    + "this paper will not be expanded.",
                     arxiv_id,
                 )
                 continue
 
-            output_dir = directories.arxiv_subdir("normalized-sources", arxiv_id)
+            output_dir = directories.arxiv_subdir("expanded-sources", arxiv_id)
             if os.path.exists(output_dir):
                 logging.warning(
-                    "Directory for normalized TeX already exists in %s. Deleting.",
+                    "Directory for expanded TeX already exists in %s. Deleting.",
                     output_dir,
                 )
                 shutil.rmtree(output_dir)
@@ -70,28 +69,26 @@ class NormalizeTexSources(ArxivBatchCommand[NormalizationTask, None]):
                 continue
 
             for tex_file in compiled_tex_files:
-                yield NormalizationTask(arxiv_id, output_dir, tex_file)
+                yield ExpansionTask(arxiv_id, output_dir, tex_file)
 
-    def process(self, item: NormalizationTask) -> Iterator[None]:
-        if item.compiled_tex_file.path not in os.listdir(item.normalized_sources_dir):
+    def process(self, item: ExpansionTask) -> Iterator[None]:
+        if item.compiled_tex_file.path not in os.listdir(item.expanded_sources_dir):
             logging.warning(  # pylint: disable=logging-not-lazy
                 "TeX file %s could not be found in sources directory for paper %s. "
                 + "This may mean that the TeX file is specified using a relative path (e.g., "
                 + "with '../'). To avoid unanticipated side effects on the file system, this "
-                + "TeX file will not be normalized.",
+                + "TeX file will not be expanded.",
                 item.compiled_tex_file.path,
                 item.arxiv_id,
             )
             yield None
 
-        tex_path = os.path.join(
-            item.normalized_sources_dir, item.compiled_tex_file.path
-        )
+        tex_path = os.path.join(item.expanded_sources_dir, item.compiled_tex_file.path)
 
         if not os.path.isfile(tex_path):
             logging.warning(  # pylint: disable=logging-not-lazy
                 "TeX file at path %s for paper %s is not an actual file (i.e., it might be a "
-                + "link). This file will not be normalized, in case there's something fishy "
+                + "link). This file will not be expanded, in case there's something fishy "
                 + "with this directory of sources that could cause files outside of the TeX "
                 + "project to be modified.",
                 item.compiled_tex_file.path,
@@ -99,7 +96,7 @@ class NormalizeTexSources(ArxivBatchCommand[NormalizationTask, None]):
             )
             yield None
 
-        expanded = expand_tex(item.normalized_sources_dir, item.compiled_tex_file.path)
+        expanded = expand_tex(item.expanded_sources_dir, item.compiled_tex_file.path)
         if expanded is None:
             logging.warning(
                 "Could not expand TeX file %s for paper %s.",
@@ -122,5 +119,5 @@ class NormalizeTexSources(ArxivBatchCommand[NormalizationTask, None]):
 
         yield None
 
-    def save(self, item: NormalizationTask, result: None) -> None:
+    def save(self, item: ExpansionTask, result: None) -> None:
         pass
