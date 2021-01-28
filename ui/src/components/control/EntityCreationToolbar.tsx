@@ -92,6 +92,7 @@ export function createCreateEntityDataWithBoxes(
     data.attributes = {
       ...data.attributes,
       mathml: null,
+      type: "identifier",
       tex: text ? `$${text}$` : null,
       nicknames: [],
       diagram_label: null,

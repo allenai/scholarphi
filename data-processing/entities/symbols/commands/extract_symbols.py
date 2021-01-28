@@ -227,6 +227,7 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, List[EquationSymbols]]):
                         tex=symbol_tex,
                         context_tex=context_tex,
                         mathml=str(symbol.element),
+                        type_=symbol.type_,
                         is_definition=symbol.defined or False,
                         relative_start=symbol.start,
                         relative_end=symbol.end,

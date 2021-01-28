@@ -316,6 +316,14 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
             );
           } else if (isSymbol(entity)) {
             /*
+             * Only show annotations for identifiers and functions (i.e., not operators).
+             */
+            const ANNOTATED_SYMBOL_TYPES = ["identifier", "function"];
+            if (ANNOTATED_SYMBOL_TYPES.indexOf(entity.attributes.type) === -1) {
+              return null;
+            }
+
+            /*
              * If the symbol appears in a selected equation, don't render it; the
              * equation diagram provides its own targets to click.
              */
