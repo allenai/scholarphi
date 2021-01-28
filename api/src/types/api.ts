@@ -119,6 +119,7 @@ export const BASE_ENTITY_ATTRIBUTE_KEYS = [
   "version",
   "source",
   "bounding_boxes",
+  "tags",
 ];
 
 /**
