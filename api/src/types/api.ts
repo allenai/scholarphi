@@ -13,16 +13,20 @@
  */
 
 export interface Paginated<T> {
-    rows: T[];
-    offset: number;
-    size: number;
-    total: number;
+  rows: T[];
+  offset: number;
+  size: number;
+  total: number;
 }
 
 export interface PaperIdWithEntityCounts {
   s2_id: string;
   arxiv_id?: string;
   version: number;
+  /*
+   * ISO timestamp.
+   */
+  updated_at: string;
   symbol_count: number;
   citation_count: number;
   sentence_count: number;

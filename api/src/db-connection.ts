@@ -1,4 +1,5 @@
 import * as Knex from "knex";
+import { DBConfig } from "./conf";
 import {
   BoundingBox,
   Entity,
@@ -11,7 +12,6 @@ import {
   Relationship,
 } from "./types/api";
 import * as validation from "./types/validation";
-import { DBConfig } from "./conf";
 
 /**
  * Create a Knex query builder that can be used to submit queries to the database.
@@ -60,22 +60,26 @@ export class Connection {
     return await this._knex("logentry").insert(logEntry);
   }
 
-  async getAllPapers(offset: number = 0, size: number = 25): Promise<Paginated<PaperIdWithEntityCounts>> {
+  async getAllPapers(
+    offset: number = 0,
+    size: number = 25
+  ): Promise<Paginated<PaperIdWithEntityCounts>> {
     // We use a local type to capture the fact that counts will come across the wire
     // as a string.
     type Row = PaperIdWithEntityCounts & {
-        symbol_count: string;
-        citation_count: string;
-        sentence_count: string;
-        term_count: string;
-        equation_count: string;
-        entity_count: string;
-        total_count: string;
+      symbol_count: string;
+      citation_count: string;
+      sentence_count: string;
+      term_count: string;
+      equation_count: string;
+      entity_count: string;
+      total_count: string;
     };
     const response = await this._knex.raw<{ rows: Row[] }>(`
       SELECT paper.arxiv_id,
              paper.s2_id,
              version.index AS version,
+             to_json(MAX(entity.updated_at)) AS updated_at,
              SUM(CASE WHEN entity.type = 'symbol' THEN 1 ELSE 0 END) AS symbol_count,
              SUM(CASE WHEN entity.type = 'citation' THEN 1 ELSE 0 END) AS citation_count,
              SUM(CASE WHEN entity.type = 'sentence' THEN 1 ELSE 0 END) AS sentence_count,
@@ -95,30 +99,40 @@ export class Connection {
     GROUP BY paper.s2_id,
              paper.arxiv_id,
              version.index
-    ORDER BY entity_count DESC, version.index DESC
+    ORDER BY updated_at DESC
       OFFSET ${offset}
        LIMIT ${size}
     `);
-    const rows = response.rows.map(r => ({
-        arxiv_id: r.arxiv_id,
-        s2_id: r.s2_id,
-        version: r.version,
-        symbol_count: parseInt(r.symbol_count),
-        citation_count: parseInt(r.citation_count),
-        sentence_count: parseInt(r.sentence_count),
-        term_count: parseInt(r.term_count),
-        equation_count: parseInt(r.equation_count),
-        entity_count: parseInt(r.entity_count)
+    const rows = response.rows.map((r) => ({
+      arxiv_id: r.arxiv_id,
+      s2_id: r.s2_id,
+      version: r.version,
+      updated_at: r.updated_at,
+      symbol_count: parseInt(r.symbol_count),
+      citation_count: parseInt(r.citation_count),
+      sentence_count: parseInt(r.sentence_count),
+      term_count: parseInt(r.term_count),
+      equation_count: parseInt(r.equation_count),
+      entity_count: parseInt(r.entity_count),
     }));
     const total = parseInt(response.rows[0].total_count);
     return { rows, offset, size, total };
   }
 
-  async getPaperEntityCount(paperSelector: PaperSelector): Promise<number | null> {
-    const idField = isS2Selector(paperSelector) ? 'p.s2_id' : 'p.arxiv_id';
-    const idValue = isS2Selector(paperSelector) ? paperSelector.s2_id : `${paperSelector.arxiv_id}%`;
-    const whereClause = `${idField} ${isS2Selector(paperSelector) ? '=' : 'ilike'} ?`
-    const response = await this._knex.raw<{ rows: {count: number, id: string}[] }>(`
+  async getPaperEntityCount(
+    paperSelector: PaperSelector
+  ): Promise<number | null> {
+    const idField = isS2Selector(paperSelector) ? "p.s2_id" : "p.arxiv_id";
+    const idValue = isS2Selector(paperSelector)
+      ? paperSelector.s2_id
+      : `${paperSelector.arxiv_id}%`;
+    const whereClause = `${idField} ${
+      isS2Selector(paperSelector) ? "=" : "ilike"
+    } ?`;
+    const response = await this._knex.raw<{
+      rows: { count: number; id: string }[];
+    }>(
+      `
       select count(e.*), ${idField}
       from paper p
       join entity e on e.paper_id = p.s2_id
@@ -129,7 +143,9 @@ export class Connection {
       ) as maximum on maximum.paper_id = e.paper_id
       where e.version = maximum.max_version and ${whereClause}
       group by p.s2_id
-    `, [idValue]);
+    `,
+      [idValue]
+    );
     if (response.rows.length > 0) {
       return response.rows[0].count;
     }
@@ -137,12 +153,13 @@ export class Connection {
   }
 
   async checkPaper(paperSelector: PaperSelector): Promise<boolean> {
-    const rows = await this._knex("paper")
-      .where(paperSelector);
+    const rows = await this._knex("paper").where(paperSelector);
     return rows.length > 0;
   }
 
-  async getLatestPaperDataVersion(paperSelector: PaperSelector): Promise<number | null> {
+  async getLatestPaperDataVersion(
+    paperSelector: PaperSelector
+  ): Promise<number | null> {
     const rows = await this._knex("version")
       .max("index")
       .join("paper", { "paper.s2_id": "version.paper_id" })
@@ -151,22 +168,32 @@ export class Connection {
     return isNaN(version) ? null : version;
   }
 
-  async getLatestProcessedArxivVersion(paperSelector: PaperSelector): Promise<number | null> {
+  async getLatestProcessedArxivVersion(
+    paperSelector: PaperSelector
+  ): Promise<number | null> {
     if (isS2Selector(paperSelector)) {
       return null;
     }
     // Provided arXiv IDs might have a version suffix, but ignore that for this check.
-    const versionDelimiterIndex = paperSelector.arxiv_id.indexOf('v');
-    const arxivId = versionDelimiterIndex > -1 ? paperSelector.arxiv_id.substring(0, versionDelimiterIndex) : paperSelector.arxiv_id;
+    const versionDelimiterIndex = paperSelector.arxiv_id.indexOf("v");
+    const arxivId =
+      versionDelimiterIndex > -1
+        ? paperSelector.arxiv_id.substring(0, versionDelimiterIndex)
+        : paperSelector.arxiv_id;
 
     // TODO(mjlangan): This won't support arXiv IDs prior to 03/2007 as written
-    const response = await this._knex.raw<{ rows: { arxiv_version: number }[] }>(`
+    const response = await this._knex.raw<{
+      rows: { arxiv_version: number }[];
+    }>(
+      `
       SELECT CAST((REGEXP_MATCHES(arxiv_id,'^\\d{4}\\.\\d{4,5}v(\\d+)$'))[1] AS integer) AS arxiv_version
         FROM paper
         WHERE arxiv_id ilike ?
         ORDER BY arxiv_version DESC
         LIMIT 1
-    `, [`${arxivId}%`]);
+    `,
+      [`${arxivId}%`]
+    );
 
     if (response.rows.length > 0) {
       return response.rows[0].arxiv_version;
@@ -662,7 +689,9 @@ interface S2IdPaperSelector {
   s2_id: string;
 }
 
-function isArxivSelector(selector: PaperSelector): selector is ArxivIdPaperSelector {
+function isArxivSelector(
+  selector: PaperSelector
+): selector is ArxivIdPaperSelector {
   return (selector as ArxivIdPaperSelector).arxiv_id !== undefined;
 }
 
