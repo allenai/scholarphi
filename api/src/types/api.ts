@@ -156,7 +156,8 @@ export interface EntityCreatePayload {
 
 export interface EntityCreateData {
   type: string;
-  attributes: Omit<BaseEntityAttributes, "version"> & GenericAttributes;
+  attributes: Omit<BaseEntityAttributes, "version" | "tags"> &
+    GenericAttributes;
   relationships: GenericRelationships;
 }
 

@@ -263,6 +263,7 @@ export class Connection {
         version: entityRow.version,
         source: entityRow.source,
         bounding_boxes: boundingBoxes,
+        tags: attributes.tags || []
       },
       relationships: {
         ...relationships,
