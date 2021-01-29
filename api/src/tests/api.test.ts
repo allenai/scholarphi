@@ -107,6 +107,7 @@ describe("API", () => {
                   height: 0.05,
                 },
               ],
+              tags: [],
             },
             relationships: {},
           },
@@ -159,6 +160,7 @@ describe("API", () => {
           version: 0,
           bounding_boxes: [],
           paper_id: "citation_paper_id",
+          tags: [],
         },
         relationships: {},
       } as Entity);
@@ -276,6 +278,7 @@ describe("API", () => {
           source: "test",
           version: 0,
           bounding_boxes: [],
+          tags: [],
           mathml: "<math></math>",
           mathml_near_matches: [
             "<math><mi>x</mi></math>",
@@ -367,6 +370,7 @@ describe("API", () => {
           source: "test",
           version: 0,
           bounding_boxes: [],
+          tags: [],
           text: "Sentence <symbol>.",
           tex: "Sentence $x$.",
           tex_start: 0,
@@ -405,6 +409,7 @@ describe("API", () => {
                 height: 0.05,
               },
             ],
+            tags: [],
           },
           relationships: {},
         },
@@ -479,6 +484,7 @@ describe("API", () => {
                 height: 0.05,
               },
             ],
+            tags: [],
           },
           relationships: {
             UNEXPECTED_RELATIONSHIP: { id: "1", type: "unknown" },
@@ -523,6 +529,7 @@ describe("API", () => {
               height: 0.05,
             },
           ],
+          tags: [],
         },
         relationships: {},
       };
