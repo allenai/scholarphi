@@ -137,7 +137,7 @@ def repair_operator_tags(element: Tag) -> None:
     if element.name != "mi":
         return
 
-    if element.text in ["∀", "∃", "|", "∥", ".", "/", "%"]:
+    if element.text in ["∀", "∃", "|", "∥", "∣", ".", "/", "%"]:
         operator = clone_element(element)
         operator.name = "mo"
         element.replace_with(operator)
@@ -732,7 +732,7 @@ class MathMlElementMerger:
         # Here come the context-sensitive rules:
         # 1. Letters can be merged into any sequence of elements before them that starts with a
         #    a letter. This allows tokens to be merged into (target letter is shown in
-        #    <angled brackets> identifiers like "r2<d>2", but not constant multiplications like
+        #    <angled brackets>) identifiers like "r2<d>2", but not constant multiplications like
         #   "4<x>", which should be split into two symbols.
         if element.name == "mi":
             return bool(self.to_merge[0].name == "mi")
@@ -740,7 +740,11 @@ class MathMlElementMerger:
         # 3. Numbers can be merged into numbers before them, extending an identifier, or making
         #    a number with multiple digits.
         if element.name == "mn":
-            return True
+            return last_element.name in ["mi", "mn"]
+        # 4. Operators can be merged into operators that appear just before them to form multi-
+        #    symbol operators, like '++', '//', etc.
+        if element.name == "mo":
+            return last_element.name == "mo"
 
         return False
 
