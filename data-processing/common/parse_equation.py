@@ -196,8 +196,16 @@ def merge_row_elements(element: Tag) -> None:
     merged = merger.merge(elements)
 
     # If the 'mrow' only contains one element after its children are merged, simplify the
-    # MathML tree replacing this node with its merged child.
+    # MathML tree replacing this node with its merged child. Preserve the start and end
+    # position of the row element if it is specified, because this often means that a styling
+    # macro was applied to the children, and the start and end positions of the row include
+    # the control sequence and braces for the styling macro.
     if len(merged) == 1:
+        start = element.attrs.get("s2:start")
+        end = element.attrs.get("s2:end")
+        if start and end:
+            merged[0].attrs["s2:start"] = start
+            merged[0].attrs["s2:end"] = end
         element.replace_with(merged[0])
     else:
         for e in elements:
@@ -691,7 +699,7 @@ class MathMlElementMerger:
 
     def _is_mergeable_type(self, element: Tag) -> bool:
         " Determine if a element is a type that is mergeable with other elements. "
-        MERGEABLE_TOKEN_TAGS = ["mn", "mi"]
+        MERGEABLE_TOKEN_TAGS = ["mn", "mi", "mo"]
         return element.name in MERGEABLE_TOKEN_TAGS and _has_s2_offset_annotations(
             element
         )
@@ -712,6 +720,13 @@ class MathMlElementMerger:
         element_start = element.attrs["s2:start"]
         last_element_end = last_element.attrs["s2:end"]
         if not element_start == last_element_end:
+            return False
+
+        # The two elements must also have the same style (i.e., if a script letter follows a
+        # regular letter, than the two are probably separate identifiers).
+        last_style = last_element.attrs.get("mathvariant")
+        style = element.attrs.get("mathvariant")
+        if not last_style == style:
             return False
 
         # Here come the context-sensitive rules:
@@ -747,6 +762,9 @@ class MathMlElementMerger:
         element.string = new_text
         element.attrs["s2:start"] = self.to_merge[0].attrs["s2:start"]
         element.attrs["s2:end"] = self.to_merge[-1].attrs["s2:end"]
+        mathvariant = self.to_merge[0].attrs.get("mathvariant")
+        if mathvariant:
+            element.attrs["mathvariant"] = mathvariant
 
         # An identifier should have no children in MathML.
         self.merged.append(element)
