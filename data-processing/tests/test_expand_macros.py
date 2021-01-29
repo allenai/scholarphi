@@ -25,6 +25,25 @@ def test_detect_simple_macro():
     assert expansions[0] == Expansion(rb"\simpledef", 2, 1, 2, 11, b"x")
 
 
+def test_detect_multiple_macros():
+    # Input TeX:
+    # \def\simpledef{x}
+    # $\simpledef$
+    # $\simpledef$
+    log = to_bytes(
+        r"Start of expansion. Control sequence: T_CS[\simpledef]. (object ID: 1). Current expansion depth: 1. (If this was a literal control sequence in a file rather than from an expansion, it appeared in /Users/andrew/github/LaTeXML/test/example/main.tex from line 2, col 1 to line 2, col 11).",
+        r"Expansion token: x (object ID 2). Expandable: false.",
+        r"End of expansion. Current expansion depth: 1. Expansion: x.",
+        r"Start of expansion. Control sequence: T_CS[\simpledef]. (object ID: 3). Current expansion depth: 1. (If this was a literal control sequence in a file rather than from an expansion, it appeared in /Users/andrew/github/LaTeXML/test/example/main.tex from line 3, col 1 to line 3, col 11).",
+        r"Expansion token: x (object ID 4). Expandable: false.",
+        r"End of expansion. Current expansion depth: 1. Expansion: x.",        
+    )
+    expansions = detect_expansions(log)
+    assert len(expansions) == 2
+    assert expansions[0] == Expansion(rb"\simpledef", 2, 1, 2, 11, b"x")
+    assert expansions[1] == Expansion(rb"\simpledef", 3, 1, 3, 11, b"x")
+
+
 def test_detect_macro_containing_style_macro():
     # Input TeX:
     # \def\defcontainingstylecontrolsequence{\mathbf x}
@@ -71,18 +90,21 @@ def test_detect_macro_with_macro_in_expansion():
     # \def\defcontainingcontrolsequence{\simpledef + y}
     # $\defcontainingcontrolsequence$
     log = to_bytes(
-        r"Start of expansion. Control sequence: T_CS[\defcontainingcontrolsequence]. (object ID: 1). Current expansion depth: 1. (If this was a literal control sequence in a file rather than from an expansion, it appeared in /Users/andrew/github/LaTeXML/test/example/main.tex from line 27, col 1 to line 27, col 30).",
+        r"Start of expansion. Control sequence: T_CS[\defcontainingcontrolsequence]. (object ID: 1). Current expansion depth: 1. (If this was a literal control sequence in a file rather than from an expansion, it appeared in /Users/andrew/github/LaTeXML/test/example/main.tex from line 2, col 1 to line 2, col 30).",
         r"Expansion token: \simpledef (object ID 2). Expandable: true.",
         r"Expansion token: + (object ID 3). Expandable: false.",
         r"Expansion token:   (object ID 4). Expandable: false.",
         r"Expansion token: y (object ID 5). Expandable: false.",
         r"End of expansion. Current expansion depth: 1. Expansion: \simpledef+ y.",
-        r"Start of expansion. Control sequence: T_CS[\simpledef]. (object ID: 2). Current expansion depth: 1. (If this was a literal control sequence in a file rather than from an expansion, it appeared in /Users/andrew/github/LaTeXML/test/example/main.tex from line 27, col 1 to line 27, col 30).",
+        r"Start of expansion. Control sequence: T_CS[\simpledef]. (object ID: 2). Current expansion depth: 1. (If this was a literal control sequence in a file rather than from an expansion, it appeared in /Users/andrew/github/LaTeXML/test/example/main.tex from line 2, col 1 to line 2, col 30).",
         r"Expansion token: x (object ID 6). Expandable: false.",
         r"End of expansion. Current expansion depth: 1. Expansion: x.",
     )
     expansions = detect_expansions(log)
-    assert False
+    assert len(expansions) == 1
+    assert expansions[0] == Expansion(
+        rb"\defcontainingcontrolsequence", 2, 1, 2, 30, b"x+ y"
+    )
 
 
 def test_detect_macro_with_macro_in_argument():
@@ -91,24 +113,26 @@ def test_detect_macro_with_macro_in_argument():
     # \def\defwithargs#1#2{#1 + #2}
     # $\defwithargs{\simpledef}{y}$
     log = to_bytes(
-        r"Start of expansion. Control sequence: T_CS[\defwithargs]. (object ID: 1). Current expansion depth: 1. (If this was a literal control sequence in a file rather than from an expansion, it appeared in /Users/andrew/github/LaTeXML/test/example/main.tex from line 36, col 1 to line 36, col 13).",
-        r'Argument token: "{" (source file main.tex, from line 36 col 13 to line 36 col 14).',
-        r'Argument token: "\simpledef" (source file main.tex, from line 36 col 14 to line 36 col 24).',
-        r'Argument token: "}" (source file main.tex, from line 36 col 24 to line 36 col 25).',
-        r'Argument token: "{" (source file main.tex, from line 36 col 25 to line 36 col 26).',
-        r'Argument token: "y" (source file main.tex, from line 36 col 26 to line 36 col 27).',
-        r'Argument token: "}" (source file main.tex, from line 36 col 27 to line 36 col 28).',
+        r"Start of expansion. Control sequence: T_CS[\defwithargs]. (object ID: 1). Current expansion depth: 1. (If this was a literal control sequence in a file rather than from an expansion, it appeared in /Users/andrew/github/LaTeXML/test/example/main.tex from line 2, col 1 to line 2, col 13).",
+        r'Argument token: "{" (source file main.tex, from line 2 col 13 to line 2 col 14).',
+        r'Argument token: "\simpledef" (source file main.tex, from line 2 col 14 to line 2 col 24).',
+        r'Argument token: "}" (source file main.tex, from line 2 col 24 to line 2 col 25).',
+        r'Argument token: "{" (source file main.tex, from line 2 col 25 to line 2 col 26).',
+        r'Argument token: "y" (source file main.tex, from line 2 col 26 to line 2 col 27).',
+        r'Argument token: "}" (source file main.tex, from line 2 col 27 to line 2 col 28).',
         r"Expansion token: \simpledef (object ID 2). Expandable: true.",
         r"Expansion token:   (object ID 3). Expandable: false.",
         r"Expansion token: + (object ID 4). Expandable: false.",
         r"Expansion token:   (object ID 3). Expandable: false.",
         r"Expansion token: y (object ID 5). Expandable: false.",
         r"End of expansion. Current expansion depth: 1. Expansion: \simpledef + y.",
-        r"Start of expansion. Control sequence: T_CS[\simpledef]. (object ID: 2). Current expansion depth: 1. (If this was a literal control sequence in a file rather than from an expansion, it appeared in /Users/andrew/github/LaTeXML/test/example/main.tex from line 36, col 27 to line 36, col 28).",
+        r"Start of expansion. Control sequence: T_CS[\simpledef]. (object ID: 2). Current expansion depth: 1. (If this was a literal control sequence in a file rather than from an expansion, it appeared in /Users/andrew/github/LaTeXML/test/example/main.tex from line 2, col 27 to line 2, col 28).",
         r"Expansion token: x (object ID 6). Expandable: false.",
         r"End of expansion. Current expansion depth: 1. Expansion: x.",
     )
-    assert False
+    expansions = detect_expansions(log)
+    assert len(expansions) == 1
+    assert expansions[0] == Expansion(rb"\defwithargs", 2, 1, 2, 28, "x + y")
 
 
 def test_detect_macro_ignore_operator_wrapper():
@@ -117,7 +141,7 @@ def test_detect_macro_ignore_operator_wrapper():
     # \DeclareMathOperator{\op}{op}
     # $\op x$
     log = to_bytes(
-        r"Start of expansion. Control sequence: T_CS[\op]. (object ID: 1). Current expansion depth: 1. (If this was a literal control sequence in a file rather than from an expansion, it appeared in /Users/andrew/github/LaTeXML/test/example/main.tex from line 40, col 1 to line 40, col 4).",
+        r"Start of expansion. Control sequence: T_CS[\op]. (object ID: 1). Current expansion depth: 1. (If this was a literal control sequence in a file rather than from an expansion, it appeared in /Users/andrew/github/LaTeXML/test/example/main.tex from line 2, col 1 to line 2, col 4).",
         r"Expansion token: \op@wrapper (object ID 2). Expandable: false.",
         r"Expansion token: { (object ID 3). Expandable: false.",
         r"Expansion token: \op@presentation (object ID 4). Expandable: true.",
@@ -131,4 +155,6 @@ def test_detect_macro_ignore_operator_wrapper():
         r"Expansion token: } (object ID 5). Expandable: false.",
         r"End of expansion. Current expansion depth: 1. Expansion: \operatorname{op}.        ",
     )
-    assert False
+    expansions = detect_expansions(log)
+    assert len(expansions) == 1
+    assert expansions[0] == Expansion(rb"\op", 2, 1, 2, 4, rb"{\operatorname{op}}")
