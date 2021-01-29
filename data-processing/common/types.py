@@ -372,6 +372,10 @@ class SerializableToken(SerializableEntity, Token):
     " See 'relative_start'. "
 
 
+# Type of symbol. If a new symbol type is added, then several other places in the larger
+# project need to be changed: (1) the symbol attributes type in the API and UI and (2) the UI code
+# that renders symbol annotations, which needs to be told which symbol types should be rendered,
+# and which types should not.
 NodeType = Literal[
     "identifier", "function", "definition-operator", "operator",
 ]
