@@ -1,4 +1,11 @@
-import { Entities, KnownEntityType, Pages } from "../../state";
+import Button from "@material-ui/core/Button";
+import Card from "@material-ui/core/Card";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import Select from "@material-ui/core/Select";
+import classNames from "classnames";
+import React from "react";
 import {
   BoundingBox,
   CitationAttributes,
@@ -11,16 +18,8 @@ import {
   TermAttributes,
   TermRelationships,
 } from "../../api/types";
+import { Entities, KnownEntityType, Pages } from "../../state";
 import * as uiUtils from "../../utils/ui";
-
-import Button from "@material-ui/core/Button";
-import Card from "@material-ui/core/Card";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-import classNames from "classnames";
-import React from "react";
 
 interface Props {
   className?: string;
@@ -74,12 +73,11 @@ export function createCreateEntityDataWithBoxes(
       ...data.attributes,
       name: text || null,
       term_type: null,
-      tags: [],
       definitions: [],
       definition_texs: [],
       sources: [],
       snippets: [],
-    } as Omit<TermAttributes, "version">;
+    } as Omit<TermAttributes, "version" | "tags">;
     data.relationships = {
       sentence: { type: "sentence", id: null },
       definition_sentences: [],
@@ -103,7 +101,7 @@ export function createCreateEntityDataWithBoxes(
       passages: [],
       mathml_near_matches: [],
       snippets: [],
-    } as Omit<SymbolAttributes, "version">;
+    } as Omit<SymbolAttributes, "version" | "tags">;
     data.relationships = {
       sentence: { type: "sentence", id: null },
       equation: { type: "equation", id: null },
