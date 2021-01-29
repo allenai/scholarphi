@@ -69,7 +69,7 @@ RUN pip install "git+https://github.com/facebookresearch/detectron2.git#egg=dete
 RUN apt-get -y install poppler-utils
 
 ARG GITHUB_ACCESS_TOKEN
-RUN git clone -b kylel/2021-01-28 https://$GITHUB_ACCESS_TOKEN@github.com/allenai/scienceparseplus
+RUN git clone -b kylel/2021-01-28/dockerfile https://$GITHUB_ACCESS_TOKEN@github.com/allenai/scienceparseplus
 
 # Copy over the source code
 WORKDIR /data-processing
