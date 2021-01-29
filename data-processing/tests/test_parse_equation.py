@@ -49,7 +49,7 @@ def test_merge_contiguous_styled_identifiers():
     assert str(result.element) == '<mi mathvariant="bold">ReLU</mi>'
     symbol = result.symbols[0]
     assert symbol.start == 0
-    assert symbol.end == 14
+    assert symbol.end == 13
 
 
 def test_keep_identifiers_with_different_styles_separate():
@@ -61,12 +61,14 @@ def test_keep_identifiers_with_different_styles_separate():
 
 def test_merge_contiguous_identifiers_into_one_with_script():
     result = parse_element(load_fragment_tag("word_sub_i.xml"))
-    assert False
+    assert len(result.symbols) == 3
+    assert str(result.element) == "<msub><mi>word</mi><mi>i</mi></msub>"
 
 
 def test_merge_contiguous_operators():
     result = parse_element(load_fragment_tag("double_bar.xml"))
-    assert False
+    assert len(result.symbols) == 1
+    assert str(result.element) == "<mo>∣∣</mo>"
 
 
 def test_merge_contigous_symbols_delimit_at_operator():
