@@ -90,18 +90,11 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
         )
         parser.add_argument(
             "--keep-intermediate-files",
-            actionn="store_true",
+            action="store_true",
             help=(
-                "This command can consume gigabytes of storage. For each batch of entities, "
-                + "this command creates two copies of the source directory (one of which is "
-                + "compiled), and two sets of images (one which contains raster of the pages "
-                + "and one which contains differences of thos rasters against raster of the "
-                + "original paper). While the storage footprint of one batch is kilobytes "
-                + "or megabytes, this creates gigabytes across hundreds of batches. By default, "
-                + "these files are deleted after each batch to reduce the likelihood that "
-                + "the machine will run out of storage while processing a paper. It is left "
-                + "as an option for debugging purposes, i.e., if you wish to inspect how "
-                + "the TeX is colorized, TeX compilation logs, and rasters."
+                "Whether to keep intermediate files (sources, compilation results, page rasters) "
+                + "generated for each batch of entities processed. The default is to delete "
+                + "these files. See the argument documentation in 'run_pipeline' for more context."
             ),
         )
 
