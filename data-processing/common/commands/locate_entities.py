@@ -13,23 +13,14 @@ from common.colorize_tex import ColorizedTex, colorize_entities
 from common.commands.base import ArxivBatchCommand
 from common.commands.compile_tex import save_compilation_result
 from common.commands.raster_pages import raster_pages
-from common.compile import (
-    compile_tex,
-    get_compiled_tex_files,
-    get_last_autotex_compiler,
-    get_last_colorized_entity_id,
-)
+from common.compile import (compile_tex, get_compiled_tex_files,
+                            get_last_autotex_compiler,
+                            get_last_colorized_entity_id)
 from common.diff_images import diff_images_in_raster_dirs
 from common.locate_entities import locate_entities
-from common.types import (
-    ArxivId,
-    ColorizationRecord,
-    ColorizeOptions,
-    FileContents,
-    HueLocationInfo,
-    RelativePath,
-    SerializableEntity,
-)
+from common.types import (ArxivId, ColorizationRecord, ColorizeOptions,
+                          FileContents, HueLocationInfo, RelativePath,
+                          SerializableEntity)
 
 
 @dataclass(frozen=True)
@@ -95,6 +86,15 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                 + "the TeX. If visual validation fails for a diff for a paper, that diff will "
                 + "not be processed. Set this flag to skip visual validation and therefore "
                 + "process all diffs of all papers regardless of evidence of layout shift."
+            ),
+        )
+        parser.add_argument(
+            "--keep-intermediate-files",
+            action="store_true",
+            help=(
+                "Whether to keep intermediate files (sources, compilation results, page rasters) "
+                + "generated for each batch of entities processed. The default is to delete "
+                + "these files. See the argument documentation in 'run_pipeline' for more context."
             ),
         )
 
@@ -555,6 +555,23 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                 item.arxiv_id,
                 iteration_id,
             )
+
+            if not self.args.keep_intermediate_files:
+                logging.debug(  # pylint: disable=logging-not-lazy
+                    "Deleting intermediate files used to locate entities (i.e., colorized "
+                    + "sources, compilation results, and rasters) for paper %s iteration %s",
+                    item.arxiv_id,
+                    iteration_id,
+                )
+                intermediate_files_dirs = [
+                    colorized_tex_dir,
+                    compiled_tex_dir,
+                    raster_output_dir,
+                    diffs_output_dir,
+                ]
+                for dir_ in intermediate_files_dirs:
+                    file_utils.clean_directory(dir_)
+                    os.rmdir(dir_)
 
             # The code above is responsible for filter 'batch' to ensure that it doesn't include
             # any entity IDs that shouldn't be save to file, for example if the client has asked that

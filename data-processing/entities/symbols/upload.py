@@ -132,10 +132,6 @@ def upload_symbols(
             for l in localized_entity.locations
         ]
 
-        # TODO(andrewhead): move this filtering condition into 'parse_equation'
-        if symbol.tex in ["$|$", "|"]:
-            continue
-
         # Get context and formula of the symbol, and other matching ones.
         symbol_context = symbol_contexts.get(sid(symbol))
         matching_contexts = mathml_contexts.get(symbol.mathml, [])
@@ -157,6 +153,20 @@ def upload_symbols(
                 other_formula_ids.append(equation_id)
 
         # Package up data for the symbol.
+        tags: List[str] = []
+        MAX_BOX_HEIGHT = 0.1
+        for b in boxes:
+            if b.height > MAX_BOX_HEIGHT:
+                logging.debug(  # pylint: disable=logging-not-lazy
+                    "Detected large bounding box for symbol with height %f for entity %s of paper "
+                    + "%s. Entity will be given a tag indicating it is unexpectedly large.",
+                    b.height,
+                    f"{localized_entity.entity.tex_path}-{localized_entity.entity.id_}",
+                    arxiv_id,
+                )
+                tags.append("large")
+                break
+
         data: EntityData = {
             "tex": f"${symbol.tex}$",
             "tex_start": symbol.start,
@@ -166,6 +176,7 @@ def upload_symbols(
             "snippets": other_context_texs,
             "defining_formulas": other_formula_texs,
             "is_definition": symbol.is_definition or False,
+            "tags": tags,
         }
 
         # Create links between this symbol, its sentence, and related symbols.

@@ -8,18 +8,12 @@ from datetime import datetime
 from typing import List
 
 from common import directories, email, file_utils
-from common.commands.base import (
-    CommandList,
-    add_arxiv_id_filter_args,
-    create_args,
-    load_arxiv_ids_using_args,
-    read_arxiv_ids_from_file,
-)
+from common.commands.base import (CommandList, add_arxiv_id_filter_args,
+                                  create_args, load_arxiv_ids_using_args,
+                                  read_arxiv_ids_from_file)
 from common.commands.database import DatabaseUploadCommand
 from common.commands.fetch_arxiv_sources import (
-    DEFAULT_S3_ARXIV_SOURCES_BUCKET,
-    FetchArxivSources,
-)
+    DEFAULT_S3_ARXIV_SOURCES_BUCKET, FetchArxivSources)
 from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
 from common.commands.locate_entities import LocateEntitiesCommand
 from common.commands.store_pipeline_log import StorePipelineLog
@@ -27,12 +21,8 @@ from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
 from common.make_digest import make_paper_digest
 from common.types import PipelineDigest
 
-from scripts.commands import (
-    ENTITY_COMMANDS,
-    TEX_PREPARATION_COMMANDS,
-    commands_by_entity,
-    run_command,
-)
+from scripts.commands import (ENTITY_COMMANDS, TEX_PREPARATION_COMMANDS,
+                              commands_by_entity, run_command)
 from scripts.job_config import fetch_config, load_job_from_s3
 from scripts.pipelines import entity_pipelines
 
@@ -57,6 +47,7 @@ def run_commands_for_arxiv_ids(
         command_args.v = pipeline_args.v
         command_args.source = pipeline_args.source
         command_args.batch_size = pipeline_args.entity_batch_size
+        command_args.keep_intermediate_files = pipeline_args.keep_intermediate_files
         command_args.log_names = [log_filename]
         command_args.schema = pipeline_args.database_schema
         command_args.create_tables = pipeline_args.database_create_tables
@@ -203,6 +194,22 @@ if __name__ == "__main__":
         ),
     )
     parser.add_argument(
+        "--keep-intermediate-files",
+        action="store_true",
+        help=(
+            "The pipeline can consume gigabytes of storage. For each batch of entities, "
+            + "the pipeline creates two copies of the source directory (one of which is "
+            + "compiled), and two sets of images (one which contains raster of the pages "
+            + "and one which contains differences of thos rasters against raster of the "
+            + "original paper). While the storage footprint of one batch is kilobytes "
+            + "or megabytes, this creates gigabytes across hundreds of batches. By default, "
+            + "these files are deleted after each batch to reduce the likelihood that "
+            + "the machine will run out of storage while processing a paper. It is left "
+            + "as an option for debugging purposes, i.e., if you wish to inspect how "
+            + "the TeX is colorized, TeX compilation logs, and rasters."
+        ),
+    )
+    parser.add_argument(
         "--max-papers",
         type=int,
         help=(
@@ -223,7 +230,7 @@ if __name__ == "__main__":
         ),
     )
     parser.add_argument(
-        "--keep-data",
+        "--keep-paper-data",
         action="store_true",
         help="If '--one-paper-at-a-time' is set, keep a paper's data after it is processed.",
     )
@@ -456,7 +463,7 @@ if __name__ == "__main__":
                 # digest for a paper cannot be computed once the paper's data is deleted.
                 pipeline_digest.update(digest_for_paper)
             finally:
-                if not args.keep_data:
+                if not args.keep_paper_data:
                     file_utils.delete_data(arxiv_id)
     else:
         logging.info("Running pipeline for papers %s", arxiv_ids)
