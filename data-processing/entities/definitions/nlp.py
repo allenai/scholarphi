@@ -32,7 +32,7 @@ MODEL_CLASSES = {
 
 
 class DefinitionDetectionModel:
-    def __init__(self) -> None:
+    def __init__(self, prediction_types: List[str]) -> None:
 
         # Initialize modules for featurization.
         # To use a smaller model, swap out the parameter with "en_core_sci_sm"
@@ -51,172 +51,189 @@ class DefinitionDetectionModel:
         self.verb_matcher = Matcher(self.nlp.vocab)
         self.verb_matcher.add("Verb phrase", None, verb_pattern)
 
-        # Initialize modules for transformer-ased definition inference
-        cache_directory = "./cache/nlp_model"
+        # Initialize modules for transformer-based inference model based on the prediction_type
+        self.model_paths = {
+            'TERM-DEF' : {'baseURL':"http://dongtae.lti.cs.cmu.edu/data/joint_bert/",'file':"model_v1.0_best.zip"},
+            'ABBR-EXP' : {'baseURL':"http://dongtae.lti.cs.cmu.edu/data/joint_bert/",'file':"model_v1.0_best.zip"},
+            'SYM-NICK' : {'baseURL':"http://dongtae.lti.cs.cmu.edu/data/joint_bert/",'file':"model_v1.0_best.zip"},
+        }
+        self.prediction_types = prediction_types
 
-        # Make a directory storing model files (./data/)
-        if not os.path.exists(cache_directory):
-            os.makedirs(cache_directory)
-            logging.debug("Created cache directory for models at %s", cache_directory)
+        self.data_args = {}
+        self.model_args = {}
+        self.tokenizer = {}
+        self.model = {}
+        self.trainer = {}
 
-            # Download the best model files in ./data/
-            MODEL_URL = (
-                "http://dongtae.lti.cs.cmu.edu/data/joint_bert/model_v1.0_best.zip"
+
+        for prediction_type in self.prediction_types:
+            cache_directory = f"./cache/{prediction_type}_model"
+
+            # Make a directory storing model files (./data/)
+            if not os.path.exists(cache_directory):
+                os.makedirs(cache_directory)
+                logging.debug("Created cache directory for models at %s", cache_directory)
+
+                # Download the best model files in ./data/
+                MODEL_URL = (
+                    self.model_paths[prediction_type]['baseURL'] + self.model_paths[prediction_type]['file']
+                )
+                logging.debug(
+                    "Downloading model from %s. Warning: this will take a long time.",
+                    MODEL_URL,
+                )
+                cache_file = self.model_paths[prediction_type]['file']
+                urllib.request.urlretrieve(
+                    MODEL_URL, os.path.join("{}/{}".format(cache_directory, cache_file)),
+                )
+
+                with zipfile.ZipFile(
+                    "{}/{}".format(cache_directory, cache_file), "r"
+                ) as zip_ref:
+                    zip_ref.extractall(cache_directory)
+                logging.debug(
+                    "Downloaded and unpacked model data in directory %s", cache_file
+                )
+
+            else:
+                logging.debug(  # pylint: disable=logging-not-lazy
+                    "Cache directory for models already exists at %s. "
+                    + "Skipping creation of directory and download of data.",
+                    cache_directory,
+                )
+
+            parser = HfArgumentParser(
+                (ModelArguments, DataTrainingArguments, TrainingArguments)
             )
-            logging.debug(
-                "Downloading model from %s. Warning: this will take a long time.",
-                MODEL_URL,
-            )
-            cache_file = "model_v1.0_best.zip"
-            urllib.request.urlretrieve(
-                MODEL_URL, os.path.join("{}/{}".format(cache_directory, cache_file)),
+            model_args, data_args, training_args = parser.parse_args_into_dataclasses(
+                [
+                    "--model_name_or_path",
+                    "roberta-large",
+                    "--prediction_type",
+                    f"{prediction_type}",
+                    "--data_dir",
+                    cache_directory,
+                    "--output_dir",
+                    os.path.join(cache_directory, "roberta-large"),
+                    "--do_eval",
+                    "--overwrite_cache",
+                    "--use_crf",
+                    "--use_heuristic",
+                    "--use_pos",
+                    "--use_np",
+                    "--use_vp",
+                    "--use_entity",
+                    "--use_acronym",
+                    "--per_device_eval_batch_size",
+                    "16",
+                    "--max_seq_len",
+                    "80",
+                ]
             )
 
-            with zipfile.ZipFile(
-                "{}/{}".format(cache_directory, cache_file), "r"
-            ) as zip_ref:
-                zip_ref.extractall(cache_directory)
-            logging.debug(
-                "Downloaded and unpacked model data in directory %s", cache_file
+            # Set seed for model.
+            set_torch_seed(training_args.seed, training_args.no_cuda)
+
+            # Log basic debugging information about model and arguments.
+            logging.info(  # pylint: disable=logging-not-lazy
+                "Arguments for NLP model. Process rank: %s, device: %s, "
+                + "n_gpu: %s, distributed training: %s, 16-bits training: %s. Training / evaluation "
+                + "parameters: %s",
+                training_args.local_rank,
+                training_args.device,
+                training_args.n_gpu,
+                bool(training_args.local_rank != -1),
+                training_args.fp16,
+                training_args,
             )
 
-        else:
-            logging.debug(  # pylint: disable=logging-not-lazy
-                "Cache directory for models already exists at %s. "
-                + "Skipping creation of directory and download of data.",
-                cache_directory,
-            )
-
-        parser = HfArgumentParser(
-            (ModelArguments, DataTrainingArguments, TrainingArguments)
-        )
-        model_args, data_args, training_args = parser.parse_args_into_dataclasses(
-            [
-                "--model_name_or_path",
-                "roberta-large",
-                "--data_dir",
-                cache_directory,
-                "--output_dir",
-                os.path.join(cache_directory, "roberta-large"),
-                "--do_eval",
-                "--overwrite_cache",
-                "--use_crf",
-                "--use_heuristic",
-                "--use_pos",
-                "--use_np",
-                "--use_vp",
-                "--use_entity",
-                "--use_acronym",
-                "--per_device_eval_batch_size",
-                "16",
-                "--max_seq_len",
-                "80",
+            # Set model type from arguments.
+            model_args.model_type = model_args.model_name_or_path.split("-")[0].split("_")[
+                0
             ]
-        )
 
-        # Set seed for model.
-        set_torch_seed(training_args.seed, training_args.no_cuda)
+            # Load model configuration.
+            if model_args.config_name:
+                config = AutoConfig.from_pretrained(
+                    model_args.config_name, cache_dir=model_args.cache_dir
+                )
+            elif model_args.model_name_or_path:
+                config = AutoConfig.from_pretrained(
+                    model_args.model_name_or_path, cache_dir=model_args.cache_dir
+                )
+            else:
+                config = CONFIG_MAPPING[model_args.model_type]()
+                logging.warning("You are instantiating a new config instance from scratch.")
 
-        # Log basic debugging information about model and arguments.
-        logging.info(  # pylint: disable=logging-not-lazy
-            "Arguments for NLP model. Process rank: %s, device: %s, "
-            + "n_gpu: %s, distributed training: %s, 16-bits training: %s. Training / evaluation "
-            + "parameters: %s",
-            training_args.local_rank,
-            training_args.device,
-            training_args.n_gpu,
-            bool(training_args.local_rank != -1),
-            training_args.fp16,
-            training_args,
-        )
+            # Load tokenizer.
+            if model_args.tokenizer_name:
+                tokenizer = AutoTokenizer.from_pretrained(
+                    model_args.tokenizer_name, cache_dir=model_args.cache_dir
+                )
+            elif model_args.model_name_or_path:
+                tokenizer = AutoTokenizer.from_pretrained(
+                    model_args.model_name_or_path, cache_dir=model_args.cache_dir
+                )
+            else:
+                raise ValueError(
+                    "You are instantiating a new tokenizer from scratch. "
+                    + "This is not supported, but you can do it from another script, "
+                    + "save it, and load it from here, using --tokenizer_name."
+                )
 
-        # Set model type from arguments.
-        model_args.model_type = model_args.model_name_or_path.split("-")[0].split("_")[
-            0
-        ]
-
-        # Load model configuration.
-        if model_args.config_name:
-            config = AutoConfig.from_pretrained(
-                model_args.config_name, cache_dir=model_args.cache_dir
-            )
-        elif model_args.model_name_or_path:
-            config = AutoConfig.from_pretrained(
-                model_args.model_name_or_path, cache_dir=model_args.cache_dir
-            )
-        else:
-            config = CONFIG_MAPPING[model_args.model_type]()
-            logging.warning("You are instantiating a new config instance from scratch.")
-
-        # Load tokenizer.
-        if model_args.tokenizer_name:
-            tokenizer = AutoTokenizer.from_pretrained(
-                model_args.tokenizer_name, cache_dir=model_args.cache_dir
-            )
-        elif model_args.model_name_or_path:
-            tokenizer = AutoTokenizer.from_pretrained(
-                model_args.model_name_or_path, cache_dir=model_args.cache_dir
-            )
-        else:
-            raise ValueError(
-                "You are instantiating a new tokenizer from scratch. "
-                + "This is not supported, but you can do it from another script, "
-                + "save it, and load it from here, using --tokenizer_name."
-            )
-
-        # Rename output directory to reflect model parameters.
-        training_args.output_dir = "{}{}{}{}{}{}".format(
-            training_args.output_dir,
-            "_pos={}".format(training_args.use_pos) if training_args.use_pos else "",
-            "_np={}".format(training_args.use_np) if training_args.use_np else "",
-            "_vp={}".format(training_args.use_vp) if training_args.use_vp else "",
-            "_entity={}".format(training_args.use_entity)
-            if training_args.use_entity
-            else "",
-            "_acronym={}".format(training_args.use_acronym)
-            if training_args.use_acronym
-            else "",
-        )
-        logging.info(
-            "The output directory for the model has been set to %s",
-            training_args.output_dir,
-        )
-
-        # Load the model.
-        model_class = MODEL_CLASSES[model_args.model_type]
-        if (
-            os.path.exists(training_args.output_dir)
-            and not training_args.overwrite_output_dir
-        ):
-            model = model_class.from_pretrained(
+            # Rename output directory to reflect model parameters.
+            training_args.output_dir = "{}{}{}{}{}{}".format(
                 training_args.output_dir,
-                args=training_args,
-                intent_label_lst=get_intent_labels(data_args),
-                slot_label_lst=get_slot_labels(data_args),
-                pos_label_lst=get_pos_labels(data_args),
+                "_pos={}".format(training_args.use_pos) if training_args.use_pos else "",
+                "_np={}".format(training_args.use_np) if training_args.use_np else "",
+                "_vp={}".format(training_args.use_vp) if training_args.use_vp else "",
+                "_entity={}".format(training_args.use_entity)
+                if training_args.use_entity
+                else "",
+                "_acronym={}".format(training_args.use_acronym)
+                if training_args.use_acronym
+                else "",
             )
-            logging.info("Model loaded from %s", training_args.output_dir)
-        else:
-            logging.error(  # pylint: disable=logging-not-lazy
-                "Could not load model from %s. A pre-trained model could "
-                + "not be found in the directory. This can occur if the download of the model was "
-                + "terminated. Try deleting %s and running this script again.",
+            logging.info(
+                "The output directory for the model has been set to %s",
                 training_args.output_dir,
-                cache_directory,
             )
-            raise ValueError(f"Could not load model from {training_args.output_dir}")
 
-        model.resize_token_embeddings(len(tokenizer))
+            # Load the model.
+            model_class = MODEL_CLASSES[model_args.model_type]
+            if (
+                os.path.exists(training_args.output_dir)
+                and not training_args.overwrite_output_dir
+            ):
+                model = model_class.from_pretrained(
+                    training_args.output_dir,
+                    args=training_args,
+                    intent_label_lst=get_intent_labels(data_args),
+                    slot_label_lst=get_slot_labels(data_args),
+                    pos_label_lst=get_pos_labels(data_args),
+                )
+                logging.info("Model loaded from %s", training_args.output_dir)
+            else:
+                logging.error(  # pylint: disable=logging-not-lazy
+                    "Could not load model from %s. A pre-trained model could "
+                    + "not be found in the directory. This can occur if the download of the model was "
+                    + "terminated. Try deleting %s and running this script again.",
+                    training_args.output_dir,
+                    cache_directory,
+                )
+                raise ValueError(f"Could not load model from {training_args.output_dir}")
 
-        data_args.ignore_index = training_args.ignore_index
-        self.data_args = data_args
-        self.model_args = model_args
+            model.resize_token_embeddings(len(tokenizer))
 
-        self.tokenizer = tokenizer
-        self.model = model
-        self.trainer = Trainer(
-            [training_args, self.model_args, self.data_args], self.model
-        )
+            data_args.ignore_index = training_args.ignore_index
+            self.data_args[prediction_type] = data_args
+            self.model_args[prediction_type] = model_args
+
+            self.tokenizer[prediction_type] = tokenizer
+            self.model[prediction_type] = model
+            self.trainer[prediction_type] = Trainer(
+                [training_args, self.model_args[prediction_type], self.data_args[prediction_type]], self.model[prediction_type]
+            )
 
     def featurize(self, text: str, limit: bool = False) -> DefaultDict[Any, Any]:
 
@@ -270,26 +287,31 @@ class DefinitionDetectionModel:
         return features
 
     def predict_batch(
-        self, data: List[Dict[Any, Any]]
+        self, data: List[Dict[Any, Any]], prediction_type: str
     ) -> Tuple[List[int], List[List[str]], List[List[float]]]:
 
         # Load data.
         test_dataset = load_and_cache_example_batch(
-            self.data_args, self.tokenizer, data,
+            self.data_args[prediction_type], self.tokenizer[prediction_type], data,
         )
 
         # Perform inference.
-        intent_pred, slot_preds, slot_pred_confs = self.trainer.evaluate_from_input(test_dataset)
+        intent_pred, slot_preds, slot_pred_confs = self.trainer[prediction_type].evaluate_from_input(test_dataset)
 
         # Process predictions.
+        prediction_replacements = {
+            'TERM-DEF' : [('TERM','TERM'),('DEF','DEF')],
+            'ABBR-EXP' : [('short','TERM'),('long','DEF')],
+            'SYM-NICK' : [('TERM','TERM'),('DEF','DEF')],
+        }
         simplified_slot_preds = []
         for slot_pred in slot_preds:
             simplified_slot_pred = []
             for s in slot_pred:
-                if s.endswith("TERM"):
-                    simplified_slot_pred.append("TERM")
-                elif s.endswith("DEF"):
-                    simplified_slot_pred.append("DEF")
+                if s.endswith(prediction_replacements[prediction_type][0][0]):
+                    simplified_slot_pred.append(prediction_replacements[prediction_type][0][1])
+                elif s.endswith(prediction_replacements[prediction_type][1][0]):
+                    simplified_slot_pred.append(prediction_replacements[prediction_type][1][1])
                 else:
                     simplified_slot_pred.append("O")
             simplified_slot_preds.append(simplified_slot_pred)

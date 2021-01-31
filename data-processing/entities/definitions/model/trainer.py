@@ -244,96 +244,253 @@ class Trainer(object):
         slot_labels: List[List[str]],
     ) -> Tuple[List[int], List[List[str]]]:
         """
-        filter out term/definition only cases
-        filter out multi-term/definition cases
-        threshold inclusion
+        Apply various heuristic filters based on the prediction type [TERM-DEF, ABBR-EXP, SYM-NICK]
         """
-        new_intent_preds, new_slot_preds = [], []
 
-        # Never use {intent,slot}_label in heuristic filtering, but they are
-        # only used for sanity checking.
-        for intent_pred, intent_label, slot_pred, slot_label in zip(
-            intent_preds, intent_labels, slot_preds, slot_labels
-        ):
-            new_slot_pred = slot_pred
-            new_intent_pred = intent_pred
+        if self.model.prediction_type == 'TERM-DEF':
+            # filter out term/definition only cases
+            # filter out multi-term/definition cases
+            # threshold inclusion
+            new_intent_preds, new_slot_preds = [], []
 
-            # 1. [slot] Filter out term / definition only cases.
-            pred_counter = dict(Counter(slot_pred))
-            term_exist, def_exist = False, False
-            for c in pred_counter:
-                if c.endswith("TERM"):
-                    term_exist = True
-                if c.endswith("DEF"):
-                    def_exist = True
-            if not term_exist and def_exist:
-                new_slot_pred = ["O" for p in slot_pred]
+            # Never use {intent,slot}_label in heuristic filtering, but they are
+            # only used for sanity checking.
+            for intent_pred, intent_label, slot_pred, slot_label in zip(
+                intent_preds, intent_labels, slot_preds, slot_labels
+            ):
+                new_slot_pred = slot_pred
+                new_intent_pred = intent_pred
 
-            # 2. [intent] Change intent label if no term + def detected.
-            if (not term_exist and not def_exist) or (term_exist and not def_exist):
-                new_intent_pred = 0
+                # 1. [slot] Filter out term / definition only cases.
+                pred_counter = dict(Counter(slot_pred))
+                term_exist, def_exist = False, False
+                for c in pred_counter:
+                    if c.endswith("TERM"):
+                        term_exist = True
+                    if c.endswith("DEF"):
+                        def_exist = True
+                if not term_exist and def_exist:
+                    new_slot_pred = ["O" for p in slot_pred]
 
-            # 3. [slot] Replace UNK with O.
-            new_slot_pred = ["O" if sp == "UNK" else sp for sp in new_slot_pred]
+                # 2. [intent] Change intent label if no term + def detected.
+                if (not term_exist and not def_exist) or (term_exist and not def_exist):
+                    new_intent_pred = 0
 
-            # 4. [slot] Fill out missing term/def within threshold.
-            temp_new_slot_pred = new_slot_pred.copy()
-            for sid, sp in enumerate(temp_new_slot_pred):
-                if sid < len(new_slot_pred) - 2 and sp.endswith("TERM"):
-                    if temp_new_slot_pred[sid + 1] == "O" and temp_new_slot_pred[
-                        sid + 2
-                    ].endswith("TERM"):
-                        new_slot_pred[sid + 1] = "I-TERM"
-            temp_new_slot_pred = new_slot_pred.copy()
-            for sid, sp in enumerate(temp_new_slot_pred):
-                if sid < len(new_slot_pred) - 2 and sp.endswith("DEF"):
-                    if temp_new_slot_pred[sid + 1] == "O" and temp_new_slot_pred[
-                        sid + 2
-                    ].endswith("DEF"):
-                        new_slot_pred[sid + 1] = "I-DEF"
-            temp_new_slot_pred = new_slot_pred.copy()
-            for sid, sp in enumerate(temp_new_slot_pred):
-                if sid < len(new_slot_pred) - 3 and sp.endswith("DEF"):
-                    if (
-                        temp_new_slot_pred[sid + 1] == "O"
-                        and temp_new_slot_pred[sid + 2] == "O"
-                        and temp_new_slot_pred[sid + 3].endswith("DEF")
-                    ):
-                        new_slot_pred[sid + 1] = "I-DEF"
-                        new_slot_pred[sid + 2] = "I-DEF"
+                # 3. [slot] Replace UNK with O.
+                new_slot_pred = ["O" if sp == "UNK" else sp for sp in new_slot_pred]
 
-            # 5. Change I-TERM I-DEF starting cases.
-            temp_new_slot_pred = new_slot_pred.copy()
-            term_start, def_start = False, False
-            for sid, sp in enumerate(temp_new_slot_pred):
-                if not term_start and sp == "I-TERM":
-                    new_slot_pred[sid] = "B-TERM"
-                if sp.endswith("TERM"):
-                    term_start = True
-                else:
-                    term_start = False
+                # 4. [slot] Fill out missing term/def within threshold.
+                temp_new_slot_pred = new_slot_pred.copy()
+                for sid, sp in enumerate(temp_new_slot_pred):
+                    if sid < len(new_slot_pred) - 2 and sp.endswith("TERM"):
+                        if temp_new_slot_pred[sid + 1] == "O" and temp_new_slot_pred[
+                            sid + 2
+                        ].endswith("TERM"):
+                            new_slot_pred[sid + 1] = "I-TERM"
+                temp_new_slot_pred = new_slot_pred.copy()
+                for sid, sp in enumerate(temp_new_slot_pred):
+                    if sid < len(new_slot_pred) - 2 and sp.endswith("DEF"):
+                        if temp_new_slot_pred[sid + 1] == "O" and temp_new_slot_pred[
+                            sid + 2
+                        ].endswith("DEF"):
+                            new_slot_pred[sid + 1] = "I-DEF"
+                temp_new_slot_pred = new_slot_pred.copy()
+                for sid, sp in enumerate(temp_new_slot_pred):
+                    if sid < len(new_slot_pred) - 3 and sp.endswith("DEF"):
+                        if (
+                            temp_new_slot_pred[sid + 1] == "O"
+                            and temp_new_slot_pred[sid + 2] == "O"
+                            and temp_new_slot_pred[sid + 3].endswith("DEF")
+                        ):
+                            new_slot_pred[sid + 1] = "I-DEF"
+                            new_slot_pred[sid + 2] = "I-DEF"
 
-                if not def_start and sp == "I-DEF":
-                    new_slot_pred[sid] = "B-DEF"
-                if sp.endswith("DEF"):
-                    def_start = True
-                else:
-                    def_start = False
+                # 5. Change I-TERM I-DEF starting cases.
+                temp_new_slot_pred = new_slot_pred.copy()
+                term_start, def_start = False, False
+                for sid, sp in enumerate(temp_new_slot_pred):
+                    if not term_start and sp == "I-TERM":
+                        new_slot_pred[sid] = "B-TERM"
+                    if sp.endswith("TERM"):
+                        term_start = True
+                    else:
+                        term_start = False
 
-            logging.debug(
-                "Prediction: %s -> %s %s %s -> %s -> %s",
-                intent_pred,
-                new_intent_pred,
-                intent_label,
-                " ".join(slot_pred),
-                " ".join(new_slot_pred),
-                " ".join(slot_label),
-            )
+                    if not def_start and sp == "I-DEF":
+                        new_slot_pred[sid] = "B-DEF"
+                    if sp.endswith("DEF"):
+                        def_start = True
+                    else:
+                        def_start = False
 
-            new_intent_preds.append(new_intent_pred)
-            new_slot_preds.append(new_slot_pred)
+                logging.debug(
+                    "Prediction: %s -> %s %s %s -> %s -> %s",
+                    intent_pred,
+                    new_intent_pred,
+                    intent_label,
+                    " ".join(slot_pred),
+                    " ".join(new_slot_pred),
+                    " ".join(slot_label),
+                )
 
-        return new_intent_preds, new_slot_preds
+                new_intent_preds.append(new_intent_pred)
+                new_slot_preds.append(new_slot_pred)
+
+            return new_intent_preds, new_slot_preds
+        elif self.model_args.prediction_type == 'ABBR-EXP':
+            # filter out term/definition only cases
+            # filter out multi-term/definition cases
+            # threshold inclusion
+            new_intent_preds, new_slot_preds = [], []
+
+            # Never use {intent,slot}_label in heuristic filtering, but they are
+            # only used for sanity checking.
+            for intent_pred, intent_label, slot_pred, slot_label in zip(
+                intent_preds, intent_labels, slot_preds, slot_labels
+            ):
+                new_slot_pred = slot_pred
+                new_intent_pred = intent_pred
+
+                # 1. [slot] Filter out term / definition only cases.
+                pred_counter = dict(Counter(slot_pred))
+                term_exist, def_exist = False, False
+                for c in pred_counter:
+                    if c.endswith("short"):
+                        term_exist = True
+                    if c.endswith("long"):
+                        def_exist = True
+                if not term_exist and def_exist:
+                    new_slot_pred = ["O" for p in slot_pred]
+
+                # 2. [intent] Change intent label if no term + def detected.
+                if (not term_exist and not def_exist) or (term_exist and not def_exist):
+                    new_intent_pred = 0
+
+                # 3. [slot] Replace UNK with O.
+                new_slot_pred = ["O" if sp == "UNK" else sp for sp in new_slot_pred]
+
+                # 4. Change I-short I-long starting cases.
+                temp_new_slot_pred = new_slot_pred.copy()
+                term_start, def_start = False, False
+                for sid, sp in enumerate(temp_new_slot_pred):
+                    if not term_start and sp == "I-short":
+                        new_slot_pred[sid] = "B-short"
+                    if sp.endswith("short"):
+                        term_start = True
+                    else:
+                        term_start = False
+
+                    if not def_start and sp == "I-long":
+                        new_slot_pred[sid] = "B-long"
+                    if sp.endswith("long"):
+                        def_start = True
+                    else:
+                        def_start = False
+
+                logging.debug(
+                    "Prediction: %s -> %s %s %s -> %s -> %s",
+                    intent_pred,
+                    new_intent_pred,
+                    intent_label,
+                    " ".join(slot_pred),
+                    " ".join(new_slot_pred),
+                    " ".join(slot_label),
+                )
+
+                new_intent_preds.append(new_intent_pred)
+                new_slot_preds.append(new_slot_pred)
+
+            return new_intent_preds, new_slot_preds
+        if self.prediction_type == 'SYM-NICK':
+            # filter out term/definition only cases
+            # filter out multi-term/definition cases
+            # threshold inclusion
+            new_intent_preds, new_slot_preds = [], []
+
+            # Never use {intent,slot}_label in heuristic filtering, but they are
+            # only used for sanity checking.
+            for intent_pred, intent_label, slot_pred, slot_label in zip(
+                intent_preds, intent_labels, slot_preds, slot_labels
+            ):
+                new_slot_pred = slot_pred
+                new_intent_pred = intent_pred
+
+                # 1. [slot] Filter out term / definition only cases.
+                pred_counter = dict(Counter(slot_pred))
+                term_exist, def_exist = False, False
+                for c in pred_counter:
+                    if c.endswith("TERM"):
+                        term_exist = True
+                    if c.endswith("DEF"):
+                        def_exist = True
+                if not term_exist and def_exist:
+                    new_slot_pred = ["O" for p in slot_pred]
+
+                # 2. [intent] Change intent label if no term + def detected.
+                if (not term_exist and not def_exist) or (term_exist and not def_exist):
+                    new_intent_pred = 0
+
+                # 3. [slot] Replace UNK with O.
+                new_slot_pred = ["O" if sp == "UNK" else sp for sp in new_slot_pred]
+
+                # 4. [slot] Fill out missing term/def within threshold.
+                temp_new_slot_pred = new_slot_pred.copy()
+                for sid, sp in enumerate(temp_new_slot_pred):
+                    if sid < len(new_slot_pred) - 2 and sp.endswith("TERM"):
+                        if temp_new_slot_pred[sid + 1] == "O" and temp_new_slot_pred[
+                            sid + 2
+                        ].endswith("TERM"):
+                            new_slot_pred[sid + 1] = "I-TERM"
+                temp_new_slot_pred = new_slot_pred.copy()
+                for sid, sp in enumerate(temp_new_slot_pred):
+                    if sid < len(new_slot_pred) - 2 and sp.endswith("DEF"):
+                        if temp_new_slot_pred[sid + 1] == "O" and temp_new_slot_pred[
+                            sid + 2
+                        ].endswith("DEF"):
+                            new_slot_pred[sid + 1] = "I-DEF"
+                temp_new_slot_pred = new_slot_pred.copy()
+                for sid, sp in enumerate(temp_new_slot_pred):
+                    if sid < len(new_slot_pred) - 3 and sp.endswith("DEF"):
+                        if (
+                            temp_new_slot_pred[sid + 1] == "O"
+                            and temp_new_slot_pred[sid + 2] == "O"
+                            and temp_new_slot_pred[sid + 3].endswith("DEF")
+                        ):
+                            new_slot_pred[sid + 1] = "I-DEF"
+                            new_slot_pred[sid + 2] = "I-DEF"
+
+                # 5. Change I-TERM I-DEF starting cases.
+                temp_new_slot_pred = new_slot_pred.copy()
+                term_start, def_start = False, False
+                for sid, sp in enumerate(temp_new_slot_pred):
+                    if not term_start and sp == "I-TERM":
+                        new_slot_pred[sid] = "B-TERM"
+                    if sp.endswith("TERM"):
+                        term_start = True
+                    else:
+                        term_start = False
+
+                    if not def_start and sp == "I-DEF":
+                        new_slot_pred[sid] = "B-DEF"
+                    if sp.endswith("DEF"):
+                        def_start = True
+                    else:
+                        def_start = False
+
+                logging.debug(
+                    "Prediction: %s -> %s %s %s -> %s -> %s",
+                    intent_pred,
+                    new_intent_pred,
+                    intent_label,
+                    " ".join(slot_pred),
+                    " ".join(new_slot_pred),
+                    " ".join(slot_label),
+                )
+
+                new_intent_preds.append(new_intent_pred)
+                new_slot_preds.append(new_slot_pred)
+
+            return new_intent_preds, new_slot_preds
 
     def evaluate_from_input(self, dataset: TensorDataset) -> Tuple[List[int], List[List[str]], List[List[float]]]:
         eval_sampler = SequentialSampler(dataset)

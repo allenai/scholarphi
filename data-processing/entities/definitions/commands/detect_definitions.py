@@ -113,11 +113,12 @@ def get_symbol_texs(
     return dict(zip(symbol_starts, symbol_texs))
 
 
-def consolidate_term_definitions(
+def consolidate_keyword_definitions(
     text: str,
     tokens: List[str],
     slot_predictions: List[str],
     slot_prediction_confidences: List[float],
+    prediction_type : str
 ) -> List[TermDefinitionPair]:
 
     # Make index from tokens to their character positions.
@@ -134,13 +135,13 @@ def consolidate_term_definitions(
     for (slot_label, slot_confidence, range_) in zip(
         slot_predictions, slot_prediction_confidences, ranges
     ):
-        if slot_label == "TERM":
+        if slot_label == 'TERM':
             term_ranges.append(range_)
             term_confidences.append(slot_confidence)
-        if slot_label == "DEF":
+        if slot_label == 'DEF':
             definition_ranges.append(range_)
             definition_confidences.append(slot_confidence)
-        if slot_label == "O":
+        if slot_label == 'O':
             if len(term_ranges) > 0:
                 terms.append(term_ranges)
                 term_confidence_list.append(
@@ -183,8 +184,14 @@ def consolidate_term_definitions(
             max([definition_range.end for definition_range in definition_rangelist]) + 1
         )
 
-        term_type = "symbol" if "SYMBOL" in text[term_start:term_end] else "term"
-        definition_type = "definition"
+        all_definition_types = {
+        'TERM-DEF' : ['term','definition'],
+        'ABBR-EXP' : ['abbreviation','expansion'],
+        'SYM-NICK' : ['symbol','nickname']
+        }
+
+        term_type = all_definition_types[prediction_type][0]
+        definition_type = all_definition_types[prediction_type][1]
 
         pair = TermDefinitionPair(
             term_start=term_start,
@@ -582,7 +589,8 @@ class DetectDefinitions(
             return
 
         # Load the pre-trained definition detection model.
-        model = DefinitionDetectionModel()
+        prediction_types =  ['TERM-DEF', 'ABBR-EXP', 'SYM-NICK']
+        model = DefinitionDetectionModel(prediction_types)
 
         definition_index = 0
         features = []
@@ -619,19 +627,33 @@ class DetectDefinitions(
 
                     # Detect terms and definitions in each sentence with a pre-trained definition
                     # extraction model, from the featurized text.
-                    intents, slots, slots_confidence = model.predict_batch(
-                        cast(List[Dict[Any, Any]], features)
+                    termdef_intents, termdef_slots, termdef_slots_confidence = model.predict_batch(
+                        cast(List[Dict[Any, Any]], features), 'TERM-DEF'
                     )
+                    abbrexp_intents, abbrexp_slots, abbrexp_slots_confidence = model.predict_batch(
+                        cast(List[Dict[Any, Any]], features), 'ABBR-EXP'
+                    )
+                    symnick_intents, symnick_slots, symnick_slots_confidence = model.predict_batch(
+                        cast(List[Dict[Any, Any]], features), 'SYM-NICK'
+                    )
+                    
 
                     # Package extracted terms and definitions into a representation that's
                     # easier to process.
                     for (
                         s,
                         sentence_features,
-                        intent,
-                        sentence_slots,
-                        sentence_slots_confidence,
-                    ) in zip(sentences, features, intents, slots, slots_confidence):
+                        termdef_intent,
+                        termdef_sentence_slots,
+                        termdef_sentence_slots_confidence,
+                        abbrexp_intent,
+                        abbrexp_sentence_slots,
+                        abbrexp_sentence_slots_confidence,
+                        symnick_intent,
+                        symnick_sentence_slots,
+                        symnick_sentence_slots_confidence,
+                    ) in zip(sentences, features, termdef_intents, termdef_slots, termdef_slots_confidence,abbrexp_intents, 
+                            abbrexp_slots, abbrexp_slots_confidence, symnick_intents, symnick_slots, symnick_slots_confidence):
                         # Extract TeX for each symbol from a parallel representation of the
                         # sentence, so that the TeX for symbols can be saved.
                         # Types of [term and definition] pairs.
@@ -642,37 +664,60 @@ class DetectDefinitions(
                         symbol_texs = get_symbol_texs(
                             s.legacy_definition_input, s.with_formulas_marked
                         )
-                        if symbol_texs is None:
-                            symbol_nickname_pairs = []
-                        else:
-                            symbol_nickname_pairs = get_symbol_nickname_pairs(
-                                s.legacy_definition_input,
-                                sentence_features["tokens"],
-                                sentence_features["pos"],
-                                symbol_texs,
-                            )
+                        # if symbol_texs is None:
+                        #     symbol_nickname_pairs = []
+                        # else:
+                        #     symbol_nickname_pairs = get_symbol_nickname_pairs(
+                        #         s.legacy_definition_input,
+                        #         sentence_features["tokens"],
+                        #         sentence_features["pos"],
+                        #         symbol_texs,
+                        #     )
 
-                        abbreviation_pairs = get_abbreviations(
-                            s.legacy_definition_input,
-                            sentence_features["tokens"],
-                            model.nlp,
-                        )
+                        # abbreviation_pairs = get_abbreviations(
+                        #     s.legacy_definition_input,
+                        #     sentence_features["tokens"],
+                        #     model.nlp,
+                        # )
 
                         # Only process slots when they include both 'TERM' and 'DEFINITION'.
-                        if "TERM" not in sentence_slots or "DEF" not in sentence_slots:
+                        if "TERM" not in termdef_sentence_slots or "DEF" not in termdef_sentence_slots:
                             term_definition_pairs = []
                         else:
-                            term_definition_pairs = consolidate_term_definitions(
+                            term_definition_pairs = consolidate_keyword_definitions(
                                 s.legacy_definition_input,
                                 sentence_features["tokens"],
-                                sentence_slots,
-                                sentence_slots_confidence,
+                                termdef_sentence_slots,
+                                termdef_sentence_slots_confidence,
+                                "TERM-DEF"
+                            )
+
+                        if "TERM" not in abbrexp_sentence_slots or "DEF" not in abbrexp_sentence_slots:
+                            abbreviation_expansion_pairs = []
+                        else:
+                            abbreviation_expansion_pairs = consolidate_keyword_definitions(
+                                s.legacy_definition_input,
+                                sentence_features["tokens"],
+                                abbrexp_sentence_slots,
+                                abbrexp_sentence_slots_confidence,
+                                "ABBR-EXP"
+                            )
+                        
+                        if "TERM" not in symnick_sentence_slots or "DEF" not in symnick_sentence_slots:
+                            symbol_nickname_pairs = []
+                        else:
+                            symbol_nickname_pairs = consolidate_keyword_definitions(
+                                s.legacy_definition_input,
+                                sentence_features["tokens"],
+                                symnick_sentence_slots,
+                                symnick_sentence_slots_confidence,
+                                "SYM-NICK"
                             )
 
                         pairs = (
                             term_definition_pairs
                             + symbol_nickname_pairs
-                            + abbreviation_pairs
+                            + abbreviation_expansion_pairs
                         )
 
                         for pair in pairs:
@@ -768,7 +813,7 @@ class DetectDefinitions(
                                 text=pair.definition_text,
                                 context_tex=sentence.context_tex,
                                 sentence_id=sentence.id_,
-                                intent=bool(intent),
+                                # intent=bool(intent),
                                 confidence=definition_confidence,
                             )
                             definitions[definition_id] = definition
