@@ -316,7 +316,8 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
             );
           } else if (isSymbol(entity)) {
             /*
-             * Only show annotations for identifiers and functions (i.e., not operators).
+             * Only show annotations for identifiers and functions (i.e., not operators). In
+             * the future, this filter could be exposed in the admin control panel.
              */
             const ANNOTATED_SYMBOL_TYPES = ["identifier", "function"];
             if (ANNOTATED_SYMBOL_TYPES.indexOf(entity.attributes.type) === -1) {
