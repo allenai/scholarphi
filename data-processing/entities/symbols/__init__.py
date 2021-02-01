@@ -143,6 +143,10 @@ def make_digest(_: str, arxiv_id: ArxivId) -> EntityProcessingDigest:
 
 
 symbols_pipeline = EntityPipeline(
-    "symbols", commands, depends_on=["equations", "sentences"], make_digest=make_digest,
+    "symbols",
+    commands,
+    depends_on=["equations"],
+    optional_depends_on=["sentences"],
+    make_digest=make_digest,
 )
 register_entity_pipeline(symbols_pipeline)
