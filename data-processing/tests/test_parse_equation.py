@@ -61,8 +61,8 @@ def test_keep_identifiers_with_different_styles_separate():
 
 def test_merge_contiguous_identifiers_into_one_with_script():
     result = parse_element(load_fragment_tag("word_sub_i.xml"))
-    assert len(result.symbols) == 3
-    assert str(result.element) == "<msub><mi>word</mi><mi>i</mi></msub>"
+    symbol = result.symbols[0]
+    assert str(symbol.element) == "<msub><mi>word</mi><mi>i</mi></msub>"
 
 
 def test_merge_contiguous_operators():

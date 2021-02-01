@@ -664,6 +664,9 @@ def create_element(tag_name: str) -> Tag:
     return BeautifulSoup("", "lxml").new_tag(tag_name)
 
 
+SCRIPT_TAGS = ["msub", "musp", "msubsup"]
+
+
 class MathMlElementMerger:
     def merge(self, elements: List[Tag]) -> List[Tag]:
         """
@@ -699,10 +702,15 @@ class MathMlElementMerger:
 
     def _is_mergeable_type(self, element: Tag) -> bool:
         " Determine if a element is a type that is mergeable with other elements. "
-        MERGEABLE_TOKEN_TAGS = ["mn", "mi", "mo"]
-        return element.name in MERGEABLE_TOKEN_TAGS and _has_s2_offset_annotations(
-            element
-        )
+
+        if not _has_s2_offset_annotations(element):
+            return False
+
+        MERGEABLE_TOKEN_TAGS = ["mn", "mi", "mo", "msub", "msup", "msubsup"]
+        if element.name in MERGEABLE_TOKEN_TAGS:
+            return True
+
+        return False
 
     def _can_merge_with_prior_elements(self, element: Tag) -> bool:
         """
@@ -730,18 +738,30 @@ class MathMlElementMerger:
             return False
 
         # Here come the context-sensitive rules:
-        # 1. Letters can be merged into any sequence of elements before them that starts with a
+        # 1. Scripts (e.g., elements with superscripts and subscripts) can be merged into prior
+        #    elements, provided that the base (the element to which the script is applied) can be
+        #    merged according to the typical merging rules.
+        if element.name in SCRIPT_TAGS:
+            first_child = next(element.children, None)
+            if first_child:
+                return self._is_mergeable_type(first_child)
+            return False
+        # 2. Script end all sequences of mergeable characters. This is because no identifier is
+        #    expected to have a superscript or a subscript in the middle.
+        if last_element.name in SCRIPT_TAGS:
+            return False
+        # 3. Letters can be merged into any sequence of elements before them that starts with a
         #    a letter. This allows tokens to be merged into (target letter is shown in
         #    <angled brackets>) identifiers like "r2<d>2", but not constant multiplications like
         #   "4<x>", which should be split into two symbols.
         if element.name == "mi":
             return bool(self.to_merge[0].name == "mi")
-        # 2. Numbers can be merged into letters before them, adding to the identifier.
-        # 3. Numbers can be merged into numbers before them, extending an identifier, or making
+        # 4. Numbers can be merged into letters before them, adding to the identifier.
+        # 5. Numbers can be merged into numbers before them, extending an identifier, or making
         #    a number with multiple digits.
         if element.name == "mn":
             return last_element.name in ["mi", "mn"]
-        # 4. Operators can be merged into operators that appear just before them to form multi-
+        # 6. Operators can be merged into operators that appear just before them to form multi-
         #    symbol operators, like '++', '//', etc.
         if element.name == "mo":
             return last_element.name == "mo"
@@ -756,25 +776,66 @@ class MathMlElementMerger:
         if len(self.to_merge) == 0:
             return
 
-        # Determine the new tag type based on the tags that will be merged. For now, we can assume
-        # that it's the same as the first type of element that will be merged.
-        tag_name = self.to_merge[0].name
-
-        # Create a new BeautifulSoup object with the contents of all identifiers appended together.
-        new_text = "".join([n.string for n in self.to_merge])
-        element = create_element(tag_name)
-        element.string = new_text
-        element.attrs["s2:start"] = self.to_merge[0].attrs["s2:start"]
-        element.attrs["s2:end"] = self.to_merge[-1].attrs["s2:end"]
-        mathvariant = self.to_merge[0].attrs.get("mathvariant")
-        if mathvariant:
-            element.attrs["mathvariant"] = mathvariant
+        if self.to_merge[-1].name in SCRIPT_TAGS:
+            element = self._merge_script(self.to_merge)
+            # If elements could not be merged together due to unexpected errors processing the
+            # script element, then keep all elements separate.
+            if element is None:
+                self.merged.extend(self.to_merge)
+        else:
+            element = self._merge_simple_row(self.to_merge)
 
         # An identifier should have no children in MathML.
         self.merged.append(element)
 
         # Now that the prior elements have been merged, clear the list.
         self.to_merge = []  # pylint: disable=attribute-defined-outside-init
+
+    def _merge_script(self, elements: List[Tag]) -> Optional[Tag]:
+        script_element = clone_element(elements[-1])
+
+        # Get the base to which the script is applied (e.g., 'x' in 'x^2'). The base is extracted
+        # recursively, as it is valid MathML to specify nested scripts. For example, x_i^2 could
+        # be expressed with 'x' as a base inside an 'msub' element (for 'x_i') inside an 'msup'
+        # element (for 'x_i^2').
+        base: Optional[Tag] = script_element
+        while base and base.name in SCRIPT_TAGS:
+            base = next(base.children, None)
+
+        if base is None:
+            return None
+
+        # Create a new base by merging in all of the simple elements appearing before the base
+        # with the base, and then applying the script to the merged base.
+        merged_base = self._merge_simple_row(elements[:-1] + [base])
+        base.replace_with(merged_base)
+
+        # Adjust offset of parent elements to reflect the expanded character range of the base.
+        parent = merged_base.parent
+        start = merged_base.attrs["s2:start"]
+        while parent:
+            if "s2:start" in parent.attrs:
+                parent.attrs["s2:start"] = start
+            parent = parent.parent
+
+        return script_element
+
+    def _merge_simple_row(self, elements: List[Tag]) -> Tag:
+        # Determine the new tag type based on the tags that will be merged. For now, we can assume
+        # that it's the same as the first type of element that will be merged.
+        tag_name = elements[0].name
+
+        # Create a new BeautifulSoup object with the contents of all identifiers appended together.
+        new_text = "".join([n.string for n in elements])
+        element = create_element(tag_name)
+        element.string = new_text
+        element.attrs["s2:start"] = elements[0].attrs["s2:start"]
+        element.attrs["s2:end"] = elements[-1].attrs["s2:end"]
+        mathvariant = elements[0].attrs.get("mathvariant")
+        if mathvariant:
+            element.attrs["mathvariant"] = mathvariant
+
+        return element
 
 
 def _has_s2_offset_annotations(tag: BeautifulSoup) -> bool:
