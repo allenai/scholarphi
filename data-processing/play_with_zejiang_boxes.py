@@ -1,5 +1,34 @@
 """
 
+1) Clone https://github.com/allenai/scienceparseplus
+2)
+3) For the SSH capabilities...
+   sudo docker build -t scienceparseplus .
+   sudo docker run -dit scienceparseplus
+   sudo docker ps -a
+   sudo docker exec -it $NAME /bin/bash
+
+4) For the running stuff capabilities...
+   sudo docker run -it scienceparseplus
+   cd tools/
+   mkdir jsons/
+
+   sudo docker ps -a     >>>   elegant_villani
+   DOCKER_CONTAINER_NAME=elegant_villani
+   sudo docker cp pdfs/ $DOCKER_CONTAINER_NAME:/usr/local/src/spp/tools/pdfs/
+
+   python inference.py --indir pdfs/ --outdir jsons/
+
+    sudo docker cp  $DOCKER_CONTAINER_NAME:/usr/local/src/spp/tools/jsons/ jsons/
+
+5) For uploading them to DB
+
+
+
+# if building scholarphi docker thing w/ zejiang's private repo:
+export GITHUB_ACCESS_TOKEN=#something_in_lastpass
+docker build -t --build-arg GITHUB_ACCESS_TOKEN=$GITHUB_ACCESS_TOKEN .
+sudo docker build -t reader .
 
 """
 
@@ -17,6 +46,8 @@ import numpy as np
 from functools import cmp_to_key
 
 from argparse import ArgumentParser
+
+import requests
 
 from entities.sentences import upload
 from common.types import EntityUploadInfo
@@ -281,29 +312,24 @@ def process_page_for_blocks(page_dict: Dict) -> List[Block]:
 #     )
 
 
-if __name__ == '__main__':
-    parser = ArgumentParser()
-    parser.add_argument("--infile", help="Path to input Scienceparse+ JSON", required=True, type=str)
-    parser.add_argument("--outfile", help="Path to output JSON file", required=True, type=str)
-    parser.add_argument("--outdir", help="Path to output bunch of CSV files for uploading", type=str)
-    args = parser.parse_args()
-
-    with open(args.infile) as f_in:
+def main(infile: str, s2_id: str, arxiv_id: str, outfile: Optional[str] = None):
+    # read JSON output from parser
+    with open(infile) as f_in:
         page_dicts = json.load(f_in)
         blocks: List[Block] = []
-        for page_dict in tqdm(page_dicts):
+        for page_dict in tqdm(page_dicts['layout']):
             blocks.extend(process_page_for_blocks(page_dict=page_dict))
 
-
-
-    with open(args.outfile, 'w') as f_out:
-        out = []
-        for block in blocks:
-            if block.type in {'figure', 'table'}:
-                continue
-            out.append(block.to_json())
-            del out[-1]['tokens']
-        json.dump(out, f_out, indent=4)
+    # temporarily save it as
+    if outfile:
+        with open(outfile, 'w') as f_out:
+            out = []
+            for block in blocks:
+                if block.type in {'figure', 'table'}:
+                    continue
+                out.append(block.to_json())
+                del out[-1]['tokens']
+            json.dump(out, f_out, indent=4)
 
     # init database
     init_database_connections(schema_name='kyle_spp', create_tables=True)
@@ -324,33 +350,33 @@ if __name__ == '__main__':
                 },
             )
             entity_infos.append(entity_info)
-    upload.upload_entities(s2_id='9c5c794094fbf5da8c48df5c3242615dc0b1d245',
-                           arxiv_id='1811.12359',
+    upload.upload_entities(s2_id=s2_id,
+                           arxiv_id=arxiv_id,
                            entities=entity_infos,
                            data_version=None)       # uploads to next version
 
-    # if args.outdir:
-    #     os.makedirs(args.outdir, exist_ok=True)
-    #     with open(os.path.join(args.outdir, 'boundingbox.csv'), 'w') as f_out:
-    #         writer = csv.DictWriter(f_out, fieldnames=['entity_id', 'source', 'page', 'left', 'top', 'width', 'height'])
-    #         writer.writeheader()
-    #         for block in blocks:
-    #             for sent in block.sents:
-    #                 writer.writerow({'entity_id': 0, 'source': 'kyle_pdf', 'page': block.bbox.page,
-    #                                  'left': block.bbox.left, 'top': block.bbox.top,
-    #                                  'width': block.bbox.width, 'height': block.bbox.height})
-    #
-    #     with open(os.path.join(args.outdir, 'entity.csv'), 'w') as f_out:
-    #         writer = csv.DictWriter(f_out, fieldnames=['paper_id', 'version', 'type', 'within_paper_id', 'source'])
-    #         writer.writeheader()
-    #         for block in blocks:
-    #             writer.writerow({})
-    #
-    #
-    #     with open(os.path.join(args.outdir, 'entitydata.csv', 'w')) as f_out:
-    #         pass
-    #
-    #     with open(os.path.join(args.outdir, 'version.csv', 'w')) as f_out:
-    #         writer = csv.DictWriter(f_out, fieldnames=['paper_id', 'index'])
-    #         pass
 
+
+if __name__ == '__main__':
+    parser = ArgumentParser()
+    parser.add_argument("--indir", help="Path to input Scienceparse+ JSONs", required=True, type=str)
+    parser.add_argument("--outdir", help="Path to output JSON files", required=True, type=str)
+    parser.add_argument("--paper_ids", help="Path to JSON of paper_id mappings", type=str)
+    args = parser.parse_args()
+
+    class Args:
+        pass
+    args = Args()
+    args.indir = '/data-processing/jsons/'
+    args.paper_ids = 'arxiv_id_to_s2_id.json'
+
+    with open(args.paper_ids) as f_in:
+        arxiv_id_to_s2_id = json.load(f_in)
+
+    for fname in os.listdir(args.indir):
+        arxiv_id = fname.replace('.json', '')
+        if arxiv_id == '1906.08632':
+            continue
+        if arxiv_id in arxiv_id_to_s2_id:
+            s2_id = arxiv_id_to_s2_id[arxiv_id]
+            main(infile=os.path.join(args.indir, fname), s2_id=s2_id, arxiv_id=arxiv_id)
