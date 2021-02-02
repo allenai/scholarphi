@@ -95,7 +95,7 @@ export class Connection {
     GROUP BY paper.s2_id,
              paper.arxiv_id,
              version.index
-    ORDER BY entity_count DESC, version.index DESC
+    ORDER BY paper.arxiv_id DESC
       OFFSET ${offset}
        LIMIT ${size}
     `);
