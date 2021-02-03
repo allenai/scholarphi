@@ -114,7 +114,7 @@ export class Connection {
     return { rows, offset, size, total };
   }
 
-  async getPaperEntityCount(paperSelector: PaperSelector): Promise<number | null> {
+  async getPaperEntityCount(paperSelector: PaperSelector, entityType: string): Promise<number | null> {
     const idField = isS2Selector(paperSelector) ? 'p.s2_id' : 'p.arxiv_id';
     const idValue = isS2Selector(paperSelector) ? paperSelector.s2_id : `${paperSelector.arxiv_id}%`;
     const whereClause = `${idField} ${isS2Selector(paperSelector) ? '=' : 'ilike'} ?`
@@ -127,14 +127,16 @@ export class Connection {
         from entity
         group by paper_id
       ) as maximum on maximum.paper_id = e.paper_id
-      where e.version = maximum.max_version and ${whereClause}
+      where e.version = maximum.max_version 
+      and ${whereClause}
+      and e.type = ?
       group by p.s2_id
-    `, [idValue]);
+    `, [idValue, entityType]);
     if (response.rows.length > 0) {
       return response.rows[0].count;
     }
     return null;
-  }
+  } 
 
   async checkPaper(paperSelector: PaperSelector): Promise<boolean> {
     const rows = await this._knex("paper")
