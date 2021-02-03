@@ -59,6 +59,11 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
             s2_metadata = S2Metadata(s2_id=data["paperId"], references=references)
             logging.debug("Fetched S2 metadata for arXiv paper %s", item)
             yield s2_metadata
+        else:
+            # Longer term, we should split out this meta data processing into it's own 
+            # later pipeline stage so we can otherwise process the paper before it's references
+            # are available via the s2 public api.
+            raise Exception("No S2 metadata available, cannot continue processing")
 
         time.sleep(FETCH_DELAY)
 
