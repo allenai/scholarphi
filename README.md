@@ -26,10 +26,11 @@ npm install
 npm start
 ```
 
-However, if you want to run the api locally as well you'll have to:
-- Do the 1 time setup instructions for the api detailed in [api/README.md#one-time-setup](api/README.md#one-time-setup)
-- Run the api server in /api via `npm start`
-- In another terminal, run the reader app via `npm run dev`
+See [ui/README.md](ui/README.md) for more details on how to use the reader.
+
+However, if you want to run the *api* locally as well you'll have to:
+- Follow the instructions in [api/README.md](api/README.md) to run the api locally
+- In another terminal, run the reader app in the /ui directory via `npm run dev`
 
 ## Style guidelines
 

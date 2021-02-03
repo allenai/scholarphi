@@ -12,6 +12,8 @@ To run the server, first install the dependencies:
 npm install
 ```
 
+If you haven't already, do the [One Time Setup](#one-time-setup).
+
 Then start the server:
 
 ```bash
