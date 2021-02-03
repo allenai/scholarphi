@@ -19,6 +19,11 @@ class S2PaperNotFoundException(Exception):
     which is a requirement for processing.
     """
 
+class S2ReferencesNotFoundException(Exception):
+    """
+    The target arxiv paper did not have any references available via the S2 public api.
+    """
+
 class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
     @staticmethod
     def get_name() -> str:
@@ -60,6 +65,9 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
                     year=reference_data["year"],
                 )
                 references.append(reference)
+            
+            if not references:
+                raise S2ReferencesNotFoundException()
 
             s2_metadata = S2Metadata(s2_id=data["paperId"], references=references)
             logging.debug("Fetched S2 metadata for arXiv paper %s", item)
