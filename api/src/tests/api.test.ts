@@ -966,7 +966,7 @@ describe("API", () => {
   });
 
   describe("GET /api/v0/papers/arxiv:{arxivId}/version", () => {
-    test("paper with entity data", async () => {
+    test("paper with citations data", async () => {
       await knex("paper").insert({
         s2_id: "s2id",
         arxiv_id: "1111.1111v1",
@@ -981,7 +981,7 @@ describe("API", () => {
           id: 1,
           paper_id: "s2id",
           version: 0,
-          type: "unknown",
+          type: "citation",
           source: "test",
         },
       ] as EntityRow[]);
@@ -995,11 +995,20 @@ describe("API", () => {
       expect(response.result).toEqual({ version: 1 });
     });
 
-    test("paper with no entity data", async () => {
+    test("paper with no citation data", async () => {
       await knex("paper").insert({
         s2_id: "s2id",
         arxiv_id: "1111.1112v1",
       } as PaperRow);
+      await knex.batchInsert("entity", [
+        {
+          id: 1,
+          paper_id: "s2id",
+          version: 0,
+          type: "other",
+          source: "test",
+        },
+      ] as EntityRow[]);
       const response = await server.inject({
         method: "get",
         url: "/api/v0/papers/arxiv:1111.1112/version",
