@@ -16,6 +16,23 @@ papers and bounding boxes for those entities.
 extract entities and their bounding boxes from papers.
 * `ui/`: the user interface for the augmented PDF reader.
 
+## Quick Start
+
+In order to run the reader app locally (pointing to the production api) you only need to do 
+
+```bash
+cd ui
+npm install 
+npm start
+```
+
+However, if you want to run the api locally as well you'll have to:
+- Do the 1 time setup instructions for the api detailed in [api/README.md#one-time-setup](api/README.md#one-time-setup)
+- Run the api server in /api via `npm start`
+- In another terminal, run the reader app via `npm run dev`
+
+## Style guidelines
+
 The code in this directory roughly follows the following 
 style guidelines:
 
