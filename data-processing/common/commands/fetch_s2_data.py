@@ -13,6 +13,11 @@ from common.types import ArxivId, Author, Reference, S2Metadata, SerializableRef
 """ Time to wait between consecutive requests to S2 API. """
 FETCH_DELAY = 3  # seconds
 
+class S2PaperNotFoundException(Exception):
+    """
+    The target arxiv paper could not be found on the S2 public api, 
+    which is a requirement for processing.
+    """
 
 class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
     @staticmethod
@@ -63,7 +68,7 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
             # Longer term, we should split out this meta data processing into it's own 
             # later pipeline stage so we can otherwise process the paper before it's references
             # are available via the s2 public api.
-            raise Exception("No S2 metadata available, cannot continue processing")
+            raise S2PaperNotFoundException()
 
         time.sleep(FETCH_DELAY)
 
