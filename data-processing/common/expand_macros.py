@@ -126,7 +126,7 @@ TOKEN_PATTERN = re.compile(
     b"Expansion token: (?P<token>.*?) "
     + br"\(object ID (?P<object_id>.*?)\)\. "
     + br"Category: (?P<category_code>\d+)\. "
-    + br"Expandable: false\.",
+    + br"Expandable: (?:true|false)\.",
     flags=re.MULTILINE | re.DOTALL,
 )
 
@@ -295,11 +295,14 @@ def detect_expansions(
 
             if expanding:
                 control_sequence = active_macros[expanding]
-                token = (
-                    ControlSequence(text, object_id, CONTROL_SEQUENCE)
-                    if category == CONTROL_SEQUENCE
-                    else TexToken(text, object_id, category)
-                )
+                token: TexToken
+                if category == CONTROL_SEQUENCE:
+                    token = ControlSequence(text, object_id, CONTROL_SEQUENCE)
+                    # Start tracking the nested macro so it will be expanded later.
+                    active_macros[object_id] = token
+                else:
+                    token = TexToken(text, object_id, category)
+
                 if control_sequence.expansion_tokens is not None:
                     control_sequence.expansion_tokens.append(token)
 
