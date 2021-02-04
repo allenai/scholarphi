@@ -9,7 +9,7 @@ from common import directories
 from common.file_utils import clean_directory
 
 
-def _unpack(archive_path: str, dest_dir: str) -> None:
+def unpack_archive(archive_path: str, dest_dir: str) -> None:
     """
     For permissible arXiv source formats, see the 'Other formats' page for an arXiv paper.
     At the time of writing, the sources could be any of the following:
@@ -58,7 +58,7 @@ def unpack(arxiv_id: str, unpack_path: str) -> Optional[str]:
             "Directory already found at %s. Deleting contents.", unpack_path
         )
         clean_directory(unpack_path)
-    _unpack(archive_path, unpack_path)
+    unpack_archive(archive_path, unpack_path)
     return unpack_path
 
 

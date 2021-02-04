@@ -5,30 +5,33 @@ import re
 import shutil
 import subprocess
 from tempfile import TemporaryDirectory
-from typing import List
+from typing import List, Optional
 
 import requests
 
 from common import directories
 from common.models import Metadata
-from common.types import ArxivId
+from common.types import ArxivId, Path
 
 USER_AGENT = "Andrew Head, for academic research on dissemination of scientific insight <head.andrewm@gmail.com>"
 
 
-def save_source_archive(arxiv_id: ArxivId, content: bytes) -> None:
-    archive_path = directories.arxiv_subdir("sources-archives", arxiv_id)
-    if not os.path.exists(os.path.dirname(archive_path)):
-        os.makedirs(os.path.dirname(archive_path))
-    with open(archive_path, "wb") as archive:
+def save_source_archive(
+    arxiv_id: ArxivId, content: bytes, dest: Optional[Path] = None
+) -> None:
+    if not dest:
+        dest = directories.arxiv_subdir("sources-archives", arxiv_id)
+    if not os.path.exists(os.path.dirname(dest)):
+        os.makedirs(os.path.dirname(dest))
+    with open(dest, "wb") as archive:
         archive.write(content)
 
 
-def fetch_from_arxiv(arxiv_id: ArxivId) -> None:
+def fetch_from_arxiv(arxiv_id: ArxivId, dest: Optional[Path] = None) -> None:
     logging.debug("Fetching sources for arXiv paper %s from arXiv.", arxiv_id)
     uri = "https://arxiv.org/e-print/%s" % (arxiv_id,)
     response = requests.get(uri, headers={"User-Agent": USER_AGENT})
-    save_source_archive(arxiv_id, response.content)
+    save_source_archive(arxiv_id, response.content, dest)
 
 
 def fetch_from_s3(arxiv_id: ArxivId, bucket: str) -> None:
