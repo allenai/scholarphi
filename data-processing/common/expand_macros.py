@@ -132,9 +132,9 @@ TOKEN_PATTERN = re.compile(
 
 ARGUMENT_PATTERN = re.compile(
     b"Argument token: "
-    + br'"{" \(source file (?P<path>.*?), '
-    + br"from line (?P<start_line>\d+), col (?P<start_column>\d+) "
-    + br"to line (?P<end_line>\d+), col (?P<end_column>\d+)\)\.",
+    + br'".*?" \(source file (?P<path>.*?), '
+    + br"from line (?P<start_line>\d+) col (?P<start_column>\d+) "
+    + br"to line (?P<end_line>\d+) col (?P<end_column>\d+)\)\.",
     flags=re.MULTILINE | re.DOTALL,
 )
 
@@ -310,7 +310,7 @@ def detect_expansions(
                 path = match.group("path").decode("utf-8", errors="ignore")
                 if path in in_files:
                     end_line = int(match.group("end_line"))
-                    end_col = int(match.group("end_col"))
+                    end_col = int(match.group("end_column"))
 
         # If LaTeXML has finished expanding a control sequence, then mark the control sequence as
         # having been expanded and pop it from the stack of macros to expand.
