@@ -13,6 +13,19 @@ from common.types import ArxivId, Author, Reference, S2Metadata, SerializableRef
 """ Time to wait between consecutive requests to S2 API. """
 FETCH_DELAY = 3  # seconds
 
+class S2MetadataException(Exception):
+    pass
+
+class S2PaperNotFoundException(S2MetadataException):
+    """
+    The target arxiv paper could not be found on the S2 public api, 
+    which is a requirement for processing.
+    """
+
+class S2ReferencesNotFoundException(S2MetadataException):
+    """
+    The target arxiv paper did not have any references available via the S2 public api.
+    """
 
 class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
     @staticmethod
@@ -55,10 +68,17 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
                     year=reference_data["year"],
                 )
                 references.append(reference)
+            
+            if not references:
+                # References are required to process citations, mark job as failed
+                raise S2ReferencesNotFoundException()
 
             s2_metadata = S2Metadata(s2_id=data["paperId"], references=references)
             logging.debug("Fetched S2 metadata for arXiv paper %s", item)
             yield s2_metadata
+        else:
+            # References are required to process citations, mark job as failed
+            raise S2PaperNotFoundException()
 
         time.sleep(FETCH_DELAY)
 
