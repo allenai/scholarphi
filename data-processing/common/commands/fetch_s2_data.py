@@ -13,13 +13,16 @@ from common.types import ArxivId, Author, Reference, S2Metadata, SerializableRef
 """ Time to wait between consecutive requests to S2 API. """
 FETCH_DELAY = 3  # seconds
 
-class S2PaperNotFoundException(Exception):
+class S2MetadataException(Exception):
+    pass
+
+class S2PaperNotFoundException(S2MetadataException):
     """
     The target arxiv paper could not be found on the S2 public api, 
     which is a requirement for processing.
     """
 
-class S2ReferencesNotFoundException(Exception):
+class S2ReferencesNotFoundException(S2MetadataException):
     """
     The target arxiv paper did not have any references available via the S2 public api.
     """
