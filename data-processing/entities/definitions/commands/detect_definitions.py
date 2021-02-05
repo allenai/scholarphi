@@ -153,6 +153,18 @@ def consolidate_keyword_definitions(
                     sum(definition_confidences) / len(definition_confidences)
                 )
             term_ranges, definition_ranges = [], []
+        
+    if len(term_ranges) > 0:
+        terms.append(term_ranges)
+        term_confidence_list.append(
+            sum(term_confidences) / len(term_confidences)
+        )
+    if len(definition_ranges) > 0:
+        definitions.append(definition_ranges)
+        definition_confidence_list.append(
+            sum(definition_confidences) / len(definition_confidences)
+        )
+    term_ranges, definition_ranges = [], []
 
     # Match pairs of term and definitions sequentially ( O T O O D then (T, D)). This
     # does not handle multi-term / definitions pairs.
@@ -664,6 +676,7 @@ class DetectDefinitions(
                         symbol_texs = get_symbol_texs(
                             s.legacy_definition_input, s.with_formulas_marked
                         )
+                        #--- This is V2 code for getting symbol_nickname_pairs and abbreviation_pairs---
                         # if symbol_texs is None:
                         #     symbol_nickname_pairs = []
                         # else:
@@ -679,6 +692,7 @@ class DetectDefinitions(
                         #     sentence_features["tokens"],
                         #     model.nlp,
                         # )
+                        #--- end ---
 
                         # Only process slots when they include both 'TERM' and 'DEFINITION'.
                         if "TERM" not in termdef_sentence_slots or "DEF" not in termdef_sentence_slots:

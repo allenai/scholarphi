@@ -53,9 +53,9 @@ class DefinitionDetectionModel:
 
         # Initialize modules for transformer-based inference model based on the prediction_type
         self.model_paths = {
-            'TERM-DEF' : {'baseURL':"http://dongtae.lti.cs.cmu.edu/data/joint_bert/",'file':"model_v1.0_best.zip"},
-            'ABBR-EXP' : {'baseURL':"http://dongtae.lti.cs.cmu.edu/data/joint_bert/",'file':"model_v1.0_best.zip"},
-            'SYM-NICK' : {'baseURL':"http://dongtae.lti.cs.cmu.edu/data/joint_bert/",'file':"model_v1.0_best.zip"},
+            'TERM-DEF' : {'baseURL':"https://scholarphi.s3-us-west-1.amazonaws.com/",'file':"termdef.zip"},
+            'ABBR-EXP' : {'baseURL':"https://scholarphi.s3-us-west-1.amazonaws.com/",'file':"abbrexp.zip"},
+            'SYM-NICK' : {'baseURL':"https://scholarphi.s3-us-west-1.amazonaws.com/",'file':"symnick.zip"},
         }
         self.prediction_types = prediction_types
 
@@ -67,7 +67,7 @@ class DefinitionDetectionModel:
 
 
         for prediction_type in self.prediction_types:
-            cache_directory = f"./cache/{prediction_type}_model"
+            cache_directory = f"./cache/{prediction_type.replace('-','_')}_model"
 
             # Make a directory storing model files (./data/)
             if not os.path.exists(cache_directory):
