@@ -15,7 +15,11 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--output-dir",
-        help="Directory into which the arXiv sources will be fetched.",
+        help=(
+            "Directory into which the arXiv sources will be fetched. The fetched sources will "
+            + "be saved in a subfolder of the output folder with its name as the arXiv ID "
+            + "(i.e., 'output_dir/<arxiv_id>/')."
+        ),
         default="tmp",
     )
 
