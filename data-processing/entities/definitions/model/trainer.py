@@ -247,7 +247,7 @@ class Trainer(object):
         Apply various heuristic filters based on the prediction type [TERM-DEF, ABBR-EXP, SYM-NICK]
         """
 
-        if self.model.prediction_type == 'TERM-DEF':
+        if self.model_args.prediction_type == 'TERM-DEF':
             # filter out term/definition only cases
             # filter out multi-term/definition cases
             # threshold inclusion
@@ -401,7 +401,7 @@ class Trainer(object):
                 new_slot_preds.append(new_slot_pred)
 
             return new_intent_preds, new_slot_preds
-        if self.prediction_type == 'SYM-NICK':
+        elif self.model_args.prediction_type == 'SYM-NICK':
             # filter out term/definition only cases
             # filter out multi-term/definition cases
             # threshold inclusion
