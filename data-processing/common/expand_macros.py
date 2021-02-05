@@ -67,6 +67,20 @@ class ControlSequence(TexToken):
 ControlSequenceId = bytes
 
 
+def _should_skip_control_sequence(control_sequence: ControlSequence) -> bool:
+    """
+    Determine whether a control sequence should be skipped (i.e., removed) from an expansion.
+    """
+    # When expanding control sequences defined with \DeclareMathOperator, LaTeXML inserts a
+    # '@wrapper' control sequence into the expansion (e.g., '\op@wrapper' for an operator named
+    # '\op'). I do not know why, though it seems to be a noop in LaTeXML and does not seem to
+    # have an analog in LaTeX. Therefore all '\*@wrapper' control sequences are treated as
+    # noops and removed from the expansion.
+    if control_sequence.text.endswith(b"@wrapper"):
+        return True
+    return False
+
+
 def _get_expansion_text(control_sequence: ControlSequence) -> bytes:
     """
     Iterate over a list of tokens (which can include control sequences with their own expansions)
@@ -77,7 +91,6 @@ def _get_expansion_text(control_sequence: ControlSequence) -> bytes:
     text = b""
     for i, token in enumerate(expansion_tokens):
         next_token = expansion_tokens[i + 1] if i < len(expansion_tokens) - 1 else None
-        text += token.text
 
         # Control sequences should be followed by spaces in cases where either
         # 1. the control sequence is the last token in the stream (and hence
@@ -85,8 +98,12 @@ def _get_expansion_text(control_sequence: ControlSequence) -> bytes:
         # 2. the next token in the expansion is a letter, which would be grouped
         #    into the control sequence if not separated by a space.
         if isinstance(token, ControlSequence):
-            if not next_token or next_token.catcode == LETTER:
-                text += b" "
+            if not _should_skip_control_sequence(token):
+                text += token.text
+                if not next_token or next_token.catcode == LETTER:
+                    text += b" "
+        else:
+            text += token.text
 
     return text
 
