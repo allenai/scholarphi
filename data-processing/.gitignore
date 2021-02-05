@@ -22,6 +22,9 @@ arxiv_ids.txt
 # Pipeline inputs and outputs
 data
 
+# Script outputs
+tmp
+
 # Pipeline logs
 logs
 
