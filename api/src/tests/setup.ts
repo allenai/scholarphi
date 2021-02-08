@@ -22,6 +22,7 @@ nconf
       password: "pdfsarefun",
       schema: "test"
     },
+    adminToken: "test"
   });
 
 const config = conf.Config.fromConfig(nconf);

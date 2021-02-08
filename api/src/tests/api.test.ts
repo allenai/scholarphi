@@ -642,7 +642,7 @@ describe("API", () => {
 
       const response = await server.inject({
         method: "patch",
-        url: "/api/v0/papers/arxiv:1111.1111/entities/1?access_token=local",
+        url: "/api/v0/papers/arxiv:1111.1111/entities/1?access_token=test",
         payload,
       });
 
@@ -710,7 +710,7 @@ describe("API", () => {
 
       const response = await server.inject({
         method: "patch",
-        url: "/api/v0/papers/arxiv:1111.1111/entities/1?access_token=local",
+        url: "/api/v0/papers/arxiv:1111.1111/entities/1?access_token=test",
         payload,
       });
 
@@ -794,7 +794,7 @@ describe("API", () => {
 
       const response = await server.inject({
         method: "patch",
-        url: "/api/v0/papers/arxiv:1111.1111/entities/1?access_token=local",
+        url: "/api/v0/papers/arxiv:1111.1111/entities/1?access_token=test",
         payload,
       });
 
@@ -953,7 +953,7 @@ describe("API", () => {
 
       const response = await server.inject({
         method: "delete",
-        url: "/api/v0/papers/arxiv:1111.1111/entities/1?access_token=local",
+        url: "/api/v0/papers/arxiv:1111.1111/entities/1?access_token=test",
       });
 
       expect(response.statusCode).toEqual(204);
