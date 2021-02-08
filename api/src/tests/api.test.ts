@@ -877,7 +877,7 @@ describe("API", () => {
 
       const response = await server.inject({
         method: "patch",
-        url: "/api/v0/papers/arxiv:1111.1111/entities/1",
+        url: "/api/v0/papers/arxiv:1111.1111/entities/1?access_token=test",
         payload,
       });
 
