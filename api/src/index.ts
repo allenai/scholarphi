@@ -11,6 +11,7 @@ nconf
       port: 5432,
       schema: "public",
     },
+    adminToken: "local"
   });
 
 process.on("unhandledRejection", (err) => {
