@@ -16,7 +16,7 @@ from .model.configuration import (
     ModelArguments,
     TrainingArguments,
 )
-from .model.load_data import load_and_cache_example, load_and_cache_example_batch
+from .model.load_data import load_and_cache_example, load_and_cache_example_batch, load_and_cache_example_batch_raw
 from .model.model import JointRoberta
 from .model.trainer import Trainer
 from .model.utils import (
@@ -53,9 +53,9 @@ class DefinitionDetectionModel:
 
         # Initialize modules for transformer-based inference model based on the prediction_type
         self.model_paths = {
-            'TERM-DEF' : {'baseURL':"https://scholarphi.s3-us-west-1.amazonaws.com/",'file':"termdef.zip"},
-            'ABBR-EXP' : {'baseURL':"https://scholarphi.s3-us-west-1.amazonaws.com/",'file':"abbrexp.zip"},
-            'SYM-NICK' : {'baseURL':"https://scholarphi.s3-us-west-1.amazonaws.com/",'file':"symnick.zip"},
+            'W00' : {'baseURL':"https://scholarphi.s3-us-west-1.amazonaws.com/",'file':"termdef.zip", 'type' : 'term-def'},
+            'AI2020' : {'baseURL':"https://scholarphi.s3-us-west-1.amazonaws.com/",'file':"abbrexp.zip", 'type' : 'abbr-exp'},
+            'DocDef2' : {'baseURL':"https://scholarphi.s3-us-west-1.amazonaws.com/",'file':"symnick.zip", 'type' : 'sym-nick'},
         }
         self.prediction_types = prediction_types
 
@@ -211,6 +211,8 @@ class DefinitionDetectionModel:
                     intent_label_lst=get_intent_labels(data_args),
                     slot_label_lst=get_slot_labels(data_args),
                     pos_label_lst=get_pos_labels(data_args),
+                    # This is because currently there are 3 different models 
+                    tasks=prediction_type
                 )
                 logging.info("Model loaded from %s", training_args.output_dir)
             else:
@@ -291,27 +293,23 @@ class DefinitionDetectionModel:
     ) -> Tuple[List[int], List[List[str]], List[List[float]]]:
 
         # Load data.
-        test_dataset = load_and_cache_example_batch(
+        test_dataset, raw = load_and_cache_example_batch_raw(
             self.data_args[prediction_type], self.tokenizer[prediction_type], data,
         )
 
         # Perform inference.
-        intent_pred, slot_preds, slot_pred_confs = self.trainer[prediction_type].evaluate_from_input(test_dataset)
+        intent_pred, slot_preds, slot_pred_confs = self.trainer[prediction_type].evaluate_from_input(test_dataset, raw)
 
         # Process predictions.
-        prediction_replacements = {
-            'TERM-DEF' : [('TERM','TERM'),('DEF','DEF')],
-            'ABBR-EXP' : [('short','TERM'),('long','DEF')],
-            'SYM-NICK' : [('TERM','TERM'),('DEF','DEF')],
-        }
+
         simplified_slot_preds = []
         for slot_pred in slot_preds:
             simplified_slot_pred = []
             for s in slot_pred:
-                if s.endswith(prediction_replacements[prediction_type][0][0]):
-                    simplified_slot_pred.append(prediction_replacements[prediction_type][0][1])
-                elif s.endswith(prediction_replacements[prediction_type][1][0]):
-                    simplified_slot_pred.append(prediction_replacements[prediction_type][1][1])
+                if s.endswith('TERM'):
+                    simplified_slot_pred.append('TERM')
+                elif s.endswith('DEF'):
+                    simplified_slot_pred.append('DEF')
                 else:
                     simplified_slot_pred.append("O")
             simplified_slot_preds.append(simplified_slot_pred)
