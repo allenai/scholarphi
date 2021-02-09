@@ -197,9 +197,9 @@ def consolidate_keyword_definitions(
         )
 
         all_definition_types = {
-        'TERM-DEF' : ['term','definition'],
-        'ABBR-EXP' : ['abbreviation','expansion'],
-        'SYM-NICK' : ['symbol','nickname']
+        'W00' : ['term','definition'],
+        'AI2020' : ['abbreviation','expansion'],
+        'DocDef2' : ['symbol','nickname']
         }
 
         term_type = all_definition_types[prediction_type][0]
@@ -601,7 +601,7 @@ class DetectDefinitions(
             return
 
         # Load the pre-trained definition detection model.
-        prediction_types =  ['TERM-DEF', 'ABBR-EXP', 'SYM-NICK']
+        prediction_types =  ['AI2020', 'DocDef2', 'W00']
         model = DefinitionDetectionModel(prediction_types)
 
         definition_index = 0
@@ -640,13 +640,13 @@ class DetectDefinitions(
                     # Detect terms and definitions in each sentence with a pre-trained definition
                     # extraction model, from the featurized text.
                     termdef_intents, termdef_slots, termdef_slots_confidence = model.predict_batch(
-                        cast(List[Dict[Any, Any]], features), 'TERM-DEF'
+                        cast(List[Dict[Any, Any]], features), 'W00'
                     )
                     abbrexp_intents, abbrexp_slots, abbrexp_slots_confidence = model.predict_batch(
-                        cast(List[Dict[Any, Any]], features), 'ABBR-EXP'
+                        cast(List[Dict[Any, Any]], features), 'AI2020'
                     )
                     symnick_intents, symnick_slots, symnick_slots_confidence = model.predict_batch(
-                        cast(List[Dict[Any, Any]], features), 'SYM-NICK'
+                        cast(List[Dict[Any, Any]], features), 'DocDef2'
                     )
                     
 
@@ -703,7 +703,7 @@ class DetectDefinitions(
                                 sentence_features["tokens"],
                                 termdef_sentence_slots,
                                 termdef_sentence_slots_confidence,
-                                "TERM-DEF"
+                                "W00"
                             )
 
                         if "TERM" not in abbrexp_sentence_slots or "DEF" not in abbrexp_sentence_slots:
@@ -714,7 +714,7 @@ class DetectDefinitions(
                                 sentence_features["tokens"],
                                 abbrexp_sentence_slots,
                                 abbrexp_sentence_slots_confidence,
-                                "ABBR-EXP"
+                                "AI2020"
                             )
                         
                         if "TERM" not in symnick_sentence_slots or "DEF" not in symnick_sentence_slots:
@@ -725,7 +725,7 @@ class DetectDefinitions(
                                 sentence_features["tokens"],
                                 symnick_sentence_slots,
                                 symnick_sentence_slots_confidence,
-                                "SYM-NICK"
+                                "DocDef2"
                             )
 
                         pairs = (

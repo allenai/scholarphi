@@ -253,7 +253,7 @@ class Trainer(object):
         Apply various heuristic filters based on the data type [AI2020(abbr-exp), DocDef2(sym-nick), W00(term-def)]
         """
         
-        data_types = self.data_args.tasks
+        data_types = self.data_args.task.split('+')
         for data_type in data_types:
             if data_type=='AI2020':
                 simplified_slot_preds = []

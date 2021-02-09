@@ -15,12 +15,6 @@ class ModelArguments:
             "help": "The model checkpoint for weights initialization. Leave None if you want to train a model from scratch."
         },
     )
-    prediction_type: Optional[str] = field(
-        default=None,
-        metadata={
-            "help": "The model prediction type. One of [TERM-DEF, ABBR-EXP, SYM-NICK]"
-        },
-    )
     config_name: Optional[str] = field(
         default=None,
         metadata={

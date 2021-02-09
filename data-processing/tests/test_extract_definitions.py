@@ -13,7 +13,7 @@ from entities.definitions.commands.detect_definitions import (
 
 @pytest.fixture(scope="module")
 def model():
-    model = DefinitionDetectionModel(['TERM-DEF', 'ABBR-EXP', 'SYM-NICK'])
+    model = DefinitionDetectionModel(['AI2020', 'DocDef2', 'W00'])
     return model
 
 
@@ -22,16 +22,16 @@ def model():
 # 2. Be marked with 'pytest.mark.slow' so the test is omitted when running typical unit tests.
 @pytest.mark.slow
 def test_model_extracts_simple_definitions(model: DefinitionDetectionModel):
-    prediction_type = 'TERM-DEF'
+    prediction_type = 'W00'
     features = model.featurize("Neural networks are machine learning models.")
     intents, slots, _ = model.predict_batch([features], prediction_type)
-    assert intents[0]
-    assert slots[0] == ["TERM", "TERM", "O", "DEF", "DEF", "DEF", "O"]
+    assert intents[prediction_type][0]
+    assert slots[prediction_type][0] == ["TERM", "TERM", "O", "DEF", "DEF", "DEF", "O"]
 
 
 @pytest.mark.slow
 def test_extract_term_definition_pairs_case_1():
-    prediction_type = 'TERM-DEF'
+    prediction_type = 'W00'
     text = "Neural networks are machine learning models."
     tokens, slots, confidences = zip(
         *[
@@ -54,16 +54,16 @@ def test_extract_term_definition_pairs_case_1():
 
 @pytest.mark.slow
 def test_model_extracts_nickname_before_symbol(model: DefinitionDetectionModel):
-    prediction_type = 'SYM-NICK'
+    prediction_type = 'DocDef2'
     features = model.featurize("The agent acts with a policy SYMBOL in each timestep SYMBOL")
     intents, slots, _ = model.predict_batch([features], prediction_type)
-    assert intents[0]
-    assert slots[0] == ["O", "O", "O", "O", "O", "DEF", "TERM", "O", "O", "DEF", "TERM"]
+    assert intents[prediction_type][0]
+    assert slots[prediction_type][0] == ["O", "O", "O", "O", "O", "DEF", "TERM", "O", "O", "DEF", "TERM"]
 
 
 @pytest.mark.slow
 def test_extract_symbol_nickname_pairs_case_1():
-    prediction_type = 'SYM-NICK'
+    prediction_type = 'DocDef2'
     text = "The agent acts with a policy SYMBOL in each timestep SYMBOL."
     tokens, slots, confidences = zip(
         *[
@@ -123,18 +123,18 @@ def test_extract_nicknames_from_before_symbols():
     assert nickname1.term_text == "t"
     assert nickname1.definition_text == "timestep"
 
-# @pytest.mark.slow
-# def test_model_extracts_nickname_symbol_separated_by_colon(model: DefinitionDetectionModel):
-#     prediction_type = 'SYM-NICK'
-#     features = model.featurize("The agent acts with a policy : SYMBOL")
-#     intents, slots, _ = model.predict_batch([features], prediction_type)
-#     assert intents[0]
-#     assert slots[0] == ["O", "O", "O", "O", "O", "DEF", "O", "TERM"]
+@pytest.mark.slow
+def test_model_extracts_nickname_symbol_separated_by_colon(model: DefinitionDetectionModel):
+    prediction_type = 'DocDef2'
+    features = model.featurize("The agent acts with a policy : SYMBOL")
+    intents, slots, _ = model.predict_batch([features], prediction_type)
+    assert intents[prediction_type][0]
+    assert slots[prediction_type][0] == ["O", "O", "O", "O", "O", "DEF", "O", "TERM"]
 
 
 @pytest.mark.slow
 def test_extract_symbol_nickname_pairs_case_2():
-    prediction_type = 'SYM-NICK'
+    prediction_type = 'DocDef2'
     text = "The agent acts with a policy : SYMBOL"
     tokens, slots, confidences = zip(
         *[
@@ -181,18 +181,18 @@ def test_extract_nicknames_symbols_separated_by_colon():
     assert nickname0.term_text == r"\pi"
     assert nickname0.definition_text == "policy"
 
-# @pytest.mark.slow
-# def test_model_extracts_nickname_symbol_parentheses(model: DefinitionDetectionModel):
-#     prediction_type = 'SYM-NICK'
-#     features = model.featurize("The agent acts with policy (SYMBOL)")
-#     intents, slots, _ = model.predict_batch([features], prediction_type)
-#     assert intents[0]
-#     assert slots[0] == ["O", "O", "O", "O", "DEF", "O", "TERM", "O"]
+@pytest.mark.slow
+def test_model_extracts_nickname_symbol_parentheses(model: DefinitionDetectionModel):
+    prediction_type = 'DocDef2'
+    features = model.featurize("The agent acts with policy (SYMBOL)")
+    intents, slots, _ = model.predict_batch([features], prediction_type)
+    assert intents[prediction_type][0]
+    assert slots[prediction_type][0] == ["O", "O", "O", "O", "DEF", "O", "TERM", "O"]
 
 
 @pytest.mark.slow
 def test_extract_symbol_nickname_pairs_case_3():
-    prediction_type = 'SYM-NICK'
+    prediction_type = 'DocDef2'
     text = "The agent acts with policy (SYMBOL)"
     tokens, slots, confidences = zip(
         *[
@@ -242,16 +242,16 @@ def test_extract_nicknames_symbols_parentheses():
 
 @pytest.mark.slow
 def test_model_extracts_nickname_symbol_filter(model: DefinitionDetectionModel):
-    prediction_type = 'SYM-NICK'
+    prediction_type = 'DocDef2'
     features = model.featurize("The agent acts with SYMBOL SYMBOL")
     intents, slots, _ = model.predict_batch([features], prediction_type)
-    assert intents[0] == 0
-    assert slots[0] == ["O", "O", "O", "O", "O", "O"]
+    assert intents[prediction_type][0] == 0
+    assert slots[prediction_type][0] == ["O", "O", "O", "O", "O", "O"]
 
 
 @pytest.mark.slow
 def test_extract_symbol_nickname_pairs_case_4():
-    prediction_type = 'SYM-NICK'
+    prediction_type = 'DocDef2'
     text = "The agent acts with SYMBOL SYMBOL"
     tokens, slots, confidences = zip(
         *[
@@ -290,13 +290,13 @@ def test_extract_nicknames_symbols_filter():
     assert len(symbol_nickname_pairs) == 0
 
 
-# @pytest.mark.slow
-# def test_model_extracts_nickname_after_symbol(model: DefinitionDetectionModel):
-#     prediction_type = 'SYM-NICK'
-#     features = model.featurize("The architecture consists of SYMBOL dense layers trained with SYMBOL learning rate")
-#     intents, slots, _ = model.predict_batch([features], prediction_type)
-#     assert intents[0]
-#     assert slots[0] == ["O", "O", "O", "O", "TERM", "DEF", "DEF", "O", "O", "TERM", "DEF", "DEF"]
+@pytest.mark.slow
+def test_model_extracts_nickname_after_symbol(model: DefinitionDetectionModel):
+    prediction_type = 'DocDef2'
+    features = model.featurize("The architecture consists of SYMBOL dense layers trained with SYMBOL learning rate")
+    intents, slots, _ = model.predict_batch([features], prediction_type)
+    assert intents[prediction_type][0]
+    assert slots[prediction_type][0] == ["O", "O", "O", "O", "TERM", "DEF", "DEF", "O", "O", "TERM", "DEF", "DEF"]
 
 def test_extract_nicknames_from_after_symbols():
     text = "The architecture consists of SYMBOL dense layers trained with SYMBOL learning rate."
@@ -333,13 +333,13 @@ def test_extract_nicknames_from_after_symbols():
     assert nickname1.definition_text == "learning rate"
 
 
-# @pytest.mark.slow
-# def test_model_extracts_nickname_for_th_index_pattern(model: DefinitionDetectionModel):
-#     prediction_type = 'SYM-NICK'
-#     features = model.featurize("This process repeats for every SYMBOLth timestep")
-#     intents, slots, _ = model.predict_batch([features], prediction_type)
-#     assert intents[0]
-#     assert slots[0] == ["O", "O", "O", "O", "O", "TERM", "DEF"]
+@pytest.mark.slow
+def test_model_extracts_nickname_for_th_index_pattern(model: DefinitionDetectionModel):
+    prediction_type = 'DocDef2'
+    features = model.featurize("This process repeats for every SYMBOLth timestep")
+    intents, slots, _ = model.predict_batch([features], prediction_type)
+    assert intents[prediction_type][0]
+    assert slots[prediction_type][0] == ["O", "O", "O", "O", "O", "TERM", "DEF"]
 
 def test_extract_nickname_for_th_index_pattern():
     text = "This process repeats for every SYMBOLth timestep."
@@ -368,16 +368,16 @@ def test_extract_nickname_for_th_index_pattern():
 
 @pytest.mark.slow
 def test_model_extract_abbreviation_acronym(model: DefinitionDetectionModel):
-    prediction_type = 'ABBR-EXP'
+    prediction_type = 'AI2020'
     features = model.featurize("We use a Convolutional Neural Network (CNN) based architecture")
     intents, slots, _ = model.predict_batch([features], prediction_type)
-    assert intents[0]
-    assert slots[0] == ["O", "O", "O", "DEF", "DEF", "DEF", "O", "TERM", "O", "O", "O"]
+    assert intents[prediction_type][0]
+    assert slots[prediction_type][0] == ["O", "O", "O", "DEF", "DEF", "DEF", "O", "TERM", "O", "O", "O"]
 
 
 @pytest.mark.slow
 def test_extract_abbreviation_expansion_pairs_case_1():
-    prediction_type = 'ABBR-EXP'
+    prediction_type = 'AI2020'
     text = "We use a Convolutional Neural Network (CNN) based architecture"
     tokens, slots, confidences = zip(
         *[
@@ -428,11 +428,11 @@ def test_extract_abbreviation_acronym(model):
 
 @pytest.mark.slow
 def test_model_extract_abbreviation_shortened_word(model: DefinitionDetectionModel):
-    prediction_type = 'ABBR-EXP'
+    prediction_type = 'AI2020'
     features = model.featurize("We propose Conductive Networks (CondNets)")
     intents, slots, _ = model.predict_batch([features], prediction_type)
-    assert intents[0]
-    assert slots[0] == ["O", "O", "DEF", "DEF", "O", "TERM", "O"]
+    assert intents[prediction_type][0]
+    assert slots[prediction_type][0] == ["O", "O", "DEF", "DEF", "O", "TERM", "O"]
 
 @pytest.mark.slow
 def test_extract_abbreviation_shortened_word(model):

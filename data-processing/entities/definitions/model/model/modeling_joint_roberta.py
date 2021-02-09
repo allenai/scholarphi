@@ -16,11 +16,13 @@ class JointRoberta(BertPreTrainedModel):
         super(JointRoberta, self).__init__(config)
         self.args = args
 
+        self .tasks = tasks
         self.intent_label_dict = intent_label_dict
         self.slot_label_dict = slot_label_dict
+        self.pos_label_lst = pos_label_lst
 
-        self.num_intent_labels = {k:len(v) for (k,v) in intent_label_dict.items()}
-        self.num_slot_labels =  {k:len(v) for (k,v) in slot_label_dict.items()}
+        self.num_intent_labels_dict = {k:len(v) for (k,v) in intent_label_dict.items()}
+        self.num_slot_labels_dict = {k:len(v) for (k,v) in slot_label_dict.items()}
 
         self.intent_classifiers = {}
         self.slot_classifiers = {}
@@ -53,10 +55,10 @@ class JointRoberta(BertPreTrainedModel):
             hidden_size += self.num_acronym_labels
 
         self.custom_pooler = Pooler(hidden_size=hidden_size)
-        for pred_type in tasks:
+        for pred_type in self.tasks:
             self.intent_classifiers[pred_type] = IntentClassifier(hidden_size, self.num_intent_labels_dict[pred_type], args.dropout_rate)
 
-        for pred_type in tasks:
+        for pred_type in self.tasks:
             self.slot_classifiers[pred_type] = SlotClassifier(hidden_size, self.num_slot_labels_dict[pred_type], args.dropout_rate)
 
             if args.use_crf:
