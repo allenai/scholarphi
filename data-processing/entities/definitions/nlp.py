@@ -24,6 +24,8 @@ from .model.utils import (
     get_pos_labels,
     get_slot_labels,
     set_torch_seed,
+    get_intent_labels_dict,
+    get_slot_labels_dict
 )
 
 MODEL_CLASSES = {
@@ -67,7 +69,7 @@ class DefinitionDetectionModel:
 
 
         for prediction_type in self.prediction_types:
-            cache_directory = f"./cache/{prediction_type.replace('-','_')}_model"
+            cache_directory = f"./cache/{prediction_type}_model"
 
             # Make a directory storing model files (./data/)
             if not os.path.exists(cache_directory):
@@ -109,7 +111,7 @@ class DefinitionDetectionModel:
                 [
                     "--model_name_or_path",
                     "roberta-large",
-                    "--prediction_type",
+                    "--task",
                     f"{prediction_type}",
                     "--data_dir",
                     cache_directory,
@@ -208,11 +210,11 @@ class DefinitionDetectionModel:
                 model = model_class.from_pretrained(
                     training_args.output_dir,
                     args=training_args,
-                    intent_label_lst=get_intent_labels(data_args),
-                    slot_label_lst=get_slot_labels(data_args),
+                    intent_label_dict=get_intent_labels_dict(data_args),
+                    slot_label_dict=get_slot_labels_dict(data_args),
                     pos_label_lst=get_pos_labels(data_args),
-                    # This is because currently there are 3 different models 
-                    tasks=prediction_type
+                    # This is because currently there are 3 different models - one for each task
+                    tasks=[prediction_type]
                 )
                 logging.info("Model loaded from %s", training_args.output_dir)
             else:
@@ -225,7 +227,7 @@ class DefinitionDetectionModel:
                 )
                 raise ValueError(f"Could not load model from {training_args.output_dir}")
 
-            model.resize_token_embeddings(len(tokenizer))
+            # model.resize_token_embeddings(len(tokenizer))
 
             data_args.ignore_index = training_args.ignore_index
             self.data_args[prediction_type] = data_args
@@ -302,16 +304,19 @@ class DefinitionDetectionModel:
 
         # Process predictions.
 
-        simplified_slot_preds = []
-        for slot_pred in slot_preds:
-            simplified_slot_pred = []
-            for s in slot_pred:
-                if s.endswith('TERM'):
-                    simplified_slot_pred.append('TERM')
-                elif s.endswith('DEF'):
-                    simplified_slot_pred.append('DEF')
-                else:
-                    simplified_slot_pred.append("O")
-            simplified_slot_preds.append(simplified_slot_pred)
+        simplified_slot_preds_dict = {}
+        for prediction_type, slot_pred_list in slot_preds.items():
+            simplified_slot_preds = []
+            for slot_pred in slot_pred_list:
+                simplified_slot_pred = []
+                for s in slot_pred:
+                    if s.endswith('TERM'):
+                        simplified_slot_pred.append('TERM')
+                    elif s.endswith('DEF'):
+                        simplified_slot_pred.append('DEF')
+                    else:
+                        simplified_slot_pred.append("O")
+                simplified_slot_preds.append(simplified_slot_pred)
+            simplified_slot_preds_dict[prediction_type] = simplified_slot_preds
 
-        return intent_pred, simplified_slot_preds, slot_pred_confs
+        return intent_pred, simplified_slot_preds_dict, slot_pred_confs

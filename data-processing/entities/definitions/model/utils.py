@@ -271,3 +271,16 @@ def get_sentence_frame_acc(
 
     sementic_acc = np.multiply(intent_result, slot_result).mean()
     return {"sementic_frame_acc": sementic_acc}
+
+
+def get_intent_labels_dict(args):
+    intent_hybrid = {}
+    for task in args.task.split('+'):
+        intent_hybrid[task] = [label.strip() for label in open(os.path.join(args.data_dir, args.intent_label_file), 'r', encoding='utf-8')]
+    return intent_hybrid
+
+def get_slot_labels_dict(args):
+    slot_hybrid = {}
+    for task in args.task.split('+'):
+        slot_hybrid[task] = [label.strip() for label in open(os.path.join(args.data_dir, args.slot_label_file), 'r', encoding='utf-8')]
+    return slot_hybrid
