@@ -7,7 +7,7 @@ from typing import Iterator
 from common import directories
 from common.commands.base import ArxivBatchCommand
 from common.compile import get_compiled_tex_files
-from common.expand_tex import expand_tex
+from common.expand_input import expand_tex
 from common.types import AbsolutePath, ArxivId, CompiledTexFile, Path, RelativePath
 
 CompilationPath = AbsolutePath

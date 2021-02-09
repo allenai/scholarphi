@@ -1,6 +1,6 @@
 from typing import List
 
-from common.expand_macros import Expansion, detect_expansions
+from common.expand_macros import Expansion, detect_expansions, expand_macros
 
 
 def to_bytes(*lines: List[str]) -> bytes:
@@ -160,7 +160,21 @@ def test_detect_macro_ignore_operator_wrapper():
     assert expansions[0] == Expansion(rb"\op", 2, 1, 2, 4, rb"{\operatorname{op}}")
 
 
-# def test_fail_me_2():
-#     assert (
-#         False
-#     ), "Will probably break if a token expands to another macro with arguments, as those arguments will need to be removed. May be able to add some additional logic in the argument reader routine switch case."
+def test_fail_me_2():
+    assert (
+        False
+    ), "Will probably break if a token expands to another macro with arguments, as those arguments will need to be removed. May be able to add some additional logic in the argument reader routine switch case."
+
+
+def test_apply_expansions():
+    # Input TeX:
+    # \def\simpledef{x}
+    # $\simpledef$
+    # $\simpledef$
+    tex = to_bytes(r"\def\simpledef{x}", r"$\simpledef$", r"$\simpledef$")
+    expansions = [
+        Expansion(rb"\simpledef", 2, 1, 2, 11, b"x"),
+        Expansion(rb"\simpledef", 3, 1, 3, 11, b"x"),
+    ]
+    expanded = expand_macros(tex, expansions)
+    assert expanded == to_bytes(r"\def\simpledef{x}", "$x$", "$x$")

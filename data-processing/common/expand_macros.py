@@ -4,28 +4,13 @@ from typing import Dict, Iterator, List, Optional
 
 from common.types import AbsolutePath
 
-
-@dataclass
-class Expansion:
-    macro_name: bytes
-    " The token containing the macro name (without arguments). Should begin with '\\'. "
-
-    start_line: int
-    start_col: int
-    end_line: int
-    end_col: int
-    """
-    'start' and 'end' represent the range of all characters that should be replaced with an
-    expansion. This should include both the control sequence and its arguments:
-    * For a simple macro without arguments, this will be just the control sequence itself
-    (e.g., just '\\X' for macro '\\X' defined as '\\def\\X{X}').
-    * For a macro with arguments, this range will cover both the control sequence and its
-    arguments (e.g., all of '\\c{X}' for the macro '\\c' defined as '\\def\\c#1{\\mathcal{C}}')).
-    """
-
-    expansion: bytes
-
-
+# TeX category codes. TeX processes different tokens differently (i.e., it has different ways
+# for processing letters, numbers, etc.). Each token is assigned a category code to tell TeX how
+# it should be processed. We can detect category codes from TeX to unambiguously determine whether
+# a token is a letter, a control sequence, etc. For a list of available category codes see:
+# https://www.overleaf.com/learn/latex/Table_of_TeX_category_codes.
+# Not that while it seems control sequences have category code 0 in regular TeX, LaTeXML detects
+# them with category code 16. We use the latter value in this script.
 CatCode = int
 LETTER = 11
 CONTROL_SEQUENCE = 16
@@ -33,6 +18,10 @@ CONTROL_SEQUENCE = 16
 
 @dataclass
 class TexToken:
+    """
+    A token read that was read in a TeX file.
+    """
+
     text: bytes
     object_id: bytes
     catcode: CatCode
@@ -46,6 +35,11 @@ class TexToken:
 
 @dataclass
 class ControlSequence(TexToken):
+    """
+    A control sequence that was read in a TeX file. Control sequences include macros, definitions,
+    and commands, among other primitives.
+    """
+
     expansion_tokens: Optional[List[TexToken]] = None
     """
     List of tokens that make up the expansion of a macro. The list can be nested:
@@ -64,21 +58,8 @@ class ControlSequence(TexToken):
     """
 
 
+# A unique ID for a control sequence (in this script, its memory location).
 ControlSequenceId = bytes
-
-
-def _should_skip_control_sequence(control_sequence: ControlSequence) -> bool:
-    """
-    Determine whether a control sequence should be skipped (i.e., removed) from an expansion.
-    """
-    # When expanding control sequences defined with \DeclareMathOperator, LaTeXML inserts a
-    # '@wrapper' control sequence into the expansion (e.g., '\op@wrapper' for an operator named
-    # '\op'). I do not know why, though it seems to be a noop in LaTeXML and does not seem to
-    # have an analog in LaTeX. Therefore all '\*@wrapper' control sequences are treated as
-    # noops and removed from the expansion.
-    if control_sequence.text.endswith(b"@wrapper"):
-        return True
-    return False
 
 
 def _get_expansion_text(control_sequence: ControlSequence) -> bytes:
@@ -96,9 +77,10 @@ def _get_expansion_text(control_sequence: ControlSequence) -> bytes:
         # 1. the control sequence is the last token in the stream (and hence
         #    we do not know what will appear after it in the TeX).
         # 2. the next token in the expansion is a letter, which would be grouped
-        #    into the control sequence if not separated by a space.
+        #    into the control sequence if not separated by a space (see\
+        #    https://tex.stackexchange.com/a/423018/198728).
         if isinstance(token, ControlSequence):
-            if not _should_skip_control_sequence(token):
+            if _should_include_control_sequence(token):
                 text += token.text
                 if not next_token or next_token.catcode == LETTER:
                     text += b" "
@@ -106,6 +88,20 @@ def _get_expansion_text(control_sequence: ControlSequence) -> bytes:
             text += token.text
 
     return text
+
+
+def _should_include_control_sequence(control_sequence: ControlSequence) -> bool:
+    """
+    Determine whether a control sequence should be included (i.e., removed) from an expansion.
+    """
+    # When expanding control sequences defined with \DeclareMathOperator, LaTeXML inserts a
+    # '@wrapper' control sequence into the expansion (e.g., '\op@wrapper' for an operator named
+    # '\op'). I do not know why, though it seems to be a noop in LaTeXML and does not seem to
+    # have an analog in LaTeX. Therefore all '\*@wrapper' control sequences are treated as
+    # noops and removed from the expansion.
+    if control_sequence.text.endswith(b"@wrapper"):
+        return False
+    return True
 
 
 def _expand_control_sequence(control_sequence: ControlSequence) -> List[TexToken]:
@@ -127,7 +123,8 @@ def _expand_control_sequence(control_sequence: ControlSequence) -> List[TexToken
     return tokens
 
 
-# Regular expressions for parsing log outputs from LaTeXML.
+# Regular expressions for detecting macro expansions in LaTeXML log outputs. Each pattern
+# includes named groups (i.e., (?P<name>...)) to capture important information about macros.
 START_PATTERN = re.compile(
     b"^Start of expansion. "
     + br"Control sequence: T_CS\[(?P<control_sequence_name>.*?)\]\. "
@@ -171,15 +168,45 @@ patterns = {
 }
 
 
+@dataclass
+class Expansion:
+    """
+    The output of the method for detecting expansions. Includes all the information that should
+    be needed to replace each appearance of a macro with its expansion---the position of the
+    macro and its arguments, and the text (as bytes) to replace it with.
+    """
+
+    macro_name: bytes
+    " The token containing the macro name (without arguments). Should begin with '\\'. "
+
+    start_line: int
+    start_col: int
+    end_line: int
+    end_col: int
+    """
+    'start' and 'end' represent the range of all characters that should be replaced with an
+    expansion. This should include both the control sequence and its arguments:
+    * For a simple macro without arguments, this will be just the control sequence itself
+    (e.g., just '\\X' for macro '\\X' defined as '\\def\\X{X}').
+    * For a macro with arguments, this range will cover both the control sequence and its
+    arguments (e.g., all of '\\c{X}' for the macro '\\c' defined as '\\def\\c#1{\\mathcal{C}}')).
+    
+    For 'start_line' and 'end_line', the first line in a file is 1 (not 0). For 'start_col' and
+    'end_col', the first character on the line is at col 0 (not 1, in contrast to the line number).
+    """
+
+    expansion: bytes
+
+
 def detect_expansions(
     stdout: bytes, in_files: List[AbsolutePath]
 ) -> Iterator[Expansion]:
     """
+    Scan a log output by LaTeXML to detect the appearance of macros and their expansions.
     'stdout' is the console output produced by running our custom instrumented version of
     LaTeXML on a TeX project. It will include log statements indicating when macros are
-    encountered and how they are expanded. 'in_files' is the list of files that expansions
-    will be detected in (expansions that appear in the project outside of these files
-    will not be detected).
+    encountered and how they are expanded. 'in_files' is a list of absolute paths to files
+    in which expansions will be detected in. Expansions outside these files will not be detected.
     """
 
     # Positions of start and end of a macro being expanded, and all of its arguments (i.e.,
@@ -343,3 +370,48 @@ def detect_expansions(
 
             if expanding == cs_id:
                 expanding = None
+
+
+def expand_macros(contents: bytes, expansions: List[Expansion]) -> bytes:
+    """
+    Apply expansions to the contents of a TeX file.
+    """
+
+    # Sort expansions from last to first.
+    expansions_sorted = sorted(
+        expansions, key=lambda e: (e.start_line, e.start_col), reverse=True
+    )
+
+    # Map from expansions (by their index in the list of sorted expansions) to their
+    # start offsets and end offsets in the file (in number of bytes from the very
+    # start of the file; first character is at offset 0).
+    start_offsets: List[int] = [-1] * len(expansions_sorted)
+    end_offsets: List[int] = [-1] * len(expansions_sorted)
+
+    # Need to keep the line ends (i.e., newline characters at the ends of lines) as
+    # they should be included in the character offset.
+    lines = contents.splitlines(keepends=True)
+    line_start = 0
+    for line_number, line in enumerate(lines, start=1):
+        for ei, expansion in enumerate(expansions_sorted):
+            if start_offsets[ei] == -1 and expansion.start_line == line_number:
+                start_offsets[ei] = line_start + expansion.start_col
+            if end_offsets[ei] == -1 and expansion.end_line == line_number:
+                end_offsets[ei] = line_start + expansion.end_col
+
+        line_start += len(line)
+
+    # Apply expansions (in reverse order)
+    contents_copy = bytes(contents)
+    for ei, expansion in enumerate(expansions_sorted):
+        macro_start = start_offsets[ei]
+        macro_end = end_offsets[ei]
+        if macro_start == -1 or macro_end == -1:
+            continue
+        contents_copy = (
+            contents_copy[:macro_start]
+            + expansion.expansion
+            + contents_copy[macro_end:]
+        )
+
+    return contents_copy
