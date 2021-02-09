@@ -106,11 +106,11 @@ class Trainer(object):
                     term_exist = True
                 if c.endswith("DEF"):
                     def_exist = True
-            if not term_exist and def_exist:
+            if not (term_exist and def_exist):
                 new_slot_pred = ["O" for p in slot_pred]
 
             # 2. [intent] Change intent label if no term + def detected.
-            if (not term_exist and not def_exist) or (term_exist and not def_exist):
+            if not(term_exist and def_exist):
                 new_intent_pred = 0
 
             # 3. [slot] Replace UNK with O.
