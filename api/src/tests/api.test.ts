@@ -642,7 +642,7 @@ describe("API", () => {
 
       const response = await server.inject({
         method: "patch",
-        url: "/api/v0/papers/arxiv:1111.1111/entities/1",
+        url: "/api/v0/papers/arxiv:1111.1111/entities/1?access_token=test",
         payload,
       });
 
@@ -710,7 +710,7 @@ describe("API", () => {
 
       const response = await server.inject({
         method: "patch",
-        url: "/api/v0/papers/arxiv:1111.1111/entities/1",
+        url: "/api/v0/papers/arxiv:1111.1111/entities/1?access_token=test",
         payload,
       });
 
@@ -794,7 +794,7 @@ describe("API", () => {
 
       const response = await server.inject({
         method: "patch",
-        url: "/api/v0/papers/arxiv:1111.1111/entities/1",
+        url: "/api/v0/papers/arxiv:1111.1111/entities/1?access_token=test",
         payload,
       });
 
@@ -877,7 +877,7 @@ describe("API", () => {
 
       const response = await server.inject({
         method: "patch",
-        url: "/api/v0/papers/arxiv:1111.1111/entities/1",
+        url: "/api/v0/papers/arxiv:1111.1111/entities/1?access_token=test",
         payload,
       });
 
@@ -953,7 +953,7 @@ describe("API", () => {
 
       const response = await server.inject({
         method: "delete",
-        url: "/api/v0/papers/arxiv:1111.1111/entities/1",
+        url: "/api/v0/papers/arxiv:1111.1111/entities/1?access_token=test",
       });
 
       expect(response.statusCode).toEqual(204);
@@ -962,6 +962,36 @@ describe("API", () => {
       expect(await knex("entity").select()).toHaveLength(0);
       expect(await knex("boundingbox").select()).toHaveLength(0);
       expect(await knex("entitydata").select()).toHaveLength(0);
+    });
+
+    test("request with no access token fails", async () => {
+      await knex("paper").insert({
+        s2_id: "s2id",
+        arxiv_id: "1111.1111",
+      } as PaperRow);
+      await knex("version").insert({
+        id: 1,
+        paper_id: "s2id",
+        index: 0,
+      } as VersionRow);
+      await knex.batchInsert("entity", [
+        {
+          id: 1,
+          paper_id: "s2id",
+          version: 0,
+          type: "unknown",
+          source: "test",
+        },
+      ] as EntityRow[]);
+
+      const response = await server.inject({
+        method: "delete",
+        url: "/api/v0/papers/arxiv:1111.1111/entities/1",
+      });
+
+      expect(response.statusCode).toEqual(401);
+
+      expect(await knex("entity").select()).toHaveLength(1);
     });
   });
 

@@ -32,15 +32,19 @@ export class S2APIConfig {
 export class Config {
     constructor(
         readonly db: DBConfig,
-        readonly s2: S2APIConfig
+        readonly s2: S2APIConfig,
+        // auth for write apis, those apis will be disabled unless a value is specified
+        readonly adminToken: string 
     ) {}
 
     static fromConfig(conf: nconf.Provider) {
         const db = conf.get("database");
         const s2 = conf.get("s2"); 
+        const adminToken = conf.get("adminToken");
         return new Config(
             new DBConfig(db.host, db.database, db.user, db.password, db.port, db.schema),
-            new S2APIConfig(s2 && s2.apiKey)
+            new S2APIConfig(s2 && s2.apiKey),
+            adminToken
         );
     }
 }

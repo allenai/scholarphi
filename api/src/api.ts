@@ -1,4 +1,5 @@
 import * as Hapi from "@hapi/hapi";
+import * as HapiAuthBearer from 'hapi-auth-bearer-token';
 import * as Joi from "@hapi/joi";
 import { Connection } from "./db-connection";
 import * as s2Api from "./s2-api";
@@ -38,6 +39,24 @@ export const plugin = {
   version: "0.0.2",
   register: async function (server: Hapi.Server, options: ApiOptions) {
     const { connection: dbConnection, config } = options;
+
+    await server.register(HapiAuthBearer);
+    server.auth.strategy('admin-token', 'bearer-access-token', {
+      allowQueryToken: true,
+      validate: async (request, token, h) => {
+        const credentials = { token };
+        const artifacts = { };
+
+        // if no token has been set, fail all requests
+        if(!token) {
+          return { isValid: false, credentials, artifacts};
+        }
+
+        const isValid = token === config.adminToken;
+        return { isValid, credentials, artifacts };
+      }
+  });
+
 
     server.route({
       method: "GET",
@@ -214,6 +233,7 @@ export const plugin = {
         return h.response({}).code(204);
       },
       options: {
+        auth: 'admin-token',
         validate: {
           params: validation.arxivId.append({
             id: Joi.string().required(),
@@ -232,6 +252,7 @@ export const plugin = {
         return h.response().code(204);
       },
       options: {
+        auth: 'admin-token',
         validate: {
           params: validation.arxivId.append({
             id: Joi.string().required(),

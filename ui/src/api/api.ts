@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from "axios";
+import cookie from "cookie";
 import { addLibraryEntryUrl, userInfoUrl } from "./s2-url";
 import { UserInfo, UserLibrary } from "../state";
 import {
@@ -11,6 +12,12 @@ import {
   Paginated,
   PaperIdWithEntityCounts,
 } from "./types";
+
+const token = cookie.parse(document.cookie)["readerAdminToken"];
+
+const config = {
+  headers: { Authorization: `Bearer ${token}` }
+};
 
 export async function listPapers(offset: number = 0, size: number = 25) {
   return axios.get<Paginated<PaperIdWithEntityCounts>>(
@@ -85,7 +92,8 @@ export async function patchEntity(
 ): Promise<boolean> {
   const response = await axios.patch(
     `/api/v0/papers/arxiv:${arxivId}/entities/${data.id}`,
-    { data } as EntityUpdatePayload
+    { data } as EntityUpdatePayload,
+    config
   );
   if (response.status === 204) {
     return true;
@@ -102,7 +110,8 @@ export async function deleteEntity(
   id: string
 ): Promise<boolean> {
   const response = await axios.delete(
-    `/api/v0/papers/arxiv:${arxivId}/entities/${id}`
+    `/api/v0/papers/arxiv:${arxivId}/entities/${id}`,
+    config
   );
   if (response.status === 204) {
     return true;
