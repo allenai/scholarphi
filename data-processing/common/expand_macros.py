@@ -414,6 +414,7 @@ def expand_macros(contents: bytes, expansions: List[Expansion]) -> bytes:
         macro_end = end_offsets[ei]
         if macro_start == -1 or macro_end == -1:
             continue
+        # Do not replace macro if the text to be expanded does not start with the macro name.
         if not contents_copy[macro_start:macro_end].startswith(expansion.macro_name):
             continue
         contents_copy = (

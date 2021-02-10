@@ -10,8 +10,8 @@ from typing import Iterator, List
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
 from common.compile import get_compiled_tex_files
-from common.expand_macros import Expansion, detect_expansions
-from common.types import AbsolutePath, ArxivId, CompiledTexFile, Path
+from common.expand_macros import Expansion, detect_expansions, expand_macros
+from common.types import ArxivId, CompiledTexFile, RelativePath
 
 
 @dataclass
@@ -21,14 +21,7 @@ class ExpansionTask:
     tex_file: CompiledTexFile
 
 
-@dataclass
-class ExpandedFile:
-    expansions: List[Expansion]
-    save_path: Path
-    tex: str
-
-
-class ExpandMathMacros(ArxivBatchCommand[ExpansionTask, ExpandedFile]):
+class ExpandMathMacros(ArxivBatchCommand[ExpansionTask, List[Expansion]]):
     @staticmethod
     def get_name() -> str:
         return "expand-math-macros"
@@ -72,7 +65,22 @@ class ExpandMathMacros(ArxivBatchCommand[ExpansionTask, ExpandedFile]):
             for tex_file in compiled_tex_files:
                 yield ExpansionTask(arxiv_id, output_dir, tex_file)
 
-    def process(self, item: ExpansionTask) -> Iterator[ExpandedFile]:
+    def process(self, item: ExpansionTask) -> Iterator[List[Expansion]]:
+
+        # Make a copy of the sources directory that in which the macros will be expanded.
+        shutil.copytree(
+            directories.arxiv_subdir("expanded-sources", item.arxiv_id),
+            item.output_sources_dir,
+        )
+
+        # Save paths to the TeX source file in the new directory.
+        sources_dir = item.output_sources_dir
+        tex_path = os.path.join(sources_dir, item.tex_file.path)
+        absolute_tex_path = os.path.realpath(os.path.abspath(tex_path))
+
+        # Remove '.tex' extension from the name of the TeX file.
+        tex_name = re.sub(r"\.tex$", "", item.tex_file.path)
+
         latexml_bin = os.path.join(
             os.path.abspath(os.path.join("perl", "latexml", "bin", "latexml"))
         )
@@ -81,11 +89,9 @@ class ExpandMathMacros(ArxivBatchCommand[ExpansionTask, ExpandedFile]):
                 "Could not find LaTeXML binary. It will not be possible to expand macros for "
                 + "this paper without it. Has the setup script in the 'perl' directory been run?"
             )
+            return
 
-        # Remove '.tex' extension from the name of the TeX file.
-        tex_name = re.sub(r"\.tex$", "", item.tex_file.path)
-        sources_dir = directories.arxiv_subdir("expanded-sources", item.arxiv_id)
-
+        # Run LaTeXML on the TeX file to detect macros.
         with NamedTemporaryFile() as tmp_file:
             args = [
                 latexml_bin,
@@ -97,9 +103,8 @@ class ExpandMathMacros(ArxivBatchCommand[ExpansionTask, ExpandedFile]):
                 "--quiet",
             ]
 
-            # Run LaTeXML on the TeX file.
             logging.debug(
-                "Detecting macros and their expansions for file '%s' in directory %s",
+                "Detecting macros and their expansions for file '%s' in directory %s.",
                 tex_name,
                 sources_dir,
             )
@@ -116,7 +121,7 @@ class ExpandMathMacros(ArxivBatchCommand[ExpansionTask, ExpandedFile]):
             success = True
 
         logging.debug(
-            "Finished macro expansion attempt for file %s in %s. Success? %s.",
+            "Finished attempt to detect macro expansions for file %s in %s. Success? %s.",
             tex_name,
             sources_dir,
             success,
@@ -129,16 +134,14 @@ class ExpandMathMacros(ArxivBatchCommand[ExpansionTask, ExpandedFile]):
                 item.arxiv_id,
             )
 
-        tex_path = os.path.join(item.output_sources_dir, item.tex_file.path)
-        absolute_tex_path = os.path.realpath(os.path.abspath(tex_path))
-
+        # Extract macro expansions from the LaTeXML log.
         expansions = detect_expansions(result.stdout, in_files=[absolute_tex_path])
         if expansions is None:
             logging.debug(
                 "No macro expansions were detected in math environments for paper %s",
                 item.arxiv_id,
             )
-            yield None
+            return
 
         if not os.path.isfile(tex_path):
             logging.warning(  # pylint: disable=logging-not-lazy
@@ -151,19 +154,18 @@ class ExpandMathMacros(ArxivBatchCommand[ExpansionTask, ExpandedFile]):
             )
             return
 
-        # Expand macros in the TeX contents.
-        assert False, "Finish this up"
-        # the original file with the unified file. This is so that as little as
-        # possible will be changed in the sources directory, in the hopes that it will
-        # cause AutoTeX to process the unified file the same way as the original file.
-        with open(tex_path, "w", encoding="utf-8") as tex_file:
+        # Expand macros in the TeX file.
+        with open(tex_path, "rb") as tex_file:
+            contents = tex_file.read()
+
+        expansions_list = list(expansions)
+        expanded = expand_macros(contents, expansions_list)
+        with open(tex_path, "wb") as tex_file:
             tex_file.write(expanded)
 
-    def save(self, item: ExpansionTask, result: List[Expansion]) -> None:
-        pass
-        # output_dir = directories.arxiv_subdir("normalized-sources", item.arxiv_id)
-        # if not os.path.exists(output_dir):
-        #     os.makedirs(output_dir)
+        yield expansions_list
 
-        # output_path = os.path.join(output_dir, "expansions.csv")
-        # file_utils.append_to_csv(output_path, result)
+    def save(self, item: ExpansionTask, result: List[Expansion]) -> None:
+        output_path = os.path.join(item.output_sources_dir, "expansions.csv")
+        for expansion in result:
+            file_utils.append_to_csv(output_path, expansion)
