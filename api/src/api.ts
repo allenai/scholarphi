@@ -44,12 +44,16 @@ export const plugin = {
     server.auth.strategy('admin-token', 'bearer-access-token', {
       allowQueryToken: true,
       validate: async (request, token, h) => {
-          const isValid = token === config.adminToken;
+        const credentials = { token };
+        const artifacts = { };
 
-          const credentials = { token };
-          const artifacts = { };
+        // if no token has been set, fail all requests
+        if(!token) {
+          return { isValid: false, credentials, artifacts};
+        }
 
-          return { isValid, credentials, artifacts };
+        const isValid = token === config.adminToken;
+        return { isValid, credentials, artifacts };
       }
   });
 

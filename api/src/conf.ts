@@ -33,7 +33,8 @@ export class Config {
     constructor(
         readonly db: DBConfig,
         readonly s2: S2APIConfig,
-        readonly adminToken: string
+        // auth for write apis, those apis will be disabled unless a value is specified
+        readonly adminToken: string 
     ) {}
 
     static fromConfig(conf: nconf.Provider) {
