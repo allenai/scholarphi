@@ -24,6 +24,13 @@ class TexToken:
 
     text: bytes
     object_id: bytes
+    """
+    Corresponds to the memory address where the token is stored in LaTeXML. In some cases, the
+    object ID is not necessarily unique. For letter tokens with the same TeX
+    (e.g., two tokens with the text 'x'), they have observed to have the same object ID. For
+    control sequences, it appears that all instances of a control sequence have a unique object ID.
+    """
+
     catcode: CatCode
     """
     Category code. The primary purpose of the category code is to distinguish between characters
@@ -190,7 +197,7 @@ class Expansion:
     (e.g., just '\\X' for macro '\\X' defined as '\\def\\X{X}').
     * For a macro with arguments, this range will cover both the control sequence and its
     arguments (e.g., all of '\\c{X}' for the macro '\\c' defined as '\\def\\c#1{\\mathcal{C}}')).
-    
+
     For 'start_line' and 'end_line', the first line in a file is 1 (not 0). For 'start_col' and
     'end_col', the first character on the line is at col 0 (not 1, in contrast to the line number).
     """
@@ -208,7 +215,6 @@ def detect_expansions(
     encountered and how they are expanded. 'in_files' is a list of absolute paths to files
     in which expansions will be detected in. Expansions outside these files will not be detected.
     """
-
     # Positions of start and end of a macro being expanded, and all of its arguments (i.e.,
     # an entire span of text that should be replaced with an expansion).
     start_line: Optional[int] = None
@@ -407,6 +413,8 @@ def expand_macros(contents: bytes, expansions: List[Expansion]) -> bytes:
         macro_start = start_offsets[ei]
         macro_end = end_offsets[ei]
         if macro_start == -1 or macro_end == -1:
+            continue
+        if not contents_copy[macro_start:macro_end].startswith(expansion.macro_name):
             continue
         contents_copy = (
             contents_copy[:macro_start]
