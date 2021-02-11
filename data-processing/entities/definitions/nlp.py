@@ -61,7 +61,7 @@ class DefinitionDetectionModel:
 
             # Download the best model files in ./data/
             MODEL_URL = (
-                "http://dongtae.lti.cs.cmu.edu/data/joint_bert/model_v1.0_best.zip"
+                "https://scholarphi.s3-us-west-1.amazonaws.com/model_v1.0_best.zip"
             )
             logging.debug(
                 "Downloading model from %s. Warning: this will take a long time.",
