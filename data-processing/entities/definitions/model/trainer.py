@@ -223,11 +223,11 @@ class Trainer(object):
                     term_exist = True
                 if c.endswith("DEF"):
                     def_exist = True
-            if not term_exist and def_exist:
+            if not (term_exist and def_exist):
                 new_slot_pred = ["O" for p in slot_pred]
 
-            # [intent] Change intent label if no term + def detected.
-            if (not term_exist and not def_exist) or (term_exist and not def_exist):
+            #[intent] Change intent label if no term + def detected.
+            if not(term_exist and def_exist):
                 new_intent_pred = 0
 
 
@@ -275,7 +275,7 @@ class Trainer(object):
 
         return intent_preds, slot_preds
 
-    def evaluate_from_input(self, dataset: TensorDataset, raw: List[List[str]]) -> Tuple[List[int], List[List[str]], List[List[float]]]:
+    def evaluate_from_input(self, dataset: TensorDataset, raw: List[List[str]]) -> Tuple[Dict[Any, Any], Dict[str, List[List[str]]], Dict[Any, Any]]:
         eval_sampler = SequentialSampler(dataset)
         eval_dataloader = DataLoader(
             dataset, sampler=eval_sampler, batch_size=self.args.eval_batch_size
@@ -364,8 +364,6 @@ class Trainer(object):
         pos_label_map = {i: label for i, label in enumerate(self.pos_label_lst)}
         pos_label_to_idx_map = {label: i for i, label in enumerate(self.pos_label_lst)}
 
-
-
         gold_slot_num_batch = int(len(gold_slot_labels_ids[list(gold_slot_labels_ids.keys())[0]]))
         gold_slot_num_length = int(len(gold_slot_labels_ids[list(gold_slot_labels_ids.keys())[0]][0]))
         slot_labels_dict = {}
@@ -396,7 +394,6 @@ class Trainer(object):
                         slot_preds_dict[data_type][i].append(slot_label_map[data_type][slot_preds[data_type][i][j]])
                         slot_conf_dict[data_type][i].append(slot_conf[data_type][i][j])
 
-
         # Apply heuristic filters.
         if self.args.use_heuristic:
             intent_preds, slot_preds_dict = self.heuristic_filters(
@@ -404,6 +401,5 @@ class Trainer(object):
                 slot_preds_dict,
                 raw
             )
-
 
         return intent_preds, slot_preds_dict, slot_conf_dict

@@ -30,7 +30,7 @@ def test_model_extracts_simple_definitions(model: DefinitionDetectionModel):
 
 
 @pytest.mark.slow
-def test_extract_term_definition_pairs_case_1():
+def test_extract_term_definition_consolidate():
     prediction_type = 'W00'
     text = "Neural networks are machine learning models."
     tokens, slots, confidences = zip(
@@ -62,7 +62,7 @@ def test_model_extracts_nickname_before_symbol(model: DefinitionDetectionModel):
 
 
 @pytest.mark.slow
-def test_extract_symbol_nickname_pairs_case_1():
+def test_extract_symbol_nickname_consolidate():
     prediction_type = 'DocDef2'
     text = "The agent acts with a policy SYMBOL in each timestep SYMBOL."
     tokens, slots, confidences = zip(
@@ -131,31 +131,6 @@ def test_model_extracts_nickname_symbol_separated_by_colon(model: DefinitionDete
     assert intents[prediction_type][0]
     assert slots[prediction_type][0] == ["O", "O", "O", "O", "O", "DEF", "O", "TERM"]
 
-
-@pytest.mark.slow
-def test_extract_symbol_nickname_pairs_case_2():
-    prediction_type = 'DocDef2'
-    text = "The agent acts with a policy : SYMBOL"
-    tokens, slots, confidences = zip(
-        *[
-            ("The", "O", 1.0),
-            ("agent", "O", 1.0),
-            ("acts", "O", 1.0),
-            ("with", "O", 1.0),
-            ("a", "O", 1.0),
-            ("policy", "DEF", 1.0),
-            (":", "O", 1.0),
-            ("SYMBOL", "TERM", 1.0),
-        ]
-    )
-
-    term_definition_pairs = consolidate_keyword_definitions(
-        text, tokens, slots, confidences, prediction_type
-    )
-    assert len(term_definition_pairs) == 1
-    assert term_definition_pairs[0].term_text == "SYMBOL"
-    assert term_definition_pairs[0].definition_text == "policy"
-
 def test_extract_nicknames_symbols_separated_by_colon():
     text = "The agent acts with SYMBOL : policy."
     symbol_texs = {20: r"\pi"}
@@ -188,31 +163,6 @@ def test_model_extracts_nickname_symbol_parentheses(model: DefinitionDetectionMo
     intents, slots, _ = model.predict_batch([features], prediction_type)
     assert intents[prediction_type][0]
     assert slots[prediction_type][0] == ["O", "O", "O", "O", "DEF", "O", "TERM", "O"]
-
-
-@pytest.mark.slow
-def test_extract_symbol_nickname_pairs_case_3():
-    prediction_type = 'DocDef2'
-    text = "The agent acts with policy (SYMBOL)"
-    tokens, slots, confidences = zip(
-        *[
-            ("The", "O", 1.0),
-            ("agent", "O", 1.0),
-            ("acts", "O", 1.0),
-            ("with", "O", 1.0),
-            ("policy", "DEF", 1.0),
-            ("(", "O", 1.0),
-            ("SYMBOL", "TERM", 1.0),
-            (")", "O", 1.0),
-        ]
-    )
-
-    term_definition_pairs = consolidate_keyword_definitions(
-        text, tokens, slots, confidences, prediction_type
-    )
-    assert len(term_definition_pairs) == 1
-    assert term_definition_pairs[0].term_text == "SYMBOL"
-    assert term_definition_pairs[0].definition_text == "policy"
 
 def test_extract_nicknames_symbols_parentheses():
     text = "The agent acts with policy (SYMBOL)."
@@ -250,7 +200,7 @@ def test_model_extracts_nickname_symbol_filter(model: DefinitionDetectionModel):
 
 
 @pytest.mark.slow
-def test_extract_symbol_nickname_pairs_case_4():
+def test_extract_symbol_nickname_cnsolidate_2():
     prediction_type = 'DocDef2'
     text = "The agent acts with SYMBOL SYMBOL"
     tokens, slots, confidences = zip(
@@ -376,7 +326,7 @@ def test_model_extract_abbreviation_acronym(model: DefinitionDetectionModel):
 
 
 @pytest.mark.slow
-def test_extract_abbreviation_expansion_pairs_case_1():
+def test_extract_abbreviation_expansion_consolidate():
     prediction_type = 'AI2020'
     text = "We use a Convolutional Neural Network (CNN) based architecture"
     tokens, slots, confidences = zip(
