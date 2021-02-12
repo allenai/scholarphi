@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import Dict, Iterator, List, Optional
+from typing import Dict, Iterator, List, Optional, Pattern
 
 from common.types import AbsolutePath
 
@@ -132,8 +132,9 @@ def _expand_control_sequence(control_sequence: ControlSequence) -> List[TexToken
 
 # Regular expressions for detecting macro expansions in LaTeXML log outputs. Each pattern
 # includes named groups (i.e., (?P<name>...)) to capture important information about macros.
+START_PATTERN_PREFIX = b"Start of expansion."
 START_PATTERN = re.compile(
-    b"^Start of expansion. "
+    b"Start of expansion. "
     + br"Control sequence: T_CS\[(?P<control_sequence_name>.*?)\]\. "
     + br"\(object ID: (?P<object_id>.*?)\)\. "
     + br"Current expansion depth: \d+\. "
@@ -143,6 +144,7 @@ START_PATTERN = re.compile(
     flags=re.MULTILINE | re.DOTALL,
 )
 
+TOKEN_PATTERN_PREFIX = b"Expansion token:"
 TOKEN_PATTERN = re.compile(
     b"Expansion token: (?P<token>.*?) "
     + br"\(object ID (?P<object_id>.*?)\)\. "
@@ -151,27 +153,37 @@ TOKEN_PATTERN = re.compile(
     flags=re.MULTILINE | re.DOTALL,
 )
 
+ARGUMENT_PATTERN_PREFIX = b"Argument token (from file):"
 ARGUMENT_PATTERN = re.compile(
-    b"Argument token: "
-    + br'".*?" \(source file (?P<path>.*?), '
+    br"Argument token \(from file\): "
+    + br'".*?" \(object ID: (?P<object_id>.*?)\)\. '
+    + br"\(source file (?P<path>.*?), "
     + br"from line (?P<start_line>\d+) col (?P<start_column>\d+) "
     + br"to line (?P<end_line>\d+) col (?P<end_column>\d+)\)\.",
     flags=re.MULTILINE | re.DOTALL,
 )
 
+END_PATTERN_PREFIX = b"End of expansion "
 END_PATTERN = re.compile(
     b"End of expansion "
     + br"\(object ID: (?P<object_id>.*?)\)\. "
     + br"Current expansion depth: \d+\. "
-    + br"Expansion: .*?\.",
+    + br"Expansion: .+?\.",
     flags=re.MULTILINE | re.DOTALL,
 )
 
-patterns = {
-    START_PATTERN: "start-expansion",
-    TOKEN_PATTERN: "add-expansion-token",
-    ARGUMENT_PATTERN: "read-argument",
-    END_PATTERN: "end-expansion",
+
+@dataclass
+class LogPattern:
+    prefix: bytes
+    capture: Pattern[bytes]
+
+
+patterns: Dict[str, LogPattern] = {
+    "start-expansion": LogPattern(START_PATTERN_PREFIX, START_PATTERN),
+    "add-expansion-token": LogPattern(TOKEN_PATTERN_PREFIX, TOKEN_PATTERN),
+    "read-argument": LogPattern(ARGUMENT_PATTERN_PREFIX, ARGUMENT_PATTERN),
+    "end-expansion": LogPattern(END_PATTERN_PREFIX, END_PATTERN),
 }
 
 
@@ -261,31 +273,38 @@ def detect_expansions(
         )
 
     # Repeatedly scan for macro expansion-related events in the LaTeXML log.
-    last_match_end = -1
+    last_match_end = 0
     while True:
 
         # Find the next segment of the log containing an expansion event.
-        first_pattern = None
-        match = None
-        for pattern in patterns:
-            pattern_match = pattern.search(stdout, pos=last_match_end)
-            if pattern_match is None:
+        first_pattern_name = None
+        first_prefix_start = None
+        for name, pattern in patterns.items():
+            prefix_start = stdout.find(pattern.prefix, last_match_end)
+            if prefix_start == -1:
                 continue
-            if not match or pattern_match.start() < match.start():
-                match = pattern_match
-                first_pattern = pattern
+            if first_prefix_start is None or prefix_start < first_prefix_start:
+                first_prefix_start = prefix_start
+                first_pattern_name = name
 
         # When there are no more log messages to process, stop iteration.
-        if not match or not first_pattern:
+        if first_prefix_start is None or not first_pattern_name:
             expansion = _make_expansion_from_last_control_sequence()
             if expansion:
                 yield expansion
             return
 
+        # Capture data fields for the pattern.
+        pattern = patterns[first_pattern_name]
+        match = pattern.capture.search(stdout, pos=first_prefix_start)
+        if match is None:
+            last_match_end = first_prefix_start + 1
+            continue
+
         # Save the position of the end of this match for resuming for the next log event.
         last_match_end = match.end()
 
-        event_type = patterns[first_pattern]
+        event_type = first_pattern_name
         if event_type == "start-expansion":
 
             # Extract data for the expansion.
