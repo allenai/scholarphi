@@ -407,7 +407,7 @@ def detect_expansions(
         # If LaTeXML has read an argument for a control sequence, expand the range of text that will
         # be replaced to include the argument.
         if event_type == "read-argument":
-            if top_level_macro:
+            if top_level_macro and expanding:
                 path = match.group("path").decode("utf-8", errors="ignore")
                 if path in used_in:
                     end_line = int(match.group("end_line"))

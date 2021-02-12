@@ -21,7 +21,13 @@ class ExpansionTask:
     tex_file: CompiledTexFile
 
 
-class ExpandMathMacros(ArxivBatchCommand[ExpansionTask, List[Expansion]]):
+@dataclass
+class ExpansionResult:
+    expansions: List[Expansion]
+    latexml_stdout: bytes
+
+
+class ExpandMathMacros(ArxivBatchCommand[ExpansionTask, ExpansionResult]):
     @staticmethod
     def get_name() -> str:
         return "expand-math-macros"
@@ -65,7 +71,7 @@ class ExpandMathMacros(ArxivBatchCommand[ExpansionTask, List[Expansion]]):
             for tex_file in compiled_tex_files:
                 yield ExpansionTask(arxiv_id, output_dir, tex_file)
 
-    def process(self, item: ExpansionTask) -> Iterator[List[Expansion]]:
+    def process(self, item: ExpansionTask) -> Iterator[ExpansionResult]:
 
         # Make a copy of the sources directory that in which the macros will be expanded.
         shutil.copytree(
@@ -171,9 +177,15 @@ class ExpandMathMacros(ArxivBatchCommand[ExpansionTask, List[Expansion]]):
         with open(tex_path, "wb") as tex_file:
             tex_file.write(expanded)
 
-        yield expansions_list
+        yield ExpansionResult(expansions_list, result.stdout)
 
-    def save(self, item: ExpansionTask, result: List[Expansion]) -> None:
-        output_path = os.path.join(item.output_sources_dir, "expansions.csv")
-        for expansion in result:
-            file_utils.append_to_csv(output_path, expansion)
+    def save(self, item: ExpansionTask, result: ExpansionResult) -> None:
+        latexml_stdout_path = os.path.join(
+            item.output_sources_dir, "latexml_stdout.txt"
+        )
+        with open(latexml_stdout_path, "wb") as latexml_stdout_file:
+            latexml_stdout_file.write(result.latexml_stdout)
+
+        expansions_path = os.path.join(item.output_sources_dir, "expansions.csv")
+        for expansion in result.expansions:
+            file_utils.append_to_csv(expansions_path, expansion)
