@@ -134,14 +134,16 @@ class ExpandMathMacros(ArxivBatchCommand[ExpansionTask, List[Expansion]]):
                 item.arxiv_id,
             )
 
+        # Determine the set of files in the project that can contain project-specific macros.
+        project_files = [
+            os.path.realpath(os.path.abspath(p))
+            for p in file_utils.find_files(sources_dir, [".sty", ".tex"])
+        ]
+
         # Extract macro expansions from the LaTeXML log.
-        expansions = detect_expansions(result.stdout, in_files=[absolute_tex_path])
-        if expansions is None:
-            logging.debug(
-                "No macro expansions were detected in math environments for paper %s",
-                item.arxiv_id,
-            )
-            return
+        expansions = detect_expansions(
+            result.stdout, used_in=[absolute_tex_path], defined_in=project_files
+        )
 
         if not os.path.isfile(tex_path):
             logging.warning(  # pylint: disable=logging-not-lazy
@@ -159,6 +161,12 @@ class ExpandMathMacros(ArxivBatchCommand[ExpansionTask, List[Expansion]]):
             contents = tex_file.read()
 
         expansions_list = list(expansions)
+        if len(expansions_list) == 0:
+            logging.debug(
+                "No macro expansions were detected in math environments for paper %s",
+                item.arxiv_id,
+            )
+            return
         expanded = expand_macros(contents, expansions_list)
         with open(tex_path, "wb") as tex_file:
             tex_file.write(expanded)

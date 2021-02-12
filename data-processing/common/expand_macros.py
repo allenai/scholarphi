@@ -132,6 +132,13 @@ def _expand_control_sequence(control_sequence: ControlSequence) -> List[TexToken
 
 # Regular expressions for detecting macro expansions in LaTeXML log outputs. Each pattern
 # includes named groups (i.e., (?P<name>...)) to capture important information about macros.
+DEFINITION_PATTERN_PREFIX = b"Control sequence '\\"
+DEFINITION_PATTERN = re.compile(
+    b"Control sequence '(?P<control_sequence_name>.*?)' "
+    + rb"defined when reading file (?P<path>.*?)\.$",
+    flags=re.MULTILINE | re.DOTALL,
+)
+
 START_PATTERN_PREFIX = b"Start of expansion."
 START_PATTERN = re.compile(
     b"Start of expansion. "
@@ -180,6 +187,7 @@ class LogPattern:
 
 
 patterns: Dict[str, LogPattern] = {
+    "definition": LogPattern(DEFINITION_PATTERN_PREFIX, DEFINITION_PATTERN),
     "start-expansion": LogPattern(START_PATTERN_PREFIX, START_PATTERN),
     "add-expansion-token": LogPattern(TOKEN_PATTERN_PREFIX, TOKEN_PATTERN),
     "read-argument": LogPattern(ARGUMENT_PATTERN_PREFIX, ARGUMENT_PATTERN),
@@ -218,14 +226,18 @@ class Expansion:
 
 
 def detect_expansions(
-    stdout: bytes, in_files: List[AbsolutePath]
+    stdout: bytes, used_in: List[AbsolutePath], defined_in: List[AbsolutePath]
 ) -> Iterator[Expansion]:
     """
     Scan a log output by LaTeXML to detect the appearance of macros and their expansions.
     'stdout' is the console output produced by running our custom instrumented version of
     LaTeXML on a TeX project. It will include log statements indicating when macros are
-    encountered and how they are expanded. 'in_files' is a list of absolute paths to files
+    encountered and how they are expanded. 'used_in' is a list of absolute paths to files
     in which expansions will be detected in. Expansions outside these files will not be detected.
+    'defined_in' is a list of absolute paths to files where macros must have been defined
+    in order to be are expanded. The purpose of the 'defined_in' argument is to prevent
+    expansion of low-level macros, or those that are defined in external pacakges, like 
+    '\\number', '\\left[', or '\\textnormal'.
     """
     # Positions of start and end of a macro being expanded, and all of its arguments (i.e.,
     # an entire span of text that should be replaced with an expansion).
@@ -233,6 +245,11 @@ def detect_expansions(
     start_col: Optional[int] = None
     end_line: Optional[int] = None
     end_col: Optional[int] = None
+
+    # List of macros that can be expanded, specified by control sequence name (i.e., the name
+    # of the macro). Contains macros that have been defined in the files specified by 'defined_in',
+    # and omits all others.
+    expandable: List[bytes] = []
 
     # A top level macro that is currently being expanded (i.e., one that appears in
     # the TeX of one of the 'in_files').
@@ -305,6 +322,14 @@ def detect_expansions(
         last_match_end = match.end()
 
         event_type = first_pattern_name
+
+        # Detect all macros defined in the specified files (ignoring the rest).
+        if event_type == "definition":
+            cs_name = match.group("control_sequence_name")
+            path = match.group("path").decode("utf-8", errors="ignore")
+            if path in defined_in:
+                expandable.append(cs_name)
+
         if event_type == "start-expansion":
 
             # Extract data for the expansion.
@@ -316,6 +341,10 @@ def detect_expansions(
             cs_end_line = int(match.group("end_line"))
             cs_end_col = int(match.group("end_column"))
 
+            # Skip expansion of macros that were not defined in a set of specified TeX files.
+            if cs_name not in expandable:
+                continue
+
             if top_level_macro:
                 # If this macro is a nested macro or an argument, then start expanding it.
                 # Upcoming expansion tokens will be assigned to the control sequence.
@@ -326,7 +355,7 @@ def detect_expansions(
                 # If an unexpected control sequence was encountered, then what is most likely is that
                 # prior macros have finished expanding, and a new macro is being expanded. Finish the
                 # prior expansion and start a new one.
-                if not cs_id in active_macros and path in in_files:
+                if not cs_id in active_macros and path in used_in:
                     expansion = _make_expansion_from_last_control_sequence()
                     if expansion:
                         yield expansion
@@ -336,7 +365,7 @@ def detect_expansions(
                     active_macros = {}
 
             # When a macro appears in a file of interest and another macro is not being expanded...
-            if not expanding and path in in_files:
+            if not expanding and path in used_in:
 
                 # Set the expansion stack to indicate that this macro is being expanded.
                 expanding = cs_id
@@ -380,7 +409,7 @@ def detect_expansions(
         if event_type == "read-argument":
             if top_level_macro:
                 path = match.group("path").decode("utf-8", errors="ignore")
-                if path in in_files:
+                if path in used_in:
                     end_line = int(match.group("end_line"))
                     end_col = int(match.group("end_column"))
 
