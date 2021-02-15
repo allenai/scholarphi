@@ -51,7 +51,7 @@ import requests
 
 from entities.sentences import upload
 from common.types import EntityUploadInfo
-from common.models import init_database_connections
+from common.models import setup_database_connections
 
 import spacy
 nlp = spacy.load("en_core_sci_md")
@@ -332,7 +332,7 @@ def main(infile: str, s2_id: str, arxiv_id: str, outfile: Optional[str] = None):
             json.dump(out, f_out, indent=4)
 
     # init database
-    init_database_connections(schema_name='kyle_spp', create_tables=True)
+    setup_database_connections(schema_name='kyle_spp', create_tables=False)     # first time run this, set create to True
 
     # upload entities
     entity_infos = []
