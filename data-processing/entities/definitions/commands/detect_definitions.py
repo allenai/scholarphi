@@ -611,6 +611,7 @@ class DetectDefinitions(
         definiendums: Dict[TermName, List[Definiendum]] = defaultdict(list)
         term_phrases: List[str] = []
         abbreviations: List[str] = []
+        symbol_nicks: List[str] = []
         definitions: Dict[DefinitionId, Definition] = {}
 
         with tqdm(
@@ -639,6 +640,7 @@ class DetectDefinitions(
 
                     # Detect terms and definitions in each sentence with a pre-trained definition
                     # extraction model, from the featurized text.
+                        
                     termdef_intents, termdef_slots, termdef_slots_confidence = model.predict_batch(
                         cast(List[Dict[Any, Any]], features), 'W00'
                     )
@@ -649,7 +651,6 @@ class DetectDefinitions(
                         cast(List[Dict[Any, Any]], features), 'DocDef2'
                     )
                     
-
                     # Package extracted terms and definitions into a representation that's
                     # easier to process.
                     for (
@@ -664,8 +665,10 @@ class DetectDefinitions(
                         symnick_intent,
                         symnick_sentence_slots,
                         symnick_sentence_slots_confidence,
-                    ) in zip(sentences, features, termdef_intents, termdef_slots, termdef_slots_confidence,abbrexp_intents, 
-                            abbrexp_slots, abbrexp_slots_confidence, symnick_intents, symnick_slots, symnick_slots_confidence):
+                    ) in zip(sentences, features, 
+                            termdef_intents['W00'], termdef_slots['W00'], termdef_slots_confidence['W00'],
+                            abbrexp_intents['AI2020'], abbrexp_slots['AI2020'], abbrexp_slots_confidence['AI2020'], 
+                            symnick_intents['DocDef2'], symnick_slots['DocDef2'], symnick_slots_confidence['DocDef2']):
                         # Extract TeX for each symbol from a parallel representation of the
                         # sentence, so that the TeX for symbols can be saved.
                         # Types of [term and definition] pairs.
@@ -733,7 +736,6 @@ class DetectDefinitions(
                             + symbol_nickname_pairs
                             + abbreviation_expansion_pairs
                         )
-
                         for pair in pairs:
                             tex_path = s.tex_path
                             definiendum_id = (
@@ -827,7 +829,7 @@ class DetectDefinitions(
                                 text=pair.definition_text,
                                 context_tex=sentence.context_tex,
                                 sentence_id=sentence.id_,
-                                # intent=bool(intent),
+                                intent=True,
                                 confidence=definition_confidence,
                             )
                             definitions[definition_id] = definition
@@ -868,16 +870,15 @@ class DetectDefinitions(
                                 term_phrases.append(definiendum.text)
                             if definiendum.type_ == "abbreviation":
                                 abbreviations.append(definiendum.text)
+                            if definiendum.type_ == "symbol":
+                                symbol_nicks.append(definiendum.text)
 
                             definition_index += 1
 
                     features = []
                     sentences = []
 
-        logging.debug(
-            "Finished detecting definitions for paper %s. Now finding references to defined terms.",
-            item.arxiv_id,
-        )
+        logging.debug(f"Finished detecting definitions for paper {item.arxiv_id}. Now finding references to defined terms.")
 
         all_definiendums: List[Definiendum] = []
         for _, definiendum_list in definiendums.items():
@@ -924,13 +925,12 @@ class DetectDefinitions(
                 definiendum.section_names.extend(section_names[definiendum.text])
                 yield definiendum
 
-        # Detect all other references to the defined terms. Only detect references to textual
-        # terms and abbreviations, but not symbols. References to symbols will already be
-        # detected by another stage of the pipeline.
+        # Detect all other references to the defined terms. Detect references to textual
+        # terms, abbreviations, and symbols.
         term_index = 0
 
         for tex_path, file_contents in item.tex_by_file.items():
-            term_extractor = PhraseExtractor(term_phrases + abbreviations)
+            term_extractor = PhraseExtractor(term_phrases + abbreviations + symbol_nicks)
             for t in term_extractor.parse(tex_path, file_contents.contents):
 
                 # Don't save term references if they are already in the definiendums.
@@ -950,6 +950,8 @@ class DetectDefinitions(
                     if t.text in abbreviations
                     else "term"
                     if t.text in term_phrases
+                    else "symbol"
+                    if t.text in symbol_nicks
                     else "unknown"
                 )
                 yield TermReference(
