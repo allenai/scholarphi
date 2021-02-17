@@ -756,7 +756,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
         if (window.heap) {
           const loadingTimeMS = Math.round(performance.now() - loadingStartTime);
-          window.heap.track("paper-loaded", { loadingTimeMS });
+          window.heap.track("paper-loaded", { loadingTimeMS, numEntities: entities.length, numCitations: citationS2Ids.length });
         }
 
         const userData = await api.getUserLibraryInfo();
