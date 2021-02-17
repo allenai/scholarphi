@@ -732,6 +732,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         this.setState({
           areCitationsLoading: true
         });
+        const loadingStartTime = performance.now();
         const entities = await api.getEntities(this.props.paperId.id);
         this.setState({
           entities: stateUtils.createRelationalStoreFromArray(entities, "id"),
@@ -751,6 +752,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
             {} as { [s2Id: string]: Paper }
           );
           this.setState({ papers, areCitationsLoading: false });
+        }
+
+        if (window.heap) {
+          const loadingTimeMS = Math.round(performance.now() - loadingStartTime);
+          window.heap.track("paper-loaded", { loadingTimeMS, numEntities: entities.length, numCitations: citationS2Ids.length });
         }
 
         const userData = await api.getUserLibraryInfo();
