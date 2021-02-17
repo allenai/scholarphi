@@ -69,7 +69,7 @@ describe("API", () => {
         id: 1,
         paper_id: "s2id",
         version: 0,
-        type: "unknown",
+        type: "citation", // Using "citation" for test purposes as "type" is a typed string
         source: "test",
       } as EntityRow);
       await knex("boundingbox").insert({
@@ -93,9 +93,10 @@ describe("API", () => {
         data: [
           {
             id: "1",
-            type: "unknown",
+            type: "citation", // Using "citation" for test purposes as "type" is a typed string
             attributes: {
               source: "test",
+              paper_id: null,
               version: 0,
               bounding_boxes: [
                 {
@@ -268,38 +269,53 @@ describe("API", () => {
 
       const response = await server.inject({
         method: "get",
-        url: "/api/v0/papers/arxiv:1111.1111/entities",
+        url: "/api/v0/papers/arxiv:1111.1111/entities?type=symbol",
       });
       expect(response.statusCode).toEqual(200);
-      expect((response.result as any).data).toContainEqual({
-        id: "2",
-        type: "symbol",
-        attributes: {
-          source: "test",
-          version: 0,
-          bounding_boxes: [],
-          tags: [],
-          mathml: "<math></math>",
-          mathml_near_matches: [
-            "<math><mi>x</mi></math>",
-            "<math><mi>y</mi></math>",
-          ],
-          tex: null,
-          extracted_nickname: null,
-          hand_written_nickname: null,
-          extracted_definition: null,
-          defining_formula: null,
-          passages: [],
-        },
-        relationships: {
-          sentence: { type: "sentence", id: "3" },
-          parent: { type: "symbol", id: null },
-          children: [
-            { type: "symbol", id: "4" },
-            { type: "symbol", id: "5" },
-          ],
-        },
-      } as Entity);
+      expect(response.result).toEqual({
+        data: [
+          {
+            id: "2",
+            type: "symbol",
+            attributes: {
+              bounding_boxes: [],
+              defining_formula_equations: [],
+              defining_formulas: [],
+              definition_sentences: [],
+              definitions: [],
+              diagram_label: null,
+              equation: {
+                id: null,
+                type: "equation",
+              },
+              is_definition: null,
+              mathml: "<math></math>",
+              mathml_near_matches: [
+                "<math><mi>x</mi></math>",
+                "<math><mi>y</mi></math>",
+              ],
+              nickname_sentences: [],
+              nicknames: [],
+              passages: [],
+              snippet_sentences: [],
+              snippets: [],
+              source: "test",
+              tags: [],
+              tex: null,
+              type: null,
+              version: 0,
+            },
+            relationships: {
+              sentence: { type: "sentence", id: "3" },
+              parent: { type: "symbol", id: null },
+              children: [
+                { type: "symbol", id: "4" },
+                { type: "symbol", id: "5" },
+              ],
+            },
+          },
+        ],
+      } as EntityGetResponse);
     });
 
     test("sentence", async () => {
@@ -361,7 +377,7 @@ describe("API", () => {
       ] as EntityDataRow[]);
       const response = await server.inject({
         method: "get",
-        url: "/api/v0/papers/arxiv:1111.1111/entities",
+        url: "/api/v0/papers/arxiv:1111.1111/entities?type=sentence",
       });
       expect((response.result as any).data).toContainEqual({
         id: "3",
