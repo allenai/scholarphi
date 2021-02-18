@@ -15,7 +15,6 @@
     "mathjax": "^3.0.0",
     "mathjax-full": "^3.0.0",
     "pdfjs-dist": "^2.2.228",
-    "qs": "^6.9.6",
     "query-string": "^6.8.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",

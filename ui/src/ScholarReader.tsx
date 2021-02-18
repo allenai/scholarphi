@@ -57,7 +57,7 @@ import * as uiUtils from "./utils/ui";
 import ViewerOverlay from "./components/overlay/ViewerOverlay";
 
 import classNames from "classnames";
-import qs from "qs";
+import queryString from "query-string";
 import React from "react";
 
 interface Props {
@@ -727,14 +727,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     });
   }
 
-  parseQueryString = (): qs.ParsedQs => {
-    const urlQueryIndex = window.location.href.indexOf("?");
-    if (urlQueryIndex > -1) {
-      return qs.parse(window.location.href.substring(urlQueryIndex), { ignoreQueryPrefix: true });
-    }
-    return qs.parse("");
-  }
-
   loadDataFromApi = async (): Promise<void> => {
     if (this.props.paperId !== undefined) {
       if (this.props.paperId.type === "arxiv") {
@@ -742,7 +734,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
           areCitationsLoading: true
         });
         let getAllEntities = false;
-        const qs = this.parseQueryString();
+        const qs = queryString.parse(window.location.search);
         if (qs.showAll && qs.showAll === "true") {
           getAllEntities = true;
         }
