@@ -97,6 +97,7 @@
     "@types/dompurify": "^2.0.0",
     "@types/node": "^12.12.9",
     "@types/pdfjs-dist": "^2.1.2",
+    "@types/qs": "^6.9.5",
     "@types/react": "^16.8.23",
     "@types/react-dom": "^16.8.5",
     "less": "^3.10.3",

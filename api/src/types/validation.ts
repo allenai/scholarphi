@@ -1,4 +1,5 @@
 import * as Joi from "@hapi/joi";
+import { EntityType, isEntityType } from "./api";
 
 /**
  * Validation 'failAction' that reports the cause of error. Ideally, this should only be used in
@@ -254,3 +255,23 @@ export const loadedEntity = Joi.object({
   attributes: attributes.required(),
   relationships: relationships.required(),
 });
+
+export const ENTITY_API_ALL = "all";
+export const apiEntityTypes = Joi.string().custom((raw: string, helpers) => {
+  // Special shortcut case for all entities
+  if (raw.toLowerCase() === ENTITY_API_ALL) {
+    return [];
+  }
+  const types = raw.split(",");
+  let accepted: EntityType[] = [];
+  types.forEach(t => {
+    if (isEntityType(t)) {
+      accepted = accepted.concat(t);
+    }
+  });
+  if (accepted.length === 0) {
+    // From https://github.com/sideway/joi/blob/master/API.md#list-of-errors
+    return helpers.error("any.invalid");
+  }
+  return accepted;
+}).default(["citation"]);

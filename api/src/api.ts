@@ -8,7 +8,8 @@ import {
   EntityUpdatePayload,
   Paper,
   PaperWithEntityCounts,
-  Paginated
+  Paginated,
+  EntityType
 } from "./types/api";
 import * as validation from "./types/validation";
 import * as conf from "./conf";
@@ -175,11 +176,16 @@ export const plugin = {
       path: "papers/{s2Id}/entities",
       handler: (request) => {
         const s2Id = request.params.s2Id;
-        return dbConnection.getEntitiesForPaper({ s2_id: s2Id });
+        // Runtime type-checked during validation.
+        const entityTypes = request.query.type as EntityType[];
+        return dbConnection.getEntitiesForPaper({ s2_id: s2Id }, entityTypes);
       },
       options: {
         validate: {
           params: validation.s2Id,
+          query: Joi.object({
+              type:  validation.apiEntityTypes
+          })
         },
       },
     });
@@ -189,9 +195,11 @@ export const plugin = {
       path: "papers/arxiv:{arxivId}/entities",
       handler: async (request) => {
         const arxivId = request.params.arxivId;
+        // Runtime type-checked during validation.
+        const entityTypes = request.query.type as EntityType[];
         let res;
         try {
-          res = await dbConnection.getEntitiesForPaper({ arxiv_id: arxivId });
+          res = await dbConnection.getEntitiesForPaper({ arxiv_id: arxivId }, entityTypes);
         } catch (e) {
           console.log(e);
         }
@@ -200,6 +208,9 @@ export const plugin = {
       options: {
         validate: {
           params: validation.arxivId,
+          query: Joi.object({
+            type:  validation.apiEntityTypes
+          })
         },
       },
     });
