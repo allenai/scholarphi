@@ -1,7 +1,7 @@
 import * as Hapi from "@hapi/hapi";
 import * as HapiAuthBearer from 'hapi-auth-bearer-token';
 import * as Joi from "@hapi/joi";
-import { Connection } from "./db-connection";
+import { Connection, PaperSelector } from "./db-connection";
 import * as s2Api from "./s2-api";
 import {
   EntityCreatePayload,
@@ -30,6 +30,15 @@ function firstIntOrDefault(request: Hapi.Request, name: string, defaultValue: nu
     return defaultValue;
   }
   return v;
+}
+
+// Intended for use after validating the parameter.
+function parsePaperSelector(rawSelector: string): PaperSelector {
+  return rawSelector.startsWith("arxiv:") ? {
+    arxiv_id: rawSelector.replace("arxiv:", ""),
+  } : {
+    s2_id: rawSelector,
+  };
 }
 
 /**
@@ -143,63 +152,29 @@ export const plugin = {
 
     server.route({
       method: "GET",
-      path: "papers/{s2Id}",
+      path: "papers/{paperSelector}",
       handler: async (request, h) => {
-        const s2Id = request.params.s2Id;
-        const exists = await dbConnection.checkPaper({ s2_id: s2Id });
+        const paperSelector = parsePaperSelector(request.params.paperSelector);
+        const exists = await dbConnection.checkPaper(paperSelector);
         return exists ? h.response().code(204) : h.response().code(404);
       },
       options: {
         validate: {
-          params: validation.s2Id,
-        },
-      },
-    })
-
-    server.route({
-      method: "GET",
-      path: "papers/arxiv:{arxivId}",
-      handler: async (request, h) => {
-        const arxivId = request.params.arxivId;
-        const exists = await dbConnection.checkPaper({ arxiv_id: arxivId });
-        return exists ? h.response().code(204) : h.response().code(404);
-      },
-      options: {
-        validate: {
-          params: validation.arxivId,
+          params: validation.paperSelector,
         },
       },
     });
 
     server.route({
       method: "GET",
-      path: "papers/{s2Id}/entities",
-      handler: (request) => {
-        const s2Id = request.params.s2Id;
-        // Runtime type-checked during validation.
-        const entityTypes = request.query.type as EntityType[];
-        return dbConnection.getEntitiesForPaper({ s2_id: s2Id }, entityTypes);
-      },
-      options: {
-        validate: {
-          params: validation.s2Id,
-          query: Joi.object({
-              type:  validation.apiEntityTypes
-          })
-        },
-      },
-    });
-
-    server.route({
-      method: "GET",
-      path: "papers/arxiv:{arxivId}/entities",
+      path: "papers/{paperSelector}/entities",
       handler: async (request) => {
-        const arxivId = request.params.arxivId;
+        const paperSelector = parsePaperSelector(request.params.paperSelector);
         // Runtime type-checked during validation.
         const entityTypes = request.query.type as EntityType[];
         let res;
         try {
-          res = await dbConnection.getEntitiesForPaper({ arxiv_id: arxivId }, entityTypes);
+          res = await dbConnection.getEntitiesForPaper(paperSelector, entityTypes);
         } catch (e) {
           console.log(e);
         }
@@ -207,7 +182,7 @@ export const plugin = {
       },
       options: {
         validate: {
-          params: validation.arxivId,
+          params: validation.paperSelector,
           query: Joi.object({
             type:  validation.apiEntityTypes
           })
@@ -217,18 +192,18 @@ export const plugin = {
 
     server.route({
       method: "POST",
-      path: "papers/arxiv:{arxivId}/entities",
+      path: "papers/{arxivSelector}/entities",
       handler: async (request, h) => {
-        const arxivId = request.params.arxivId;
+        const paperSelector = parsePaperSelector(request.params.arxivSelector);
         const entity = await dbConnection.createEntity(
-          { arxiv_id: arxivId },
+          paperSelector,
           (request.payload as EntityCreatePayload).data
         );
         return h.response({ data: entity }).code(201);
       },
       options: {
         validate: {
-          params: validation.arxivId,
+          params: validation.arxivOnlySelector,
           payload: validation.entityPost,
         },
       },
@@ -236,7 +211,7 @@ export const plugin = {
 
     server.route({
       method: "PATCH",
-      path: "papers/arxiv:{arxivId}/entities/{id}",
+      path: "papers/{arxivSelector}/entities/{id}",
       handler: async (request, h) => {
         await dbConnection.updateEntity(
           (request.payload as EntityUpdatePayload).data
@@ -246,7 +221,7 @@ export const plugin = {
       options: {
         auth: 'admin-token',
         validate: {
-          params: validation.arxivId.append({
+          params: validation.arxivOnlySelector.append({
             id: Joi.string().required(),
           }),
           payload: validation.entityPatch,
@@ -256,7 +231,7 @@ export const plugin = {
 
     server.route({
       method: "DELETE",
-      path: "papers/arxiv:{arxivId}/entities/{id}",
+      path: "papers/{arxivSelector}/entities/{id}",
       handler: async (request, h) => {
         const { id } = request.params;
         await dbConnection.deleteEntity(id);
@@ -265,7 +240,7 @@ export const plugin = {
       options: {
         auth: 'admin-token',
         validate: {
-          params: validation.arxivId.append({
+          params: validation.arxivOnlySelector.append({
             id: Joi.string().required(),
           }),
         },
@@ -274,9 +249,9 @@ export const plugin = {
 
     server.route({
       method: "GET",
-      path: "papers/arxiv:{arxivId}/version",
+      path: "papers/{arxivSelector}/version",
       handler: async (request, h) => {
-        const paperSelector = { arxiv_id: request.params.arxivId };
+        const paperSelector = parsePaperSelector(request.params.arxivSelector);
         const version = await dbConnection.getLatestProcessedArxivVersion(paperSelector);
         const citationCount = await dbConnection.getPaperEntityCount(paperSelector, 'citation');
         if (!version || !citationCount) {
@@ -288,7 +263,7 @@ export const plugin = {
       },
       options: {
         validate: {
-          params: validation.arxivId,
+          params: validation.arxivOnlySelector,
         },
       },
     });

@@ -662,7 +662,7 @@ export class Connection {
 /**
  * Expected knex.js parameters for selecting a paper. Map from paper table column ID to value.
  */
-type PaperSelector = ArxivIdPaperSelector | S2IdPaperSelector;
+export type PaperSelector = ArxivIdPaperSelector | S2IdPaperSelector;
 
 interface ArxivIdPaperSelector {
   arxiv_id: string;
