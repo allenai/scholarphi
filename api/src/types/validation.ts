@@ -18,8 +18,22 @@ export const logEntry = Joi.object({
   data: Joi.object().unknown(true).default(null),
 });
 
-export const s2Id = Joi.object({
-  s2Id: Joi.string().pattern(/[a-f0-9]{40}/),
+const s2paperId = Joi.string().pattern(/[a-f0-9]{40}/);
+/*
+ * See the arXiv documentation on valid identifiers here:
+ * https://arxiv.org/help/arxiv_identifier.
+ */
+const currentArxivFormat = Joi.string().pattern(/arxiv:[0-9]{2}[0-9]{2}.[0-9]+(v[0-9]+)?/);
+const olderArxivFormat = Joi.string().pattern(
+  /arxiv:[a-zA-Z0-9-]+\.[A-Z]{2}\/[0-9]{2}[0-9]{2}[0-9]+(v[0-9]+)/
+);
+
+export const paperSelector = Joi.object({
+  paperSelector: Joi.alternatives().try(
+    s2paperId,
+    currentArxivFormat,
+    olderArxivFormat,
+  )
 });
 
 /**
@@ -27,21 +41,9 @@ export const s2Id = Joi.object({
  * version of Hapi needed an object to use the 'alternatives' feature.
  */
 export const arxivId = Joi.object({
-  /*
-   * See the arXiv documentation on valid identifiers here:
-   * https://arxiv.org/help/arxiv_identifier.
-   */
   arxivId: Joi.alternatives().try(
-    /*
-     * Current arXiv ID format.
-     */
-    Joi.string().pattern(/[0-9]{2}[0-9]{2}.[0-9]+(v[0-9]+)?/),
-    /*
-     * Older arXiv ID format.
-     */
-    Joi.string().pattern(
-      /[a-zA-Z0-9-]+\.[A-Z]{2}\/[0-9]{2}[0-9]{2}[0-9]+(v[0-9]+)/
-    )
+    currentArxivFormat,
+    olderArxivFormat
   ),
 });
 
