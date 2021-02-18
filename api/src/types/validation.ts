@@ -40,8 +40,8 @@ export const paperSelector = Joi.object({
  * arXiv ID needed to be wrapped in 'Joi.object' at the time of writing this as the contemporary
  * version of Hapi needed an object to use the 'alternatives' feature.
  */
-export const arxivId = Joi.object({
-  arxivId: Joi.alternatives().try(
+export const arxivOnlySelector = Joi.object({
+  arxivSelector: Joi.alternatives().try(
     currentArxivFormat,
     olderArxivFormat
   ),

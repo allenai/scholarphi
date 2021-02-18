@@ -192,18 +192,18 @@ export const plugin = {
 
     server.route({
       method: "POST",
-      path: "papers/arxiv:{arxivId}/entities",
+      path: "papers/{arxivSelector}/entities",
       handler: async (request, h) => {
-        const arxivId = request.params.arxivId;
+        const paperSelector = parsePaperSelector(request.params.arxivSelector);
         const entity = await dbConnection.createEntity(
-          { arxiv_id: arxivId },
+          paperSelector,
           (request.payload as EntityCreatePayload).data
         );
         return h.response({ data: entity }).code(201);
       },
       options: {
         validate: {
-          params: validation.arxivId,
+          params: validation.arxivOnlySelector,
           payload: validation.entityPost,
         },
       },
@@ -211,7 +211,7 @@ export const plugin = {
 
     server.route({
       method: "PATCH",
-      path: "papers/arxiv:{arxivId}/entities/{id}",
+      path: "papers/{arxivSelector}/entities/{id}",
       handler: async (request, h) => {
         await dbConnection.updateEntity(
           (request.payload as EntityUpdatePayload).data
@@ -221,7 +221,7 @@ export const plugin = {
       options: {
         auth: 'admin-token',
         validate: {
-          params: validation.arxivId.append({
+          params: validation.arxivOnlySelector.append({
             id: Joi.string().required(),
           }),
           payload: validation.entityPatch,
@@ -231,7 +231,7 @@ export const plugin = {
 
     server.route({
       method: "DELETE",
-      path: "papers/arxiv:{arxivId}/entities/{id}",
+      path: "papers/{arxivSelector}/entities/{id}",
       handler: async (request, h) => {
         const { id } = request.params;
         await dbConnection.deleteEntity(id);
@@ -240,7 +240,7 @@ export const plugin = {
       options: {
         auth: 'admin-token',
         validate: {
-          params: validation.arxivId.append({
+          params: validation.arxivOnlySelector.append({
             id: Joi.string().required(),
           }),
         },
@@ -249,9 +249,9 @@ export const plugin = {
 
     server.route({
       method: "GET",
-      path: "papers/arxiv:{arxivId}/version",
+      path: "papers/{arxivSelector}/version",
       handler: async (request, h) => {
-        const paperSelector = { arxiv_id: request.params.arxivId };
+        const paperSelector = parsePaperSelector(request.params.arxivSelector);
         const version = await dbConnection.getLatestProcessedArxivVersion(paperSelector);
         const citationCount = await dbConnection.getPaperEntityCount(paperSelector, 'citation');
         if (!version || !citationCount) {
@@ -263,7 +263,7 @@ export const plugin = {
       },
       options: {
         validate: {
-          params: validation.arxivId,
+          params: validation.arxivOnlySelector,
         },
       },
     });
