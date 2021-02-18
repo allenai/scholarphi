@@ -210,7 +210,7 @@ export const plugin = {
           params: validation.arxivId,
           query: Joi.object({
             type:  validation.apiEntityTypes
-        })
+          })
         },
       },
     });
