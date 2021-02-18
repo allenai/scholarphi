@@ -256,12 +256,13 @@ export const loadedEntity = Joi.object({
   relationships: relationships.required(),
 });
 
+export const ENTITY_API_ALL = "all";
 export const apiEntityTypes = Joi.string().custom((raw: string, helpers) => {
   // Special shortcut case for all entities
-  if (raw.toLowerCase() === 'all') {
+  if (raw.toLowerCase() === ENTITY_API_ALL) {
     return [];
   }
-  const types = raw.split(',');
+  const types = raw.split(",");
   let accepted: EntityType[] = [];
   types.forEach(t => {
     if (isEntityType(t)) {
@@ -270,7 +271,7 @@ export const apiEntityTypes = Joi.string().custom((raw: string, helpers) => {
   });
   if (accepted.length === 0) {
     // From https://github.com/sideway/joi/blob/master/API.md#list-of-errors
-    return helpers.error('any.invalid');
+    return helpers.error("any.invalid");
   }
   return accepted;
 }).default(["citation"]);

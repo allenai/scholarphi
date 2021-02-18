@@ -743,7 +743,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         });
         let getAllEntities = false;
         const qs = this.parseQueryString();
-        console.log(qs);
         if (qs.showAll && qs.showAll === "true") {
           getAllEntities = true;
         }
