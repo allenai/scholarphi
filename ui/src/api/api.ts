@@ -61,9 +61,12 @@ export async function getPapers(s2Ids: string[]) {
   return Promise.all(promises).then((responses) => responses.flat() as Paper[]);
 }
 
-export async function getEntities(arxivId: string) {
+export async function getEntities(arxivId: string, getAllEntities?: boolean) {
+  const params = getAllEntities ? {
+    type: 'all'
+  } : {};
   const data = await doGet(
-    axios.get(`/api/v0/papers/arxiv:${arxivId}/entities`)
+    axios.get(`/api/v0/papers/arxiv:${arxivId}/entities`, { params })
   );
   return ((data as any).data || []) as Entity[];
 }

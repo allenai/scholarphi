@@ -57,6 +57,7 @@ import * as uiUtils from "./utils/ui";
 import ViewerOverlay from "./components/overlay/ViewerOverlay";
 
 import classNames from "classnames";
+import qs from "qs";
 import React from "react";
 
 interface Props {
@@ -726,13 +727,27 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     });
   }
 
+  parseQueryString = (): qs.ParsedQs => {
+    const urlQueryIndex = window.location.href.indexOf("?");
+    if (urlQueryIndex > -1) {
+      return qs.parse(window.location.href.substring(urlQueryIndex), { ignoreQueryPrefix: true });
+    }
+    return qs.parse("");
+  }
+
   loadDataFromApi = async (): Promise<void> => {
     if (this.props.paperId !== undefined) {
       if (this.props.paperId.type === "arxiv") {
         this.setState({
           areCitationsLoading: true
         });
-        const entities = await api.getEntities(this.props.paperId.id);
+        let getAllEntities = false;
+        const qs = this.parseQueryString();
+        console.log(qs);
+        if (qs.showAll && qs.showAll === "true") {
+          getAllEntities = true;
+        }
+        const entities = await api.getEntities(this.props.paperId.id, getAllEntities);
         this.setState({
           entities: stateUtils.createRelationalStoreFromArray(entities, "id"),
         });
