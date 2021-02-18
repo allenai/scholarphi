@@ -68,17 +68,17 @@ export interface EntityGetResponse {
   data?: Entity[];
 }
 
-const entityTypes = {
-  citation: '',
-  definition: '',
-  equation: '',
-  sentence: '',
-  symbol: '',
-  term: '',
-};
-export type EntityType = keyof typeof entityTypes;
+const entityTypes = [
+  'citation',
+  'definition',
+  'equation',
+  'sentence',
+  'symbol',
+  'term'
+] as const;
+export type EntityType = typeof entityTypes[number];
 export const isEntityType = (s: string): s is EntityType => {
-  return entityTypes.hasOwnProperty(s);
+  return (entityTypes as readonly string[]).indexOf(s) >= 0;
 }
 
 /**
