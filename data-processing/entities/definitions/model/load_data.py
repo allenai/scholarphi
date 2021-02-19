@@ -566,7 +566,7 @@ def load_and_cache_example_batch_raw(
         example = InputExample(
             guid="one",
             words=d["tokens"],
-            intent_label=1,  # false intent label
+            intent_label=1,  # fake intent label
             slot_labels=[1] * len(d["tokens"]),  # fake slot labels
             pos_labels=[
                 processor.pos_labels.index(s) if s in processor.pos_labels else 0
