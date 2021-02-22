@@ -140,18 +140,6 @@ def test_extract_nicknames_from_before_symbols():
     assert nickname1.definition_text == "timestep"
 
 
-@pytest.mark.slow
-@pytest.mark.skip(reason="Model does not pass this case currently.")
-def test_model_extracts_nickname_symbol_separated_by_colon(
-    model: DefinitionDetectionModel,
-):
-    prediction_type = "DocDef2"
-    features = model.featurize("The agent acts with a policy : SYMBOL")
-    intents, slots, _ = model.predict_batch([features], prediction_type)
-    assert intents[prediction_type][0]
-    assert slots[prediction_type][0] == ["O", "O", "O", "O", "O", "DEF", "O", "TERM"]
-
-
 def test_extract_nicknames_symbols_separated_by_colon():
     text = "The agent acts with SYMBOL : policy."
     symbol_texs = {20: r"\pi"}
@@ -176,16 +164,6 @@ def test_extract_nicknames_symbols_separated_by_colon():
     nickname0 = symbol_nickname_pairs[0]
     assert nickname0.term_text == r"\pi"
     assert nickname0.definition_text == "policy"
-
-
-@pytest.mark.slow
-@pytest.mark.skip(reason="Model does not pass this case currently.")
-def test_model_extracts_nickname_symbol_parentheses(model: DefinitionDetectionModel):
-    prediction_type = "DocDef2"
-    features = model.featurize("The agent acts with policy (SYMBOL)")
-    intents, slots, _ = model.predict_batch([features], prediction_type)
-    assert intents[prediction_type][0]
-    assert slots[prediction_type][0] == ["O", "O", "O", "O", "DEF", "O", "TERM", "O"]
 
 
 def test_extract_nicknames_symbols_parentheses():
@@ -266,31 +244,6 @@ def test_extract_nicknames_symbols_filter():
     assert len(symbol_nickname_pairs) == 0
 
 
-@pytest.mark.slow
-@pytest.mark.skip(reason="Model does not pass this case currently.")
-def test_model_extracts_nickname_after_symbol(model: DefinitionDetectionModel):
-    prediction_type = "DocDef2"
-    features = model.featurize(
-        "The architecture consists of SYMBOL dense layers trained with SYMBOL learning rate"
-    )
-    intents, slots, _ = model.predict_batch([features], prediction_type)
-    assert intents[prediction_type][0]
-    assert slots[prediction_type][0] == [
-        "O",
-        "O",
-        "O",
-        "O",
-        "TERM",
-        "DEF",
-        "DEF",
-        "O",
-        "O",
-        "TERM",
-        "DEF",
-        "DEF",
-    ]
-
-
 def test_extract_nicknames_from_after_symbols():
     text = "The architecture consists of SYMBOL dense layers trained with SYMBOL learning rate."
     symbol_texs = {29: "L_d", 62: r"\alpha"}
@@ -324,16 +277,6 @@ def test_extract_nicknames_from_after_symbols():
     nickname1 = symbol_nickname_pairs[1]
     assert nickname1.term_text == r"\alpha"
     assert nickname1.definition_text == "learning rate"
-
-
-@pytest.mark.slow
-@pytest.mark.skip(reason="Model does not pass this case currently.")
-def test_model_extracts_nickname_for_th_index_pattern(model: DefinitionDetectionModel):
-    prediction_type = "DocDef2"
-    features = model.featurize("This process repeats for every SYMBOLth timestep")
-    intents, slots, _ = model.predict_batch([features], prediction_type)
-    assert intents[prediction_type][0]
-    assert slots[prediction_type][0] == ["O", "O", "O", "O", "O", "TERM", "DEF"]
 
 
 def test_extract_nickname_for_th_index_pattern():
@@ -466,3 +409,71 @@ def test_extract_abbreviation_shortened_word(model):
     assert len(abbreviations) == 1
     assert abbreviations[0].term_text == "CondNets"
     assert abbreviations[0].definition_text == "Conductive Networks"
+
+
+# BUGGY TESTS: The following tests document behavior that the definition extractor should have,
+# but currently does not have due to limitations of the model. They are left here as documentation.
+# They should be enabled as regression tests once the model is improved to pass the test cases.
+@pytest.mark.slow
+@pytest.mark.skip(
+    reason="Model does not yet detect this definition. Model improvements needed."
+)
+def test_model_extracts_nickname_symbol_parentheses(model: DefinitionDetectionModel):
+    prediction_type = "DocDef2"
+    features = model.featurize("The agent acts with policy (SYMBOL)")
+    intents, slots, _ = model.predict_batch([features], prediction_type)
+    assert intents[prediction_type][0]
+    assert slots[prediction_type][0] == ["O", "O", "O", "O", "DEF", "O", "TERM", "O"]
+
+
+@pytest.mark.slow
+@pytest.mark.skip(
+    reason="Model does not yet detect this definition. Model improvements needed."
+)
+def test_model_extracts_nickname_after_symbol(model: DefinitionDetectionModel):
+    prediction_type = "DocDef2"
+    features = model.featurize(
+        "The architecture consists of SYMBOL dense layers trained with SYMBOL learning rate"
+    )
+    intents, slots, _ = model.predict_batch([features], prediction_type)
+    assert intents[prediction_type][0]
+    assert slots[prediction_type][0] == [
+        "O",
+        "O",
+        "O",
+        "O",
+        "TERM",
+        "DEF",
+        "DEF",
+        "O",
+        "O",
+        "TERM",
+        "DEF",
+        "DEF",
+    ]
+
+
+@pytest.mark.slow
+@pytest.mark.skip(
+    reason="Model does not yet detect this definition. Model improvements needed."
+)
+def test_model_extracts_nickname_symbol_separated_by_colon(
+    model: DefinitionDetectionModel,
+):
+    prediction_type = "DocDef2"
+    features = model.featurize("The agent acts with a policy : SYMBOL")
+    intents, slots, _ = model.predict_batch([features], prediction_type)
+    assert intents[prediction_type][0]
+    assert slots[prediction_type][0] == ["O", "O", "O", "O", "O", "DEF", "O", "TERM"]
+
+
+@pytest.mark.slow
+@pytest.mark.skip(
+    reason="Model does not yet detect this definition. Model improvements needed."
+)
+def test_model_extracts_nickname_for_th_index_pattern(model: DefinitionDetectionModel):
+    prediction_type = "DocDef2"
+    features = model.featurize("This process repeats for every SYMBOLth timestep")
+    intents, slots, _ = model.predict_batch([features], prediction_type)
+    assert intents[prediction_type][0]
+    assert slots[prediction_type][0] == ["O", "O", "O", "O", "O", "TERM", "DEF"]
