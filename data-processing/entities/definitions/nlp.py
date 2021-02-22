@@ -9,24 +9,16 @@ import spacy
 from scispacy.abbreviation import AbbreviationDetector
 from spacy.matcher import Matcher
 from spacy.util import filter_spans
-from transformers import CONFIG_MAPPING, AutoConfig, AutoTokenizer, HfArgumentParser
+from transformers import (CONFIG_MAPPING, AutoConfig, AutoTokenizer,
+                          HfArgumentParser)
 
-from .model.configuration import (
-    DataTrainingArguments,
-    ModelArguments,
-    TrainingArguments,
-)
-from .model.load_data import load_and_cache_example, load_and_cache_example_batch, load_and_cache_example_batch_raw
+from .model.configuration import (DataTrainingArguments, ModelArguments,
+                                  TrainingArguments)
+from .model.load_data import load_and_cache_example_batch_raw
 from .model.model import JointRoberta
 from .model.trainer import Trainer
-from .model.utils import (
-    get_intent_labels,
-    get_pos_labels,
-    get_slot_labels,
-    set_torch_seed,
-    get_intent_labels_dict,
-    get_slot_labels_dict
-)
+from .model.utils import (get_intent_labels_dict, get_pos_labels,
+                          get_slot_labels_dict, set_torch_seed)
 
 MODEL_CLASSES = {
     "roberta": JointRoberta,
@@ -55,9 +47,21 @@ class DefinitionDetectionModel:
 
         # Initialize modules for transformer-based inference model based on the prediction_type
         self.model_paths = {
-            'W00' : {'baseURL':"https://scholarphi.s3-us-west-1.amazonaws.com/",'file':"termdef.zip", 'type' : 'term-def'},
-            'AI2020' : {'baseURL':"https://scholarphi.s3-us-west-1.amazonaws.com/",'file':"abbrexp.zip", 'type' : 'abbr-exp'},
-            'DocDef2' : {'baseURL':"https://scholarphi.s3-us-west-1.amazonaws.com/",'file':"symnick.zip", 'type' : 'sym-nick'},
+            "W00": {
+                "baseURL": "https://scholarphi.s3-us-west-1.amazonaws.com/",
+                "file": "termdef.zip",
+                "type": "term-def",
+            },
+            "AI2020": {
+                "baseURL": "https://scholarphi.s3-us-west-1.amazonaws.com/",
+                "file": "abbrexp.zip",
+                "type": "abbr-exp",
+            },
+            "DocDef2": {
+                "baseURL": "https://scholarphi.s3-us-west-1.amazonaws.com/",
+                "file": "symnick.zip",
+                "type": "sym-nick",
+            },
         }
         self.prediction_types = prediction_types
 
@@ -67,26 +71,29 @@ class DefinitionDetectionModel:
         self.model = {}
         self.trainer = {}
 
-
         for prediction_type in self.prediction_types:
             cache_directory = f"./cache/{prediction_type}_model"
 
             # Make a directory storing model files (./data/)
             if not os.path.exists(cache_directory):
                 os.makedirs(cache_directory)
-                logging.debug("Created cache directory for models at %s", cache_directory)
+                logging.debug(
+                    "Created cache directory for models at %s", cache_directory
+                )
 
                 # Download the best model files in ./data/
                 MODEL_URL = (
-                    self.model_paths[prediction_type]['baseURL'] + self.model_paths[prediction_type]['file']
+                    self.model_paths[prediction_type]["baseURL"]
+                    + self.model_paths[prediction_type]["file"]
                 )
                 logging.debug(
                     "Downloading model from %s. Warning: this will take a long time.",
                     MODEL_URL,
                 )
-                cache_file = self.model_paths[prediction_type]['file']
+                cache_file = self.model_paths[prediction_type]["file"]
                 urllib.request.urlretrieve(
-                    MODEL_URL, os.path.join("{}/{}".format(cache_directory, cache_file)),
+                    MODEL_URL,
+                    os.path.join("{}/{}".format(cache_directory, cache_file)),
                 )
 
                 with zipfile.ZipFile(
@@ -150,9 +157,9 @@ class DefinitionDetectionModel:
             )
 
             # Set model type from arguments.
-            model_args.model_type = model_args.model_name_or_path.split("-")[0].split("_")[
-                0
-            ]
+            model_args.model_type = model_args.model_name_or_path.split("-")[0].split(
+                "_"
+            )[0]
 
             # Load model configuration.
             if model_args.config_name:
@@ -165,7 +172,9 @@ class DefinitionDetectionModel:
                 )
             else:
                 config = CONFIG_MAPPING[model_args.model_type]()
-                logging.warning("You are instantiating a new config instance from scratch.")
+                logging.warning(
+                    "You are instantiating a new config instance from scratch."
+                )
 
             # Load tokenizer.
             if model_args.tokenizer_name:
@@ -186,7 +195,9 @@ class DefinitionDetectionModel:
             # Rename output directory to reflect model parameters.
             training_args.output_dir = "{}{}{}{}{}{}".format(
                 training_args.output_dir,
-                "_pos={}".format(training_args.use_pos) if training_args.use_pos else "",
+                "_pos={}".format(training_args.use_pos)
+                if training_args.use_pos
+                else "",
                 "_np={}".format(training_args.use_np) if training_args.use_np else "",
                 "_vp={}".format(training_args.use_vp) if training_args.use_vp else "",
                 "_entity={}".format(training_args.use_entity)
@@ -214,7 +225,7 @@ class DefinitionDetectionModel:
                     slot_label_dict=get_slot_labels_dict(data_args),
                     pos_label_lst=get_pos_labels(data_args),
                     # This is because currently there are 3 different models - one for each task
-                    tasks=[prediction_type]
+                    tasks=[prediction_type],
                 )
                 logging.info("Model loaded from %s", training_args.output_dir)
             else:
@@ -225,7 +236,9 @@ class DefinitionDetectionModel:
                     training_args.output_dir,
                     cache_directory,
                 )
-                raise ValueError(f"Could not load model from {training_args.output_dir}")
+                raise ValueError(
+                    f"Could not load model from {training_args.output_dir}"
+                )
 
             # model.resize_token_embeddings(len(tokenizer))
 
@@ -236,7 +249,12 @@ class DefinitionDetectionModel:
             self.tokenizer[prediction_type] = tokenizer
             self.model[prediction_type] = model
             self.trainer[prediction_type] = Trainer(
-                [training_args, self.model_args[prediction_type], self.data_args[prediction_type]], self.model[prediction_type]
+                [
+                    training_args,
+                    self.model_args[prediction_type],
+                    self.data_args[prediction_type],
+                ],
+                self.model[prediction_type],
             )
 
     def featurize(self, text: str, limit: bool = False) -> DefaultDict[Any, Any]:
@@ -292,7 +310,7 @@ class DefinitionDetectionModel:
 
     def predict_batch(
         self, data: List[Dict[Any, Any]], prediction_type: str
-    ) -> Tuple[List[int], List[List[str]], List[List[float]]]:
+    ) -> Tuple[Dict[Any, Any], Dict[str, List[List[str]]], Dict[Any, Any]]:
 
         # Load data.
         test_dataset, raw = load_and_cache_example_batch_raw(
@@ -300,20 +318,21 @@ class DefinitionDetectionModel:
         )
 
         # Perform inference.
-        intent_pred, slot_preds, slot_pred_confs = self.trainer[prediction_type].evaluate_from_input(test_dataset, raw)
+        intent_pred, slot_preds, slot_pred_confs = self.trainer[
+            prediction_type
+        ].evaluate_from_input(test_dataset, raw)
 
         # Process predictions.
-
-        simplified_slot_preds_dict = {}
+        simplified_slot_preds_dict: Dict[str, List[List[str]]] = {}
         for prediction_type, slot_pred_list in slot_preds.items():
             simplified_slot_preds = []
             for slot_pred in slot_pred_list:
                 simplified_slot_pred = []
                 for s in slot_pred:
-                    if s.endswith('TERM'):
-                        simplified_slot_pred.append('TERM')
-                    elif s.endswith('DEF'):
-                        simplified_slot_pred.append('DEF')
+                    if s.endswith("TERM"):
+                        simplified_slot_pred.append("TERM")
+                    elif s.endswith("DEF"):
+                        simplified_slot_pred.append("DEF")
                     else:
                         simplified_slot_pred.append("O")
                 simplified_slot_preds.append(simplified_slot_pred)

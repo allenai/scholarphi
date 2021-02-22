@@ -18,12 +18,8 @@ from ..types import Definiendum, Definition, EmbellishedSentence, TermReference
 
 """
 Deployment TODOs:
-* TODO(dykang): add dependencies to Dockerfile
 * TODO(dykang): document model download instructions in README
 * TODO(dykang): make model location configurable in config.ini
-
-Detection improvement TODOs:
-* TODO(dykang): aggregation over terms / definitions (e.g., coreference links)
 """
 
 TermName = str
@@ -118,7 +114,7 @@ def consolidate_keyword_definitions(
     tokens: List[str],
     slot_predictions: List[str],
     slot_prediction_confidences: List[float],
-    prediction_type : str
+    prediction_type: str,
 ) -> List[TermDefinitionPair]:
 
     # Make index from tokens to their character positions.
@@ -135,13 +131,13 @@ def consolidate_keyword_definitions(
     for (slot_label, slot_confidence, range_) in zip(
         slot_predictions, slot_prediction_confidences, ranges
     ):
-        if slot_label == 'TERM':
+        if slot_label == "TERM":
             term_ranges.append(range_)
             term_confidences.append(slot_confidence)
-        if slot_label == 'DEF':
+        if slot_label == "DEF":
             definition_ranges.append(range_)
             definition_confidences.append(slot_confidence)
-        if slot_label == 'O':
+        if slot_label == "O":
             if len(term_ranges) > 0:
                 terms.append(term_ranges)
                 term_confidence_list.append(
@@ -153,12 +149,10 @@ def consolidate_keyword_definitions(
                     sum(definition_confidences) / len(definition_confidences)
                 )
             term_ranges, definition_ranges = [], []
-        
+
     if len(term_ranges) > 0:
         terms.append(term_ranges)
-        term_confidence_list.append(
-            sum(term_confidences) / len(term_confidences)
-        )
+        term_confidence_list.append(sum(term_confidences) / len(term_confidences))
     if len(definition_ranges) > 0:
         definitions.append(definition_ranges)
         definition_confidence_list.append(
@@ -197,9 +191,9 @@ def consolidate_keyword_definitions(
         )
 
         all_definition_types = {
-        'W00' : ['term','definition'],
-        'AI2020' : ['abbreviation','expansion'],
-        'DocDef2' : ['symbol','nickname']
+            "W00": ["term", "definition"],
+            "AI2020": ["abbreviation", "expansion"],
+            "DocDef2": ["symbol", "nickname"],
         }
 
         term_type = all_definition_types[prediction_type][0]
@@ -486,7 +480,7 @@ def get_symbol_nickname_pairs(
             # Reject a nickname if the nickname text is "SYMBOL".
             if nickname_text == "SYMBOL":
                 continue
-            
+
             pair = TermDefinitionPair(
                 term_start=symbol_start,
                 term_end=symbol_end,
@@ -561,8 +555,7 @@ class DetectDefinitions(
 
             # Load cleaned sentences for definition detection.
             detected_sentences_path = os.path.join(
-                directories.arxiv_subdir("sentence-tokens", arxiv_id),
-                "sentences.csv",
+                directories.arxiv_subdir("sentence-tokens", arxiv_id), "sentences.csv",
             )
             try:
                 sentences = list(
@@ -601,7 +594,7 @@ class DetectDefinitions(
             return
 
         # Load the pre-trained definition detection model.
-        prediction_types =  ['AI2020', 'DocDef2', 'W00']
+        prediction_types = ["AI2020", "DocDef2", "W00"]
         model = DefinitionDetectionModel(prediction_types)
 
         definition_index = 0
@@ -640,35 +633,38 @@ class DetectDefinitions(
 
                     # Detect terms and definitions in each sentence with a pre-trained definition
                     # extraction model, from the featurized text.
-                        
-                    termdef_intents, termdef_slots, termdef_slots_confidence = model.predict_batch(
-                        cast(List[Dict[Any, Any]], features), 'W00'
+
+                    (_, termdef_slots, termdef_slots_confidence,) = model.predict_batch(
+                        cast(List[Dict[Any, Any]], features), "W00"
                     )
-                    abbrexp_intents, abbrexp_slots, abbrexp_slots_confidence = model.predict_batch(
-                        cast(List[Dict[Any, Any]], features), 'AI2020'
+                    (_, abbrexp_slots, abbrexp_slots_confidence,) = model.predict_batch(
+                        cast(List[Dict[Any, Any]], features), "AI2020"
                     )
-                    symnick_intents, symnick_slots, symnick_slots_confidence = model.predict_batch(
-                        cast(List[Dict[Any, Any]], features), 'DocDef2'
+                    (_, symnick_slots, symnick_slots_confidence,) = model.predict_batch(
+                        cast(List[Dict[Any, Any]], features), "DocDef2"
                     )
-                    
+
                     # Package extracted terms and definitions into a representation that's
                     # easier to process.
                     for (
                         s,
                         sentence_features,
-                        termdef_intent,
                         termdef_sentence_slots,
                         termdef_sentence_slots_confidence,
-                        abbrexp_intent,
                         abbrexp_sentence_slots,
                         abbrexp_sentence_slots_confidence,
-                        symnick_intent,
                         symnick_sentence_slots,
                         symnick_sentence_slots_confidence,
-                    ) in zip(sentences, features, 
-                            termdef_intents['W00'], termdef_slots['W00'], termdef_slots_confidence['W00'],
-                            abbrexp_intents['AI2020'], abbrexp_slots['AI2020'], abbrexp_slots_confidence['AI2020'], 
-                            symnick_intents['DocDef2'], symnick_slots['DocDef2'], symnick_slots_confidence['DocDef2']):
+                    ) in zip(
+                        sentences,
+                        features,
+                        termdef_slots["W00"],
+                        termdef_slots_confidence["W00"],
+                        abbrexp_slots["AI2020"],
+                        abbrexp_slots_confidence["AI2020"],
+                        symnick_slots["DocDef2"],
+                        symnick_slots_confidence["DocDef2"],
+                    ):
                         # Extract TeX for each symbol from a parallel representation of the
                         # sentence, so that the TeX for symbols can be saved.
                         # Types of [term and definition] pairs.
@@ -679,7 +675,7 @@ class DetectDefinitions(
                         symbol_texs = get_symbol_texs(
                             s.legacy_definition_input, s.with_formulas_marked
                         )
-                        #--- This is V2 code for getting symbol_nickname_pairs and abbreviation_pairs---
+                        # --- This is V2 code for getting symbol_nickname_pairs and abbreviation_pairs---
                         # if symbol_texs is None:
                         #     symbol_nickname_pairs = []
                         # else:
@@ -695,10 +691,13 @@ class DetectDefinitions(
                         #     sentence_features["tokens"],
                         #     model.nlp,
                         # )
-                        #--- end ---
+                        # --- end ---
 
                         # Only process slots when they include both 'TERM' and 'DEFINITION'.
-                        if "TERM" not in termdef_sentence_slots or "DEF" not in termdef_sentence_slots:
+                        if (
+                            "TERM" not in termdef_sentence_slots
+                            or "DEF" not in termdef_sentence_slots
+                        ):
                             term_definition_pairs = []
                         else:
                             term_definition_pairs = consolidate_keyword_definitions(
@@ -706,10 +705,13 @@ class DetectDefinitions(
                                 sentence_features["tokens"],
                                 termdef_sentence_slots,
                                 termdef_sentence_slots_confidence,
-                                "W00"
+                                "W00",
                             )
 
-                        if "TERM" not in abbrexp_sentence_slots or "DEF" not in abbrexp_sentence_slots:
+                        if (
+                            "TERM" not in abbrexp_sentence_slots
+                            or "DEF" not in abbrexp_sentence_slots
+                        ):
                             abbreviation_expansion_pairs = []
                         else:
                             abbreviation_expansion_pairs = consolidate_keyword_definitions(
@@ -717,10 +719,13 @@ class DetectDefinitions(
                                 sentence_features["tokens"],
                                 abbrexp_sentence_slots,
                                 abbrexp_sentence_slots_confidence,
-                                "AI2020"
+                                "AI2020",
                             )
-                        
-                        if "TERM" not in symnick_sentence_slots or "DEF" not in symnick_sentence_slots:
+
+                        if (
+                            "TERM" not in symnick_sentence_slots
+                            or "DEF" not in symnick_sentence_slots
+                        ):
                             symbol_nickname_pairs = []
                         else:
                             symbol_nickname_pairs = consolidate_keyword_definitions(
@@ -728,7 +733,7 @@ class DetectDefinitions(
                                 sentence_features["tokens"],
                                 symnick_sentence_slots,
                                 symnick_sentence_slots_confidence,
-                                "DocDef2"
+                                "DocDef2",
                             )
 
                         pairs = (
@@ -878,7 +883,10 @@ class DetectDefinitions(
                     features = []
                     sentences = []
 
-        logging.debug(f"Finished detecting definitions for paper {item.arxiv_id}. Now finding references to defined terms.")
+        logging.debug(  # pylint: disable=logging-not-lazy
+            "Finished detecting definitions for paper %s. Now finding references to defined terms.",
+            item.arxiv_id
+        )
 
         all_definiendums: List[Definiendum] = []
         for _, definiendum_list in definiendums.items():
@@ -930,7 +938,9 @@ class DetectDefinitions(
         term_index = 0
 
         for tex_path, file_contents in item.tex_by_file.items():
-            term_extractor = PhraseExtractor(term_phrases + abbreviations + symbol_nicks)
+            term_extractor = PhraseExtractor(
+                term_phrases + abbreviations + symbol_nicks
+            )
             for t in term_extractor.parse(tex_path, file_contents.contents):
 
                 # Don't save term references if they are already in the definiendums.

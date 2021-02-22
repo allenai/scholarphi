@@ -162,7 +162,10 @@ def get_slot_simple_metrics(
     Conceptually, define the following new types of ‘virtual tags’
     TERM = B-term OR I-Term (ie the union of those two tags)
     DEF = B-Def OR I-Def
-    Now, what are the P,R & F1 numbers for TERM and DEF?  (I think these matter because users may just care about accuracy of term and defn matching and the macro averaged scores conflate other things like recall on these metrics and precision on O. Likewise the current macro average treats missing the first word in a definition differently from skipping the last word.
+    Now, what are the P,R & F1 numbers for TERM and DEF?  (I think these matter because users may
+    just care about accuracy of term and defn matching and the macro averaged scores conflate
+    other things like recall on these metrics and precision on O. Likewise the current macro
+    average treats missing the first word in a definition differently from skipping the last word.
     """
     assert len(preds) == len(labels)
 
@@ -275,12 +278,25 @@ def get_sentence_frame_acc(
 
 def get_intent_labels_dict(args):
     intent_hybrid = {}
-    for task in args.task.split('+'):
-        intent_hybrid[task] = [label.strip() for label in open(os.path.join(args.data_dir, args.intent_label_file), 'r', encoding='utf-8')]
+    for task in args.task.split("+"):
+        intent_hybrid[task] = [
+            label.strip()
+            for label in open(
+                os.path.join(args.data_dir, args.intent_label_file),
+                "r",
+                encoding="utf-8",
+            )
+        ]
     return intent_hybrid
+
 
 def get_slot_labels_dict(args):
     slot_hybrid = {}
-    for task in args.task.split('+'):
-        slot_hybrid[task] = [label.strip() for label in open(os.path.join(args.data_dir, args.slot_label_file), 'r', encoding='utf-8')]
+    for task in args.task.split("+"):
+        slot_hybrid[task] = [
+            label.strip()
+            for label in open(
+                os.path.join(args.data_dir, args.slot_label_file), "r", encoding="utf-8"
+            )
+        ]
     return slot_hybrid

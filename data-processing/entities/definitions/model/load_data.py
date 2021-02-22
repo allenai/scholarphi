@@ -5,7 +5,7 @@ import copy
 import json
 import logging
 import os.path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 import torch
 from torch.utils.data import TensorDataset
@@ -557,7 +557,7 @@ def load_and_cache_example(
 
 def load_and_cache_example_batch_raw(
     args: Any, tokenizer: AutoTokenizer, data: List[Dict[Any, Any]]
-) -> TensorDataset:
+) -> Tuple[TensorDataset, List[Any]]:
     processor = DefProcessor(args)
 
     examples = []
