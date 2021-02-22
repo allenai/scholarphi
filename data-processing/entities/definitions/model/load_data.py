@@ -555,9 +555,15 @@ def load_and_cache_example(
     )
     return dataset
 
+
 def load_and_cache_example_batch_raw(
     args: Any, tokenizer: AutoTokenizer, data: List[Dict[Any, Any]]
 ) -> Tuple[TensorDataset, List[Any]]:
+    """
+    In relation to 'load_and_cache_example_batch', this function also returns the raw
+    data (along with the tensor dataset). Raw data is needed in the filtering heuristics
+    stage. Some logic may be duplicated across these two functions.
+    """
     processor = DefProcessor(args)
 
     examples = []
@@ -578,7 +584,7 @@ def load_and_cache_example_batch_raw(
             acronym_labels=d["abbreviation"],
         )
         examples.append(example)
-        raw.append(d['tokens'])
+        raw.append(d["tokens"])
 
     # Use cross entropy ignore index as padding label id so that only real label ids contribute to the loss later
     features = convert_examples_to_features(
@@ -629,6 +635,7 @@ def load_and_cache_example_batch_raw(
         all_acronym_labels_ids,
     )
     return dataset, raw
+
 
 def load_and_cache_example_batch(
     args: Any, tokenizer: AutoTokenizer, data: List[Dict[Any, Any]]
