@@ -245,6 +245,13 @@ def test_expand_macros():
     assert expanded == to_bytes(r"\def\simpledef{x}", "$x$", "$x$")
 
 
+def test_expand_macros_wrapping_in_groups():
+    tex = to_bytes(r"\def\simpledef{x}", r"$\simpledef$")
+    expansions = [Expansion(rb"\simpledef", 2, 1, 2, 11, b"x")]
+    expanded = expand_macros(tex, expansions, wrap_expansions_in_groups=True)
+    assert expanded == to_bytes(r"\def\simpledef{x}", "${x}$")
+
+
 def test_no_expand_macros_if_macro_name_not_at_offset():
     tex = to_bytes(r"\def\simpledef{x}", r"$\simpledef$")
     expansions = [

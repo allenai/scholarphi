@@ -89,7 +89,7 @@ def _get_expansion_text(control_sequence: ControlSequence) -> bytes:
         if isinstance(token, ControlSequence):
             if _should_include_control_sequence(token):
                 text += token.text
-                if not next_token or next_token.catcode == LETTER:
+                if next_token and next_token.catcode == LETTER:
                     text += b" "
         else:
             text += token.text
@@ -348,14 +348,17 @@ def detect_expansions(
             if top_level_macro:
                 # If this macro is a nested macro or an argument, then start expanding it.
                 # Upcoming expansion tokens will be assigned to the control sequence.
-                if cs_id in active_macros:
+                # XXX(andrewhead): Check that the macro also has the same name as the macro
+                # that is expected next, as in some rare cases, two macros have had the same
+                # cs_id, despite being different macros.
+                if cs_id in active_macros and active_macros[cs_id].text == cs_name:
                     expanding = cs_id
                     active_macros[cs_id].expansion_tokens = []
 
                 # If an unexpected control sequence was encountered, then what is most likely is that
                 # prior macros have finished expanding, and a new macro is being expanded. Finish the
                 # prior expansion and start a new one.
-                if not cs_id in active_macros and path in used_in:
+                elif path in used_in:
                     expansion = _make_expansion_from_last_control_sequence()
                     if expansion:
                         yield expansion
@@ -426,9 +429,21 @@ def detect_expansions(
                 expanding = None
 
 
-def expand_macros(contents: bytes, expansions: List[Expansion]) -> bytes:
+def expand_macros(
+    contents: bytes,
+    expansions: List[Expansion],
+    wrap_expansions_in_groups: bool = False,
+) -> bytes:
     """
-    Apply expansions to the contents of a TeX file.
+    Apply expansions to the contents of a TeX file. It is recommended that this method
+    is called with 'wrap_expansions_in_groups' set. This will wrap all expansions in
+    curly braces (i.e., '{' and '}', or group delimiters in TeX). The advantage of wrapping
+    in groups is that it averts several potential sources of TeX compilation errors that
+    could arise from expanding macros, including:
+
+    - expanding a macro right after another unexpanded macro such that it then gets
+      merged into the macro name before it
+      Example: \\unexpandable\\expandstox -> \\unexpandablex
     """
 
     # Sort expansions from last to first.
@@ -465,10 +480,13 @@ def expand_macros(contents: bytes, expansions: List[Expansion]) -> bytes:
         # Do not replace macro if the text to be expanded does not start with the macro name.
         if not contents_copy[macro_start:macro_end].startswith(expansion.macro_name):
             continue
+
+        expansion_tex = expansion.expansion
+        if wrap_expansions_in_groups:
+            expansion_tex = b"{" + expansion_tex + b"}"
+
         contents_copy = (
-            contents_copy[:macro_start]
-            + expansion.expansion
-            + contents_copy[macro_end:]
+            contents_copy[:macro_start] + expansion_tex + contents_copy[macro_end:]
         )
 
     return contents_copy

@@ -173,7 +173,7 @@ class ExpandMathMacros(ArxivBatchCommand[ExpansionTask, ExpansionResult]):
                 item.arxiv_id,
             )
             return
-        expanded = expand_macros(contents, expansions_list)
+        expanded = expand_macros(contents, expansions_list, wrap_expansions_in_groups=True)
         with open(tex_path, "wb") as tex_file:
             tex_file.write(expanded)
 
