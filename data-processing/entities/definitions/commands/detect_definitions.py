@@ -258,6 +258,9 @@ def check_text_contains_abbreviation_for_sanity(
 def get_abbreviations(
     text: str, tokens: List[str], nlp_model: Any
 ) -> List[TermDefinitionPair]:
+    """
+    Legacy function for detecting abbreviations in a text. No longer in use.
+    """
 
     pairs: List[TermDefinitionPair] = []
 
@@ -398,6 +401,10 @@ class SymbolNickname(NamedTuple):
 def get_symbol_nickname_pairs(
     text: str, tokens: List[str], pos: List[str], symbol_texs: Dict[StringOffset, str]
 ) -> List[TermDefinitionPair]:
+    """
+    Legacy function for detecting nicknames of a symbol in a text. No longer in use.
+    """
+
     # Check whether a symbol's definition is a nickname of the symbol or not
     # using heuristic rules below, although they are not perfect for some cases.
     # a/DT particular/JJ transcript/NN SYMBOL/NN.
@@ -671,27 +678,9 @@ class DetectDefinitions(
                         #   [nickname and definition] for symbols.
                         #   [abbreviation and expansion] for abbreviations.
                         #   [term and definition] for other types.
-
                         symbol_texs = get_symbol_texs(
                             s.legacy_definition_input, s.with_formulas_marked
                         )
-                        # --- This is V2 code for getting symbol_nickname_pairs and abbreviation_pairs---
-                        # if symbol_texs is None:
-                        #     symbol_nickname_pairs = []
-                        # else:
-                        #     symbol_nickname_pairs = get_symbol_nickname_pairs(
-                        #         s.legacy_definition_input,
-                        #         sentence_features["tokens"],
-                        #         sentence_features["pos"],
-                        #         symbol_texs,
-                        #     )
-
-                        # abbreviation_pairs = get_abbreviations(
-                        #     s.legacy_definition_input,
-                        #     sentence_features["tokens"],
-                        #     model.nlp,
-                        # )
-                        # --- end ---
 
                         # Only process slots when they include both 'TERM' and 'DEFINITION'.
                         if (
@@ -885,7 +874,7 @@ class DetectDefinitions(
 
         logging.debug(  # pylint: disable=logging-not-lazy
             "Finished detecting definitions for paper %s. Now finding references to defined terms.",
-            item.arxiv_id
+            item.arxiv_id,
         )
 
         all_definiendums: List[Definiendum] = []
@@ -934,12 +923,13 @@ class DetectDefinitions(
                 yield definiendum
 
         # Detect all other references to the defined terms. Detect references to textual
-        # terms, abbreviations, and symbols.
+        # terms and abbreviations. References to symbols need not be found here; they
+        # will be detected automatically in the symbol extraction code.
         term_index = 0
 
         for tex_path, file_contents in item.tex_by_file.items():
             term_extractor = PhraseExtractor(
-                term_phrases + abbreviations + symbol_nicks
+                term_phrases + abbreviations
             )
             for t in term_extractor.parse(tex_path, file_contents.contents):
 
