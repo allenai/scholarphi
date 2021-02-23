@@ -7,7 +7,7 @@ import {
   EntityCreatePayload,
   EntityUpdatePayload,
   Paper,
-  PaperWithEntityCounts,
+  PaperWithIdInfo,
   Paginated,
   EntityType
 } from "./types/api";
@@ -91,7 +91,7 @@ export const plugin = {
           }
           s2PaperInfoByPaperId[s2Paper.s2Id] = s2Paper;
         }
-        const mergedPapers: PaperWithEntityCounts[] = [];
+        const mergedPapers: PaperWithIdInfo[] = [];
         for (const paper of papers.rows) {
           const maybeS2Paper = s2PaperInfoByPaperId[paper.s2_id];
           mergedPapers.push({
@@ -106,7 +106,7 @@ export const plugin = {
             citationVelocity: maybeS2Paper?.citationVelocity
           });
         }
-        const response: Paginated<PaperWithEntityCounts> = { ...papers, ...{ rows: mergedPapers } };
+        const response: Paginated<PaperWithIdInfo> = { ...papers, ...{ rows: mergedPapers } };
         return response;
       },
     });
