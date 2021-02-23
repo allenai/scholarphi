@@ -61,7 +61,7 @@ export class Connection {
     return await this._knex("logentry").insert(logEntry);
   }
 
-  async getAllPapers(offset: number = 0, size: number = 25, entity_type='citations'): Promise<Paginated<PaperIdInfo>> {
+  async getAllPapers(offset: number = 0, size: number = 25, entity_type: EntityType='citation'): Promise<Paginated<PaperIdInfo>> {
     type Row = PaperIdInfo & {
       total_count: string;
     }
@@ -76,17 +76,17 @@ export class Connection {
                  FROM version
              GROUP BY paper_id ) AS version
           ON version.paper_id = paper.s2_id
-   LEFT JOIN entity
+        JOIN entity
           ON entity.paper_id = paper.s2_id
          AND entity.version = version.index
-         AND entity.type = '${entity_type}'
+         AND entity.type = ?
     GROUP BY paper.s2_id,
              paper.arxiv_id,
              version.index
     ORDER BY paper.arxiv_id DESC
       OFFSET ${offset}
        LIMIT ${size}
-    `);
+    `, [entity_type]);
     const rows = response.rows.map(r => ({
         arxiv_id: r.arxiv_id,
         s2_id: r.s2_id,
