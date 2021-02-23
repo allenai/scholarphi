@@ -19,6 +19,12 @@ export interface Paginated<T> {
   total: number;
 }
 
+export interface PaperIdInfo {
+  s2_id: string;
+  arxiv_id?: string;
+  version: number;
+}
+
 export interface PaperIdWithEntityCounts {
   s2_id: string;
   arxiv_id?: string;
@@ -48,6 +54,17 @@ export interface Paper {
 }
 
 export interface PaperWithEntityCounts extends PaperIdWithEntityCounts {
+  abstract?: string;
+  authors?: Author[];
+  title?: string;
+  url?: string;
+  venue?: string;
+  year?: number | null;
+  influentialCitationCount?: number;
+  citationVelocity?: number;
+}
+
+export interface PaperWithIdInfo extends PaperIdInfo {
   abstract?: string;
   authors?: Author[];
   title?: string;

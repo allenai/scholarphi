@@ -8,7 +8,7 @@
  * the general reader interface slightly.
  */
 import { listPapers } from "../api/api";
-import { Paginated, PaperWithEntityCounts } from "../api/types";
+import { Paginated, PaperWithIdInfo } from "../api/types";
 
 import AppBar from "@material-ui/core/AppBar";
 import Box from "@material-ui/core/Box";
@@ -90,7 +90,7 @@ const PaperList = () => {
     getOffsetFromURL(0),
     getSizeFromURL(25)
   ));
-  const [ results, setResults ] = useState<Paginated<PaperWithEntityCounts>>();
+  const [ results, setResults ] = useState<Paginated<PaperWithIdInfo>>();
   const [ state, setState ] = useState<ViewState>(ViewState.Loading);
 
   useEffect(() => {
@@ -135,12 +135,6 @@ const PaperList = () => {
                 <TableCell>Paper</TableCell>
                 <TableCell>Reader Link</TableCell>
                 <TableCell>ArXiv ID</TableCell>
-                <TableCell>Symbols</TableCell>
-                <TableCell>Citations</TableCell>
-                <TableCell>Equations</TableCell>
-                <TableCell>Terms</TableCell>
-                <TableCell>Sentences</TableCell>
-                <TableCell>Total Entities</TableCell>
                 <TableCell>Entity Version</TableCell>
               </TableRow>
             </TableHead>
@@ -185,12 +179,6 @@ const PaperList = () => {
                         </a>
                       ) : null}
                     </TableCell>
-                    <TableCell>{paper.symbol_count}</TableCell>
-                    <TableCell>{paper.citation_count}</TableCell>
-                    <TableCell>{paper.equation_count}</TableCell>
-                    <TableCell>{paper.term_count}</TableCell>
-                    <TableCell>{paper.sentence_count}</TableCell>
-                    <TableCell>{paper.entity_count}</TableCell>
                     <TableCell>{paper.version}</TableCell>
                   </TableRow>
                 );
