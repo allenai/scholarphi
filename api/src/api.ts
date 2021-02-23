@@ -254,12 +254,14 @@ export const plugin = {
         const paperSelector = parsePaperSelector(request.params.arxivSelector);
         const version = await dbConnection.getLatestProcessedArxivVersion(paperSelector);
         const citationCount = version !== null ? await dbConnection.getPaperEntityCount(paperSelector, 'citation'): null;
-        if (version === null || citationCount === null) {
+
+        if(citationCount && citationCount > 0) {
+          return h.response({ version }).code(200);
+        } else {
           // We don't have version info for this ID, or no citations were extracted so we consider
           // it unsuccessfully processed.
           return h.response().code(404);
-        }
-        return h.response({ version }).code(200);
+        }    
       },
       options: {
         validate: {
