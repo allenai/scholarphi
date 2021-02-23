@@ -61,7 +61,7 @@ export class Connection {
     return await this._knex("logentry").insert(logEntry);
   }
 
-  async getAllPapers(offset: number = 0, size: number = 25, entity_type: EntityType='citation'): Promise<Paginated<PaperIdInfo>> {
+  async getAllPapers(offset: number = 0, size: number = 25, entity_type: EntityType = 'citation'): Promise<Paginated<PaperIdInfo>> {
     type Row = PaperIdInfo & {
       total_count: string;
     }
