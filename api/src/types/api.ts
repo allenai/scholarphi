@@ -68,6 +68,19 @@ export interface EntityGetResponse {
   data?: Entity[];
 }
 
+const entityTypes = [
+  'citation',
+  'definition',
+  'equation',
+  'sentence',
+  'symbol',
+  'term'
+] as const;
+export type EntityType = typeof entityTypes[number];
+export const isEntityType = (s: string): s is EntityType => {
+  return (entityTypes as readonly string[]).indexOf(s) >= 0;
+}
+
 /**
  * Use type guards (e.g., 'isSymbol') to distinguish between types of entities.
  */
@@ -83,7 +96,7 @@ export interface BaseEntity {
    * Entity IDs are guaranteed to be unique, both within and across papers.
    */
   id: string;
-  type: string;
+  type: EntityType;
   attributes: BaseEntityAttributes;
   relationships: Relationships;
 }

@@ -3,6 +3,7 @@ import {
   BoundingBox,
   Entity,
   EntityCreateData,
+  EntityType,
   EntityUpdateData,
   GenericAttributes,
   GenericRelationships,
@@ -127,7 +128,7 @@ export class Connection {
         from entity
         group by paper_id
       ) as maximum on maximum.paper_id = e.paper_id
-      where e.version = maximum.max_version 
+      where e.version = maximum.max_version
       and ${whereClause}
       and e.type = ?
       group by p.s2_id
@@ -136,7 +137,7 @@ export class Connection {
       return response.rows[0].count;
     }
     return null;
-  } 
+  }
 
   async checkPaper(paperSelector: PaperSelector): Promise<boolean> {
     const rows = await this._knex("paper")
@@ -259,7 +260,7 @@ export class Connection {
 
     return {
       id: String(entityRow.id),
-      type: entityRow.type,
+      type: entityRow.type as EntityType,
       attributes: {
         ...attributes,
         version: entityRow.version,
@@ -273,7 +274,7 @@ export class Connection {
     };
   }
 
-  async getEntitiesForPaper(paperSelector: PaperSelector, version?: number) {
+  async getEntitiesForPaper(paperSelector: PaperSelector, entityTypes: EntityType[], version?: number) {
     if (version === undefined) {
       try {
         let latestVersion = await this.getLatestPaperDataVersion(paperSelector);
@@ -289,7 +290,13 @@ export class Connection {
     const entityRows: EntityRow[] = await this._knex("entity")
       .select("entity.paper_id AS paper_id", "id", "version", "type", "source")
       .join("paper", { "paper.s2_id": "entity.paper_id" })
-      .where({ ...paperSelector, version });
+      .where({ ...paperSelector, version }).andWhere(builder => {
+        if (entityTypes.length > 0) {
+          builder.whereIn('type', entityTypes);
+        } else {
+          builder.where(true);
+        }
+      });
 
     let boundingBoxRows: BoundingBoxRow[];
     try {
@@ -655,7 +662,7 @@ export class Connection {
 /**
  * Expected knex.js parameters for selecting a paper. Map from paper table column ID to value.
  */
-type PaperSelector = ArxivIdPaperSelector | S2IdPaperSelector;
+export type PaperSelector = ArxivIdPaperSelector | S2IdPaperSelector;
 
 interface ArxivIdPaperSelector {
   arxiv_id: string;
