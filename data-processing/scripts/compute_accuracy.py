@@ -8,6 +8,7 @@ from common.bounding_box import compute_accuracy
 from common.commands.base import add_arxiv_id_filter_args, load_arxiv_ids_using_args
 from common.models import BoundingBox as BoundingBoxModel
 from common.models import Entity as EntityModel
+from common.models import EntityData as EntityDataModel
 from common.models import Paper, Version, setup_database_connections
 from common.types import ArxivId, BoundingBox, FloatRectangle
 from peewee import fn
@@ -68,20 +69,54 @@ def fetch_boxes(
             BoundingBoxModel.width,
             BoundingBoxModel.height,
             BoundingBoxModel.page,
+            # Aggregate data for an entity into an array, where each field
+            # is a dictionary: {"key", "...", "value", "..."}. All values will
+            # be of type string.
+            fn.json_agg(
+                fn.json_build_object(
+                    "key", EntityDataModel.key, "value", EntityDataModel.value
+                )
+            ).alias("data"),
         )
         .join(Paper)
         .switch(EntityModel)
         .join(BoundingBoxModel)
+        .switch(EntityModel)
+        .join(EntityDataModel)
         .where(
             EntityModel.version == version,
             Paper.arxiv_id == arxiv_id,
             EntityModel.type << types,
         )
+        .group_by(
+            EntityModel.id,
+            EntityModel.type,
+            BoundingBoxModel.left,
+            BoundingBoxModel.top,
+            BoundingBoxModel.width,
+            BoundingBoxModel.height,
+            BoundingBoxModel.page,
+        )
         .dicts()
     )
+
     boxes_by_entity_db_id: Dict[str, List[BoundingBox]] = defaultdict(list)
     types_by_entity_db_id: Dict[str, str] = {}
     for row in rows:
+
+        # When processing symbols, ignore those that are not of the types included in the gold set.
+        # For example, operators will be ignored because they are not in the gold set. If a symbol
+        # does not have an explicit type, it is assumed to be of one of the allowed types.
+        GOLD_SYMBOL_TYPES = ["function", "identifier"]
+        if row["type"] == "symbol":
+            if any(
+                [
+                    d["key"] == "type" and d["value"] not in GOLD_SYMBOL_TYPES
+                    for d in row["data"]
+                ]
+            ):
+                continue
+
         boxes_by_entity_db_id[row["id"]].append(
             BoundingBox(
                 row["left"], row["top"], row["width"], row["height"], row["page"],
