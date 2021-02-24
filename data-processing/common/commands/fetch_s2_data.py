@@ -13,12 +13,24 @@ from common.types import ArxivId, Author, Reference, S2Metadata, SerializableRef
 """ Time to wait between consecutive requests to S2 API. """
 FETCH_DELAY = 3  # seconds
 
-class S2MetadataException(Exception):
-    pass
+
+class S2ApiException(Exception):
+    """Generic exception related to calling the S2 API"""
+
+
+class S2ApiRateLimitingException(S2ApiException):
+    """
+    Caller has been rate-limited by S2's Public/Partner API.
+    """
+
+class S2MetadataException(S2ApiException):
+    """
+    Represents data availability issues when calling the S2 API.
+    """
 
 class S2PaperNotFoundException(S2MetadataException):
     """
-    The target arxiv paper could not be found on the S2 public api, 
+    The target arxiv paper could not be found on the S2 public api,
     which is a requirement for processing.
     """
 
@@ -26,6 +38,7 @@ class S2ReferencesNotFoundException(S2MetadataException):
     """
     The target arxiv paper did not have any references available via the S2 public api.
     """
+
 
 class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
     @staticmethod
@@ -47,38 +60,51 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
         # XXX(andrewhead): S2 API does not have versions of arXiv papers. I don't think this
         # will be an issue, but it's something to pay attention to.
         versionless_id = self._strip_arxiv_version(item)
-        resp = requests.get(
-            f"https://api.semanticscholar.org/v1/paper/arXiv:{versionless_id}"
-        )
 
-        if resp.ok:
-            data = resp.json()
-            references = []
-            for reference_data in data["references"]:
-                authors = []
-                for author_data in reference_data["authors"]:
-                    authors.append(Author(author_data["authorId"], author_data["name"]))
-                reference = Reference(
-                    s2_id=reference_data["paperId"],
-                    arxivId=reference_data["arxivId"],
-                    doi=reference_data["doi"],
-                    title=reference_data["title"],
-                    authors=authors,
-                    venue=reference_data["venue"],
-                    year=reference_data["year"],
-                )
-                references.append(reference)
-            
-            if not references:
-                # References are required to process citations, mark job as failed
-                raise S2ReferencesNotFoundException()
+        try:
+            resp = requests.get(
+                f"https://api.semanticscholar.org/v1/paper/arXiv:{versionless_id}"
+            )
 
-            s2_metadata = S2Metadata(s2_id=data["paperId"], references=references)
-            logging.debug("Fetched S2 metadata for arXiv paper %s", item)
-            yield s2_metadata
+        except Exception:
+            # Exceptions here could reflect temporary service availability
+            # or slowdown issues with S2's API.
+            raise S2ApiException()
+
         else:
-            # References are required to process citations, mark job as failed
-            raise S2PaperNotFoundException()
+            if resp.ok:
+                data = resp.json()
+                references = []
+                for reference_data in data["references"]:
+                    authors = []
+                    for author_data in reference_data["authors"]:
+                        authors.append(Author(author_data["authorId"], author_data["name"]))
+                    reference = Reference(
+                        s2_id=reference_data["paperId"],
+                        arxivId=reference_data["arxivId"],
+                        doi=reference_data["doi"],
+                        title=reference_data["title"],
+                        authors=authors,
+                        venue=reference_data["venue"],
+                        year=reference_data["year"],
+                    )
+                    references.append(reference)
+
+                if not references:
+                    # References are required to process citations, mark job as failed
+                    raise S2ReferencesNotFoundException()
+
+                s2_metadata = S2Metadata(s2_id=data["paperId"], references=references)
+                logging.debug("Fetched S2 metadata for arXiv paper %s", item)
+                yield s2_metadata
+            elif resp.status_code == 404:
+                # Paper is unavailable in Public API -- potential race condition.
+                raise S2PaperNotFoundException()
+            elif resp.status_code == 429:
+                # Request rate limit has been exceeded for this account or client IP.
+                raise S2ApiRateLimitingException()
+            else:
+                raise S2ApiException()
 
         time.sleep(FETCH_DELAY)
 
