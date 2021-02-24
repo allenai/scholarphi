@@ -1,14 +1,19 @@
 import dataclasses
 import logging
+import os
 import os.path
 import time
-from typing import Iterator
+from typing import Any, Iterator
 
 import requests
 
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
 from common.types import ArxivId, Author, Reference, S2Metadata, SerializableReference
+
+
+logger = logging.getLogger(__name__)
+
 
 """ Time to wait between consecutive requests to S2 API. """
 FETCH_DELAY = 3  # seconds
@@ -41,6 +46,29 @@ class S2ReferencesNotFoundException(S2MetadataException):
 
 
 class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
+    def __init__(self, args: Any) -> None:
+        super().__init__(args)
+        self._partner_api_token = os.getenv("S2_PARTNER_API_TOKEN", None)
+
+    def _mk_api_request(self, arxivId: ArxivId) -> requests.Response:
+        # XXX(andrewhead): S2 API does not have versions of arXiv papers. I don't think this
+        # will be an issue, but it's something to pay attention to.
+        versionless_id = self._strip_arxiv_version(arxivId)
+
+        if self._partner_api_token:
+            logger.info("Calling S2's partner API")
+            return requests.get(
+                f"https://partner.semanticscholar.org/v1/paper/arXiv:{versionless_id}",
+                headers={
+                    "x-api-key": self._partner_api_token
+                }
+            )
+
+        logger.info("Calling regular public S2 API")
+        return requests.get(
+            f"https://api.semanticscholar.org/v1/paper/arXiv:{versionless_id}",
+        )
+
     @staticmethod
     def get_name() -> str:
         return "fetch-s2-metadata"
@@ -57,14 +85,9 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
             yield arxiv_id
 
     def process(self, item: ArxivId) -> Iterator[S2Metadata]:
-        # XXX(andrewhead): S2 API does not have versions of arXiv papers. I don't think this
-        # will be an issue, but it's something to pay attention to.
-        versionless_id = self._strip_arxiv_version(item)
 
         try:
-            resp = requests.get(
-                f"https://api.semanticscholar.org/v1/paper/arXiv:{versionless_id}"
-            )
+            resp = self._mk_api_request(item)
 
         except Exception:
             # Exceptions here could reflect temporary service availability
