@@ -541,7 +541,7 @@ select {
 
 #sidebarContainer {
   position: absolute;
-  top: 32px;
+  top: 64px;
   bottom: 0;
   width: 200px; /* Here, and elsewhere below, keep the constant value for compatibility
                    with older browsers that lack support for CSS variables. */
@@ -599,7 +599,7 @@ html[dir='rtl'] #outerContainer.sidebarOpen #sidebarContainer {
 }
 
 #sidebarContent {
-  top: 32px;
+  top: 64px;
   bottom: 0;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
@@ -620,7 +620,7 @@ html[dir='rtl'] #sidebarContent {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   position: absolute;
-  top: 32px;
+  top: 64px;
   right: 0;
   bottom: 0;
   left: 0;
@@ -700,6 +700,16 @@ html[dir='rtl'] #sidebarResizer {
   left: -6px;
 }
 
+#readerBrandingToolbar {
+  height: 32px;
+  background-color: white;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 20px;
+}
+
 #toolbarContainer, .findbar, .secondaryToolbar {
   position: relative;
   height: 32px;
@@ -776,7 +786,7 @@ html[dir='rtl'] #toolbarContainer, .findbar, .secondaryToolbar {
 }
 
 .findbar, .secondaryToolbar {
-  top: 32px;
+  top: 64px;
   position: absolute;
   z-index: 10000;
   height: auto;
@@ -1950,7 +1960,7 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   background: none repeat scroll 0 0 white;
   border: 1px solid #666666;
   position: fixed;
-  top: 32px;
+  top: 64px;
   right: 0;
   bottom: 0;
   font-size: 10px;
