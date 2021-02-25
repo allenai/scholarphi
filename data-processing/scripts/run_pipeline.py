@@ -20,7 +20,7 @@ from common.commands.fetch_arxiv_sources import (
     FetchArxivSources,
 )
 from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
-from common.commands.fetch_s2_data import S2MetadataException
+from common.commands.fetch_s2_data import S2ApiException
 from common.commands.locate_entities import LocateEntitiesCommand
 from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
@@ -474,7 +474,7 @@ if __name__ == "__main__":
                 # The pipeline digest must be updated after each arXiv ID is processed, because the
                 # digest for a paper cannot be computed once the paper's data is deleted.
                 pipeline_digest.update(digest_for_paper)
-            except S2MetadataException as e:
+            except S2ApiException as e:
                 logging.error("Retryable Failure processing id: {arxiv_id}", e)
                 exit(RETRYABLE_FAILURE_RETURN_CODE)
             finally:
