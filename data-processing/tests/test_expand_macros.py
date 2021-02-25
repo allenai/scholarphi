@@ -218,23 +218,6 @@ def test_detect_macro_ignore_operator_wrapper():
     assert expansions[0] == Expansion(rb"\op", 2, 1, 2, 4, rb"{\operatorname{op}}")
 
 
-def test_fail_me_2():
-
-    # This fix might take a very long time...
-    # I think I know the fix.
-    # When getting the argument, check if it appears in the TeX or not (using source name).
-    # If not, then find the first argument _after_ the control sequence with a matching
-    # object ID, and remove it.
-    # assert False, (
-    #     "Do not include the same token twice, if after expansion it is used "
-    #     + "as an argument to another expansion."
-    # )
-
-    assert (
-        False
-    ), "Will probably break if a token expands to another macro with arguments, as those arguments will need to be removed. May be able to add some additional logic in the argument reader routine switch case."
-
-
 def test_expand_macros():
     tex = to_bytes(r"\def\simpledef{x}", r"$\simpledef$", r"$\simpledef$")
     expansions = [
