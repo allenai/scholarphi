@@ -307,18 +307,26 @@ class Trainer(object):
 
             nb_eval_steps += 1
 
-            input_ids_all = inputs["input_ids"].detach().cpu().numpy()
+            if input_ids_all is None and pos_ids_all is None:
+                input_ids_all = inputs["input_ids"].detach().cpu().numpy()
+                pos_ids_all = inputs["pos_label_ids"].detach().cpu().numpy()
+            else:
+                input_ids_all = np.concatenate((input_ids_all,inputs["input_ids"].detach().cpu().numpy()))
+                pos_ids_all = np.concatenate((pos_ids_all,inputs["pos_label_ids"].detach().cpu().numpy()))
             # POS
-            pos_ids_all = inputs["pos_label_ids"].detach().cpu().numpy()
 
             # Predict intent
             intent_probs = {}
             for data_type, logits in intent_logits.items():
                 intent_probs[data_type] = torch.softmax(logits, dim=1).detach().cpu().numpy()
-                gold_intent_label_dict[data_type] = inputs["intent_label_ids"][data_type].detach().cpu().numpy()
-                intent_preds[data_type] = logits.detach().cpu().numpy()
-                intent_conf[data_type] = intent_probs[data_type][:,1]
-
+                if data_type not in gold_intent_label_dict and data_type not in intent_preds and data_type not in intent_conf:
+                    gold_intent_label_dict[data_type] = inputs["intent_label_ids"][data_type].detach().cpu().numpy()
+                    intent_preds[data_type] = logits.detach().cpu().numpy()
+                    intent_conf[data_type] = intent_probs[data_type][:,1]
+                else:
+                    gold_intent_label_dict[data_type] = np.concatenate((gold_intent_label_dict[data_type], inputs["intent_label_ids"][data_type].detach().cpu().numpy()))
+                    intent_preds[data_type] = np.concatenate((intent_preds[data_type], logits.detach().cpu().numpy()))
+                    intent_conf[data_type] = np.concatenate((intent_conf[data_type], intent_probs[data_type][:,1]))
             # Predict slots.
             slot_probs = {}
             for data_type, logits in slot_logits.items():
@@ -327,14 +335,26 @@ class Trainer(object):
                     decode_out = self.model.crfs[data_type].decode(logits)
                     slot_logits_crf = np.array(decode_out)
                     # decode() in `torchcrf` returns list with best index directly
-                    slot_preds[data_type] = slot_logits_crf
+                    if data_type not in slot_preds:
+                        slot_preds[data_type] = slot_logits_crf
+                    else:
+                        slot_preds[data_type] = np.concatenate((slot_preds[data_type], slot_logits_crf))
                     # get confidence from softmax
                     I,J = np.ogrid[:slot_logits_crf.shape[0], :slot_logits_crf.shape[1]]
-                    slot_conf[data_type] = slot_probs[data_type][I, J, slot_logits_crf]
+                    if data_type not in slot_conf:
+                        slot_conf[data_type] = slot_probs[data_type][I, J, slot_logits_crf]
+                    else:
+                        slot_conf[data_type] = np.concatenate((slot_conf[data_type], slot_probs[data_type][I, J, slot_logits_crf]))
                 else:
-                    slot_preds[data_type] = logits.detach().cpu().numpy()
+                    if data_type not in slot_preds:
+                        slot_preds[data_type] = logits.detach().cpu().numpy()
+                    else:
+                        slot_preds[data_type] = np.concatenate((slot_preds[data_type], logits.detach().cpu().numpy()))                  
 
-                gold_slot_labels_ids[data_type] = inputs["slot_label_ids"][data_type].detach().cpu().numpy()
+                if data_type not in gold_slot_labels_ids:
+                    gold_slot_labels_ids[data_type] = inputs["slot_label_ids"][data_type].detach().cpu().numpy()
+                else:
+                    gold_slot_labels_ids[data_type] = np.concatenate((gold_slot_labels_ids[data_type], inputs["slot_label_ids"][data_type].detach().cpu().numpy()))
 
         if nb_eval_steps == 0:
             return [], {}
