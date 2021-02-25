@@ -55,18 +55,18 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
         # will be an issue, but it's something to pay attention to.
         versionless_id = self._strip_arxiv_version(arxivId)
 
-        if self._partner_api_token:
-            logger.info("Calling S2's partner API")
-            return requests.get(
-                f"https://partner.semanticscholar.org/v1/paper/arXiv:{versionless_id}",
-                headers={
-                    "x-api-key": self._partner_api_token
-                }
-            )
+        base_url = "api.semanticscholar.org"
+        headers = None
 
-        logger.info("Calling regular public S2 API")
+        if self._partner_api_token:
+            base_url = "partner.semanticscholar.org"
+            headers = {"x-api-key": self._partner_api_token}
+
+        logger.info(f"Issuing request to S2 @ {base_url}")
+
         return requests.get(
-            f"https://api.semanticscholar.org/v1/paper/arXiv:{versionless_id}",
+            f"https://{base_url}/v1/paper/arXiv:{versionless_id}",
+            headers=headers
         )
 
     @staticmethod
@@ -85,13 +85,13 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
             yield arxiv_id
 
     def process(self, item: ArxivId) -> Iterator[S2Metadata]:
-
         try:
             resp = self._mk_api_request(item)
 
-        except Exception:
+        except Exception as e:
             # Exceptions here could reflect temporary service availability
             # or slowdown issues with S2's API.
+            logging.error("Error encountered attempting to call S2's API", e)
             raise S2ApiException()
 
         else:
@@ -127,7 +127,7 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
                 # Request rate limit has been exceeded for this account or client IP.
                 raise S2ApiRateLimitingException()
             else:
-                raise S2ApiException()
+                raise S2ApiException(f"Failed to retrieve paper data from S2 with HTTP error code {resp.status_code}")
 
         time.sleep(FETCH_DELAY)
 

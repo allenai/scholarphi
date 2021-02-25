@@ -30,7 +30,10 @@ def test_makes_request_over_public_api_in_absence_of_partner_token():
 
             command = FetchS2Metadata(Args(arxiv_ids=['fakeid']))
             command._mk_api_request("fakeid")
-            mock_requests.get.assert_called_with("https://api.semanticscholar.org/v1/paper/arXiv:fakeid")
+            mock_requests.get.assert_called_with(
+                "https://api.semanticscholar.org/v1/paper/arXiv:fakeid",
+                headers=None
+            )
 
 
 def test_makes_request_over_partner_api_when_token_present():
