@@ -7,12 +7,18 @@ from datetime import datetime
 from typing import List
 
 from common import directories, email, file_utils
-from common.commands.base import (CommandList, add_arxiv_id_filter_args,
-                                  create_args, load_arxiv_ids_using_args,
-                                  read_arxiv_ids_from_file)
+from common.commands.base import (
+    CommandList,
+    add_arxiv_id_filter_args,
+    create_args,
+    load_arxiv_ids_using_args,
+    read_arxiv_ids_from_file,
+)
 from common.commands.database import DatabaseUploadCommand
 from common.commands.fetch_arxiv_sources import (
-    DEFAULT_S3_ARXIV_SOURCES_BUCKET, FetchArxivSources)
+    DEFAULT_S3_ARXIV_SOURCES_BUCKET,
+    FetchArxivSources,
+)
 from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
 from common.commands.fetch_s2_data import S2MetadataException
 from common.commands.locate_entities import LocateEntitiesCommand
@@ -21,8 +27,12 @@ from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
 from common.make_digest import make_paper_digest
 from common.types import PipelineDigest
 
-from scripts.commands import (ENTITY_COMMANDS, TEX_PREPARATION_COMMANDS,
-                              commands_by_entity, run_command)
+from scripts.commands import (
+    ENTITY_COMMANDS,
+    TEX_PREPARATION_COMMANDS,
+    commands_by_entity,
+    run_command,
+)
 from scripts.job_config import fetch_config, load_job_from_s3
 from scripts.pipelines import entity_pipelines
 
@@ -47,7 +57,8 @@ def run_commands_for_arxiv_ids(
         command_args.arxiv_ids_file = None
         command_args.v = pipeline_args.v
         command_args.source = pipeline_args.source
-        command_args.batch_size = pipeline_args.entity_batch_size
+        if CommandCls == LocateEntitiesCommand:
+            command_args.batch_size = pipeline_args.entity_batch_size
         command_args.keep_intermediate_files = pipeline_args.keep_intermediate_files
         command_args.log_names = [log_filename]
         command_args.schema = pipeline_args.database_schema

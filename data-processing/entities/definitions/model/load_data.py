@@ -5,7 +5,7 @@ import copy
 import json
 import logging
 import os.path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 import torch
 from torch.utils.data import TensorDataset
@@ -493,7 +493,7 @@ def load_and_cache_example(
     example = InputExample(
         guid="one",
         words=data["tokens"],
-        intent_label=1,  # fakse intent label
+        intent_label=1,  # false intent label
         slot_labels=[1] * len(data["tokens"]),  # fake slot labels
         pos_labels=[
             processor.pos_labels.index(s) if s in processor.pos_labels else 0
@@ -556,6 +556,87 @@ def load_and_cache_example(
     return dataset
 
 
+def load_and_cache_example_batch_raw(
+    args: Any, tokenizer: AutoTokenizer, data: List[Dict[Any, Any]]
+) -> Tuple[TensorDataset, List[Any]]:
+    """
+    In relation to 'load_and_cache_example_batch', this function also returns the raw
+    data (along with the tensor dataset). Raw data is needed in the filtering heuristics
+    stage. Some logic may be duplicated across these two functions.
+    """
+    processor = DefProcessor(args)
+
+    examples = []
+    raw = []
+    for d in data:
+        example = InputExample(
+            guid="one",
+            words=d["tokens"],
+            intent_label=1,  # fake intent label
+            slot_labels=[1] * len(d["tokens"]),  # fake slot labels
+            pos_labels=[
+                processor.pos_labels.index(s) if s in processor.pos_labels else 0
+                for s in d["pos"]
+            ],
+            np_labels=d["np"],
+            vp_labels=d["vp"],
+            entity_labels=d["entities"],
+            acronym_labels=d["abbreviation"],
+        )
+        examples.append(example)
+        raw.append(d["tokens"])
+
+    # Use cross entropy ignore index as padding label id so that only real label ids contribute to the loss later
+    features = convert_examples_to_features(
+        examples, args.max_seq_len, tokenizer, pad_token_label_id=args.ignore_index
+    )
+
+    # Convert to Tensors and build dataset
+    all_input_ids = torch.tensor([f.input_ids for f in features], dtype=torch.long)
+    all_attention_mask = torch.tensor(
+        [f.attention_mask for f in features], dtype=torch.long
+    )
+    all_token_type_ids = torch.tensor(
+        [f.token_type_ids for f in features], dtype=torch.long
+    )
+    all_intent_label_ids = torch.tensor(
+        [f.intent_label_id for f in features], dtype=torch.long
+    )
+    all_slot_labels_ids = torch.tensor(
+        [f.slot_labels_ids for f in features], dtype=torch.long
+    )
+    all_pos_labels_ids = torch.tensor(
+        [f.pos_labels_ids for f in features], dtype=torch.long
+    )
+
+    all_np_labels_ids = torch.tensor(
+        [f.np_labels_ids for f in features], dtype=torch.float
+    )
+    all_vp_labels_ids = torch.tensor(
+        [f.vp_labels_ids for f in features], dtype=torch.float
+    )
+    all_entity_labels_ids = torch.tensor(
+        [f.entity_labels_ids for f in features], dtype=torch.float
+    )
+    all_acronym_labels_ids = torch.tensor(
+        [f.acronym_labels_ids for f in features], dtype=torch.float
+    )
+
+    dataset = TensorDataset(
+        all_input_ids,
+        all_attention_mask,
+        all_token_type_ids,
+        all_intent_label_ids,
+        all_slot_labels_ids,
+        all_pos_labels_ids,
+        all_np_labels_ids,
+        all_vp_labels_ids,
+        all_entity_labels_ids,
+        all_acronym_labels_ids,
+    )
+    return dataset, raw
+
+
 def load_and_cache_example_batch(
     args: Any, tokenizer: AutoTokenizer, data: List[Dict[Any, Any]]
 ) -> TensorDataset:
@@ -566,7 +647,7 @@ def load_and_cache_example_batch(
         example = InputExample(
             guid="one",
             words=d["tokens"],
-            intent_label=1,  # fakse intent label
+            intent_label=1,  # false intent label
             slot_labels=[1] * len(d["tokens"]),  # fake slot labels
             pos_labels=[
                 processor.pos_labels.index(s) if s in processor.pos_labels else 0
