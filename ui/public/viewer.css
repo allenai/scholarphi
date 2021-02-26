@@ -541,7 +541,7 @@ select {
 
 #sidebarContainer {
   position: absolute;
-  top: 80px;
+  top: 32px;
   bottom: 0;
   width: 200px; /* Here, and elsewhere below, keep the constant value for compatibility
                    with older browsers that lack support for CSS variables. */
@@ -599,7 +599,7 @@ html[dir='rtl'] #outerContainer.sidebarOpen #sidebarContainer {
 }
 
 #sidebarContent {
-  top: 80px;
+  top: 32px;
   bottom: 0;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
@@ -620,7 +620,7 @@ html[dir='rtl'] #sidebarContent {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   position: absolute;
-  top: 80px;
+  top: 32px;
   right: 0;
   bottom: 0;
   left: 0;
@@ -776,7 +776,7 @@ html[dir='rtl'] #toolbarContainer, .findbar, .secondaryToolbar {
 }
 
 .findbar, .secondaryToolbar {
-  top: 80px;
+  top: 32px;
   position: absolute;
   z-index: 10000;
   height: auto;
@@ -1950,7 +1950,7 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   background: none repeat scroll 0 0 white;
   border: 1px solid #666666;
   position: fixed;
-  top: 80px;
+  top: 32px;
   right: 0;
   bottom: 0;
   font-size: 10px;
