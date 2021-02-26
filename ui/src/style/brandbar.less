@@ -1,0 +1,72 @@
+// Logo
+@logo-blue-1: #12233c;
+@logo-blue-2: #1f3c73;
+@logo-blue-3: #2c5ba8;
+@logo-blue-4: #638bc8;
+@logo-yellow: #f3d25f;
+
+.brandbar {
+  font-size: 14px;
+  height: 48px;
+  background-color: white;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  padding: 0 12px;
+
+  .brandbar__left {
+    grid-column: 1;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .brandbar__right {
+    grid-column: 3;
+  }
+
+  .brandbar__app-title {
+    .brandbar__app-title__word1 {
+      color: #11223d;
+    }
+    .brandbar__app-title__word2 {
+      font-weight: bold;
+      color: #0f3875;
+    }
+  }
+
+  .brandbar__app-subtitle {
+    color: #546973;
+  }
+
+  .brandbar__seperator {
+    margin: -3px 10px;
+
+    border-left: 1px solid #D9DADB;
+  }
+
+  .brandbar__s2-logo {
+    margin-top: -4px;
+    margin-right: 5px;
+    width: 28px;
+
+    .brandbar__s2-logo__wordmark {
+      fill: @logo-blue-1;
+    }
+
+    .brandbar__s2-logo__checkmark {
+      fill: @logo-yellow;
+    }
+
+    .brandbar__s2-logo__paper-one {
+      fill: @logo-blue-2;
+    }
+
+    .brandbar__s2-logo__paper-two {
+      fill: @logo-blue-3;
+    }
+
+    .brandbar__s2-logo__paper-three {
+      fill: @logo-blue-4;
+    }
+  }
+}
