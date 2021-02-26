@@ -899,9 +899,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 </span>
               </button>
             </PdfjsToolbar>
-            <PdfjsBrandbar>
-              Hello world
-            </PdfjsBrandbar>
+            <PdfjsBrandbar />
             <ViewerOverlay
               pdfViewer={this.state.pdfViewer}
               handleSetTextSelection={this.setTextSelection}
