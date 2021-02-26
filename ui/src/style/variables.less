@@ -83,6 +83,7 @@
 /**
  * ELEMENT DIMENSIONS
  */
+ @brandbar-height: 48px;
 @paper-summary-width: 400px;
 @paper-padding: 20px;
 
@@ -120,5 +121,5 @@
  * XXX(andrewhead): If the pdf.js submodule is updated, these properties must be checked to
  * ensure that they still match those in the pdf.js style files.
  */
-@pdfjs-toolbarViewer-height: 80px;
+@pdfjs-toolbarViewer-height: 32px + @brandbar-height;
 @pdfjs-sidebarContainer-z-index: 100;

@@ -16,6 +16,7 @@ import logger from "./logging";
 import MasterControlPanel from "./components/control/MasterControlPanel";
 import PageOverlay from "./components/overlay/PageOverlay";
 import PdfjsToolbar from "./components/pdfjs/PdfjsToolbar";
+import PdfjsBrandbar from "./components/pdfjs/PdfjsBrandbar";
 import PrimerPage from "./components/primer/PrimerPage";
 import SearchPageMask from "./components/mask/SearchPageMask";
 import * as selectors from "./selectors";
@@ -898,6 +899,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 </span>
               </button>
             </PdfjsToolbar>
+            <PdfjsBrandbar>
+              Hello world
+            </PdfjsBrandbar>
             <ViewerOverlay
               pdfViewer={this.state.pdfViewer}
               handleSetTextSelection={this.setTextSelection}
