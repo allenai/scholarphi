@@ -224,6 +224,12 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
         to_process = deque([e.id_ for e in entities_ordered])
         to_process_alone: Deque[str] = deque()
 
+        # Path to output directories. These directories will be redefined once for each batch.
+        colorized_tex_dir: Optional[str] = None
+        compiled_tex_dir: Optional[str] = None
+        raster_output_dir: Optional[str] = None
+        diffs_output_dir: Optional[str] = None
+
         def next_batch() -> List[str]:
             """
             Get the next batch of entities to process. First tries to sample a batch from
@@ -236,10 +242,32 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                 ]
             return [to_process_alone.popleft()]
 
+        def _cleanup_from_last_batch() -> None:
+            " Clean up output directories from the last batch. "
+            if not self.args.keep_intermediate_files:
+                logging.debug(  # pylint: disable=logging-not-lazy
+                    "Deleting intermediate files used to locate entities (i.e., colorized "
+                    + "sources, compilation results, and rasters) for paper %s iteration %s",
+                    item.arxiv_id,
+                    iteration_id,
+                )
+                intermediate_files_dirs = [
+                    colorized_tex_dir,
+                    compiled_tex_dir,
+                    raster_output_dir,
+                    diffs_output_dir,
+                ]
+                for dir_ in intermediate_files_dirs:
+                    if dir_ and os.path.exists(dir_):
+                        file_utils.clean_directory(dir_)
+                        os.rmdir(dir_)
+
         batch_index = -1
         while len(to_process) > 0 or len(to_process_alone) > 0:
 
-            # Fetch the next batch of entities to process.
+            if batch_index > -1:
+                _cleanup_from_last_batch()
+
             batch_index += 1
             logging.debug(
                 "Locating bounding boxes for batch %d-%d of entities of type %s for paper %s.",
@@ -251,6 +279,22 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
             iteration_id = directories.tex_iteration(
                 item.tex_path, f"{item.group}-{batch_index}"
             )
+
+            # Define output directory locations for this batch.
+            colorized_tex_dir = directories.iteration(
+                self.output_base_dirs["sources"], item.arxiv_id, iteration_id
+            )
+            compiled_tex_dir = directories.iteration(
+                self.output_base_dirs["compiled-sources"], item.arxiv_id, iteration_id,
+            )
+            raster_output_dir = directories.iteration(
+                self.output_base_dirs["paper-images"], item.arxiv_id, iteration_id
+            )
+            diffs_output_dir = directories.iteration(
+                self.output_base_dirs["diffed-images"], item.arxiv_id, iteration_id
+            )
+
+            # Fetch the next batch of entities to process.
             batch = next_batch()
             entities: List[SerializableEntity] = [entities_by_id[id_] for id_ in batch]
 
@@ -304,9 +348,6 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                     del batch[batch.index(skip.id_)]
 
             # Save the colorized TeX to the file system.
-            colorized_tex_dir = directories.iteration(
-                self.output_base_dirs["sources"], item.arxiv_id, iteration_id
-            )
             save_success = save_colorized_tex(
                 item.arxiv_id,
                 colorized_tex_dir,
@@ -330,9 +371,6 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                 )
 
             # Compile the TeX with the colors.
-            compiled_tex_dir = directories.iteration(
-                self.output_base_dirs["compiled-sources"], item.arxiv_id, iteration_id,
-            )
             shutil.copytree(colorized_tex_dir, compiled_tex_dir)
             compilation_result = compile_tex(compiled_tex_dir)
             save_compilation_result(
@@ -393,12 +431,6 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
 
             # Raster the pages to images, and compute diffs from the original images.
             output_files = compilation_result.output_files
-            raster_output_dir = directories.iteration(
-                self.output_base_dirs["paper-images"], item.arxiv_id, iteration_id
-            )
-            diffs_output_dir = directories.iteration(
-                self.output_base_dirs["diffed-images"], item.arxiv_id, iteration_id
-            )
             for output_file in output_files:
                 raster_success = raster_pages(
                     compiled_tex_dir,
@@ -556,25 +588,8 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                 iteration_id,
             )
 
-            if not self.args.keep_intermediate_files:
-                logging.debug(  # pylint: disable=logging-not-lazy
-                    "Deleting intermediate files used to locate entities (i.e., colorized "
-                    + "sources, compilation results, and rasters) for paper %s iteration %s",
-                    item.arxiv_id,
-                    iteration_id,
-                )
-                intermediate_files_dirs = [
-                    colorized_tex_dir,
-                    compiled_tex_dir,
-                    raster_output_dir,
-                    diffs_output_dir,
-                ]
-                for dir_ in intermediate_files_dirs:
-                    file_utils.clean_directory(dir_)
-                    os.rmdir(dir_)
-
-            # The code above is responsible for filter 'batch' to ensure that it doesn't include
-            # any entity IDs that shouldn't be save to file, for example if the client has asked that
+            # The code above is responsible for filtering 'batch' to ensure that it doesn't include
+            # any entity IDs that shouldn't be saved to file, for example if the client has asked that
             # entity IDs that cause colorization errors be omitted from the results.
             for entity_id in batch:
                 for box in location_result.locations[entity_id]:
@@ -589,6 +604,8 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                         width=box.width,
                         height=box.height,
                     )
+
+        _cleanup_from_last_batch()
 
     def save(self, item: LocationTask, result: HueLocationInfo) -> None:
         logging.debug(
