@@ -230,6 +230,10 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
         raster_output_dir: Optional[str] = None
         diffs_output_dir: Optional[str] = None
 
+        # Iteration state
+        batch_index = -1
+        iteration_id = None
+
         def next_batch() -> List[str]:
             """
             Get the next batch of entities to process. First tries to sample a batch from
@@ -244,12 +248,12 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
 
         def _cleanup_from_last_batch() -> None:
             " Clean up output directories from the last batch. "
-            if not self.args.keep_intermediate_files:
+            if batch_index > -1 and not self.args.keep_intermediate_files:
                 logging.debug(  # pylint: disable=logging-not-lazy
                     "Deleting intermediate files used to locate entities (i.e., colorized "
                     + "sources, compilation results, and rasters) for paper %s iteration %s",
                     item.arxiv_id,
-                    iteration_id,
+                    iteration_id or "''",
                 )
                 intermediate_files_dirs = [
                     colorized_tex_dir,
@@ -262,9 +266,7 @@ class LocateEntitiesCommand(ArxivBatchCommand[LocationTask, HueLocationInfo], AB
                         file_utils.clean_directory(dir_)
                         os.rmdir(dir_)
 
-        batch_index = -1
         while len(to_process) > 0 or len(to_process_alone) > 0:
-
             if batch_index > -1:
                 _cleanup_from_last_batch()
 
