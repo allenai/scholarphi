@@ -24,6 +24,7 @@ from common.commands.fetch_s2_data import S2ApiException
 from common.commands.locate_entities import LocateEntitiesCommand
 from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
+from common.fetch_arxiv import FetchFromArxivException
 from common.make_digest import make_paper_digest
 from common.types import PipelineDigest
 
@@ -86,7 +87,7 @@ def run_commands_for_arxiv_ids(
         # and subprocess calls in the commands, it is simply unlikely that we can predict and
         # write exceptions for every possible exception that could be thrown.
         except Exception as exc:  # pylint: disable=broad-except
-            logging.error("Unexpected exception processing papers: {}".format(arxiv_id_list), exc)
+            logging.exception("Unexpected exception processing papers: {}".format(arxiv_id_list))
             raise exc
 
         logging.info("Finished running command %s", CommandCls.get_name())
@@ -475,7 +476,10 @@ if __name__ == "__main__":
                 # digest for a paper cannot be computed once the paper's data is deleted.
                 pipeline_digest.update(digest_for_paper)
             except S2ApiException as e:
-                logging.error("Retryable Failure processing id: {arxiv_id}", e)
+                logging.exception(f"Retryable Failure processing id: {arxiv_id}")
+                exit(RETRYABLE_FAILURE_RETURN_CODE)
+            except FetchFromArxivException as e:
+                logging.exception(f"Retryable Failure processing id: {arxiv_id}")
                 exit(RETRYABLE_FAILURE_RETURN_CODE)
             finally:
                 if not args.keep_paper_data:

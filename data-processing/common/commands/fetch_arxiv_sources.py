@@ -1,15 +1,21 @@
 import time
 from argparse import ArgumentParser
+import logging
 from typing import Iterator, Optional
 
 from common.commands.base import ArxivBatchCommand
-from common.fetch_arxiv import fetch_from_arxiv, fetch_from_s3
+from common.fetch_arxiv import FetchFromArxivException, fetch_from_arxiv, fetch_from_s3
 from common.types import ArxivId
 
 DEFAULT_S3_ARXIV_SOURCES_BUCKET = "s2-arxiv-sources"
 
-""" Time to wait between consecutive requests to arXiv. """
-FETCH_DELAY = 10  # seconds
+"""Constants for dealing with retries and delays between call attempts"""
+DEFAULT_FETCH_DELAY = 10  # seconds
+BACKOFF_FETCH_DELAY = 60  # seconds
+MAX_FETCH_ATTEMPTS = 3
+
+
+logger = logging.getLogger(__name__)
 
 
 class FetchArxivSources(ArxivBatchCommand[ArxivId, None]):
@@ -47,14 +53,34 @@ class FetchArxivSources(ArxivBatchCommand[ArxivId, None]):
         for arxiv_id in self.arxiv_ids:
             yield arxiv_id
 
-    def process(self, item: ArxivId) -> Iterator[None]:
+    def process(
+        self,
+        item: ArxivId
+    ) -> Iterator[None]:
         if self.args.source == "arxiv":
-            fetch_from_arxiv(item)
+            attempt = 0
+
+            while True:
+                try:
+                    result = fetch_from_arxiv(item)
+                    yield result
+                    break
+                except FetchFromArxivException as e:
+                    if attempt < MAX_FETCH_ATTEMPTS - 1:
+                        logger.warning("Trouble getting data from ArXiv. Backing off and trying again.")
+                        attempt += 1
+                        time.sleep(BACKOFF_FETCH_DELAY)
+                    else:
+                        logger.warning("Exceed maximum retries to ArXiv.")
+                        time.sleep(BACKOFF_FETCH_DELAY)
+                        raise e
+
             # This method of delaying fetches assumes that calls to 'process' will be made sequentially
             # and not in parallel. Delay mechanisms will need to be more sophisticated if we transition
             # to parallel data fetching.
-            time.sleep(FETCH_DELAY)
+            time.sleep(DEFAULT_FETCH_DELAY)
             yield None
+
         elif self.args.source == "s3":
             fetch_from_s3(item, self.args.s3_bucket)
             yield None
