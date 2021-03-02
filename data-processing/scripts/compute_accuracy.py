@@ -37,6 +37,12 @@ class AccuracyResults:
     recall: Optional[float]
 
 
+# When processing symbols, ignore those that are not of the types included in the gold set.
+# For example, operators will be ignored because they are not in the gold set. If a symbol
+# does not have an explicit type, it is assumed to be of one of the allowed types.
+GOLD_SYMBOL_TYPES = ["function", "identifier"]
+
+
 def fetch_boxes(
     arxiv_id: ArxivId, schema: str, version: Optional[int], types: List[str]
 ) -> Optional[RegionsByPageAndType]:
@@ -103,11 +109,6 @@ def fetch_boxes(
     boxes_by_entity_db_id: Dict[str, List[BoundingBox]] = defaultdict(list)
     types_by_entity_db_id: Dict[str, str] = {}
     for row in rows:
-
-        # When processing symbols, ignore those that are not of the types included in the gold set.
-        # For example, operators will be ignored because they are not in the gold set. If a symbol
-        # does not have an explicit type, it is assumed to be of one of the allowed types.
-        GOLD_SYMBOL_TYPES = ["function", "identifier"]
         if row["type"] == "symbol":
             if any(
                 [
