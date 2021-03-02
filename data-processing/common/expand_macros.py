@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import Dict, Iterator, List, Optional, Pattern
+from typing import Dict, Iterator, List, Optional, Pattern, Match
 
 from common.types import AbsolutePath
 
@@ -196,6 +196,12 @@ patterns: Dict[str, LogPattern] = {
 
 
 @dataclass
+class LogMatch:
+    match: Match[bytes]
+    event_name: str
+
+
+@dataclass
 class Expansion:
     """
     The output of the method for detecting expansions. Includes all the information that should
@@ -226,207 +232,295 @@ class Expansion:
 
 
 def detect_expansions(
-    stdout: bytes, used_in: List[AbsolutePath], defined_in: List[AbsolutePath]
+    expansion_log: bytes, used_in: List[AbsolutePath], defined_in: List[AbsolutePath]
 ) -> Iterator[Expansion]:
     """
     Scan a log output by LaTeXML to detect the appearance of macros and their expansions.
-    'stdout' is the console output produced by running our custom instrumented version of
+    'expansion_log' is the console output produced by running our custom instrumented version of
     LaTeXML on a TeX project. It will include log statements indicating when macros are
     encountered and how they are expanded. 'used_in' is a list of absolute paths to files
     in which expansions will be detected in. Expansions outside these files will not be detected.
     'defined_in' is a list of absolute paths to files where macros must have been defined
     in order to be are expanded. The purpose of the 'defined_in' argument is to prevent
-    expansion of low-level macros, or those that are defined in external pacakges, like 
+    expansion of low-level macros, or those that are defined in external pacakges, like
     '\\number', '\\left[', or '\\textnormal'.
     """
-    # Positions of start and end of a macro being expanded, and all of its arguments (i.e.,
-    # an entire span of text that should be replaced with an expansion).
-    start_line: Optional[int] = None
-    start_col: Optional[int] = None
-    end_line: Optional[int] = None
-    end_col: Optional[int] = None
 
-    # List of macros that can be expanded, specified by control sequence name (i.e., the name
-    # of the macro). Contains macros that have been defined in the files specified by 'defined_in',
-    # and omits all others.
-    expandable: List[bytes] = []
+    detector = MacroExpansionDetector()
+    return detector.detect_expansions(expansion_log, used_in, defined_in)
 
-    # A top level macro that is currently being expanded (i.e., one that appears in
-    # the TeX of one of the 'in_files').
-    top_level_macro: Optional[ControlSequence] = None
 
-    # ID of a macro that is being expanded. Need not be top-level---it will often be a
-    # macro that appears as an argument, or in an expansion of another macro.
-    expanding: Optional[ControlSequenceId] = None
+class MacroExpansionDetector:
+    def __init__(self) -> None:
 
-    # A lookup table from object IDs to control sequences. This table is used when expanding
-    # macros nested within others, or passed as arguments to others.
-    active_macros: Dict[ControlSequenceId, ControlSequence] = {}
+        self._expandable: List[bytes]
+        """
+        List of macros that can be expanded, specified by control sequence name (i.e., the name
+        of the macro like '\mymacro'). Contains macros that have been defined in the files
+        specified by 'defined_in', and omits all others.
+        """
 
-    def _make_expansion_from_last_control_sequence() -> Optional[Expansion]:
+        self._top_level_macro: Optional[ControlSequence]
+        """
+        A top level macro that is currently being expanded (i.e., one that appears in
+        the TeX of one of the 'in_files').
+        """
+
+        self._expanding: Optional[ControlSequenceId]
+        """
+        ID of a macro that is being expanded. Need not be top-level---it will often be a
+        macro that appears as an argument, or in an expansion of another macro.
+        """
+
+        self._active_macros: Dict[ControlSequenceId, ControlSequence]
+        """
+        A lookup table from object IDs to control sequences. This table is used when expanding
+        macros nested within others, or passed as arguments to others.
+        """
+
+        self._start_line: Optional[int]
+        self._start_col: Optional[int]
+        self._end_line: Optional[int]
+        self._end_col: Optional[int]
+        """
+        Positions of start and end of a macro being expanded, and all of its arguments (i.e.,
+        an entire span of text that should be replaced with an expansion).
+        """
+
+        self._expansion_log: bytes
+        " Console output from running LaTeXML macro expansion branch on a TeX project. "
+
+        self._used_in: List[AbsolutePath]
+        self._defined_in: List[AbsolutePath]
+        """
+        Lists of paths to files where macros are used or defined to filter which macro expansions
+        will be detected. See 'detect_expansions' documentation for more details.
+        """
+
+    def detect_expansions(
+        self,
+        expansion_log: bytes,
+        used_in: List[AbsolutePath],
+        defined_in: List[AbsolutePath],
+    ) -> Iterator[Expansion]:
+        self._used_in = used_in
+        self._defined_in = defined_in
+
+        # Reset state of macro expansion every time the public detection function is called.
+        self._expandable = []
+        self._top_level_macro = None
+        self._expanding = None
+        self._active_macros = {}
+        self._start_line = None
+        self._start_col = None
+        self._end_line = None
+        self._end_col = None
+
+        for event in self._read_events(expansion_log):
+            event_type = event.event_name
+
+            # Detect all macros defined in the specified files (ignoring the rest).
+            if event_type == "definition":
+                self._process_definition(event)
+
+            if event_type == "start-expansion":
+                last_expansion = self._process_start_expansion(event)
+                if last_expansion:
+                    yield last_expansion
+
+            # If a token is read that is part of an expansion of a control sequence, assign the token
+            # to whichever control sequence is being expanded.
+            if event_type == "add-expansion-token":
+                self._process_add_expansion_token(event)
+
+            # If LaTeXML has read an argument for a control sequence, expand the range of text that will
+            # be replaced to include the argument.
+            if event_type == "read-argument":
+                self._process_read_argument(event)
+
+            # If LaTeXML has finished expanding a control sequence, then mark the control sequence as
+            # having been expanded and pop it from the stack of macros to expand.
+            if event_type == "end-expansion":
+                self._process_end_expansion(event)
+
+        expansion = self._make_expansion_from_last_control_sequence()
+        if expansion:
+            yield expansion
+
+    def _read_events(self, log: bytes) -> Iterator[LogMatch]:
+        # Repeatedly scan for macro expansion-related events in the LaTeXML log.
+        last_match_end = 0
+        while True:
+
+            # Find the next segment of the log containing an expansion event.
+            first_pattern_name = None
+            first_prefix_start = None
+            for name, pattern in patterns.items():
+                prefix_start = log.find(pattern.prefix, last_match_end)
+                if prefix_start == -1:
+                    continue
+                if first_prefix_start is None or prefix_start < first_prefix_start:
+                    first_prefix_start = prefix_start
+                    first_pattern_name = name
+
+            # When there are no more log messages to process, stop iteration.
+            if first_prefix_start is None or not first_pattern_name:
+                return
+
+            # Capture data fields for the pattern.
+            pattern = patterns[first_pattern_name]
+            match = pattern.capture.search(log, pos=first_prefix_start)
+            if match is None:
+                last_match_end = first_prefix_start + 1
+                continue
+
+            yield LogMatch(match, first_pattern_name)
+
+            # Save the position of the end of this match for resuming for the next log event.
+            last_match_end = match.end()
+
+    def _process_definition(self, log_match: LogMatch) -> None:
+        match = log_match.match
+        cs_name = match.group("control_sequence_name")
+        path = match.group("path").decode("utf-8", errors="ignore")
+        if path in self._defined_in:
+            self._expandable.append(cs_name)
+
+    def _process_start_expansion(self, log_match: LogMatch) -> Optional[Expansion]:
+        """
+        If a new expansion has started, then that often means that the last expansion is finished.
+        This method returns an expansion whenever it is inferred that the start of this expansion
+        means that the prior expansion has finished being processed.
+        """
+
+        # Extract data for the expansion.
+        match = log_match.match
+        cs_name = match.group("control_sequence_name")
+        cs_id = match.group("object_id")
+        path = match.group("path").decode("utf-8", errors="ignore")
+        cs_start_line = int(match.group("start_line"))
+        cs_start_col = int(match.group("start_column"))
+        cs_end_line = int(match.group("end_line"))
+        cs_end_col = int(match.group("end_column"))
+
+        # Set 'expansion' if the start of this expansion means another expansion has finished.
+        expansion = None
+
+        # Skip expansion of macros that were not defined in a set of specified TeX files.
+        if cs_name not in self._expandable:
+            return None
+
+        if self._top_level_macro:
+            # If this macro is a nested macro or an argument, then start expanding it.
+            # Upcoming expansion tokens will be assigned to the control sequence.
+            # XXX(andrewhead): Check that the macro also has the same name as the macro
+            # that is expected next, as in some rare cases, two macros have had the same
+            # cs_id, despite being different macros.
+            if (
+                cs_id in self._active_macros
+                and self._active_macros[cs_id].text == cs_name
+            ):
+                self._expanding = cs_id
+                self._active_macros[cs_id].expansion_tokens = []
+
+            # If an unexpected control sequence was encountered, then what is most likely is that
+            # prior macros have finished expanding, and a new macro is being expanded. Finish the
+            # prior expansion and start a new one.
+            elif path in self._used_in:
+                expansion = self._make_expansion_from_last_control_sequence()
+
+                self._start_line = (
+                    self._start_col
+                ) = self._end_line = self._end_col = None
+                self._expanding = None
+                self._active_macros = {}
+
+        # When a macro appears in a file of interest and another macro is not being expanded...
+        if not self._expanding and path in self._used_in:
+
+            # Set the expansion stack to indicate that this macro is being expanded.
+            self._expanding = cs_id
+
+            # Create a new control sequence object.
+            control_sequence = ControlSequence(cs_name, cs_id, CONTROL_SEQUENCE, [])
+
+            # Set the control sequence as the top-level macro to expand next.
+            self._top_level_macro = control_sequence
+            self._active_macros = {cs_id: control_sequence}
+
+            # Save the positions of the control sequence. This forms the basis of the
+            # character range of the original text that will be replaced with an expansion.
+            self._start_line = cs_start_line
+            self._start_col = cs_start_col
+            self._end_line = cs_end_line
+            self._end_col = cs_end_col
+
+        return expansion
+
+    def _process_add_expansion_token(self, log_match: LogMatch) -> None:
+
+        match = log_match.match
+        text = match.group("token")
+        object_id = match.group("object_id")
+        category = int(match.group("category_code"))
+
+        if self._expanding:
+            control_sequence = self._active_macros[self._expanding]
+            token: TexToken
+            if category == CONTROL_SEQUENCE:
+                token = ControlSequence(text, object_id, CONTROL_SEQUENCE)
+                # Start tracking the nested macro so it will be expanded later.
+                self._active_macros[object_id] = token
+            else:
+                token = TexToken(text, object_id, category)
+
+            if control_sequence.expansion_tokens is not None:
+                control_sequence.expansion_tokens.append(token)
+
+    def _process_read_argument(self, log_match: LogMatch) -> None:
+        match = log_match.match
+        if self._top_level_macro and self._expanding:
+            path = match.group("path").decode("utf-8", errors="ignore")
+            if path in self._used_in:
+                self._end_line = int(match.group("end_line"))
+                self._end_col = int(match.group("end_column"))
+
+    def _process_end_expansion(self, log_match: LogMatch) -> None:
+        match = log_match.match
+        cs_id = match.group("object_id")
+
+        cs = self._active_macros.get(cs_id)
+        if cs:
+            cs.expanded = True
+
+        if self._expanding == cs_id:
+            self._expanding = None
+
+    def _make_expansion_from_last_control_sequence(self) -> Optional[Expansion]:
         """
         Wrap up the last expanded control sequence into an Expansion object.
         """
 
-        if not top_level_macro:
+        if not self._top_level_macro:
             return None
 
         if (
-            not top_level_macro.expanded
-            or start_line is None
-            or start_col is None
-            or end_line is None
-            or end_col is None
+            not self._top_level_macro.expanded
+            or self._start_line is None
+            or self._start_col is None
+            or self._end_line is None
+            or self._end_col is None
         ):
             return None
 
         return Expansion(
-            macro_name=top_level_macro.text,
-            start_line=start_line,
-            start_col=start_col,
-            end_line=end_line,
-            end_col=end_col,
-            expansion=_get_expansion_text(top_level_macro),
+            macro_name=self._top_level_macro.text,
+            start_line=self._start_line,
+            start_col=self._start_col,
+            end_line=self._end_line,
+            end_col=self._end_col,
+            expansion=_get_expansion_text(self._top_level_macro),
         )
-
-    # Repeatedly scan for macro expansion-related events in the LaTeXML log.
-    last_match_end = 0
-    while True:
-
-        # Find the next segment of the log containing an expansion event.
-        first_pattern_name = None
-        first_prefix_start = None
-        for name, pattern in patterns.items():
-            prefix_start = stdout.find(pattern.prefix, last_match_end)
-            if prefix_start == -1:
-                continue
-            if first_prefix_start is None or prefix_start < first_prefix_start:
-                first_prefix_start = prefix_start
-                first_pattern_name = name
-
-        # When there are no more log messages to process, stop iteration.
-        if first_prefix_start is None or not first_pattern_name:
-            expansion = _make_expansion_from_last_control_sequence()
-            if expansion:
-                yield expansion
-            return
-
-        # Capture data fields for the pattern.
-        pattern = patterns[first_pattern_name]
-        match = pattern.capture.search(stdout, pos=first_prefix_start)
-        if match is None:
-            last_match_end = first_prefix_start + 1
-            continue
-
-        # Save the position of the end of this match for resuming for the next log event.
-        last_match_end = match.end()
-
-        event_type = first_pattern_name
-
-        # Detect all macros defined in the specified files (ignoring the rest).
-        if event_type == "definition":
-            cs_name = match.group("control_sequence_name")
-            path = match.group("path").decode("utf-8", errors="ignore")
-            if path in defined_in:
-                expandable.append(cs_name)
-
-        if event_type == "start-expansion":
-
-            # Extract data for the expansion.
-            cs_name = match.group("control_sequence_name")
-            cs_id = match.group("object_id")
-            path = match.group("path").decode("utf-8", errors="ignore")
-            cs_start_line = int(match.group("start_line"))
-            cs_start_col = int(match.group("start_column"))
-            cs_end_line = int(match.group("end_line"))
-            cs_end_col = int(match.group("end_column"))
-
-            # Skip expansion of macros that were not defined in a set of specified TeX files.
-            if cs_name not in expandable:
-                continue
-
-            if top_level_macro:
-                # If this macro is a nested macro or an argument, then start expanding it.
-                # Upcoming expansion tokens will be assigned to the control sequence.
-                # XXX(andrewhead): Check that the macro also has the same name as the macro
-                # that is expected next, as in some rare cases, two macros have had the same
-                # cs_id, despite being different macros.
-                if cs_id in active_macros and active_macros[cs_id].text == cs_name:
-                    expanding = cs_id
-                    active_macros[cs_id].expansion_tokens = []
-
-                # If an unexpected control sequence was encountered, then what is most likely is that
-                # prior macros have finished expanding, and a new macro is being expanded. Finish the
-                # prior expansion and start a new one.
-                elif path in used_in:
-                    expansion = _make_expansion_from_last_control_sequence()
-                    if expansion:
-                        yield expansion
-
-                    start_line = start_col = end_line = end_col = None
-                    expanding = None
-                    active_macros = {}
-
-            # When a macro appears in a file of interest and another macro is not being expanded...
-            if not expanding and path in used_in:
-
-                # Set the expansion stack to indicate that this macro is being expanded.
-                expanding = cs_id
-
-                # Create a new control sequence object.
-                control_sequence = ControlSequence(cs_name, cs_id, CONTROL_SEQUENCE, [])
-
-                # Set the control sequence as the top-level macro to expand next.
-                top_level_macro = control_sequence
-                active_macros = {cs_id: control_sequence}
-
-                # Save the positions of the control sequence. This forms the basis of the
-                # character range of the original text that will be replaced with an expansion.
-                start_line = cs_start_line
-                start_col = cs_start_col
-                end_line = cs_end_line
-                end_col = cs_end_col
-
-        # If a token is read that is part of an expansion of a control sequence, assign the token
-        # to whichever control sequence is being expanded.
-        if event_type == "add-expansion-token":
-            text = match.group("token")
-            object_id = match.group("object_id")
-            category = int(match.group("category_code"))
-
-            if expanding:
-                control_sequence = active_macros[expanding]
-                token: TexToken
-                if category == CONTROL_SEQUENCE:
-                    token = ControlSequence(text, object_id, CONTROL_SEQUENCE)
-                    # Start tracking the nested macro so it will be expanded later.
-                    active_macros[object_id] = token
-                else:
-                    token = TexToken(text, object_id, category)
-
-                if control_sequence.expansion_tokens is not None:
-                    control_sequence.expansion_tokens.append(token)
-
-        # If LaTeXML has read an argument for a control sequence, expand the range of text that will
-        # be replaced to include the argument.
-        if event_type == "read-argument":
-            if top_level_macro and expanding:
-                path = match.group("path").decode("utf-8", errors="ignore")
-                if path in used_in:
-                    end_line = int(match.group("end_line"))
-                    end_col = int(match.group("end_column"))
-
-        # If LaTeXML has finished expanding a control sequence, then mark the control sequence as
-        # having been expanded and pop it from the stack of macros to expand.
-        if event_type == "end-expansion":
-            cs_id = match.group("object_id")
-
-            cs = active_macros.get(cs_id)
-            if cs:
-                cs.expanded = True
-
-            if expanding == cs_id:
-                expanding = None
 
 
 def expand_macros(
