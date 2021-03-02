@@ -66,6 +66,13 @@ def fetch_boxes(
         version = int(version_number)
 
     # Load bounding boxes from rows in the tables.
+    # Note that filtering of entities occurs in two stages:
+    # 1. In the 'where' function call in the query below.
+    # 2. When iterating over the returned 'rows' object.
+    # In general, it is encouraged to write filtering conditions in the where clause to
+    # consolidate conditions and as it could be faster. That said, if it is particularly tricky
+    # to filter (e.g., involving many interrelated conditions), filters can be written as rules
+    # in the loop over the rows.
     rows = (
         EntityModel.select(
             EntityModel.id,
