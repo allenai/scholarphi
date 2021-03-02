@@ -585,8 +585,8 @@ module.exports = function(webpackEnv) {
         new MiniCssExtractPlugin({
           // Options similar to the same options in webpackOptions.output
           // both options are optional
-          filename: 'static/css/[name].css',
-          chunkFilename: 'static/css/[name].chunk.css',
+          filename: 'static/css/[name].[hash].css',
+          chunkFilename: 'static/css/[name].[hash].chunk.css',
         }),
       // Generate a manifest file which contains a mapping of all asset filenames
       // to their corresponding output file so that tools can pick it up without

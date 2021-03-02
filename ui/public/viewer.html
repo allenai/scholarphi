@@ -37,6 +37,8 @@ See https://github.com/adobe-type-tools/cmap-resources
 
     <link rel="icon" href="images/favicon.png" sizes="32x32">
     <link rel="stylesheet" href="viewer.css">
+    
+    <!-- Semantic Reader specific -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
 
     <script type="text/javascript">
@@ -80,6 +82,7 @@ See https://github.com/adobe-type-tools/cmap-resources
         });
       heap.load("3075009564");
     </script>
+
 
 
 <!-- This snippet is used in production (included from viewer.html) -->
@@ -231,6 +234,8 @@ See https://github.com/adobe-type-tools/cmap-resources
         </div>  <!-- secondaryToolbar -->
 
         <div class="toolbar">
+          <!-- Semantic Reader specific -->
+          <div id="readerBrandbar"></div>
           <div id="toolbarContainer">
             <div id="toolbarViewer">
               <div id="toolbarViewerLeft">
@@ -254,8 +259,8 @@ See https://github.com/adobe-type-tools/cmap-resources
                 <span id="numPages" class="toolbarLabel"></span>
               </div>
               <div id="toolbarViewerRight">
+                <!-- Semantic Reader specific -->
                 <div id="scholarReaderControls"></div>
-
                 <button id="presentationMode" class="toolbarButton presentationMode hiddenLargeView" title="Switch to Presentation Mode" tabindex="31" data-l10n-id="presentation_mode">
                   <span data-l10n-id="presentation_mode_label">Presentation Mode</span>
                 </button>
@@ -438,7 +443,7 @@ See https://github.com/adobe-type-tools/cmap-resources
       </div>  <!-- overlayContainer -->
 
     </div> <!-- outerContainer -->
-
+    <!-- Semantic Reader specific -->
     <div id="scholar-reader"></div>
     <div id="printContainer"></div>
   </body>

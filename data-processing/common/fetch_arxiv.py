@@ -16,6 +16,13 @@ from common.types import ArxivId, Path
 USER_AGENT = "Andrew Head, for academic research on dissemination of scientific insight <head.andrewm@gmail.com>"
 
 
+logger = logging.getLogger(__name__)
+
+
+class FetchFromArxivException(Exception):
+    pass
+
+
 def save_source_archive(
     arxiv_id: ArxivId, content: bytes, dest: Optional[Path] = None
 ) -> None:
@@ -30,16 +37,32 @@ def save_source_archive(
 def fetch_from_arxiv(arxiv_id: ArxivId, dest: Optional[Path] = None) -> None:
     logging.debug("Fetching sources for arXiv paper %s from arXiv.", arxiv_id)
     uri = "https://arxiv.org/e-print/%s" % (arxiv_id,)
-    response = requests.get(uri, headers={"User-Agent": USER_AGENT})
-    save_source_archive(arxiv_id, response.content, dest)
+
+    try:
+        response = requests.get(uri, headers={"User-Agent": USER_AGENT})
+
+    except Exception:
+        msg = f"Request to ArXiv for paper {arxiv_id} failed"
+        logger.exception(msg)
+        raise FetchFromArxivException(msg)
+
+    else:
+        if response.ok:
+            save_source_archive(arxiv_id, response.content, dest)
+        elif response.status_code == 404:
+            raise Exception(f"Paper assets don't exist in ArXiv for {arxiv_id}")
+        else:
+            status_code = response.status_code
+            msg = f"Failed to fetch assets for {arxiv_id} from ArXiv with code {status_code}"
+            raise FetchFromArxivException(msg)
 
 
 def fetch_from_s3(arxiv_id: ArxivId, bucket: str) -> None:
-    logging.debug("Fetching sources for arXiv paper %s from s3 storage.", arxiv_id)
+    logger.debug("Fetching sources for arXiv paper %s from s3 storage.", arxiv_id)
     arxiv_id_tokens = arxiv_id.split(".")
     year_month_match = re.match(r"\d{4}", arxiv_id_tokens[0])
     if not year_month_match:
-        logging.warning(  # pylint: disable=logging-not-lazy
+        logger.warning(  # pylint: disable=logger-not-lazy
             (
                 "Unexpected arXiv ID format %s; This method only works for fetching arXiv IDs"
                 + " whose IDs start with YYMM. Skipping this paper."
@@ -66,21 +89,21 @@ def fetch_from_s3(arxiv_id: ArxivId, bucket: str) -> None:
             "--include",
             f"{arxiv_id}*",
         ]
-        logging.debug("Fetching sources with command %s", command_args)
+        logger.debug("Fetching sources with command %s", command_args)
         result = subprocess.run(
             command_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False,
         )
-        logging.debug(
+        logger.debug(
             "Finished running command to fetch S3 sources for arXiv ID %s", arxiv_id
         )
         if result.returncode != 0:
-            logging.warning(
+            logger.warning(
                 "Error fetching files from S3 for arXiv ID %s: %s",
                 arxiv_id,
                 result.stderr,
             )
 
-        logging.debug(
+        logger.debug(
             "Moving files downloaded to %s for arXiv ID %s to %s",
             download_dir_path,
             arxiv_id,
@@ -88,7 +111,7 @@ def fetch_from_s3(arxiv_id: ArxivId, bucket: str) -> None:
         )
         downloaded_files = os.listdir(download_dir_path)
         if len(downloaded_files) == 0:
-            logging.warning(  # pylint: disable=logging-not-lazy
+            logger.warning(  # pylint: disable=logger-not-lazy
                 (
                     "No files fetched for arXiv ID %s. It's possible there are no files for this "
                     + "paper on S3."
@@ -97,7 +120,7 @@ def fetch_from_s3(arxiv_id: ArxivId, bucket: str) -> None:
             )
             return
         if len(downloaded_files) > 1:
-            logging.warning(
+            logger.warning(
                 "Unexpectedly downloaded more than one source archive file for arXiv ID %s",
                 arxiv_id,
             )

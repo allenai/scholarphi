@@ -1,4 +1,5 @@
 import * as Joi from "@hapi/joi";
+import { EntityType, isEntityType } from "./api";
 
 /**
  * Validation 'failAction' that reports the cause of error. Ideally, this should only be used in
@@ -17,30 +18,32 @@ export const logEntry = Joi.object({
   data: Joi.object().unknown(true).default(null),
 });
 
-export const s2Id = Joi.object({
-  s2Id: Joi.string().pattern(/[a-f0-9]{40}/),
+const s2paperId = Joi.string().pattern(/[a-f0-9]{40}/);
+/*
+ * See the arXiv documentation on valid identifiers here:
+ * https://arxiv.org/help/arxiv_identifier.
+ */
+const currentArxivFormat = Joi.string().pattern(/arxiv:[0-9]{2}[0-9]{2}.[0-9]+(v[0-9]+)?/);
+const olderArxivFormat = Joi.string().pattern(
+  /arxiv:[a-zA-Z0-9-]+\.[A-Z]{2}\/[0-9]{2}[0-9]{2}[0-9]+(v[0-9]+)/
+);
+
+export const paperSelector = Joi.object({
+  paperSelector: Joi.alternatives().try(
+    s2paperId,
+    currentArxivFormat,
+    olderArxivFormat,
+  )
 });
 
 /**
  * arXiv ID needed to be wrapped in 'Joi.object' at the time of writing this as the contemporary
  * version of Hapi needed an object to use the 'alternatives' feature.
  */
-export const arxivId = Joi.object({
-  /*
-   * See the arXiv documentation on valid identifiers here:
-   * https://arxiv.org/help/arxiv_identifier.
-   */
-  arxivId: Joi.alternatives().try(
-    /*
-     * Current arXiv ID format.
-     */
-    Joi.string().pattern(/[0-9]{2}[0-9]{2}.[0-9]+(v[0-9]+)?/),
-    /*
-     * Older arXiv ID format.
-     */
-    Joi.string().pattern(
-      /[a-zA-Z0-9-]+\.[A-Z]{2}\/[0-9]{2}[0-9]{2}[0-9]+(v[0-9]+)/
-    )
+export const arxivOnlySelector = Joi.object({
+  arxivSelector: Joi.alternatives().try(
+    currentArxivFormat,
+    olderArxivFormat
   ),
 });
 
@@ -254,3 +257,23 @@ export const loadedEntity = Joi.object({
   attributes: attributes.required(),
   relationships: relationships.required(),
 });
+
+export const ENTITY_API_ALL = "all";
+export const apiEntityTypes = Joi.string().custom((raw: string, helpers) => {
+  // Special shortcut case for all entities
+  if (raw.toLowerCase() === ENTITY_API_ALL) {
+    return [];
+  }
+  const types = raw.split(",");
+  let accepted: EntityType[] = [];
+  types.forEach(t => {
+    if (isEntityType(t)) {
+      accepted = accepted.concat(t);
+    }
+  });
+  if (accepted.length === 0) {
+    // From https://github.com/sideway/joi/blob/master/API.md#list-of-errors
+    return helpers.error("any.invalid");
+  }
+  return accepted;
+}).default(["citation"]);

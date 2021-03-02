@@ -1,8 +1,9 @@
 import dataclasses
 import logging
+import os
 import os.path
 import time
-from typing import Iterator
+from typing import Any, Iterator
 
 import requests
 
@@ -10,15 +11,31 @@ from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
 from common.types import ArxivId, Author, Reference, S2Metadata, SerializableReference
 
+
+logger = logging.getLogger(__name__)
+
+
 """ Time to wait between consecutive requests to S2 API. """
 FETCH_DELAY = 3  # seconds
 
-class S2MetadataException(Exception):
-    pass
+
+class S2ApiException(Exception):
+    """Generic exception related to calling the S2 API"""
+
+
+class S2ApiRateLimitingException(S2ApiException):
+    """
+    Caller has been rate-limited by S2's Public/Partner API.
+    """
+
+class S2MetadataException(S2ApiException):
+    """
+    Represents data availability issues when calling the S2 API.
+    """
 
 class S2PaperNotFoundException(S2MetadataException):
     """
-    The target arxiv paper could not be found on the S2 public api, 
+    The target arxiv paper could not be found on the S2 public api,
     which is a requirement for processing.
     """
 
@@ -27,7 +44,31 @@ class S2ReferencesNotFoundException(S2MetadataException):
     The target arxiv paper did not have any references available via the S2 public api.
     """
 
+
 class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
+    def __init__(self, args: Any) -> None:
+        super().__init__(args)
+        self._partner_api_token = os.getenv("S2_PARTNER_API_TOKEN", None)
+
+    def _mk_api_request(self, arxivId: ArxivId) -> requests.Response:
+        # XXX(andrewhead): S2 API does not have versions of arXiv papers. I don't think this
+        # will be an issue, but it's something to pay attention to.
+        versionless_id = self._strip_arxiv_version(arxivId)
+
+        base_url = "api.semanticscholar.org"
+        headers = None
+
+        if self._partner_api_token:
+            base_url = "partner.semanticscholar.org"
+            headers = {"x-api-key": self._partner_api_token}
+
+        logger.info(f"Issuing request to S2 @ {base_url}")
+
+        return requests.get(
+            f"https://{base_url}/v1/paper/arXiv:{versionless_id}",
+            headers=headers
+        )
+
     @staticmethod
     def get_name() -> str:
         return "fetch-s2-metadata"
@@ -44,41 +85,49 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
             yield arxiv_id
 
     def process(self, item: ArxivId) -> Iterator[S2Metadata]:
-        # XXX(andrewhead): S2 API does not have versions of arXiv papers. I don't think this
-        # will be an issue, but it's something to pay attention to.
-        versionless_id = self._strip_arxiv_version(item)
-        resp = requests.get(
-            f"https://api.semanticscholar.org/v1/paper/arXiv:{versionless_id}"
-        )
+        try:
+            resp = self._mk_api_request(item)
 
-        if resp.ok:
-            data = resp.json()
-            references = []
-            for reference_data in data["references"]:
-                authors = []
-                for author_data in reference_data["authors"]:
-                    authors.append(Author(author_data["authorId"], author_data["name"]))
-                reference = Reference(
-                    s2_id=reference_data["paperId"],
-                    arxivId=reference_data["arxivId"],
-                    doi=reference_data["doi"],
-                    title=reference_data["title"],
-                    authors=authors,
-                    venue=reference_data["venue"],
-                    year=reference_data["year"],
-                )
-                references.append(reference)
-            
-            if not references:
-                # References are required to process citations, mark job as failed
-                raise S2ReferencesNotFoundException()
+        except Exception as e:
+            # Exceptions here could reflect temporary service availability
+            # or slowdown issues with S2's API.
+            logging.error("Error encountered attempting to call S2's API", e)
+            raise S2ApiException()
 
-            s2_metadata = S2Metadata(s2_id=data["paperId"], references=references)
-            logging.debug("Fetched S2 metadata for arXiv paper %s", item)
-            yield s2_metadata
         else:
-            # References are required to process citations, mark job as failed
-            raise S2PaperNotFoundException()
+            if resp.ok:
+                data = resp.json()
+                references = []
+                for reference_data in data["references"]:
+                    authors = []
+                    for author_data in reference_data["authors"]:
+                        authors.append(Author(author_data["authorId"], author_data["name"]))
+                    reference = Reference(
+                        s2_id=reference_data["paperId"],
+                        arxivId=reference_data["arxivId"],
+                        doi=reference_data["doi"],
+                        title=reference_data["title"],
+                        authors=authors,
+                        venue=reference_data["venue"],
+                        year=reference_data["year"],
+                    )
+                    references.append(reference)
+
+                if not references:
+                    # References are required to process citations, mark job as failed
+                    raise S2ReferencesNotFoundException()
+
+                s2_metadata = S2Metadata(s2_id=data["paperId"], references=references)
+                logging.debug("Fetched S2 metadata for arXiv paper %s", item)
+                yield s2_metadata
+            elif resp.status_code == 404:
+                # Paper is unavailable in Public API -- potential race condition.
+                raise S2PaperNotFoundException()
+            elif resp.status_code == 429:
+                # Request rate limit has been exceeded for this account or client IP.
+                raise S2ApiRateLimitingException()
+            else:
+                raise S2ApiException(f"Failed to retrieve paper data from S2 with HTTP error code {resp.status_code}")
 
         time.sleep(FETCH_DELAY)
 

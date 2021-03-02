@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from typing import Callable, List, Optional, Union, cast
 
 from bs4 import BeautifulSoup, NavigableString, Tag
-from typing_extensions import Literal
 
 from common.types import NodeType, Token
 
@@ -664,7 +663,7 @@ def create_element(tag_name: str) -> Tag:
     return BeautifulSoup("", "lxml").new_tag(tag_name)
 
 
-SCRIPT_TAGS = ["msub", "musp", "msubsup"]
+SCRIPT_TAGS = ["msub", "msup", "msubsup"]
 
 
 class MathMlElementMerger:
@@ -738,17 +737,17 @@ class MathMlElementMerger:
             return False
 
         # Here come the context-sensitive rules:
-        # 1. Scripts (e.g., elements with superscripts and subscripts) can be merged into prior
+        # 1. Script end all sequences of mergeable characters. This is because no identifier is
+        #    expected to have a superscript or a subscript in the middle.
+        if last_element.name in SCRIPT_TAGS:
+            return False
+        # 2. Scripts (e.g., elements with superscripts and subscripts) can be merged into prior
         #    elements, provided that the base (the element to which the script is applied) can be
         #    merged according to the typical merging rules.
         if element.name in SCRIPT_TAGS:
             first_child = next(element.children, None)
             if first_child:
                 return self._is_mergeable_type(first_child)
-            return False
-        # 2. Script end all sequences of mergeable characters. This is because no identifier is
-        #    expected to have a superscript or a subscript in the middle.
-        if last_element.name in SCRIPT_TAGS:
             return False
         # 3. Letters can be merged into any sequence of elements before them that starts with a
         #    a letter. This allows tokens to be merged into (target letter is shown in
@@ -764,7 +763,7 @@ class MathMlElementMerger:
         # 6. Operators can be merged into operators that appear just before them to form multi-
         #    symbol operators, like '++', '//', etc.
         if element.name == "mo":
-            return last_element.name == "mo"
+            return last_element.name in ["mo"]
 
         return False
 
@@ -773,10 +772,16 @@ class MathMlElementMerger:
         Merge all of the identifiers seen up to this point into a new element, and add that element to
         the list of all merged elements.
         """
+        # Special case: nothing to merge.
         if len(self.to_merge) == 0:
             return
 
-        if self.to_merge[-1].name in SCRIPT_TAGS:
+        # Special case: only one element to merge; merged element is the same as that element.
+        if len(self.to_merge) == 1:
+            element = self.to_merge[0]
+
+        # Special case: sequence ends with a script element (superscript, subscript).
+        elif self.to_merge[-1].name in SCRIPT_TAGS:
             element = self._merge_script(self.to_merge)
             # If elements could not be merged together due to unexpected errors processing the
             # script element, then keep all elements separate.
@@ -785,7 +790,7 @@ class MathMlElementMerger:
         else:
             element = self._merge_simple_row(self.to_merge)
 
-        # An identifier should have no children in MathML.
+        # Save the merged element.
         self.merged.append(element)
 
         # Now that the prior elements have been merged, clear the list.

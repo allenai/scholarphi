@@ -16,6 +16,7 @@ import logger from "./logging";
 import MasterControlPanel from "./components/control/MasterControlPanel";
 import PageOverlay from "./components/overlay/PageOverlay";
 import PdfjsToolbar from "./components/pdfjs/PdfjsToolbar";
+import PdfjsBrandbar from "./components/pdfjs/PdfjsBrandbar";
 import PrimerPage from "./components/primer/PrimerPage";
 import SearchPageMask from "./components/mask/SearchPageMask";
 import * as selectors from "./selectors";
@@ -57,6 +58,7 @@ import * as uiUtils from "./utils/ui";
 import ViewerOverlay from "./components/overlay/ViewerOverlay";
 
 import classNames from "classnames";
+import queryString from "query-string";
 import React from "react";
 
 interface Props {
@@ -732,7 +734,13 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         this.setState({
           areCitationsLoading: true
         });
-        const entities = await api.getEntities(this.props.paperId.id);
+        let getAllEntities = false;
+        const qs = queryString.parse(window.location.search);
+        if (qs.showAll && qs.showAll === "true") {
+          getAllEntities = true;
+        }
+        const loadingStartTime = performance.now();
+        const entities = await api.getEntities(this.props.paperId.id, getAllEntities);
         this.setState({
           entities: stateUtils.createRelationalStoreFromArray(entities, "id"),
         });
@@ -751,6 +759,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
             {} as { [s2Id: string]: Paper }
           );
           this.setState({ papers, areCitationsLoading: false });
+        }
+
+        if (window.heap) {
+          const loadingTimeMS = Math.round(performance.now() - loadingStartTime);
+          window.heap.track("paper-loaded", { loadingTimeMS, numEntities: entities.length, numCitations: citationS2Ids.length });
         }
 
         const userData = await api.getUserLibraryInfo();
@@ -886,6 +899,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 </span>
               </button>
             </PdfjsToolbar>
+            <PdfjsBrandbar />
             <ViewerOverlay
               pdfViewer={this.state.pdfViewer}
               handleSetTextSelection={this.setTextSelection}

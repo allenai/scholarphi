@@ -1,32 +1,44 @@
 import logging
 import os
 import sys
-import traceback
 import uuid
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from typing import List
 
 from common import directories, email, file_utils
-from common.commands.base import (CommandList, add_arxiv_id_filter_args,
-                                  create_args, load_arxiv_ids_using_args,
-                                  read_arxiv_ids_from_file)
+from common.commands.base import (
+    CommandList,
+    add_arxiv_id_filter_args,
+    create_args,
+    load_arxiv_ids_using_args,
+    read_arxiv_ids_from_file,
+)
 from common.commands.database import DatabaseUploadCommand
 from common.commands.fetch_arxiv_sources import (
-    DEFAULT_S3_ARXIV_SOURCES_BUCKET, FetchArxivSources)
+    DEFAULT_S3_ARXIV_SOURCES_BUCKET,
+    FetchArxivSources,
+)
 from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
+from common.commands.fetch_s2_data import S2ApiException
 from common.commands.locate_entities import LocateEntitiesCommand
 from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
+from common.fetch_arxiv import FetchFromArxivException
 from common.make_digest import make_paper_digest
 from common.types import PipelineDigest
 
-from scripts.commands import (ENTITY_COMMANDS, TEX_PREPARATION_COMMANDS,
-                              commands_by_entity, run_command)
+from scripts.commands import (
+    ENTITY_COMMANDS,
+    TEX_PREPARATION_COMMANDS,
+    commands_by_entity,
+    run_command,
+)
 from scripts.job_config import fetch_config, load_job_from_s3
 from scripts.pipelines import entity_pipelines
 
 DEFAULT_ENTITIES = ["citations", "symbols", "definitions"]
+RETRYABLE_FAILURE_RETURN_CODE = 100
 
 
 def run_commands_for_arxiv_ids(
@@ -46,7 +58,8 @@ def run_commands_for_arxiv_ids(
         command_args.arxiv_ids_file = None
         command_args.v = pipeline_args.v
         command_args.source = pipeline_args.source
-        command_args.batch_size = pipeline_args.entity_batch_size
+        if CommandCls == LocateEntitiesCommand:
+            command_args.batch_size = pipeline_args.entity_batch_size
         command_args.keep_intermediate_files = pipeline_args.keep_intermediate_files
         command_args.log_names = [log_filename]
         command_args.schema = pipeline_args.database_schema
@@ -73,10 +86,10 @@ def run_commands_for_arxiv_ids(
         # Catch-all for unexpected errors from running commands. With the amount of networking
         # and subprocess calls in the commands, it is simply unlikely that we can predict and
         # write exceptions for every possible exception that could be thrown.
-        except Exception:  # pylint: disable=broad-except
-            logging.error(
-                "Unexpected exception processing paper: %s", traceback.format_exc()
-            )
+        except Exception as exc:  # pylint: disable=broad-except
+            logging.exception("Unexpected exception processing papers: {}".format(arxiv_id_list))
+            raise exc
+
         logging.info("Finished running command %s", CommandCls.get_name())
 
     # Create digest describing the result of running these commands for these papers
@@ -462,6 +475,9 @@ if __name__ == "__main__":
                 # The pipeline digest must be updated after each arXiv ID is processed, because the
                 # digest for a paper cannot be computed once the paper's data is deleted.
                 pipeline_digest.update(digest_for_paper)
+            except (FetchFromArxivException, S2ApiException) as e:
+                logging.exception(f"Retryable Failure processing id: {arxiv_id}")
+                exit(RETRYABLE_FAILURE_RETURN_CODE)
             finally:
                 if not args.keep_paper_data:
                     file_utils.delete_data(arxiv_id)

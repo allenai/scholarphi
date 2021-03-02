@@ -19,6 +19,12 @@ export interface Paginated<T> {
   total: number;
 }
 
+export interface PaperIdInfo {
+  s2_id: string;
+  arxiv_id?: string;
+  version: number;
+}
+
 export interface PaperIdWithEntityCounts {
   s2_id: string;
   arxiv_id?: string;
@@ -58,6 +64,17 @@ export interface PaperWithEntityCounts extends PaperIdWithEntityCounts {
   citationVelocity?: number;
 }
 
+export interface PaperWithIdInfo extends PaperIdInfo {
+  abstract?: string;
+  authors?: Author[];
+  title?: string;
+  url?: string;
+  venue?: string;
+  year?: number | null;
+  influentialCitationCount?: number;
+  citationVelocity?: number;
+}
+
 export interface Author {
   id: string;
   name: string;
@@ -66,6 +83,19 @@ export interface Author {
 
 export interface EntityGetResponse {
   data?: Entity[];
+}
+
+const entityTypes = [
+  'citation',
+  'definition',
+  'equation',
+  'sentence',
+  'symbol',
+  'term'
+] as const;
+export type EntityType = typeof entityTypes[number];
+export const isEntityType = (s: string): s is EntityType => {
+  return (entityTypes as readonly string[]).indexOf(s) >= 0;
 }
 
 /**
@@ -83,7 +113,7 @@ export interface BaseEntity {
    * Entity IDs are guaranteed to be unique, both within and across papers.
    */
   id: string;
-  type: string;
+  type: EntityType;
   attributes: BaseEntityAttributes;
   relationships: Relationships;
 }

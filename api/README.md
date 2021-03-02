@@ -63,7 +63,8 @@ is one. Once you have the values, put them in a file called
   },
   "s2": {
     "apiKey": "<key>"
-  }
+  },
+  "adminToken": "<randomly-generated-token-for-write-access-to-apis>"
 }
 ```
 
