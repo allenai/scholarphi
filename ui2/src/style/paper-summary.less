@@ -1,0 +1,106 @@
+/**
+ * Paper summary layout
+ */
+.paper-summary {
+  max-width: @paper-summary-width;
+  padding: @padding;
+  color: @s2-text-default;
+}
+
+/**
+ * Pad paper summary title so the favorite button doesn't occlude it
+ */
+.paper-summary__title {
+  padding-right: 2em;
+}
+
+/**
+ * Paper summary fonts
+ */
+.paper-summary {
+  color: @black;
+  font-size: @medium;
+  line-height: @medium * @line-height-ratio;
+  min-width: 320px;
+
+  &__section {
+    padding-bottom: @tooltip-content-vertical-padding;
+  }
+
+  &__title {
+    font-size: @large;
+    line-height: @large * @line-height-ratio;
+    font-weight: bold;
+  }
+
+  &__authors,
+  &__year {
+    color: lighten(@black, 10%);
+  }
+
+  &__abstract__show-more-label {
+    color: deepskyblue;
+  }
+
+  &__feedback {
+    color: lighten(@black, 50%);
+    font-style: italic;
+  }
+}
+
+.paper-summary__metrics-and-actions {
+  display: flex;
+  align-items: center;
+}
+
+/**
+ * Actions
+ */
+
+@{mui-button-base} {
+  @icon-size: 1.8rem;
+
+  &.paper-summary__action {
+    color: @s2-text-light;
+
+    svg {
+      font-size: @icon-size;
+    }
+  }
+}
+
+.paper-summary__library-error {
+  color: @s2-error;
+}
+
+/**
+ * Metrics
+ */
+
+.paper-summary__metrics {
+  display: flex;
+  border-right: 1px solid @s2-border-light;
+  margin-right: @padding;
+}
+
+.paper-summary__metrics__metric {
+  display: flex;
+  align-items: center;
+  margin-right: @padding;
+  color: @s2-influential-citation-orange;
+
+  svg {
+    fill: @s2-influential-citation-orange;
+    margin-right: @padding / 2;
+  }
+}
+
+@{mui-button-base}.paper-summary__action,
+.paper-summary__metrics__metric {
+  font-size: @button-font-size;
+  font-weight: 700;
+}
+
+.paper-summary__abstract__show-more-label {
+  cursor: pointer;
+}

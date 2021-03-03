@@ -1,0 +1,73 @@
+/**
+ * Gloss dimensions
+ */
+.gloss {
+  &.term-property-evaluation-gloss,
+  &.symbol-property-evaluation-gloss {
+    max-width: 400px;
+  }
+}
+
+/**
+ * Fonts
+ */
+.property-evaluation-gloss {
+  &__clickable-link {
+    color: @s2-link-default;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .property-evaluation-gloss__not-defined {
+    color: @s2-text-light;
+  }
+}
+
+/**
+ * Property evaluation tables
+ */
+.property-evaluation-gloss table {
+  table-layout: fixed;
+
+  /**
+   * Section headers
+   */
+  .property-evaluation-gloss__header {
+    background-color: lightgrey;
+
+    td {
+      font-weight: bold;
+    }
+  }
+
+  /**
+   * Cell dimensions
+   */
+  td {
+    padding-left: @padding / 2;
+
+    &:first-of-type {
+      /*
+       * Scroll display equations
+       */
+      width: 85%;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    &.vote-button {
+      width: 24px;
+      padding-left: @padding;
+      padding-right: @padding;
+    }
+  }
+}
+
+/**
+ * Symbol tabs
+ */
+@{mui-tab}.symbol-property-evaluation-gloss__tab {
+  min-width: 50px;
+  width: 50px;
+  text-transform: none;
+}

@@ -1,0 +1,48 @@
+/**
+ * Drawer position
+ */
+@{drawer} {
+  top: @pdfjs-toolbarViewer-height;
+  height: calc(100% - @pdfjs-toolbarViewer-height);
+}
+
+/**
+ * Drawer style
+ */
+@{drawer} {
+  border-left: @border;
+}
+
+.drawer__header {
+  padding: @medium;
+}
+
+/**
+ * Padding for drawer content.
+ */
+.drawer__content {
+  padding: 0 @padding;
+}
+
+.drawer__close_icon {
+  position: fixed;
+  z-index: @drawer-close-button-z-index;
+}
+
+/**
+ * Drawer text.
+ */
+.drawer__content {
+  &__header {
+    font-size: @large;
+    font-weight: bolder;
+    padding-top: @padding;
+    padding-bottom: @padding;
+  }
+
+  p:not(&__header) {
+    font-size: @medium;
+    line-height: @medium * @line-height-ratio;
+    color: @s2-text-default;
+  }
+}

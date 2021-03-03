@@ -1,0 +1,80 @@
+/**
+ * Equation diagram.
+ */
+.equation-diagram {
+  z-index: @equation-diagram-z-index;
+}
+
+/**
+ * Features (areas of interest) in diagrams.
+ */
+rect.equation-diagram__feature {
+  stroke-width: 2;
+  fill: @highlight-color;
+  fill-opacity: @highlight-hover-opacity;
+}
+
+/**
+ * Labels
+ */
+div.equation-diagram-tooltip {
+  border: 1px solid #bbb;
+}
+
+div.equation-diagram-gloss {
+  cursor: pointer;
+  max-width: 200px;
+
+  &:hover {
+    background-color: #ddd;
+  }
+}
+
+/**
+ * Leader lines.
+ */
+g.equation-diagram__leader {
+  opacity: 0.8;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  path.leader-background {
+    stroke: white;
+    stroke-width: 4;
+    fill: none;
+  }
+
+  path.leader-foreground {
+    // stroke: @highlight-color;
+    stroke: black;
+    stroke-opacity: 0.4;
+    stroke-width: 2;
+    fill: none;
+  }
+}
+
+/**
+ * Hover behavior.
+ */
+div.equation-diagram__label-container {
+  pointer-events: all;
+  cursor: pointer;
+
+  &:hover {
+    cursor: pointer;
+
+    rect.equation-diagram__feature {
+      fill-opacity: @highlight-opacity;
+    }
+
+    .equation-diagram-gloss {
+      background-color: #ddd;
+    }
+
+    path.leader-foreground {
+      stroke-opacity: 0.7;
+    }
+  }
+}

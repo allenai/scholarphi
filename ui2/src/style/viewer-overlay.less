@@ -1,0 +1,89 @@
+/**
+ * Position of container of toolbars
+ */
+.scholar-reader-toolbar-container {
+  position: absolute;
+  right: @padding * 2;
+  top: @pdfjs-toolbarViewer-height + 10;
+
+  /*
+   * Uncomment these lines if the toolbars should appear at the bottom of the viewer instead of
+   * the top.
+   */
+  // bottom: @pdfjs-toolbarViewer-height - 20;
+
+  /*
+   * Toolbars must appear both above the pdf.js sidebar and annotations
+   */
+  z-index: max(@pdfjs-sidebarContainer-z-index + 1, @toolbar-z-index + 1);
+}
+
+/**
+ * Toolbars should receive pointer events, but the empty space surrounding them in the toolbar
+ * container should not. If 'pointer-events' is not 'none' for the container, some annotations
+ * may appear unclickable.
+ */
+.scholar-reader-toolbar-container {
+  pointer-events: none;
+  div.scholar-reader-toolbar {
+    pointer-events: all;
+  }
+}
+
+/**
+ * Spacing between toolbars
+ */
+.scholar-reader-toolbar-container {
+  .scholar-reader-toolbar + .scholar-reader-toolbar {
+    margin-top: @padding;
+  }
+}
+
+/**
+ * Show each toolbar on a separate line, and set their widths independently
+ */
+.scholar-reader-toolbar-container {
+  .scholar-reader-toolbar {
+    float: left;
+    clear: left;
+  }
+}
+
+/**
+ * Toolbar contents
+ */
+div.scholar-reader-toolbar {
+  padding: (@padding / 2) @padding;
+
+  &:not(.vertical) {
+    > * + * {
+      margin-left: @padding;
+    }
+  }
+}
+
+/**
+ * Definition preview position
+ */
+.definition-preview {
+  position: absolute;
+  bottom: @padding * 2;
+  right: @padding * 2;
+  z-index: @toolbar-z-index;
+}
+
+/**
+ * Text selection menu
+ */
+.text-selection-menu {
+  position: absolute;
+  z-index: @toolbar-z-index;
+  padding: @padding;
+
+  /*
+   * Button text in sentence case
+   */
+  button {
+    text-transform: none;
+  }
+}

@@ -1,0 +1,201 @@
+/**
+ * Default gloss dimensions
+ */
+.gloss {
+  max-width: 420px;
+  &:not(.simple-gloss) {
+    min-width: 200px;
+  }
+
+  &.closed {
+    display: none;
+  }
+}
+
+/**
+ * Gloss contents
+ */
+.gloss {
+  &.simple-gloss {
+    background-color: #eee;
+    padding: 0;
+
+    &.symbol-gloss .simple-gloss__definition-container {
+      width: max-content;
+      max-width: 350px;
+    }
+
+    &.term-gloss .simple-gloss__definition-container {
+      width: max-content;
+      max-width: 350px;
+    }
+
+    p {
+      padding: @padding / 4;
+      margin-top: 0;
+      font-size: @large;
+      padding-left: @padding;
+      padding-right: @padding;
+      line-height: @line-height-ratio;
+    }
+
+    td {
+      vertical-align: middle;
+    }
+
+    &.term-gloss p {
+      padding: @padding / 2;
+      max-height: 5rem;
+      overflow: auto;
+    }
+  }
+
+  .gloss__section {
+    & + .gloss__section {
+      padding-top: @medium / 2;
+    }
+  }
+
+  .gloss__header {
+    padding-top: @padding / 2;
+  }
+
+  /*
+   * Inset nested list elements
+   */
+  list-style-position: inside;
+
+  /*
+   * If this is an inline gloss, lay out sections horizontally.
+   */
+  &.inline-gloss {
+    & > div {
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
+}
+
+/**
+ * Align buttons to the right
+ */
+.gloss__action-buttons {
+  text-align: right;
+}
+
+/**
+ * Space out the action buttons
+ */
+.gloss__action-buttons .gloss__action-button {
+  margin-left: @padding;
+}
+
+/**
+ * Gloss text
+ */
+.gloss {
+  color: @s2-text-default;
+  font-family: @s2-font-family;
+  font-size: @medium;
+  line-height: @medium * @line-height-ratio;
+  font-weight: lighter;
+
+  /*
+   * List element styling
+   */
+  li {
+    margin-bottom: @medium * 0.5;
+
+    /*
+     * Show display equations inline
+     */
+    .katex-display {
+      margin: unset;
+    }
+  }
+
+  .gloss__section > p {
+    padding-left: @padding;
+    padding-right: @padding;
+    margin-bottom: @padding / 2;
+    &:not(:first-child) {
+      margin-top: @padding / 2;
+    }
+  }
+
+  p {
+    margin-top: @padding / 2;
+
+    &.gloss-section__label {
+      font-size: small;
+      font-weight: normal;
+      margin-top: 0;
+      margin-bottom: @padding;
+    }
+
+    span.gloss__show-more {
+      cursor: pointer;
+      border-bottom: 1px solid @s2-link-default;
+      color: @s2-link-default;
+    }
+  }
+
+  span.other-symbol-link {
+    padding-left: 0.1rem;
+    cursor: pointer;
+    border-bottom: 1px solid @s2-link-default;
+    color: @s2-link-default;
+  }
+}
+
+/**
+ * Fonts
+ */
+.gloss-entry-table {
+  &__clickable-link {
+    color: @s2-link-default;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+
+/**
+ * Property evaluation tables
+ */
+.gloss-entry-table {
+  table-layout: fixed;
+
+  /**
+   * Cell dimensions
+   */
+  td {
+    padding-left: @padding / 2;
+    border-bottom: none;
+
+    &:first-of-type {
+      /*
+       * Scroll display equations
+       */
+      width: 90%;
+      padding-right: @padding / 2;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    &.vote-button {
+      width: 24px;
+      padding-left: @padding;
+      padding-right: @padding;
+    }
+  }
+
+  &__action-buttons-row {
+    td {
+      text-align: center;
+    }
+
+    button {
+      text-transform: none;
+    }
+  }
+}

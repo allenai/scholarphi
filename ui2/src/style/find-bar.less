@@ -1,0 +1,49 @@
+/**
+ * Find-bar is opaque
+ */
+.find-bar {
+  background-color: @white;
+  /* 
+   * Annotation markers should be hidden behind the find bar
+   */
+  z-index: @toolbar-z-index + 1;
+}
+
+/**
+ * Layout of find-bar widgets
+ */
+.find-bar {
+  & > * {
+    display: inline-block;
+  }
+
+  &__progress,
+  &__message__span {
+    vertical-align: middle;
+  }
+
+  .find-bar__query__flag {
+    margin-left: @padding;
+    margin-right: 0;
+  }
+}
+
+/**
+ * Find bar fonts
+ */
+.find-bar {
+  color: @s2-text-default;
+
+  &__message__span {
+    font-size: @medium;
+  }
+}
+
+/**
+ * Symbol search filters
+ */
+.find-bar .symbol-filters {
+  .filter-button + * {
+    margin-left: @padding;
+  }
+}

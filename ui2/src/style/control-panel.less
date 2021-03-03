@@ -1,0 +1,35 @@
+/**
+ * Control panel padding
+ */
+.scholar-reader-toolbar.control-panel-toolbar {
+  padding-top: @padding * 1.5;
+  padding-bottom: @padding * 1.5;
+}
+
+/**
+ * Control panel layout of components
+ */
+.control-panel-toolbar {
+  .control-panel-toolbar__header {
+    margin-bottom: @padding / 2;
+
+    div {
+      display: inline-block;
+      &.control-panel-toolbar__header__close-button {
+        float: right;
+      }
+    }
+  }
+
+  .control-panel-toolbar__select {
+    margin-top: @padding;
+    margin-bottom: @padding / 2;
+  }
+}
+
+/**
+ * Control panel switches
+ */
+.control-panel-toolbar__switch-label {
+  white-space: nowrap;
+}

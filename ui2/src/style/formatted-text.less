@@ -1,0 +1,20 @@
+/**
+ * Font styles for formatted text
+ */
+span.formatted-text {
+  .highlight {
+    font-weight: bold;
+    background-color: fade(@highlight-color, @highlight-hover-opacity-percent);
+    padding-left: 0.3rem;
+    padding-right: 0.3rem;
+    border-radius: @border-radius;
+  }
+
+  .hide {
+    color: @s2-text-light;
+  }
+
+  .match-highlight {
+    background-color: fade(@highlight-color, @highlight-hover-opacity-percent);
+  }
+}

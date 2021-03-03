@@ -1,0 +1,27 @@
+@sidenote-margin: @padding;
+
+/**
+ * Position side note off the side of the page. Vertical position is set in the JavaScript.
+ */
+.scholar-reader-sidenote {
+  position: absolute;
+
+  &.side-left {
+    right: 100%;
+    margin-right: @sidenote-margin;
+  }
+
+  &.side-right {
+    left: 100%;
+    margin-left: @sidenote-margin;
+  }
+}
+
+/**
+ * Rule from sidenote to anchor
+ */
+.sidenote-rule {
+  position: absolute;
+  border: none;
+  border-top: 1px dashed @black;
+}

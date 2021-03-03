@@ -1,0 +1,23 @@
+/**
+ * Container for paper clipping.
+ */
+
+/**
+ * Paper clipping dimensions
+ */
+.paper-clipping {
+  /**
+   * In a tooltip.
+   */
+  .symbol-tooltip-body & {
+    width: @tooltip-paper-clipping-width;
+    height: @tooltip-paper-clipping-height;
+  }
+
+  border: @border;
+  border-radius: @border-radius;
+  /**
+   * Set to 'auto' if you want users to be able to scroll.
+   */
+  overflow: hidden;
+}

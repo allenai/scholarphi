@@ -1,0 +1,154 @@
+/**
+ * Position annotations absolutely on each page
+ */
+.scholar-reader-annotation-span {
+  position: absolute;
+}
+
+/**
+ * Enlarge the hitbox of an annotation
+ */
+.scholar-reader-annotation-span {
+  margin: -@highlight-hitbox-padding * 2/3 -@highlight-hitbox-padding;
+  padding: @highlight-hitbox-padding * 2/3 @highlight-hitbox-padding;
+}
+
+/**
+ * Make annotations interactive
+ */
+.scholar-reader-annotation {
+  /**
+   * Highlight all spans of an annotation when hovering over any one span of the annotation
+   */
+  &:hover .scholar-reader-annotation-span {
+    background-color: fade(@highlight-color, @highlight-hover-opacity-percent);
+    cursor: pointer;
+  }
+
+  /**
+   * Deepen the saturation of colors when the annotation is selected
+   */
+  &.selected .scholar-reader-annotation-span {
+    &:not(.find-selection) {
+      background-color: fade(@highlight-color, @highlight-opacity-percent);
+    }
+  }
+
+  .scholar-reader-annotation-span.underline:not(.ancestor-of-selection) {
+    padding-bottom: 0.2%;
+    border-bottom: @underline-width fade(@underline-color, 70%) dotted;
+  }
+}
+
+/**
+ * Highlight matches from search
+ */
+.scholar-reader-annotation-span {
+  &.find-match {
+    background-color: fade(@highlight-color, @highlight-hover-opacity-percent);
+  }
+
+  &.find-selection {
+    background-color: fade(
+      @highlight-color,
+      @highlight-opacity-percent
+    ) !important;
+  }
+}
+
+/**
+ * Highlight the target of jumps within the document
+ */
+.scholar-reader-annotation-span.jump-target {
+  background-color: fade(@highlight-color, @highlight-hover-opacity-percent);
+  // transition: background-color ease-out;
+  // animation-name: fade;
+  // animation-duration: 20s;
+}
+
+@keyframes fade {
+  0% {
+    background-color: fade(@highlight-color, @highlight-hover-opacity-percent);
+  }
+  75% {
+    background-color: fade(@highlight-color, @highlight-hover-opacity-percent);
+  }
+  100% {
+    background-color: none;
+  }
+}
+
+/**
+ * Make inactive annotations non-interactive
+ */
+.scholar-reader-annotation-span.inactive {
+  pointer-events: none;
+}
+
+/**
+ * Highlight entities that were extracted using experimental techniques
+ */
+.scholar-reader-annotation-span.source-other {
+  background-color: fade(yellow, 30%);
+}
+
+/**
+ * Set z-index of annotation spans to minimize occlusion. For example, sentences annotations will
+ * often contain the full area of other annotations. To allow the other annotations to be
+ * clickable, show sentence annotations under other annotations.
+ */
+.scholar-reader-annotation-span {
+  &.sentence-annotation {
+    z-index: @sentence-annotation-z-index;
+  }
+
+  &.equation-annotation {
+    z-index: @equation-annotation-z-index;
+  }
+
+  &:not(.sentence-annotation) {
+    z-index: @default-annotation-z-index;
+  }
+}
+
+/**
+ * Symbol annotations
+ */
+.symbol-annotation {
+  &.selected:not(.leaf-symbol) {
+    pointer-events: none;
+    padding: @padding / 2;
+    margin: -@padding / 2;
+    border-radius: @border-radius;
+    background-color: fade(
+      @highlight-color,
+      @highlight-hover-opacity-percent
+    ) !important;
+  }
+
+  &.selection-hint {
+    background-color: fade(@highlight-color, @highlight-opacity-percent);
+    border-radius: @border-radius;
+
+    /*
+     * By default, annotations appear behind equation diagrams, which are meant to appear
+     * as overlays on top of the annotations. However, when an equation diagram and a
+     * symbol is meant to be clickable, its z-index needs to be higher than the z-index
+     * for the diagram.
+     */
+    &.in-selected-equation {
+      z-index: @equation-diagram-annotation-z-index;
+    }
+  }
+}
+
+/**
+ * Equation annotations
+ */
+.equation-annotation {
+  &.annotation-selected {
+    pointer-events: none;
+    background: none !important;
+    border-bottom: none !important;
+  }
+}

@@ -1,0 +1,48 @@
+/**
+ * Position page overlay on top of its parent page.
+ */
+.scholar-reader-page-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  /**
+   * The overlay is full width and height to allow children to also be full width and full height
+   * (i.e., to set width and height to 100% in the children to make them take up the whole page).
+   * To keep the underlying content on the page still interactive, 'pointer-events' is set to 'none'
+   * so that the overlay doesn't inherently capture clicks. That said, all children will be
+   * interactive (see 'pointer-events: auto' below) by default.
+   */
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  * {
+    pointer-events: auto;
+  }
+}
+
+/**
+ * Page mask
+ */
+.page-mask {
+  &__highlight {
+    fill: @highlight-color;
+    opacity: 0.3;
+  }
+
+  &__highlight-label {
+    font-family: @s2-font-family;
+    color: @s2-text-default;
+
+    &__background {
+      fill: @label-color;
+      stroke: @label-border-color;
+      stroke-width: @label-border-width;
+    }
+  }
+
+  &__underline {
+    // stroke-width: 1px;
+    // stroke: orangered;
+  }
+}
