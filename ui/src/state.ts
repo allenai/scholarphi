@@ -10,7 +10,7 @@ import {
   PDFViewerApplication,
 } from "./types/pdfjs-viewer";
 
-import { PDFDocumentProxy } from "pdfjs-dist";
+import { PDFDocumentProxy } from 'pdfjs-dist/types/display/api'
 
 /**
  * An object containing all the shared global state. It is designed to be used as follows:
