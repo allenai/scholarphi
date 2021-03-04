@@ -1,22 +1,18 @@
-FROM node:12.20.0 as build
-WORKDIR /ui
+# NOTE: This Dockerfile is only used in development. It provides a runtime
+# environment where the JavaScript build process can run. In production the
+# files built by this process are served from disk, while in development a HTTP
+# server that's distributed with the UI build tools is used.
+FROM node:14.15.1
+
+# Setup a spot for our code
+WORKDIR /usr/local/src/skiff/app/ui
 
 # Install dependencies
-COPY package*.json ./
-RUN npm install
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
-# Copy over the source code and build
+# Copy in the source code
 COPY . .
-ARG NODE_ENV
-ENV NODE_ENV ${NODE_ENV:-production}
-RUN npm run build
 
-FROM nginx:1.17.0-alpine as runtime
-
-# Copy over the static files we built in the previous change, and put them
-# where `nginx` serves from by default.
-COPY --from=build /ui/build /ui/
-
-# The `nginx.conf` file is included in the code we copied over previously --
-# use that so the build is ever so slightly faster.
-COPY --from=build /ui/nginx.conf /etc/nginx/nginx.conf
+ENTRYPOINT [ "yarn" ]
+CMD [ "start" ]

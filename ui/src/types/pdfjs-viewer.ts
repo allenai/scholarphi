@@ -1,4 +1,25 @@
-import { PDFDocumentProxy, PDFPageProxy, PDFPageViewport } from "pdfjs-dist";
+import { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist/types/display/api";
+
+interface PDFPageViewportOptions {
+  viewBox: any;
+  scale: number;
+  rotation: number;
+  offsetX: number;
+  offsetY: number;
+  dontFlip: boolean;
+}
+
+interface PDFPageViewport {
+  width: number;
+  height: number;
+  scale: number;
+  transforms: number[];
+
+  clone(options: PDFPageViewportOptions): PDFPageViewport;
+  convertToViewportPoint(x: number, y: number): number[]; // [x, y]
+  convertToViewportRectangle(rect: number[]): number[]; // [x1, y1, x2, y2]
+  convertToPdfPoint(x: number, y: number): number[]; // [x, y]
+}
 
 /**
  * Declarations for the PDF.js viewer application. These types are not declared as part of
