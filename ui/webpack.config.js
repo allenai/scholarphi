@@ -78,9 +78,7 @@ module.exports = (env, argv) => {
             syntactic: true,
           },
           mode: "write-references",
-        },
-        // This is for debugging
-        logger: { infrastructure: 'console' }
+        }
       })
     ],
     output: {
