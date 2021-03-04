@@ -78,22 +78,16 @@ def add_color_macros(tex: str, after_macros: Optional[str] = None) -> str:
     )
 
 
-# TODO(andrewhead): determine number of hues based on the number of hues that OpenCV is capable
-# of distinguishing between. Current value is a guess.
-NUM_HUES = 30
+def generate_hues(num_hues: int = 30) -> Iterator[float]:
+    # Don't include both 0 and 1 as hues, because hue is radial. Therefore, 0 and 1 are the same
+    # hue, meaning that two entities with 0 and 1 as hues would be detected as the same entity.
+    HUES = np.linspace(0, 1 - (1.0 / num_hues), num_hues)
 
-# Don't include both 0 and 1 as hues, because hue is radial. Therefore, 0 and 1 are the same
-# hue, meaning that two entities with 0 and 1 as hues would be detected as the same entity.
-HUES = np.linspace(0, 1 - (1.0 / NUM_HUES), NUM_HUES)
-
-
-def generate_hues() -> Iterator[float]:
     for hue in HUES:
         yield hue
     logging.debug(
         "Out of hues. Hopefully the caller is restarting this generator to keep coloring."
     )
-    return
 
 
 def wrap_span(
@@ -221,7 +215,7 @@ def colorize_entities(
         entities_filtered, key=lambda e: e.start, reverse=True
     )
 
-    hue_generator = generate_hues()
+    hue_generator = generate_hues(num_hues=len(entities))
     entity_hues = {}
 
     colorized_tex = tex

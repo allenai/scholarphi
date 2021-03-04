@@ -2,6 +2,16 @@
 % If possible, check for definitions using e-TeX's '\ifcsname' command, as it does not
 % have the side effect of defining an undefined command as '\relax'. See
 % the discussion about this side effect here https://tex.stackexchange.com/a/164197/198728.
+% Assume by default that there is a macro named '\ifcsname'
+\def\scholarifdefinedelse#1#2#3{%
+\ifcsname#1\endcsname%
+#2%
+\else%
+#3%
+\fi%
+}
+
+% If there is not, then redefine the definition macro to use lower-level macros.
 \expandafter\ifx\csname ifcsname\endcsname\relax%
 \def\scholarifdefinedelse#1#2#3{%
 \expandafter\ifx\csname #1\endcsname\relax%
@@ -11,13 +21,6 @@
 \fi%
 }
 \else
-\def\scholarifdefinedelse#1#2#3{%
-\ifcsname#1\endcsname%
-#2%
-\else%
-#3%
-\fi%
-}
 \fi
 
 \def\scholarifundefined#1#2{%
