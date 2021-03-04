@@ -1,8 +1,0 @@
-# Build artifacts
-build/
-
-# Editor settings
-.vscode/settings.json
-
-# Node modules
-node_modules
