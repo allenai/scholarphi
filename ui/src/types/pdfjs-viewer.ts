@@ -1,5 +1,19 @@
 import { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist/types/display/api";
 
+/**
+ * Declarations for the PDF.js viewer application. These types are not declared as part of
+ * @types/pdfjs-dist, probably because the PDF.js maintainers do not distribute the viewer
+ * application with pdfjs-dist package.
+ *
+ * As we are building on top of Mozilla's viewer application, these typings help us type check
+ * against expectations of the interface to viewer functionality.
+ *
+ * It's possible that these members may become inaccessible in future versions of the pdf.js
+ * package. Take care when updating the 'pdf.js' submodule of this project to check that
+ * all of these typings still accurately describe the interfaces available at runtime when
+ * the application is launched from 'viewer.html'.
+ */
+
 interface PDFPageViewportOptions {
   viewBox: any;
   scale: number;
@@ -20,20 +34,6 @@ interface PDFPageViewport {
   convertToViewportRectangle(rect: number[]): number[]; // [x1, y1, x2, y2]
   convertToPdfPoint(x: number, y: number): number[]; // [x, y]
 }
-
-/**
- * Declarations for the PDF.js viewer application. These types are not declared as part of
- * @types/pdfjs-dist, probably because the PDF.js maintainers do not distribute the viewer
- * application with pdfjs-dist package.
- *
- * As we are building on top of Mozilla's viewer application, these typings help us type check
- * against expectations of the interface to viewer functionality.
- *
- * It's possible that these members may become inaccessible in future versions of the pdf.js
- * package. Take care when updating the 'pdf.js' submodule of this project to check that
- * all of these typings still accurately describe the interfaces available at runtime when
- * the application is launched from 'viewer.html'.
- */
 export interface PDFViewerApplication {
   initialized: boolean;
   appConfig: AppConfig;
