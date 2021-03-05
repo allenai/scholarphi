@@ -45,7 +45,10 @@ module.exports = (env, argv) => {
         {
           inject: true,
           template: './public/viewer.html',
-          excludeChunks: ['list']
+          templateParameters: {
+            cacheBust: Math.random().toString(36).substring(7)
+          },
+          excludeChunks: ['list'],
         }
       ),
       new HtmlWebpackPlugin(
@@ -56,14 +59,14 @@ module.exports = (env, argv) => {
           excludeChunks: ['reader']
         }
       ),
-      // This copies everything that isn't `index.html` from `public/` into the build output
+      // This copies everything that isn't an HTML file from `public/` into the build output
       // directory.
       new CopyPlugin({
         patterns: [
           {
             from: 'public/**/*',
             filter: (absPathToFile) => {
-              return absPathToFile !== path.resolve(__dirname, 'public', 'index.html');
+              return !absPathToFile.endsWith(".html");
             },
             transformPath: (p) => p.replace(/^public\//, ''),
           },
