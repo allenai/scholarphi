@@ -84,6 +84,10 @@
   position: absolute;
 }
 
+.annotationLayer .linkAnnotation {
+  border: none !important;
+}
+
 .annotationLayer .linkAnnotation > a,
 .annotationLayer .buttonWidgetAnnotation.pushButton > a {
   position: absolute;
