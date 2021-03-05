@@ -1,4 +1,5 @@
 import logging
+import math
 from typing import (
     Callable,
     Dict,
@@ -62,6 +63,32 @@ def extract_bounding_boxes(
         boxes.append(
             BoundingBox(left_ratio, top_ratio, width_ratio, height_ratio, page_number)
         )
+
+    return boxes
+
+
+def find_boxes_with_rgb(
+    image: np.ndarray, red: int, green: int, blue: int
+) -> List[Rectangle]:
+    """
+    Arguments:
+    - 'red', 'green', 'blue': integer numbers between 0 and 255.
+    - 'tolerance': is the amount of difference from 'hue' (from 0-to-1) still considered that hue.
+    - 'masks': a set of masks to apply to the image, one at a time. Bounding boxes are extracted
+      from within each of those boxes. Masks should be in pixel coordinates.
+    """
+
+    boxes = []
+    matching_pixels = np.where(
+        (image[:, :, 0] == blue) & (image[:, :, 1] == green) & (image[:, :, 2] == red)
+    )
+
+    if len(matching_pixels[0]) > 0:
+        left = min(matching_pixels[1])
+        right = max(matching_pixels[1])
+        top = min(matching_pixels[0])
+        bottom = max(matching_pixels[0])
+        boxes.append(Rectangle(left, top, right - left + 1, bottom - top + 1))
 
     return boxes
 
