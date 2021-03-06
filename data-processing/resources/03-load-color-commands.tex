@@ -181,3 +181,24 @@ scholarcolor@\scholar@current@citation@key%
 
 % Revert '@' to just be a normal character.
 \catcode`@ = 12
+
+\newcount\initialpageno
+\newcount\currentpageno
+
+\def\scholaradvancepage{
+\message{Advancing to the next page. Starting on page \the\count0. }
+\initialpageno = \count0
+\loop
+  \message{Still on page \the\count0. Forcing end of column. }
+  \ 
+  \eject
+\ifnum \count0=\initialpageno
+\repeat
+\message{Finished advancing. Now on page \the\count0. }
+}
+
+\def\scholarfillandadvancepage{
+\message{Adding a huge solid color box to page \the\count0. }
+{\color[RGB]{250,165,80}\hrule width5000pt height5000pt}
+\scholaradvancepage{}
+}
