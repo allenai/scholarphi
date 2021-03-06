@@ -1,5 +1,6 @@
 import os
 import os.path
+import random
 import shutil
 import tempfile
 from argparse import ArgumentParser
@@ -7,18 +8,14 @@ from typing import Dict, Iterator, List, Optional, Tuple
 
 import cv2
 import numpy as np
+import requests
 from common.bounding_box import find_boxes_with_rgb
-from common.colorize_tex import (
-    COLOR_MACROS,
-    COLOR_MACROS_BASE_MACROS,
-    COLOR_MACROS_LATEX_IMPORTS,
-    COLOR_MACROS_TEX_IMPORTS,
-    add_color_macros,
-)
+from common.colorize_tex import add_color_macros
 from common.commands.raster_pages import raster_pages
 from common.compile import compile_tex
 from common.scan_tex import Pattern, scan_tex
-from common.types import Entity, Path, RelativePath
+from common.types import (ArxivId, BoundingBox, Entity, Path, Rectangle,
+                          RelativePath)
 
 
 class ColorCouldNotBeFoundException(Exception):
@@ -72,8 +69,15 @@ def _does_page_contain_start_marker(image: np.array) -> bool:
     return num_blue_pixels / float(num_pixels) > 0.5
 
 
+SymbolId = str
+PageNumber = int
+
+
 def detect_symbols(
-    original_sources_dir: Path, main_file_path: RelativePath, symbols_file_path: Path
+    arxiv_id: ArxivId,
+    original_sources_dir: Path,
+    main_file_path: RelativePath,
+    symbols_file_path: Path,
 ) -> None:
 
     # Read TeX for symbols from auxiliary file.
@@ -84,10 +88,10 @@ def detect_symbols(
 
     with tempfile.TemporaryDirectory() as temp_dir:
 
-        sources_dir = os.path.join(temp_dir, "sources")
+        sources_dir = os.path.join(temp_dir, "modified-sources")
         shutil.copytree(original_sources_dir, sources_dir)
 
-        rasters_dir = os.path.join(temp_dir, "rasters")
+        rasters_dir = os.path.join(temp_dir, "modified-rasters")
         os.makedirs(rasters_dir)
 
         templates_dir = os.path.join(temp_dir, "templates")
@@ -96,7 +100,6 @@ def detect_symbols(
         # Prepare a TeX file where the letter 'o' is repeated, each time on a new line. A
         # different color is assigned to 'o' each time it is written.
         body = ""
-        SymbolId = str
         rgbs: List[Tuple[SymbolId, Tuple[int, int, int]]] = []
         color_generator = _get_color()
         for i, symbol in enumerate(symbol_texs):
@@ -202,12 +205,12 @@ def detect_symbols(
             box = boxes[0]
             print(f"Found symbol R{red}, G{green}, B{blue} at {box}.")
 
-            symbol_template_dir = os.path.join(templates_dir, symbol_id)
-            os.makedirs(symbol_template_dir)
+            symbol_templates_dir = os.path.join(templates_dir, symbol_id)
+            os.makedirs(symbol_templates_dir)
             template_index = 0
             while True:
                 template_path = os.path.join(
-                    symbol_template_dir, f"template-{template_index}.png"
+                    symbol_templates_dir, f"template-{template_index}.png"
                 )
                 if os.path.exists(template_path):
                     template_index += 1
@@ -228,12 +231,101 @@ def detect_symbols(
                 print(f"Saved template to {template_path}.")
                 break
 
+        print("Extracted templates for all symbols.")
+
+        # Fetch original PDF on which to do visual detection of symbols.
+        pdf_name = f"{arxiv_id}.pdf"
+        with open(os.path.join(temp_dir, pdf_name), mode="wb") as pdf_file:
+            result = requests.get(f"https://arxiv.org/pdf/{arxiv_id}.pdf")
+            pdf_file.write(result.content)
+
+        # Render original PDF to images and load those images into memory.
+        # Load pages as black-and-white; symbol detection should not depend on color.
+        pdf_rasters_dir = os.path.join(temp_dir, "pdf-rasters")
+        os.makedirs(pdf_rasters_dir)
+        raster_pages(temp_dir, pdf_rasters_dir, pdf_name, "pdf")
+
+        original_pages: Dict[int, np.array] = {}
+        annotated_pages: Dict[int, np.array] = {}
+
+        for image_name in os.listdir(pdf_rasters_dir):
+            page_no = int(image_name.split(".")[0][5:])
+            image = cv2.imread(os.path.join(pdf_rasters_dir, image_name))
+            image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            # All pixels that are not exactly white are made black.
+            # TODO(andrewhead): check this little bit of code for appropriate threshold values.
+            (_, image_black_and_white) = cv2.threshold(
+                image_gray, 254, 255, cv2.THRESH_BINARY
+            )
+            original_pages[page_no] = image_black_and_white
+            annotated_pages[page_no] = image
+
+        annotated_rasters_dir = os.path.join(temp_dir, "annotated-rasters")
+        os.makedirs(annotated_rasters_dir)
+
+        # Search for each symbol in the PDF using template matching on the rastered images.
+        # At the same time, annotate each page with boxes showing the detected locations of
+        # each symbol.
+        for (symbol_id, _) in rgbs:
+            symbol_templates_dir = os.path.join(templates_dir, symbol_id)
+            templates: List[np.array] = []
+            for template_path in os.listdir(symbol_templates_dir):
+                image = cv2.imread(os.path.join(symbol_templates_dir, template_path))
+                image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                templates.append(image_gray)
+
+            # Use a consistent (yet randomly-chosen) color for each symbol detected.
+            symbol_annotation_color = (
+                random.randint(0, 256),
+                random.randint(0, 256),
+                random.randint(0, 256),
+            )
+            symbol_locations: List[Tuple[PageNumber, Rectangle]] = []
+            for page_no, page_image in original_pages.items():
+                for template in templates:
+                    MATCH_THRESHOLD = 0.95
+                    MATCH_METHOD = cv2.TM_CCOEFF_NORMED
+                    match_result = cv2.matchTemplate(page_image, template, MATCH_METHOD)
+                    match_locations = np.where(match_result > MATCH_THRESHOLD)
+
+                    template_width, template_height = template.shape[::-1]
+                    for loc in zip(*match_locations[::-1]):
+                        symbol_locations.append(
+                            (
+                                page_no,
+                                Rectangle(
+                                    left=loc[0],
+                                    top=loc[1],
+                                    width=template_width,
+                                    height=template_height,
+                                ),
+                            )
+                        )
+
+                        cv2.rectangle(
+                            annotated_pages[page_no],
+                            loc,
+                            (loc[0] + template_width, loc[1] + template_height),
+                            symbol_annotation_color,
+                            1,
+                        )
+
+        # Save annotated rasters to file for debugging.
+        for page_no, image in annotated_pages.items():
+            image_path = os.path.join(annotated_rasters_dir, f"page-{page_no}.png")
+            cv2.imwrite(image_path, image)
+
         pass
 
 
 if __name__ == "__main__":
     parser = ArgumentParser(
         description=("Automatically discover the positions of symbols.")
+    )
+    parser.add_argument(
+        "--arxiv-id",
+        required=True,
+        help=("arXiv ID of the paper in which symbols are being detected."),
     )
     parser.add_argument(
         "--sources-dir",
@@ -256,7 +348,9 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     try:
-        detect_symbols(args.sources_dir, args.main_file, args.symbols_file)
+        detect_symbols(
+            args.arxiv_id, args.sources_dir, args.main_file, args.symbols_file
+        )
     except ColorConfusionException as e:
         print(e)
         print(
