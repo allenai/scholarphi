@@ -3,7 +3,7 @@ import os.path
 import shutil
 import tempfile
 from argparse import ArgumentParser
-from typing import Iterator, List, Optional, Tuple
+from typing import Dict, Iterator, List, Optional, Tuple
 
 import cv2
 import numpy as np
@@ -90,18 +90,22 @@ def detect_symbols(
         rasters_dir = os.path.join(temp_dir, "rasters")
         os.makedirs(rasters_dir)
 
+        templates_dir = os.path.join(temp_dir, "templates")
+        os.makedirs(templates_dir)
+
         # Prepare a TeX file where the letter 'o' is repeated, each time on a new line. A
         # different color is assigned to 'o' each time it is written.
         body = ""
-        rgbs = []
+        SymbolId = str
+        rgbs: List[Tuple[SymbolId, Tuple[int, int, int]]] = []
         color_generator = _get_color()
-        for symbol in symbol_texs:
+        for i, symbol in enumerate(symbol_texs):
             red, green, blue = next(color_generator)
             colorized_symbol = (
                 rf"\textcolor[RGB]{{{red},{green},{blue}}}{{${symbol}$}}" + "\n\n"
             )
             body += colorized_symbol
-            rgbs.append((red, green, blue))
+            rgbs.append((str(i), (red, green, blue)))
 
         tex_path = os.path.join(sources_dir, main_file_path)
         with open(tex_path) as tex_file:
@@ -173,8 +177,7 @@ def detect_symbols(
             next_image = get_next_image()
             break
 
-        while rgbs:
-            red, green, blue = rgbs.pop(0)
+        for (symbol_id, (red, green, blue)) in rgbs:
             boxes = find_boxes_with_rgb(current_image, red, green, blue)
 
             if next_image is not None:
@@ -196,7 +199,36 @@ def detect_symbols(
             if not boxes:
                 raise ColorCouldNotBeFoundException()
 
-            print(f"Success! R{red}, G{green}, B{blue}")
+            box = boxes[0]
+            print(f"Found symbol R{red}, G{green}, B{blue} at {box}.")
+
+            symbol_template_dir = os.path.join(templates_dir, symbol_id)
+            os.makedirs(symbol_template_dir)
+            template_index = 0
+            while True:
+                template_path = os.path.join(
+                    symbol_template_dir, f"template-{template_index}.png"
+                )
+                if os.path.exists(template_path):
+                    template_index += 1
+                    continue
+
+                template = current_image[
+                    box.top : box.top + box.height, box.left : box.left + box.width
+                ]
+                # Convert all non-white pixels in a template to black.
+                template[
+                    np.where(
+                        (template[:, :, 0] != 255)
+                        | (template[:, :, 1] != 255)
+                        | (template[:, :, 2] != 255)
+                    )
+                ] = [0, 0, 0]
+                cv2.imwrite(template_path, template)
+                print(f"Saved template to {template_path}.")
+                break
+
+        pass
 
 
 if __name__ == "__main__":
