@@ -14,6 +14,7 @@ from common.models import Metadata
 from common.types import ArxivId, Path
 
 USER_AGENT = "Andrew Head, for academic research on dissemination of scientific insight <head.andrewm@gmail.com>"
+ARXIV_ASSET_URL_PREFIX = "https://export.arxiv.org/src/"
 
 
 logger = logging.getLogger(__name__)
@@ -36,7 +37,7 @@ def save_source_archive(
 
 def fetch_from_arxiv(arxiv_id: ArxivId, dest: Optional[Path] = None) -> None:
     logging.debug("Fetching sources for arXiv paper %s from arXiv.", arxiv_id)
-    uri = "https://arxiv.org/e-print/%s" % (arxiv_id,)
+    uri = ARXIV_ASSET_URL_PREFIX + arxiv_id
 
     try:
         response = requests.get(uri, headers={"User-Agent": USER_AGENT})
