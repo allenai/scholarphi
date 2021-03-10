@@ -48,6 +48,7 @@ def register(dirkey: str, suffix: Optional[str] = None) -> RelativePath:
 
 # Register directories in an order that roughly corresponds to the order they will be run in.
 register("arxiv-ids")
+register('arxiv-pdfs')
 register("sources-archives")
 register("s2-metadata")
 register("sources")
