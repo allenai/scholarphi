@@ -17,7 +17,6 @@ def test_raises_appropriate_exception_if_request_fails_outright():
 
             assert not mock_save_source.called
 
-
         with patch("common.fetch_arxiv.requests") as mock_requests:
             mock_requests.get.side_effect = requests.exceptions.HTTPError()
 
@@ -62,9 +61,40 @@ def test_saves_source_if_all_good():
             mock_resp.ok = True
             mock_resp.status_code = 200
             mock_resp.content = "i am some content"
+            mock_resp.headers = {"Content-Type": "application/x-eprint-tar"}
             mock_requests.get.return_value = mock_resp
 
             fetch_from_arxiv("fakeid")
 
             mock_save_source.assert_called_with("fakeid", "i am some content", None)
 
+
+def test_raises_fetch_exception_if_content_is_pdf():
+    with patch("common.fetch_arxiv.save_source_archive") as _:
+        with patch("common.fetch_arxiv.requests") as mock_requests:
+            mock_resp = Mock()
+            mock_resp.ok = True
+            mock_resp.status_code = 200
+            mock_resp.content = "some pdf content"
+            mock_resp.headers = {"Content-Type": "application/pdf"}
+            mock_requests.get.return_value = mock_resp
+
+            with pytest.raises(FetchFromArxivException):
+                fetch_from_arxiv("fakeid")
+
+def test_raises_regular_exception_if_content_is_not_pdf_nor_tarball():
+    with patch("common.fetch_arxiv.save_source_archive") as _:
+        with patch("common.fetch_arxiv.requests") as mock_requests:
+            mock_resp = Mock()
+            mock_resp.ok = True
+            mock_resp.status_code = 200
+            mock_resp.content = "some text content"
+            mock_resp.headers = {"Content-Type": "application/text"}
+            mock_requests.get.return_value = mock_resp
+
+            try:
+                fetch_from_arxiv("fakeid")
+            except Exception as e:
+                assert not isinstance(e, FetchFromArxivException)
+            else:
+                assert False, "Expected to receive an exception"
