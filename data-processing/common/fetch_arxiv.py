@@ -56,7 +56,7 @@ def fetch_from_arxiv(arxiv_id: ArxivId, dest: Optional[Path] = None) -> None:
                 raise FetchFromArxivException(msg)
             else:
                 msg = f"Unexpected content type for {arxiv_id}. Content type is {response.headers['Content-Type']}."
-                raise FetchFromArxivException(msg)
+                raise Exception(msg)
         elif response.status_code == 404:
             raise Exception(f"Paper assets don't exist in ArXiv for {arxiv_id}")
         else:

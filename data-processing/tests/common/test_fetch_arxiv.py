@@ -81,3 +81,20 @@ def test_raises_fetch_exception_if_content_is_pdf():
 
             with pytest.raises(FetchFromArxivException):
                 fetch_from_arxiv("fakeid")
+
+def test_raises_regular_exception_if_content_is_not_pdf_nor_tarball():
+    with patch("common.fetch_arxiv.save_source_archive") as _:
+        with patch("common.fetch_arxiv.requests") as mock_requests:
+            mock_resp = Mock()
+            mock_resp.ok = True
+            mock_resp.status_code = 200
+            mock_resp.content = "some text content"
+            mock_resp.headers = {"Content-Type": "application/text"}
+            mock_requests.get.return_value = mock_resp
+
+            try:
+                fetch_from_arxiv("fakeid")
+            except Exception as e:
+                assert not isinstance(e, FetchFromArxivException)
+            else:
+                assert False, "Expected to receive an exception"
