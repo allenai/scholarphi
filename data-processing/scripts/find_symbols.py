@@ -1,6 +1,8 @@
+import math
 import os
 import os.path
 import random
+import re
 import shutil
 import tempfile
 from argparse import ArgumentParser
@@ -14,8 +16,7 @@ from common.colorize_tex import add_color_macros
 from common.commands.raster_pages import raster_pages
 from common.compile import compile_tex
 from common.scan_tex import Pattern, scan_tex
-from common.types import (ArxivId, BoundingBox, Entity, Path, Rectangle,
-                          RelativePath)
+from common.types import ArxivId, Entity, Path, Rectangle, RelativePath
 
 
 class ColorCouldNotBeFoundException(Exception):
@@ -73,6 +74,7 @@ SymbolId = str
 PageNumber = int
 
 
+# @profile
 def detect_symbols(
     arxiv_id: ArxivId,
     original_sources_dir: Path,
@@ -103,12 +105,20 @@ def detect_symbols(
         rgbs: List[Tuple[SymbolId, Tuple[int, int, int]]] = []
         color_generator = _get_color()
         for i, symbol in enumerate(symbol_texs):
-            red, green, blue = next(color_generator)
-            colorized_symbol = (
-                rf"\textcolor[RGB]{{{red},{green},{blue}}}{{${symbol}$}}" + "\n\n"
-            )
-            body += colorized_symbol
-            rgbs.append((str(i), (red, green, blue)))
+            for tex_template in [
+                "${symbol}$",
+                "$_{{{symbol}}}$",
+                "$_{{_{{{symbol}}}}}$",
+            ]:
+                for offset in range(0, 10):
+                    tex = tex_template.format(symbol=symbol)
+                    red, green, blue = next(color_generator)
+                    colorized_symbol = (
+                        rf"\hskip {offset}px\textcolor[RGB]{{{red},{green},{blue}}}{{{tex}}}"
+                        + "\n\n"
+                    )
+                    body += colorized_symbol
+                    rgbs.append((str(i), (red, green, blue)))
 
         tex_path = os.path.join(sources_dir, main_file_path)
         with open(tex_path) as tex_file:
@@ -180,7 +190,14 @@ def detect_symbols(
             next_image = get_next_image()
             break
 
+        active_symbol_id = None
+        symbol_templates: List[np.array] = []
+
         for (symbol_id, (red, green, blue)) in rgbs:
+            if symbol_id != active_symbol_id:
+                symbol_templates = []
+                active_symbol_id = symbol_id
+
             boxes = find_boxes_with_rgb(current_image, red, green, blue)
 
             if next_image is not None:
@@ -206,7 +223,8 @@ def detect_symbols(
             print(f"Found symbol R{red}, G{green}, B{blue} at {box}.")
 
             symbol_templates_dir = os.path.join(templates_dir, symbol_id)
-            os.makedirs(symbol_templates_dir)
+            if not os.path.exists(symbol_templates_dir):
+                os.makedirs(symbol_templates_dir)
             template_index = 0
             while True:
                 template_path = os.path.join(
@@ -227,7 +245,21 @@ def detect_symbols(
                         | (template[:, :, 2] != 255)
                     )
                 ] = [0, 0, 0]
+                # Only save a template if it has a different appearance from the other templates
+                # saved for a symbol. This is important as a bunch of templates for the symbol
+                # at the same size are created to try to make sure that templates are saved for
+                # every way that extra space might have been introduced between characters in the
+                # symbol when the PDF was rendered to an image.
+                already_saved = False
+                for t in symbol_templates:
+                    if np.array_equal(t, template):
+                        already_saved = True
+                        break
+                if already_saved:
+                    break
+
                 cv2.imwrite(template_path, template)
+                symbol_templates.append(template)
                 print(f"Saved template to {template_path}.")
                 break
 
@@ -246,18 +278,22 @@ def detect_symbols(
         raster_pages(temp_dir, pdf_rasters_dir, pdf_name, "pdf")
 
         original_pages: Dict[int, np.array] = {}
+        original_page_strings: Dict[int, str] = {}
         annotated_pages: Dict[int, np.array] = {}
 
         for image_name in os.listdir(pdf_rasters_dir):
             page_no = int(image_name.split(".")[0][5:])
             image = cv2.imread(os.path.join(pdf_rasters_dir, image_name))
             image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            image_string = image_to_string(image_gray)
             # All pixels that are not exactly white are made black.
             # TODO(andrewhead): check this little bit of code for appropriate threshold values.
             (_, image_black_and_white) = cv2.threshold(
                 image_gray, 254, 255, cv2.THRESH_BINARY
             )
+            # image_gray = cv2.blur(image_gray, (3, 3))
             original_pages[page_no] = image_black_and_white
+            original_page_strings[page_no] = image_string
             annotated_pages[page_no] = image
 
         annotated_rasters_dir = os.path.join(temp_dir, "annotated-rasters")
@@ -266,12 +302,14 @@ def detect_symbols(
         # Search for each symbol in the PDF using template matching on the rastered images.
         # At the same time, annotate each page with boxes showing the detected locations of
         # each symbol.
-        for (symbol_id, _) in rgbs:
+        unique_symbol_ids = set(item[0] for item in rgbs)
+        for symbol_id in unique_symbol_ids:
             symbol_templates_dir = os.path.join(templates_dir, symbol_id)
             templates: List[np.array] = []
             for template_path in os.listdir(symbol_templates_dir):
                 image = cv2.imread(os.path.join(symbol_templates_dir, template_path))
                 image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                # image_gray = cv2.blur(image_gray, (3, 3))
                 templates.append(image_gray)
 
             # Use a consistent (yet randomly-chosen) color for each symbol detected.
@@ -280,22 +318,38 @@ def detect_symbols(
                 random.randint(0, 256),
                 random.randint(0, 256),
             )
+
             symbol_locations: List[Tuple[PageNumber, Rectangle]] = []
             for page_no, page_image in original_pages.items():
                 for template in templates:
-                    MATCH_THRESHOLD = 0.95
-                    MATCH_METHOD = cv2.TM_CCOEFF_NORMED
-                    match_result = cv2.matchTemplate(page_image, template, MATCH_METHOD)
-                    match_locations = np.where(match_result > MATCH_THRESHOLD)
+                    page_width = len(page_image[0])
+                    template_width = len(template[0])
+                    page_image_string = original_page_strings[page_no]
+                    template_string = image_to_string(
+                        template, page_width - template_width
+                    )
+                    # MATCH_THRESHOLD = 0.9
+                    # MATCH_METHOD = cv2.TM_CCOEFF_NORMED
+                    # MATCH_METHOD = cv2.TM_SQDIFF_NORMED
+                    # match_result = cv2.matchTemplate(page_image, template, MATCH_METHOD)
+                    # match_locations = np.where(match_result > MATCH_THRESHOLD)
 
                     template_width, template_height = template.shape[::-1]
-                    for loc in zip(*match_locations[::-1]):
+                    search_start = 0
+                    pattern = re.compile(template_string)
+                    while True:
+                        match = pattern.search(page_image_string, pos=search_start)
+                        if match is None:
+                            break
+                        start_character = match.start()
+                        left = start_character % page_width
+                        top = math.floor(start_character / page_width)
                         symbol_locations.append(
                             (
                                 page_no,
                                 Rectangle(
-                                    left=loc[0],
-                                    top=loc[1],
+                                    left=left,
+                                    top=top,
                                     width=template_width,
                                     height=template_height,
                                 ),
@@ -304,18 +358,56 @@ def detect_symbols(
 
                         cv2.rectangle(
                             annotated_pages[page_no],
-                            loc,
-                            (loc[0] + template_width, loc[1] + template_height),
+                            (left, top),
+                            (left + template_width, top + template_height),
                             symbol_annotation_color,
                             1,
                         )
 
+                        search_start = match.start() + 1
+
         # Save annotated rasters to file for debugging.
         for page_no, image in annotated_pages.items():
+            # assert False, "Come up with a way to detect inside of 'max'"
             image_path = os.path.join(annotated_rasters_dir, f"page-{page_no}.png")
             cv2.imwrite(image_path, image)
 
         pass
+
+
+def image_to_string(image: np.array, pattern_padding: int = 0) -> str:
+    """
+    Convert image to flattened string representation appropriate for conducting efficient
+    exact matching of pixesl. In the string, a '0' represents a blank pixel (e.g., white)
+    and a '1' represents a non-blank pixel (e.g., gray or black).
+
+    It is assumed that the input image is in grayscale format.
+
+    If using this method to create a template to match against a larger image, set the
+    'pattern_padding' to be the number of pixels difference between the width of the
+    larger image and the template image. Wildcards (i.e., '.') will be inserted for these
+    extra padded pixels, which will be able to match anything in the larger image.
+    """
+
+    thresholded = image.copy()
+    blank_pixels = image == 255
+    non_blank_pixels = image < 255
+
+    thresholded[blank_pixels] = 0
+    thresholded[non_blank_pixels] = 1
+
+    s = ""
+    for row_index, row in enumerate(thresholded):
+        s += "".join([str(p) for p in row.tolist()])
+        if row_index < len(thresholded) - 1:
+            s += "." * pattern_padding
+
+    # assert False, (
+    #     "Also, can strip out the edges beyond the symbol! So that matches can "
+    #     + "be performed on contours instead of rectangles."
+    # )
+
+    return s
 
 
 if __name__ == "__main__":
