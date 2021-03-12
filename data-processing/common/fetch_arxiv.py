@@ -49,14 +49,7 @@ def fetch_from_arxiv(arxiv_id: ArxivId, dest: Optional[Path] = None) -> None:
 
     else:
         if response.ok:
-            if response.headers["Content-Type"] == "application/x-eprint-tar":
-                save_source_archive(arxiv_id, response.content, dest)
-            elif response.headers["Content-Type"] == "application/pdf":
-                msg = f"{arxiv_id} is a pdf, but might become a tarball later. Raising exception to trigger retry."
-                raise FetchFromArxivException(msg)
-            else:
-                msg = f"Unexpected content type for {arxiv_id}. Content type is {response.headers['Content-Type']}."
-                raise FetchFromArxivException(msg)
+            save_source_archive(arxiv_id, response.content, dest)
         elif response.status_code == 404:
             raise Exception(f"Paper assets don't exist in ArXiv for {arxiv_id}")
         else:
