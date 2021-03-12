@@ -6,6 +6,7 @@ import re
 import shutil
 import tempfile
 from argparse import ArgumentParser
+from dataclasses import dataclass
 from typing import Dict, Iterator, List, Optional, Tuple
 
 import cv2
@@ -234,15 +235,15 @@ def detect_symbols(
                     template_index += 1
                     continue
 
-                template = current_image[
+                template_img = current_image[
                     box.top : box.top + box.height, box.left : box.left + box.width
                 ]
                 # Convert all non-white pixels in a template to black.
-                template[
+                template_img[
                     np.where(
-                        (template[:, :, 0] != 255)
-                        | (template[:, :, 1] != 255)
-                        | (template[:, :, 2] != 255)
+                        (template_img[:, :, 0] != 255)
+                        | (template_img[:, :, 1] != 255)
+                        | (template_img[:, :, 2] != 255)
                     )
                 ] = [0, 0, 0]
                 # Only save a template if it has a different appearance from the other templates
@@ -252,14 +253,14 @@ def detect_symbols(
                 # symbol when the PDF was rendered to an image.
                 already_saved = False
                 for t in symbol_templates:
-                    if np.array_equal(t, template):
+                    if np.array_equal(t, template_img):
                         already_saved = True
                         break
                 if already_saved:
                     break
 
-                cv2.imwrite(template_path, template)
-                symbol_templates.append(template)
+                cv2.imwrite(template_path, template_img)
+                symbol_templates.append(template_img)
                 print(f"Saved template to {template_path}.")
                 break
 
@@ -303,79 +304,94 @@ def detect_symbols(
         # At the same time, annotate each page with boxes showing the detected locations of
         # each symbol.
         unique_symbol_ids = set(item[0] for item in rgbs)
+
+        symbol_annotation_colors: Dict[SymbolId, Tuple[int, int, int]] = {}
+        page_width = len(list(original_pages.values())[0][0])
+        template_patterns: List[str] = []
+
         for symbol_id in unique_symbol_ids:
+
             symbol_templates_dir = os.path.join(templates_dir, symbol_id)
-            templates: List[np.array] = []
-            for template_path in os.listdir(symbol_templates_dir):
+
+            for ti, template_path in enumerate(os.listdir(symbol_templates_dir)):
                 image = cv2.imread(os.path.join(symbol_templates_dir, template_path))
-                image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-                # image_gray = cv2.blur(image_gray, (3, 3))
-                templates.append(image_gray)
+                template_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                template_width = len(template_img[0])
+                template = image_to_string(template_img, page_width - template_width)
+                template_pattern = f"(?P<template_{symbol_id}_{ti}>{template.pattern})"
+                template_patterns.append(template_pattern)
 
             # Use a consistent (yet randomly-chosen) color for each symbol detected.
-            symbol_annotation_color = (
+            color = (
                 random.randint(0, 256),
                 random.randint(0, 256),
                 random.randint(0, 256),
             )
+            symbol_annotation_colors[symbol_id] = color
 
-            symbol_locations: List[Tuple[PageNumber, Rectangle]] = []
-            for page_no, page_image in original_pages.items():
-                for template in templates:
-                    page_width = len(page_image[0])
-                    template_width = len(template[0])
-                    page_image_string = original_page_strings[page_no]
-                    template_string = image_to_string(
-                        template, page_width - template_width
+        shared_template = re.compile("|".join(template_patterns))
+
+        for page_no, page_image in original_pages.items():
+            search_start = 0
+            page_string = image_to_string(page_image).pattern
+            symbol_locations: List[Tuple[SymbolId, Rectangle]] = []
+            while True:
+                match = shared_template.search(page_string, pos=search_start)
+                if match is None:
+                    break
+
+                pattern_name = match.lastgroup
+                if pattern_name:
+                    symbol_id = pattern_name.split("_")[1]
+                    start_character = match.start()
+                    end_character = match.end() - 1
+
+                    left = start_character % page_width
+                    top = math.floor(start_character / page_width)
+                    right = end_character % page_width
+                    bottom = math.floor(end_character / page_width)
+
+                    symbol_locations.append(
+                        (
+                            symbol_id,
+                            Rectangle(
+                                left=left,
+                                top=top,
+                                width=right - left,
+                                height=bottom - top,
+                            ),
+                        )
                     )
-                    # MATCH_THRESHOLD = 0.9
-                    # MATCH_METHOD = cv2.TM_CCOEFF_NORMED
-                    # MATCH_METHOD = cv2.TM_SQDIFF_NORMED
-                    # match_result = cv2.matchTemplate(page_image, template, MATCH_METHOD)
-                    # match_locations = np.where(match_result > MATCH_THRESHOLD)
 
-                    template_width, template_height = template.shape[::-1]
-                    search_start = 0
-                    pattern = re.compile(template_string)
-                    while True:
-                        match = pattern.search(page_image_string, pos=search_start)
-                        if match is None:
-                            break
-                        start_character = match.start()
-                        left = start_character % page_width
-                        top = math.floor(start_character / page_width)
-                        symbol_locations.append(
-                            (
-                                page_no,
-                                Rectangle(
-                                    left=left,
-                                    top=top,
-                                    width=template_width,
-                                    height=template_height,
-                                ),
-                            )
-                        )
+                search_start = match.start() + 1
 
-                        cv2.rectangle(
-                            annotated_pages[page_no],
-                            (left, top),
-                            (left + template_width, top + template_height),
-                            symbol_annotation_color,
-                            1,
-                        )
-
-                        search_start = match.start() + 1
+            for (symbol_id, loc) in symbol_locations:
+                color = symbol_annotation_colors[symbol_id]
+                cv2.rectangle(
+                    annotated_pages[page_no],
+                    (loc.left, loc.top),
+                    (loc.left + loc.width, loc.top + loc.height),
+                    color,
+                    1,
+                )
 
         # Save annotated rasters to file for debugging.
         for page_no, image in annotated_pages.items():
             # assert False, "Come up with a way to detect inside of 'max'"
+            # assert False, "Compute page width dynamically (just in case)"
             image_path = os.path.join(annotated_rasters_dir, f"page-{page_no}.png")
             cv2.imwrite(image_path, image)
 
         pass
 
 
-def image_to_string(image: np.array, pattern_padding: int = 0) -> str:
+@dataclass
+class Template:
+    pattern: str
+    prefix: str
+
+
+def image_to_string(image: np.array, pattern_padding: int = 0) -> Template:
     """
     Convert image to flattened string representation appropriate for conducting efficient
     exact matching of pixesl. In the string, a '0' represents a blank pixel (e.g., white)
@@ -407,7 +423,7 @@ def image_to_string(image: np.array, pattern_padding: int = 0) -> str:
     #     + "be performed on contours instead of rectangles."
     # )
 
-    return s
+    return Template(prefix="".join(thresholded[0].tolist()), pattern=s)
 
 
 if __name__ == "__main__":
