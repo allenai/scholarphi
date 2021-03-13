@@ -89,6 +89,8 @@ def detect_symbols(
         for line in symbols_file:
             symbol_texs.append(line.strip())
 
+    if os.path.exists(output_dir):
+        shutil.rmtree(output_dir)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
