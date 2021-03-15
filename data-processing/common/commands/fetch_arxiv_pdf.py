@@ -1,3 +1,5 @@
+import os
+
 import time
 from argparse import ArgumentParser
 import logging
@@ -42,8 +44,9 @@ class FetchArxivPdf(ArxivBatchCommand[ArxivId, None]):
 
         while True:
             try:
-                result = fetch_pdf_from_arxiv(item, dest=directories.arxiv_subdir(dirkey='arxiv-pdfs',
-                                                                                  arxiv_id=item))
+                result = fetch_pdf_from_arxiv(item, dest=os.path.join(
+                    directories.arxiv_subdir(dirkey='arxiv-pdfs', arxiv_id=item), f'{item}.pdf'
+                ))
                 yield result
                 break
             except FetchFromArxivPDFException as e:
