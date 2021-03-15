@@ -13,7 +13,7 @@ from common.types import ArxivId, BoundingBox, EntityLocationInfo, SerializableS
     RelativePath, Context
 from entities.sentences.types import Sentence
 
-from entities.sentences.pdf_stuff import SppBBox, TokenWithBBox, SymbolWithBBoxes, SentenceWithBBoxes, \
+from entities.sentences_pdf.pdf_stuff import SppBBox, TokenWithBBox, SymbolWithBBoxes, SentenceWithBBoxes, \
     RowWithBBox, Block, are_bboxes_intersecting
 
 
@@ -77,7 +77,7 @@ class LocateSentencesCommand(ArxivBatchCommand[Any, Any]):
                 directories.arxiv_subdir(dirkey='contexts-for-symbols', arxiv_id=arxiv_id), 'contexts.csv'), Context))
 
             # TODO; fill this out
-            blocks =
+            blocks = 0
 
             yield LocationTask(arxiv_id=arxiv_id, sentneces=[], symbols=[], equations=[], contexts=[])
 
