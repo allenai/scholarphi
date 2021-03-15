@@ -3,7 +3,7 @@ from typing import Optional, cast
 from common.types import BoundingBox, EntityUploadInfo, PaperProcessingResult
 from common.upload_entities import upload_entities
 
-from .types import Sentence as SentenceEntity
+from entities.sentences.types import Sentence as SentenceEntity
 
 
 def upload_sentences(
