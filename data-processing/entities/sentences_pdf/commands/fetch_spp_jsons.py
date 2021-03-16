@@ -68,7 +68,7 @@ class FetchSppJsons(ArxivBatchCommand[ArxivId, None]):
         results_dir = directories.arxiv_subdir('fetched-spp-jsons', item.arxiv_id)
         if not os.path.exists(results_dir):
             os.makedirs(results_dir)
-        spp_json_path = os.path.join(results_dir, f"{item.arxiv_id}.json")
+        spp_json_path = os.path.join(results_dir, f"spp.json")
         with open(spp_json_path, 'w') as f_out:
             json.dump(result, f_out)
 

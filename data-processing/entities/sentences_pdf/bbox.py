@@ -13,12 +13,15 @@ import csv
 
 from collections import defaultdict
 
-from common.types import BoundingBox
+from common.types import BoundingBox, SerializableSymbol, Context, Equation
+from entities.sentences.types import Sentence
 from common.bounding_box import are_intersecting
 
 import numpy as np
 import pysbd
 
+from entities.sentences_pdf.fuzzy_match import compute_ngrams, compute_best_alignments_with_threshold, \
+    tokenized_sentence_similarity
 
 def _bbox_to_json(bbox: BoundingBox) -> List:
     return [bbox.left, bbox.top, bbox.width, bbox.height, bbox.page]
@@ -152,6 +155,7 @@ class RowWithBBox:
 
     def _compute_union_bbox_from_tokens(self) -> BoundingBox:
         return _union_bboxes(bboxes=[token.bbox for token in self.tokens])
+
 
 class Block:
 
@@ -308,3 +312,5 @@ class Block:
                     block = Block(tokens=block_tokens, bbox=block_bbox, type=block_dict['type'])
                     blocks.append(block)
         return blocks
+
+

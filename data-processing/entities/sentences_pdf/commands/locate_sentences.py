@@ -4,27 +4,30 @@ from scripts import run_pipeline
 import logging
 import os.path
 from dataclasses import dataclass
-from typing import Iterator, List, Any
+from typing import Iterator, List, Any, Dict
 
 from common import directories, file_utils
-from common.bounding_box import cluster_boxes
 from common.commands.base import ArxivBatchCommand
 from common.types import ArxivId, BoundingBox, EntityLocationInfo, SerializableSymbol, Equation, HueLocationInfo, \
     RelativePath, Context
 from entities.sentences.types import Sentence
 
-from entities.sentences_pdf.pdf_stuff import SppBBox, TokenWithBBox, SymbolWithBBoxes, SentenceWithBBoxes, \
-    RowWithBBox, Block, are_bboxes_intersecting
+from entities.sentences_pdf.bbox import SymbolWithBBoxes, Block
+from entities.sentences_pdf.fuzzy_match import locate_sentences_fuzzy_ngram
+
+from collections import defaultdict
 
 
 @dataclass(frozen=True)
 class LocationTask:
     tex_path: RelativePath
     arxiv_id: ArxivId
-    sentences: List[Sentence]
-    symbols: List[SerializableSymbol]
-    equations: List[Equation]
-    contexts: List[Context]
+    pipeline_sentences: List[Sentence]
+    pipeline_symbols: List[SerializableSymbol]
+    pipeline_equations: List[Equation]
+    pipeline_contexts: List[Context]
+    symbol_id_to_symbol: Dict[str, SymbolWithBBoxes]
+    equation_id_to_equation: Dict[str, SymbolWithBBoxes]
     blocks: List[Block]
 
 
@@ -48,41 +51,56 @@ class LocateSentencesCommand(ArxivBatchCommand[Any, Any]):
             output_dir = directories.arxiv_subdir("sentences-locations", arxiv_id)
             file_utils.clean_directory(output_dir)
 
-             # TODO; this is good
-            sentences = list(file_utils.load_from_csv(csv_path=os.path.join(
-                directories.arxiv_subdir(dirkey='detected-sentences', arxiv_id=arxiv_id), 'entities.csv'
-            ), D=Sentence))
+            pipeline_sentences = list(file_utils.load_from_csv(
+                os.path.join(directories.arxiv_subdir(dirkey='detected-sentences', arxiv_id=arxiv_id), 'entities.csv'),
+                Sentence)
+            )
 
-
-            # TODO:  alternative is f'{symbol.tex_path}-{symbol.equation-index}-{symbol.symbol_index}'
             _symbol_id_to_symbol_bboxes = dict(file_utils.load_locations(arxiv_id=arxiv_id, entity_name='symbols'))
-            pipeline_symbols = list(file_utils.load_from_csv(os.path.join(
-                directories.arxiv_subdir(dirkey='detected-symbols', arxiv_id=arxiv_id), 'entities.csv'
-            ), SerializableSymbol))
+            pipeline_symbols = list(file_utils.load_from_csv(
+                os.path.join(directories.arxiv_subdir(dirkey='detected-symbols', arxiv_id=arxiv_id), 'entities.csv'),
+                SerializableSymbol)
+            )
             symbol_id_to_symbol = {
-                f'{symbol.tex_path}-{symbol.id_}': SymbolWithBBoxes(text=f'${symbol.tex}$', bboxes=_symbol_id_to_symbol_bboxes[symbol.id_])
+                f'{symbol.tex_path}-{symbol.id_}': SymbolWithBBoxes(text=f'${symbol.tex}$',
+                                                                    bboxes=_symbol_id_to_symbol_bboxes[symbol.id_])
                 for symbol in pipeline_symbols
             }
 
             _equation_id_to_equation_bboxes = dict(file_utils.load_locations(arxiv_id=arxiv_id, entity_name='equations'))
-            pipeline_equations = list(file_utils.load_from_csv(os.path.join(
-                directories.arxiv_subdir(dirkey='detected-equations', arxiv_id=arxiv_id), 'entities.csv'
-            ), Equation))
+            pipeline_equations = list(file_utils.load_from_csv(
+                os.path.join(directories.arxiv_subdir(dirkey='detected-equations', arxiv_id=arxiv_id), 'entities.csv'),
+                Equation)
+            )
             equation_id_to_equation = {
-                equation.id_: SymbolWithBBoxes(text=equation.tex, bboxes=_equation_id_to_equation_bboxes[equation.id_])
+                equation.id_: SymbolWithBBoxes(text=equation.tex,
+                                               bboxes=_equation_id_to_equation_bboxes[equation.id_])
                 for equation in pipeline_equations
             }
 
-            contexts = list(file_utils.load_from_csv(os.path.join(
-                directories.arxiv_subdir(dirkey='contexts-for-symbols', arxiv_id=arxiv_id), 'contexts.csv'), Context))
+            pipeline_contexts = list(file_utils.load_from_csv(
+                os.path.join(directories.arxiv_subdir(dirkey='contexts-for-symbols', arxiv_id=arxiv_id), 'contexts.csv'),
+                Context)
+            )
 
-            # TODO; fill this out
-            blocks = 0
+            blocks = Block.build_blocks_from_spp_json(
+                infile=os.path.join(directories.arxiv_subdir(dirkey='fetched-spp-jsons', arxiv_id=arxiv_id), 'spp.json')
+            )
 
-            yield LocationTask(arxiv_id=arxiv_id, sentneces=[], symbols=[], equations=[], contexts=[])
+            yield LocationTask(arxiv_id=arxiv_id,
+                               pipeline_sentences=pipeline_sentences,
+                               pipeline_symbols=pipeline_symbols,
+                               pipeline_equations=pipeline_equations,
+                               pipeline_contexts=pipeline_contexts,
+                               symbol_id_to_symbol=symbol_id_to_symbol,
+                               equation_id_to_equation=equation_id_to_equation,
+                               blocks=blocks)
 
 
     def process(self, item: LocationTask) -> Iterator[EntityLocationInfo]:
+
+        locate_sentences_fuzzy_ngram()
+
         sentences = []
         for sentence in sentences:
             for bbox in sentence.bboxes:
