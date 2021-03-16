@@ -20,8 +20,6 @@ from common.bounding_box import are_intersecting
 import numpy as np
 import pysbd
 
-from entities.sentences_pdf.fuzzy_match import compute_ngrams, compute_best_alignments_with_threshold, \
-    tokenized_sentence_similarity
 
 def _bbox_to_json(bbox: BoundingBox) -> List:
     return [bbox.left, bbox.top, bbox.width, bbox.height, bbox.page]

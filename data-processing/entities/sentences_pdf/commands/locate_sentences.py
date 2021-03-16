@@ -1,5 +1,5 @@
 # TODO - keep for development
-from scripts import run_pipeline
+# from scripts import run_pipeline
 
 import logging
 import os.path
