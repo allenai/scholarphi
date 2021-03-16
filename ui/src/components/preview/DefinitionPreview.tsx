@@ -7,7 +7,7 @@ import * as uiUtils from "../../utils/ui";
 
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import { PDFDocumentProxy } from "pdfjs-dist";
+import { PDFDocumentProxy } from "pdfjs-dist/types/display/api";
 import React from "react";
 
 interface Props {
