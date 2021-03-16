@@ -99,14 +99,19 @@ class LocateSentencesCommand(ArxivBatchCommand[Any, Any]):
 
     def process(self, item: LocationTask) -> Iterator[EntityLocationInfo]:
 
-        locate_sentences_fuzzy_ngram()
+        sentence_id_to_bboxes = locate_sentences_fuzzy_ngram(pipeline_symbols=item.pipeline_symbols,
+                                                             pipeline_equations=item.pipeline_equations,
+                                                             pipeline_sentences=item.pipeline_sentences,
+                                                             pipeline_contexts=item.pipeline_contexts,
+                                                             symbol_id_to_symbol=item.symbol_id_to_symbol,
+                                                             equation_id_to_equation=item.equation_id_to_equation,
+                                                             blocks=item.blocks)
 
-        sentences = []
-        for sentence in sentences:
-            for bbox in sentence.bboxes:
+        for sentence_id, bboxes in sentence_id_to_bboxes:
+            for bbox in bboxes:
                 yield EntityLocationInfo(
                     tex_path="N/A",
-                    entity_id=sentence.id_,
+                    entity_id=sentence_id,
                     page=bbox.page,
                     left=bbox.left,
                     top=bbox.top,
