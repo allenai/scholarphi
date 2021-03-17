@@ -20,7 +20,6 @@ from collections import defaultdict
 
 @dataclass(frozen=True)
 class LocationTask:
-    tex_path: RelativePath
     arxiv_id: ArxivId
     pipeline_sentences: List[Sentence]
     pipeline_symbols: List[SerializableSymbol]
@@ -107,7 +106,7 @@ class LocateSentencesCommand(ArxivBatchCommand[Any, Any]):
                                                              equation_id_to_equation=item.equation_id_to_equation,
                                                              blocks=item.blocks)
 
-        for sentence_id, bboxes in sentence_id_to_bboxes:
+        for sentence_id, bboxes in sentence_id_to_bboxes.items():
             for bbox in bboxes:
                 yield EntityLocationInfo(
                     tex_path="N/A",
@@ -121,5 +120,7 @@ class LocateSentencesCommand(ArxivBatchCommand[Any, Any]):
 
     def save(self, item: LocationTask, result: EntityLocationInfo) -> None:
         output_dir = directories.arxiv_subdir("sentences-locations", item.arxiv_id)
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
         locations_path = os.path.join(output_dir, "entity_locations.csv")
         file_utils.append_to_csv(locations_path, result)

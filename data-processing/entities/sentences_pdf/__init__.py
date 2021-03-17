@@ -20,7 +20,9 @@ directories.register(f"sentences-locations")
 commands.append(LocateSentencesCommand)
 
 # step 4: upload
-upload_command = make_upload_entities_command('sentences', upload_sentences, DetectedEntityType=Sentence)
+upload_command = make_upload_entities_command(entity_name='sentences',
+                                              upload_func=upload_sentences,
+                                              DetectedEntityType=Sentence)
 commands.append(upload_command)
 
 # register
