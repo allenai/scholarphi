@@ -49,12 +49,15 @@ class FetchSppJsons(ArxivBatchCommand[ArxivId, None]):
 
     def load(self) -> Iterator[SppJsonTask]:
         for arxiv_id in self.arxiv_ids:
-            yield SppJsonTask(
-                arxiv_id=arxiv_id,
-                pdf_path=os.path.join(directories.arxiv_subdir('arxiv-pdfs', arxiv_id=arxiv_id), f'{arxiv_id}.pdf'),
-                # TODO -- change to real one
-                spp_host='http://localhost:8080/detect'
-            )
+            with open(f'/data-processing/scienceparseplus/jsons/{arxiv_id}.json') as f_in:
+                d = json.load(f_in)
+                yield d
+            # yield SppJsonTask(
+            #     arxiv_id=arxiv_id,
+            #     pdf_path=os.path.join(directories.arxiv_subdir('arxiv-pdfs', arxiv_id=arxiv_id), f'{arxiv_id}.pdf'),
+            #     # TODO -- change to real one
+            #     spp_host='http://pdf-layout-detection-service-dev.us-west-2.elasticbeanstalk.com/detect'
+            # )
 
     def process(self, item: SppJsonTask) -> Iterator[dict]:
         f = open(item.pdf_path, 'rb')
