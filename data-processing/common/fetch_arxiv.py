@@ -83,6 +83,8 @@ def fetch_pdf_from_arxiv(arxiv_id: ArxivId, dest: Path) -> None:
 
     else:
         if response.ok:
+            if not os.path.exists(os.path.dirname(dest)):
+                os.makedirs(os.path.dirname(dest))
             with open(dest, 'wb') as destfile:
                 destfile.write(response.content)
 
