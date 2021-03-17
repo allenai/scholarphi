@@ -27,6 +27,7 @@ class LocationTask:
     pipeline_contexts: List[Context]
     symbol_id_to_symbol: Dict[str, SymbolWithBBoxes]
     equation_id_to_equation: Dict[str, SymbolWithBBoxes]
+    sentence_id_to_tex_path: Dict[str, str]
     blocks: List[Block]
 
 
@@ -54,6 +55,7 @@ class LocateSentencesCommand(ArxivBatchCommand[Any, Any]):
                 os.path.join(directories.arxiv_subdir(dirkey='detected-sentences', arxiv_id=arxiv_id), 'entities.csv'),
                 Sentence)
             )
+            sentence_id_to_tex_path = {s.id_: s.tex_path for s in pipeline_sentences}
 
             _symbol_id_to_symbol_bboxes = dict(file_utils.load_locations(arxiv_id=arxiv_id, entity_name='symbols'))
             pipeline_symbols = list(file_utils.load_from_csv(
@@ -93,6 +95,7 @@ class LocateSentencesCommand(ArxivBatchCommand[Any, Any]):
                                pipeline_contexts=pipeline_contexts,
                                symbol_id_to_symbol=symbol_id_to_symbol,
                                equation_id_to_equation=equation_id_to_equation,
+                               sentence_id_to_tex_path=sentence_id_to_tex_path,
                                blocks=blocks)
 
 
@@ -109,7 +112,7 @@ class LocateSentencesCommand(ArxivBatchCommand[Any, Any]):
         for sentence_id, bboxes in sentence_id_to_bboxes.items():
             for bbox in bboxes:
                 yield EntityLocationInfo(
-                    tex_path="N/A",
+                    tex_path=item.sentence_id_to_tex_path[sentence_id],
                     entity_id=sentence_id,
                     page=bbox.page,
                     left=bbox.left,
