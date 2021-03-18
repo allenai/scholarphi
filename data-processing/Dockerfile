@@ -64,13 +64,6 @@ RUN npm run install-katex
 # Install vim for when we inevitably want to inspect files
 RUN apt-get install -y vim
 
-# Install dependencies for ScienceParsePlus
-RUN pip install "git+https://github.com/facebookresearch/detectron2.git#egg=detectron2"
-RUN apt-get -y install poppler-utils
-
-ARG GITHUB_ACCESS_TOKEN
-RUN git clone -b kylel/2021-01-28/dockerfile https://$GITHUB_ACCESS_TOKEN@github.com/allenai/scienceparseplus
-
 # Copy over the source code
 WORKDIR /data-processing
 COPY . .
