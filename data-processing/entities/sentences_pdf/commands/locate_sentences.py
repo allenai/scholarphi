@@ -1,5 +1,22 @@
 # TODO - keep for development
 # from scripts import run_pipeline
+"""
+
+If you'd like to verify that this is working, run SQL query in DB like:
+
+    select *
+    from entity
+    join paper on (entity.paper_id = paper.s2_id)
+    join entitydata on (entity.id = entitydata.entity_id)
+    join boundingbox on (entity.id = boundingbox.entity_id)
+    where entity.created_at >= '2021-03-17'
+    and entity.version = (select max(version) from entity)
+    and paper.arxiv_id = '1601.00978'
+    and entity.type = 'sentence'
+    and entitydata.key = 'tex';
+
+"""
+
 
 import logging
 import os.path
@@ -95,7 +112,7 @@ class LocateSentencesCommand(ArxivBatchCommand[Any, Any]):
                                pipeline_contexts=pipeline_contexts,
                                symbol_id_to_symbol=symbol_id_to_symbol,
                                equation_id_to_equation=equation_id_to_equation,
-                               sentence_id_to_tex_path=sentence_id_to_meta_info,
+                               sentence_id_to_meta_info=sentence_id_to_meta_info,
                                blocks=blocks)
 
 
