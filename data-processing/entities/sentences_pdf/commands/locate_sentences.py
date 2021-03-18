@@ -27,7 +27,7 @@ class LocationTask:
     pipeline_contexts: List[Context]
     symbol_id_to_symbol: Dict[str, SymbolWithBBoxes]
     equation_id_to_equation: Dict[str, SymbolWithBBoxes]
-    sentence_id_to_tex_path: Dict[str, str]
+    sentence_id_to_meta_info: Dict[str, Dict]
     blocks: List[Block]
 
 
@@ -55,7 +55,7 @@ class LocateSentencesCommand(ArxivBatchCommand[Any, Any]):
                 os.path.join(directories.arxiv_subdir(dirkey='detected-sentences', arxiv_id=arxiv_id), 'entities.csv'),
                 Sentence)
             )
-            sentence_id_to_tex_path = {s.id_: s.tex_path for s in pipeline_sentences}
+            sentence_id_to_meta_info = {f'{s.tex_path}-{s.id_}': {'tex_path': s.tex_path, 'id': s.id_} for s in pipeline_sentences}
 
             _symbol_id_to_symbol_bboxes = dict(file_utils.load_locations(arxiv_id=arxiv_id, entity_name='symbols'))
             pipeline_symbols = list(file_utils.load_from_csv(
@@ -95,7 +95,7 @@ class LocateSentencesCommand(ArxivBatchCommand[Any, Any]):
                                pipeline_contexts=pipeline_contexts,
                                symbol_id_to_symbol=symbol_id_to_symbol,
                                equation_id_to_equation=equation_id_to_equation,
-                               sentence_id_to_tex_path=sentence_id_to_tex_path,
+                               sentence_id_to_tex_path=sentence_id_to_meta_info,
                                blocks=blocks)
 
 
@@ -111,9 +111,10 @@ class LocateSentencesCommand(ArxivBatchCommand[Any, Any]):
 
         for sentence_id, bboxes in sentence_id_to_bboxes.items():
             for bbox in bboxes:
+                meta_info = item.sentence_id_to_meta_info[sentence_id]
                 yield EntityLocationInfo(
-                    tex_path=item.sentence_id_to_tex_path[sentence_id],
-                    entity_id=sentence_id,
+                    tex_path=meta_info['tex_path'],
+                    entity_id=meta_info['id'],
                     page=bbox.page,
                     left=bbox.left,
                     top=bbox.top,
