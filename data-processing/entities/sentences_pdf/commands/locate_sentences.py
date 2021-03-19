@@ -79,6 +79,9 @@ class LocateSentencesCommand(ArxivBatchCommand[Any, Any]):
                 os.path.join(directories.arxiv_subdir(dirkey='detected-symbols', arxiv_id=arxiv_id), 'entities.csv'),
                 SerializableSymbol)
             )
+            pipeline_symbols = [
+                symbol for symbol in pipeline_symbols if symbol.id_ in _symbol_id_to_symbol_bboxes    # not all symbols have bboxes!
+            ]
             symbol_id_to_symbol = {
                 f'{symbol.tex_path}-{symbol.id_}': SymbolWithBBoxes(text=f'${symbol.tex}$',
                                                                     bboxes=_symbol_id_to_symbol_bboxes[symbol.id_])
@@ -90,6 +93,9 @@ class LocateSentencesCommand(ArxivBatchCommand[Any, Any]):
                 os.path.join(directories.arxiv_subdir(dirkey='detected-equations', arxiv_id=arxiv_id), 'entities.csv'),
                 Equation)
             )
+            pipeline_equations = [
+                equation for equation in pipeline_equations if equation.id_ in _equation_id_to_equation_bboxes    # not all equations have bboxes!
+            ]
             equation_id_to_equation = {
                 equation.id_: SymbolWithBBoxes(text=equation.tex,
                                                bboxes=_equation_id_to_equation_bboxes[equation.id_])
