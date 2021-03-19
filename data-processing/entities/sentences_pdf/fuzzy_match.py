@@ -92,12 +92,10 @@ def locate_sentences_fuzzy_ngram(pipeline_symbols: List[SerializableSymbol],
                                  blocks: List[Block]) -> Dict[str, List[BoundingBox]]:
 
     # 1) Symbol <-- --> Equation
-    symbol_id_to_equation_id = {}
     equation_id_to_symbol_ids = defaultdict(list)
     for s_tex in pipeline_symbols:
         symbol_id = f'{s_tex.tex_path}-{s_tex.id_}'
         equation_id = str(s_tex.equation_index)
-        symbol_id_to_equation_id[symbol_id] = equation_id
         equation_id_to_symbol_ids[equation_id].append(symbol_id)
 
     # 2) Sentence's text
@@ -108,20 +106,18 @@ def locate_sentences_fuzzy_ngram(pipeline_symbols: List[SerializableSymbol],
 
     # 3) Symbol <-- --> Sentence
     symbol_id_to_sentence_id = {}
-    sentence_id_to_symbol_ids = defaultdict(list)
     for context in pipeline_contexts:
         symbol_id = f'{context.tex_path}-{context.entity_id}'
         sentence_id = f'{context.tex_path}-{context.sentence_id}'
         symbol_id_to_sentence_id[symbol_id] = sentence_id
-        sentence_id_to_symbol_ids[sentence_id].append(symbol_id)
 
     # 4) Using Symbol <----> Equation, and Symbol <----> Sentence, THEREFORE we now have Equation <----> Sentence
-    equation_id_to_sentence_id = {}
     sentence_id_to_equation_ids = defaultdict(list)
     for equation_id, symbol_ids in equation_id_to_symbol_ids.items():
-        sentence_id = {symbol_id_to_sentence_id[symbol_id] for symbol_id in symbol_ids}.pop()
-        equation_id_to_sentence_id[equation_id] = sentence_id
-        sentence_id_to_equation_ids[sentence_id].append(equation_id)
+        unique_sentence_ids = {symbol_id_to_sentence_id[symbol_id] for symbol_id in symbol_ids if symbol_id in symbol_id_to_sentence_id}    # not all symbols have associated context
+        if unique_sentence_ids:
+            sentence_id = unique_sentence_ids.pop()
+            sentence_id_to_equation_ids[sentence_id].append(equation_id)
 
     # 5) Various matching strategies
     sentence_id_to_bboxes = defaultdict(list)
