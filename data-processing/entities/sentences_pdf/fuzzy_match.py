@@ -130,10 +130,11 @@ def locate_sentences_fuzzy_ngram(pipeline_symbols: List[SerializableSymbol],
         equation_bboxes = []
         equation_tex = []
         for equation_id in equation_ids:
-            e = equation_id_to_equation[equation_id]
-            equation_tex.append(e.text)
-            for bbox in e.bboxes:
-                equation_bboxes.append(bbox)
+            e = equation_id_to_equation.get(equation_id)    # not all equations have bboxes
+            if e is not None:
+                equation_tex.append(e.text)
+                for bbox in e.bboxes:
+                    equation_bboxes.append(bbox)
 
         # TODO: special handling for when there's multipel matching boxes
         # find matching block via pdf block bbox overlap with equations
