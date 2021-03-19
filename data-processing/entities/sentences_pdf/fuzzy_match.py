@@ -71,9 +71,10 @@ NGRAM_SIM_THRESHOLD: float = 0.8
 
 
 def featurize_tex_sentence(sentence_tex: str, equation_tex: List[str]) -> List[str]:
+    # actually, dont do this anymore.  there are some sentences that are entirely an equation.
     s_tex = sentence_tex
-    for e in equation_tex:
-        s_tex = s_tex.replace(e, '')  # remove equations from sentence text
+    # for e in equation_tex:
+    #     s_tex = s_tex.replace(e, '')  # remove equations from sentence text
     s_tex = compute_ngrams(s=s_tex, n=NGRAM_WIDTH, k=NGRAM_STRIDE)
     return s_tex
 
