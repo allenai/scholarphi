@@ -142,7 +142,7 @@ If you're just testing out the pipeline, consider making an
 Then run the following command to start off the pipeline:
 
 ```bash
-python scripts/process.py fetch-arxiv-sources arxiv_ids.txt
+python scripts/run_pipeline.py fetch-arxiv-sources arxiv_ids.txt
 ```
 
 Once you have done this, you can run the rest of the steps 
@@ -150,19 +150,19 @@ in the pipeline for extracting the positions of citations
 and uploading those positions:
 
 ```bash
-python scripts/process.py fetch-s2-metadata
-python scripts/process.py unpack-sources
-python scripts/process.py extract-bibitems
-python scripts/process.py resolve-bibitems
-python scripts/process.py colorize-citations
-python scripts/process.py compile-tex
-python scripts/process.py raster-pages
-python scripts/process.py compile-tex-with-colorized-citations
-python scripts/process.py raster-pages-with-colorized-citations
-python scripts/process.py diff-images-with-colorized-citations
-python scripts/process.py locate-citation-hues
-python scripts/process.py annotate-pdfs-with-citation-boxes  # optional: for debugging citation location extraction
-python scripts/process.py upload-citations
+python scripts/run_pipeline.py fetch-s2-metadata
+python scripts/run_pipeline.py unpack-sources
+python scripts/run_pipeline.py extract-bibitems
+python scripts/run_pipeline.py resolve-bibitems
+python scripts/run_pipeline.py colorize-citations
+python scripts/run_pipeline.py compile-tex
+python scripts/run_pipeline.py raster-pages
+python scripts/run_pipeline.py compile-tex-with-colorized-citations
+python scripts/run_pipeline.py raster-pages-with-colorized-citations
+python scripts/run_pipeline.py diff-images-with-colorized-citations
+python scripts/run_pipeline.py locate-citation-hues
+python scripts/run_pipeline.py annotate-pdfs-with-citation-boxes  # optional: for debugging citation location extraction
+python scripts/run_pipeline.py upload-citations
 ```
 
 Almost all scripts output results as CSV files, images, 
