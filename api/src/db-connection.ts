@@ -431,6 +431,8 @@ export class Connection {
         }
       });
 
+    const entityIds = entityRows.map(e => e.id);
+
     let boundingBoxRows: BoundingBoxRow[];
     try {
       boundingBoxRows = await this._knex("boundingbox")
@@ -470,23 +472,21 @@ export class Connection {
 
     const entityDataRows: EntityDataRow[] = await this._knex("entitydata")
       .select(
-        "entity.id AS entity_id",
-        "entitydata.source AS source",
+        "entity_id",
+        "source",
         "key",
         "value",
         "item_type",
         "of_list",
         "relation_type"
       )
-      .join("entity", { "entitydata.entity_id": "entity.id" })
-      .join("paper", { "paper.s2_id": "entity.paper_id" })
+      .whereIn("entity_id", entityIds)
+      .whereNotIn("entitydata.key", sharedSymbolFields)
       /*
        * Order by entity ID to ensure that items from lists are retrieved in
        * the order they were written to the database.
        */
-      .orderBy("entitydata.id", "asc")
-      .where({ ...paperSelector, version })
-      .whereNotIn("entitydata.key", sharedSymbolFields);
+      .orderBy("entitydata.id", "asc");
 
     /*
      * Organize entity data entries by the entity they belong to.
