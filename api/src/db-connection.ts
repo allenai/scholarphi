@@ -7,9 +7,13 @@ import {
   EntityUpdateData,
   GenericAttributes,
   GenericRelationships,
+  isSymbol,
   Paginated,
   PaperIdInfo,
   Relationship,
+  SharedSymbolData,
+  sharedSymbolFields,
+  Symbol
 } from "./types/api";
 import * as validation from "./types/validation";
 import { DBConfig } from "./conf";
@@ -243,7 +247,7 @@ export class Connection {
       entityDataRows
     );
 
-    return {
+    const entity = {
       id: String(entityRow.id),
       type: entityRow.type as EntityType,
       attributes: {
@@ -257,6 +261,12 @@ export class Connection {
         ...relationships,
       },
     };
+
+    if (isSymbol(entity)) {
+      (entity as Symbol).attributes.disambiguated_id = entity.attributes.mathml
+    }
+
+    return entity
   }
 
   async getEntitiesForPaper(paperSelector: PaperSelector, entityTypes: EntityType[], version?: number) {
@@ -387,6 +397,204 @@ export class Connection {
       .map((validationResult) => validationResult.value as Entity);
 
     return entities;
+  }
+
+  /**
+   * Default implementation in `getEntitiesForPaper` naively retrieves all entities,
+   * which includes quadratic data duplication across multiple instances of the same symbol.
+   * This variant method is meant as a placeholder bridge until the underlying DB schema and
+   * extraction write layer is changed to be non-duplicative.
+   * Leaving the underlying data unchanged in the DB, we selectively exclude the entity data
+   * types known to be redundant. These are retrieved later and added into lookup tables.
+   */
+  async getDedupedEntitiesForPaper(paperSelector: PaperSelector, entityTypes: EntityType[], version?: number) {
+    if (version === undefined) {
+      try {
+        let latestVersion = await this.getLatestPaperDataVersion(paperSelector);
+        if (latestVersion === null) {
+          return [];
+        }
+        version = latestVersion;
+      } catch (e) {
+        console.log("Error fetching latest data version number:", e);
+      }
+    }
+
+    const entityRows: EntityRow[] = await this._knex("entity")
+      .select("entity.paper_id AS paper_id", "id", "version", "type", "source")
+      .join("paper", { "paper.s2_id": "entity.paper_id" })
+      .where({ ...paperSelector, version }).andWhere(builder => {
+        if (entityTypes.length > 0) {
+          builder.whereIn('type', entityTypes);
+        } else {
+          builder.where(true);
+        }
+      });
+
+    let boundingBoxRows: BoundingBoxRow[];
+    try {
+      boundingBoxRows = await this._knex("boundingbox")
+        .select(
+          "entity.id AS entity_id",
+          "boundingbox.id AS id",
+          "boundingbox.source AS source",
+          "page",
+          "left",
+          "top",
+          "width",
+          "height"
+        )
+        .join("entity", { "boundingbox.entity_id": "entity.id" })
+        .join("paper", { "paper.s2_id": "entity.paper_id" })
+        .where({ ...paperSelector, version })
+    } catch (e) {
+      console.log(e);
+      throw "Error";
+    }
+
+    /*
+     * Organize bounding box data by the entity they belong to.
+     */
+    const boundingBoxRowsByEntity = boundingBoxRows.reduce(
+      (dict, row) => {
+        if (dict[row.entity_id] === undefined) {
+          dict[row.entity_id] = [];
+        }
+        dict[row.entity_id].push(row);
+        return dict;
+      },
+      {} as {
+        [entity_id: string]: BoundingBoxRow[];
+      }
+    );
+
+    const entityDataRows: EntityDataRow[] = await this._knex("entitydata")
+      .select(
+        "entity.id AS entity_id",
+        "entitydata.source AS source",
+        "key",
+        "value",
+        "item_type",
+        "of_list",
+        "relation_type"
+      )
+      .join("entity", { "entitydata.entity_id": "entity.id" })
+      .join("paper", { "paper.s2_id": "entity.paper_id" })
+      /*
+       * Order by entity ID to ensure that items from lists are retrieved in
+       * the order they were written to the database.
+       */
+      .orderBy("entitydata.id", "asc")
+      .where({ ...paperSelector, version })
+      .whereNotIn("entitydata.key", sharedSymbolFields);
+
+    /*
+     * Organize entity data entries by the entity they belong to.
+     */
+    const entityDataRowsByEntity = entityDataRows.reduce(
+      (dict, row) => {
+        if (dict[row.entity_id] === undefined) {
+          dict[row.entity_id] = [];
+        }
+        dict[row.entity_id].push(row);
+        return dict;
+      },
+      {} as {
+        [entity_id: string]: EntityDataRow[];
+      }
+    );
+
+    /**
+     * Create entities from entity data.
+     */
+    const entities: Entity[] = entityRows
+      .map((entityRow) => {
+        const boundingBoxRowsForEntity =
+          boundingBoxRowsByEntity[entityRow.id] || [];
+        const entityDataRowsForEntity =
+          entityDataRowsByEntity[entityRow.id] || [];
+        return this.createEntityObjectFromRows(
+          entityRow,
+          boundingBoxRowsForEntity,
+          entityDataRowsForEntity
+        );
+      })
+      /*
+       * Validation with Joi does two things:
+       * 1. It adds default values to fields for an entity.
+       * 2. It lists errors when an entity is still missing reuqired properties.
+       */
+      .map((e) => validation.loadedEntity.validate(e, { stripUnknown: true }))
+      .filter((validationResult) => {
+        if (validationResult.error !== undefined) {
+          console.error(
+            "Invalid entity will not be returned. Error:",
+            validationResult.error
+          );
+          return false;
+        }
+        return true;
+      })
+      .map((validationResult) => validationResult.value as Entity);
+
+    const disambiguatedSymbolIdsToExemplarEntityIds = entities
+      .filter((row) => isSymbol(row))
+      .reduce(
+        (dict, symbol) => {
+          const disambiguatedId = (symbol as Symbol).attributes.mathml;
+          if (disambiguatedId !== null) {
+            dict[disambiguatedId] = symbol.id;
+          }
+          return dict;
+        },
+        {} as {
+          [disambiguatedId: string]: string
+        }
+      );
+
+    const exemplarEntityIdsToDisambiguatedSymbolIds = Object.keys(disambiguatedSymbolIdsToExemplarEntityIds).reduce(
+      (dict, key) => {
+        const exemplarEntityId = disambiguatedSymbolIdsToExemplarEntityIds[key];
+        dict[exemplarEntityId] = key;
+        return dict;
+      },
+      {} as {
+        [exemplarEntityId: string]: string
+      }
+    );
+
+    const dedupedSymbolData = await this._knex("entitydata")
+      .select("entity_id", "key", "value")
+      .orderBy("id", "asc")
+      .whereIn("key", sharedSymbolFields)
+      .whereIn("entity_id", Object.values(disambiguatedSymbolIdsToExemplarEntityIds))
+
+    const sharedSymbolData = dedupedSymbolData.reduce(
+      (dict, row) => {
+        const disambiguatedId = exemplarEntityIdsToDisambiguatedSymbolIds[row.entity_id];
+
+        if (!(disambiguatedId in dict)) {
+          dict[disambiguatedId] = sharedSymbolFields.reduce(
+            (dict, key) => {
+              dict[key] = [];
+              return dict;
+            },
+            {} as {[shitlistedKey: string]: string[]}
+          );
+        }
+        dict[disambiguatedId][row.key].push(row.value)
+
+        return dict;
+      },
+      {} as {
+        [disambiguatedId: string]: SharedSymbolData
+      }
+    )
+
+    return {
+      entities,
+      sharedSymbolData
+    };
   }
 
   createBoundingBoxRows(
