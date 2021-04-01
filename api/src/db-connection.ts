@@ -537,6 +537,12 @@ export class Connection {
       })
       .map((validationResult) => validationResult.value as Entity);
 
+    /**
+     * To provide a deduped copy of shared data between symbol instances, we
+     * identify each symbol by its "disambiguated" id (currently the `mathml` attribute).
+     * An arbitrary symbol entity from within each `mathml` is chosen as an exemplar from
+     * which to look up supporting data that is identical across instances.
+     */
     const disambiguatedSymbolIdsToExemplarEntityIds = entities
       .filter((row) => isSymbol(row))
       .reduce(
