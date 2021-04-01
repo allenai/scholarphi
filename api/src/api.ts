@@ -199,7 +199,7 @@ export const plugin = {
     server.route({
       method: "GET",
       path: "papers/{paperSelector}/entities-deduped",
-      handler: async (request) => {
+      handler: async (request, h) => {
         const paperSelector = parsePaperSelector(request.params.paperSelector);
         // Runtime type-checked during validation.
         const entityTypes = request.query.type as EntityType[];
@@ -208,6 +208,7 @@ export const plugin = {
           res = await dbConnection.getDedupedEntitiesForPaper(paperSelector, entityTypes);
         } catch (e) {
           console.log(e);
+          return h.response().code(500);
         }
         return { data: res };
       },
