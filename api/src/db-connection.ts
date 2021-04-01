@@ -105,14 +105,14 @@ export class Connection {
       FROM paper p
       JOIN entity e on e.paper_id = p.s2_id
       JOIN (
-        SELECT 
-          paper_id, 
-          MAX(index) AS max_version 
-        FROM 
-          version 
-        GROUP BY 
+        SELECT
+          paper_id,
+          MAX(index) AS max_version
+        FROM
+          version
+        GROUP BY
           paper_id
-      ) AS maximum ON maximum.paper_id = e.paper_id     
+      ) AS maximum ON maximum.paper_id = e.paper_id
       WHERE e.version = maximum.max_version
       AND ${whereClause}
       AND e.type = ?
@@ -283,22 +283,22 @@ export class Connection {
         }
       });
 
+    const entityIds = entityRows.map(e => e.id);
+
     let boundingBoxRows: BoundingBoxRow[];
     try {
       boundingBoxRows = await this._knex("boundingbox")
         .select(
-          "entity.id AS entity_id",
-          "boundingbox.id AS id",
-          "boundingbox.source AS source",
+          "id",
+          "entity_id",
+          "source",
           "page",
           "left",
           "top",
           "width",
           "height"
         )
-        .join("entity", { "boundingbox.entity_id": "entity.id" })
-        .join("paper", { "paper.s2_id": "entity.paper_id" })
-        .where({ ...paperSelector, version });
+        .whereIn("entity_id", entityIds);
     } catch (e) {
       console.log(e);
       throw "Error";
@@ -322,22 +322,20 @@ export class Connection {
 
     const entityDataRows: EntityDataRow[] = await this._knex("entitydata")
       .select(
-        "entity.id AS entity_id",
-        "entitydata.source AS source",
+        "entity_id",
+        "source",
         "key",
         "value",
         "item_type",
         "of_list",
         "relation_type"
       )
-      .join("entity", { "entitydata.entity_id": "entity.id" })
-      .join("paper", { "paper.s2_id": "entity.paper_id" })
+      .whereIn("entity_id", entityIds)
       /*
        * Order by entity ID to ensure that items from lists are retrieved in
        * the order they were written to the database.
        */
-      .orderBy("entitydata.id", "asc")
-      .where({ ...paperSelector, version });
+      .orderBy("entitydata.id", "asc");
 
     /*
      * Organize entity data entries by the entity they belong to.
