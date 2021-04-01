@@ -111,26 +111,20 @@ Whew! You made it through that dizzying set of setup
 instructions. Now let's start processing TeX.
 
 Your only interface to all of these scripts is a single 
-Python command, `python process/script.py`. This one command 
-provides you access to dozens of subcommands, each of which 
+Python command, `python scripts/run_pipeline.py`. This one command 
+provides you access to dozens of subcommands and options, each of which 
 executes a different stage of the processing pipeline.
 
 To see the set of available subcommands, run:
 
 ```bash
 export PYTHONPATH=".:$PYTHONPATH"  # set up module search path
-python scripts/process.py -h       # show the list of subcommands
+python scripts/run_pipeline.py -h  # show the list of subcommands
 ```
 
 In general, subcommands should be executed in the order 
 they're listed by the help output. Most commands require 
 results that are output from prior commands.
-
-Almost _none_ of these commands require any arguments, aside 
-from the very first command `python scripts/process.py 
-fetch-arxiv-sources`. You can discover the arguments 
-required for this command by running `python 
-scripts/proces.py fetch-arxiv-sources -h`.
 
 If you're just testing out the pipeline, consider making an 
 `arxiv_ids.txt` file with the following contents:
@@ -142,7 +136,7 @@ If you're just testing out the pipeline, consider making an
 Then run the following command to start off the pipeline:
 
 ```bash
-python scripts/process.py fetch-arxiv-sources arxiv_ids.txt
+python scripts/run_pipeline.py --commands fetch-arxiv-sources --arxiv-ids-file arxiv_ids.txt
 ```
 
 Once you have done this, you can run the rest of the steps 
@@ -150,19 +144,19 @@ in the pipeline for extracting the positions of citations
 and uploading those positions:
 
 ```bash
-python scripts/process.py fetch-s2-metadata
-python scripts/process.py unpack-sources
-python scripts/process.py extract-bibitems
-python scripts/process.py resolve-bibitems
-python scripts/process.py colorize-citations
-python scripts/process.py compile-tex
-python scripts/process.py raster-pages
-python scripts/process.py compile-tex-with-colorized-citations
-python scripts/process.py raster-pages-with-colorized-citations
-python scripts/process.py diff-images-with-colorized-citations
-python scripts/process.py locate-citation-hues
-python scripts/process.py annotate-pdfs-with-citation-boxes  # optional: for debugging citation location extraction
-python scripts/process.py upload-citations
+python scripts/run_pipeline.py --commands fetch-s2-metadata --arxiv-ids-file arxiv_ids.txt
+python scripts/run_pipeline.py --commands unpack-sources --arxiv-ids-file arxiv_ids.txt
+python scripts/run_pipeline.py --commands extract-bibitems --arxiv-ids-file arxiv_ids.txt
+python scripts/run_pipeline.py --commands resolve-bibitems --arxiv-ids-file arxiv_ids.txt
+python scripts/run_pipeline.py --commands colorize-citations --arxiv-ids-file arxiv_ids.txt
+python scripts/run_pipeline.py --commands compile-tex --arxiv-ids-file arxiv_ids.txt
+python scripts/run_pipeline.py --commands raster-pages --arxiv-ids-file arxiv_ids.txt
+python scripts/run_pipeline.py --commands compile-tex-with-colorized-citations --arxiv-ids-file arxiv_ids.txt
+python scripts/run_pipeline.py --commands raster-pages-with-colorized-citations --arxiv-ids-file arxiv_ids.txt
+python scripts/run_pipeline.py --commands diff-images-with-colorized-citations --arxiv-ids-file arxiv_ids.txt
+python scripts/run_pipeline.py --commands locate-citation-hues --arxiv-ids-file arxiv_ids.txt
+python scripts/run_pipeline.py --commands annotate-pdfs-with-citation-boxes --arxiv-ids-file arxiv_ids.txt  # optional: for debugging citation location extraction
+python scripts/run_pipeline.py --commands upload-citations --arxiv-ids-file arxiv_ids.txt
 ```
 
 Almost all scripts output results as CSV files, images, 
