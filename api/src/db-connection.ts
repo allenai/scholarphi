@@ -181,7 +181,7 @@ export class Connection {
    * relationships may need to be cleaned, as they contain *anything* that was found in the
    * entity table, which could include junk uploaded by annotators.
    */
-  unpackEntityDataRows(rows: Omit<EntityDataRow, "id">[]) {
+  unpackEntityDataRows(rows: Omit<EntityDataRow, "id">[], slim: boolean = false) {
     const attributes: GenericAttributes = {};
     const relationships: GenericRelationships = {};
     for (const row of rows) {
@@ -215,7 +215,10 @@ export class Connection {
        * Read relationships.
        */
       if (row.item_type === "relation-id" && row.relation_type !== null) {
-        const relationship = { type: row.relation_type, id: row.value };
+        // optionally return a more compact representation for relationships
+        const relationship = slim
+          ? { id: row.value }
+          : { type: row.relation_type, id: row.value };
         if (row.of_list) {
           if (relationships[row.key] === undefined) {
             relationships[row.key] = [];
@@ -235,12 +238,13 @@ export class Connection {
   createEntityObjectFromRows(
     entityRow: EntityRow,
     boundingBoxRows: Omit<BoundingBoxRow, "id">[],
-    entityDataRows: Omit<EntityDataRow, "id">[]
+    entityDataRows: Omit<EntityDataRow, "id">[],
+    slim?: boolean,
   ): Entity {
     const boundingBoxes = this.createBoundingBoxes(boundingBoxRows);
 
     const { attributes, relationships } = this.unpackEntityDataRows(
-      entityDataRows
+      entityDataRows, slim
     );
 
     return {
@@ -259,7 +263,7 @@ export class Connection {
     };
   }
 
-  async getEntitiesForPaper(paperSelector: PaperSelector, entityTypes: EntityType[], version?: number) {
+  async getEntitiesForPaper(paperSelector: PaperSelector, entityTypes: EntityType[], slim: boolean, version?: number) {
     if (version === undefined) {
       try {
         let latestVersion = await this.getLatestPaperDataVersion(paperSelector);
@@ -272,8 +276,11 @@ export class Connection {
       }
     }
 
+    const entityColumns = slim
+      ? ["entity.paper_id AS paper_id", "id", "type"]
+      : ["entity.paper_id AS paper_id", "id", "version", "type", "source"];
     const entityRows: EntityRow[] = await this._knex("entity")
-      .select("entity.paper_id AS paper_id", "id", "version", "type", "source")
+      .select(entityColumns)
       .join("paper", { "paper.s2_id": "entity.paper_id" })
       .where({ ...paperSelector, version }).andWhere(builder => {
         if (entityTypes.length > 0) {
@@ -285,19 +292,13 @@ export class Connection {
 
     const entityIds = entityRows.map(e => e.id);
 
+    const boundingBoxColumns = slim
+    ? ["id", "entity_id", "page", "left", "top", "width", "height"]
+    : ["id", "entity_id", "source", "page", "left", "top", "width", "height"];
     let boundingBoxRows: BoundingBoxRow[];
     try {
       boundingBoxRows = await this._knex("boundingbox")
-        .select(
-          "id",
-          "entity_id",
-          "source",
-          "page",
-          "left",
-          "top",
-          "width",
-          "height"
-        )
+        .select(boundingBoxColumns)
         .whereIn("entity_id", entityIds);
     } catch (e) {
       console.log(e);
@@ -319,17 +320,11 @@ export class Connection {
         [entity_id: string]: BoundingBoxRow[];
       }
     );
-
+    const entityDataColumns = slim
+    ? ["entity_id", "key", "value", "item_type", "of_list", "relation_type"]
+    : ["entity_id", "source", "key", "value", "item_type", "of_list", "relation_type"];
     const entityDataRows: EntityDataRow[] = await this._knex("entitydata")
-      .select(
-        "entity_id",
-        "source",
-        "key",
-        "value",
-        "item_type",
-        "of_list",
-        "relation_type"
-      )
+      .select(entityDataColumns)
       .whereIn("entity_id", entityIds)
       /*
        * Order by entity ID to ensure that items from lists are retrieved in
@@ -365,7 +360,8 @@ export class Connection {
         return this.createEntityObjectFromRows(
           entityRow,
           boundingBoxRowsForEntity,
-          entityDataRowsForEntity
+          entityDataRowsForEntity,
+          slim
         );
       })
       /*

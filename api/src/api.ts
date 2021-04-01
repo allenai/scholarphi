@@ -4,12 +4,13 @@ import * as Joi from "@hapi/joi";
 import { Connection, PaperSelector } from "./db-connection";
 import * as s2Api from "./s2-api";
 import {
+  Entity,
   EntityCreatePayload,
   EntityUpdatePayload,
+  EntityType,
   Paper,
   PaperWithIdInfo,
-  Paginated,
-  EntityType
+  Paginated
 } from "./types/api";
 import * as validation from "./types/validation";
 import * as conf from "./conf";
@@ -168,15 +169,27 @@ export const plugin = {
     server.route({
       method: "GET",
       path: "papers/{paperSelector}/entities",
-      handler: async (request) => {
+      handler: async (request, h) => {
         const paperSelector = parsePaperSelector(request.params.paperSelector);
         // Runtime type-checked during validation.
         const entityTypes = request.query.type as EntityType[];
-        let res;
+        // pretty sure Joi is actually making this a boolean, despite Hapi saying it's a string
+        const slim = !!request.query.slim;
+        let res: Entity[] = [];
         try {
-          res = await dbConnection.getEntitiesForPaper(paperSelector, entityTypes);
+          res = await dbConnection.getEntitiesForPaper(paperSelector, entityTypes, slim);
         } catch (e) {
           console.log(e);
+          return h.response().code(500);
+        }
+        if (slim) {
+          res = res.map(e => {
+            // tags are unused, don't return them
+            if (e.attributes.tags) {
+              delete e.attributes.tags;
+            }
+            return e;
+          });
         }
         return { data: res };
       },
@@ -184,7 +197,8 @@ export const plugin = {
         validate: {
           params: validation.paperSelector,
           query: Joi.object({
-            type:  validation.apiEntityTypes
+            type:  validation.apiEntityTypes,
+            slim:  Joi.boolean(),
           })
         },
       },
@@ -261,7 +275,7 @@ export const plugin = {
           // We don't have version info for this ID, or no citations were extracted so we consider
           // it unsuccessfully processed.
           return h.response().code(404);
-        }    
+        }
       },
       options: {
         validate: {

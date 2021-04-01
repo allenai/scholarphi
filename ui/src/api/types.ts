@@ -127,19 +127,6 @@ export interface BaseEntityAttributes {
 }
 
 /**
- * List of base entity attribute keys. Update this as 'BaseEntityAttributes' updates. This list
- * lets a program check statically whether an attribute on an entity is a custom attribute.
- */
-export const BASE_ENTITY_ATTRIBUTE_KEYS = [
-  "id",
-  "type",
-  "version",
-  "source",
-  "bounding_boxes",
-  "tags",
-];
-
-/**
  * While it is not described with types here, Relationships must be key-value pairs, where the values
  * are either 'Relationship' or a list of 'Relationship's.
  */
