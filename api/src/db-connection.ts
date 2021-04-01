@@ -569,6 +569,12 @@ export class Connection {
       }
     );
 
+    if (entityTypes.indexOf("symbol") === -1 && entityTypes.length > 0) {
+      return {
+        entities
+      }
+    }
+
     const dedupedSymbolData = await this._knex("entitydata")
       .select("entity_id", "key", "value")
       .orderBy("id", "asc")
