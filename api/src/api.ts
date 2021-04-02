@@ -174,7 +174,7 @@ export const plugin = {
         const entityTypes = request.query.type as EntityType[];
         let res;
         try {
-          res = await dbConnection.getEntitiesForPaper(paperSelector, entityTypes);
+          res = await dbConnection.getEntitiesForPaper(paperSelector, entityTypes, true);
         } catch (e) {
           console.log(e);
         }
