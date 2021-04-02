@@ -263,10 +263,10 @@ export class Connection {
     };
 
     if (isSymbol(entity)) {
-      entity.attributes.disambiguated_id = entity.attributes.mathml
+      entity.attributes.disambiguated_id = entity.attributes.mathml;
     }
 
-    return entity
+    return entity;
   }
 
   async getEntitiesForPaper(paperSelector: PaperSelector, entityTypes: EntityType[], includeDuplicateSymbolData: boolean, version?: number) {
