@@ -116,6 +116,7 @@ attributes = attributes
       {
         is: "symbol",
         then: Joi.object().keys({
+          disambiguated_id: stringAttribute,
           tex: stringAttribute,
           type: stringAttribute,
           mathml: stringAttribute,

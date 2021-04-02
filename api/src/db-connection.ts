@@ -7,9 +7,13 @@ import {
   EntityUpdateData,
   GenericAttributes,
   GenericRelationships,
+  isSymbol,
   Paginated,
   PaperIdInfo,
   Relationship,
+  SharedSymbolData,
+  sharedSymbolFields,
+  Symbol
 } from "./types/api";
 import * as validation from "./types/validation";
 import { DBConfig } from "./conf";
@@ -247,7 +251,7 @@ export class Connection {
       entityDataRows, slim
     );
 
-    return {
+    const entity = {
       id: String(entityRow.id),
       type: entityRow.type as EntityType,
       attributes: {
@@ -261,9 +265,15 @@ export class Connection {
         ...relationships,
       },
     };
+
+    if (isSymbol(entity)) {
+      entity.attributes.disambiguated_id = entity.attributes.mathml;
+    }
+
+    return entity;
   }
 
-  async getEntitiesForPaper(paperSelector: PaperSelector, entityTypes: EntityType[], slim: boolean, version?: number) {
+  async getEntitiesForPaper(paperSelector: PaperSelector, entityTypes: EntityType[], includeDuplicateSymbolData: boolean, slim: boolean, version?: number) {
     if (version === undefined) {
       try {
         let latestVersion = await this.getLatestPaperDataVersion(paperSelector);
@@ -325,12 +335,22 @@ export class Connection {
     : ["entity_id", "source", "key", "value", "item_type", "of_list", "relation_type"];
     const entityDataRows: EntityDataRow[] = await this._knex("entitydata")
       .select(entityDataColumns)
-      .whereIn("entity_id", entityIds)
+      .join("entity", { "entitydata.entity_id": "entity.id" })
       /*
        * Order by entity ID to ensure that items from lists are retrieved in
        * the order they were written to the database.
        */
-      .orderBy("entitydata.id", "asc");
+      .orderBy("entitydata.id", "asc")
+      .whereIn("entity.id", entityIds)
+      .whereNot(
+        (builder) => {
+          if (!includeDuplicateSymbolData) {
+            builder
+              .where("entity.type", "symbol")
+              .whereIn("entitydata.key", sharedSymbolFields)
+          }
+        }
+      )
 
     /*
      * Organize entity data entries by the entity they belong to.
@@ -383,6 +403,92 @@ export class Connection {
       .map((validationResult) => validationResult.value as Entity);
 
     return entities;
+  }
+
+  /**
+   * Default implementation in `getEntitiesForPaper` naively retrieves all entities,
+   * which includes quadratic data duplication across multiple instances of the same symbol.
+   * This variant method is meant as a placeholder bridge until the underlying DB schema and
+   * extraction write layer is changed to be non-duplicative.
+   * Leaving the underlying data unchanged in the DB, we selectively exclude the entity data
+   * types known to be redundant. These are retrieved later and added into lookup tables.
+   */
+  async getDedupedEntitiesForPaper(paperSelector: PaperSelector, entityTypes: EntityType[], version?: number) {
+    const entities = await this.getEntitiesForPaper(paperSelector, entityTypes, false, true, version);
+
+    // Short-circuit fancy behavior below if we don't need the shared symbol data.
+    if (entityTypes.indexOf("symbol") === -1 && entityTypes.length > 0) {
+      return {
+        entities
+      }
+    }
+
+    // To provide a deduped copy of shared data between symbol instances, we
+    // identify each symbol by its "disambiguated" id (currently the `mathml` attribute).
+    // An arbitrary symbol entity from within each `mathml` is chosen as an exemplar from
+    // which to look up supporting data that is identical across instances.
+    const disambiguatedSymbolIdsToExemplarEntityIds = entities
+      .filter((row) => isSymbol(row))
+      .reduce(
+        (dict, symbol) => {
+          const disambiguatedId = (symbol as Symbol).attributes.mathml;
+          if (disambiguatedId !== null) {
+            dict[disambiguatedId] = symbol.id;
+          }
+          return dict;
+        },
+        {} as {
+          [disambiguatedId: string]: string
+        }
+      );
+
+    const exemplarEntityIdsToDisambiguatedSymbolIds = Object.keys(disambiguatedSymbolIdsToExemplarEntityIds).reduce(
+      (dict, key) => {
+        const exemplarEntityId = disambiguatedSymbolIdsToExemplarEntityIds[key];
+        dict[exemplarEntityId] = key;
+        return dict;
+      },
+      {} as {
+        [exemplarEntityId: string]: string
+      }
+    );
+
+    const dedupedSymbolData = await this._knex("entitydata")
+      .select(
+        "entity_id",
+        "key",
+        "value"
+      )
+      .orderBy("id", "asc")
+      .whereIn("key", sharedSymbolFields)
+      .whereIn("entity_id", Object.values(disambiguatedSymbolIdsToExemplarEntityIds))
+
+    const sharedSymbolData = dedupedSymbolData.reduce(
+      (dict, row) => {
+        const disambiguatedId = exemplarEntityIdsToDisambiguatedSymbolIds[row.entity_id];
+
+        if (!(disambiguatedId in dict)) {
+          dict[disambiguatedId] = sharedSymbolFields.reduce(
+            (dict, key) => {
+              dict[key] = [];
+              return dict;
+            },
+            {} as {[sharedSymbolField: string]: string[]}
+          );
+        }
+        dict[disambiguatedId][row.key].push(row.value)
+
+        return dict;
+      },
+      {} as {
+        [disambiguatedId: string]: SharedSymbolData
+      }
+    )
+
+    return {
+      entities,
+      sharedSymbolData
+    };
   }
 
   createBoundingBoxRows(

@@ -177,7 +177,7 @@ export const plugin = {
         const slim = !!request.query.slim;
         let res: Entity[] = [];
         try {
-          res = await dbConnection.getEntitiesForPaper(paperSelector, entityTypes, slim);
+          res = await dbConnection.getEntitiesForPaper(paperSelector, entityTypes, true, slim);
         } catch (e) {
           console.log(e);
           return h.response().code(500);
@@ -203,6 +203,39 @@ export const plugin = {
         },
       },
     });
+
+    /**
+     * The default implementation above is enormously wasteful in terms of space,
+     * due to a quadratic blowout in identical data.
+     * This route exists as a temporary fixture during development to dedupe data,
+     * accomplished via surgical DB queries rather than exhaustive ones.
+     */
+    server.route({
+      method: "GET",
+      path: "papers/{paperSelector}/entities-deduped",
+      handler: async (request, h) => {
+        const paperSelector = parsePaperSelector(request.params.paperSelector);
+        // Runtime type-checked during validation.
+        const entityTypes = request.query.type as EntityType[];
+        let res;
+        try {
+          res = await dbConnection.getDedupedEntitiesForPaper(paperSelector, entityTypes);
+        } catch (e) {
+          console.log(e);
+          return h.response().code(500);
+        }
+        return { data: res };
+      },
+      options: {
+        validate: {
+          params: validation.paperSelector,
+          query: Joi.object({
+            type:  validation.apiEntityTypes
+          })
+        },
+      },
+    });
+
 
     server.route({
       method: "POST",

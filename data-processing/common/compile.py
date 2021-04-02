@@ -54,6 +54,10 @@ def compile_tex(sources_dir: str) -> CompilationResult:
     the TeX. See README.md for dependencies.
     """
     logging.debug("Compiling sources in %s.", sources_dir)
+    tex_files = [f for f in os.listdir(sources_dir) if f.endswith(".tex")]
+    if not tex_files:
+        logging.warning("No .tex files found in %s.", sources_dir)
+
     _set_sources_dir_permissions(sources_dir)
 
     config = configparser.ConfigParser()
