@@ -152,7 +152,6 @@ export const BASE_ENTITY_ATTRIBUTE_KEYS = [
   "tags",
 ];
 
-
 /**
  * While it is not described with types here, Relationships must be key-value pairs, where the values
  * are either 'Relationship' or a list of 'Relationship's.
@@ -221,7 +220,6 @@ export interface GenericAttributes {
 export type GenericRelationships = {
   [key: string]: Relationship | Relationship[];
 };
-
 
 /**
  * Represents the entity data fields that are identical between every instance
