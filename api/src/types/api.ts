@@ -222,6 +222,32 @@ export type GenericRelationships = {
 };
 
 /**
+ * Represents the entity data fields that are identical between every instance
+ * of a given symbol.
+ * Defined here so that we can reduce the order of space consumption in the payload.
+ */
+export const sharedSymbolFields = [
+  "defining_formula_equations",
+  "defining_formulas",
+  "definition_sentences",
+  "definition_texs",
+  "definitions",
+  "snippets",
+  "snippet_sentences",
+  "sources"
+]
+export interface SharedSymbolData {
+  defining_formula_equations: string[];  // entity id
+  defining_formulas: string[];  // tex-bearing formula text
+  definition_sentences: string[];
+  definition_texs: string[];
+  definitions: string[];
+  snippets: string[];  // tex-bearing sentence text
+  snippet_sentences: string[];  // entity id
+  sources: string[];
+}
+
+/**
  * 'Symbol' is an example of how to define a new entity type with custom attributes
  * and relationships. Note that a full custom entity definition includes:
  * * an 'attributes' type
@@ -235,6 +261,7 @@ export interface Symbol extends BaseEntity {
 }
 
 export interface SymbolAttributes extends BaseEntityAttributes {
+  disambiguated_id: string | null;
   tex: string | null;
   type: "identifier" | "function" | "operator";
   mathml: string | null;
