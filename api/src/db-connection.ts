@@ -331,8 +331,8 @@ export class Connection {
       }
     );
     const entityDataColumns = slim
-    ? ["entity_id", "key", "value", "item_type", "of_list", "relation_type"]
-    : ["entity_id", "source", "key", "value", "item_type", "of_list", "relation_type"];
+    ? ["entity.id AS entity_id", "key", "value", "item_type", "of_list", "relation_type"]
+    : ["entity.id AS entity_id", "entitydata.source AS source", "key", "value", "item_type", "of_list", "relation_type"];
     const entityDataRows: EntityDataRow[] = await this._knex("entitydata")
       .select(entityDataColumns)
       .join("entity", { "entitydata.entity_id": "entity.id" })
