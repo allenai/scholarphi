@@ -49,7 +49,7 @@ export const arxivOnlySelector = Joi.object({
 
 const boundingBox = Joi.object({
   page: Joi.number().integer().min(0),
-  source: Joi.string(),
+  source: Joi.string().optional(),
   left: Joi.number(),
   top: Joi.number(),
   width: Joi.number(),
@@ -65,8 +65,9 @@ export let attributes = Joi.object({
   /*
    * Source is required on both POST and PATCH requests. It is required for PATCH requests because
    * the database logs the 'source' of updated attributes and bounding boxes.
+   * TODO: Split this for GETs and POST/PATCHes -- This is also used for outgoing API responses, which don't need to include source
    */
-  source: Joi.string().required(),
+  source: Joi.string().optional(),
   bounding_boxes: Joi.array().items(boundingBox),
   tags: Joi.array().items(Joi.string()),
 });
@@ -173,7 +174,7 @@ export let relationships = Joi.object();
  */
 const oneToOneRelationship = (type: string) => {
   return Joi.object({
-    type: Joi.string().required().valid(type),
+    type: Joi.string().optional().valid(type),
     id: Joi.string().required().allow(null),
   }).default({ type, id: null });
 };
@@ -181,7 +182,7 @@ const oneToManyRelationship = (type: string) => {
   return Joi.array()
     .items(
       Joi.object({
-        type: Joi.string().required().valid(type),
+        type: Joi.string().optional().valid(type),
         id: Joi.string().required(),
       })
     )

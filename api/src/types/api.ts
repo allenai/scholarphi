@@ -123,7 +123,7 @@ export interface BaseEntity {
  */
 export interface BaseEntityAttributes {
   version: number;
-  source: string;
+  source: string; // TODO: technically optional for outgoing responses
   bounding_boxes: BoundingBox[];
   /**
    * Additional data for this entity in the form of arbitrary strings. For instance, there could be
@@ -136,21 +136,8 @@ export interface BaseEntityAttributes {
    * when prototyping new features, as it allows the data to be changed in the database without
    * continually updating these types.
    */
-  tags: string[];
+  tags?: string[];
 }
-
-/**
- * List of base entity attribute keys. Update this as 'BaseEntityAttributes' updates. This list
- * lets a program check statically whether an attribute on an entity is a custom attribute.
- */
-export const BASE_ENTITY_ATTRIBUTE_KEYS = [
-  "id",
-  "type",
-  "version",
-  "source",
-  "bounding_boxes",
-  "tags",
-];
 
 /**
  * While it is not described with types here, Relationships must be key-value pairs, where the values
@@ -159,7 +146,7 @@ export const BASE_ENTITY_ATTRIBUTE_KEYS = [
 export interface Relationships {}
 
 export interface Relationship {
-  type: string;
+  type?: string;
   id: string | null;
 }
 
