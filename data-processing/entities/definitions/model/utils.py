@@ -1,5 +1,6 @@
 import os
 import random
+import json
 from typing import Any, Dict, List, Union
 
 import numpy as np
@@ -275,6 +276,14 @@ def get_sentence_frame_acc(
     sementic_acc = np.multiply(intent_result, slot_result).mean()
     return {"sementic_frame_acc": sementic_acc}
 
+def get_joint_labels(args, key):
+    with open(
+            os.path.join(args.data_dir, args.dataconfig_file),
+            "r",
+            encoding="utf-8",
+        ) as f:
+        data_config = json.load(f)
+    return data_config[key]
 
 def get_intent_labels_dict(args):
     intent_hybrid = {}

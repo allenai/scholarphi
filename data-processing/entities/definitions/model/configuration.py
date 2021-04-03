@@ -113,3 +113,7 @@ class DataTrainingArguments:
     max_seq_len: Optional[int] = field(
         default=50, metadata={"help": "TBW"},
     )
+    dataconfig_file: Optional[str] = field(
+        default="dataconfig.json", metadata={"help": "dataconfig file (it has intent_label, slot_label dicts, and pos_label list)"},
+    )
+    
