@@ -224,7 +224,7 @@ export const plugin = {
           console.log(e);
           return h.response().code(500);
         }
-        return { data: res };
+        return res;
       },
       options: {
         validate: {
