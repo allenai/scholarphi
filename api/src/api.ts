@@ -225,7 +225,7 @@ export const plugin = {
           return h.response().code(500);
         }
         // tags are unused, don't return them
-        res = res.entities.map(e => {
+        res.entities = res.entities.map(e => {
           if (e.attributes.tags) {
             delete e.attributes.tags;
           }
