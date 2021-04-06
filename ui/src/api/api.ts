@@ -194,17 +194,21 @@ function undedupeResponse(response: DedupedEntityResponse): EntityGetResponse {
   };
 }
 
-export async function getDedupedEntities(arxivId: string) {
+export async function getDedupedEntities(arxivId: string, getAllEntities?: boolean) {
+  const params = getAllEntities ? {
+    type: ENTITY_API_ALL
+  } : {};
   const data = await doGet(
     axios.get<EntityGetResponse>(
       `/api/v0/papers/arxiv:${arxivId}/entities-deduped`,
       {
+        params,
         //@ts-ignore -- TODO: this pattern works in other projects, is there a version issue somewhere?
         transformResponse: [].concat(axios.defaults.transformResponse).concat(undedupeResponse)
       }
     )
   );
-  return data.data || [];
+  return data?.data || [];
 }
 
 export async function postEntity(
@@ -303,5 +307,5 @@ async function doGet<T>(get: Promise<AxiosResponse<T>>) {
   } catch (error) {
     console.error("API Error:", error);
   }
-  throw "API Error";
+  return null;
 }
