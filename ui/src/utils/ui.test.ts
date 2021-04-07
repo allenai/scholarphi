@@ -18,4 +18,10 @@ describe('extractArxivId', () => {
     const output = extractArxivId(url);
     expect(output).toEqual('2005.06967v2');
   });
+
+  it('returns no match if no arxiv URL is given', () => {
+    const url = 'this is not an arxiv url';
+    const output = extractArxivId(url);
+    expect(output).toEqual(undefined);
+  });
 });
