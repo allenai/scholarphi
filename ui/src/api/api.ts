@@ -18,7 +18,16 @@ import {
   Symbol,
   Term,
 } from "./types";
-import { Entity as DedupedEntity, DedupedEntityResponse, isCitation, isEquation, isSentence, isSymbol, isTerm, toLegacyRelationship } from "./deduped";
+import {
+  Entity as DedupedEntity,
+  DedupedEntityResponse,
+  isCitation,
+  isEquation,
+  isSentence,
+  isSymbol,
+  isTerm,
+  toLegacyRelationship
+} from "./deduped";
 
 const token = cookie.parse(document.cookie)["readerAdminToken"];
 
@@ -226,7 +235,7 @@ function undedupeResponse(response: DedupedEntityResponse): EntityGetResponse {
  *
  * NOTE: Currently, this function passes the response through a transform function to make
  * it compatible with the existing UI code.
- * 
+ *
  * @param arxivId arXiv ID of the viewed paper
  * @param getAllEntities `true` retrieves entities of all types, `false` retrieves only citations
  * @returns
