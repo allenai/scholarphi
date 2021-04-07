@@ -52,7 +52,7 @@ interface SymbolAttributes extends AttributesBase {
   /**
    * This is the ID to use when getting SharedSymbolData for this entity.
    */
-  disambiguated_id: string;
+  disambiguated_id: Nullable<string>;
   /**
    * Nicknames for the symbol extracted from the text, no more than a few words long.
    */

@@ -140,7 +140,8 @@ function undedupeResponse(response: DedupedEntityResponse): EntityGetResponse {
       };
       return sentence;
     } else if (isSymbol(deduped)) {
-      const mathml = deduped.attributes.disambiguated_id;
+       // empty string is a safe default, there shouldn't be sharedSymbolData for empty string.
+      const disambiguatedId = deduped.attributes.disambiguated_id || '';
       const symbol: Symbol = {
         id: deduped.id,
         type: 'symbol',
@@ -155,11 +156,11 @@ function undedupeResponse(response: DedupedEntityResponse): EntityGetResponse {
           diagram_label: deduped.attributes.diagram_label,
           is_definition: deduped.attributes.is_definition,
           nicknames: deduped.attributes.nicknames,
-          definitions: response.sharedSymbolData[mathml]?.definitions || [],
+          definitions: response.sharedSymbolData[disambiguatedId]?.definitions || [],
           defining_formulas:
-            response.sharedSymbolData[mathml]?.defining_formulas || [],
+            response.sharedSymbolData[disambiguatedId]?.defining_formulas || [],
           passages: deduped.attributes.passages,
-          snippets: response.sharedSymbolData[mathml]?.snippets || [],
+          snippets: response.sharedSymbolData[disambiguatedId]?.snippets || [],
         },
         relationships: {
           equation: toLegacyRelationship(
@@ -178,13 +179,13 @@ function undedupeResponse(response: DedupedEntityResponse): EntityGetResponse {
             (n) => toLegacyRelationship(n, 'sentence')
           ),
           defining_formula_equations: (
-            response.sharedSymbolData[mathml]?.defining_formula_equations || []
+            response.sharedSymbolData[disambiguatedId]?.defining_formula_equations || []
           ).map((s) => toLegacyRelationship(s, 'equation')),
           definition_sentences: (
-            response.sharedSymbolData[mathml]?.definition_sentences || []
+            response.sharedSymbolData[disambiguatedId]?.definition_sentences || []
           ).map((s) => toLegacyRelationship(s, 'sentence')),
           snippet_sentences: (
-            response.sharedSymbolData[mathml]?.snippet_sentences || []
+            response.sharedSymbolData[disambiguatedId]?.snippet_sentences || []
           ).map((s) => toLegacyRelationship(s, 'sentence')),
         },
       };
