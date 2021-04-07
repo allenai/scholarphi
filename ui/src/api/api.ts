@@ -96,9 +96,9 @@ function undedupeResponse(response: DedupedEntityResponse): EntityGetResponse {
           bounding_boxes: deduped.attributes.bounding_boxes,
           paper_id: deduped.attributes.paper_id,
           source: 'tex-pipeline', // hardcoded since most everything comes out of the tex pipeline
-          tags: []
+          tags: [],
         },
-        relationships: {}
+        relationships: {},
       };
       return citation;
     } else if (isEquation(deduped)) {
@@ -109,9 +109,9 @@ function undedupeResponse(response: DedupedEntityResponse): EntityGetResponse {
           bounding_boxes: deduped.attributes.bounding_boxes,
           source: 'tex-pipeline', // hardcoded since most everything comes out of the tex pipeline
           tags: [],
-          tex: deduped.attributes.tex
+          tex: deduped.attributes.tex,
         },
-        relationships: {}
+        relationships: {},
       };
       return equation;
     } else if (isSentence(deduped)) {
@@ -127,7 +127,7 @@ function undedupeResponse(response: DedupedEntityResponse): EntityGetResponse {
           tex_end: deduped.attributes.tex_end,
           text: deduped.attributes.text,
         },
-        relationships: {}
+        relationships: {},
       };
       return sentence;
     } else if (isSymbol(deduped)) {
@@ -147,20 +147,37 @@ function undedupeResponse(response: DedupedEntityResponse): EntityGetResponse {
           is_definition: deduped.attributes.is_definition,
           nicknames: deduped.attributes.nicknames,
           definitions: response.sharedSymbolData[mathml]?.definitions || [],
-          defining_formulas: response.sharedSymbolData[mathml]?.defining_formulas || [],
+          defining_formulas:
+            response.sharedSymbolData[mathml]?.defining_formulas || [],
           passages: deduped.attributes.passages,
           snippets: response.sharedSymbolData[mathml]?.snippets || [],
         },
         relationships: {
-          equation: toLegacyRelationship(deduped.relationships.equation, 'equation'),
-          children: deduped.relationships.children.map(c => toLegacyRelationship(c, 'symbol')),
+          equation: toLegacyRelationship(
+            deduped.relationships.equation,
+            'equation'
+          ),
+          children: deduped.relationships.children.map(
+            (c) => toLegacyRelationship(c, 'symbol')
+          ),
           parent: toLegacyRelationship(deduped.relationships.parent, 'symbol'),
-          sentence: toLegacyRelationship(deduped.relationships.sentence, 'sentence'),
-          nickname_sentences: deduped.relationships.nickname_sentences.map(n => toLegacyRelationship(n, 'sentence')),
-          defining_formula_equations: (response.sharedSymbolData[mathml]?.defining_formula_equations || []).map(s => toLegacyRelationship(s, 'equation')),
-          definition_sentences: (response.sharedSymbolData[mathml]?.definition_sentences || []).map(s => toLegacyRelationship(s, 'sentence')),
-          snippet_sentences: (response.sharedSymbolData[mathml]?.snippet_sentences || []).map(s => toLegacyRelationship(s, 'sentence')),
-        }
+          sentence: toLegacyRelationship(
+            deduped.relationships.sentence,
+            'sentence'
+          ),
+          nickname_sentences: deduped.relationships.nickname_sentences.map(
+            (n) => toLegacyRelationship(n, 'sentence')
+          ),
+          defining_formula_equations: (
+            response.sharedSymbolData[mathml]?.defining_formula_equations || []
+          ).map((s) => toLegacyRelationship(s, 'equation')),
+          definition_sentences: (
+            response.sharedSymbolData[mathml]?.definition_sentences || []
+          ).map((s) => toLegacyRelationship(s, 'sentence')),
+          snippet_sentences: (
+            response.sharedSymbolData[mathml]?.snippet_sentences || []
+          ).map((s) => toLegacyRelationship(s, 'sentence')),
+        },
       };
       return symbol;
     } else if (isTerm(deduped)) {
@@ -179,10 +196,17 @@ function undedupeResponse(response: DedupedEntityResponse): EntityGetResponse {
           snippets: deduped.attributes.snippets,
         },
         relationships: {
-          sentence: toLegacyRelationship(deduped.relationships.sentence, 'sentence'),
-          definition_sentences: (deduped.relationships.definition_sentences || []).map(s => toLegacyRelationship(s, 'sentence')),
-          snippet_sentences: (deduped.relationships.snippet_sentences || []).map(s => toLegacyRelationship(s, 'sentence')),
-        }
+          sentence: toLegacyRelationship(
+            deduped.relationships.sentence,
+            'sentence'
+          ),
+          definition_sentences: (
+            deduped.relationships.definition_sentences || []
+          ).map((s) => toLegacyRelationship(s, 'sentence')),
+          snippet_sentences: (
+            deduped.relationships.snippet_sentences || []
+          ).map((s) => toLegacyRelationship(s, 'sentence')),
+        },
       };
       return term;
     }
@@ -190,7 +214,7 @@ function undedupeResponse(response: DedupedEntityResponse): EntityGetResponse {
     throw "Unknown entity type";
   });
   return {
-    data: entities
+    data: entities,
   };
 }
 
