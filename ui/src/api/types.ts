@@ -109,7 +109,7 @@ export interface BaseEntity {
  * All entities must define at least these attributes.
  */
 export interface BaseEntityAttributes {
-  version: number;
+  version?: number;
   source: string;
   bounding_boxes: BoundingBox[];
   /**
@@ -210,7 +210,7 @@ export interface Symbol extends BaseEntity {
 
 export interface SymbolAttributes extends BaseEntityAttributes {
   tex: string | null;
-  type: "identifier" | "function" | "operator";
+  type: "identifier" | "function" | "operator"; // TODO: This is null too with the deduped endpoint
   mathml: string | null;
   mathml_near_matches: string[];
   is_definition: boolean | null;
@@ -374,7 +374,7 @@ export function isSentence(entity: Entity): entity is Sentence {
  * coordinates when processing PDFs and PostScript files with Python.
  */
 export interface BoundingBox {
-  source: string;
+  source?: string;
   /**
    * Page indexes start at 0.
    */
