@@ -390,3 +390,12 @@ export function getElementCoordinates(element: HTMLElement) {
     clientHeight: element.clientHeight,
   };
 }
+
+/**
+ * TODO(andrewhead): Handle the case of arXiv publications that have multiple versions. How do we
+ * make sure we're querying for the same version of paper data as the paper that was opened?
+ */
+ export function extractArxivId(url: string): string | undefined {
+  const matches = url.match(/arxiv\.org\/pdf\/(.*)(?:\.pdf).*$/) || [];
+  return matches[1];
+}
