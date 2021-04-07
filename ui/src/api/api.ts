@@ -218,6 +218,19 @@ function undedupeResponse(response: DedupedEntityResponse): EntityGetResponse {
   };
 }
 
+
+/**
+ * This API returns a compacted representation of the paper's entities and their relationships.
+ * Certain fields of Symbol entity data are pulled into a separate `sharedSymbolData` map,
+ * which is organized by the Symbols' `attributes.disambiguated_id` value.
+ *
+ * NOTE: Currently, this function passes the response through a transform function to make
+ * it compatible with the existing UI code.
+ * 
+ * @param arxivId arXiv ID of the viewed paper
+ * @param getAllEntities `true` retrieves entities of all types, `false` retrieves only citations
+ * @returns
+ */
 export async function getDedupedEntities(arxivId: string, getAllEntities?: boolean) {
   const params = getAllEntities ? {
     type: ENTITY_API_ALL

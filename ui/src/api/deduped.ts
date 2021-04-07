@@ -134,6 +134,9 @@ interface SharedSymbolData {
   sources: string[];
 }
 
+/*
+ * Type guards for handling specific types of entities.
+ */
 export function isCitation(entity: Entity): entity is Citation {
   return entity.type === "citation";
 }
@@ -154,6 +157,15 @@ export function isSentence(entity: Entity): entity is Sentence {
   return entity.type === "sentence";
 }
 
+/**
+ * We can express relationships more compactly as a list of IDs, but
+ * exisiting code expects each relationship entry to also define what
+ * entity type it links to, despite relationships always linking
+ * to one type of entity.
+ * @param rel The relationship to process
+ * @param type The entity type to which this relationship links
+ * @returns old-form {id, type} tuple describing the relationship
+ */
 export function toLegacyRelationship(rel: Relationship, type: string): LegacyRelationship {
   if (typeof rel === "string") {
     return {
