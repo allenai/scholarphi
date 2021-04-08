@@ -83,7 +83,7 @@ export async function getEntities(arxivId: string, getAllEntities?: boolean) {
     type: ENTITY_API_ALL
   } : {};
   const data = await doGet(
-    axios.get(`/api/v0/papers/arxiv:${arxivId}/entities`, { params })
+    axios.get(`/api/v0/papers/arxiv:${encodeURIComponent(arxivId)}/entities`, { params })
   );
   return ((data as any).data || []) as Entity[];
 }
@@ -247,7 +247,7 @@ export async function getDedupedEntities(arxivId: string, getAllEntities?: boole
   } : {};
   const data = await doGet(
     axios.get<EntityGetResponse>(
-      `/api/v0/papers/arxiv:${arxivId}/entities-deduped`,
+      `/api/v0/papers/arxiv:${encodeURIComponent(arxivId)}/entities-deduped`,
       {
         params,
         //@ts-ignore -- TODO: this pattern works in other projects, is there a version issue somewhere?
@@ -264,7 +264,7 @@ export async function postEntity(
 ): Promise<Entity | null> {
   try {
     const response = await axios.post(
-      `/api/v0/papers/arxiv:${arxivId}/entities`,
+      `/api/v0/papers/arxiv:${encodeURIComponent(arxivId)}/entities`,
       { data } as EntityCreatePayload
     );
     if (response.status === 201) {
@@ -281,7 +281,7 @@ export async function patchEntity(
   data: EntityUpdateData
 ): Promise<boolean> {
   const response = await axios.patch(
-    `/api/v0/papers/arxiv:${arxivId}/entities/${data.id}`,
+    `/api/v0/papers/arxiv:${encodeURIComponent(arxivId)}/entities/${encodeURIComponent(data.id)}`,
     { data } as EntityUpdatePayload,
     config
   );
@@ -300,7 +300,7 @@ export async function deleteEntity(
   id: string
 ): Promise<boolean> {
   const response = await axios.delete(
-    `/api/v0/papers/arxiv:${arxivId}/entities/${id}`,
+    `/api/v0/papers/arxiv:${encodeURIComponent(arxivId)}/entities/${encodeURIComponent(id)}`,
     config
   );
   if (response.status === 204) {

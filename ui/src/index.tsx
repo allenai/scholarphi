@@ -2,6 +2,7 @@ import queryString from "query-string";
 import React from "react";
 import ReactDOM from "react-dom";
 import ScholarReader from "./ScholarReader";
+import { extractArxivId } from './utils/ui';
 import { PaperId } from "./state";
 import { PDFViewerApplication } from "./types/pdfjs-viewer";
 require("mathjax-full/es5/core");
@@ -19,15 +20,6 @@ declare global {
     PDFViewerApplication?: PDFViewerApplication;
     heap?: HeapAnalyticsClient;
   }
-}
-
-/**
- * TODO(andrewhead): Handle the case of arXiv publications that have multiple versions. How do we
- * make sure we're querying for the same version of paper data as the paper that was opened?
- */
-function extractArxivId(url: string): string | undefined {
-  const matches = url.match(/arxiv\.org\/pdf\/(.*?)(?:\.pdf)?$/) || [];
-  return matches[1];
 }
 
 const params = queryString.parse(window.location.search);
