@@ -18,22 +18,20 @@ export const logEntry = Joi.object({
   data: Joi.object().unknown(true).default(null),
 });
 
-const s2paperId = Joi.string().pattern(/[a-f0-9]{40}/);
+const s2paperId = Joi.string().pattern(/^[a-f0-9]{40}$/);
 /*
  * See the arXiv documentation on valid identifiers here:
  * https://arxiv.org/help/arxiv_identifier.
  */
-const currentArxivFormat = Joi.string().pattern(/arxiv:[0-9]{2}[0-9]{2}.[0-9]+(v[0-9]+)?/);
-const arxivMathFormat = Joi.string().pattern(/arxiv:math\/[0-9]{5,}(v[0-9]+)/);
+const currentArxivFormat = Joi.string().pattern(/^arxiv:[0-9]{2}[0-9]{2}.[0-9]+(v[0-9]+)?$/);
 const olderArxivFormat = Joi.string().pattern(
-  /arxiv:[a-zA-Z0-9-]+\.[A-Z]{2}\/[0-9]{2}[0-9]{2}[0-9]+(v[0-9]+)/
+  /^arxiv:[a-zA-Z0-9\-]+(\.[A-Z]{2})?\/[0-9]{2}[0-9]{2}[0-9]+(v[0-9]+)?$/
 );
 
 export const paperSelector = Joi.object({
   paperSelector: Joi.alternatives().try(
     s2paperId,
     currentArxivFormat,
-    arxivMathFormat,
     olderArxivFormat,
   )
 });
