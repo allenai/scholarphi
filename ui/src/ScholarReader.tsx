@@ -729,46 +729,44 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   loadDataFromApi = async (): Promise<void> => {
-    if (this.props.paperId !== undefined) {
-      if (this.props.paperId.type === "arxiv") {
-        this.setState({
-          areCitationsLoading: true
-        });
-        const loadingStartTime = performance.now();
-        const entities = await api.getDedupedEntities(this.props.paperId.id, true);
-        this.setState({
-          entities: stateUtils.createRelationalStoreFromArray(entities, "id"),
-        });
+    if (this.props.paperId !== undefined && this.props.paperId.type === "arxiv") {
+      this.setState({
+        areCitationsLoading: true
+      });
+      const loadingStartTime = performance.now();
+      const entities = await api.getDedupedEntities(this.props.paperId.id, true);
+      this.setState({
+        entities: stateUtils.createRelationalStoreFromArray(entities, "id"),
+      });
 
-        const citationS2Ids = entities
-          .filter(isCitation)
-          .map((c) => c.attributes.paper_id)
-          .filter((id) => id !== null)
-          .map((id) => id as string);
-        if (citationS2Ids.length >= 1) {
-          const papers = (await api.getPapers(citationS2Ids)).reduce(
-            (papers, paper) => {
-              papers[paper.s2Id] = paper;
-              return papers;
-            },
-            {} as { [s2Id: string]: Paper }
-          );
-          this.setState({ papers, areCitationsLoading: false });
-        } else {
-          this.setState({ areCitationsLoading: false });
-        }
+      const citationS2Ids = entities
+        .filter(isCitation)
+        .map((c) => c.attributes.paper_id)
+        .filter((id) => id !== null)
+        .map((id) => id as string);
+      if (citationS2Ids.length >= 1) {
+        const papers = (await api.getPapers(citationS2Ids)).reduce(
+          (papers, paper) => {
+            papers[paper.s2Id] = paper;
+            return papers;
+          },
+          {} as { [s2Id: string]: Paper }
+        );
+        this.setState({ papers, areCitationsLoading: false });
+      } else {
+        this.setState({ areCitationsLoading: false });
+      }
 
-        if (window.heap) {
-          const loadingTimeMS = Math.round(performance.now() - loadingStartTime);
-          window.heap.track("paper-loaded", { loadingTimeMS, numEntities: entities.length, numCitations: citationS2Ids.length });
-        }
+      if (window.heap) {
+        const loadingTimeMS = Math.round(performance.now() - loadingStartTime);
+        window.heap.track("paper-loaded", { loadingTimeMS, numEntities: entities.length, numCitations: citationS2Ids.length });
+      }
 
-        const userData = await api.getUserLibraryInfo();
-        if (userData) {
-          this.setState({ userLibrary: userData.userLibrary });
-          if (userData.email) {
-            logger.setUsername(userData.email);
-          }
+      const userData = await api.getUserLibraryInfo();
+      if (userData) {
+        this.setState({ userLibrary: userData.userLibrary });
+        if (userData.email) {
+          logger.setUsername(userData.email);
         }
       }
     }
