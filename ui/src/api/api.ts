@@ -49,38 +49,34 @@ export async function listPapers(offset: number = 0, size: number = 25) {
  */
 export async function getPapers(s2Ids: string[]) {
   const PAPER_REQUEST_BATCH_SIZE = 50;
-  let s2IdsBatch = [];
-  let promises = [];
-  let dedupedIds: string[] = [];
-  s2Ids.forEach(id => {
-    if (dedupedIds.indexOf(id) < 0) {
-      dedupedIds.push(id);
+  // Use a set to remove dupes
+  const dedupeIds = [...new Set(s2Ids)];
+
+  // Use .reduce() to break into chunks
+  const s2IdsBatch = dedupeIds.reduce((chunks, s2Id, index) => {
+    const chunkIndex = Math.floor(index / PAPER_REQUEST_BATCH_SIZE);
+    if (chunks[chunkIndex]) {
+      chunks[chunkIndex].push(s2Id);
+    } else {
+      chunks[chunkIndex] = [s2Id];
     }
-  });
+    return chunks;
+  }, [[]] as string[][]);
 
-  for (let i = 0; i < dedupedIds.length; i += PAPER_REQUEST_BATCH_SIZE) {
-    s2IdsBatch.push(dedupedIds.slice(i, i + PAPER_REQUEST_BATCH_SIZE));
-  }
+  // Await the results within the async function, use async function in map
+  const results = await Promise.all(s2IdsBatch.map(async (s2Ids) => {
+    const result = await doGet(
+      axios.get<Paper[]>("/api/v0/papers", {
+        params: {
+          id: s2Ids.join(","),
+        },
+      }));
+    // ...process result
+    return result || [];
+  }));
 
-  for (let i = 0; i < s2IdsBatch.length; i++) {
-    promises.push(
-      doGet(
-        axios.get<Paper[]>("/api/v0/papers", {
-          params: {
-            id: s2IdsBatch[i].join(","),
-          },
-        })
-      ).then((data: any) => {
-        const papers = [];
-        if (data !== null && data.data !== undefined) {
-          papers.push(...data.data.map((p: any) => p.attributes));
-        }
-        return papers;
-      })
-    );
-  }
-
-  return Promise.all(promises).then((responses) => responses.flat() as Paper[]);
+  // Use `[].concat(...) to flatten array
+  return ([] as Paper[]).concat(...results);
 }
 
 const ENTITY_API_ALL = 'all';
