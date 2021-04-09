@@ -754,6 +754,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
             {} as { [s2Id: string]: Paper }
           );
           this.setState({ papers, areCitationsLoading: false });
+        } else {
+          this.setState({ areCitationsLoading: false });
         }
 
         if (window.heap) {
