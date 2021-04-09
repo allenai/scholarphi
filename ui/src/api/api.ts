@@ -49,11 +49,17 @@ export async function listPapers(offset: number = 0, size: number = 25) {
  */
 export async function getPapers(s2Ids: string[]) {
   const PAPER_REQUEST_BATCH_SIZE = 50;
-  var s2IdsBatch = [];
-  var promises = [];
+  let s2IdsBatch = [];
+  let promises = [];
+  let dedupedIds: string[] = [];
+  s2Ids.forEach(id => {
+    if (dedupedIds.indexOf(id) < 0) {
+      dedupedIds.push(id);
+    }
+  });
 
-  for (let i = 0; i < s2Ids.length; i += PAPER_REQUEST_BATCH_SIZE) {
-    s2IdsBatch.push(s2Ids.slice(i, i + PAPER_REQUEST_BATCH_SIZE));
+  for (let i = 0; i < dedupedIds.length; i += PAPER_REQUEST_BATCH_SIZE) {
+    s2IdsBatch.push(dedupedIds.slice(i, i + PAPER_REQUEST_BATCH_SIZE));
   }
 
   for (let i = 0; i < s2IdsBatch.length; i++) {
