@@ -29,6 +29,9 @@ class DefinitionDetectionModel:
 
         # Initialize modules for featurization.
         # To use a smaller model, swap out the parameter with "en_core_sci_sm"
+        # The prediction_type are the '+' separated keys of the joint model heads.
+        # They are the names of the datasets on which the joint model was trained. 
+        # Example : prediction_type = "DocDef2+AI2020+W00"
         logging.debug("Loading Spacy models (this may take some time).")
         self.nlp = spacy.load("en_core_sci_md")
         abbreviation_pipe = AbbreviationDetector(self.nlp)

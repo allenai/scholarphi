@@ -114,6 +114,24 @@ class DataTrainingArguments:
         default=50, metadata={"help": "TBW"},
     )
     dataconfig_file: Optional[str] = field(
-        default="dataconfig.json", metadata={"help": "dataconfig file (it has intent_label, slot_label dicts, and pos_label list)"},
+        default="dataconfig.json", metadata={"help": 
+        '''
+            The `dataconfig.json` file, that is bundled along with the joint model. 
+            It has intent_label dict, slot_label dict, and pos_label list) for all 
+            the datasets used in to train the model (and thus used during inference).
+            Schema of the file : 
+                {
+                    "intent_label" : {
+                        <dataset_1> : <List of intent labels>,
+                        <dataset_2> : <List of intent labels>,
+                    },
+                    "slot_label" : {
+                        <dataset_1> : <List of slot labels>,
+                        <dataset_2> : <List of slot labels>,
+                    },
+                    "pos_label" : <List of global POS Labels>,
+                }
+
+        '''},
     )
     

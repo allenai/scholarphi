@@ -31,6 +31,18 @@ def test_model_extracts_simple_definitions(model: DefinitionDetectionModel):
 
 
 @pytest.mark.slow
+@pytest.mark.skip(
+    reason="Model does not yet detect this definition. Model improvements needed."
+)
+def test_model_extracts_simple_definitions_2(model: DefinitionDetectionModel):
+    prediction_type = "W00"
+    features = model.featurize("Neural networks are machine learning models.")
+    intents, slots, _ = model.predict_batch([features])
+    print(intents, slots)
+    assert intents[prediction_type][0]
+    assert slots[prediction_type][0] == ["TERM", "TERM", "O", "DEF", "DEF", "DEF", "O"]
+
+@pytest.mark.slow
 def test_extract_term_definition_consolidate():
     prediction_type = "W00"
     text = "Neural networks are machine learning models."
