@@ -76,3 +76,8 @@ export PROXY='http://localhost:3000'
 
 See the README in the `api/` sibling directory for more information
 about running it locally.
+
+## Tests
+
+Run `npm test` to execute the suite of UI tests.
+To run tests continuously when files are changed, use `npm test -- --watch`.

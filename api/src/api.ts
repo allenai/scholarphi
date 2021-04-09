@@ -224,7 +224,14 @@ export const plugin = {
           console.log(e);
           return h.response().code(500);
         }
-        return { data: res };
+        // tags are unused, don't return them
+        res.entities = res.entities.map(e => {
+          if (e.attributes.tags) {
+            delete e.attributes.tags;
+          }
+          return e;
+        });
+        return res;
       },
       options: {
         validate: {

@@ -10,13 +10,19 @@ jobs:
         working-directory: ui
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.21.0
+      - run: npm install
+      - run: npm test
+      # Build the image, so we're sure it still builds.
       - run: docker build .
-      # We run the build a second time instead of trying to wire the docker SHA from 
+      # We run the build a second time instead of trying to wire the docker SHA from
       # one step to another. The layers should be cached, so it should be really fast.
       # We run the build in a separate step above so that there's nice output if something
       # doesn't work.
       - run: docker run --name ui --rm -d -p 4000:4000 $(docker build -q .)
-      # We don't have UI tests yet, so we just make sure the `/` route returns 200.
+      # Do a simple check that the server returns 200
       - run: curl --fail http://localhost:4000
       - run: docker stop ui
   api:
@@ -28,7 +34,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 12.20.0
+          node-version: 12.21.0
       - run: npm install
       - run: ./bin/start_local_db.sh
       - run: npm test

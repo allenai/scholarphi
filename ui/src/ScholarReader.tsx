@@ -734,13 +734,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         this.setState({
           areCitationsLoading: true
         });
-        let getAllEntities = false;
-        const qs = queryString.parse(window.location.search);
-        if (qs.showAll && qs.showAll === "true") {
-          getAllEntities = true;
-        }
         const loadingStartTime = performance.now();
-        const entities = await api.getEntities(this.props.paperId.id, getAllEntities);
+        const entities = await api.getDedupedEntities(this.props.paperId.id, true);
         this.setState({
           entities: stateUtils.createRelationalStoreFromArray(entities, "id"),
         });
