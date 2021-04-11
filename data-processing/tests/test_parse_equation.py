@@ -1,9 +1,9 @@
 import os
 
 from bs4 import BeautifulSoup, Tag
+
 from common.parse_equation import parse_element, parse_equation
 from common.types import Token
-
 from tests.util import get_test_path
 
 
@@ -25,31 +25,38 @@ def test_parse_single_symbol():
     assert str(symbol.element) == "<mi>x</mi>"
     assert symbol.type_ == "identifier"
     assert symbol.children == []
-    assert symbol.tokens == [Token("x", "atom", 0, 1)]
+    assert symbol.tokens == [Token("x", "atom", 0, 1, "<mi>x</mi>", [])]
     assert symbol.start == 0
     assert symbol.end == 1
     assert not symbol.defined
     assert not symbol.contains_affix_token
-    assert result.tokens == [Token("x", "atom", 0, 1)]
 
 
 def test_merge_contiguous_identifiers():
     result = parse_element(load_fragment_tag("relu.xml"))
-    assert str(result.element) == "<mi>ReLU</mi>"
     symbol = result.symbols[0]
     assert str(symbol.element) == "<mi>ReLU</mi>"
     assert symbol.children == []
     assert symbol.tokens == [
-        Token("ReLU", "atom", 0, 4),
+        Token("R", "atom", 0, 1, "<mi>R</mi>", []),
+        Token("e", "atom", 1, 2, "<mi>e</mi>", []),
+        Token("L", "atom", 2, 3, "<mi>L</mi>", []),
+        Token("U", "atom", 3, 4, "<mi>U</mi>", []),
     ]
 
 
 def test_merge_contiguous_styled_identifiers():
     result = parse_element(load_fragment_tag("bold_relu.xml"))
-    assert str(result.element) == '<mi mathvariant="bold">ReLU</mi>'
     symbol = result.symbols[0]
+    assert str(symbol.element == '<mi mathvariant="bold">ReLU</mi>')
     assert symbol.start == 0
     assert symbol.end == 13
+    assert symbol.tokens == [
+        Token("R", "atom", 8, 9, '<mi mathvariant="bold">R</mi>', ["mathbf"]),
+        Token("e", "atom", 9, 10, '<mi mathvariant="bold">e</mi>', ["mathbf"]),
+        Token("L", "atom", 10, 11, '<mi mathvariant="bold">L</mi>', ["mathbf"]),
+        Token("U", "atom", 11, 12, '<mi mathvariant="bold">U</mi>', ["mathbf"]),
+    ]
 
 
 def test_keep_identifiers_with_different_styles_separate():
@@ -68,12 +75,11 @@ def test_merge_contiguous_identifiers_into_one_with_script():
 def test_merge_contiguous_operators():
     result = parse_element(load_fragment_tag("double_bar.xml"))
     assert len(result.symbols) == 1
-    assert str(result.element) == "<mo>∣∣</mo>"
+    assert str(result.symbols[0].element) == "<mo>∣∣</mo>"
 
 
 def test_merge_contigous_symbols_delimit_at_operator():
     result = parse_element(load_fragment_tag("var1_plus_var2.xml"))
-    assert str(result.element) == "<mrow><mi>var1</mi><mo>+</mo><mi>var2</mi></mrow>"
     assert len(result.symbols) == 3
     assert str(result.symbols[0].element) == "<mi>var1</mi>"
     assert str(result.symbols[1].element) == "<mo>+</mo>"
@@ -83,8 +89,6 @@ def test_merge_contigous_symbols_delimit_at_operator():
 def test_do_not_parse_error_node():
     result = parse_element(load_fragment_tag("error.xml"))
     assert result.symbols == []
-    assert result.element is None
-    assert result.tokens == []
 
 
 def test_parse_node_with_child_nodes():
@@ -97,8 +101,8 @@ def test_parse_node_with_child_nodes():
     assert str(symbol.children[0].element) == "<mi>x</mi>"
     assert str(symbol.children[1].element) == "<mi>i</mi>"
     assert symbol.tokens == [
-        Token("x", "atom", 0, 1),
-        Token("i", "atom", 2, 3),
+        Token("x", "atom", 0, 1, "<mi>x</mi>", []),
+        Token("i", "atom", 2, 3, "<mi>i</mi>", []),
     ]
 
 
@@ -114,29 +118,26 @@ def test_parent_symbol_inherits_children_from_row():
 
 def test_number_is_not_a_symbol():
     result = parse_element(load_fragment_tag("1.xml"))
-    assert str(result.element) == "<mn>1</mn>"
     assert result.symbols == []
-    assert result.tokens == [Token("1", "atom", 0, 1)]
 
 
 def test_d_is_symbol_on_its_own():
     result = parse_element(load_fragment_tag("d.xml"))
     assert len(result.symbols) == 1
-    assert str(result.symbols[0].element) == "<mi>d</mi>"
-    assert result.symbols[0].tokens == [Token("d", "atom", 0, 1)]
+    symbol = result.symbols[0]
+    assert str(symbol.element) == "<mi>d</mi>"
+    assert symbol.type_ == "identifier"
 
 
-def test_ignore_derivative_tokens():
+def test_parse_derivative_tokens_as_operators():
     result = parse_element(load_fragment_tag("delta_a_d_b.xml"))
     assert len(result.symbols) == 4
     assert str(result.symbols[0].element) == "<mo>∂</mo>"
+    assert result.symbols[0].type_ == "operator"
     assert str(result.symbols[1].element) == "<mi>a</mi>"
     assert str(result.symbols[2].element) == "<mo>d</mo>"
+    assert result.symbols[2].type_ == "operator"
     assert str(result.symbols[3].element) == "<mi>b</mi>"
-
-    # Make sure that derivatives tokens aren't removed from the MathML.
-    assert any([e.name == "mo" and e.text == "d" for e in result.element])
-    assert any([e.name == "mo" and e.text == "∂" for e in result.element])
 
 
 def test_parse_prime():
@@ -145,22 +146,28 @@ def test_parse_prime():
     symbol = result.symbols[0]
     assert len(symbol.children) == 2
     assert str(symbol.children[0].element) == "<mi>x</mi>"
-    assert symbol.tokens == [Token("x", "atom", 0, 1), Token("′", "atom", 1, 2)]
+    assert symbol.tokens == [
+        Token("x", "atom", 0, 1, "<mi>x</mi>", []),
+        Token("′", "atom", 1, 2, "<mo>′</mo>", []),
+    ]
 
 
 def test_parse_text_as_symbol():
     result = parse_element(load_fragment_tag("text.xml"))
     assert len(result.symbols) == 1
-    assert str(result.element) == "<mtext>text</mtext>"
+    assert str(result.symbols[0].element) == "<mtext>text</mtext>"
 
 
 def test_parse_accent():
     result = parse_element(load_fragment_tag("bar_x.xml"))
     assert len(result.symbols) == 1
-    assert str(result.element) == '<mover accent="true"><mi>x</mi><mo>ˉ</mo></mover>'
     symbol = result.symbols[0]
+    assert str(symbol.element) == '<mover accent="true"><mi>x</mi><mo>ˉ</mo></mover>'
     assert symbol.contains_affix_token
-    assert symbol.tokens == [Token("x", "atom", 5, 6), Token("ˉ", "affix", 0, 5)]
+    assert symbol.tokens == [
+        Token("ˉ", "affix", 0, 5, "<mo>ˉ</mo>", []),
+        Token("x", "atom", 5, 6, "<mi>x</mi>", []),
+    ]
 
 
 def test_summation_is_not_symbol():
@@ -213,10 +220,10 @@ def test_detect_function_declaration():
     assert symbol.start == 0
     assert symbol.end == 16
     assert (
-        Token("(", "atom", 1, 2) in symbol.tokens
+        Token("(", "atom", 1, 2, "<mo>(</mo>", []) in symbol.tokens
     ), "function tokens should include parentheses"
     assert (
-        Token(")", "atom", 15, 16) in symbol.tokens
+        Token(")", "atom", 15, 16, "<mo>)</mo>", []) in symbol.tokens
     ), "function tokens should include parentheses"
     assert not any(
         [t.text == "," for t in symbol.tokens]
