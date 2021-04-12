@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import Callable, Dict, List, NamedTuple, Optional, Set, Union
+from typing import (Callable, Dict, List, NamedTuple, Optional, Set, Tuple,
+                    Union)
 
 from typing_extensions import Literal
 
@@ -316,7 +317,7 @@ class Token:
     attribute of the MathML element, but rather can only be recovered from the font macros.
     """
 
-    font_macros: List[str]
+    font_macros: Tuple[str, ...]
     """
     List of TeX macros that were applied to the letter to style it in the equation. Note that this
     list might be normalized (e.g., the '\\bm' macro might be replaced with '\\boldsymbol') as this

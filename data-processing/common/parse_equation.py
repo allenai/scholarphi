@@ -1,7 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import (Callable, Dict, Generic, Iterable, List, Optional, Tuple,
-                    TypeVar, Union, cast)
+from typing import Callable, Dict, List, Optional, Tuple, Union, cast
 
 from bs4 import BeautifulSoup, NavigableString, Tag
 
@@ -611,15 +610,15 @@ def _extract_tokens_from_element(element: Tag) -> List[Token]:
     return tokens
 
 
-def _extract_font_macros(element: Tag) -> List[str]:
+def _extract_font_macros(element: Tag) -> Tuple[str, ...]:
     """
     Get the list of TeX styling macros applied to a token represented by a MathML element. Relies
     on the MathML having an "s2:font-macros" attribute on the elements for tokens, where
     each font macro is separated by an '&' character.
     """
 
-    font_macros_string = element.get("s2:font-macros", "")
-    font_macros = [m for m in font_macros_string.split("&") if m != ""]
+    font_macros_string = str(element.get("s2:font-macros", ""))
+    font_macros = tuple([m for m in font_macros_string.split("&") if m != ""])
     return font_macros
 
 

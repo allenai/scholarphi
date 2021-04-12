@@ -9,13 +9,8 @@ from typing import Iterator, List, Optional, Set
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
 from common.parse_equation import KATEX_ERROR_COLOR, Node, parse_equation
-from common.types import (
-    ArxivId,
-    SerializableChild,
-    SerializableSymbol,
-    SerializableSymbolToken,
-    SerializableToken,
-)
+from common.types import (ArxivId, SerializableChild, SerializableSymbol,
+                          SerializableSymbolToken, SerializableToken)
 
 
 @dataclass(frozen=True)  # pylint: disable=too-many-instance-attributes
@@ -275,6 +270,8 @@ class ExtractSymbols(ArxivBatchCommand[ArxivId, List[EquationSymbols]]):
                         equation_index=equation_index,
                         start=equation_start + token.start,
                         end=equation_start + token.end,
+                        mathml=token.mathml,
+                        font_macros=token.font_macros,
                         relative_start=token.start,
                         relative_end=token.end,
                         type_=token.type_,
