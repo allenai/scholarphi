@@ -25,7 +25,7 @@ def test_parse_single_symbol():
     assert str(symbol.element) == "<mi>x</mi>"
     assert symbol.type_ == "identifier"
     assert symbol.children == []
-    assert symbol.tokens == [Token("x", "atom", 0, 1, "<mi>x</mi>", [])]
+    assert symbol.tokens == [Token("x", "atom", 0, 1, "<mi>x</mi>", ())]
     assert symbol.start == 0
     assert symbol.end == 1
     assert not symbol.defined
@@ -38,10 +38,10 @@ def test_merge_contiguous_identifiers():
     assert str(symbol.element) == "<mi>ReLU</mi>"
     assert symbol.children == []
     assert symbol.tokens == [
-        Token("R", "atom", 0, 1, "<mi>R</mi>", []),
-        Token("e", "atom", 1, 2, "<mi>e</mi>", []),
-        Token("L", "atom", 2, 3, "<mi>L</mi>", []),
-        Token("U", "atom", 3, 4, "<mi>U</mi>", []),
+        Token("R", "atom", 0, 1, "<mi>R</mi>", ()),
+        Token("e", "atom", 1, 2, "<mi>e</mi>", ()),
+        Token("L", "atom", 2, 3, "<mi>L</mi>", ()),
+        Token("U", "atom", 3, 4, "<mi>U</mi>", ()),
     ]
 
 
@@ -52,10 +52,10 @@ def test_merge_contiguous_styled_identifiers():
     assert symbol.start == 0
     assert symbol.end == 13
     assert symbol.tokens == [
-        Token("R", "atom", 8, 9, '<mi mathvariant="bold">R</mi>', ["mathbf"]),
-        Token("e", "atom", 9, 10, '<mi mathvariant="bold">e</mi>', ["mathbf"]),
-        Token("L", "atom", 10, 11, '<mi mathvariant="bold">L</mi>', ["mathbf"]),
-        Token("U", "atom", 11, 12, '<mi mathvariant="bold">U</mi>', ["mathbf"]),
+        Token("R", "atom", 8, 9, '<mi mathvariant="bold">R</mi>', ("mathbf",)),
+        Token("e", "atom", 9, 10, '<mi mathvariant="bold">e</mi>', ("mathbf",)),
+        Token("L", "atom", 10, 11, '<mi mathvariant="bold">L</mi>', ("mathbf",)),
+        Token("U", "atom", 11, 12, '<mi mathvariant="bold">U</mi>', ("mathbf",)),
     ]
 
 
@@ -101,8 +101,8 @@ def test_parse_node_with_child_nodes():
     assert str(symbol.children[0].element) == "<mi>x</mi>"
     assert str(symbol.children[1].element) == "<mi>i</mi>"
     assert symbol.tokens == [
-        Token("x", "atom", 0, 1, "<mi>x</mi>", []),
-        Token("i", "atom", 2, 3, "<mi>i</mi>", []),
+        Token("x", "atom", 0, 1, "<mi>x</mi>", ()),
+        Token("i", "atom", 2, 3, "<mi>i</mi>", ()),
     ]
 
 
@@ -147,8 +147,8 @@ def test_parse_prime():
     assert len(symbol.children) == 2
     assert str(symbol.children[0].element) == "<mi>x</mi>"
     assert symbol.tokens == [
-        Token("x", "atom", 0, 1, "<mi>x</mi>", []),
-        Token("′", "atom", 1, 2, "<mo>′</mo>", []),
+        Token("x", "atom", 0, 1, "<mi>x</mi>", ()),
+        Token("′", "atom", 1, 2, "<mo>′</mo>", ()),
     ]
 
 
@@ -165,8 +165,8 @@ def test_parse_accent():
     assert str(symbol.element) == '<mover accent="true"><mi>x</mi><mo>ˉ</mo></mover>'
     assert symbol.contains_affix_token
     assert symbol.tokens == [
-        Token("ˉ", "affix", 0, 5, "<mo>ˉ</mo>", []),
-        Token("x", "atom", 5, 6, "<mi>x</mi>", []),
+        Token("ˉ", "affix", 0, 5, "<mo>ˉ</mo>", ()),        
+        Token("x", "atom", 5, 6, "<mi>x</mi>", ()),
     ]
 
 
@@ -220,10 +220,10 @@ def test_detect_function_declaration():
     assert symbol.start == 0
     assert symbol.end == 16
     assert (
-        Token("(", "atom", 1, 2, "<mo>(</mo>", []) in symbol.tokens
+        Token("(", "atom", 1, 2, "<mo>(</mo>", ()) in symbol.tokens
     ), "function tokens should include parentheses"
     assert (
-        Token(")", "atom", 15, 16, "<mo>)</mo>", []) in symbol.tokens
+        Token(")", "atom", 15, 16, "<mo>)</mo>", ()) in symbol.tokens
     ), "function tokens should include parentheses"
     assert not any(
         [t.text == "," for t in symbol.tokens]

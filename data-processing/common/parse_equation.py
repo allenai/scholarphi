@@ -493,20 +493,11 @@ def parse_identifier(
 ) -> Optional[Node]:
     " Attempt to parse an element as an identifier. "
 
-    if _is_identifier(element) and _has_s2_offset_annotations(element):
-
-        # If the element has been styled (e.g., by applying a bold font) and
-        # character offsets of the style macro were found, use the offsets of
-        # the style macro as the offsets of the symbol.
-        if "s2:style-start" in element.attrs and "s2:style-end" in element.attrs:
-            start = int(element.attrs["s2:style-start"])
-            end = int(element.attrs["s2:style-end"])
-        else:
-            start = int(element.attrs["s2:start"])
-            end = int(element.attrs["s2:end"])
-
-        node = Node("identifier", element, children, start, end, tokens,)
-        return node
+    if _is_identifier(element):
+        start, end = _extract_symbol_element_start_and_end(element)
+        if start is not None and end is not None:
+            node = Node("identifier", element, children, start, end, tokens,)
+            return node
 
     return None
 
@@ -515,54 +506,71 @@ def parse_function(
     element: Tag, children: List[Node], tokens: List[Token]
 ) -> Optional[Node]:
 
-    if (
-        not element.name == "mrow"
-        or not element.get("s2:is_function")
-        or not _has_s2_offset_annotations(element)
-    ):
+    if not element.name == "mrow" or not element.get("s2:is_function"):
         return None
 
-    return Node(
-        "function",
-        element,
-        children,
-        int(element["s2:start"]),
-        int(element["s2:end"]),
-        tokens,
-    )
+    start, end = _extract_symbol_element_start_and_end(element)
+    if start is not None and end is not None:
+        return Node("function", element, children, start, end, tokens,)
+    return None
 
 
 def parse_definition_operator(element: Tag, tokens: List[Token]) -> Optional[Node]:
     EQUATION_SIGNS = ["=", "≈", "≥", "≤", "<", ">", "∈", "∼", "≜"]
-    if (
-        element.name != "mo"
-        or element.text not in EQUATION_SIGNS
-        or not _has_s2_offset_annotations(element)
-    ):
+    if element.name != "mo" or element.text not in EQUATION_SIGNS:
         return None
 
-    return Node(
-        type_="definition-operator",
-        element=element,
-        children=[],
-        start=int(element.attrs["s2:start"]),
-        end=int(element.attrs["s2:end"]),
-        tokens=tokens,
-    )
+    start, end = _extract_symbol_element_start_and_end(element)
+    if start is not None and end is not None:
+        return Node(
+            type_="definition-operator",
+            element=element,
+            children=[],
+            start=start,
+            end=end,
+            tokens=tokens,
+        )
+    return None
 
 
 def parse_operator(element: Tag, tokens: List[Token]) -> Optional[Node]:
-    if element.name != "mo" or not _has_s2_offset_annotations(element):
+    if element.name != "mo":
         return None
 
-    return Node(
-        type_="operator",
-        element=element,
-        children=[],
-        start=int(element.attrs["s2:start"]),
-        end=int(element.attrs["s2:end"]),
-        tokens=tokens,
-    )
+    start, end = _extract_symbol_element_start_and_end(element)
+    if start is not None and end is not None:
+        return Node(
+            type_="operator",
+            element=element,
+            children=[],
+            start=start,
+            end=end,
+            tokens=tokens,
+        )
+
+    return None
+
+
+def _extract_symbol_element_start_and_end(
+    element: Tag,
+) -> Tuple[Optional[int], Optional[int]]:
+    """
+    Get the start and end character offsets of a symbol. If the element was styled
+    in the TeX (e.g., with a macro like '\mathbf'), then the character offsets will
+    include the characters of the macro.
+    """
+
+    start = None
+    end = None
+
+    if "s2:style-start" in element.attrs and "s2:style-end" in element.attrs:
+        start = int(element.attrs["s2:style-start"])
+        end = int(element.attrs["s2:style-end"])
+    elif "s2:start" in element.attrs and "s2:end" in element.attrs:
+        start = int(element.attrs["s2:start"])
+        end = int(element.attrs["s2:end"])
+
+    return start, end
 
 
 def _extract_tokens_from_element(element: Tag) -> List[Token]:
