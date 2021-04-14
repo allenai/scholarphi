@@ -8,6 +8,7 @@
     "lint": "eslint '**/*.{js,ts,tsx,json}' && echo '💫  Lint complete.'",
     "lint:fix": "eslint '**/*.{js,ts,tsx,json}' --fix && npx sort-package-json  && echo '🛠  Lint --fix complete'",
     "start": "webpack serve --hot --mode development",
+    "start:local": "webpack serve --hot --mode development --env PROXY=http://localhost:3000",
     "test": "jest"
   },
   "resolutions": {

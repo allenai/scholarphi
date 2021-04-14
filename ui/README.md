@@ -67,12 +67,8 @@ By default the UI proxies API requests to the production
 API (https://s2-reader.apps.allenai.org). This makes it possible
 to run a self-standing version of the UI locally.
 
-To use a local version of the API, export the `PROXY` environment
-variable like so:
-
-```bash
-export PROXY='http://localhost:3000'
-```
+To use a local version of the API, start the API locally and then
+start the UI using `npm run start:local`.
 
 See the README in the `api/` sibling directory for more information
 about running it locally.

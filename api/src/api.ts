@@ -157,13 +157,8 @@ export const plugin = {
         });
         const data = (await s2Api.getPapers(uniqueIds, config.s2.apiKey))
           .filter((paper) => paper !== undefined)
-          .map((paper) => paper as Paper)
-          .map((paper) => ({
-            id: paper.s2Id,
-            type: "paper",
-            attributes: paper,
-          }));
-        return { data };
+          .map((paper) => paper as Paper);
+        return data;
       },
       options: {
         validate: {
