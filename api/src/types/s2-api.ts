@@ -17,3 +17,11 @@ interface S2ApiAuthor {
   name: string;
   url: string;
 }
+
+export interface S2ApiError {
+  error: string;
+}
+
+export function isS2ApiError(d: any): d is S2ApiError {
+  return !!d.error && typeof d.error === "string";
+}

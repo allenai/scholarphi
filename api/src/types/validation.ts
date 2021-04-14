@@ -18,7 +18,7 @@ export const logEntry = Joi.object({
   data: Joi.object().unknown(true).default(null),
 });
 
-const s2paperId = Joi.string().pattern(/^[a-f0-9]{40}$/);
+export const s2paperId = Joi.string().pattern(/^[a-f0-9]{40}$/);
 /*
  * See the arXiv documentation on valid identifiers here:
  * https://arxiv.org/help/arxiv_identifier.

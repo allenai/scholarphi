@@ -12,6 +12,8 @@
  * into other projects, all of the types are available to the client code.
  */
 
+export type Nullable<T> = T | null;
+
 export interface Paginated<T> {
   rows: T[];
   offset: number;

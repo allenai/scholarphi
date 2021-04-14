@@ -1,7 +1,7 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosPromise, AxiosRequestConfig, AxiosResponse, AxiosTransformer } from "axios";
 import * as LRU from 'lru-cache';
-import { Paper } from "./types/api";
-import { S2ApiPaper } from "./types/s2-api";
+import { Paper, Nullable } from "./types/api";
+import { isS2ApiError, S2ApiError, S2ApiPaper } from "./types/s2-api";
 
 /**
  * We cache the papers returned from S2's API, since the data doesn't change often and it
@@ -90,7 +90,69 @@ async function getPaper(s2Id: string, apiKey?: string): Promise<Paper | undefine
   );
   const response = await axios.get<S2ApiPaper>(`${apiOrigin}/paper/${s2Id}`, conf);
   const paper = toPaper(s2Id, response.data);
-  cache.set(s2Id, paper);
+  // only cache if the request is successful to avoid papers being permanent errors
+  if (response.status === 200) {
+    cache.set(s2Id, paper);
+  }
+
 
   return paper;
+}
+
+/**
+ * Fetches a single paper from the S2 API and converts it into a Paper,
+ * while also allowing for error handling using axios's promise interface.
+ *
+ * @param s2Id SHA of the paper to request
+ * @param apiKey optional key for higher rate limit
+ * @returns
+ */
+export function getPaperUncached(s2Id: string, apiKey?: string): AxiosPromise<Paper> {
+  if (!apiKey) {
+    console.warn(`
+      WARNING: The S2 Public API Key isn't set. If the backend makes more than 100 requests to
+      the public API in 5 minutes it'll be rate limited and might stop working.
+
+      See the README.md for more information about geting an API key.
+    `);
+  }
+
+  const conf: AxiosRequestConfig = {
+    headers: {
+      "user-agent":
+        "Semantic Reader API Client (https://scholarphi.semanticscholar.org)",
+    },
+    // cast to AxiosTransformer[] or else the base type is never[]
+    // TODO: See if a newer version of typescript is better at resolving empty array types
+    transformResponse: ([] as AxiosTransformer[])
+    // axios defaults must come first or the transform function underneath gets the raw string
+    // because the defaults use the same interface as the config, TS thinks this is optional on the defaults.
+    .concat(axios.defaults.transformResponse || [])
+    .concat(
+      (data: S2ApiPaper | S2ApiError): Nullable<Paper> => {
+        if (isS2ApiError(data)) {
+          // API error gets handled by catching the promise
+          return null;
+        }
+        return toPaper(s2Id, data);
+      }
+    ),
+  };
+  if (apiKey) {
+    conf.headers['x-api-key'] = apiKey;
+  }
+  const apiOrigin = (
+    apiKey
+      ? "https://partner.semanticscholar.org/v1"
+      : "https://api.semanticscholar.org/v1"
+  );
+
+  return axios.get<Paper>(`${apiOrigin}/paper/${s2Id}`, conf)
+  .then((resp) => {
+    // Side effect promise to cache the result if successful
+    if (resp.status === 200) {
+      cache.set(s2Id, resp.data);
+    }
+    return resp;
+  });
 }
