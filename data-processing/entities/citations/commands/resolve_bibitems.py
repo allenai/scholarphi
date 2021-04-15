@@ -70,7 +70,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
             yield MatchTask(arxiv_id, bibitems, references)
 
     def process(self, item: MatchTask) -> Iterator[BibitemMatch]:
-        count = 0
+        ref_match_count = 0
         for bibitem in item.bibitems:
             max_similarity = 0.0
             most_similar_reference = None
@@ -81,7 +81,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
                     most_similar_reference = reference
 
             if most_similar_reference is not None:
-                count += 1
+                ref_match_count += 1
                 yield BibitemMatch(
                     bibitem.id_,
                     bibitem.text,
@@ -94,8 +94,10 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
                     bibitem.id_,
                     item.arxiv_id,
                 )
-        if item.bibitems and count == 0:
+        if item.bibitems and ref_match_count == 0:
             logging.warning(f"Could not match any reference for paper {item.arxiv_id}.")
+        else:
+            logging.debug(f"Matched {ref_match_count} references for paper {item.arxiv_id}.")
 
     def save(self, item: MatchTask, result: BibitemMatch) -> None:
         resolutions_dir = directories.arxiv_subdir("bibitem-resolutions", item.arxiv_id)
