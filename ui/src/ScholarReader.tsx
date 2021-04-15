@@ -58,7 +58,6 @@ import * as uiUtils from "./utils/ui";
 import ViewerOverlay from "./components/overlay/ViewerOverlay";
 
 import classNames from "classnames";
-import queryString from "query-string";
 import React from "react";
 
 interface Props {
@@ -83,7 +82,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
     this.state = {
       entities: null,
-      papers: null,
+      lazyPapers: new Map(),
 
       userLibrary: null,
 
@@ -730,9 +729,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
   loadDataFromApi = async (): Promise<void> => {
     if (this.props.paperId !== undefined && this.props.paperId.type === "arxiv") {
-      this.setState({
-        areCitationsLoading: true
-      });
       const loadingStartTime = performance.now();
       const entities = await api.getDedupedEntities(this.props.paperId.id, true);
       this.setState({
@@ -744,18 +740,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         .map((c) => c.attributes.paper_id)
         .filter((id) => id !== null)
         .map((id) => id as string);
-      if (citationS2Ids.length >= 1) {
-        const papers = (await api.getPapers(citationS2Ids)).reduce(
-          (papers, paper) => {
-            papers[paper.s2Id] = paper;
-            return papers;
-          },
-          {} as { [s2Id: string]: Paper }
-        );
-        this.setState({ papers, areCitationsLoading: false });
-      } else {
-        this.setState({ areCitationsLoading: false });
-      }
 
       if (window.heap) {
         const loadingTimeMS = Math.round(performance.now() - loadingStartTime);
@@ -770,6 +754,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         }
       }
     }
+  }
+
+  cachePaper = (paper: Paper, cb?: () => void): void => {
+    const paperMap = new Map(this.state.lazyPapers);
+    paperMap.set(paper.s2Id, paper);
+    this.setState({
+      lazyPapers: paperMap,
+    }, cb);
   }
 
   jumpToEntityWithBackMessage = (id: string): void => {
@@ -1132,8 +1124,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       <EntityAnnotationLayer
                         paperId={this.props.paperId}
                         pageView={pageView}
-                        papers={this.state.papers}
                         entities={entities}
+                        lazyPapers={this.state.lazyPapers}
+                        cachePaper={this.cachePaper}
                         userLibrary={this.state.userLibrary}
                         selectedEntityIds={selectedEntityIds}
                         selectedAnnotationIds={selectedAnnotationIds}

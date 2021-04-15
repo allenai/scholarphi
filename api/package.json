@@ -35,6 +35,7 @@
     "typescript": "^3.9.6"
   },
   "dependencies": {
+    "@hapi/boom": "^7.4.11",
     "@hapi/hapi": "^18.4.1",
     "@hapi/joi": "^16.1.7",
     "@types/lru-cache": "^5.1.0",

@@ -1,6 +1,5 @@
 import { BoundingBox, Relationship as LegacyRelationship } from './types';
-
-export type Nullable<T> = T | null;
+import { Nullable } from '../types/ui';
 
 /**
  * Types defined in here are for the entities-deduped endpoint,

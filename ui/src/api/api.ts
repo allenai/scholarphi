@@ -28,6 +28,7 @@ import {
   isTerm,
   toLegacyRelationship
 } from "./deduped";
+import { Nullable } from "../types/ui";
 
 const token = cookie.parse(document.cookie)["readerAdminToken"];
 
@@ -88,6 +89,13 @@ export async function getEntities(arxivId: string, getAllEntities?: boolean) {
     axios.get(`/api/v0/papers/arxiv:${encodeURIComponent(arxivId)}/entities`, { params })
   );
   return ((data as any).data || []) as Entity[];
+}
+
+export async function getPaper(s2Id: string): Promise<Nullable<Paper>> {
+  const data = await doGet(
+    axios.get<Paper>(`/api/v0/paper/${encodeURIComponent(s2Id)}`, {
+    }));
+  return data;
 }
 
 // This translates from the entities-deduped API's response to the legacy
