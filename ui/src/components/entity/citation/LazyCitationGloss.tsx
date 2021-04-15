@@ -10,6 +10,8 @@ import { AxiosError } from "axios";
 
 interface Props {
   citation: Citation;
+  lazyPapers: Map<string, Paper>;
+  cachePaper: (paper: Paper, cb?: () => void) => void;
   evaluationEnabled?: boolean;
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
   openedPaperId?: PaperId;
@@ -19,30 +21,43 @@ interface Props {
 interface State {
   error: Nullable<string>;
   isLoadingPaper: boolean;
-  paper: Nullable<Paper>;
 }
 
 export default class LazyCitationGloss extends React.PureComponent<Props, State> {
   state = {
     error: null,
     isLoadingPaper: false,
-    paper: null,
   };
 
   componentDidMount() {
     if (!!this.props.citation.attributes.paper_id) {
-      this.setState({ isLoadingPaper: true });
-      getPaper(this.props.citation.attributes.paper_id).then(paper => {
-        this.setState({
-          paper,
-          isLoadingPaper: false,
+      const paperId = this.props.citation.attributes.paper_id;
+      // Check the global cache at load time and request the paper if unavailable
+      if (!this.props.lazyPapers.has(paperId)) {
+        this.setState({ isLoadingPaper: true });
+        getPaper(this.props.citation.attributes.paper_id).then(paper => {
+          if (paper) {
+            this.props.cachePaper(paper, () => {
+              // Update component state as a callback after global state updates
+              this.setState({
+                isLoadingPaper: false,
+              });
+            });
+          } else {
+            // This should rarely be hit as failures
+            // to fetch papers will throw and be caught below
+            this.setState({
+              error: 'Could not load paper data',
+              isLoadingPaper: false,
+            });
+          }
+        }).catch((err) => {
+          this.setState({
+            error: err?.message ? err.message : 'Could not load paper data',
+            isLoadingPaper: false,
+          });
         });
-      }).catch((err: AxiosError /* Fairly sure this is the type, though AxiosPromise gets abstracted away */) => {
-        this.setState({
-          error: err?.message ? err.message : 'Could not load paper data',
-          isLoadingPaper: false,
-        });
-      });
+      }
     } else {
       this.setState({
         error: 'No paper data available',
@@ -68,8 +83,7 @@ export default class LazyCitationGloss extends React.PureComponent<Props, State>
       </div>
     );
 
-    // @ts-ignore why is this resolving to null?!
-    const paper: Paper = this.state.paper;
+    const paper = this.props.lazyPapers.get(this.props.citation.attributes.paper_id || '');
     const paperComponent = !!paper ? (
       <PaperSummary
             paper={paper}

@@ -82,6 +82,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
     this.state = {
       entities: null,
+      lazyPapers: new Map(),
 
       userLibrary: null,
 
@@ -755,6 +756,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     }
   }
 
+  cachePaper = (paper: Paper, cb?: () => void): void => {
+    const paperMap = new Map(this.state.lazyPapers);
+    paperMap.set(paper.s2Id, paper);
+    this.setState({
+      lazyPapers: paperMap,
+    }, cb);
+  }
+
   jumpToEntityWithBackMessage = (id: string): void => {
     const success = this.jumpToEntity(id);
 
@@ -1116,6 +1125,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                         paperId={this.props.paperId}
                         pageView={pageView}
                         entities={entities}
+                        lazyPapers={this.state.lazyPapers}
+                        cachePaper={this.cachePaper}
                         userLibrary={this.state.userLibrary}
                         selectedEntityIds={selectedEntityIds}
                         selectedAnnotationIds={selectedAnnotationIds}

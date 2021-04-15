@@ -45,6 +45,7 @@ export interface State extends Settings {
    * *** PAPER DATA ***
    */
   entities: Readonly<Entities> | null;
+  lazyPapers: Map<string, Paper>;
 
   /*
    * *** USER LIBRARY DATA ***

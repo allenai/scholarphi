@@ -7,6 +7,7 @@ import {
   isSentence,
   isSymbol,
   isTerm,
+  Paper,
 } from "../../api/types";
 import * as selectors from "../../selectors";
 import { GlossStyle } from "../../settings";
@@ -25,6 +26,7 @@ interface Props {
   paperId?: PaperId;
   pageView: PDFPageView;
   entities: Entities;
+  lazyPapers: Map<string, Paper>;
   userLibrary: UserLibrary | null;
   selectedEntityIds: string[];
   selectedAnnotationIds: string[];
@@ -51,6 +53,7 @@ interface Props {
   handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
   handleJumpToEntity: (entityId: string) => void;
   handleOpenDrawer: (contentType: DrawerContentType) => void;
+  cachePaper: (paper: Paper) => void;
 }
 
 class EntityAnnotationLayer extends React.Component<Props, {}> {
@@ -155,6 +158,8 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
       paperId,
       pageView,
       entities,
+      lazyPapers,
+      cachePaper,
       userLibrary,
       selectedEntityIds,
       selectedAnnotationIds,
@@ -281,10 +286,12 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                   showGlosses ? (
                     <LazyCitationGloss
                       citation={entity}
+                      lazyPapers={lazyPapers}
                       userLibrary={userLibrary}
                       handleAddPaperToLibrary={handleAddPaperToLibrary}
                       openedPaperId={paperId}
                       evaluationEnabled={glossEvaluationEnabled}
+                      cachePaper={cachePaper}
                     />
                   ) : null
                 }
