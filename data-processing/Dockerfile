@@ -2,11 +2,8 @@ FROM ubuntu:bionic
 
 RUN apt-get update
 
-# Install LaTeX suite
-# This download will take an extremely long time to install, so we install it first
 # Set DEBIAN_FRONTEND to disable tzdatainteractive dialogue
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get install -y texlive-full
 
 # Install Perl
 # Build-essential is required for installing Perl dependencies
@@ -19,6 +16,19 @@ RUN cpan App::perlbrew
 RUN perlbrew init
 RUN perlbrew --notest install perl-5.22.4
 RUN perlbrew install-cpanm
+
+# Install LaTeX suite
+# This download will take an extremely long time to install, so we install it first
+RUN apt-get install -y wget
+RUN wget https://arxiv-web-static1.s3.amazonaws.com/semantic_scholar_20210412/arXivTeXLive2020.tar.gz
+RUN tar -xf arXivTeXLive2020.tar.gz
+RUN echo "I" | perl 2020/install-tl
+
+# Install Perl dependencies
+SHELL ["/bin/bash", "-c"]
+RUN source ~/perl5/perlbrew/etc/bashrc \
+  && perlbrew use perl-5.22.4 \
+  && cpanm TeX::AutoTeX
 
 # Install Postgres
 RUN apt-get install -y postgresql
@@ -36,6 +46,8 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x | bash
 RUN apt-get install -y nodejs
 
 # Let ImageMagick to read and write PDFs
+RUN apt-get install -y imagemagick imagemagick-6-common imagemagick-6.q16 \
+  libmagick++-6.q16-7 libmagickcore-6.q16-3 libmagickcore-6.q16-3-extra libmagickwand-6.q16-3
 RUN sed -i '/pattern="PDF"/s/rights="none"/rights="read | write"/' /etc/ImageMagick-6/policy.xml
 
 # Install GhostScript
@@ -44,12 +56,6 @@ RUN apt-get install -y ghostscript
 # Install pip requireements
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
-
-# Install Perl dependencies
-SHELL ["/bin/bash", "-c"]
-RUN source ~/perl5/perlbrew/etc/bashrc \
-  && perlbrew use perl-5.22.4 \
-  && cpanm TeX::AutoTeX
 
 # Install Node.js dependencies
 WORKDIR /data-processing/node
