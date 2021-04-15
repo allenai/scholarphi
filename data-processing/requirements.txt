@@ -3,7 +3,7 @@ beautifulsoup4==4.8.0
 lxml==4.4.2
 nltk==3.4.5
 numpy==1.17.4
-opencv-python==3.4.8.29
+opencv-python-headless==3.4.8.29
 # Sometime between versions 3.12.0 and 3.13.3, a change was made that influences how batch
 # inserts are made that breaks the function for uploading entities. 3.12.0 lets the code
 # create all entities, then bounding box models that refer to those entities, before

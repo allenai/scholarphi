@@ -53,10 +53,6 @@ RUN sed -i '/pattern="PDF"/s/rights="none"/rights="read | write"/' /etc/ImageMag
 # Install GhostScript
 RUN apt-get install -y ghostscript
 
-# Install pip requireements
-COPY requirements.txt ./
-RUN pip install -r requirements.txt
-
 # Install Node.js dependencies
 WORKDIR /data-processing/node
 RUN apt-get install -y git
@@ -69,6 +65,10 @@ RUN npm run install-katex
 
 # Install vim for when we inevitably want to inspect files
 RUN apt-get install -y vim
+
+# Install pip requireements
+COPY requirements.txt ./
+RUN pip install -r requirements.txt
 
 # Copy over the source code
 WORKDIR /data-processing
