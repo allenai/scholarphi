@@ -15,8 +15,6 @@ import {
 } from "./types/api";
 import * as validation from "./types/validation";
 import * as conf from "./conf";
-import { AxiosError } from "axios";
-import { S2ApiError } from "./types/s2-api";
 
 interface ApiOptions {
   connection: Connection;
@@ -120,17 +118,18 @@ export const plugin = {
       path: "paper/{s2Id}",
       handler: async (request) => {
         const s2Id = request.params.s2Id;
-        const paper = await s2Api.getPaperUncached(s2Id, config.s2.apiKey)
-        .then(p => p.data)
-        .catch((error: AxiosError<S2ApiError>) => {
+        let resp = null;
+        try {
+          resp = await s2Api.getPaperUncached(s2Id, config.s2.apiKey);
+        } catch (error) {
           if (error.response?.status === 404) {
             throw Boom.notFound(`not found: ${s2Id}`);
           } else if (error.response?.status === 500) {
             throw Boom.internal(`S2 API Error accessing paper ${s2Id}`);
           }
           throw Boom.internal(`Internal Error: ${error}`);
-        });
-        return paper;
+        }
+        return resp?.data;
       },
       options: {
         validate: {
