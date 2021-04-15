@@ -40,6 +40,7 @@ export default class LazyCitationGloss extends React.PureComponent<Props, State>
       }).catch((err: AxiosError /* Fairly sure this is the type, though AxiosPromise gets abstracted away */) => {
         this.setState({
           error: err?.message ? err.message : 'Could not load paper data',
+          isLoadingPaper: false,
         });
       });
     } else {
