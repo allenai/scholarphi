@@ -10,11 +10,11 @@ import {
 } from "../../api/types";
 import * as selectors from "../../selectors";
 import { GlossStyle } from "../../settings";
-import { Entities, PaperId, Papers, UserLibrary } from "../../state";
+import { Entities, PaperId, UserLibrary } from "../../state";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
 import { DrawerContentType } from "../drawer/Drawer";
-import CitationGloss from "../entity/citation/CitationGloss";
+import LazyCitationGloss from "./citation/LazyCitationGloss";
 import EntityAnnotation from "./EntityAnnotation";
 import SimpleSymbolGloss from "./SimpleSymbolGloss";
 import SimpleTermGloss from "./SimpleTermGloss";
@@ -24,7 +24,6 @@ export type SymbolUnderlineMethod = "top-level-symbols" | "defined-symbols";
 interface Props {
   paperId?: PaperId;
   pageView: PDFPageView;
-  papers: Papers | null;
   entities: Entities;
   userLibrary: UserLibrary | null;
   selectedEntityIds: string[];
@@ -155,7 +154,6 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
     const {
       paperId,
       pageView,
-      papers,
       entities,
       userLibrary,
       selectedEntityIds,
@@ -268,9 +266,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
           } else if (
             citationAnnotationsEnabled &&
             isCitation(entity) &&
-            papers !== null &&
-            entity.attributes.paper_id !== null &&
-            papers[entity.attributes.paper_id] !== undefined
+            entity.attributes.paper_id !== null
           ) {
             return (
               <EntityAnnotation
@@ -283,9 +279,8 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 glossStyle={glossStyle}
                 glossContent={
                   showGlosses ? (
-                    <CitationGloss
+                    <LazyCitationGloss
                       citation={entity}
-                      paper={papers[entity.attributes.paper_id]}
                       userLibrary={userLibrary}
                       handleAddPaperToLibrary={handleAddPaperToLibrary}
                       openedPaperId={paperId}

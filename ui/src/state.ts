@@ -45,7 +45,6 @@ export interface State extends Settings {
    * *** PAPER DATA ***
    */
   entities: Readonly<Entities> | null;
-  papers: Readonly<Papers> | null;
 
   /*
    * *** USER LIBRARY DATA ***
