@@ -118,18 +118,19 @@ export const plugin = {
       path: "paper/{s2Id}",
       handler: async (request) => {
         const s2Id = request.params.s2Id;
-        let resp = null;
         try {
-          resp = await s2Api.getPaperUncached(s2Id, config.s2.apiKey);
+          const resp = await s2Api.getPaperUncached(s2Id, config.s2.apiKey);
+          return resp.data;
         } catch (error) {
-          if (error.response?.status === 404) {
-            throw Boom.notFound(`not found: ${s2Id}`);
-          } else if (error.response?.status === 500) {
-            throw Boom.internal(`S2 API Error accessing paper ${s2Id}`);
+          switch(error.response?.status) {
+            case 404:
+              throw Boom.notFound(`not found: ${s2Id}`);
+            case 500:
+              throw Boom.internal(`S2 API Error accessing paper ${s2Id}`);
+            default:
+              throw Boom.internal(`Internal Error: ${error}`);
           }
-          throw Boom.internal(`Internal Error: ${error}`);
         }
-        return resp?.data;
       },
       options: {
         validate: {

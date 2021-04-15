@@ -66,37 +66,14 @@ async function getPaper(s2Id: string, apiKey?: string): Promise<Paper | undefine
     return Promise.resolve(cached);
   }
 
-  if (!apiKey) {
-    console.warn(`
-      WARNING: The S2 Public API Key isn't set. If the backend makes more than 100 requests to
-      the public API in 5 minutes it'll be rate limited and might stop working.
-
-      See the README.md for more information about geting an API key.
-    `);
-  }
-
-  const conf: AxiosRequestConfig = {
-    headers: {
-      'user-agent': 'Semantic Reader API Client (https://scholarphi.semanticscholar.org)'
-    }
-  };
-  if (apiKey) {
-    conf.headers['x-api-key'] = apiKey;
-  }
-  const apiOrigin = (
-    apiKey
-      ? "https://partner.semanticscholar.org/v1"
-      : "https://api.semanticscholar.org/v1"
-  );
-  const response = await axios.get<S2ApiPaper>(`${apiOrigin}/paper/${s2Id}`, conf);
-  const paper = toPaper(s2Id, response.data);
-  // only cache if the request is successful to avoid papers being permanent errors
-  if (response.status === 200) {
+  try {
+    const resp = await getPaperUncached(s2Id, apiKey);
+    const paper = resp.data;
     cache.set(s2Id, paper);
+    return paper;
+  } catch (err) {
+    throw err;
   }
-
-
-  return paper;
 }
 
 /**
