@@ -147,12 +147,5 @@ export function getPaperUncached(s2Id: string, apiKey?: string): AxiosPromise<Pa
       : "https://api.semanticscholar.org/v1"
   );
 
-  return axios.get<Paper>(`${apiOrigin}/paper/${s2Id}`, conf)
-  .then((resp) => {
-    // Side effect promise to cache the result if successful
-    if (resp.status === 200) {
-      cache.set(s2Id, resp.data);
-    }
-    return resp;
-  });
+  return axios.get<Paper>(`${apiOrigin}/paper/${s2Id}`, conf);
 }
