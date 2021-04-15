@@ -97,7 +97,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
         if item.bibitems and ref_match_count == 0:
             logging.warning(f"Could not match any reference for paper {item.arxiv_id}.")
         else:
-            logging.debug(f"Matched {ref_match_count} references for paper {item.arxiv_id}.")
+            logging.info(f"Matched {ref_match_count} references for paper {item.arxiv_id}.")
 
     def save(self, item: MatchTask, result: BibitemMatch) -> None:
         resolutions_dir = directories.arxiv_subdir("bibitem-resolutions", item.arxiv_id)
