@@ -1,3 +1,4 @@
+import * as Boom from "@hapi/boom";
 import * as Hapi from "@hapi/hapi";
 import * as HapiAuthBearer from 'hapi-auth-bearer-token';
 import * as Joi from "@hapi/joi";
@@ -110,6 +111,34 @@ export const plugin = {
         const response: Paginated<PaperWithIdInfo> = { ...papers, ...{ rows: mergedPapers } };
         return response;
       },
+    });
+
+    server.route({
+      method: "GET",
+      path: "paper/{s2Id}",
+      handler: async (request) => {
+        const s2Id = request.params.s2Id;
+        try {
+          const resp = await s2Api.getPaperUncached(s2Id, config.s2.apiKey);
+          return resp.data;
+        } catch (error) {
+          switch(error.response?.status) {
+            case 404:
+              throw Boom.notFound(`not found: ${s2Id}`);
+            case 500:
+              throw Boom.internal(`S2 API Error accessing paper ${s2Id}`);
+            default:
+              throw Boom.internal(`Internal Error: ${error}`);
+          }
+        }
+      },
+      options: {
+        validate: {
+          params: Joi.object({
+            s2Id: validation.s2paperId
+          })
+        }
+      }
     });
 
     server.route({
