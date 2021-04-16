@@ -52,7 +52,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
                     references_path,
                     arxiv_id,
                 )
-                return
+                continue
             references = list(
                 file_utils.load_from_csv(references_path, SerializableReference)
             )
@@ -64,12 +64,13 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
                     bibitems_path,
                     arxiv_id,
                 )
-                return
+                continue
             bibitems = list(file_utils.load_from_csv(bibitems_path, Bibitem))
 
             yield MatchTask(arxiv_id, bibitems, references)
 
     def process(self, item: MatchTask) -> Iterator[BibitemMatch]:
+        ref_match_count = 0
         for bibitem in item.bibitems:
             max_similarity = 0.0
             most_similar_reference = None
@@ -80,6 +81,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
                     most_similar_reference = reference
 
             if most_similar_reference is not None:
+                ref_match_count += 1
                 yield BibitemMatch(
                     bibitem.id_,
                     bibitem.text,
@@ -92,6 +94,22 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
                     bibitem.id_,
                     item.arxiv_id,
                 )
+
+        if item.bibitems:
+            if ref_match_count == 0:
+                logging.warning(
+                    f"Paper {item.arxiv_id} has {len(item.bibitems)} reference(s), " +
+                    f"but could not match any to S2 reference data."
+                )
+            else:
+                logging.info(
+                    f"Paper has {len(item.bibitems)} references, " +
+                    f"able to match {ref_match_count} reference(s) to S2 data."
+                )
+        else:
+            logging.warning(
+                f"Could not extract any reference for paper {item.arxiv_id}."
+            )
 
     def save(self, item: MatchTask, result: BibitemMatch) -> None:
         resolutions_dir = directories.arxiv_subdir("bibitem-resolutions", item.arxiv_id)
