@@ -94,10 +94,21 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
                     bibitem.id_,
                     item.arxiv_id,
                 )
-        if item.bibitems and ref_match_count == 0:
-            logging.warning(f"Could not match any reference for paper {item.arxiv_id}.")
+
+        if item.bibitems:
+            if ref_match_count == 0:
+                logging.warning(
+                    f"Paper has reference(s), but could not match any to S2 reference data. Paper ID {item.arxiv_id}."
+                )
+            else:
+                logging.info(
+                    f"Paper has {len(item.bibitems)} references, " +
+                    f"able to match {ref_match_count} reference(s) to S2 data."
+                )
         else:
-            logging.info(f"Matched {ref_match_count} references for paper {item.arxiv_id}.")
+            logging.warning(
+                f"Could not extract any reference for paper {item.arxiv_id}."
+            )
 
     def save(self, item: MatchTask, result: BibitemMatch) -> None:
         resolutions_dir = directories.arxiv_subdir("bibitem-resolutions", item.arxiv_id)
