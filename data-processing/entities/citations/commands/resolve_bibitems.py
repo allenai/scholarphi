@@ -98,7 +98,8 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
         if item.bibitems:
             if ref_match_count == 0:
                 logging.warning(
-                    f"Paper has reference(s), but could not match any to S2 reference data. Paper ID {item.arxiv_id}."
+                    f"Paper {item.arxiv_id} has {len(item.bibitems)} reference(s), " +
+                    f"but could not match any to S2 reference data."
                 )
             else:
                 logging.info(
