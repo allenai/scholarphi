@@ -23,6 +23,7 @@ RUN apt-get install -y wget
 RUN wget https://arxiv-web-static1.s3.amazonaws.com/semantic_scholar_20210412/arXivTeXLive2020.tar.gz
 RUN tar -xf arXivTeXLive2020.tar.gz
 RUN echo "I" | perl 2020/install-tl
+RUN rm -r arXivTeXLive2020.tar.gz 2020
 
 # Install Perl dependencies
 SHELL ["/bin/bash", "-c"]
