@@ -45,11 +45,6 @@ RUN python get-pip.py --force-reinstall
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash
 RUN apt-get install -y nodejs
 
-# Let ImageMagick to read and write PDFs
-RUN apt-get install -y imagemagick imagemagick-6-common imagemagick-6.q16 \
-  libmagick++-6.q16-7 libmagickcore-6.q16-3 libmagickcore-6.q16-3-extra libmagickwand-6.q16-3
-RUN sed -i '/pattern="PDF"/s/rights="none"/rights="read | write"/' /etc/ImageMagick-6/policy.xml
-
 # Install GhostScript
 RUN apt-get install -y ghostscript
 
@@ -58,7 +53,7 @@ WORKDIR /data-processing/node
 RUN apt-get install -y git
 COPY node/package*.json ./
 RUN npm install
-# As KaTeX is undegoing rapid changes, install it from sources
+# As KaTeX is undergoing rapid changes, install it from sources
 RUN npm install -g yarn
 RUN npm run prepare-katex
 RUN npm run install-katex
