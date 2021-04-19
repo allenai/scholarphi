@@ -7,7 +7,7 @@ import { userLibraryUrl } from "../../../api/s2-url";
 import S2Link from "./S2Link";
 import { PaperId, UserLibrary } from "../../../state";
 import { Paper } from "../../../api/types";
-import { truncateText } from "../../../utils/ui";
+import PaperAbstract from "./PaperAbstract";
 
 import Button from "@material-ui/core/Button";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -75,9 +75,6 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
 
     const hasMetrics =
       paper.citationVelocity !== 0 || paper.influentialCitationCount !== 0;
-    const truncatedAbstract = paper.abstract
-      ? truncateText(paper.abstract, 300)
-      : null;
     const inLibrary = userLibrary
       ? userLibrary.paperIds.includes(paper.s2Id)
       : false;
@@ -104,24 +101,7 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
         </div>
         {paper.abstract !== null && (
           <div className="paper-summary__section">
-            <p className="paper-summary__abstract">
-              {this.state.showFullAbstract ||
-              truncatedAbstract === paper.abstract ? (
-                paper.abstract
-              ) : (
-                <React.Fragment>
-                  {truncatedAbstract}
-                  <span
-                    className="paper-summary__abstract__show-more-label"
-                    onClick={() => {
-                      this.setState({ showFullAbstract: true });
-                    }}
-                  >
-                    (show more)
-                  </span>
-                </React.Fragment>
-              )}
-            </p>
+            <PaperAbstract paper={paper}/>
           </div>
         )}
 
