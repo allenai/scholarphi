@@ -4,3 +4,4 @@ node/node_modules
 .vscode
 venv
 cache
+data
