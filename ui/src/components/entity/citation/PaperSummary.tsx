@@ -1,7 +1,12 @@
 import AuthorList from "./AuthorList";
-import ExternalLink from '../../common/ExternalLink';
+import ExternalLink from "../../common/ExternalLink";
 import FeedbackButton from "./FeedbackButton";
-import { ChartIcon, InfluentialCitationIcon, InboundCitationIcon, OutboundCitationIcon } from "../../icon";
+import {
+  ChartIcon,
+  InfluentialCitationIcon,
+  InboundCitationIcon,
+  OutboundCitationIcon,
+} from "../../icon";
 import logger from "../../../logging";
 import { userLibraryUrl } from "../../../api/s2-url";
 import S2Link from "./S2Link";
@@ -53,7 +58,7 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
 
     if (!userLibrary) {
       this.setState({
-        showLoginMessage: true
+        showLoginMessage: true,
       });
     } else {
       try {
@@ -68,15 +73,16 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
         });
       }
     }
-  }
+  };
 
   render(): React.ReactNode {
     const { paper, userLibrary } = this.props;
 
-    const hasMetrics = paper.citationVelocity
-      || paper.influentialCitationCount
-      || paper.inboundCitations
-      || paper.outboundCitations;
+    const hasMetrics =
+      paper.citationVelocity ||
+      paper.influentialCitationCount ||
+      paper.inboundCitations ||
+      paper.outboundCitations;
     const inLibrary = userLibrary
       ? userLibrary.paperIds.includes(paper.s2Id)
       : false;
@@ -103,7 +109,7 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
         </div>
         {paper.abstract !== null && (
           <div className="paper-summary__section">
-            <PaperAbstract paper={paper}/>
+            <PaperAbstract paper={paper} />
           </div>
         )}
 
@@ -148,9 +154,7 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
                   </div>
                 </Tooltip>
               ) : null}
-            </div>
-          ) : null}
-          {!!paper.inboundCitations ? (
+              {!!paper.inboundCitations ? (
                 <Tooltip
                   placement="bottom-start"
                   title={
@@ -186,10 +190,16 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
                   </div>
                 </Tooltip>
               ) : null}
-          {inLibrary
-            ? <LibraryButton label="In Your Library" onClick={goToLibrary}/>
-            : <LibraryButton label="Save To Library" onClick={this.saveToLibrary}/>
-            }
+            </div>
+          ) : null}
+          {inLibrary ? (
+            <LibraryButton label="In Your Library" onClick={goToLibrary} />
+          ) : (
+            <LibraryButton
+              label="Save To Library"
+              onClick={this.saveToLibrary}
+            />
+          )}
         </div>
 
         <div className="paper-summary__section paper-summary__feedback">
@@ -204,9 +214,15 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
           {!!this.state.errorMessage && this.state.errorMessage}
           {this.state.showLoginMessage && (
             <React.Fragment>
-              Before you can save papers to your library, you must be logged into Semantic Scholar.
-              Visit <ExternalLink href="https://www.semanticscholar.org/me/library" allowReferrer>Semantic Scholar</ExternalLink> to log in.
-              Then refresh this page and try again.
+              Before you can save papers to your library, you must be logged
+              into Semantic Scholar. Visit{" "}
+              <ExternalLink
+                href="https://www.semanticscholar.org/me/library"
+                allowReferrer
+              >
+                Semantic Scholar
+              </ExternalLink>{" "}
+              to log in. Then refresh this page and try again.
             </React.Fragment>
           )}
         </div>
@@ -215,15 +231,18 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
   }
 }
 
-const LibraryButton = (props: { label: string, onClick: () => void }): React.ReactElement => {
+const LibraryButton = (props: {
+  label: string;
+  onClick: () => void;
+}): React.ReactElement => {
   const { label, onClick } = props;
   return (
     <Button
-        startIcon={<SaveIcon />}
-        className="paper-summary__action"
-        onClick={onClick}
-      >
+      startIcon={<SaveIcon />}
+      className="paper-summary__action"
+      onClick={onClick}
+    >
       {label}
     </Button>
   );
-}
+};
