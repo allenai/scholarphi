@@ -53,6 +53,8 @@ export interface Paper {
   year: number | null;
   influentialCitationCount?: number;
   citationVelocity?: number;
+  inboundCitations: number;
+  outboundCitations: number;
 }
 
 export interface PaperWithEntityCounts extends PaperIdWithEntityCounts {
