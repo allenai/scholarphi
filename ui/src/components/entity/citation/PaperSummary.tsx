@@ -1,7 +1,7 @@
 import AuthorList from "./AuthorList";
 import ExternalLink from '../../common/ExternalLink';
 import FeedbackButton from "./FeedbackButton";
-import { ChartIcon, InfluentialCitationIcon } from "../../icon";
+import { ChartIcon, InfluentialCitationIcon, InboundCitationIcon, OutboundCitationIcon } from "../../icon";
 import logger from "../../../logging";
 import { userLibraryUrl } from "../../../api/s2-url";
 import S2Link from "./S2Link";
@@ -73,8 +73,10 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
   render(): React.ReactNode {
     const { paper, userLibrary } = this.props;
 
-    const hasMetrics =
-      paper.citationVelocity !== 0 || paper.influentialCitationCount !== 0;
+    const hasMetrics = paper.citationVelocity
+      || paper.influentialCitationCount
+      || paper.inboundCitations
+      || paper.outboundCitations;
     const inLibrary = userLibrary
       ? userLibrary.paperIds.includes(paper.s2Id)
       : false;
@@ -109,8 +111,7 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
         <div className="paper-summary__metrics-and-actions paper-summary__section">
           {hasMetrics ? (
             <div className="paper-summary__metrics">
-              {paper.influentialCitationCount !== undefined &&
-              paper.influentialCitationCount > 0 ? (
+              {!!paper.influentialCitationCount ? (
                 <Tooltip
                   placement="bottom-start"
                   title={
@@ -128,8 +129,7 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
                   </div>
                 </Tooltip>
               ) : null}
-              {paper.citationVelocity !== undefined &&
-              paper.citationVelocity > 0 ? (
+              {!!paper.citationVelocity ? (
                 <Tooltip
                   placement="bottom-start"
                   title={
@@ -150,6 +150,42 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
               ) : null}
             </div>
           ) : null}
+          {!!paper.inboundCitations ? (
+                <Tooltip
+                  placement="bottom-start"
+                  title={
+                    <React.Fragment>
+                      <strong>
+                        {paper.inboundCitations} citation
+                        {paper.inboundCitations !== 1 ? "s" : ""}
+                      </strong>
+                    </React.Fragment>
+                  }
+                >
+                  <div className="paper-summary__metrics__metric">
+                    <InboundCitationIcon width="12" height="12" />
+                    {paper.inboundCitations}
+                  </div>
+                </Tooltip>
+              ) : null}
+              {!!paper.outboundCitations ? (
+                <Tooltip
+                  placement="bottom-start"
+                  title={
+                    <React.Fragment>
+                      <strong>
+                        {paper.outboundCitations} reference
+                        {paper.outboundCitations !== 1 ? "s" : ""}
+                      </strong>
+                    </React.Fragment>
+                  }
+                >
+                  <div className="paper-summary__metrics__metric">
+                    <OutboundCitationIcon width="12" height="12" />
+                    {paper.outboundCitations}
+                  </div>
+                </Tooltip>
+              ) : null}
           {inLibrary
             ? <LibraryButton label="In Your Library" onClick={goToLibrary}/>
             : <LibraryButton label="Save To Library" onClick={this.saveToLibrary}/>
