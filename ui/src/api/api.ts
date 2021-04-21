@@ -1,7 +1,5 @@
 import axios, { AxiosResponse } from "axios";
 import cookie from "cookie";
-import { addLibraryEntryUrl, userInfoUrl } from "./s2-url";
-import { UserInfo, UserLibrary } from "../state";
 import {
   Entity,
   EntityCreateData,
@@ -321,33 +319,6 @@ export async function deleteEntity(
     response
   );
   return false;
-}
-
-export async function addLibraryEntry(paperId: string, paperTitle: string) {
-  const folders: number[] = [];
-  const response = await axios.post(
-    addLibraryEntryUrl,
-    {
-      paperId,
-      paperTitle,
-      folders,
-    },
-    { withCredentials: true }
-  );
-  return response.data;
-}
-
-export async function getUserLibraryInfo() {
-  const data = await doGet(
-    axios.get<UserInfo>(userInfoUrl, { withCredentials: true })
-  );
-  if (data) {
-    const userLibrary: UserLibrary = {
-      paperIds: data.entriesWithPaperIds.map((entry) => entry[1]),
-    };
-    const email = data.user.email;
-    return { email, userLibrary };
-  }
 }
 
 /**

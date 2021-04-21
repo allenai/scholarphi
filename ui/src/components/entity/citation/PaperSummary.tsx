@@ -7,85 +7,28 @@ import {
   InboundCitationIcon,
   OutboundCitationIcon,
 } from "../../icon";
-import logger from "../../../logging";
-import { userLibraryUrl } from "../../../api/s2-url";
 import S2Link from "./S2Link";
-import { PaperId, UserLibrary } from "../../../state";
+import { PaperId } from "../../../state";
 import { Paper } from "../../../api/types";
 import PaperAbstract from "./PaperAbstract";
 
-import Button from "@material-ui/core/Button";
 import Tooltip from "@material-ui/core/Tooltip";
-import SaveIcon from "@material-ui/icons/Bookmark";
 import React from "react";
 
 interface Props {
   paper: Paper;
-  userLibrary: UserLibrary | null;
-  handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
   openedPaperId?: PaperId;
 }
 
-interface State {
-  showFullAbstract: boolean;
-  showLoginMessage: boolean;
-  errorMessage: string;
-}
-
-function goToLibrary() {
-  window.open(userLibraryUrl, "_blank");
-}
-
-function trackLibrarySave() {
-  if (window.heap) {
-    window.heap.track("Save to Library", { actionType: "save" });
-  }
-}
-
-export default class PaperSummary extends React.PureComponent<Props, State> {
-  state = {
-    showFullAbstract: false,
-    showLoginMessage: false,
-    errorMessage: "",
-  };
-
-  saveToLibrary = async (): Promise<void> => {
-    const { paper, userLibrary, handleAddPaperToLibrary } = this.props;
-    logger.log("debug", "citation-action", {
-      type: "save-to-library",
-      paper: paper,
-    });
-
-    if (!userLibrary) {
-      this.setState({
-        showLoginMessage: true,
-      });
-    } else {
-      try {
-        await handleAddPaperToLibrary(paper.s2Id, paper.title);
-        trackLibrarySave();
-        this.setState({
-          errorMessage: "",
-        });
-      } catch (error) {
-        this.setState({
-          errorMessage: "Cannot save to library at this time.",
-        });
-      }
-    }
-  };
-
+export default class PaperSummary extends React.PureComponent<Props> {
   render(): React.ReactNode {
-    const { paper, userLibrary } = this.props;
+    const { paper } = this.props;
 
     const hasMetrics =
       paper.citationVelocity ||
       paper.influentialCitationCount ||
       paper.inboundCitations ||
       paper.outboundCitations;
-    const inLibrary = userLibrary
-      ? userLibrary.paperIds.includes(paper.s2Id)
-      : false;
 
     return (
       <div className="paper-summary">
@@ -192,14 +135,6 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
               ) : null}
             </div>
           ) : null}
-          {inLibrary ? (
-            <LibraryButton label="In Your Library" onClick={goToLibrary} />
-          ) : (
-            <LibraryButton
-              label="Save To Library"
-              onClick={this.saveToLibrary}
-            />
-          )}
         </div>
 
         <div className="paper-summary__section paper-summary__feedback">
@@ -209,40 +144,7 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
             extraContext={{ paperId: paper.s2Id }}
           />
         </div>
-
-        <div className="paper-summary__library-error">
-          {!!this.state.errorMessage && this.state.errorMessage}
-          {this.state.showLoginMessage && (
-            <>
-              Before you can save papers to your library, you must be logged
-              into Semantic Scholar. Visit{" "}
-              <ExternalLink
-                href="https://www.semanticscholar.org/me/library"
-                allowReferrer
-              >
-                Semantic Scholar
-              </ExternalLink>{" "}
-              to log in. Then refresh this page and try again.
-            </>
-          )}
-        </div>
       </div>
     );
   }
 }
-
-const LibraryButton = (props: {
-  label: string;
-  onClick: () => void;
-}): React.ReactElement => {
-  const { label, onClick } = props;
-  return (
-    <Button
-      startIcon={<SaveIcon />}
-      className="paper-summary__action"
-      onClick={onClick}
-    >
-      {label}
-    </Button>
-  );
-};

@@ -1,21 +1,18 @@
 import React from "react";
 import PaperSummary from "./PaperSummary";
-import { PaperId, UserLibrary } from "../../../state";
+import { PaperId } from "../../../state";
 import { Citation, Paper } from "../../../api/types";
 import { VoteButton } from "../../common";
 import { Nullable } from '../../../types/ui';
 import { getPaper } from '../../../api/api';
 import { LinearProgress } from "@material-ui/core";
-import { AxiosError } from "axios";
 
 interface Props {
   citation: Citation;
   lazyPapers: Map<string, Paper>;
   cachePaper: (paper: Paper, cb?: () => void) => void;
   evaluationEnabled?: boolean;
-  handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
   openedPaperId?: PaperId;
-  userLibrary: Nullable<UserLibrary>;
 }
 
 interface State {
@@ -87,8 +84,6 @@ export default class LazyCitationGloss extends React.PureComponent<Props, State>
     const paperComponent = !!paper ? (
       <PaperSummary
             paper={paper}
-            userLibrary={this.props.userLibrary}
-            handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
             openedPaperId={this.props.openedPaperId}
           />
     ) : noPaperComponent;

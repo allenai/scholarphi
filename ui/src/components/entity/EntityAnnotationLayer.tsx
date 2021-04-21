@@ -11,7 +11,7 @@ import {
 } from "../../api/types";
 import * as selectors from "../../selectors";
 import { GlossStyle } from "../../settings";
-import { Entities, PaperId, UserLibrary } from "../../state";
+import { Entities, PaperId } from "../../state";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
 import { DrawerContentType } from "../drawer/Drawer";
@@ -27,7 +27,6 @@ interface Props {
   pageView: PDFPageView;
   entities: Entities;
   lazyPapers: Map<string, Paper>;
-  userLibrary: UserLibrary | null;
   selectedEntityIds: string[];
   selectedAnnotationIds: string[];
   selectedAnnotationSpanIds: string[];
@@ -50,13 +49,12 @@ interface Props {
     spanId: string
   ) => void;
   handleShowSnackbarMessage: (message: string) => void;
-  handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
   handleJumpToEntity: (entityId: string) => void;
   handleOpenDrawer: (contentType: DrawerContentType) => void;
   cachePaper: (paper: Paper) => void;
 }
 
-class EntityAnnotationLayer extends React.Component<Props, {}> {
+class EntityAnnotationLayer extends React.Component<Props> {
   constructor(props: Props) {
     super(props);
     this.onClickSentence = this.onClickSentence.bind(this);
@@ -160,7 +158,6 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
       entities,
       lazyPapers,
       cachePaper,
-      userLibrary,
       selectedEntityIds,
       selectedAnnotationIds,
       selectedAnnotationSpanIds,
@@ -177,7 +174,6 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
       termAnnotationsEnabled,
       equationDiagramsEnabled,
       copySentenceOnClick,
-      handleAddPaperToLibrary,
       handleSelectEntityAnnotation,
     } = this.props;
 
@@ -287,8 +283,6 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                     <LazyCitationGloss
                       citation={entity}
                       lazyPapers={lazyPapers}
-                      userLibrary={userLibrary}
-                      handleAddPaperToLibrary={handleAddPaperToLibrary}
                       openedPaperId={paperId}
                       evaluationEnabled={glossEvaluationEnabled}
                       cachePaper={cachePaper}

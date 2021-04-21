@@ -84,8 +84,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       entities: null,
       lazyPapers: new Map(),
 
-      userLibrary: null,
-
       pages: null,
       pdfViewerApplication: null,
       pdfDocument: null,
@@ -153,23 +151,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.setState({
       [setting.key]: value,
     } as State);
-  }
-
-  addToLibrary = async (paperId: string, paperTitle: string): Promise<void> => {
-    if (this.props.paperId) {
-      const response = await api.addLibraryEntry(paperId, paperTitle);
-
-      if (!response) {
-        // Request failed, throw an error
-        throw new Error("Failed to add entry to library.");
-      }
-
-      const userLibrary = this.state.userLibrary;
-      if (userLibrary) {
-        const paperIds = userLibrary.paperIds.concat(paperId);
-        this.setState({ userLibrary: { ...userLibrary, paperIds } });
-      }
-    }
   }
 
   setTextSelection = (selection: Selection | null): void => {
@@ -745,14 +726,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         const loadingTimeMS = Math.round(performance.now() - loadingStartTime);
         window.heap.track("paper-loaded", { loadingTimeMS, numEntities: entities.length, numCitations: citationS2Ids.length });
       }
-
-      const userData = await api.getUserLibraryInfo();
-      if (userData) {
-        this.setState({ userLibrary: userData.userLibrary });
-        if (userData.email) {
-          logger.setUsername(userData.email);
-        }
-      }
     }
   }
 
@@ -1127,7 +1100,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                         entities={entities}
                         lazyPapers={this.state.lazyPapers}
                         cachePaper={this.cachePaper}
-                        userLibrary={this.state.userLibrary}
                         selectedEntityIds={selectedEntityIds}
                         selectedAnnotationIds={selectedAnnotationIds}
                         selectedAnnotationSpanIds={selectedAnnotationSpanIds}
@@ -1158,7 +1130,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                           this.selectEntityAnnotation
                         }
                         handleShowSnackbarMessage={this.showSnackbarMessage}
-                        handleAddPaperToLibrary={this.addToLibrary}
                         handleJumpToEntity={this.jumpToEntityWithBackMessage}
                         handleOpenDrawer={this.openDrawer}
                       />
