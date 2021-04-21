@@ -72,6 +72,12 @@ def test_merge_contiguous_identifiers_into_one_with_script():
     assert str(symbol.element) == "<msub><mi>word</mi><mi>i</mi></msub>"
 
 
+def test_do_not_merge_operator_into_identifier_with_script():
+    result = parse_element(load_fragment_tag("plus_x_sub_i.xml"))
+    assert str(result.symbols[0].element) == '<mo>+</mo>'
+    assert str(result.symbols[1].element) == '<msub><mi>x</mi><mi>i</mi></msub>'
+
+
 def test_merge_contiguous_operators():
     result = parse_element(load_fragment_tag("double_bar.xml"))
     assert len(result.symbols) == 1
@@ -165,7 +171,7 @@ def test_parse_accent():
     assert str(symbol.element) == '<mover accent="true"><mi>x</mi><mo>ˉ</mo></mover>'
     assert symbol.contains_affix_token
     assert symbol.tokens == [
-        Token("ˉ", "affix", 0, 5, "<mo>ˉ</mo>", ()),        
+        Token("ˉ", "affix", 0, 5, "<mo>ˉ</mo>", ()),
         Token("x", "atom", 5, 6, "<mi>x</mi>", ()),
     ]
 

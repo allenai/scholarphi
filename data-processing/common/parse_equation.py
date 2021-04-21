@@ -556,7 +556,7 @@ def _extract_symbol_element_start_and_end(
 ) -> Tuple[Optional[int], Optional[int]]:
     """
     Get the start and end character offsets of a symbol. If the element was styled
-    in the TeX (e.g., with a macro like '\mathbf'), then the character offsets will
+    in the TeX (e.g., with a macro like '\\mathbf'), then the character offsets will
     include the characters of the macro.
     """
 
@@ -828,17 +828,22 @@ class MathMlElementMerger:
             return False
 
         # Here come the context-sensitive rules:
-        # 1. Script end all sequences of mergeable characters. This is because no identifier is
+        # 1. Scripts (e.g., elements with superscripts and subscripts) will end any
+        #    sequence of mergeable characters. This is because no identifier is
         #    expected to have a superscript or a subscript in the middle.
         if last_element.name in SCRIPT_TAGS:
             return False
-        # 2. Scripts (e.g., elements with superscripts and subscripts) can be merged into prior
-        #    elements, provided that the base (the element to which the script is applied) can be
-        #    merged according to the typical merging rules.
+        # 2. Scripts can be merged into prior elements, provided that the base
+        #    (the element to which the script is applied) can be merged according
+        #    to the typical merging rules.
         if element.name in SCRIPT_TAGS:
             first_child = next(element.children, None)
-            if first_child:
-                return self._is_mergeable_type(first_child)
+            if (
+                first_child
+                and self._is_mergeable_type(first_child)
+                and self._can_merge_with_prior_elements(first_child)
+            ):
+                return True
             return False
         # 3. Letters can be merged into any sequence of elements before them that starts with a
         #    a letter. This allows tokens to be merged into (target letter is shown in
