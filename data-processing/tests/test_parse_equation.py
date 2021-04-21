@@ -32,6 +32,13 @@ def test_parse_single_symbol():
     assert not symbol.contains_affix_token
 
 
+def test_clean_attributes_on_token_elements():
+    # This test was added when, in a prior version of the code, the "s2:" attributes were not
+    # being removed from 'mn' elements that were children of script elements.
+    result = parse_element(load_fragment_tag("x_squared.xml"))
+    assert str(result.symbols[0].element) == "<msup><mi>x</mi><mn>2</mn></msup>"
+
+
 def test_merge_contiguous_identifiers():
     result = parse_element(load_fragment_tag("relu.xml"))
     symbol = result.symbols[0]
@@ -74,8 +81,8 @@ def test_merge_contiguous_identifiers_into_one_with_script():
 
 def test_do_not_merge_operator_into_identifier_with_script():
     result = parse_element(load_fragment_tag("plus_x_sub_i.xml"))
-    assert str(result.symbols[0].element) == '<mo>+</mo>'
-    assert str(result.symbols[1].element) == '<msub><mi>x</mi><mi>i</mi></msub>'
+    assert str(result.symbols[0].element) == "<mo>+</mo>"
+    assert str(result.symbols[1].element) == "<msub><mi>x</mi><mi>i</mi></msub>"
 
 
 def test_merge_contiguous_operators():

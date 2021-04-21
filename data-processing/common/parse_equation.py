@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import Callable, Dict, List, Optional, Tuple, Union, cast
+from typing import Callable, Dict, List, Optional, Set, Tuple, Union, cast
 
 from bs4 import BeautifulSoup, NavigableString, Tag
 
@@ -388,11 +388,14 @@ def parse_element(element: Tag) -> ParseResult:
 
     # Remove custom S2 annotations that were used for parsing, but which do not belong
     # in a normalized representation of the element.
-    node_queue = list(parse_result.nodes)
-    while node_queue:
-        node = node_queue.pop()
-        _sanitize_attributes(node.element)
-        node_queue.extend(node.children)
+    cleaned_elements: Set[Tag] = set()
+    to_clean = {n.element for n in parse_result.nodes}
+    while to_clean:
+        element = to_clean.pop()
+        _sanitize_attributes(element)
+        for child in element.children:
+            if isinstance(child, Tag) and child not in cleaned_elements:
+                to_clean.add(child)
 
     return ParseResult(parse_result.nodes)
 
