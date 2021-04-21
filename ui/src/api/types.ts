@@ -45,8 +45,8 @@ export interface Paper {
   year: number | null;
   influentialCitationCount?: number;
   citationVelocity?: number;
-  inboundCitations: number;
-  outboundCitations: number;
+  inboundCitations: number;  // numCitedBy in S2 API
+  outboundCitations: number;  // numCiting in S2 API
 }
 
 export interface PaperWithEntityCounts extends PaperIdWithEntityCounts {

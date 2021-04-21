@@ -1,12 +1,12 @@
 import React from "react";
 
 interface Props {
-    width: string;
-    height: string;
+  width: string;
+  height: string;
 }
 
 export const InboundCitationIcon = ({ width, height }: Props) => (
-  <svg viewBox="0 0 36 36" width={width} height={height}>
+  <svg viewBox="0 0 36 36" width={width} height={height} data-icon="inbound-citation">
     <path
       d="M12.4,18c0.9,0,1.7,0.3,2.4,1s1,1.5,1,2.4v9c0,0.9-0.3,1.7-1,2.4s-1.5,1-2.4,1h-9c-0.9,0-1.7-0.3-2.4-1s-1-1.5-1-2.4V13.5
       c0-2,0.5-3.9,1.5-5.6s2.4-3.1,4.1-4.1s3.6-1.5,5.6-1.5h0.6c0.5,0,0.9,0.2,1.2,0.5s0.5,0.7,0.5,1.2v3.4c0,0.5-0.2,0.9-0.5,1.2

@@ -33,19 +33,17 @@ export default class PaperAbstract extends React.Component<Props, State> {
     const expandMsg = showFullAbstract ? "(show less)" : "(show more)";
     return (
       <p className="paper-summary__abstract">
-        <>
-          {showFullAbstract || abstractsMatch
-            ? paper.abstract
-            : truncatedAbstract}
-          {!abstractsMatch && (
-            <span
-              className="paper-summary__abstract__show-more-label"
-              onClick={this.toggleFullAbstract}
-            >
-              {expandMsg}
-            </span>
-          )}
-        </>
+        {showFullAbstract || abstractsMatch
+          ? paper.abstract
+          : truncatedAbstract}
+        {!abstractsMatch && (
+          <span
+            className="paper-summary__abstract__show-more-label"
+            onClick={this.toggleFullAbstract}
+          >
+            {expandMsg}
+          </span>
+        )}
       </p>
     );
   }

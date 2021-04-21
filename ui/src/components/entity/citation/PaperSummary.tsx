@@ -121,12 +121,12 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
                 <Tooltip
                   placement="bottom-start"
                   title={
-                    <React.Fragment>
+                    <>
                       <strong>
                         {paper.influentialCitationCount} influential citation
                         {paper.influentialCitationCount !== 1 ? "s" : ""}
                       </strong>
-                    </React.Fragment>
+                    </>
                   }
                 >
                   <div className="paper-summary__metrics__metric">
@@ -139,13 +139,13 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
                 <Tooltip
                   placement="bottom-start"
                   title={
-                    <React.Fragment>
+                    <>
                       <strong>
                         Averaging {paper.citationVelocity} citation
                         {paper.citationVelocity !== 1 ? "s " : " "}
                         per year
                       </strong>
-                    </React.Fragment>
+                    </>
                   }
                 >
                   <div className="paper-summary__metrics__metric">
@@ -158,12 +158,12 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
                 <Tooltip
                   placement="bottom-start"
                   title={
-                    <React.Fragment>
+                    <>
                       <strong>
                         {paper.inboundCitations} citation
                         {paper.inboundCitations !== 1 ? "s" : ""}
                       </strong>
-                    </React.Fragment>
+                    </>
                   }
                 >
                   <div className="paper-summary__metrics__metric">
@@ -176,12 +176,12 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
                 <Tooltip
                   placement="bottom-start"
                   title={
-                    <React.Fragment>
+                    <>
                       <strong>
                         {paper.outboundCitations} reference
                         {paper.outboundCitations !== 1 ? "s" : ""}
                       </strong>
-                    </React.Fragment>
+                    </>
                   }
                 >
                   <div className="paper-summary__metrics__metric">
@@ -213,7 +213,7 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
         <div className="paper-summary__library-error">
           {!!this.state.errorMessage && this.state.errorMessage}
           {this.state.showLoginMessage && (
-            <React.Fragment>
+            <>
               Before you can save papers to your library, you must be logged
               into Semantic Scholar. Visit{" "}
               <ExternalLink
@@ -223,7 +223,7 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
                 Semantic Scholar
               </ExternalLink>{" "}
               to log in. Then refresh this page and try again.
-            </React.Fragment>
+            </>
           )}
         </div>
       </div>
