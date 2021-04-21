@@ -10,6 +10,8 @@ export interface S2ApiPaper {
   year: string;
   influentialCitationCount?: number;
   citationVelocity?: number;
+  numCiting: number; // outbound citations
+  numCitedBy: number; // inbound citations
 }
 
 interface S2ApiAuthor {

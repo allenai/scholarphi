@@ -1,13 +1,18 @@
 import AuthorList from "./AuthorList";
-import ExternalLink from '../../common/ExternalLink';
+import ExternalLink from "../../common/ExternalLink";
 import FeedbackButton from "./FeedbackButton";
-import { ChartIcon, InfluentialCitationIcon } from "../../icon";
+import {
+  ChartIcon,
+  InfluentialCitationIcon,
+  InboundCitationIcon,
+  OutboundCitationIcon,
+} from "../../icon";
 import logger from "../../../logging";
 import { userLibraryUrl } from "../../../api/s2-url";
 import S2Link from "./S2Link";
 import { PaperId, UserLibrary } from "../../../state";
 import { Paper } from "../../../api/types";
-import { truncateText } from "../../../utils/ui";
+import PaperAbstract from "./PaperAbstract";
 
 import Button from "@material-ui/core/Button";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -53,7 +58,7 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
 
     if (!userLibrary) {
       this.setState({
-        showLoginMessage: true
+        showLoginMessage: true,
       });
     } else {
       try {
@@ -68,16 +73,16 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
         });
       }
     }
-  }
+  };
 
   render(): React.ReactNode {
     const { paper, userLibrary } = this.props;
 
     const hasMetrics =
-      paper.citationVelocity !== 0 || paper.influentialCitationCount !== 0;
-    const truncatedAbstract = paper.abstract
-      ? truncateText(paper.abstract, 300)
-      : null;
+      paper.citationVelocity ||
+      paper.influentialCitationCount ||
+      paper.inboundCitations ||
+      paper.outboundCitations;
     const inLibrary = userLibrary
       ? userLibrary.paperIds.includes(paper.s2Id)
       : false;
@@ -104,24 +109,7 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
         </div>
         {paper.abstract !== null && (
           <div className="paper-summary__section">
-            <p className="paper-summary__abstract">
-              {this.state.showFullAbstract ||
-              truncatedAbstract === paper.abstract ? (
-                paper.abstract
-              ) : (
-                <React.Fragment>
-                  {truncatedAbstract}
-                  <span
-                    className="paper-summary__abstract__show-more-label"
-                    onClick={() => {
-                      this.setState({ showFullAbstract: true });
-                    }}
-                  >
-                    (show more)
-                  </span>
-                </React.Fragment>
-              )}
-            </p>
+            <PaperAbstract paper={paper} />
           </div>
         )}
 
@@ -129,17 +117,16 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
         <div className="paper-summary__metrics-and-actions paper-summary__section">
           {hasMetrics ? (
             <div className="paper-summary__metrics">
-              {paper.influentialCitationCount !== undefined &&
-              paper.influentialCitationCount > 0 ? (
+              {!!paper.influentialCitationCount ? (
                 <Tooltip
                   placement="bottom-start"
                   title={
-                    <React.Fragment>
+                    <>
                       <strong>
                         {paper.influentialCitationCount} influential citation
                         {paper.influentialCitationCount !== 1 ? "s" : ""}
                       </strong>
-                    </React.Fragment>
+                    </>
                   }
                 >
                   <div className="paper-summary__metrics__metric">
@@ -148,18 +135,17 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
                   </div>
                 </Tooltip>
               ) : null}
-              {paper.citationVelocity !== undefined &&
-              paper.citationVelocity > 0 ? (
+              {!!paper.citationVelocity ? (
                 <Tooltip
                   placement="bottom-start"
                   title={
-                    <React.Fragment>
+                    <>
                       <strong>
                         Averaging {paper.citationVelocity} citation
                         {paper.citationVelocity !== 1 ? "s " : " "}
                         per year
                       </strong>
-                    </React.Fragment>
+                    </>
                   }
                 >
                   <div className="paper-summary__metrics__metric">
@@ -168,12 +154,52 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
                   </div>
                 </Tooltip>
               ) : null}
+              {!!paper.inboundCitations ? (
+                <Tooltip
+                  placement="bottom-start"
+                  title={
+                    <>
+                      <strong>
+                        {paper.inboundCitations} citation
+                        {paper.inboundCitations !== 1 ? "s" : ""}
+                      </strong>
+                    </>
+                  }
+                >
+                  <div className="paper-summary__metrics__metric">
+                    <InboundCitationIcon width="12" height="12" />
+                    {paper.inboundCitations}
+                  </div>
+                </Tooltip>
+              ) : null}
+              {!!paper.outboundCitations ? (
+                <Tooltip
+                  placement="bottom-start"
+                  title={
+                    <>
+                      <strong>
+                        {paper.outboundCitations} reference
+                        {paper.outboundCitations !== 1 ? "s" : ""}
+                      </strong>
+                    </>
+                  }
+                >
+                  <div className="paper-summary__metrics__metric">
+                    <OutboundCitationIcon width="12" height="12" />
+                    {paper.outboundCitations}
+                  </div>
+                </Tooltip>
+              ) : null}
             </div>
           ) : null}
-          {inLibrary
-            ? <LibraryButton label="In Your Library" onClick={goToLibrary}/>
-            : <LibraryButton label="Save To Library" onClick={this.saveToLibrary}/>
-            }
+          {inLibrary ? (
+            <LibraryButton label="In Your Library" onClick={goToLibrary} />
+          ) : (
+            <LibraryButton
+              label="Save To Library"
+              onClick={this.saveToLibrary}
+            />
+          )}
         </div>
 
         <div className="paper-summary__section paper-summary__feedback">
@@ -187,11 +213,17 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
         <div className="paper-summary__library-error">
           {!!this.state.errorMessage && this.state.errorMessage}
           {this.state.showLoginMessage && (
-            <React.Fragment>
-              Before you can save papers to your library, you must be logged into Semantic Scholar.
-              Visit <ExternalLink href="https://www.semanticscholar.org/me/library" allowReferrer>Semantic Scholar</ExternalLink> to log in.
-              Then refresh this page and try again.
-            </React.Fragment>
+            <>
+              Before you can save papers to your library, you must be logged
+              into Semantic Scholar. Visit{" "}
+              <ExternalLink
+                href="https://www.semanticscholar.org/me/library"
+                allowReferrer
+              >
+                Semantic Scholar
+              </ExternalLink>{" "}
+              to log in. Then refresh this page and try again.
+            </>
           )}
         </div>
       </div>
@@ -199,15 +231,18 @@ export default class PaperSummary extends React.PureComponent<Props, State> {
   }
 }
 
-const LibraryButton = (props: { label: string, onClick: () => void }): React.ReactElement => {
+const LibraryButton = (props: {
+  label: string;
+  onClick: () => void;
+}): React.ReactElement => {
   const { label, onClick } = props;
   return (
     <Button
-        startIcon={<SaveIcon />}
-        className="paper-summary__action"
-        onClick={onClick}
-      >
+      startIcon={<SaveIcon />}
+      className="paper-summary__action"
+      onClick={onClick}
+    >
       {label}
     </Button>
   );
-}
+};

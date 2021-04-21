@@ -1,4 +1,4 @@
-import axios, { AxiosPromise, AxiosRequestConfig, AxiosResponse, AxiosTransformer } from "axios";
+import axios, { AxiosPromise, AxiosRequestConfig, AxiosTransformer } from "axios";
 import * as LRU from 'lru-cache';
 import { Paper, Nullable } from "./types/api";
 import { isS2ApiError, S2ApiError, S2ApiPaper } from "./types/s2-api";
@@ -57,6 +57,8 @@ function toPaper(s2Id: string, apiPaper: S2ApiPaper): Paper {
     venue: apiPaper.venue,
     citationVelocity: apiPaper.citationVelocity || 0,
     influentialCitationCount: apiPaper.influentialCitationCount || 0,
+    inboundCitations: apiPaper.numCitedBy,
+    outboundCitations: apiPaper.numCiting,
   };
 }
 
