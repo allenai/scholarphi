@@ -48,11 +48,6 @@ export interface State extends Settings {
   lazyPapers: Map<string, Paper>;
 
   /*
-   * *** USER LIBRARY DATA ***
-   */
-  userLibrary: UserLibrary | null;
-
-  /*
    * *** PDF.JS OBJECTS ***
    */
   pages: Readonly<Pages> | null;
@@ -171,10 +166,6 @@ export interface UserInfo {
     email: string | null;
   };
   entriesWithPaperIds: [number, string][];
-}
-
-export interface UserLibrary {
-  paperIds: string[];
 }
 
 export type Pages = { [pageNumber: number]: PageModel };
