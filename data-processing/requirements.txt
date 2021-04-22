@@ -1,6 +1,6 @@
 awscli==1.16.303
 beautifulsoup4==4.8.0
-lxml==4.4.2
+lxml==4.6.3
 nltk==3.4.5
 numpy==1.17.4
 opencv-python-headless==3.4.8.29
