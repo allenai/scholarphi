@@ -1,3 +1,5 @@
+from typing import Any
+
 import os
 
 import json
@@ -36,6 +38,10 @@ class SppJsonTask:
 
 
 class FetchSppJsons(ArxivBatchCommand[ArxivId, None]):
+    def __init__(self, args: Any) -> None:
+        super().__init__(args)
+        self._spp_host_url = os.getenv("S2_SPP_HOST_URL", None)
+
     @staticmethod
     def get_name() -> str:
         return "fetch-spp-jsons"
@@ -52,19 +58,18 @@ class FetchSppJsons(ArxivBatchCommand[ArxivId, None]):
             yield SppJsonTask(
                 arxiv_id=arxiv_id,
                 pdf_path=os.path.join(directories.arxiv_subdir('arxiv-pdfs', arxiv_id=arxiv_id), f'{arxiv_id}.pdf'),
-                # TODO -- change to real one
-                spp_host='http://pdf-layout-detection-service-dev.us-west-2.elasticbeanstalk.com/detect'
+                spp_host=self._spp_host_url
             )
 
     def process(self, item: SppJsonTask) -> Iterator[dict]:
-        # f = open(item.pdf_path, 'rb')
-        # files = {"pdf_file": (f.name, f, "multipart/form-data")}
-        # r = requests.post(item.spp_host, files=files)
-        # spp_json = r.json()
-        with open(f'/data-processing/scienceparseplus/jsons/{item.arxiv_id}.json') as f_in:
-            spp_json = json.load(f_in)
+        f = open(item.pdf_path, 'rb')
+        files = {"pdf_file": (f.name, f, "multipart/form-data")}
+        r = requests.post(item.spp_host, files=files)
+        spp_json = r.json()
+        f.close()
+        # with open(f'/data-processing/scienceparseplus/jsons/{item.arxiv_id}.json') as f_in:
+        #     spp_json = json.load(f_in)
         yield spp_json
-
 
     def save(self, item: SppJsonTask, result: dict) -> None:
         results_dir = directories.arxiv_subdir('fetched-spp-jsons', item.arxiv_id)
