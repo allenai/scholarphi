@@ -10,10 +10,20 @@ export interface S2ApiPaper {
   year: string;
   influentialCitationCount?: number;
   citationVelocity?: number;
+  numCiting: number; // outbound citations
+  numCitedBy: number; // inbound citations
 }
 
 interface S2ApiAuthor {
   authorId: string;
   name: string;
   url: string;
+}
+
+export interface S2ApiError {
+  error: string;
+}
+
+export function isS2ApiError(d: any): d is S2ApiError {
+  return !!d.error && typeof d.error === "string";
 }

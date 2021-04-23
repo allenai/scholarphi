@@ -7,9 +7,13 @@ import {
   EntityUpdateData,
   GenericAttributes,
   GenericRelationships,
+  isSymbol,
   Paginated,
   PaperIdInfo,
   Relationship,
+  SharedSymbolData,
+  sharedSymbolFields,
+  Symbol
 } from "./types/api";
 import * as validation from "./types/validation";
 import { DBConfig } from "./conf";
@@ -105,14 +109,14 @@ export class Connection {
       FROM paper p
       JOIN entity e on e.paper_id = p.s2_id
       JOIN (
-        SELECT 
-          paper_id, 
-          MAX(index) AS max_version 
-        FROM 
-          version 
-        GROUP BY 
+        SELECT
+          paper_id,
+          MAX(index) AS max_version
+        FROM
+          version
+        GROUP BY
           paper_id
-      ) AS maximum ON maximum.paper_id = e.paper_id     
+      ) AS maximum ON maximum.paper_id = e.paper_id
       WHERE e.version = maximum.max_version
       AND ${whereClause}
       AND e.type = ?
@@ -181,7 +185,7 @@ export class Connection {
    * relationships may need to be cleaned, as they contain *anything* that was found in the
    * entity table, which could include junk uploaded by annotators.
    */
-  unpackEntityDataRows(rows: Omit<EntityDataRow, "id">[]) {
+  unpackEntityDataRows(rows: Omit<EntityDataRow, "id">[], slim: boolean = false) {
     const attributes: GenericAttributes = {};
     const relationships: GenericRelationships = {};
     for (const row of rows) {
@@ -215,7 +219,10 @@ export class Connection {
        * Read relationships.
        */
       if (row.item_type === "relation-id" && row.relation_type !== null) {
-        const relationship = { type: row.relation_type, id: row.value };
+        // optionally return a more compact representation for relationships
+        const relationship = slim
+          ? { id: row.value }
+          : { type: row.relation_type, id: row.value };
         if (row.of_list) {
           if (relationships[row.key] === undefined) {
             relationships[row.key] = [];
@@ -235,15 +242,16 @@ export class Connection {
   createEntityObjectFromRows(
     entityRow: EntityRow,
     boundingBoxRows: Omit<BoundingBoxRow, "id">[],
-    entityDataRows: Omit<EntityDataRow, "id">[]
+    entityDataRows: Omit<EntityDataRow, "id">[],
+    slim?: boolean,
   ): Entity {
     const boundingBoxes = this.createBoundingBoxes(boundingBoxRows);
 
     const { attributes, relationships } = this.unpackEntityDataRows(
-      entityDataRows
+      entityDataRows, slim
     );
 
-    return {
+    const entity = {
       id: String(entityRow.id),
       type: entityRow.type as EntityType,
       attributes: {
@@ -257,9 +265,15 @@ export class Connection {
         ...relationships,
       },
     };
+
+    if (isSymbol(entity)) {
+      entity.attributes.disambiguated_id = entity.attributes.mathml;
+    }
+
+    return entity;
   }
 
-  async getEntitiesForPaper(paperSelector: PaperSelector, entityTypes: EntityType[], version?: number) {
+  async getEntitiesForPaper(paperSelector: PaperSelector, entityTypes: EntityType[], includeDuplicateSymbolData: boolean, slim: boolean, version?: number) {
     if (version === undefined) {
       try {
         let latestVersion = await this.getLatestPaperDataVersion(paperSelector);
@@ -272,8 +286,11 @@ export class Connection {
       }
     }
 
+    const entityColumns = slim
+      ? ["entity.paper_id AS paper_id", "id", "type"]
+      : ["entity.paper_id AS paper_id", "id", "version", "type", "source"];
     const entityRows: EntityRow[] = await this._knex("entity")
-      .select("entity.paper_id AS paper_id", "id", "version", "type", "source")
+      .select(entityColumns)
       .join("paper", { "paper.s2_id": "entity.paper_id" })
       .where({ ...paperSelector, version }).andWhere(builder => {
         if (entityTypes.length > 0) {
@@ -283,22 +300,16 @@ export class Connection {
         }
       });
 
+    const entityIds = entityRows.map(e => e.id);
+
+    const boundingBoxColumns = slim
+    ? ["id", "entity_id", "page", "left", "top", "width", "height"]
+    : ["id", "entity_id", "source", "page", "left", "top", "width", "height"];
     let boundingBoxRows: BoundingBoxRow[];
     try {
       boundingBoxRows = await this._knex("boundingbox")
-        .select(
-          "entity.id AS entity_id",
-          "boundingbox.id AS id",
-          "boundingbox.source AS source",
-          "page",
-          "left",
-          "top",
-          "width",
-          "height"
-        )
-        .join("entity", { "boundingbox.entity_id": "entity.id" })
-        .join("paper", { "paper.s2_id": "entity.paper_id" })
-        .where({ ...paperSelector, version });
+        .select(boundingBoxColumns)
+        .whereIn("entity_id", entityIds);
     } catch (e) {
       console.log(e);
       throw "Error";
@@ -319,25 +330,27 @@ export class Connection {
         [entity_id: string]: BoundingBoxRow[];
       }
     );
-
+    const entityDataColumns = slim
+    ? ["entity.id AS entity_id", "key", "value", "item_type", "of_list", "relation_type"]
+    : ["entity.id AS entity_id", "entitydata.source AS source", "key", "value", "item_type", "of_list", "relation_type"];
     const entityDataRows: EntityDataRow[] = await this._knex("entitydata")
-      .select(
-        "entity.id AS entity_id",
-        "entitydata.source AS source",
-        "key",
-        "value",
-        "item_type",
-        "of_list",
-        "relation_type"
-      )
+      .select(entityDataColumns)
       .join("entity", { "entitydata.entity_id": "entity.id" })
-      .join("paper", { "paper.s2_id": "entity.paper_id" })
       /*
        * Order by entity ID to ensure that items from lists are retrieved in
        * the order they were written to the database.
        */
       .orderBy("entitydata.id", "asc")
-      .where({ ...paperSelector, version });
+      .whereIn("entity.id", entityIds)
+      .whereNot(
+        (builder) => {
+          if (!includeDuplicateSymbolData) {
+            builder
+              .where("entity.type", "symbol")
+              .whereIn("entitydata.key", sharedSymbolFields)
+          }
+        }
+      )
 
     /*
      * Organize entity data entries by the entity they belong to.
@@ -367,7 +380,8 @@ export class Connection {
         return this.createEntityObjectFromRows(
           entityRow,
           boundingBoxRowsForEntity,
-          entityDataRowsForEntity
+          entityDataRowsForEntity,
+          slim
         );
       })
       /*
@@ -389,6 +403,92 @@ export class Connection {
       .map((validationResult) => validationResult.value as Entity);
 
     return entities;
+  }
+
+  /**
+   * Default implementation in `getEntitiesForPaper` naively retrieves all entities,
+   * which includes quadratic data duplication across multiple instances of the same symbol.
+   * This variant method is meant as a placeholder bridge until the underlying DB schema and
+   * extraction write layer is changed to be non-duplicative.
+   * Leaving the underlying data unchanged in the DB, we selectively exclude the entity data
+   * types known to be redundant. These are retrieved later and added into lookup tables.
+   */
+  async getDedupedEntitiesForPaper(paperSelector: PaperSelector, entityTypes: EntityType[], version?: number) {
+    const entities = await this.getEntitiesForPaper(paperSelector, entityTypes, false, true, version);
+
+    // Short-circuit fancy behavior below if we don't need the shared symbol data.
+    if (entityTypes.indexOf("symbol") === -1 && entityTypes.length > 0) {
+      return {
+        entities
+      }
+    }
+
+    // To provide a deduped copy of shared data between symbol instances, we
+    // identify each symbol by its "disambiguated" id (currently the `mathml` attribute).
+    // An arbitrary symbol entity from within each `mathml` is chosen as an exemplar from
+    // which to look up supporting data that is identical across instances.
+    const disambiguatedSymbolIdsToExemplarEntityIds = entities
+      .filter((row) => isSymbol(row))
+      .reduce(
+        (dict, symbol) => {
+          const disambiguatedId = (symbol as Symbol).attributes.mathml;
+          if (disambiguatedId !== null) {
+            dict[disambiguatedId] = symbol.id;
+          }
+          return dict;
+        },
+        {} as {
+          [disambiguatedId: string]: string
+        }
+      );
+
+    const exemplarEntityIdsToDisambiguatedSymbolIds = Object.keys(disambiguatedSymbolIdsToExemplarEntityIds).reduce(
+      (dict, key) => {
+        const exemplarEntityId = disambiguatedSymbolIdsToExemplarEntityIds[key];
+        dict[exemplarEntityId] = key;
+        return dict;
+      },
+      {} as {
+        [exemplarEntityId: string]: string
+      }
+    );
+
+    const dedupedSymbolData = await this._knex("entitydata")
+      .select(
+        "entity_id",
+        "key",
+        "value"
+      )
+      .orderBy("id", "asc")
+      .whereIn("key", sharedSymbolFields)
+      .whereIn("entity_id", Object.values(disambiguatedSymbolIdsToExemplarEntityIds))
+
+    const sharedSymbolData = dedupedSymbolData.reduce(
+      (dict, row) => {
+        const disambiguatedId = exemplarEntityIdsToDisambiguatedSymbolIds[row.entity_id];
+
+        if (!(disambiguatedId in dict)) {
+          dict[disambiguatedId] = sharedSymbolFields.reduce(
+            (dict, key) => {
+              dict[key] = [];
+              return dict;
+            },
+            {} as {[sharedSymbolField: string]: string[]}
+          );
+        }
+        dict[disambiguatedId][row.key].push(row.value)
+
+        return dict;
+      },
+      {} as {
+        [disambiguatedId: string]: SharedSymbolData
+      }
+    )
+
+    return {
+      entities,
+      sharedSymbolData
+    };
   }
 
   createBoundingBoxRows(

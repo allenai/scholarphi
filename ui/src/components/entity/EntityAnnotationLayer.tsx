@@ -7,14 +7,15 @@ import {
   isSentence,
   isSymbol,
   isTerm,
+  Paper,
 } from "../../api/types";
 import * as selectors from "../../selectors";
 import { GlossStyle } from "../../settings";
-import { Entities, PaperId, Papers, UserLibrary } from "../../state";
+import { Entities, PaperId } from "../../state";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
 import { DrawerContentType } from "../drawer/Drawer";
-import CitationGloss from "../entity/citation/CitationGloss";
+import LazyCitationGloss from "./citation/LazyCitationGloss";
 import EntityAnnotation from "./EntityAnnotation";
 import SimpleSymbolGloss from "./SimpleSymbolGloss";
 import SimpleTermGloss from "./SimpleTermGloss";
@@ -24,9 +25,8 @@ export type SymbolUnderlineMethod = "top-level-symbols" | "defined-symbols";
 interface Props {
   paperId?: PaperId;
   pageView: PDFPageView;
-  papers: Papers | null;
   entities: Entities;
-  userLibrary: UserLibrary | null;
+  lazyPapers: Map<string, Paper>;
   selectedEntityIds: string[];
   selectedAnnotationIds: string[];
   selectedAnnotationSpanIds: string[];
@@ -49,12 +49,12 @@ interface Props {
     spanId: string
   ) => void;
   handleShowSnackbarMessage: (message: string) => void;
-  handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
   handleJumpToEntity: (entityId: string) => void;
   handleOpenDrawer: (contentType: DrawerContentType) => void;
+  cachePaper: (paper: Paper) => void;
 }
 
-class EntityAnnotationLayer extends React.Component<Props, {}> {
+class EntityAnnotationLayer extends React.Component<Props> {
   constructor(props: Props) {
     super(props);
     this.onClickSentence = this.onClickSentence.bind(this);
@@ -155,9 +155,9 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
     const {
       paperId,
       pageView,
-      papers,
       entities,
-      userLibrary,
+      lazyPapers,
+      cachePaper,
       selectedEntityIds,
       selectedAnnotationIds,
       selectedAnnotationSpanIds,
@@ -174,7 +174,6 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
       termAnnotationsEnabled,
       equationDiagramsEnabled,
       copySentenceOnClick,
-      handleAddPaperToLibrary,
       handleSelectEntityAnnotation,
     } = this.props;
 
@@ -268,9 +267,7 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
           } else if (
             citationAnnotationsEnabled &&
             isCitation(entity) &&
-            papers !== null &&
-            entity.attributes.paper_id !== null &&
-            papers[entity.attributes.paper_id] !== undefined
+            entity.attributes.paper_id !== null
           ) {
             return (
               <EntityAnnotation
@@ -283,13 +280,12 @@ class EntityAnnotationLayer extends React.Component<Props, {}> {
                 glossStyle={glossStyle}
                 glossContent={
                   showGlosses ? (
-                    <CitationGloss
+                    <LazyCitationGloss
                       citation={entity}
-                      paper={papers[entity.attributes.paper_id]}
-                      userLibrary={userLibrary}
-                      handleAddPaperToLibrary={handleAddPaperToLibrary}
+                      lazyPapers={lazyPapers}
                       openedPaperId={paperId}
                       evaluationEnabled={glossEvaluationEnabled}
+                      cachePaper={cachePaper}
                     />
                   ) : null
                 }

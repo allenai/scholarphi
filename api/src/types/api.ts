@@ -12,6 +12,8 @@
  * into other projects, all of the types are available to the client code.
  */
 
+export type Nullable<T> = T | null;
+
 export interface Paginated<T> {
   rows: T[];
   offset: number;
@@ -51,6 +53,8 @@ export interface Paper {
   year: number | null;
   influentialCitationCount?: number;
   citationVelocity?: number;
+  inboundCitations: number; // numCitedBy in S2 API
+  outboundCitations: number; // numCiting in S2 API
 }
 
 export interface PaperWithEntityCounts extends PaperIdWithEntityCounts {
@@ -123,7 +127,7 @@ export interface BaseEntity {
  */
 export interface BaseEntityAttributes {
   version: number;
-  source: string;
+  source: string; // TODO: technically optional for outgoing responses
   bounding_boxes: BoundingBox[];
   /**
    * Additional data for this entity in the form of arbitrary strings. For instance, there could be
@@ -136,21 +140,8 @@ export interface BaseEntityAttributes {
    * when prototyping new features, as it allows the data to be changed in the database without
    * continually updating these types.
    */
-  tags: string[];
+  tags?: string[];
 }
-
-/**
- * List of base entity attribute keys. Update this as 'BaseEntityAttributes' updates. This list
- * lets a program check statically whether an attribute on an entity is a custom attribute.
- */
-export const BASE_ENTITY_ATTRIBUTE_KEYS = [
-  "id",
-  "type",
-  "version",
-  "source",
-  "bounding_boxes",
-  "tags",
-];
 
 /**
  * While it is not described with types here, Relationships must be key-value pairs, where the values
@@ -159,7 +150,7 @@ export const BASE_ENTITY_ATTRIBUTE_KEYS = [
 export interface Relationships {}
 
 export interface Relationship {
-  type: string;
+  type?: string;
   id: string | null;
 }
 
@@ -222,6 +213,32 @@ export type GenericRelationships = {
 };
 
 /**
+ * Represents the entity data fields that are identical between every instance
+ * of a given symbol.
+ * Defined here so that we can reduce the order of space consumption in the payload.
+ */
+export const sharedSymbolFields = [
+  "defining_formula_equations",
+  "defining_formulas",
+  "definition_sentences",
+  "definition_texs",
+  "definitions",
+  "snippets",
+  "snippet_sentences",
+  "sources"
+]
+export interface SharedSymbolData {
+  defining_formula_equations: string[];  // entity id
+  defining_formulas: string[];  // tex-bearing formula text
+  definition_sentences: string[];
+  definition_texs: string[];
+  definitions: string[];
+  snippets: string[];  // tex-bearing sentence text
+  snippet_sentences: string[];  // entity id
+  sources: string[];
+}
+
+/**
  * 'Symbol' is an example of how to define a new entity type with custom attributes
  * and relationships. Note that a full custom entity definition includes:
  * * an 'attributes' type
@@ -235,6 +252,7 @@ export interface Symbol extends BaseEntity {
 }
 
 export interface SymbolAttributes extends BaseEntityAttributes {
+  disambiguated_id: string | null;
   tex: string | null;
   type: "identifier" | "function" | "operator";
   mathml: string | null;

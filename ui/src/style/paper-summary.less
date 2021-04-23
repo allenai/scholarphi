@@ -7,6 +7,10 @@
   color: @s2-text-default;
 }
 
+.paper-summary__loading-msg {
+  margin-bottom: 1em;
+}
+
 /**
  * Pad paper summary title so the favorite button doesn't occlude it
  */
@@ -69,18 +73,12 @@
   }
 }
 
-.paper-summary__library-error {
-  color: @s2-error;
-}
-
 /**
  * Metrics
  */
 
 .paper-summary__metrics {
   display: flex;
-  border-right: 1px solid @s2-border-light;
-  margin-right: @padding;
 }
 
 .paper-summary__metrics__metric {
@@ -102,5 +100,6 @@
 }
 
 .paper-summary__abstract__show-more-label {
+  margin-left: 4px;
   cursor: pointer;
 }

@@ -45,6 +45,8 @@ export interface Paper {
   year: number | null;
   influentialCitationCount?: number;
   citationVelocity?: number;
+  inboundCitations: number;  // numCitedBy in S2 API
+  outboundCitations: number;  // numCiting in S2 API
 }
 
 export interface PaperWithEntityCounts extends PaperIdWithEntityCounts {
@@ -109,7 +111,7 @@ export interface BaseEntity {
  * All entities must define at least these attributes.
  */
 export interface BaseEntityAttributes {
-  version: number;
+  version?: number;
   source: string;
   bounding_boxes: BoundingBox[];
   /**
@@ -125,19 +127,6 @@ export interface BaseEntityAttributes {
    */
   tags: string[];
 }
-
-/**
- * List of base entity attribute keys. Update this as 'BaseEntityAttributes' updates. This list
- * lets a program check statically whether an attribute on an entity is a custom attribute.
- */
-export const BASE_ENTITY_ATTRIBUTE_KEYS = [
-  "id",
-  "type",
-  "version",
-  "source",
-  "bounding_boxes",
-  "tags",
-];
 
 /**
  * While it is not described with types here, Relationships must be key-value pairs, where the values
@@ -223,7 +212,7 @@ export interface Symbol extends BaseEntity {
 
 export interface SymbolAttributes extends BaseEntityAttributes {
   tex: string | null;
-  type: "identifier" | "function" | "operator";
+  type: "identifier" | "function" | "operator"; // TODO: This is null too with the deduped endpoint
   mathml: string | null;
   mathml_near_matches: string[];
   is_definition: boolean | null;
@@ -387,7 +376,7 @@ export function isSentence(entity: Entity): entity is Sentence {
  * coordinates when processing PDFs and PostScript files with Python.
  */
 export interface BoundingBox {
-  source: string;
+  source?: string;
   /**
    * Page indexes start at 0.
    */

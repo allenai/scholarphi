@@ -1,14 +1,12 @@
 import React from "react";
 import PaperSummary from "./PaperSummary";
-import { PaperId, UserLibrary } from "../../../state";
+import { PaperId } from "../../../state";
 import { Citation, Paper } from "../../../api/types";
 import { VoteButton } from "../../common";
 
 interface Props {
   paper: Paper;
   citation: Citation;
-  userLibrary: UserLibrary | null;
-  handleAddPaperToLibrary: (paperId: string, paperTitle: string) => void;
   openedPaperId?: PaperId;
   evaluationEnabled?: boolean;
 }
@@ -20,8 +18,6 @@ export class CitationGloss extends React.PureComponent<Props> {
         <div className="gloss__section">
           <PaperSummary
             paper={this.props.paper}
-            userLibrary={this.props.userLibrary}
-            handleAddPaperToLibrary={this.props.handleAddPaperToLibrary}
             openedPaperId={this.props.openedPaperId}
           />
         </div>

@@ -9,3 +9,5 @@ export interface Rectangle {
   width: number;
   height: number;
 }
+
+export type Nullable<T> = T | null;

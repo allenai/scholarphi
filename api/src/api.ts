@@ -1,15 +1,17 @@
+import * as Boom from "@hapi/boom";
 import * as Hapi from "@hapi/hapi";
 import * as HapiAuthBearer from 'hapi-auth-bearer-token';
 import * as Joi from "@hapi/joi";
 import { Connection, PaperSelector } from "./db-connection";
 import * as s2Api from "./s2-api";
 import {
+  Entity,
   EntityCreatePayload,
   EntityUpdatePayload,
+  EntityType,
   Paper,
   PaperWithIdInfo,
-  Paginated,
-  EntityType
+  Paginated
 } from "./types/api";
 import * as validation from "./types/validation";
 import * as conf from "./conf";
@@ -113,6 +115,34 @@ export const plugin = {
 
     server.route({
       method: "GET",
+      path: "paper/{s2Id}",
+      handler: async (request) => {
+        const s2Id = request.params.s2Id;
+        try {
+          const resp = await s2Api.getPaperUncached(s2Id, config.s2.apiKey);
+          return resp.data;
+        } catch (error) {
+          switch(error.response?.status) {
+            case 404:
+              throw Boom.notFound(`not found: ${s2Id}`);
+            case 500:
+              throw Boom.internal(`S2 API Error accessing paper ${s2Id}`);
+            default:
+              throw Boom.internal(`Internal Error: ${error}`);
+          }
+        }
+      },
+      options: {
+        validate: {
+          params: Joi.object({
+            s2Id: validation.s2paperId
+          })
+        }
+      }
+    });
+
+    server.route({
+      method: "GET",
       path: "papers",
       handler: async (request) => {
         let idString;
@@ -127,13 +157,8 @@ export const plugin = {
         });
         const data = (await s2Api.getPapers(uniqueIds, config.s2.apiKey))
           .filter((paper) => paper !== undefined)
-          .map((paper) => paper as Paper)
-          .map((paper) => ({
-            id: paper.s2Id,
-            type: "paper",
-            attributes: paper,
-          }));
-        return { data };
+          .map((paper) => paper as Paper);
+        return data;
       },
       options: {
         validate: {
@@ -168,17 +193,69 @@ export const plugin = {
     server.route({
       method: "GET",
       path: "papers/{paperSelector}/entities",
-      handler: async (request) => {
+      handler: async (request, h) => {
+        const paperSelector = parsePaperSelector(request.params.paperSelector);
+        // Runtime type-checked during validation.
+        const entityTypes = request.query.type as EntityType[];
+        // pretty sure Joi is actually making this a boolean, despite Hapi saying it's a string
+        const slim = !!request.query.slim;
+        let res: Entity[] = [];
+        try {
+          res = await dbConnection.getEntitiesForPaper(paperSelector, entityTypes, true, slim);
+        } catch (e) {
+          console.log(e);
+          return h.response().code(500);
+        }
+        if (slim) {
+          res = res.map(e => {
+            // tags are unused, don't return them
+            if (e.attributes.tags) {
+              delete e.attributes.tags;
+            }
+            return e;
+          });
+        }
+        return { data: res };
+      },
+      options: {
+        validate: {
+          params: validation.paperSelector,
+          query: Joi.object({
+            type:  validation.apiEntityTypes,
+            slim:  Joi.boolean(),
+          })
+        },
+      },
+    });
+
+    /**
+     * The default implementation above is enormously wasteful in terms of space,
+     * due to a quadratic blowout in identical data.
+     * This route exists as a temporary fixture during development to dedupe data,
+     * accomplished via surgical DB queries rather than exhaustive ones.
+     */
+    server.route({
+      method: "GET",
+      path: "papers/{paperSelector}/entities-deduped",
+      handler: async (request, h) => {
         const paperSelector = parsePaperSelector(request.params.paperSelector);
         // Runtime type-checked during validation.
         const entityTypes = request.query.type as EntityType[];
         let res;
         try {
-          res = await dbConnection.getEntitiesForPaper(paperSelector, entityTypes);
+          res = await dbConnection.getDedupedEntitiesForPaper(paperSelector, entityTypes);
         } catch (e) {
           console.log(e);
+          return h.response().code(500);
         }
-        return { data: res };
+        // tags are unused, don't return them
+        res.entities = res.entities.map(e => {
+          if (e.attributes.tags) {
+            delete e.attributes.tags;
+          }
+          return e;
+        });
+        return res;
       },
       options: {
         validate: {
@@ -189,6 +266,7 @@ export const plugin = {
         },
       },
     });
+
 
     server.route({
       method: "POST",
@@ -261,7 +339,7 @@ export const plugin = {
           // We don't have version info for this ID, or no citations were extracted so we consider
           // it unsuccessfully processed.
           return h.response().code(404);
-        }    
+        }
       },
       options: {
         validate: {

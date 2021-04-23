@@ -58,7 +58,6 @@ import * as uiUtils from "./utils/ui";
 import ViewerOverlay from "./components/overlay/ViewerOverlay";
 
 import classNames from "classnames";
-import queryString from "query-string";
 import React from "react";
 
 interface Props {
@@ -83,9 +82,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
     this.state = {
       entities: null,
-      papers: null,
-
-      userLibrary: null,
+      lazyPapers: new Map(),
 
       pages: null,
       pdfViewerApplication: null,
@@ -154,23 +151,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.setState({
       [setting.key]: value,
     } as State);
-  }
-
-  addToLibrary = async (paperId: string, paperTitle: string): Promise<void> => {
-    if (this.props.paperId) {
-      const response = await api.addLibraryEntry(paperId, paperTitle);
-
-      if (!response) {
-        // Request failed, throw an error
-        throw new Error("Failed to add entry to library.");
-      }
-
-      const userLibrary = this.state.userLibrary;
-      if (userLibrary) {
-        const paperIds = userLibrary.paperIds.concat(paperId);
-        this.setState({ userLibrary: { ...userLibrary, paperIds } });
-      }
-    }
   }
 
   setTextSelection = (selection: Selection | null): void => {
@@ -729,52 +709,32 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   loadDataFromApi = async (): Promise<void> => {
-    if (this.props.paperId !== undefined) {
-      if (this.props.paperId.type === "arxiv") {
-        this.setState({
-          areCitationsLoading: true
-        });
-        let getAllEntities = false;
-        const qs = queryString.parse(window.location.search);
-        if (qs.showAll && qs.showAll === "true") {
-          getAllEntities = true;
-        }
-        const loadingStartTime = performance.now();
-        const entities = await api.getEntities(this.props.paperId.id, getAllEntities);
-        this.setState({
-          entities: stateUtils.createRelationalStoreFromArray(entities, "id"),
-        });
+    if (this.props.paperId !== undefined && this.props.paperId.type === "arxiv") {
+      const loadingStartTime = performance.now();
+      const entities = await api.getDedupedEntities(this.props.paperId.id, true);
+      this.setState({
+        entities: stateUtils.createRelationalStoreFromArray(entities, "id"),
+      });
 
-        const citationS2Ids = entities
-          .filter(isCitation)
-          .map((c) => c.attributes.paper_id)
-          .filter((id) => id !== null)
-          .map((id) => id as string);
-        if (citationS2Ids.length >= 1) {
-          const papers = (await api.getPapers(citationS2Ids)).reduce(
-            (papers, paper) => {
-              papers[paper.s2Id] = paper;
-              return papers;
-            },
-            {} as { [s2Id: string]: Paper }
-          );
-          this.setState({ papers, areCitationsLoading: false });
-        }
+      const citationS2Ids = entities
+        .filter(isCitation)
+        .map((c) => c.attributes.paper_id)
+        .filter((id) => id !== null)
+        .map((id) => id as string);
 
-        if (window.heap) {
-          const loadingTimeMS = Math.round(performance.now() - loadingStartTime);
-          window.heap.track("paper-loaded", { loadingTimeMS, numEntities: entities.length, numCitations: citationS2Ids.length });
-        }
-
-        const userData = await api.getUserLibraryInfo();
-        if (userData) {
-          this.setState({ userLibrary: userData.userLibrary });
-          if (userData.email) {
-            logger.setUsername(userData.email);
-          }
-        }
+      if (window.heap) {
+        const loadingTimeMS = Math.round(performance.now() - loadingStartTime);
+        window.heap.track("paper-loaded", { loadingTimeMS, numEntities: entities.length, numCitations: citationS2Ids.length });
       }
     }
+  }
+
+  cachePaper = (paper: Paper, cb?: () => void): void => {
+    const paperMap = new Map(this.state.lazyPapers);
+    paperMap.set(paper.s2Id, paper);
+    this.setState({
+      lazyPapers: paperMap,
+    }, cb);
   }
 
   jumpToEntityWithBackMessage = (id: string): void => {
@@ -1137,9 +1097,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       <EntityAnnotationLayer
                         paperId={this.props.paperId}
                         pageView={pageView}
-                        papers={this.state.papers}
                         entities={entities}
-                        userLibrary={this.state.userLibrary}
+                        lazyPapers={this.state.lazyPapers}
+                        cachePaper={this.cachePaper}
                         selectedEntityIds={selectedEntityIds}
                         selectedAnnotationIds={selectedAnnotationIds}
                         selectedAnnotationSpanIds={selectedAnnotationSpanIds}
@@ -1170,7 +1130,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                           this.selectEntityAnnotation
                         }
                         handleShowSnackbarMessage={this.showSnackbarMessage}
-                        handleAddPaperToLibrary={this.addToLibrary}
                         handleJumpToEntity={this.jumpToEntityWithBackMessage}
                         handleOpenDrawer={this.openDrawer}
                       />

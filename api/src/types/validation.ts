@@ -18,14 +18,14 @@ export const logEntry = Joi.object({
   data: Joi.object().unknown(true).default(null),
 });
 
-const s2paperId = Joi.string().pattern(/[a-f0-9]{40}/);
+export const s2paperId = Joi.string().pattern(/^[a-f0-9]{40}$/);
 /*
  * See the arXiv documentation on valid identifiers here:
  * https://arxiv.org/help/arxiv_identifier.
  */
-const currentArxivFormat = Joi.string().pattern(/arxiv:[0-9]{2}[0-9]{2}.[0-9]+(v[0-9]+)?/);
+const currentArxivFormat = Joi.string().pattern(/^arxiv:[0-9]{2}[0-9]{2}.[0-9]+(v[0-9]+)?$/);
 const olderArxivFormat = Joi.string().pattern(
-  /arxiv:[a-zA-Z0-9-]+\.[A-Z]{2}\/[0-9]{2}[0-9]{2}[0-9]+(v[0-9]+)/
+  /^arxiv:[a-zA-Z0-9\-]+(\.[A-Z]{2})?\/[0-9]{2}[0-9]{2}[0-9]+(v[0-9]+)?$/
 );
 
 export const paperSelector = Joi.object({
@@ -49,7 +49,7 @@ export const arxivOnlySelector = Joi.object({
 
 const boundingBox = Joi.object({
   page: Joi.number().integer().min(0),
-  source: Joi.string(),
+  source: Joi.string().optional(),
   left: Joi.number(),
   top: Joi.number(),
   width: Joi.number(),
@@ -65,8 +65,9 @@ export let attributes = Joi.object({
   /*
    * Source is required on both POST and PATCH requests. It is required for PATCH requests because
    * the database logs the 'source' of updated attributes and bounding boxes.
+   * TODO: Split this for GETs and POST/PATCHes -- This is also used for outgoing API responses, which don't need to include source
    */
-  source: Joi.string().required(),
+  source: Joi.string().optional(),
   bounding_boxes: Joi.array().items(boundingBox),
   tags: Joi.array().items(Joi.string()),
 });
@@ -115,6 +116,7 @@ attributes = attributes
       {
         is: "symbol",
         then: Joi.object().keys({
+          disambiguated_id: stringAttribute,
           tex: stringAttribute,
           type: stringAttribute,
           mathml: stringAttribute,
@@ -172,7 +174,7 @@ export let relationships = Joi.object();
  */
 const oneToOneRelationship = (type: string) => {
   return Joi.object({
-    type: Joi.string().required().valid(type),
+    type: Joi.string().optional().valid(type),
     id: Joi.string().required().allow(null),
   }).default({ type, id: null });
 };
@@ -180,7 +182,7 @@ const oneToManyRelationship = (type: string) => {
   return Joi.array()
     .items(
       Joi.object({
-        type: Joi.string().required().valid(type),
+        type: Joi.string().optional().valid(type),
         id: Joi.string().required(),
       })
     )
