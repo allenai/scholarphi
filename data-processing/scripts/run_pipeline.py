@@ -37,7 +37,7 @@ from scripts.commands import (
 from scripts.job_config import fetch_config, load_job_from_s3
 from scripts.pipelines import entity_pipelines
 
-DEFAULT_ENTITIES = ["citations", "symbols", "definitions"]
+DEFAULT_ENTITIES = ["citations", "symbols", "sentences", "sentences-pdf", "definitions"]
 RETRYABLE_FAILURE_RETURN_CODE = 100
 
 
