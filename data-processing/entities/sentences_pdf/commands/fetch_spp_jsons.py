@@ -2,7 +2,7 @@ import os
 
 import json
 import logging
-from typing import Iterator, Optional
+from typing import Any, Iterator, Optional
 from dataclasses import dataclass
 
 from common import directories
