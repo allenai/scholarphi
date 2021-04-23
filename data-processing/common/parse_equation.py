@@ -659,6 +659,7 @@ def _is_atomic_token(element: Tag) -> bool:
         "-",
         "/",
         "*",
+        "∗",
         "∙",
         "⋅",
         "⋅",
