@@ -52,6 +52,13 @@ def test_merge_contiguous_identifiers():
     ]
 
 
+def test_extract_operator_tokens():
+    result = parse_element(load_fragment_tag("plus.xml"))
+    assert len(result.symbols[0].tokens) == 1
+    token = result.symbols[0].tokens[0]
+    assert token.mathml == "<mo>+</mo>"
+
+
 def test_merge_contiguous_styled_identifiers():
     result = parse_element(load_fragment_tag("bold_relu.xml"))
     symbol = result.symbols[0]

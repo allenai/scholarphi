@@ -652,6 +652,23 @@ def _is_atomic_token(element: Tag) -> bool:
     # Parentheses, for functions.
     if element.name == "mo" and element.text in ["(", ")"]:
         return True
+    # Common mathematical operators. See a list of all operators supported by KaTeX here:
+    # https://katex.org/docs/supported.html#binary-operators
+    OPERATORS = [
+        "+",
+        "-",
+        "/",
+        "*",
+        "∙",
+        "⋅",
+        "⋅",
+        "⋅",
+        "÷",
+        "±",
+        "×",
+    ]
+    if element.name == "mo" and element.text in OPERATORS:
+        return True
     # Text spans consisting of only a single word.
     if element.name == "mtext" and re.match(r"\w+", element.text):
         return True
