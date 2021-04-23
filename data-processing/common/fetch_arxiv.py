@@ -71,7 +71,7 @@ def fetch_from_arxiv(arxiv_id: ArxivId, dest: Optional[Path] = None) -> None:
 
 def fetch_pdf_from_arxiv(arxiv_id: ArxivId, dest: Path) -> None:
     logging.debug("Fetching PDF for arXiv paper %s from arXiv.", arxiv_id)
-    uri = "https://export.arxiv.org/pdf/%.pdf" % (arxiv_id,)
+    uri = "https://export.arxiv.org/pdf/%s.pdf" % (arxiv_id,)
 
     try:
         response = requests.get(uri, headers={"User-Agent": USER_AGENT})
