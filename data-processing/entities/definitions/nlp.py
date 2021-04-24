@@ -66,7 +66,7 @@ class DefinitionDetectionModel:
             },
             "DocDef2+AI2020+W00": {
                 "baseURL": "https://scholarphi.s3-us-west-1.amazonaws.com/",
-                "file": "joint_abbrexp_termdef_symnick.zip",
+                "file": "joint_symnick_abbrexp_termdef.zip",
                 "type": "joint",
             },
         }
@@ -211,6 +211,9 @@ class DefinitionDetectionModel:
             training_args.output_dir,
         )
 
+        data_args.ignore_index = training_args.ignore_index
+        data_args.output_dir = training_args.output_dir
+        
         # Load the model.
         model_class = MODEL_CLASSES[model_args.model_type]
         if (
@@ -241,7 +244,6 @@ class DefinitionDetectionModel:
 
             # model.resize_token_embeddings(len(tokenizer))
 
-        data_args.ignore_index = training_args.ignore_index
         self.data_args = data_args
         self.model_args = model_args
 

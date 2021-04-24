@@ -278,7 +278,7 @@ def get_sentence_frame_acc(
 
 def get_joint_labels(args, key):
     with open(
-            os.path.join(args.data_dir, args.dataconfig_file),
+            os.path.join(args.output_dir, args.dataconfig_file),
             "r",
             encoding="utf-8",
         ) as f:
