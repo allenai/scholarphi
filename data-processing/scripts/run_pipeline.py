@@ -22,6 +22,7 @@ from common.commands.fetch_arxiv_sources import (
 from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
 from common.commands.fetch_s2_data import S2ApiException
 from common.commands.locate_entities import LocateEntitiesCommand
+from common.commands.upload_entities import UploadEntitiesCommand
 from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
 from common.fetch_arxiv import FetchFromArxivException
@@ -450,6 +451,23 @@ if __name__ == "__main__":
             filtered_commands.append(CommandClass)
             if args.end is not None and command_name == args.end:
                 end_reached = True
+
+    # TODO[kylel] -- temp measure to force upload commands to happen at the end of everything
+    upload_commands = []
+    filtered_commands_without_upload = []
+    for command in filtered_commands:
+        if issubclass(command, UploadEntitiesCommand):
+            upload_commands.append(command)
+        else:
+            filtered_commands_without_upload.append(command)
+    sorted_upload_commands = [c for c in upload_commands if 'citation' in c.get_name()][0] + \
+                             [c for c in upload_commands if 'sentence' in c.get_name()][0] + \
+                             [c for c in upload_commands if 'equation' in c.get_name()][0] + \
+                             [c for c in upload_commands if 'symbol' in c.get_name()][0] + \
+                             [c for c in upload_commands if 'definition' in c.get_name()][0] + \
+                             [c for c in upload_commands if 'glossary' in c.get_name()][0]
+    filtered_commands = filtered_commands_without_upload + sorted_upload_commands
+
 
     if args.max_papers is not None:
         logging.debug(
