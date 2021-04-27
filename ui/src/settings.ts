@@ -145,7 +145,7 @@ export function getSettings(presets?: string[]) {
     termGlossesEnabled: false,
     symbolUnderlineMethod: "defined-symbols",
     symbolSearchEnabled: true,
-    declutterEnabled: false,
+    declutterEnabled: true,
     definitionPreviewEnabled: false,
     equationDiagramsEnabled: false,
     useDefinitionsForDiagramLabels: false,
