@@ -474,7 +474,7 @@ if __name__ == "__main__":
             upload_command_to_sort_order[command] = sort_order
         else:
             filtered_commands_without_upload.append(command)
-    sorted_upload_commands = sorted(upload_command_to_sort_order.items(), key=lambda tup: tup[1])
+    sorted_upload_commands = [cmd for cmd, sort_order in sorted(upload_command_to_sort_order.items(), key=lambda tup: tup[1])]
     filtered_commands = filtered_commands_without_upload + sorted_upload_commands
 
 
