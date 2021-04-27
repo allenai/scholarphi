@@ -453,19 +453,28 @@ if __name__ == "__main__":
                 end_reached = True
 
     # TODO[kylel] -- temp measure to force upload commands to happen at the end of everything
-    upload_commands = []
+    upload_command_to_sort_order = {}
     filtered_commands_without_upload = []
     for command in filtered_commands:
         if issubclass(command, UploadEntitiesCommand):
-            upload_commands.append(command)
+            if 'citation' in command.get_name():
+                sort_order = 0
+            elif 'sentence' in command.get_name():
+                sort_order = 1
+            elif 'equation' in command.get_name():
+                sort_order = 2
+            elif 'symbol' in command.get_name():
+                sort_order = 3
+            elif 'definition' in command.get_name():
+                sort_order = 4
+            elif 'glossary' in command.get_name():
+                sort_order = 5
+            else:
+                raise ValueError(f'Unknown entity type for uploading: {command.get_name()}')
+            upload_command_to_sort_order[command] = sort_order
         else:
             filtered_commands_without_upload.append(command)
-    sorted_upload_commands = [c for c in upload_commands if 'citation' in c.get_name()][0] + \
-                             [c for c in upload_commands if 'sentence' in c.get_name()][0] + \
-                             [c for c in upload_commands if 'equation' in c.get_name()][0] + \
-                             [c for c in upload_commands if 'symbol' in c.get_name()][0] + \
-                             [c for c in upload_commands if 'definition' in c.get_name()][0] + \
-                             [c for c in upload_commands if 'glossary' in c.get_name()][0]
+    sorted_upload_commands = sorted(upload_command_to_sort_order.items(), key=lambda tup: tup[1])
     filtered_commands = filtered_commands_without_upload + sorted_upload_commands
 
 
