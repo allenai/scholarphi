@@ -9,7 +9,7 @@ nconf
   .defaults({
     database: {
       port: 5432,
-      schema: "public",
+      schema: "dev",
     },
   });
 

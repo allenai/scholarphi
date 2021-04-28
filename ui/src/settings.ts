@@ -93,6 +93,10 @@ export interface Settings {
    * disabled as it interferes with built-in text selection in pdf.js.
    */
   sentenceTexCopyOnOptionClickEnabled: boolean;
+  /**
+   * Enable typographical cuing strategies for skimming.
+   */
+   skimmingEnabled: boolean;
 }
 
 /**
@@ -133,10 +137,10 @@ const PRESETS: Preset[] = [
  */
 export function getSettings(presets?: string[]) {
   const DEFAULT_SETTINGS: Settings = {
-    primerPageEnabled: true,
+    primerPageEnabled: false,
     primerInstructionsEnabled: true,
     annotationInteractionEnabled: true,
-    annotationHintsEnabled: true,
+    annotationHintsEnabled: false,
     glossesEnabled: true,
     initialFocus: null,
     glossStyle: "tooltip",
@@ -153,6 +157,7 @@ export function getSettings(presets?: string[]) {
     entityEditingEnabled: false,
     sentenceTexCopyOnOptionClickEnabled: false,
     glossEvaluationEnabled: false,
+    skimmingEnabled: true,
   };
 
   let settings = DEFAULT_SETTINGS;
@@ -263,5 +268,10 @@ export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
     key: "sentenceTexCopyOnOptionClickEnabled",
     type: "flag",
     label: "<Opt> + <Click> to copy sentence TeX",
+  },
+  {
+    key: "skimmingEnabled",
+    type: "flag",
+    label: "Declutter for skimming",
   },
 ];

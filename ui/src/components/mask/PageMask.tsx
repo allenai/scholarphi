@@ -11,6 +11,10 @@ interface Props {
    */
   show: BoundingBox[];
   /**
+   * Regions where the mask should be reapplied to hide content.
+   */
+  noShow?: BoundingBox[];
+  /**
    * Regions where highlights should be overlaid on top of the page.
    */
   highlight?: BoundingBox[];
@@ -21,7 +25,7 @@ interface Props {
  */
 class PageMask extends React.PureComponent<Props> {
   render() {
-    const { pageView, show, highlight } = this.props;
+    const { pageView, show, noShow, highlight } = this.props;
     const { width, height } = uiUtils.getPageViewDimensions(pageView);
     const pageNumber = uiUtils.getPageNumber(pageView);
 
@@ -56,6 +60,23 @@ class PageMask extends React.PureComponent<Props> {
                 fill="black"
               />
             ))}
+          {/*
+           * Reapply the mask wherever a span should not be activated
+           */}
+          {noShow !== undefined
+            ? noShow
+                .filter((b) => b.page === pageNumber)
+                .map((b, i) => (
+                  <rect
+                    key={`box${i}`}
+                    x={b.left * width}
+                    y={b.top * height}
+                    width={b.width * width}
+                    height={b.height * height}
+                    fill="white"
+                  />
+                ))
+            : null}
         </mask>
         {/* Show a white mask over the page where a 'show' region doesn't appear. */}
         <rect

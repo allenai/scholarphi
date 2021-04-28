@@ -19,6 +19,7 @@ import PdfjsToolbar from "./components/pdfjs/PdfjsToolbar";
 import PdfjsBrandbar from "./components/pdfjs/PdfjsBrandbar";
 import PrimerPage from "./components/primer/PrimerPage";
 import SearchPageMask from "./components/mask/SearchPageMask";
+import SkimPageMask from "./components/mask/SkimPageMask";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
 import {
@@ -137,6 +138,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
   setAnnotationHintsEnabled = (enabled: boolean): void => {
     this.setState({ annotationHintsEnabled: enabled });
+  }
+
+  toggleSkimming = (): void => {
+    this.setState((prevState) => ({
+      skimmingEnabled: !prevState.skimmingEnabled,
+    }));
   }
 
   setGlossStyle = (style: GlossStyle): void => {
@@ -849,13 +856,13 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
             />
             <PdfjsToolbar>
               <button
-                onClick={this.toggleAnnotationHints}
+                onClick={this.toggleSkimming}
                 className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
               >
                 <span>
-                  {this.state.annotationHintsEnabled
-                    ? "Hide Underlines"
-                    : "Show Underlines"}
+                  {this.state.skimmingEnabled
+                    ? "Deactivate skimming"
+                    : "Activate skimming"}
                 </span>
               </button>
             </PdfjsToolbar>
@@ -1090,6 +1097,15 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                         pageView={pageView}
                         entities={entities}
                         selectedEntityIds={selectedEntityIds}
+                      />
+                    ) : null}
+                    {/* Masks to apply typographical cuing for skimming. */}
+                    {this.props.paperId !== undefined &&
+                    this.state.skimmingEnabled ? (
+                      <SkimPageMask
+                        pageView={pageView}
+                        entities={entities}
+                        paperId={this.props.paperId.id}
                       />
                     ) : null}
                     {/* Interactive annotations on entities. */}
