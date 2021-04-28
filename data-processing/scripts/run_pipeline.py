@@ -22,6 +22,7 @@ from common.commands.fetch_arxiv_sources import (
 from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
 from common.commands.fetch_s2_data import S2ApiException
 from common.commands.locate_entities import LocateEntitiesCommand
+from common.commands.upload_entities import UploadEntitiesCommand
 from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
 from common.fetch_arxiv import FetchFromArxivException
@@ -37,7 +38,7 @@ from scripts.commands import (
 from scripts.job_config import fetch_config, load_job_from_s3
 from scripts.pipelines import entity_pipelines
 
-DEFAULT_ENTITIES = ["citations", "symbols", "definitions"]
+DEFAULT_ENTITIES = ["citations", "symbols", "sentences", "sentences-pdf", "definitions"]
 RETRYABLE_FAILURE_RETURN_CODE = 100
 
 
@@ -450,6 +451,32 @@ if __name__ == "__main__":
             filtered_commands.append(CommandClass)
             if args.end is not None and command_name == args.end:
                 end_reached = True
+
+    # TODO[kylel] -- temp measure to force upload commands to happen at the end of everything
+    upload_command_to_sort_order = {}
+    filtered_commands_without_upload = []
+    for command in filtered_commands:
+        if issubclass(command, UploadEntitiesCommand):
+            if 'citation' in command.get_name():
+                sort_order = 0
+            elif 'sentence' in command.get_name():
+                sort_order = 1
+            elif 'equation' in command.get_name():
+                sort_order = 2
+            elif 'symbol' in command.get_name():
+                sort_order = 3
+            elif 'definition' in command.get_name():
+                sort_order = 4
+            elif 'glossary' in command.get_name():
+                sort_order = 5
+            else:
+                raise ValueError(f'Unknown entity type for uploading: {command.get_name()}')
+            upload_command_to_sort_order[command] = sort_order
+        else:
+            filtered_commands_without_upload.append(command)
+    sorted_upload_commands = [cmd for cmd, sort_order in sorted(upload_command_to_sort_order.items(), key=lambda tup: tup[1])]
+    filtered_commands = filtered_commands_without_upload + sorted_upload_commands
+
 
     if args.max_papers is not None:
         logging.debug(

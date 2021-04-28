@@ -66,6 +66,6 @@ commands: CommandList = [
 
 
 definitions_pipeline = EntityPipeline(
-    "definitions", commands, depends_on=["symbols", "sentences"],
+    "definitions", commands, depends_on=["symbols", "sentences", "sentences-pdf"],
 )
 register_entity_pipeline(definitions_pipeline)

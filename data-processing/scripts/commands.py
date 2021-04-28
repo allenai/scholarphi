@@ -7,6 +7,7 @@ from common.commands.fetch_s2_data import FetchS2Metadata
 from common.commands.normalize_tex import NormalizeTexSources
 from common.commands.raster_pages import RasterPages
 from common.commands.unpack_sources import UnpackSources
+from common.commands.fetch_arxiv_pdf import FetchArxivPdf
 
 # Force the importing of modules for entity processing. This forces a call from each of the entity
 # modules to register pipelines for processing each entity. If these aren't imported,
@@ -19,6 +20,7 @@ from entities import equations  # pylint: disable=unused-import
 from entities import glossary_terms  # pylint: disable=unused-import
 from entities import sentences  # pylint: disable=unused-import
 from entities import symbols  # pylint: disable=unused-import
+from entities import sentences_pdf   # pylint: disable=unused-import
 
 from scripts.pipelines import EntityPipeline, entity_pipelines
 
@@ -30,6 +32,7 @@ TEX_PREPARATION_COMMANDS: CommandList = [
     CompileTexSources,
     NormalizeTexSources,
     CompileNormalizedTexSources,
+    FetchArxivPdf,
     RasterPages,
 ]
 
