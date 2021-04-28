@@ -27,12 +27,12 @@ from scripts.pipelines import EntityPipeline, entity_pipelines
 # Commands for fetching arXiv sources and preparing for entity processing.
 TEX_PREPARATION_COMMANDS: CommandList = [
     FetchArxivSources,
-    FetchArxivPdf,
     FetchS2Metadata,
     UnpackSources,
     CompileTexSources,
     NormalizeTexSources,
     CompileNormalizedTexSources,
+    FetchArxivPdf,
     RasterPages,
 ]
 
