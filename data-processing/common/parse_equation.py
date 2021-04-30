@@ -831,7 +831,7 @@ class MathMlElementMerger:
         tag_name = elements[0].name
 
         # Create a new BeautifulSoup object with the contents of all identifiers appended together.
-        new_text = "".join([n.string for n in elements])
+        new_text = "".join([n.string for n in elements if n.string is not None])
         element = create_element(tag_name)
         element.string = new_text
         element.attrs["s2:start"] = elements[0].attrs["s2:start"]
