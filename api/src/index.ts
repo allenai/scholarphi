@@ -5,6 +5,14 @@ import { Config } from "./conf";
 nconf
   .argv()
   .env()
+  .overrides({
+    database: {
+      port: 5432,
+      schema: "dev",
+      host: "scholar-reader.c5tvjmptvzlz.us-west-2.rds.amazonaws.com",
+      database: "scholar-reader",
+    },
+  })
   .file({ file: process.env.SECRETS_FILE || "config/secret.json" })
   .defaults({
     database: {
