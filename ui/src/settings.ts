@@ -137,7 +137,8 @@ const PRESETS: Preset[] = [
   {
     key: "skim-bl",
     primerPageEnabled: false,
-    skimmingEnabled: true
+    skimmingEnabled: true,
+    abstractExpansionEnabled: false
   },
   {
     key: "skim-abs",

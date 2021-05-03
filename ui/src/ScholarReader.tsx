@@ -1144,7 +1144,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                         paperId={this.props.paperId.id}
                       />
                     ) : null}
-                    {this.props.paperId !== undefined ? (
+                    {this.props.paperId !== undefined &&
+                    this.state.abstractExpansionEnabled ? (
                       <AbstractMask
                         pageView={pageView}
                         entities={entities}
