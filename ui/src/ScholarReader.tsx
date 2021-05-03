@@ -172,10 +172,24 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
   setSelectedAbstractSentenceId = (id: string): void => {
     this.setState((prevState) => {
-      return {
-        selectedAbstractSentenceId:
-          prevState.selectedAbstractSentenceId !== id ? id : "",
-      } as State;
+      const sidebarOpen = document
+        .querySelector("#outerContainer")
+        ?.classList.contains("sidebarOpen");
+      const toolbarButton = document.querySelector("#sidebarToggle");
+      const clickEvent = new Event("click");
+      if (prevState.selectedAbstractSentenceId !== id) {
+        if (!sidebarOpen) {
+          toolbarButton?.dispatchEvent(clickEvent);
+        }
+        return { selectedAbstractSentenceId: id } as State;
+      } else {
+        if (sidebarOpen) {
+          toolbarButton?.dispatchEvent(clickEvent);
+        }
+        return {
+          selectedAbstractSentenceId: "",
+        } as State;
+      }
     });
   }
 
@@ -878,7 +892,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 </span>
               </button>
             </PdfjsToolbar>
-            <PdfjsBrandbar />
+            {/* <PdfjsBrandbar /> */}
             <ViewerOverlay
               pdfViewer={this.state.pdfViewer}
               handleSetTextSelection={this.setTextSelection}
@@ -1105,6 +1119,23 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                         )[0][1]!
                         .slice(0, 15)
                     : [];
+
+                const selectedPages = [
+                  ...new Set(
+                    selectedDiscourseEntityIds
+                      .map((id) => entities.byId[id].attributes.bounding_boxes)
+                      .flat()
+                      .map((b) => b.page)
+                  ),
+                ];
+                [
+                  ...document.querySelectorAll<HTMLElement>(".thumbnail"),
+                ].map((e) => e.classList.remove("abstract-selected"));
+                [...document.querySelectorAll<HTMLElement>(".thumbnail")]
+                  .filter((e) =>
+                    selectedPages.includes(parseInt(e.dataset.pageNumber || ""))
+                  )
+                  .map((e) => e.classList.add("abstract-selected"));
 
                 return (
                   <PageOverlay key={key} pageView={pageView}>
