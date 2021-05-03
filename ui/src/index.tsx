@@ -45,6 +45,46 @@ if (params.preset instanceof Array) {
   presets = [params.preset];
 }
 
+if (params.annotateCitations !== undefined) {
+  const element = document.createElement("style");
+  document.head.appendChild(element);
+
+  if (element.sheet) {
+    element.sheet.insertRule(`
+        .citation-annotation { 
+            background-color: rgba(0, 0, 255, 0.1) !important; 
+        }`,
+      0);
+  }
+}
+
+if (params.annotateSymbols !== undefined) {
+  const element = document.createElement("style");
+  document.head.appendChild(element);
+
+  if (element.sheet) {
+    element.sheet.insertRule(`
+        .symbol-annotation { 
+            background-color: rgba(255, 0, 0, 0.1) !important; 
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+        }`,
+      0);
+  }
+}
+
+if (params.annotateEquations !== undefined) {
+  const element = document.createElement("style");
+  document.head.appendChild(element);
+
+  if (element.sheet) {
+    element.sheet.insertRule(`
+        .equation-annotation { 
+            background-color: rgba(0, 255, 0, 0.1) !important; 
+        }`,
+      0);
+  }
+}
+
 let context: any = {};
 if (typeof params.p === "string") {
   context.userId = params.p;
