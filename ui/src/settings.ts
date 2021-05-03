@@ -130,6 +130,11 @@ const PRESETS: Preset[] = [
     symbolUnderlineMethod: "top-level-symbols",
     equationDiagramsEnabled: false,
   },
+  {
+    key: "skim-bl",
+    primerPageEnabled: false,
+    skimmingEnabled: true
+  },
 ];
 
 /**
@@ -137,7 +142,7 @@ const PRESETS: Preset[] = [
  */
 export function getSettings(presets?: string[]) {
   const DEFAULT_SETTINGS: Settings = {
-    primerPageEnabled: false,
+    primerPageEnabled: true,
     primerInstructionsEnabled: true,
     annotationInteractionEnabled: true,
     annotationHintsEnabled: false,
@@ -157,7 +162,7 @@ export function getSettings(presets?: string[]) {
     entityEditingEnabled: false,
     sentenceTexCopyOnOptionClickEnabled: false,
     glossEvaluationEnabled: false,
-    skimmingEnabled: true,
+    skimmingEnabled: false,
   };
 
   let settings = DEFAULT_SETTINGS;
