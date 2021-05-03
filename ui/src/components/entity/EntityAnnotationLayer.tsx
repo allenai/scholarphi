@@ -40,6 +40,7 @@ interface Props {
   glossEvaluationEnabled: boolean;
   citationAnnotationsEnabled: boolean;
   termAnnotationsEnabled: boolean;
+  symbolGlossesEnabled: boolean;
   symbolUnderlineMethod: SymbolUnderlineMethod;
   equationDiagramsEnabled: boolean;
   copySentenceOnClick: boolean;
@@ -172,6 +173,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
       citationAnnotationsEnabled,
       symbolUnderlineMethod,
       termAnnotationsEnabled,
+      symbolGlossesEnabled,
       equationDiagramsEnabled,
       copySentenceOnClick,
       handleSelectEntityAnnotation,
@@ -426,6 +428,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
                 glossStyle={glossStyle}
                 glossContent={
                   showGlosses &&
+                  symbolGlossesEnabled &&
                   !(this.props.glossStyle === "tooltip" && !isFindSelection) ? (
                     <SimpleSymbolGloss
                       symbol={entity}

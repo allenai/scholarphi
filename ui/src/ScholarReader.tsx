@@ -1115,6 +1115,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                           this.state.citationGlossesEnabled
                         }
                         termAnnotationsEnabled={this.state.termGlossesEnabled}
+                        symbolGlossesEnabled={this.state.symbolGlossesEnabled}
                         symbolUnderlineMethod={this.state.symbolUnderlineMethod}
                         glossStyle={this.state.glossStyle}
                         glossEvaluationEnabled={

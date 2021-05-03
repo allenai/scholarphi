@@ -41,6 +41,10 @@ export interface Settings {
    */
   termGlossesEnabled: boolean;
   /**
+   * Show glosses for symbols.
+   */
+  symbolGlossesEnabled: boolean;
+  /**
    * How to determine whether to underline a symbol. For example, underlines can be placed
    * underneath all symbols with a definition, or under all top-level symbols.
    */
@@ -143,6 +147,7 @@ export function getSettings(presets?: string[]) {
     textSelectionMenuEnabled: false,
     citationGlossesEnabled: true,
     termGlossesEnabled: false,
+    symbolGlossesEnabled: false,
     symbolUnderlineMethod: "defined-symbols",
     symbolSearchEnabled: true,
     declutterEnabled: true,
