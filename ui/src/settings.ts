@@ -148,7 +148,7 @@ export function getSettings(presets?: string[]) {
     citationGlossesEnabled: true,
     termGlossesEnabled: false,
     symbolGlossesEnabled: false,
-    symbolUnderlineMethod: "defined-symbols",
+    symbolUnderlineMethod: "top-level-symbols",
     symbolSearchEnabled: true,
     declutterEnabled: true,
     definitionPreviewEnabled: false,
@@ -228,6 +228,11 @@ export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
     key: "citationGlossesEnabled",
     type: "flag",
     label: "Citation glosses",
+  },
+  {
+    key: "symbolGlossesEnabled",
+    type: "flag",
+    label: "Symbol glosses",
   },
   {
     key: "symbolSearchEnabled",
