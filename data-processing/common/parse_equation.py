@@ -831,7 +831,13 @@ class MathMlElementMerger:
         tag_name = elements[0].name
 
         # Create a new BeautifulSoup object with the contents of all identifiers appended together.
-        new_text = "".join([n.string for n in elements])
+        # TODO(andrewhead): The guard below for `n.string is not None` is a workaround for the
+        # exception that is encountered when one of the elements being merged has child element
+        # of its own. Ideally, the guard should not be needed, and instead, the caller of this method should
+        # check that an element has no children before marking it as capable of being merged. arXiv
+        # paper 1612.03144v2 will reproduce the error if the guard is removed.
+        # See https://github.com/allenai/scholarphi/pull/279.
+        new_text = "".join([n.string for n in elements if n.string is not None])
         element = create_element(tag_name)
         element.string = new_text
         element.attrs["s2:start"] = elements[0].attrs["s2:start"]
