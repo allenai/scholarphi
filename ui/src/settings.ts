@@ -96,7 +96,11 @@ export interface Settings {
   /**
    * Enable typographical cuing strategies for skimming.
    */
-   skimmingEnabled: boolean;
+  skimmingEnabled: boolean;
+  /**
+   * Allow clicks on abstract sentences to reveal related sentences in the text.
+   */
+  abstractExpansionEnabled: boolean;
 }
 
 /**
@@ -135,6 +139,12 @@ const PRESETS: Preset[] = [
     primerPageEnabled: false,
     skimmingEnabled: true
   },
+  {
+    key: "skim-abs",
+    primerPageEnabled: false,
+    skimmingEnabled: false,
+    abstractExpansionEnabled: true
+  }
 ];
 
 /**
@@ -163,6 +173,7 @@ export function getSettings(presets?: string[]) {
     sentenceTexCopyOnOptionClickEnabled: false,
     glossEvaluationEnabled: false,
     skimmingEnabled: false,
+    abstractExpansionEnabled: false
   };
 
   let settings = DEFAULT_SETTINGS;
@@ -278,5 +289,10 @@ export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
     key: "skimmingEnabled",
     type: "flag",
     label: "Declutter for skimming",
+  },
+  {
+    key: "abstractExpansionEnabled",
+    type: "flag",
+    label: "Details on demand from abstract",
   },
 ];

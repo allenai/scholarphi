@@ -1,4 +1,6 @@
 import * as api from "./api/api";
+import AbstractMask from "./components/mask/AbstractMask";
+import { data } from "./components/mask/relatedSentences.json";
 import AppOverlay from "./components/overlay/AppOverlay";
 import Control from "./components/control/Control";
 import DefinitionPreview from "./components/preview/DefinitionPreview";
@@ -94,6 +96,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
       areCitationsLoading: false,
 
+      selectedAbstractSentenceId: "",
       selectedAnnotationIds: [],
       selectedAnnotationSpanIds: [],
       selectedEntityIds: [],
@@ -164,6 +167,15 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.setState({
       textSelection: selection,
       textSelectionChangeMs: Date.now(),
+    });
+  }
+
+  setSelectedAbstractSentenceId = (id: string): void => {
+    this.setState((prevState) => {
+      return {
+        selectedAbstractSentenceId:
+          prevState.selectedAbstractSentenceId !== id ? id : "",
+      } as State;
     });
   }
 
@@ -1070,6 +1082,30 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     pageNumber
                   )[0] || null;
 
+                const abstractIds =
+                  this.props.paperId !== undefined
+                    ? Object.keys(
+                        data.filter(
+                          (x) => x.arxivId === this.props.paperId!.id
+                        )[0].relatedSents
+                      )
+                    : [];
+
+                const selectedDiscourseEntityIds =
+                  this.props.paperId !== undefined &&
+                  this.state.selectedAbstractSentenceId !== ""
+                    ? Object.entries(
+                        data.filter(
+                          (x) => x.arxivId === this.props.paperId!.id
+                        )[0].relatedSents
+                      )
+                        .filter(
+                          ([id, e], _) =>
+                            id === this.state.selectedAbstractSentenceId
+                        )[0][1]!
+                        .slice(0, 15)
+                    : [];
+
                 return (
                   <PageOverlay key={key} pageView={pageView}>
                     {/* Mask for highlighting results from in-situ search. */}
@@ -1108,6 +1144,21 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                         paperId={this.props.paperId.id}
                       />
                     ) : null}
+                    {this.props.paperId !== undefined ? (
+                      <AbstractMask
+                        pageView={pageView}
+                        entities={entities}
+                        abstractIds={abstractIds}
+                        selectedEntityIds={selectedDiscourseEntityIds}
+                        selectedAbstractSentenceId={
+                          this.state.selectedAbstractSentenceId
+                        }
+                        setSelectedAbstractSentenceId={
+                          this.setSelectedAbstractSentenceId
+                        }
+                      />
+                    ) : null}
+
                     {/* Interactive annotations on entities. */}
                     {this.state.entities !== null && (
                       <EntityAnnotationLayer
