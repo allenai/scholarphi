@@ -51,7 +51,7 @@ class TrainingArguments(defaultTrainingArguments):
     slot_loss_coef: Optional[float] = field(
         default=1.0, metadata={"help": "Coeffcient for the slot loss"},
     )
-    use_crf: bool = field(default=False, metadata={"help": "Wehther to use CRF"})
+    use_crf: bool = field(default=False, metadata={"help": "Whether to use CRF"})
     slot_pad_label: Optional[str] = field(
         default="PAD",
         metadata={
@@ -62,23 +62,23 @@ class TrainingArguments(defaultTrainingArguments):
         default=0.1, metadata={"help": "Dropout for fully-connected layers"},
     )
     use_pos: bool = field(
-        default=False, metadata={"help": "Wehther to use POS embedding or not"}
+        default=False, metadata={"help": "Whether to use POS embedding or not"}
     )
     use_np: bool = field(
-        default=False, metadata={"help": "Wehther to use NP embedding or not"}
+        default=False, metadata={"help": "Whether to use NP embedding or not"}
     )
     use_vp: bool = field(
-        default=False, metadata={"help": "Wehther to use VP embedding or not"}
+        default=False, metadata={"help": "Whether to use VP embedding or not"}
     )
     use_entity: bool = field(
-        default=False, metadata={"help": "Wehther to use Entity embedding or not"}
+        default=False, metadata={"help": "Whether to use Entity embedding or not"}
     )
     use_acronym: bool = field(
-        default=False, metadata={"help": "Wehther to use Acronym embedding or not"}
+        default=False, metadata={"help": "Whether to use Acronym embedding or not"}
     )
 
     use_heuristic: bool = field(
-        default=False, metadata={"help": "Wehther to use heuristic filters or not"}
+        default=False, metadata={"help": "Whether to use heuristic filters or not"}
     )
 
 
@@ -113,3 +113,25 @@ class DataTrainingArguments:
     max_seq_len: Optional[int] = field(
         default=50, metadata={"help": "TBW"},
     )
+    dataconfig_file: Optional[str] = field(
+        default="dataconfig.json", metadata={"help": 
+        '''
+            The `dataconfig.json` file, that is bundled along with the joint model. 
+            It has intent_label dict, slot_label dict, and pos_label list) for all 
+            the datasets used in to train the model (and thus used during inference).
+            Schema of the file : 
+                {
+                    "intent_label" : {
+                        <dataset_1> : <List of intent labels>,
+                        <dataset_2> : <List of intent labels>,
+                    },
+                    "slot_label" : {
+                        <dataset_1> : <List of slot labels>,
+                        <dataset_2> : <List of slot labels>,
+                    },
+                    "pos_label" : <List of global POS Labels>,
+                }
+
+        '''},
+    )
+    
