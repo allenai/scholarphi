@@ -13,7 +13,7 @@ from entities.definitions.commands.detect_definitions import (
 
 @pytest.fixture(scope="module")
 def model():
-    model = DefinitionDetectionModel("DocDef2+AI2020+W00")
+    model = DefinitionDetectionModel(["AI2020", "DocDef2", "W00"])
     return model
 
 
@@ -23,24 +23,11 @@ def model():
 @pytest.mark.slow
 def test_model_extracts_simple_definitions(model: DefinitionDetectionModel):
     prediction_type = "W00"
-    features = model.featurize("Neural networks are a type of machine learning models.")
-    intents, slots, _ = model.predict_batch([features])
-    print(intents, slots)
-    assert intents[prediction_type][0]
-    assert slots[prediction_type][0] == ["TERM", "TERM", "O", "DEF", "DEF", "DEF", "DEF", "DEF", "DEF", "O"]
-
-
-@pytest.mark.slow
-@pytest.mark.skip(
-    reason="Model does not yet detect this definition. Model improvements needed."
-)
-def test_model_extracts_simple_definitions_2(model: DefinitionDetectionModel):
-    prediction_type = "W00"
     features = model.featurize("Neural networks are machine learning models.")
-    intents, slots, _ = model.predict_batch([features])
-    print(intents, slots)
+    intents, slots, _ = model.predict_batch([features], prediction_type)
     assert intents[prediction_type][0]
     assert slots[prediction_type][0] == ["TERM", "TERM", "O", "DEF", "DEF", "DEF", "O"]
+
 
 @pytest.mark.slow
 def test_extract_term_definition_consolidate():
@@ -72,7 +59,7 @@ def test_model_extracts_nickname_before_symbol(model: DefinitionDetectionModel):
     features = model.featurize(
         "The agent acts with a policy SYMBOL in each timestep SYMBOL"
     )
-    intents, slots, _ = model.predict_batch([features])
+    intents, slots, _ = model.predict_batch([features], prediction_type)
     assert intents[prediction_type][0]
     assert slots[prediction_type][0] == [
         "O",
@@ -210,7 +197,7 @@ def test_extract_nicknames_symbols_parentheses():
 def test_model_extracts_nickname_symbol_filter(model: DefinitionDetectionModel):
     prediction_type = "DocDef2"
     features = model.featurize("The agent acts with SYMBOL SYMBOL")
-    intents, slots, _ = model.predict_batch([features])
+    intents, slots, _ = model.predict_batch([features], prediction_type)
     assert intents[prediction_type][0] == 0
     assert slots[prediction_type][0] == ["O", "O", "O", "O", "O", "O"]
 
@@ -324,7 +311,7 @@ def test_model_extract_abbreviation_acronym(model: DefinitionDetectionModel):
     features = model.featurize(
         "We use a Convolutional Neural Network (CNN) based architecture"
     )
-    intents, slots, _ = model.predict_batch([features])
+    intents, slots, _ = model.predict_batch([features], prediction_type)
     assert intents[prediction_type][0]
     assert slots[prediction_type][0] == [
         "O",
@@ -400,7 +387,7 @@ def test_extract_abbreviation_acronym(model):
 def test_model_extract_abbreviation_shortened_word(model: DefinitionDetectionModel):
     prediction_type = "AI2020"
     features = model.featurize("We propose Conductive Networks (CondNets)")
-    intents, slots, _ = model.predict_batch([features])
+    intents, slots, _ = model.predict_batch([features], prediction_type)
     assert intents[prediction_type][0]
     assert slots[prediction_type][0] == ["O", "O", "DEF", "DEF", "O", "TERM", "O"]
 
@@ -434,7 +421,7 @@ def test_extract_abbreviation_shortened_word(model):
 def test_model_extracts_nickname_symbol_parentheses(model: DefinitionDetectionModel):
     prediction_type = "DocDef2"
     features = model.featurize("The agent acts with policy (SYMBOL)")
-    intents, slots, _ = model.predict_batch([features])
+    intents, slots, _ = model.predict_batch([features], prediction_type)
     assert intents[prediction_type][0]
     assert slots[prediction_type][0] == ["O", "O", "O", "O", "DEF", "O", "TERM", "O"]
 
@@ -448,7 +435,7 @@ def test_model_extracts_nickname_after_symbol(model: DefinitionDetectionModel):
     features = model.featurize(
         "The architecture consists of SYMBOL dense layers trained with SYMBOL learning rate"
     )
-    intents, slots, _ = model.predict_batch([features])
+    intents, slots, _ = model.predict_batch([features], prediction_type)
     assert intents[prediction_type][0]
     assert slots[prediction_type][0] == [
         "O",
@@ -475,7 +462,7 @@ def test_model_extracts_nickname_symbol_separated_by_colon(
 ):
     prediction_type = "DocDef2"
     features = model.featurize("The agent acts with a policy : SYMBOL")
-    intents, slots, _ = model.predict_batch([features])
+    intents, slots, _ = model.predict_batch([features], prediction_type)
     assert intents[prediction_type][0]
     assert slots[prediction_type][0] == ["O", "O", "O", "O", "O", "DEF", "O", "TERM"]
 
@@ -487,6 +474,6 @@ def test_model_extracts_nickname_symbol_separated_by_colon(
 def test_model_extracts_nickname_for_th_index_pattern(model: DefinitionDetectionModel):
     prediction_type = "DocDef2"
     features = model.featurize("This process repeats for every SYMBOLth timestep")
-    intents, slots, _ = model.predict_batch([features])
+    intents, slots, _ = model.predict_batch([features], prediction_type)
     assert intents[prediction_type][0]
     assert slots[prediction_type][0] == ["O", "O", "O", "O", "O", "TERM", "DEF"]

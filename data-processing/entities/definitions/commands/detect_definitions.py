@@ -513,7 +513,7 @@ class DetectDefinitions(
 ):
     """
     Extract terms and definitions of those terms from sentences using a pre-trained definition
-    extraction model. Performs the following steps:
+    extraction model. Performs the following stpes:
     1. Load cleaned sentences from the 'detected-sentences' data directory
     2. Extract features from each sentence (aka featurization)
     3. Load the pre-trained NLP model, load the features, and predict intent and term:definition
@@ -601,8 +601,8 @@ class DetectDefinitions(
             return
 
         # Load the pre-trained definition detection model.
-        prediction_type = "DocDef2+AI2020+W00"
-        model = DefinitionDetectionModel(prediction_type)
+        prediction_types = ["AI2020", "DocDef2", "W00"]
+        model = DefinitionDetectionModel(prediction_types)
 
         definition_index = 0
         features = []
@@ -641,8 +641,14 @@ class DetectDefinitions(
                     # Detect terms and definitions in each sentence with a pre-trained definition
                     # extraction model, from the featurized text.
 
-                    (_, slots, slots_confidence) = model.predict_batch(
-                        cast(List[Dict[Any, Any]], features)
+                    (_, termdef_slots, termdef_slots_confidence,) = model.predict_batch(
+                        cast(List[Dict[Any, Any]], features), "W00"
+                    )
+                    (_, abbrexp_slots, abbrexp_slots_confidence,) = model.predict_batch(
+                        cast(List[Dict[Any, Any]], features), "AI2020"
+                    )
+                    (_, symnick_slots, symnick_slots_confidence,) = model.predict_batch(
+                        cast(List[Dict[Any, Any]], features), "DocDef2"
                     )
 
                     # Package extracted terms and definitions into a representation that's
@@ -659,12 +665,12 @@ class DetectDefinitions(
                     ) in zip(
                         sentences,
                         features,
-                        slots["W00"],
-                        slots_confidence["W00"],
-                        slots["AI2020"],
-                        slots_confidence["AI2020"],
-                        slots["DocDef2"],
-                        slots_confidence["DocDef2"],
+                        termdef_slots["W00"],
+                        termdef_slots_confidence["W00"],
+                        abbrexp_slots["AI2020"],
+                        abbrexp_slots_confidence["AI2020"],
+                        symnick_slots["DocDef2"],
+                        symnick_slots_confidence["DocDef2"],
                     ):
                         # Extract TeX for each symbol from a parallel representation of the
                         # sentence, so that the TeX for symbols can be saved.
