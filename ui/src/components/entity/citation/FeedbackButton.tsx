@@ -27,8 +27,7 @@ function createFeedbackLink(
    * the assocaited form). If this proves to be an issue we'll have to think
    * through alternative feedback mechanisms.
    */
-  const baseUrl =
-    "https://docs.google.com/forms/d/e/1FAIpQLSdnTn4ng-3SsNqwr6M7yF54IhABNAw9_KIjPdWC746fIe546w/viewform";
+  const baseUrl = "https://forms.gle/BvGeHYzUA1pHzcAK6";
   const params = {
     "entry.331961046": JSON.stringify(
       Object.assign({}, extraContext || {}, { paperId })
