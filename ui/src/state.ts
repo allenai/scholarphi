@@ -72,6 +72,8 @@ export interface State extends Settings {
   /*
    * ~ Selecting annotations and entities ~
    */
+  selectedDiscourseEntityId: string;
+  selectedDiscourseEntityIds: string[];
   selectedAbstractSentenceId: string;
   selectedAnnotationIds: string[];
   selectedAnnotationSpanIds: string[];

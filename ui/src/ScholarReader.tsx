@@ -96,6 +96,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
       areCitationsLoading: false,
 
+      selectedDiscourseEntityId: "",
+      selectedDiscourseEntityIds: [],
       selectedAbstractSentenceId: "",
       selectedAnnotationIds: [],
       selectedAnnotationSpanIds: [],
@@ -178,20 +180,110 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       const toolbarButton = document.querySelector("#sidebarToggle");
       const clickEvent = new Event("click");
       if (prevState.selectedAbstractSentenceId !== id) {
+        const selectedDiscourseEntityIds = Object.entries(
+          data.filter((x) => x.arxivId === this.props.paperId!.id)[0]
+            .relatedSents
+        )
+          .filter(([_id, e], _) => _id === id)[0][1]!
+          .slice(0, 15)
+          .sort();
+
+        const selectedPages = [
+          ...new Set(
+            selectedDiscourseEntityIds
+              .map(
+                (_id) =>
+                  this.state.entities?.byId[_id].attributes.bounding_boxes
+              )
+              .flat()
+              .map((b) => b?.page)
+          ),
+        ];
+        [...document.querySelectorAll<HTMLElement>(".thumbnail")].map((e) =>
+          e.classList.remove("abstract-selected")
+        );
+        [...document.querySelectorAll<HTMLElement>(".thumbnail")]
+          .filter((e) =>
+            selectedPages.includes(parseInt(e.dataset.pageNumber || ""))
+          )
+          .map((e) => e.classList.add("abstract-selected"));
+
         if (!sidebarOpen) {
           toolbarButton?.dispatchEvent(clickEvent);
         }
-        return { selectedAbstractSentenceId: id } as State;
+        document.addEventListener(
+          "keydown",
+          this.navigateRelatedSentences,
+          false
+        );
+        return {
+          selectedDiscourseEntityIds,
+          selectedAbstractSentenceId: id,
+        } as State;
       } else {
+        [...document.querySelectorAll<HTMLElement>(".thumbnail")].map((e) =>
+          e.classList.remove("abstract-selected")
+        );
         if (sidebarOpen) {
           toolbarButton?.dispatchEvent(clickEvent);
         }
-        return {
+        document.removeEventListener(
+          "keydown",
+          this.navigateRelatedSentences,
+          false
+        );
+        return ({
+          selectedDiscourseEntityIds: [],
           selectedAbstractSentenceId: "",
-        } as State;
+        } as unknown) as State;
       }
     });
-  }
+  };
+
+  addRelatedSentenceKeyNavigationHandler = (): void => {
+    document.addEventListener("keydown", this.navigateRelatedSentences, false);
+  };
+
+  navigateRelatedSentences = (e: KeyboardEvent) => {
+    const {
+      selectedDiscourseEntityId,
+      selectedDiscourseEntityIds,
+    } = this.state;
+
+    if (e.code === "ArrowRight") {
+      e.stopPropagation();
+      const nextDiscourseEntityId =
+        selectedDiscourseEntityIds[
+          (selectedDiscourseEntityIds.indexOf(selectedDiscourseEntityId) + 1) %
+            selectedDiscourseEntityIds.length
+        ];
+      this.jumpToEntity(
+        selectedDiscourseEntityId === ""
+          ? selectedDiscourseEntityIds[0]
+          : nextDiscourseEntityId
+      );
+      this.setState({
+        selectedDiscourseEntityId: nextDiscourseEntityId
+      });
+    } else if (e.code === "ArrowLeft") {
+      e.stopPropagation();
+      const previousId =
+        selectedDiscourseEntityIds[
+          (selectedDiscourseEntityIds.indexOf(selectedDiscourseEntityId) -
+            1 +
+            selectedDiscourseEntityIds.length) %
+            selectedDiscourseEntityIds.length
+        ];
+      this.jumpToEntity(
+        selectedDiscourseEntityId === ""
+          ? selectedDiscourseEntityIds[selectedDiscourseEntityIds.length - 1]
+          : previousId
+      );
+      this.setState({
+        selectedDiscourseEntityId: previousId
+      });
+    }
+  };
 
   selectEntity = (id: string): void => {
     this.selectEntityAnnotation(id);
@@ -1105,38 +1197,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       )
                     : [];
 
-                const selectedDiscourseEntityIds =
-                  this.props.paperId !== undefined &&
-                  this.state.selectedAbstractSentenceId !== ""
-                    ? Object.entries(
-                        data.filter(
-                          (x) => x.arxivId === this.props.paperId!.id
-                        )[0].relatedSents
-                      )
-                        .filter(
-                          ([id, e], _) =>
-                            id === this.state.selectedAbstractSentenceId
-                        )[0][1]!
-                        .slice(0, 15)
-                    : [];
-
-                const selectedPages = [
-                  ...new Set(
-                    selectedDiscourseEntityIds
-                      .map((id) => entities.byId[id].attributes.bounding_boxes)
-                      .flat()
-                      .map((b) => b.page)
-                  ),
-                ];
-                [
-                  ...document.querySelectorAll<HTMLElement>(".thumbnail"),
-                ].map((e) => e.classList.remove("abstract-selected"));
-                [...document.querySelectorAll<HTMLElement>(".thumbnail")]
-                  .filter((e) =>
-                    selectedPages.includes(parseInt(e.dataset.pageNumber || ""))
-                  )
-                  .map((e) => e.classList.add("abstract-selected"));
-
                 return (
                   <PageOverlay key={key} pageView={pageView}>
                     {/* Mask for highlighting results from in-situ search. */}
@@ -1181,7 +1241,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                         pageView={pageView}
                         entities={entities}
                         abstractIds={abstractIds}
-                        selectedEntityIds={selectedDiscourseEntityIds}
+                        selectedEntityIds={this.state.selectedDiscourseEntityIds}
                         selectedAbstractSentenceId={
                           this.state.selectedAbstractSentenceId
                         }
