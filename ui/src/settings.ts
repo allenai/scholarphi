@@ -147,7 +147,7 @@ export function getSettings(presets?: string[]) {
     symbolSearchEnabled: true,
     declutterEnabled: true,
     definitionPreviewEnabled: false,
-    equationDiagramsEnabled: false,
+    equationDiagramsEnabled: true,
     useDefinitionsForDiagramLabels: false,
     entityCreationEnabled: false,
     entityEditingEnabled: false,
