@@ -133,44 +133,44 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.setState((prevState) => ({
       controlPanelShowing: !prevState.controlPanelShowing,
     }));
-  }
+  };
 
   toggleAnnotationHints = (): void => {
     this.setState((prevState) => ({
       annotationHintsEnabled: !prevState.annotationHintsEnabled,
     }));
-  }
+  };
 
   setAnnotationHintsEnabled = (enabled: boolean): void => {
     this.setState({ annotationHintsEnabled: enabled });
-  }
+  };
 
   toggleSkimming = (): void => {
     this.setState((prevState) => ({
       skimmingEnabled: !prevState.skimmingEnabled,
     }));
-  }
+  };
 
   setGlossStyle = (style: GlossStyle): void => {
     this.setState({ glossStyle: style });
-  }
+  };
 
   closeControlPanel = (): void => {
     this.setState({ controlPanelShowing: false });
-  }
+  };
 
   handleChangeSetting = (setting: ConfigurableSetting, value: any): void => {
     this.setState({
       [setting.key]: value,
     } as State);
-  }
+  };
 
   setTextSelection = (selection: Selection | null): void => {
     this.setState({
       textSelection: selection,
       textSelectionChangeMs: Date.now(),
     });
-  }
+  };
 
   setSelectedAbstractSentenceId = (id: string): void => {
     this.setState((prevState) => {
@@ -196,7 +196,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                   this.state.entities?.byId[_id].attributes.bounding_boxes
               )
               .flat()
-              .map((b) => b?.page)
+              .map((b) =>
+                b !== undefined && b.page !== undefined ? b.page + 1 : null
+              )
+              .filter((pn) => pn !== null)
           ),
         ];
         [...document.querySelectorAll<HTMLElement>(".thumbnail")].map((e) =>
@@ -263,7 +266,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
           : nextDiscourseEntityId
       );
       this.setState({
-        selectedDiscourseEntityId: nextDiscourseEntityId
+        selectedDiscourseEntityId: nextDiscourseEntityId,
       });
     } else if (e.code === "ArrowLeft") {
       e.stopPropagation();
@@ -280,14 +283,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
           : previousId
       );
       this.setState({
-        selectedDiscourseEntityId: previousId
+        selectedDiscourseEntityId: previousId,
       });
     }
   };
 
   selectEntity = (id: string): void => {
     this.selectEntityAnnotation(id);
-  }
+  };
 
   selectEntityAnnotation = (
     entityId: string,
@@ -406,7 +409,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         jumpTarget: null,
       } as State;
     });
-  }
+  };
 
   clearEntitySelection = (): void => {
     logger.log("debug", "clear-entity-selection");
@@ -429,15 +432,17 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       selectedEntityIds: [],
       jumpTarget: null,
     });
-  }
+  };
 
   setEntityCreationType = (type: KnownEntityType): void => {
     this.setState({ entityCreationType: type });
-  }
+  };
 
-  setEntityCreationAreaSelectionMethod = (method: AreaSelectionMethod): void => {
+  setEntityCreationAreaSelectionMethod = (
+    method: AreaSelectionMethod
+  ): void => {
     this.setState({ entityCreationAreaSelectionMethod: method });
-  }
+  };
 
   createEntity = async (data: EntityCreateData): Promise<string | null> => {
     if (this.props.paperId !== undefined) {
@@ -464,7 +469,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       }
     }
     return null;
-  }
+  };
 
   createParentSymbol = async (childSymbols: Symbol[]): Promise<boolean> => {
     /*
@@ -543,7 +548,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     }
 
     return true;
-  }
+  };
 
   updateEntity = async (
     entity: Entity,
@@ -625,7 +630,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
     const completeSuccess = entitiesToPatch.length === patchedEntities.length;
     return completeSuccess;
-  }
+  };
 
   deleteEntity = async (id: string): Promise<boolean> => {
     if (this.props.paperId !== undefined) {
@@ -664,7 +669,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       }
     }
     return false;
-  }
+  };
 
   showSnackbarMessage = (message: string): void => {
     this.setState({
@@ -672,7 +677,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       snackbarActivationTimeMs: Date.now(),
       snackbarMessage: message,
     });
-  }
+  };
 
   closeSnackbar = (): void => {
     this.setState({
@@ -680,7 +685,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       snackbarActivationTimeMs: null,
       snackbarMessage: null,
     });
-  }
+  };
 
   openDrawer = (drawerContentType: DrawerContentType): void => {
     logger.log("debug", "request-open-drawer", { drawerContentType });
@@ -688,22 +693,22 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       drawerMode: "open",
       drawerContentType,
     });
-  }
+  };
 
   closeDrawer = (): void => {
     logger.log("debug", "close-drawer");
     this.setState({ drawerMode: "closed" });
-  }
+  };
 
   setMultiselectEnabled = (enabled: boolean): void => {
     this.setState({ multiselectEnabled: enabled });
-  }
+  };
 
   setPropagateEntityEdits = (propagate: boolean): void => {
     this.setState({
       propagateEntityEdits: propagate,
     });
-  }
+  };
 
   startTextSearch = (): void => {
     logger.log("debug", "start-text-search");
@@ -712,12 +717,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       findActivationTimeMs: Date.now(),
       findMode: "pdfjs-builtin-find",
     });
-  }
+  };
 
   setFindMatchCount = (findMatchCount: number | null): void => {
     logger.log("debug", "find-match-count-updated", { count: findMatchCount });
     this.setState({ findMatchCount });
-  }
+  };
 
   setFindMatchIndex = (findMatchIndex: number | null): void => {
     logger.log("debug", "find-match-index-updated", {
@@ -736,7 +741,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       }
       return { findMatchIndex };
     });
-  }
+  };
 
   setFindQuery = (findQuery: FindQuery): void => {
     this.setState((state) => {
@@ -772,7 +777,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       }
       return { findQuery } as State;
     });
-  }
+  };
 
   closeFindBar = (): void => {
     logger.log("debug", "find-close");
@@ -785,7 +790,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       findMatchIndex: null,
       findMatchedEntities: null,
     });
-  }
+  };
 
   componentDidMount() {
     waitForPDFViewerInitialization().then((application) => {
@@ -802,7 +807,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.loadDataFromApi();
   }
 
-  subscribeToPDFViewerStateChanges = (pdfViewerApplication: PDFViewerApplication): void => {
+  subscribeToPDFViewerStateChanges = (
+    pdfViewerApplication: PDFViewerApplication
+  ): void => {
     const { eventBus, pdfDocument, pdfViewer } = pdfViewerApplication;
 
     if (pdfDocument !== null) {
@@ -831,12 +838,18 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         },
       });
     });
-  }
+  };
 
   loadDataFromApi = async (): Promise<void> => {
-    if (this.props.paperId !== undefined && this.props.paperId.type === "arxiv") {
+    if (
+      this.props.paperId !== undefined &&
+      this.props.paperId.type === "arxiv"
+    ) {
       const loadingStartTime = performance.now();
-      const entities = await api.getDedupedEntities(this.props.paperId.id, true);
+      const entities = await api.getDedupedEntities(
+        this.props.paperId.id,
+        true
+      );
       this.setState({
         entities: stateUtils.createRelationalStoreFromArray(entities, "id"),
       });
@@ -849,18 +862,25 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
       if (window.heap) {
         const loadingTimeMS = Math.round(performance.now() - loadingStartTime);
-        window.heap.track("paper-loaded", { loadingTimeMS, numEntities: entities.length, numCitations: citationS2Ids.length });
+        window.heap.track("paper-loaded", {
+          loadingTimeMS,
+          numEntities: entities.length,
+          numCitations: citationS2Ids.length,
+        });
       }
     }
-  }
+  };
 
   cachePaper = (paper: Paper, cb?: () => void): void => {
     const paperMap = new Map(this.state.lazyPapers);
     paperMap.set(paper.s2Id, paper);
-    this.setState({
-      lazyPapers: paperMap,
-    }, cb);
-  }
+    this.setState(
+      {
+        lazyPapers: paperMap,
+      },
+      cb
+    );
+  };
 
   jumpToEntityWithBackMessage = (id: string): void => {
     const success = this.jumpToEntity(id);
@@ -871,7 +891,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       );
       // this._backButtonHintShown = true;
     }
-  }
+  };
 
   jumpToEntity = (id: string): boolean => {
     /*
@@ -925,7 +945,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     });
 
     return true;
-  }
+  };
 
   render() {
     let findMatchEntityId: string | null = null;
@@ -1241,7 +1261,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                         pageView={pageView}
                         entities={entities}
                         abstractIds={abstractIds}
-                        selectedEntityIds={this.state.selectedDiscourseEntityIds}
+                        selectedEntityIds={
+                          this.state.selectedDiscourseEntityIds
+                        }
                         selectedAbstractSentenceId={
                           this.state.selectedAbstractSentenceId
                         }
