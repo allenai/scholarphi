@@ -108,13 +108,12 @@ class PrimerPage extends React.PureComponent<Props> {
           This reading application is based on research from the Semantic Scholar team at AI2,
           UC Berkeley and the University of Washington,
           and is supported in part by the Alfred P. Sloan Foundation.
-        </p>
-        <p>
           Your use of this application is entirely voluntary and you may exit it at any time.
           Learn more about Semantic Reader <a href="https://www.semanticscholar.org/product/semantic-reader">here</a>.
         </p>
+        <p className={"primer-page__subheader"}>Have feedback?</p>
         <p>
-          Have feedback? Please use this <FeedbackLink text="form" paperId={paperId} /> to submit feedback on how to help
+          Please use this <FeedbackLink text="form" paperId={paperId} /> to submit feedback on how to help
           improve Semantic Reader or to report a bug.
         </p>
         {paperId && paperId.type === "arxiv" && (
