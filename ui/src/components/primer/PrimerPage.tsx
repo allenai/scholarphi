@@ -17,6 +17,7 @@ interface Props {
   entities: Entities | null;
   showInstructions: boolean;
   annotationHintsEnabled: boolean;
+  primerPageGlossaryEnabled: boolean;
   termGlossesEnabled: boolean;
   scrollToPageOnLoad?: boolean;
   areCitationsLoading?: boolean;
@@ -67,6 +68,7 @@ class PrimerPage extends React.PureComponent<Props> {
     const {
       pages,
       entities,
+      primerPageGlossaryEnabled,
       showInstructions,
       termGlossesEnabled,
       areCitationsLoading,
@@ -195,7 +197,7 @@ class PrimerPage extends React.PureComponent<Props> {
           }
           {isEntitiesLoaded(entities) && (
             <>
-              {termGlossesEnabled && terms.length > 0 ? (
+              {primerPageGlossaryEnabled && termGlossesEnabled && terms.length > 0 ? (
                 <>
                   <p className="primer-page__header">Glossary of key terms</p>
                   <p className="primer-page__subheader">
@@ -214,7 +216,7 @@ class PrimerPage extends React.PureComponent<Props> {
                   </div>
                 </>
               ) : null}
-              {symbols.length > 0 ? (
+              {primerPageGlossaryEnabled && symbols.length > 0 ? (
                 <>
                   <p className="primer-page__header">
                     Glossary of key {terms.length === 0 && "terms and "} symbols
