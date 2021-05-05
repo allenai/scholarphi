@@ -982,6 +982,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         this.state.pdfViewer !== null &&
         this.state.pages !== null ? (
           <PrimerPage
+            paperId={this.props.paperId}
             pdfViewer={this.state.pdfViewer}
             pages={this.state.pages}
             entities={this.state.entities}

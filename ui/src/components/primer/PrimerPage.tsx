@@ -1,4 +1,4 @@
-import { Entities, Pages } from "../../state";
+import { Entities, Pages, PaperId } from "../../state";
 import SymbolDefinitionGloss from "./SymbolDefinitionGloss";
 import TermDefinitionGloss from "./TermDefinitionGloss";
 import { isSymbol, isTerm, Symbol, Term } from "../../api/types";
@@ -10,8 +10,10 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 import Switch from "@material-ui/core/Switch";
 import React from "react";
 import ReactDOM from "react-dom";
+import FeedbackLink from "../common/FeedbackLink";
 
 interface Props {
+  paperId?: PaperId;
   pdfViewer: PDFViewer;
   pages: Pages;
   entities: Entities | null;
@@ -65,6 +67,7 @@ class PrimerPage extends React.PureComponent<Props> {
 
   render() {
     const {
+      paperId,
       pages,
       entities,
       showInstructions,
@@ -90,84 +93,66 @@ class PrimerPage extends React.PureComponent<Props> {
     const terms = isEntitiesLoaded(entities) ? glossaryTerms(entities) : [];
     const symbols = isEntitiesLoaded(entities) ? glossarySymbols(entities) : [];
 
+    const instructions = (
+      <>
+        <p className="primer-page__header">Introducing Semantic Reader Beta</p>
+        <p>
+          Semantic Reader puts relevant information directly in the context of the paper you are reading.
+          The features currently supported in this reader are:
+        </p>
+        <ul className="feature-list">
+          <li>Citations - Click a citation to see the abstract for that citation</li>
+          <li>Symbols -- Click a mathematical symbol to see its usages throughout the paper</li>
+        </ul>
+        <p>
+          This reading application is based on research from the Semantic Scholar team at AI2,
+          UC Berkeley and the University of Washington,
+          and is supported in part by the Alfred P. Sloan Foundation.
+        </p>
+        <p>
+          Your use of this application is entirely voluntary and you may exit it at any time.
+          Learn more about Semantic Reader <a href="https://www.semanticscholar.org/product/semantic-reader">here</a>.
+        </p>
+        <p>
+          Have feedback? Please use this <FeedbackLink text="form" paperId={paperId} /> to submit feedback on how to help
+          improve Semantic Reader or to report a bug.
+        </p>
+        {paperId && paperId.type === "arxiv" && (
+          <p className="primer-page__smaller-text">
+            View and download <a href={`https://arxiv.org/pdf/${paperId.id}.pdf`}>this PDF</a> on arXiv.
+          </p>
+        )}
+        <hr />
+        <p className="primer-page__header">Reading settings</p>
+        <div>
+          <FormControl>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={this.props.annotationHintsEnabled}
+                  color="primary"
+                  onChange={this.onAnnotationHintsEnabledChanged}
+                />
+              }
+              label={
+                <>
+                  Mark explainable things with a{" "}
+                  <span style={{ borderBottom: "1px dotted" }}>
+                          dotted underline
+                        </span>{" "}
+                  (recommended).
+                </>
+              }
+            />
+          </FormControl>
+        </div>
+      </>
+    );
+
     return ReactDOM.createPortal(
       <>
         <div className="primer-page__contents">
-          {showInstructions && (
-            <>
-              <p className="primer-page__header">This paper is interactive.</p>
-              <p>
-                Sometimes it can be hard to understand a paper. The citations
-                can be poorly explained. Symbols can be cryptic. Terms can be
-                confusing. What if your reading application helped explain these
-                parts of a paper?
-              </p>
-              <p>
-                This reading application, called <b>Semantic Reader</b>, explains
-                confusing things in papers. You can click on citations, symbols,
-                and terms to look up explanations of them. Anything that has a{" "}
-                <span style={{ borderBottom: "1px dotted" }}>
-                  dotted underline
-                </span>{" "}
-                can be clicked to access an explanation.
-              </p>
-              <p>The main features are:</p>
-              <ul className="feature-list">
-                <li>Click a citation to see the abstract for that citation</li>
-                <li>
-                  Click a symbol to see its definitions <i>and</i> search for
-                  that symbol elsewhere in the paper
-                </li>
-                <li>
-                  Click a display equation to see a diagram with definitions of
-                  key symbols.
-                </li>
-              </ul>
-              <p>
-                Subsymbols of big, complex symbols can be selected by clicking
-                first on the complex symbol, and then on its subsymbol. If you
-                want to hide the explanations, just click anywhere on the page
-                that isn't underlined.
-              </p>
-              <p>
-                Your use of this application is entirely voluntary and you may
-                exit it at any time. By using this tool, you consent to have
-                your interactions with the tool logged with your IP address.
-                Your interactions and responses to the form will be analyzed as
-                part of on-going research conducted by post-doc{" "}
-                <a href="mailto:andrewhead@berkeley.edu">Andrew Head</a> and PI{" "}
-                <a href="mailto:hears@berkeley.edu">Marti Hearst</a> at UC
-                Berkeley. Contact the researchers if you have any questions.
-              </p>
-              <p>
-                If you have feedback on how to improve Semantic Reader or want to report a bug, please join our Slack channel <a href="https://join.slack.com/share/zt-kzpbfz5x-5xVGrzxORdkdNI_RIjS52A">#s2-scholarphi-users</a>.
-              </p>
-              <hr />
-              <p className="primer-page__header">Reading settings</p>
-              <div>
-                <FormControl>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={this.props.annotationHintsEnabled}
-                        color="primary"
-                        onChange={this.onAnnotationHintsEnabledChanged}
-                      />
-                    }
-                    label={
-                      <>
-                        Mark explainable things with a{" "}
-                        <span style={{ borderBottom: "1px dotted" }}>
-                          dotted underline
-                        </span>{" "}
-                        (recommended).
-                      </>
-                    }
-                  />
-                </FormControl>
-              </div>
-            </>
-          )}
+          {showInstructions && instructions}
           {
             (areCitationsLoading || !isEntitiesLoaded(entities)) && (
               <>
