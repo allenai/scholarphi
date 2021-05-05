@@ -13,6 +13,10 @@ export interface Settings {
    */
   primerPageEnabled: boolean;
   /**
+   * Whether or not to show term and symbol glossary on primer page
+   */
+  primerPageGlossaryEnabled: boolean;
+  /**
    * Show instructions in the primer describing how to use the tool.
    */
   primerInstructionsEnabled: boolean;
@@ -49,6 +53,10 @@ export interface Settings {
    * Start a within-paper symbol search when a symbol is selected.
    */
   symbolSearchEnabled: boolean;
+  /**
+   * Whether to show definition related features in symbol gloss
+   */
+  definitionsInSymbolGloss: boolean;
   /**
    * Enable the 'declutter' interaction which masks pages to show only those sentences that
    * contain an entity that the user selected.
@@ -134,6 +142,7 @@ const PRESETS: Preset[] = [
 export function getSettings(presets?: string[]) {
   const DEFAULT_SETTINGS: Settings = {
     primerPageEnabled: true,
+    primerPageGlossaryEnabled: false,
     primerInstructionsEnabled: true,
     annotationInteractionEnabled: true,
     annotationHintsEnabled: true,
@@ -142,12 +151,13 @@ export function getSettings(presets?: string[]) {
     glossStyle: "tooltip",
     textSelectionMenuEnabled: false,
     citationGlossesEnabled: true,
+    definitionsInSymbolGloss: false,
     termGlossesEnabled: false,
     symbolUnderlineMethod: "defined-symbols",
     symbolSearchEnabled: true,
     declutterEnabled: true,
     definitionPreviewEnabled: false,
-    equationDiagramsEnabled: true,
+    equationDiagramsEnabled: false,
     useDefinitionsForDiagramLabels: false,
     entityCreationEnabled: false,
     entityEditingEnabled: false,

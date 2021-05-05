@@ -41,6 +41,7 @@ interface Props {
   citationAnnotationsEnabled: boolean;
   termAnnotationsEnabled: boolean;
   symbolUnderlineMethod: SymbolUnderlineMethod;
+  definitionsInSymbolGloss: boolean;
   equationDiagramsEnabled: boolean;
   copySentenceOnClick: boolean;
   handleSelectEntityAnnotation: (
@@ -433,6 +434,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
                       showDrawerActions={true}
                       handleJumpToEntity={this.props.handleJumpToEntity}
                       handleOpenDrawer={this.props.handleOpenDrawer}
+                      definitionsEnabled={this.props.definitionsInSymbolGloss}
                     />
                   ) : null
                 }
