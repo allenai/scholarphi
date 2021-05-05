@@ -153,7 +153,7 @@ export function getSettings(presets?: string[]) {
     citationGlossesEnabled: true,
     definitionsInSymbolGloss: false,
     termGlossesEnabled: false,
-    symbolUnderlineMethod: "defined-symbols",
+    symbolUnderlineMethod: "top-level-symbols",
     symbolSearchEnabled: true,
     declutterEnabled: true,
     definitionPreviewEnabled: false,
