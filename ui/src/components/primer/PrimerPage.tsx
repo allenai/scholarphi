@@ -102,7 +102,7 @@ class PrimerPage extends React.PureComponent<Props> {
         </p>
         <ul className="feature-list">
           <li>Citations - Click a citation to see the abstract for that citation</li>
-          <li>Symbols -- Click a mathematical symbol to see its usages throughout the paper</li>
+          <li>Symbols - Click a mathematical symbol to see its usages throughout the paper</li>
         </ul>
         <p>
           This reading application is based on research from the Semantic Scholar team at AI2,
