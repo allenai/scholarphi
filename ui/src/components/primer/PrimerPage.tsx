@@ -110,7 +110,6 @@ class PrimerPage extends React.PureComponent<Props> {
           This reading application is based on research from the Semantic Scholar team at AI2,
           UC Berkeley and the University of Washington,
           and is supported in part by the Alfred P. Sloan Foundation.
-          Your use of this application is entirely voluntary and you may exit it at any time.
           Learn more about Semantic Reader <a href="https://www.semanticscholar.org/product/semantic-reader">here</a>.
         </p>
         <p className={"primer-page__subheader"}>Have feedback?</p>
@@ -120,6 +119,7 @@ class PrimerPage extends React.PureComponent<Props> {
         </p>
         {paperId && paperId.type === "arxiv" && (
           <p className="primer-page__smaller-text">
+            By using this tool you agree to the terms outlined in our <a href="https://allenai.org/privacy-policy">Privacy Policy</a>.
             View and download <a href={`https://arxiv.org/pdf/${paperId.id}.pdf`}>this PDF</a> on arXiv.
           </p>
         )}
