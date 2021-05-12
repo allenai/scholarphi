@@ -1,0 +1,79 @@
+.abstract-card-wrapper {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 400px;
+  margin-left: 30px;
+  display: flex;
+  align-items: center;
+}
+
+.abstract-card {
+  width: 100%;
+  background-color: whitesmoke;
+  border: @border;
+  border-radius: @border-radius;
+  max-height: 75vh;
+  overflow-y: auto;
+
+  :last-child {
+    margin-bottom: @margin;
+  }
+
+  .abstract-card-sentence {
+    font-size: @medium;
+    line-height: @medium * @line-height-ratio;
+    color: @s2-text-default;
+    padding: 0 @padding 0 @padding;
+    margin-top: @margin;
+    margin-left: @margin;
+    margin-right: @margin;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: @border-radius;
+    &:hover {
+      border: 1px solid lightblue;
+    }
+  }
+
+  &__header {
+    font-weight: bold !important;
+    padding-left: @padding;
+  }
+
+  .MuiAccordionDetails-root {
+    padding: 0;
+    margin-bottom: 0;
+  }
+
+  .MuiTypography-root {
+    margin-bottom: 0;
+  }
+
+  .MuiCollapse-wrapperInner {
+    margin-bottom: 0;
+  }
+
+  .MuiCollapse-wrapper {
+    margin-bottom: 0;
+  }
+
+  .MuiCollapse-container {
+    margin-bottom: 0;
+  }
+
+  .MuiAccordionSummary-content.Mui-expanded {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .MuiAccordionSummary-expandIcon {
+    padding-bottom: 0;
+    margin-bottom: 0;
+    &:not(.Mui-expanded) {
+      padding-top: 0;
+      margin-top: 10px;
+    }
+  }
+}

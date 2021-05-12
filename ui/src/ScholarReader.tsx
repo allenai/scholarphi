@@ -1,4 +1,5 @@
 import * as api from "./api/api";
+import AbstractCard from "./components/abstract/AbstractCard";
 import AbstractMask from "./components/mask/AbstractMask";
 import { data } from "./components/mask/relatedSentences.json";
 import AppOverlay from "./components/overlay/AppOverlay";
@@ -965,6 +966,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       ];
     }
 
+    const abstractIds =
+      this.props.paperId !== undefined
+        ? Object.keys(
+            data.filter((x) => x.arxivId === this.props.paperId!.id)[0]
+              .relatedSents
+          )
+        : [];
+
     if (
       !this._jumpedToInitialFocus &&
       this.state.pages !== null &&
@@ -1126,6 +1135,15 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                   selectedEntityIds={this.state.selectedEntityIds}
                 />
               ) : null}
+              {this.state.entities !== null &&
+              this.state.abstractExpansionEnabled ? (
+                <AbstractCard
+                  entities={this.state.entities}
+                  abstractIds={abstractIds}
+                  selectedAbstractId={this.state.selectedAbstractSentenceId}
+                  setSelectedAbstractId={this.setSelectedAbstractSentenceId}
+                ></AbstractCard>
+              ) : null}
             </ViewerOverlay>
           </>
         ) : null}
@@ -1213,15 +1231,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     entities,
                     pageNumber
                   )[0] || null;
-
-                const abstractIds =
-                  this.props.paperId !== undefined
-                    ? Object.keys(
-                        data.filter(
-                          (x) => x.arxivId === this.props.paperId!.id
-                        )[0].relatedSents
-                      )
-                    : [];
 
                 return (
                   <PageOverlay key={key} pageView={pageView}>
