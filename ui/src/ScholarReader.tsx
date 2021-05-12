@@ -185,8 +185,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
             .relatedSents
         )
           .filter(([_id, e], _) => _id === id)[0][1]!
-          .slice(0, 15)
-          .sort();
+          .slice(0, 15);
 
         const selectedPages = [
           ...new Set(
@@ -211,9 +210,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
           )
           .map((e) => e.classList.add("abstract-selected"));
 
-        if (!sidebarOpen) {
-          toolbarButton?.dispatchEvent(clickEvent);
-        }
+        // if (!sidebarOpen) {
+        //   toolbarButton?.dispatchEvent(clickEvent);
+        // }
         document.addEventListener(
           "keydown",
           this.navigateRelatedSentences,
@@ -222,14 +221,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         return {
           selectedDiscourseEntityIds,
           selectedAbstractSentenceId: id,
+          selectedEntityIds: selectedDiscourseEntityIds,
+          drawerMode: selectedDiscourseEntityIds.length > 0 ? "open" : "closed",
+          drawerContentType: "relevant-sentences",
         } as State;
       } else {
         [...document.querySelectorAll<HTMLElement>(".thumbnail")].map((e) =>
           e.classList.remove("abstract-selected")
         );
-        if (sidebarOpen) {
-          toolbarButton?.dispatchEvent(clickEvent);
-        }
         document.removeEventListener(
           "keydown",
           this.navigateRelatedSentences,
@@ -238,13 +237,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         return ({
           selectedDiscourseEntityIds: [],
           selectedAbstractSentenceId: "",
+          selectedEntityIds: [],
+          drawerMode: "closed",
         } as unknown) as State;
       }
     });
-  };
-
-  addRelatedSentenceKeyNavigationHandler = (): void => {
-    document.addEventListener("keydown", this.navigateRelatedSentences, false);
   };
 
   navigateRelatedSentences = (e: KeyboardEvent) => {
@@ -252,17 +249,18 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       selectedDiscourseEntityId,
       selectedDiscourseEntityIds,
     } = this.state;
+    let ids = selectedDiscourseEntityIds.sort();
 
     if (e.code === "ArrowRight") {
       e.stopPropagation();
       const nextDiscourseEntityId =
-        selectedDiscourseEntityIds[
-          (selectedDiscourseEntityIds.indexOf(selectedDiscourseEntityId) + 1) %
-            selectedDiscourseEntityIds.length
+        ids[
+          (ids.indexOf(selectedDiscourseEntityId) + 1) %
+            ids.length
         ];
       this.jumpToEntity(
         selectedDiscourseEntityId === ""
-          ? selectedDiscourseEntityIds[0]
+          ? ids[0]
           : nextDiscourseEntityId
       );
       this.setState({
@@ -271,15 +269,15 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     } else if (e.code === "ArrowLeft") {
       e.stopPropagation();
       const previousId =
-        selectedDiscourseEntityIds[
-          (selectedDiscourseEntityIds.indexOf(selectedDiscourseEntityId) -
+        ids[
+          (ids.indexOf(selectedDiscourseEntityId) -
             1 +
-            selectedDiscourseEntityIds.length) %
-            selectedDiscourseEntityIds.length
+            ids.length) %
+            ids.length
         ];
       this.jumpToEntity(
         selectedDiscourseEntityId === ""
-          ? selectedDiscourseEntityIds[selectedDiscourseEntityIds.length - 1]
+          ? ids[ids.length - 1]
           : previousId
       );
       this.setState({
@@ -420,6 +418,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
      * target contains important highlights that shouldn't be dismissed.
      */
     if (!this.state.annotationInteractionEnabled) {
+      return;
+    }
+
+    /*
+     * If a sentence in the abstract is selected, don't do anything.
+     * TODO(rayfok): This probably isn't the right way to handle this. Just a hack for now.
+     */
+    if (this.state.selectedAbstractSentenceId !== "") {
       return;
     }
 

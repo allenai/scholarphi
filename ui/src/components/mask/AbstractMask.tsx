@@ -76,7 +76,7 @@ class AbstractMask extends React.Component<Props> {
                     ? "black"
                     : "white"
                 }
-                onMouseDown={() =>
+                onClick={() =>
                   this.props.setSelectedAbstractSentenceId(
                     abstractIds[sentIndex]
                   )

@@ -5,6 +5,7 @@ import { getRemoteLogger } from "../../logging";
 import { Entities } from "../../state";
 import { Entity, EntityUpdateData } from "../../api/types";
 import { PDFViewer } from "../../types/pdfjs-viewer";
+import RelevantSentences from "./RelevantSentences";
 import Usages from "./Usages";
 import * as uiUtils from "../../utils/ui";
 
@@ -21,6 +22,7 @@ export type DrawerContentType =
   | "defining-formulas"
   | "usages"
   | "entity-property-editor"
+  | "relevant-sentences"
   | null;
 
 interface Props {
@@ -171,6 +173,13 @@ export class Drawer extends React.PureComponent<Props> {
           )}
           {contentType === "definitions" && entities !== null && (
             <Definitions
+              selectedEntityIds={selectedEntityIds}
+              entities={entities}
+              handleJumpToEntity={this.props.handleJumpToEntity}
+            />
+          )}
+          {contentType === "relevant-sentences" && entities !== null && (
+            <RelevantSentences
               selectedEntityIds={selectedEntityIds}
               entities={entities}
               handleJumpToEntity={this.props.handleJumpToEntity}

@@ -11,6 +11,15 @@
     text-align: center;
     margin-bottom: @padding * 2;
   }
+
+  .relevant-sentence-page-header {
+    text-align: left;
+    font-weight: 700;
+    margin-top: 25px;
+    &:first-child {
+      margin-top: 0;
+    }
+  }
 }
 
 /**
@@ -56,6 +65,14 @@
    * height, the line spacing of snippets looks more consistent.
    */
   line-height: 1.5em;
+  cursor: pointer;
+  &:hover {
+    background: rgb(223, 231, 240);
+  }
+
+  &.most-relevant {
+    border: 2px dashed rgb(20, 65, 167);
+  }
 }
 
 /*
