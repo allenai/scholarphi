@@ -4,7 +4,6 @@ import { Entities } from "../../state";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
 import PageMask from "./PageMask";
-import { data } from "./relatedSentences.json";
 
 interface Props {
   pageView: PDFPageView;

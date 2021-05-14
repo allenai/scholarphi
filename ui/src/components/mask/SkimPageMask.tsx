@@ -4,7 +4,7 @@ import { Entities } from "../../state";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
 import PageMask from "./PageMask";
-import { data } from "./skimming_data.json";
+import { data } from "./skimmingData.json";
 
 interface Props {
   pageView: PDFPageView;

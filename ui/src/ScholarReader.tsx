@@ -1,7 +1,7 @@
 import * as api from "./api/api";
 import AbstractCard from "./components/abstract/AbstractCard";
 import AbstractMask from "./components/mask/AbstractMask";
-import { data } from "./components/mask/relatedSentences.json";
+import { data } from "./components/mask/skimmingData.json";
 import AppOverlay from "./components/overlay/AppOverlay";
 import Control from "./components/control/Control";
 import DefinitionPreview from "./components/preview/DefinitionPreview";
@@ -182,7 +182,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       const clickEvent = new Event("click");
       if (prevState.selectedAbstractSentenceId !== id) {
         const selectedDiscourseEntityIds = Object.entries(
-          data.filter((x) => x.arxivId === this.props.paperId!.id)[0]
+          data.filter((x) => x.paperId === this.props.paperId!.id)[0]
             .relatedSents
         )
           .filter(([_id, e], _) => _id === id)[0][1]!
@@ -969,7 +969,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     const abstractIds =
       this.props.paperId !== undefined
         ? Object.keys(
-            data.filter((x) => x.arxivId === this.props.paperId!.id)[0]
+            data.filter((x) => x.paperId === this.props.paperId!.id)[0]
               .relatedSents
           )
         : [];

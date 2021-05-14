@@ -138,13 +138,14 @@ const PRESETS: Preset[] = [
     key: "skim-bl",
     primerPageEnabled: false,
     skimmingEnabled: true,
-    abstractExpansionEnabled: false
+    abstractExpansionEnabled: false,
+    annotationHintsEnabled: false,
   },
   {
     key: "skim-abs",
     primerPageEnabled: false,
     skimmingEnabled: false,
-    abstractExpansionEnabled: true
+    abstractExpansionEnabled: true,
   }
 ];
 
@@ -156,7 +157,7 @@ export function getSettings(presets?: string[]) {
     primerPageEnabled: true,
     primerInstructionsEnabled: true,
     annotationInteractionEnabled: true,
-    annotationHintsEnabled: false,
+    annotationHintsEnabled: true,
     glossesEnabled: true,
     initialFocus: null,
     glossStyle: "tooltip",
