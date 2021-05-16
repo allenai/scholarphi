@@ -12,7 +12,7 @@ import { RichText } from "../common";
 interface Props {
   entities: Entities;
   abstractIds: string[];
-  abstractDiscourseClassification: { [id: string]: string };
+  abstractDiscourseClassification: { [id: string]: string | undefined };
   selectedAbstractId: string;
   setSelectedAbstractId: (id: string) => void;
 }
@@ -44,14 +44,12 @@ class AbstractCard extends React.PureComponent<Props> {
 
     const abstractColors = abstractIds
       .map((id) => abstractDiscourseClassification[id])
-      .map((d) => discourse2ColorMap[d]);
+      .filter((d) => d !== undefined)
+      .map((d) => discourse2ColorMap[d!]);
 
     return (
       <div className={"abstract-card-wrapper"}>
-        <Accordion
-          className={"abstract-card"}
-          defaultExpanded={true}
-        >
+        <Accordion className={"abstract-card"} defaultExpanded={true}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography className="abstract-card__header" variant={"h6"}>
               Abstract
