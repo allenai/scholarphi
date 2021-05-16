@@ -974,6 +974,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
           )
         : [];
 
+    const abstractDiscourseClassification =
+      this.props.paperId !== undefined
+        ? data.filter((x) => x.paperId === this.props.paperId!.id)[0]
+            .abstractDiscourseClassification
+        : undefined;
+
     if (
       !this._jumpedToInitialFocus &&
       this.state.pages !== null &&
@@ -1136,10 +1142,15 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 />
               ) : null}
               {this.state.entities !== null &&
-              this.state.abstractExpansionEnabled ? (
+              this.state.abstractExpansionEnabled &&
+              abstractIds.length > 0 &&
+              abstractDiscourseClassification !== undefined ? (
                 <AbstractCard
                   entities={this.state.entities}
                   abstractIds={abstractIds}
+                  abstractDiscourseClassification={
+                    abstractDiscourseClassification
+                  }
                   selectedAbstractId={this.state.selectedAbstractSentenceId}
                   setSelectedAbstractId={this.setSelectedAbstractSentenceId}
                 ></AbstractCard>
@@ -1271,11 +1282,16 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       />
                     ) : null}
                     {this.props.paperId !== undefined &&
-                    this.state.abstractExpansionEnabled ? (
+                    this.state.abstractExpansionEnabled &&
+                    abstractIds.length > 0 &&
+                    abstractDiscourseClassification !== undefined ? (
                       <AbstractMask
                         pageView={pageView}
                         entities={entities}
                         abstractIds={abstractIds}
+                        abstractDiscourseClassification={
+                          abstractDiscourseClassification
+                        }
                         selectedEntityIds={
                           this.state.selectedDiscourseEntityIds
                         }

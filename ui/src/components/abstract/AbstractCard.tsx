@@ -12,6 +12,7 @@ import { RichText } from "../common";
 interface Props {
   entities: Entities;
   abstractIds: string[];
+  abstractDiscourseClassification: { [id: string]: string };
   selectedAbstractId: string;
   setSelectedAbstractId: (id: string) => void;
 }
@@ -22,18 +23,39 @@ class AbstractCard extends React.PureComponent<Props> {
   }
 
   render() {
-    const { entities, abstractIds, selectedAbstractId } = this.props;
+    const {
+      entities,
+      abstractIds,
+      selectedAbstractId,
+      abstractDiscourseClassification,
+    } = this.props;
     const abstractSentences = abstractIds
       .map((id) => entities.byId[id])
       .filter((e) => e !== undefined)
       .filter((e) => isSentence(e))
       .map((e) => e as Sentence);
 
+    const discourse2ColorMap: { [discourse: string]: string } = {
+      Objective: "#9AC2C552",
+      Background: "#C2C6A752",
+      Method: "#ECCE8E52",
+      Result: "#27072252",
+    };
+
+    const abstractColors = abstractIds
+      .map((id) => abstractDiscourseClassification[id])
+      .map((d) => discourse2ColorMap[d]);
+
     return (
       <div className={"abstract-card-wrapper"}>
-        <Accordion className={"abstract-card"} defaultExpanded={true}>
+        <Accordion
+          className={"abstract-card"}
+          defaultExpanded={true}
+        >
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography className="abstract-card__header" variant={"h6"}>Abstract</Typography>
+            <Typography className="abstract-card__header" variant={"h6"}>
+              Abstract
+            </Typography>
           </AccordionSummary>
           {abstractSentences.map((s, i) =>
             s.attributes.tex !== null ? (
@@ -42,8 +64,15 @@ class AbstractCard extends React.PureComponent<Props> {
                 className={classNames("abstract-card-sentence", {
                   selected: selectedAbstractId === s.id,
                 })}
+                style={{ position: "relative" }}
                 onClick={() => this.props.setSelectedAbstractId(s.id)}
               >
+                <div
+                  className={classNames("discourse-tag")}
+                  style={{
+                    backgroundColor: abstractColors[i],
+                  }}
+                ></div>
                 <RichText>{selectors.cleanTex(s.attributes.tex!)}</RichText>
               </div>
             ) : null

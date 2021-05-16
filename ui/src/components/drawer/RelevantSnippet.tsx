@@ -36,7 +36,9 @@ class RelevantSnippet extends React.PureComponent<Props> {
         <div
           className={classNames("snippet", {
             clickable: context && this.props.handleJumpToContext,
-            "most-relevant": mostRelevantId === id,
+            // The following attribute adds a dotted outline to the snippet
+            // of the sentence with the highest probability of relevance.
+            // "most-relevant": mostRelevantId === id,
           })}
           onClick={this.onClick}
         >

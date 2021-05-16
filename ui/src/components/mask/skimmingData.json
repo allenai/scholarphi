@@ -2172,6 +2172,17 @@
           "4830",
           "4862"
         ]
+      },
+      "abstractDiscourseClassification": {
+        "4757": "Background",
+        "4758": "Background",
+        "4759": "Objective",
+        "4760": "Method",
+        "4761": "Method",
+        "4762": "Method",
+        "4763": "Result",
+        "4764": "Result",
+        "4765": "Result"
       }
     },
     {
@@ -3932,6 +3943,15 @@
           "180846",
           "180835"
         ]
+      },
+      "abstractDiscourseClassification": {
+        "180635": "Background",
+        "180636": "Background",
+        "180637": "Background",
+        "180638": "Background",
+        "180639": "Method",
+        "180640": "Result",
+        "180641": "Method"
       }
     }
   ]

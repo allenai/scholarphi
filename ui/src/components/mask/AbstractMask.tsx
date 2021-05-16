@@ -9,6 +9,7 @@ interface Props {
   pageView: PDFPageView;
   entities: Entities;
   abstractIds: string[];
+  abstractDiscourseClassification: { [id: string]: string };
   selectedEntityIds: string[];
   selectedAbstractSentenceId: string;
   setSelectedAbstractSentenceId: (id: string) => void;
