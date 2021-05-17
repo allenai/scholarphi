@@ -32,8 +32,13 @@
     cursor: pointer;
     border: 1px solid transparent;
     border-radius: @border-radius;
+
     &:hover {
       border: 1px solid lightblue;
+    }
+
+    &.selected > span > span {
+      background-color: rgba(0, 183, 255, 0.05);
     }
   }
 

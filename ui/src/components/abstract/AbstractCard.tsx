@@ -7,7 +7,7 @@ import React from "react";
 import { isSentence, Sentence } from "../../api/types";
 import * as selectors from "../../selectors";
 import { Entities } from "../../state";
-import { RichText } from "../common";
+import { LatexPreview } from "../common";
 
 interface Props {
   entities: Entities;
@@ -71,7 +71,9 @@ class AbstractCard extends React.PureComponent<Props> {
                     backgroundColor: abstractColors[i],
                   }}
                 ></div>
-                <RichText>{selectors.cleanTex(s.attributes.tex!)}</RichText>
+                <LatexPreview>
+                  {selectors.cleanTex(s.attributes.tex!)}
+                </LatexPreview>
               </div>
             ) : null
           )}
