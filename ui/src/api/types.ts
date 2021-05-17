@@ -396,3 +396,21 @@ export interface LogEntryCreatePayload {
   event_type: string | null;
   data: any;
 }
+
+
+/**
+ * Data with important paper components to enable declutter for skimming.
+ */
+export interface SkimmingAnnotation {
+  paperId: string;
+  metadata: string[];
+  abstract: string[];
+  conclusion: string[];
+  sectionHeaders: string[];
+  subsectionHeaders: string[];
+  firstFigureCaption: string[];
+  captionFirstSentences: string[];
+  firstSentences: string[];
+  manualBoxes: BoundingBox[];
+  noShow: string[];
+}

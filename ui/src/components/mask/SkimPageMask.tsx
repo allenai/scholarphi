@@ -1,29 +1,14 @@
 import React from "react";
-import { BoundingBox, isCitation, isSentence } from "../../api/types";
+import { isCitation, isSentence, SkimmingAnnotation } from "../../api/types";
 import { Entities } from "../../state";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
 import PageMask from "./PageMask";
-import { data } from "./skimmingData.json";
 
 interface Props {
   pageView: PDFPageView;
   entities: Entities;
-  paperId: string;
-}
-
-interface SkimmingAnnotation {
-  paperId: string;
-  metadata: string[];
-  abstract: string[];
-  conclusion: string[];
-  sectionHeaders: string[];
-  subsectionHeaders: string[];
-  firstFigureCaption: string[];
-  captionFirstSentences: string[];
-  firstSentences: string[];
-  manualBoxes: BoundingBox[];
-  noShow: string[];
+  skimmingData: SkimmingAnnotation;
 }
 
 /**
@@ -31,12 +16,8 @@ interface SkimmingAnnotation {
  */
 class SkimPageMask extends React.PureComponent<Props> {
   render() {
-    const { pageView, entities, paperId } = this.props;
+    const { pageView, entities, skimmingData } = this.props;
     const pageNumber = uiUtils.getPageNumber(pageView);
-
-    const skimmingData: SkimmingAnnotation = data.filter(
-      (x: SkimmingAnnotation) => x.paperId === paperId
-    )[0];
 
     const sentences = Object.fromEntries(
       Object.entries(entities.byId).filter(

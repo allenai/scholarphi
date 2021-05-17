@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import React from "react";
+import { SkimmingAnnotation } from "../../api/types";
 import { Entities } from "../../state";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
@@ -8,6 +9,7 @@ import PageMask from "./PageMask";
 interface Props {
   pageView: PDFPageView;
   entities: Entities;
+  skimmingData: SkimmingAnnotation;
   abstractIds: string[];
   abstractDiscourseClassification: { [id: string]: string };
   selectedEntityIds: string[];
@@ -27,6 +29,7 @@ class AbstractMask extends React.Component<Props> {
     const {
       pageView,
       entities,
+      skimmingData,
       abstractIds,
       selectedEntityIds,
       selectedAbstractSentenceId,
@@ -40,8 +43,14 @@ class AbstractMask extends React.Component<Props> {
       .map((e) => e.attributes.bounding_boxes)
       .filter(([b]) => b.page === pageNumber);
 
+    const showIds = [
+      // ...skimmingData.metadata,
+      ...skimmingData.sectionHeaders,
+      ...skimmingData.subsectionHeaders,
+    ];
     const boundingBoxes = selectedEntityIds
       .concat(selectedAbstractSentenceId)
+      .concat(showIds)
       .map((id) => entities.byId[id])
       .filter((e) => e !== undefined)
       .map((e) => e.attributes.bounding_boxes)

@@ -51,6 +51,7 @@ import {
   isTerm,
   Paper,
   Symbol,
+  SkimmingAnnotation,
 } from "./api/types";
 import {
   DocumentLoadedEvent,
@@ -1278,7 +1279,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       <SkimPageMask
                         pageView={pageView}
                         entities={entities}
-                        paperId={this.props.paperId.id}
+                        skimmingData={
+                          data.filter(
+                            (x: SkimmingAnnotation) =>
+                              x.paperId === this.props.paperId!.id
+                          )[0]
+                        }
                       />
                     ) : null}
                     {this.props.paperId !== undefined &&
@@ -1288,6 +1294,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       <AbstractMask
                         pageView={pageView}
                         entities={entities}
+                        skimmingData={
+                          data.filter(
+                            (x: SkimmingAnnotation) =>
+                              x.paperId === this.props.paperId!.id
+                          )[0]
+                        }
                         abstractIds={abstractIds}
                         abstractDiscourseClassification={
                           abstractDiscourseClassification
