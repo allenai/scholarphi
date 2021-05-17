@@ -203,6 +203,28 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               .filter((pn) => pn !== null)
           ),
         ];
+
+        Array.from(document.querySelectorAll<HTMLElement>(".page"))
+          .filter((p) => {
+            const pageNumber = parseInt(
+              p.getAttribute("data-page-number") as string
+            );
+            return pageNumber !== 1 && !selectedPages.includes(pageNumber);
+          })
+          .map((p) => {
+            p.style.height = "300px";
+            const canvasWrapper = p.querySelector(
+              ".canvasWrapper"
+            ) as HTMLElement;
+            if (canvasWrapper !== null) {
+              canvasWrapper.style.height = "100%";
+            }
+            const textLayer = p.querySelector(".textLayer") as HTMLElement;
+            if (textLayer !== null) {
+              textLayer.style.height = "100%";
+            }
+          });
+
         [...document.querySelectorAll<HTMLElement>(".thumbnail")].map((e) =>
           e.classList.remove("abstract-selected")
         );
@@ -228,6 +250,22 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
           drawerContentType: "relevant-sentences",
         } as State;
       } else {
+        const originalHeight = Array.from(
+          document.querySelectorAll<HTMLElement>(".page")
+        )[0].style.height;
+        Array.from(document.querySelectorAll<HTMLElement>(".page")).map((p) => {
+          p.style.height = originalHeight;
+          const canvasWrapper = p.querySelector(
+            ".canvasWrapper"
+          ) as HTMLElement;
+          if (canvasWrapper !== null) {
+            canvasWrapper.style.height = originalHeight;
+          }
+          const textLayer = p.querySelector(".textLayer") as HTMLElement;
+          if (textLayer !== null) {
+            textLayer.style.height = originalHeight;
+          }
+        });
         [...document.querySelectorAll<HTMLElement>(".thumbnail")].map((e) =>
           e.classList.remove("abstract-selected")
         );

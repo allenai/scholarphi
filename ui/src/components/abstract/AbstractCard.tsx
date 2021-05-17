@@ -62,6 +62,7 @@ class AbstractCard extends React.PureComponent<Props> {
               <Chip
                 className={"discourse-chip"}
                 label={d}
+                key={d}
                 onClick={() => {}}
                 style={{ backgroundColor: color + opacity }}
                 variant="outlined"
