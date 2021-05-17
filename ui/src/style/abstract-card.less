@@ -17,10 +17,6 @@
   max-height: 75vh;
   overflow-y: auto;
 
-  :last-child {
-    margin-bottom: @margin;
-  }
-
   .abstract-card-sentence {
     font-size: @medium;
     line-height: @medium * @line-height-ratio;
@@ -32,6 +28,10 @@
     cursor: pointer;
     border: 1px solid transparent;
     border-radius: @border-radius;
+
+    &:last-child {
+      margin-bottom: @margin;
+    }
 
     &:hover {
       border: 1px solid lightblue;
@@ -87,5 +87,17 @@
     right: 0;
     width: 8px;
     height: 100%;
+  }
+
+  .discourse-chip-palette {
+    margin: 0 auto;
+    width: 95%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    .discourse-chip {
+      margin: 0 5px;
+    }
   }
 }
