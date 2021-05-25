@@ -1,6 +1,6 @@
 # This file tells Google Cloud Build how to deploy the application.
 # It can be attached to a variety of triggers, the default being whenever
-# someone merges changes to the `master` branch.
+# someone merges changes to the main branch.
 steps:
 # Pull down the latest versions of each Docker image, so the build is faster.
 - id: 'api.pull'
