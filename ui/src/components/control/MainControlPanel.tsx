@@ -14,7 +14,7 @@ interface Props {
  * Control panel for turning turn on or off features of the user interface. Meant for use by
  * developers, or by participants in usability studies.
  */
-class MasterControlPanel extends React.PureComponent<Props> {
+class MainControlPanel extends React.PureComponent<Props> {
   render() {
     return (
       <Card
@@ -41,4 +41,4 @@ class MasterControlPanel extends React.PureComponent<Props> {
   }
 }
 
-export default MasterControlPanel;
+export default MainControlPanel;

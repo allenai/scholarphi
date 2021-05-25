@@ -97,7 +97,7 @@ class TexScanner:
         """
         scan_patterns = PRIVATE_PATTERNS + list(patterns)
 
-        # Create a master regular expression pattern for all input patterns.
+        # Create a universal regular expression pattern for all input patterns.
         patterns_by_name = {p.name: p for p in scan_patterns}
         regexes = []
         for p in scan_patterns:

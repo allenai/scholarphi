@@ -13,7 +13,7 @@ import EntityPageMask from "./components/mask/EntityPageMask";
 import EquationDiagram from "./components/entity/equation/EquationDiagram";
 import FindBar, { FindQuery } from "./components/search/FindBar";
 import logger from "./logging";
-import MasterControlPanel from "./components/control/MasterControlPanel";
+import MainControlPanel from "./components/control/MainControlPanel";
 import PageOverlay from "./components/overlay/PageOverlay";
 import PdfjsToolbar from "./components/pdfjs/PdfjsToolbar";
 import PdfjsBrandbar from "./components/pdfjs/PdfjsBrandbar";
@@ -871,7 +871,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 })}
               >
                 {this.state.controlPanelShowing ? (
-                  <MasterControlPanel
+                  <MainControlPanel
                     className="scholar-reader-toolbar"
                     handleClose={this.closeControlPanel}
                   >
@@ -883,7 +883,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                         handleChange={this.handleChangeSetting}
                       />
                     ))}
-                  </MasterControlPanel>
+                  </MainControlPanel>
                 ) : null}
                 {this.state.isFindActive &&
                 this.state.findActivationTimeMs !== null &&
