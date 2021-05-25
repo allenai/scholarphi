@@ -98,6 +98,14 @@ export interface Settings {
    */
   skimmingEnabled: boolean;
   /**
+   * Show only gold summary for decluttering sentences for skimming.
+   */
+  goldSkimmingEnabled: boolean;
+  /**
+   * Show lead sentences with gold summary for decluttering sentences for skimming.
+   */
+   goldWithLeadSkimmingEnabled: boolean;
+  /**
    * Allow clicks on abstract sentences to reveal related sentences in the text.
    */
   abstractExpansionEnabled: boolean;
@@ -142,6 +150,23 @@ const PRESETS: Preset[] = [
     annotationHintsEnabled: false,
   },
   {
+    key: "skim-gold",
+    primerPageEnabled: false,
+    skimmingEnabled: true,
+    goldSkimmingEnabled: true,
+    abstractExpansionEnabled: false,
+    annotationHintsEnabled: false,
+  },
+  {
+    key: "skim-gold-lead",
+    primerPageEnabled: false,
+    skimmingEnabled: true,
+    goldSkimmingEnabled: true,
+    goldWithLeadSkimmingEnabled: true,
+    abstractExpansionEnabled: false,
+    annotationHintsEnabled: false,
+  },
+  {
     key: "skim-abs",
     primerPageEnabled: false,
     skimmingEnabled: false,
@@ -175,6 +200,8 @@ export function getSettings(presets?: string[]) {
     sentenceTexCopyOnOptionClickEnabled: false,
     glossEvaluationEnabled: false,
     skimmingEnabled: false,
+    goldSkimmingEnabled: false,
+    goldWithLeadSkimmingEnabled: false,
     abstractExpansionEnabled: false
   };
 

@@ -181,6 +181,26 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         ?.classList.contains("sidebarOpen");
       const toolbarButton = document.querySelector("#sidebarToggle");
       const clickEvent = new Event("click");
+
+      // Regardless of which abstract sentence is clicked, we need to
+      // expand all condensed pages.
+      const originalHeight = Array.from(
+        document.querySelectorAll<HTMLElement>(".page")
+      )[0].style.height;
+      Array.from(document.querySelectorAll<HTMLElement>(".page")).map((p) => {
+        p.style.height = originalHeight;
+        const canvasWrapper = p.querySelector(
+          ".canvasWrapper"
+        ) as HTMLElement;
+        if (canvasWrapper !== null) {
+          canvasWrapper.style.height = originalHeight;
+        }
+        const textLayer = p.querySelector(".textLayer") as HTMLElement;
+        if (textLayer !== null) {
+          textLayer.style.height = originalHeight;
+        }
+      });
+
       if (prevState.selectedAbstractSentenceId !== id) {
         const selectedDiscourseEntityIds = Object.entries(
           data.filter((x) => x.paperId === this.props.paperId!.id)[0]
@@ -250,22 +270,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
           drawerContentType: "relevant-sentences",
         } as State;
       } else {
-        const originalHeight = Array.from(
-          document.querySelectorAll<HTMLElement>(".page")
-        )[0].style.height;
-        Array.from(document.querySelectorAll<HTMLElement>(".page")).map((p) => {
-          p.style.height = originalHeight;
-          const canvasWrapper = p.querySelector(
-            ".canvasWrapper"
-          ) as HTMLElement;
-          if (canvasWrapper !== null) {
-            canvasWrapper.style.height = originalHeight;
-          }
-          const textLayer = p.querySelector(".textLayer") as HTMLElement;
-          if (textLayer !== null) {
-            textLayer.style.height = originalHeight;
-          }
-        });
         [...document.querySelectorAll<HTMLElement>(".thumbnail")].map((e) =>
           e.classList.remove("abstract-selected")
         );
@@ -1323,6 +1327,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                               x.paperId === this.props.paperId!.id
                           )[0]
                         }
+                        gold={this.state.goldSkimmingEnabled}
+                        goldWithLead={this.state.goldWithLeadSkimmingEnabled}
                       />
                     ) : null}
                     {this.props.paperId !== undefined &&
