@@ -982,10 +982,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         this.state.pdfViewer !== null &&
         this.state.pages !== null ? (
           <PrimerPage
+            paperId={this.props.paperId}
             pdfViewer={this.state.pdfViewer}
             pages={this.state.pages}
             entities={this.state.entities}
             annotationHintsEnabled={this.state.annotationHintsEnabled}
+            primerPageGlossaryEnabled={this.state.primerPageGlossaryEnabled}
             termGlossesEnabled={this.state.termGlossesEnabled}
             showInstructions={this.state.primerInstructionsEnabled}
             scrollToPageOnLoad={this.state.initialFocus === null}
@@ -1116,6 +1118,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                         }
                         termAnnotationsEnabled={this.state.termGlossesEnabled}
                         symbolUnderlineMethod={this.state.symbolUnderlineMethod}
+                        definitionsInSymbolGloss={this.state.definitionsInSymbolGloss}
                         glossStyle={this.state.glossStyle}
                         glossEvaluationEnabled={
                           this.state.glossEvaluationEnabled

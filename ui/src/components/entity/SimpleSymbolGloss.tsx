@@ -22,6 +22,7 @@ interface Props {
   showDrawerActions?: boolean;
   handleOpenDrawer: (contentType: DrawerContentType) => void;
   handleJumpToEntity: (entityId: string) => void;
+  definitionsEnabled: boolean;
 }
 
 interface State {
@@ -69,7 +70,7 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { entities, symbol } = this.props;
+    const { entities, symbol, definitionsEnabled } = this.props;
 
     /*
      * Try to find definition and nickname right before the symbol.
@@ -128,7 +129,7 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
         <table>
           <tbody>
             <tr>
-              {(definedHere || definition || nickname) && (
+              {(definitionsEnabled && (definedHere || definition || nickname)) && (
                 <td>
                   <div className="simple-gloss__definition-container">
                     {definedHere && <p>Defined here.</p>}
@@ -168,23 +169,25 @@ class SimpleSymbolGloss extends React.PureComponent<Props, State> {
               )}
               {this.props.showDrawerActions && (
                 <React.Fragment>
-                  <td>
-                    <MuiTooltip
-                      title={
-                        defsAndNicknames.length > 0
-                          ? `See ${defsAndNicknames.length} definitions`
-                          : "No definitions."
-                      }
-                    >
-                      <IconButton
-                        size="small"
-                        disabled={defsAndNicknames.length === 0}
-                        onClick={this.onClickDefinitionsButton}
+                  {definitionsEnabled && (
+                    <td>
+                      <MuiTooltip
+                        title={
+                          defsAndNicknames.length > 0
+                            ? `See ${defsAndNicknames.length} definitions`
+                            : "No definitions."
+                        }
                       >
-                        <MenuBook />
-                      </IconButton>
-                    </MuiTooltip>
-                  </td>
+                        <IconButton
+                          size="small"
+                          disabled={defsAndNicknames.length === 0}
+                          onClick={this.onClickDefinitionsButton}
+                        >
+                          <MenuBook />
+                        </IconButton>
+                      </MuiTooltip>
+                    </td>
+                  )}
                   <td>
                     <MuiTooltip
                       title={
