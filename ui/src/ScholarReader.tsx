@@ -855,6 +855,13 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       this.subscribeToPDFViewerStateChanges(application);
     });
     this.loadDataFromApi();
+
+    // Add keypress listener for toggling skimming overlay
+    document.addEventListener("keydown", e => {
+      if (e.code === "KeyF") {
+        this.toggleSkimming();
+      }
+    });
   }
 
   subscribeToPDFViewerStateChanges = (
