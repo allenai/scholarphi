@@ -69,6 +69,7 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
               height: ScrollbarMarkup.scrollbarHeight,
               width: ScrollbarMarkup.scrollbarWidth,
               top: ScrollbarMarkup.scrollbarOffsetTop,
+              pointerEvents: "none",
               right: 0,
             }}
           >
