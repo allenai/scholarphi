@@ -14,6 +14,7 @@ interface Props {
   pageView: PDFPageView;
   entities: Entities;
   skimmingData: SkimmingAnnotation;
+  opacity: number;
 }
 
 /**
@@ -21,7 +22,7 @@ interface Props {
  */
 class SkimPageMask extends React.PureComponent<Props> {
   render() {
-    const { pageView, entities, skimmingData } = this.props;
+    const { pageView, entities, skimmingData, opacity } = this.props;
     const pageNumber = uiUtils.getPageNumber(pageView);
 
     const sentences = Object.fromEntries(
@@ -64,7 +65,7 @@ class SkimPageMask extends React.PureComponent<Props> {
     showBoxes = showBoxes.concat(skimmingData.manualBoxes);
 
     return (
-      <PageMask pageView={pageView} show={showBoxes} noShow={noShowBoxes} />
+      <PageMask pageView={pageView} show={showBoxes} noShow={noShowBoxes} opacity={opacity} />
     );
   }
 }

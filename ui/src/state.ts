@@ -149,6 +149,11 @@ export interface State extends Settings {
    * all other appearances of the same term).
    */
   propagateEntityEdits: boolean;
+
+  /**
+   * Opacity of mask applied to decluttered regions of the PDF.
+   */
+  skimOpacity: number;
 }
 
 export type Entities = RelationalStore<Entity>;

@@ -23,6 +23,8 @@ import PdfjsBrandbar from "./components/pdfjs/PdfjsBrandbar";
 import PrimerPage from "./components/primer/PrimerPage";
 import SearchPageMask from "./components/mask/SearchPageMask";
 import SkimPageMask from "./components/mask/SkimPageMask";
+import Slider from "@material-ui/core/Slider";
+import Typography from "@material-ui/core/Typography";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
 import {
@@ -129,6 +131,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       entityCreationType: "term",
       propagateEntityEdits: true,
 
+      skimOpacity: 0.4,
+
       ...settings,
     };
   }
@@ -173,6 +177,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.setState({
       textSelection: selection,
       textSelectionChangeMs: Date.now(),
+    });
+  };
+
+  setSkimOpacity = (value: number): void => {
+    this.setState({
+      skimOpacity: value,
     });
   };
 
@@ -1227,6 +1237,21 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
             skimmingData={skimmingData}
           ></ScrollbarMarkup>
         ) : null}
+        {this.state.skimmingEnabled ? (
+          <div className="opacity-slider">
+            <span id="opacity-slider-label">
+              Decluttered opacity
+            </span>
+            <Slider
+              min={0}
+              max={1}
+              step={0.01}
+              value={this.state.skimOpacity}
+              onChange={(_, value) => this.setSkimOpacity(value as number)}
+              aria-labelledby="opacity-slider-label"
+            />
+          </div>
+        ) : null}
         {
           /* Add overlays (e.g., annotations, etc.) atop each page. */
           this.state.pages !== null && this.state.entities !== null ? (
@@ -1335,12 +1360,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                           entities={entities}
                           skimmingData={skimmingData}
                           showLead={this.state.goldWithLeadSkimmingEnabled}
+                          opacity={this.state.skimOpacity}
                         ></DiscourseTagMask>
                       ) : (
                         <SkimPageMask
                           pageView={pageView}
                           entities={entities}
                           skimmingData={skimmingData}
+                          opacity={this.state.skimOpacity}
                         />
                       )
                     ) : null}

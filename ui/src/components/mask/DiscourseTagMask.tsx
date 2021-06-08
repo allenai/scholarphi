@@ -16,6 +16,7 @@ interface Props {
   entities: Entities;
   skimmingData: SkimmingAnnotation;
   showLead: boolean;
+  opacity: number;
 }
 
 interface State {
@@ -42,7 +43,7 @@ class DiscourseTagMask extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { pageView, entities, skimmingData, showLead } = this.props;
+    const { pageView, entities, skimmingData, showLead, opacity } = this.props;
     const pageNumber = uiUtils.getPageNumber(pageView);
 
     const sentences = Object.fromEntries(
@@ -128,7 +129,7 @@ class DiscourseTagMask extends React.PureComponent<Props, State> {
           pageView={pageView}
           show={showBoxes}
           noShow={noShowBoxes}
-          opacity={0.4}
+          opacity={opacity}
           highlight={this.state.highlight}
         />
       </>
