@@ -1,9 +1,9 @@
 import React from "react";
 import {
-    BoundingBox,
-    isCitation,
-    isSentence,
-    SkimmingAnnotation
+  BoundingBox,
+  isCitation,
+  isSentence,
+  SkimmingAnnotation,
 } from "../../api/types";
 import { Entities } from "../../state";
 import { PDFPageView } from "../../types/pdfjs-viewer";
@@ -18,10 +18,29 @@ interface Props {
   showLead: boolean;
 }
 
+interface State {
+  highlight: BoundingBox[];
+}
+
 /**
  * Declutter relevant sentences and add discourse tag in margin for each sentence.
  */
-class DiscourseTagMask extends React.PureComponent<Props> {
+class DiscourseTagMask extends React.PureComponent<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = { highlight: [] };
+  }
+
+  onTagMouseOver = (entityId: string) => {
+    this.setState({
+      highlight: this.props.entities.byId[entityId].attributes.bounding_boxes,
+    });
+  };
+
+  onTagMouseOut = () => {
+    this.setState({ highlight: [] });
+  };
+
   render() {
     const { pageView, entities, skimmingData, showLead } = this.props;
     const pageNumber = uiUtils.getPageNumber(pageView);
@@ -99,6 +118,9 @@ class DiscourseTagMask extends React.PureComponent<Props> {
             anchor={d.tagLocation}
             content={<span>{d.discourse}</span>}
             color={d.color}
+            entityId={d.id}
+            onMouseOver={this.onTagMouseOver}
+            onMouseOut={this.onTagMouseOut}
             key={i}
           />
         ))}
@@ -107,6 +129,7 @@ class DiscourseTagMask extends React.PureComponent<Props> {
           show={showBoxes}
           noShow={noShowBoxes}
           opacity={0.4}
+          highlight={this.state.highlight}
         />
       </>
     );

@@ -27,6 +27,9 @@ interface Props {
    * Color (hex) to render tag.
    */
   color?: string;
+  entityId: string;
+  onMouseOver: (entityId: string) => void;
+  onMouseOut: () => void;
 }
 
 /**
@@ -87,7 +90,11 @@ export class DiscourseTag extends React.PureComponent<Props> {
             top: sidenoteTop,
             backgroundColor: color !== undefined ? color : undefined,
             padding: 2,
+            fontFamily: "Times Roman",
+            fontWeight: "bold",
           }}
+          onMouseOver={() => this.props.onMouseOver(this.props.entityId)}
+          onMouseOut={() => this.props.onMouseOut()}
         >
           {content}
         </Card>
