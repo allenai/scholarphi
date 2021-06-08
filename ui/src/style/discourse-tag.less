@@ -1,0 +1,27 @@
+@sidenote-margin: @padding;
+
+/**
+ * Position tag off the side of the page. Vertical position is set in the JavaScript.
+ */
+.scholar-reader-discourse-tag {
+  position: absolute;
+
+  &.side-left {
+    right: 90%;
+    margin-right: @sidenote-margin;
+  }
+
+  &.side-right {
+    left: 90%;
+    margin-left: @sidenote-margin;
+  }
+}
+
+/**
+ * Rule from sidenote to anchor
+ */
+.discourse-tag-rule {
+  position: absolute;
+  border: none;
+  border-top: 1px dotted grey;
+}

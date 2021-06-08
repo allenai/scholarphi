@@ -414,4 +414,5 @@ export interface SkimmingAnnotation {
   manualBoxes: BoundingBox[];
   noShow: string[];
   goldSummary: string[];
+  discourseTags: {};
 }

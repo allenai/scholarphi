@@ -190,14 +190,6 @@
           "height": 0.05
         },
         {
-          "comment": "Fix first sentence of third paragraph in section 2.1",
-          "page": 2,
-          "left": 0.5,
-          "top": 0.28,
-          "width": 0.15,
-          "height": 0.02
-        },
-        {
           "comment": "section 2.1 header",
           "page": 2,
           "left": 0.1,
@@ -2200,7 +2192,24 @@
         "4982",
         "4985",
         "4992"
-      ]
+      ],
+      "discourseTags": {
+        "4775": "Motivation",
+        "4776": "Contribution",
+        "4780": "Result",
+        "4781": "Method",
+        "4805": "Method",
+        "4806": "Method",
+        "4818": "Method",
+        "4848": "Method",
+        "4868": "Method",
+        "4869": "Motivation",
+        "4943": "Result",
+        "4979": "Result",
+        "4982": "Result",
+        "4985": "Result",
+        "4992": "FutureWork"
+      }
     },
     {
       "paperId": "1809.01185v2",
@@ -3997,7 +4006,35 @@
         "180821",
         "180822",
         "180829"
-      ]
+      ],
+      "discourseTags": {
+        "180673": "Method",
+        "180674": "Result",
+        "180675": "Method",
+        "180676": "Result",
+        "180677": "Method",
+        "180678": "Experiment",
+        "180679": "FutureWork",
+        "180701": "Method",
+        "180702": "Method",
+        "180703": "Method",
+        "180725": "Method",
+        "180728": "Method",
+        "180729": "Method",
+        "180730": "Contribution",
+        "180758": "Experiment",
+        "180770": "Experiment",
+        "180781": "Result",
+        "180804": "Experiment",
+        "180808": "Experiment",
+        "180817": "Result",
+        "180818": "Result",
+        "180819": "Result",
+        "180820": "Result",
+        "180821": "Result",
+        "180822": "Method",
+        "180829": "Experiment"
+      }
     }
   ]
 }

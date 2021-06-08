@@ -18,14 +18,22 @@ interface Props {
    * Regions where highlights should be overlaid on top of the page.
    */
   highlight?: BoundingBox[];
+  /**
+   * Amount of opacity to apply to declutter regions.
+   */
+  opacity: number;
 }
 
 /**
  * A mask overlaid on a page of a PDF that shows some of the content and hides the rest.
  */
 class PageMask extends React.PureComponent<Props> {
+  public static defaultProps = {
+    opacity: 0.6,
+  };
+
   render() {
-    const { pageView, show, noShow, highlight } = this.props;
+    const { pageView, show, noShow, highlight, opacity } = this.props;
     const { width, height } = uiUtils.getPageViewDimensions(pageView);
     const pageNumber = uiUtils.getPageNumber(pageView);
 
@@ -84,7 +92,7 @@ class PageMask extends React.PureComponent<Props> {
           width={width}
           height={height}
           fill="white"
-          opacity={0.6}
+          opacity={opacity}
           mask={`url(#${maskId})`}
         />
         {highlight !== undefined

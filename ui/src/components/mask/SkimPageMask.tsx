@@ -3,7 +3,7 @@ import {
   BoundingBox,
   isCitation,
   isSentence,
-  SkimmingAnnotation,
+  SkimmingAnnotation
 } from "../../api/types";
 import { Entities } from "../../state";
 import { PDFPageView } from "../../types/pdfjs-viewer";
@@ -14,8 +14,6 @@ interface Props {
   pageView: PDFPageView;
   entities: Entities;
   skimmingData: SkimmingAnnotation;
-  gold: boolean;
-  goldWithLead: boolean;
 }
 
 /**
@@ -23,7 +21,7 @@ interface Props {
  */
 class SkimPageMask extends React.PureComponent<Props> {
   render() {
-    const { pageView, entities, skimmingData, gold, goldWithLead } = this.props;
+    const { pageView, entities, skimmingData } = this.props;
     const pageNumber = uiUtils.getPageNumber(pageView);
 
     const sentences = Object.fromEntries(
@@ -47,44 +45,23 @@ class SkimPageMask extends React.PureComponent<Props> {
       .concat(citationBoxes);
 
     let showBoxes: BoundingBox[] = [];
-    if (gold) {
-      let ids = [
-        ...skimmingData.goldSummary,
-        ...skimmingData.metadata,
-        ...skimmingData.abstract,
-        ...skimmingData.conclusion,
-        ...skimmingData.sectionHeaders,
-        ...skimmingData.subsectionHeaders,
-      ];
-      if (goldWithLead) {
-        ids = ids.concat(skimmingData.firstSentences);
-      }
-      showBoxes = ids
-        .map((id) => sentences[id])
-        .filter((e) => e !== undefined)
-        .map((e) => e.attributes.bounding_boxes)
-        .flat()
-        .filter((b) => b.page === pageNumber);
-      showBoxes = showBoxes.concat(skimmingData.manualBoxes);
-    } else {
-      const ids = [
-        ...skimmingData.metadata,
-        ...skimmingData.abstract,
-        ...skimmingData.conclusion,
-        ...skimmingData.sectionHeaders,
-        ...skimmingData.subsectionHeaders,
-        ...skimmingData.firstFigureCaption,
-        ...skimmingData.captionFirstSentences,
-        ...skimmingData.firstSentences,
-      ];
-      showBoxes = ids
-        .map((id) => sentences[id])
-        .filter((e) => e !== undefined)
-        .map((e) => e.attributes.bounding_boxes)
-        .flat()
-        .filter((b) => b.page === pageNumber);
-      showBoxes = showBoxes.concat(skimmingData.manualBoxes);
-    }
+    const ids = [
+      ...skimmingData.metadata,
+      ...skimmingData.abstract,
+      ...skimmingData.conclusion,
+      ...skimmingData.sectionHeaders,
+      ...skimmingData.subsectionHeaders,
+      ...skimmingData.firstFigureCaption,
+      ...skimmingData.captionFirstSentences,
+      ...skimmingData.firstSentences,
+    ];
+    showBoxes = ids
+      .map((id) => sentences[id])
+      .filter((e) => e !== undefined)
+      .map((e) => e.attributes.bounding_boxes)
+      .flat()
+      .filter((b) => b.page === pageNumber);
+    showBoxes = showBoxes.concat(skimmingData.manualBoxes);
 
     return (
       <PageMask pageView={pageView} show={showBoxes} noShow={noShowBoxes} />

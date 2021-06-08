@@ -64,6 +64,7 @@ import ViewerOverlay from "./components/overlay/ViewerOverlay";
 
 import classNames from "classnames";
 import React from "react";
+import DiscourseTagMask from "./components/mask/DiscourseTagMask";
 
 interface Props {
   paperId?: PaperId;
@@ -189,9 +190,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       )[0].style.height;
       Array.from(document.querySelectorAll<HTMLElement>(".page")).map((p) => {
         p.style.height = originalHeight;
-        const canvasWrapper = p.querySelector(
-          ".canvasWrapper"
-        ) as HTMLElement;
+        const canvasWrapper = p.querySelector(".canvasWrapper") as HTMLElement;
         if (canvasWrapper !== null) {
           canvasWrapper.style.height = originalHeight;
         }
@@ -298,14 +297,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     if (e.code === "ArrowRight") {
       e.stopPropagation();
       const nextDiscourseEntityId =
-        ids[
-          (ids.indexOf(selectedDiscourseEntityId) + 1) %
-            ids.length
-        ];
+        ids[(ids.indexOf(selectedDiscourseEntityId) + 1) % ids.length];
       this.jumpToEntity(
-        selectedDiscourseEntityId === ""
-          ? ids[0]
-          : nextDiscourseEntityId
+        selectedDiscourseEntityId === "" ? ids[0] : nextDiscourseEntityId
       );
       this.setState({
         selectedDiscourseEntityId: nextDiscourseEntityId,
@@ -314,15 +308,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       e.stopPropagation();
       const previousId =
         ids[
-          (ids.indexOf(selectedDiscourseEntityId) -
-            1 +
-            ids.length) %
-            ids.length
+          (ids.indexOf(selectedDiscourseEntityId) - 1 + ids.length) % ids.length
         ];
       this.jumpToEntity(
-        selectedDiscourseEntityId === ""
-          ? ids[ids.length - 1]
-          : previousId
+        selectedDiscourseEntityId === "" ? ids[ids.length - 1] : previousId
       );
       this.setState({
         selectedDiscourseEntityId: previousId,
@@ -857,7 +846,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.loadDataFromApi();
 
     // Add keypress listener for toggling skimming overlay
-    document.addEventListener("keydown", e => {
+    document.addEventListener("keydown", (e) => {
       if (e.code === "KeyF") {
         this.toggleSkimming();
       }
@@ -1325,18 +1314,30 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     {/* Masks to apply typographical cuing for skimming. */}
                     {this.props.paperId !== undefined &&
                     this.state.skimmingEnabled ? (
-                      <SkimPageMask
-                        pageView={pageView}
-                        entities={entities}
-                        skimmingData={
-                          data.filter(
-                            (x: SkimmingAnnotation) =>
-                              x.paperId === this.props.paperId!.id
-                          )[0]
-                        }
-                        gold={this.state.goldSkimmingEnabled}
-                        goldWithLead={this.state.goldWithLeadSkimmingEnabled}
-                      />
+                      this.state.goldSkimmingEnabled ? (
+                        <DiscourseTagMask
+                          pageView={pageView}
+                          entities={entities}
+                          skimmingData={
+                            data.filter(
+                              (x: SkimmingAnnotation) =>
+                                x.paperId === this.props.paperId!.id
+                            )[0]
+                          }
+                          showLead={this.state.goldWithLeadSkimmingEnabled}
+                        ></DiscourseTagMask>
+                      ) : (
+                        <SkimPageMask
+                          pageView={pageView}
+                          entities={entities}
+                          skimmingData={
+                            data.filter(
+                              (x: SkimmingAnnotation) =>
+                                x.paperId === this.props.paperId!.id
+                            )[0]
+                          }
+                        />
+                      )
                     ) : null}
                     {this.props.paperId !== undefined &&
                     this.state.abstractExpansionEnabled &&
