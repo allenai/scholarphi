@@ -65,6 +65,7 @@ import ViewerOverlay from "./components/overlay/ViewerOverlay";
 import classNames from "classnames";
 import React from "react";
 import DiscourseTagMask from "./components/mask/DiscourseTagMask";
+import ScrollbarMarkup from "./components/scrollbar/ScrollbarMarkup";
 
 interface Props {
   paperId?: PaperId;
@@ -1019,6 +1020,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
             .abstractDiscourseClassification
         : {};
 
+    const skimmingData = data.filter(
+      (x: SkimmingAnnotation) => x.paperId === this.props.paperId!.id
+    )[0];
+
     if (
       !this._jumpedToInitialFocus &&
       this.state.pages !== null &&
@@ -1212,6 +1217,16 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
             areCitationsLoading={this.state.areCitationsLoading}
           />
         ) : null}
+        {this.state.pdfViewerApplication &&
+        this.state.pages !== null &&
+        this.state.entities !== null &&
+        this.state.goldSkimmingEnabled ? (
+          <ScrollbarMarkup
+            numPages={this.state.pdfViewerApplication?.pdfDocument?.numPages}
+            entities={this.state.entities}
+            skimmingData={skimmingData}
+          ></ScrollbarMarkup>
+        ) : null}
         {
           /* Add overlays (e.g., annotations, etc.) atop each page. */
           this.state.pages !== null && this.state.entities !== null ? (
@@ -1318,24 +1333,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                         <DiscourseTagMask
                           pageView={pageView}
                           entities={entities}
-                          skimmingData={
-                            data.filter(
-                              (x: SkimmingAnnotation) =>
-                                x.paperId === this.props.paperId!.id
-                            )[0]
-                          }
+                          skimmingData={skimmingData}
                           showLead={this.state.goldWithLeadSkimmingEnabled}
                         ></DiscourseTagMask>
                       ) : (
                         <SkimPageMask
                           pageView={pageView}
                           entities={entities}
-                          skimmingData={
-                            data.filter(
-                              (x: SkimmingAnnotation) =>
-                                x.paperId === this.props.paperId!.id
-                            )[0]
-                          }
+                          skimmingData={skimmingData}
                         />
                       )
                     ) : null}
@@ -1346,12 +1351,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       <AbstractMask
                         pageView={pageView}
                         entities={entities}
-                        skimmingData={
-                          data.filter(
-                            (x: SkimmingAnnotation) =>
-                              x.paperId === this.props.paperId!.id
-                          )[0]
-                        }
+                        skimmingData={skimmingData}
                         abstractIds={abstractIds}
                         abstractDiscourseClassification={
                           abstractDiscourseClassification
