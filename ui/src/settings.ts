@@ -143,7 +143,7 @@ const PRESETS: Preset[] = [
     equationDiagramsEnabled: false,
   },
   {
-    key: "skim-bl",
+    key: "skim-lead",
     primerPageEnabled: false,
     skimmingEnabled: true,
     abstractExpansionEnabled: false,
