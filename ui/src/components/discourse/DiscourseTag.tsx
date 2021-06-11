@@ -102,3 +102,5 @@ export class DiscourseTag extends React.PureComponent<Props> {
     );
   }
 }
+
+export default DiscourseTag;

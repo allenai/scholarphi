@@ -1,4 +1,3 @@
-export * from './DiscourseTag';
 export * from './EntityLink';
 export * from './EntityPageLink';
 export * from './FormattedText';

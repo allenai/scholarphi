@@ -154,6 +154,16 @@ export interface State extends Settings {
    * Opacity of mask applied to decluttered regions of the PDF.
    */
   skimOpacity: number;
+
+  /**
+   * Map of entity ids to discourse tags interactively created by a user.
+   */
+  customDiscourseTags: {};
+
+  /**
+   * Id of user selected entity for which to update its discourse tag.
+   */
+   selectedEntityIdForDiscourseTagAction: string;
 }
 
 export type Entities = RelationalStore<Entity>;

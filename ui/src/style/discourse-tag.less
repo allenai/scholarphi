@@ -15,6 +15,10 @@
     left: 90%;
     margin-left: @sidenote-margin;
   }
+
+  &:hover {
+    z-index: 1000;
+  }
 }
 
 /**
@@ -24,4 +28,25 @@
   position: absolute;
   border: none;
   border-top: 1px dotted grey;
+}
+
+.discourse-tag-action-widget {
+  position: absolute;
+  width: relative;
+  border-radius: 5px;
+  border: 1px solid grey;
+  visibility: hidden;
+  z-index: 1001;
+
+  &.visible {
+    visibility: visible !important;
+  }
+
+  > div {
+    padding: 10px;
+  }
+}
+
+.discourse-select {
+  min-width: 120px !important;
 }

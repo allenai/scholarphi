@@ -14,6 +14,7 @@ import { GlossStyle } from "../../settings";
 import { Entities, PaperId } from "../../state";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
+import DiscourseTagActionWidget from "../discourse/DiscourseTagActionWidget";
 import { DrawerContentType } from "../drawer/Drawer";
 import LazyCitationGloss from "./citation/LazyCitationGloss";
 import EntityAnnotation from "./EntityAnnotation";
@@ -52,6 +53,12 @@ interface Props {
   handleJumpToEntity: (entityId: string) => void;
   handleOpenDrawer: (contentType: DrawerContentType) => void;
   cachePaper: (paper: Paper) => void;
+  handleCreateCustomDiscourseTag: (entityId: string, discourse: string) => void;
+  handleDeleteCustomDiscourseTag: (entityId: string) => void;
+  handleSelectedForDiscourseTag: (entityId: string) => void;
+  selectedEntityIdForDiscourseTagAction: string;
+  discourseOptions: string[];
+  customDiscourseTags: { [entityId: string]: string };
 }
 
 class EntityAnnotationLayer extends React.Component<Props> {
@@ -126,6 +133,12 @@ class EntityAnnotationLayer extends React.Component<Props> {
     if (!isSentence(sentenceEntity)) {
       return;
     }
+
+    /*
+     * Allow users to interactively add and remove discourse tags for sentence entities.
+     */
+    this.props.handleSelectedForDiscourseTag(sentenceEntity.id);
+
     if (event.altKey) {
       if (event.shiftKey) {
         const { id } = sentenceEntity;
@@ -151,6 +164,14 @@ class EntityAnnotationLayer extends React.Component<Props> {
     }
   }
 
+  handleCreateCustomDiscourseTag = (discourse: string) => {
+    this.props.handleCreateCustomDiscourseTag(
+      this.props.selectedEntityIdForDiscourseTagAction,
+      discourse
+    );
+    this.props.handleSelectedForDiscourseTag("");
+  };
+
   render() {
     const {
       paperId,
@@ -175,6 +196,9 @@ class EntityAnnotationLayer extends React.Component<Props> {
       equationDiagramsEnabled,
       copySentenceOnClick,
       handleSelectEntityAnnotation,
+      selectedEntityIdForDiscourseTagAction,
+      discourseOptions,
+      customDiscourseTags,
     } = this.props;
 
     const pageNumber = uiUtils.getPageNumber(pageView);
@@ -183,6 +207,27 @@ class EntityAnnotationLayer extends React.Component<Props> {
 
     return (
       <>
+        {selectedEntityIdForDiscourseTagAction !== "" ? (
+          <DiscourseTagActionWidget
+            className={classNames("discourse-tag-action-widget visible")}
+            pageView={pageView}
+            anchor={
+              entities.byId[selectedEntityIdForDiscourseTagAction].attributes
+                .bounding_boxes[0]
+            }
+            handleDeleteCustomDiscourseTag={() => {
+              this.props.handleDeleteCustomDiscourseTag(
+                selectedEntityIdForDiscourseTagAction
+              );
+              this.props.handleSelectedForDiscourseTag("");
+            }}
+            handleCreateCustomDiscourseTag={this.handleCreateCustomDiscourseTag}
+            discourseOptions={discourseOptions}
+            selectedDiscourseTag={
+              customDiscourseTags[selectedEntityIdForDiscourseTagAction] || ""
+            }
+          />
+        ) : null}
         {entities.all.map((entityId) => {
           /*
            * Unpack entity data.
@@ -446,6 +491,8 @@ class EntityAnnotationLayer extends React.Component<Props> {
                 key={annotationId}
                 className={classNames("sentence-annotation", {
                   "jump-target": isJumpTarget,
+                  "selected-for-tagging":
+                    entity.id === selectedEntityIdForDiscourseTagAction,
                 })}
                 id={annotationId}
                 pageView={pageView}

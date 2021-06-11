@@ -6,6 +6,8 @@ interface Props {
   numPages: number;
   entities: Entities;
   skimmingData: SkimmingAnnotation;
+  customDiscourseTags: object;
+  discourseToColorMap: { [discourse: string]: string };
 }
 
 class ScrollbarMarkup extends React.PureComponent<Props> {
@@ -33,18 +35,12 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
   };
 
   render() {
-    const { numPages, entities, skimmingData } = this.props;
+    const { entities, skimmingData, customDiscourseTags, discourseToColorMap } = this.props;
 
-    const discourse2ColorMap: { [discourse: string]: string } = {
-      Motivation: "#9AC2C5",
-      Contribution: "#C2C6A7",
-      Method: "#ECCE8E",
-      Experiment: "#75BCE5",
-      Result: "#F285A0",
-      FutureWork: "#EDD96D",
-    };
-
-    const discourseObjs = Object.entries(skimmingData.discourseTags)
+    const discourseObjs = Object.entries({
+      ...skimmingData.discourseTags,
+      ...customDiscourseTags,
+    })
       .map(([id, discourse]) => ({
         id: id,
         entity: entities.byId[id],
@@ -56,7 +52,7 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
           e.entity.attributes.bounding_boxes[
             e.entity.attributes.bounding_boxes.length - 1
           ],
-        color: discourse2ColorMap[e.discourse],
+        color: discourseToColorMap[e.discourse],
       }));
 
     return (

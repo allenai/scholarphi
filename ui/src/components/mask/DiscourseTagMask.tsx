@@ -8,7 +8,7 @@ import {
 import { Entities } from "../../state";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
-import { DiscourseTag } from "../common";
+import { DiscourseTag } from "../discourse/DiscourseTag";
 import PageMask from "./PageMask";
 
 interface Props {
@@ -17,6 +17,8 @@ interface Props {
   skimmingData: SkimmingAnnotation;
   showLead: boolean;
   opacity: number;
+  customDiscourseTags: object;
+  discourseToColorMap: { [discourse: string]: string };
 }
 
 interface State {
@@ -43,7 +45,15 @@ class DiscourseTagMask extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { pageView, entities, skimmingData, showLead, opacity } = this.props;
+    const {
+      pageView,
+      entities,
+      skimmingData,
+      showLead,
+      opacity,
+      customDiscourseTags,
+      discourseToColorMap,
+    } = this.props;
     const pageNumber = uiUtils.getPageNumber(pageView);
 
     const sentences = Object.fromEntries(
@@ -52,15 +62,6 @@ class DiscourseTagMask extends React.PureComponent<Props, State> {
           isSentence(e) && e.attributes.bounding_boxes.length !== 0
       )
     );
-
-    const discourse2ColorMap: { [discourse: string]: string } = {
-      Motivation: "#9AC2C5",
-      Contribution: "#C2C6A7",
-      Method: "#ECCE8E",
-      Experiment: "#75BCE5",
-      Result: "#F285A0",
-      FutureWork: "#EDD96D",
-    };
 
     const citationBoxes = Object.values(entities.byId)
       .filter((e) => isCitation(e) && e !== undefined)
@@ -75,7 +76,6 @@ class DiscourseTagMask extends React.PureComponent<Props, State> {
       .filter((b) => b.page === pageNumber)
       .concat(citationBoxes);
 
-    let showBoxes: BoundingBox[] = [];
     let ids = [
       ...skimmingData.goldSummary,
       ...skimmingData.metadata,
@@ -84,18 +84,25 @@ class DiscourseTagMask extends React.PureComponent<Props, State> {
       ...skimmingData.sectionHeaders,
       ...skimmingData.subsectionHeaders,
     ];
+
     if (showLead) {
       ids = ids.concat(skimmingData.firstSentences);
     }
-    showBoxes = ids
+
+    ids = ids.concat(Object.keys(customDiscourseTags));
+
+    const showBoxes = ids
       .map((id) => sentences[id])
       .filter((e) => e !== undefined)
       .map((e) => e.attributes.bounding_boxes)
       .flat()
-      .filter((b) => b.page === pageNumber);
-    showBoxes = showBoxes.concat(skimmingData.manualBoxes);
+      .filter((b) => b.page === pageNumber)
+      .concat(skimmingData.manualBoxes);
 
-    const discourseObjs = Object.entries(skimmingData.discourseTags)
+    const discourseObjs = Object.entries({
+      ...skimmingData.discourseTags,
+      ...customDiscourseTags,
+    })
       .map(([id, discourse]) => ({
         id: id,
         entity: sentences[id],
@@ -107,7 +114,7 @@ class DiscourseTagMask extends React.PureComponent<Props, State> {
           e.entity.attributes.bounding_boxes[
             e.entity.attributes.bounding_boxes.length - 1
           ],
-        color: discourse2ColorMap[e.discourse],
+        color: discourseToColorMap[e.discourse],
       }))
       .filter((e) => e.tagLocation.page === pageNumber);
 

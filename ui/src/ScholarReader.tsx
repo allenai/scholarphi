@@ -132,6 +132,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       propagateEntityEdits: true,
 
       skimOpacity: 0.4,
+      customDiscourseTags: {},
+      selectedEntityIdForDiscourseTagAction: "",
 
       ...settings,
     };
@@ -1004,6 +1006,51 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     return true;
   };
 
+  createCustomDiscourseTag = (entityId: string, discourse: string) => {
+    this.setState((prevState) => ({
+      customDiscourseTags: {
+        ...prevState.customDiscourseTags,
+        [entityId]: discourse,
+      },
+    }));
+  };
+
+  deleteCustomDiscourseTag = (entityId: string) => {
+    const customDiscourseTags: { [entityId: string]: string } = {
+      ...this.state.customDiscourseTags,
+    };
+    delete customDiscourseTags[entityId];
+    this.setState({
+      customDiscourseTags,
+    });
+  };
+
+  selectForDiscourseTag = (entityId: string) => {
+    this.setState((prevState) => {
+      return {
+        selectedEntityIdForDiscourseTagAction:
+          prevState.selectedEntityIdForDiscourseTagAction !== entityId
+            ? entityId
+            : "",
+      };
+    });
+  };
+
+  getDiscourseToColorMap = () => {
+    return {
+      Motivation: "#9AC2C5",
+      Contribution: "#C2C6A7",
+      Method: "#ECCE8E",
+      Experiment: "#75BCE5",
+      Result: "#F285A0",
+      FutureWork: "#EDD96D",
+    };
+  };
+
+  getDiscourseOptions = () => {
+    return Object.keys(this.getDiscourseToColorMap());
+  };
+
   render() {
     let findMatchEntityId: string | null = null;
     if (
@@ -1235,13 +1282,13 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
             numPages={this.state.pdfViewerApplication?.pdfDocument?.numPages}
             entities={this.state.entities}
             skimmingData={skimmingData}
+            customDiscourseTags={this.state.customDiscourseTags}
+            discourseToColorMap={this.getDiscourseToColorMap()}
           ></ScrollbarMarkup>
         ) : null}
         {this.state.skimmingEnabled ? (
           <div className="opacity-slider">
-            <span id="opacity-slider-label">
-              Decluttered opacity
-            </span>
+            <span id="opacity-slider-label">Decluttered opacity</span>
             <Slider
               min={0}
               max={1}
@@ -1361,6 +1408,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                           skimmingData={skimmingData}
                           showLead={this.state.goldWithLeadSkimmingEnabled}
                           opacity={this.state.skimOpacity}
+                          customDiscourseTags={this.state.customDiscourseTags}
+                          discourseToColorMap={this.getDiscourseToColorMap()}
                         ></DiscourseTagMask>
                       ) : (
                         <SkimPageMask
@@ -1435,6 +1484,20 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                         handleShowSnackbarMessage={this.showSnackbarMessage}
                         handleJumpToEntity={this.jumpToEntityWithBackMessage}
                         handleOpenDrawer={this.openDrawer}
+                        handleCreateCustomDiscourseTag={
+                          this.createCustomDiscourseTag
+                        }
+                        handleDeleteCustomDiscourseTag={
+                          this.deleteCustomDiscourseTag
+                        }
+                        handleSelectedForDiscourseTag={
+                          this.selectForDiscourseTag
+                        }
+                        selectedEntityIdForDiscourseTagAction={
+                          this.state.selectedEntityIdForDiscourseTagAction
+                        }
+                        discourseOptions={this.getDiscourseOptions()}
+                        customDiscourseTags={this.state.customDiscourseTags}
                       />
                     )}
                     {/* Equation diagram overlays. */}
