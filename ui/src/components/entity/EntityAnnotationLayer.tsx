@@ -55,7 +55,7 @@ interface Props {
   cachePaper: (paper: Paper) => void;
   handleCreateCustomDiscourseTag: (entityId: string, discourse: string) => void;
   handleDeleteCustomDiscourseTag: (entityId: string) => void;
-  handleSelectedForDiscourseTag: (entityId: string) => void;
+  handleSelectedForDiscourseTag?: (entityId: string) => void;
   selectedEntityIdForDiscourseTagAction: string;
   discourseOptions: string[];
   customDiscourseTags: { [entityId: string]: string };
@@ -137,7 +137,9 @@ class EntityAnnotationLayer extends React.Component<Props> {
     /*
      * Allow users to interactively add and remove discourse tags for sentence entities.
      */
-    this.props.handleSelectedForDiscourseTag(sentenceEntity.id);
+    if (this.props.handleSelectedForDiscourseTag !== undefined) {
+      this.props.handleSelectedForDiscourseTag(sentenceEntity.id);
+    }
 
     if (event.altKey) {
       if (event.shiftKey) {
@@ -169,7 +171,9 @@ class EntityAnnotationLayer extends React.Component<Props> {
       this.props.selectedEntityIdForDiscourseTagAction,
       discourse
     );
-    this.props.handleSelectedForDiscourseTag("");
+    if (this.props.handleSelectedForDiscourseTag !== undefined) {
+      this.props.handleSelectedForDiscourseTag("");
+    }
   };
 
   render() {
@@ -219,7 +223,9 @@ class EntityAnnotationLayer extends React.Component<Props> {
               this.props.handleDeleteCustomDiscourseTag(
                 selectedEntityIdForDiscourseTagAction
               );
-              this.props.handleSelectedForDiscourseTag("");
+              if (this.props.handleSelectedForDiscourseTag !== undefined) {
+                this.props.handleSelectedForDiscourseTag("");
+              }
             }}
             handleCreateCustomDiscourseTag={this.handleCreateCustomDiscourseTag}
             discourseOptions={discourseOptions}

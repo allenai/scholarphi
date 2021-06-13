@@ -1515,7 +1515,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                           this.deleteCustomDiscourseTag
                         }
                         handleSelectedForDiscourseTag={
-                          this.selectForDiscourseTag
+                          this.state.goldSkimmingEnabled
+                            ? this.selectForDiscourseTag
+                            : undefined
                         }
                         selectedEntityIdForDiscourseTagAction={
                           this.state.selectedEntityIdForDiscourseTagAction
