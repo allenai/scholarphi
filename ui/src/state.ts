@@ -163,7 +163,12 @@ export interface State extends Settings {
   /**
    * Id of user selected entity for which to update its discourse tag.
    */
-   selectedEntityIdForDiscourseTagAction: string;
+  selectedEntityIdForDiscourseTagAction: string;
+
+  /**
+   * List of discourses that have been marked as not important by the user.
+   */
+  deselectedDiscourses: string[];
 }
 
 export type Entities = RelationalStore<Entity>;

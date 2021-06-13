@@ -5,6 +5,7 @@ import { data } from "./components/mask/skimmingData.json";
 import AppOverlay from "./components/overlay/AppOverlay";
 import Control from "./components/control/Control";
 import DefinitionPreview from "./components/preview/DefinitionPreview";
+import DiscoursePalette from "./components/discourse/DiscoursePalette";
 import { Drawer, DrawerContentType } from "./components/drawer/Drawer";
 import EntityAnnotationLayer from "./components/entity/EntityAnnotationLayer";
 import EntityCreationCanvas from "./components/control/EntityCreationCanvas";
@@ -134,6 +135,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       skimOpacity: 0.4,
       customDiscourseTags: {},
       selectedEntityIdForDiscourseTagAction: "",
+      deselectedDiscourses: [],
 
       ...settings,
     };
@@ -1038,17 +1040,30 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
   getDiscourseToColorMap = () => {
     return {
-      Motivation: "#9AC2C5",
-      Contribution: "#C2C6A7",
-      Method: "#ECCE8E",
-      Experiment: "#75BCE5",
-      Result: "#F285A0",
-      FutureWork: "#EDD96D",
+      Motivation: "#9AC2C57D",
+      Contribution: "#C2C6A77D",
+      Method: "#ECCE8E7D",
+      Experiment: "#75BCE57D",
+      Result: "#F285A07D",
+      FutureWork: "#EDD96D7D",
     };
   };
 
   getDiscourseOptions = () => {
     return Object.keys(this.getDiscourseToColorMap());
+  };
+
+  clickDiscourseChip = (discourse: string) => {
+    if (this.state.deselectedDiscourses.includes(discourse)) {
+      const deselectedDiscourses = this.state.deselectedDiscourses.filter(
+        (x) => x !== discourse
+      );
+      this.setState({ deselectedDiscourses });
+    } else {
+      this.setState((prevState) => ({
+        deselectedDiscourses: [...prevState.deselectedDiscourses, discourse],
+      }));
+    }
   };
 
   render() {
@@ -1278,13 +1293,21 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         this.state.pages !== null &&
         this.state.entities !== null &&
         this.state.goldSkimmingEnabled ? (
-          <ScrollbarMarkup
-            numPages={this.state.pdfViewerApplication?.pdfDocument?.numPages}
-            entities={this.state.entities}
-            skimmingData={skimmingData}
-            customDiscourseTags={this.state.customDiscourseTags}
-            discourseToColorMap={this.getDiscourseToColorMap()}
-          ></ScrollbarMarkup>
+          <>
+            <ScrollbarMarkup
+              numPages={this.state.pdfViewerApplication?.pdfDocument?.numPages}
+              entities={this.state.entities}
+              skimmingData={skimmingData}
+              customDiscourseTags={this.state.customDiscourseTags}
+              discourseToColorMap={this.getDiscourseToColorMap()}
+              deselectedDiscourses={this.state.deselectedDiscourses}
+            ></ScrollbarMarkup>
+            <DiscoursePalette
+              discourseToColorMap={this.getDiscourseToColorMap()}
+              deselectedDiscourses={this.state.deselectedDiscourses}
+              handleClickDiscourseChip={this.clickDiscourseChip}
+            ></DiscoursePalette>
+          </>
         ) : null}
         {this.state.skimmingEnabled ? (
           <div className="opacity-slider">
@@ -1410,6 +1433,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                           opacity={this.state.skimOpacity}
                           customDiscourseTags={this.state.customDiscourseTags}
                           discourseToColorMap={this.getDiscourseToColorMap()}
+                          deselectedDiscourses={this.state.deselectedDiscourses}
                         ></DiscourseTagMask>
                       ) : (
                         <SkimPageMask

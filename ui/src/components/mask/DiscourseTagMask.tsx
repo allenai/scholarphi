@@ -1,3 +1,4 @@
+import { Filter } from "@material-ui/icons";
 import React from "react";
 import {
   BoundingBox,
@@ -19,6 +20,7 @@ interface Props {
   opacity: number;
   customDiscourseTags: object;
   discourseToColorMap: { [discourse: string]: string };
+  deselectedDiscourses: string[];
 }
 
 interface State {
@@ -53,6 +55,7 @@ class DiscourseTagMask extends React.PureComponent<Props, State> {
       opacity,
       customDiscourseTags,
       discourseToColorMap,
+      deselectedDiscourses,
     } = this.props;
     const pageNumber = uiUtils.getPageNumber(pageView);
 
@@ -91,15 +94,7 @@ class DiscourseTagMask extends React.PureComponent<Props, State> {
 
     ids = ids.concat(Object.keys(customDiscourseTags));
 
-    const showBoxes = ids
-      .map((id) => sentences[id])
-      .filter((e) => e !== undefined)
-      .map((e) => e.attributes.bounding_boxes)
-      .flat()
-      .filter((b) => b.page === pageNumber)
-      .concat(skimmingData.manualBoxes);
-
-    const discourseObjs = Object.entries({
+    let discourseObjs = Object.entries({
       ...skimmingData.discourseTags,
       ...customDiscourseTags,
     })
@@ -117,6 +112,21 @@ class DiscourseTagMask extends React.PureComponent<Props, State> {
         color: discourseToColorMap[e.discourse],
       }))
       .filter((e) => e.tagLocation.page === pageNumber);
+
+    const deselectedIds = discourseObjs
+      .filter((e) => deselectedDiscourses.includes(e.discourse))
+      .map((x) => x.id);
+
+    discourseObjs = discourseObjs.filter((e) => !deselectedIds.includes(e.id));
+
+    const showBoxes = ids
+      .filter((id) => !deselectedIds.includes(id))
+      .map((id) => sentences[id])
+      .filter((e) => e !== undefined)
+      .map((e) => e.attributes.bounding_boxes)
+      .flat()
+      .filter((b) => b.page === pageNumber)
+      .concat(skimmingData.manualBoxes);
 
     return (
       <>

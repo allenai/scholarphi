@@ -89,9 +89,6 @@ export class DiscourseTag extends React.PureComponent<Props> {
           style={{
             top: sidenoteTop,
             backgroundColor: color !== undefined ? color : undefined,
-            padding: 2,
-            fontFamily: "Times Roman",
-            fontWeight: "bold",
           }}
           onMouseOver={() => this.props.onMouseOver(this.props.entityId)}
           onMouseOut={() => this.props.onMouseOut()}

@@ -8,6 +8,7 @@ interface Props {
   skimmingData: SkimmingAnnotation;
   customDiscourseTags: object;
   discourseToColorMap: { [discourse: string]: string };
+  deselectedDiscourses: string[];
 }
 
 class ScrollbarMarkup extends React.PureComponent<Props> {
@@ -35,7 +36,13 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
   };
 
   render() {
-    const { entities, skimmingData, customDiscourseTags, discourseToColorMap } = this.props;
+    const {
+      entities,
+      skimmingData,
+      customDiscourseTags,
+      discourseToColorMap,
+      deselectedDiscourses,
+    } = this.props;
 
     const discourseObjs = Object.entries({
       ...skimmingData.discourseTags,
@@ -53,7 +60,8 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
             e.entity.attributes.bounding_boxes.length - 1
           ],
         color: discourseToColorMap[e.discourse],
-      }));
+      }))
+      .filter((e) => !deselectedDiscourses.includes(e.discourse));
 
     return (
       <>
