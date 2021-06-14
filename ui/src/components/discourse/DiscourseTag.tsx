@@ -39,9 +39,10 @@ export class DiscourseTag extends React.PureComponent<Props> {
   render() {
     const { pageView, anchor, content, color } = this.props;
 
-    const anchorToPageRight = 1 - (anchor.left + anchor.width);
-    const anchorToPageLeft = anchor.left;
-    const side = anchorToPageLeft < anchorToPageRight ? "left" : "right";
+    const side =
+      anchor.left * pageView.div.clientWidth < pageView.div.clientWidth / 2
+        ? "left"
+        : "right";
 
     /*
      * Determine sidenote position.
