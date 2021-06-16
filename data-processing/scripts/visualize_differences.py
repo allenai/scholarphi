@@ -1,17 +1,21 @@
 import logging
+import math
+import os.path
+import subprocess
 from argparse import ArgumentParser
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Dict, FrozenSet, List, Optional, Set, Tuple
 
+import cv2
 from common.bounding_box import compute_accuracy
-from common.commands.base import (add_arxiv_id_filter_args,
-                                  load_arxiv_ids_using_args)
+from common.commands.base import add_arxiv_id_filter_args, load_arxiv_ids_using_args
+from common.commands.raster_pages import raster_pages
 from common.models import BoundingBox as BoundingBoxModel
 from common.models import Entity as EntityModel
 from common.models import EntityData as EntityDataModel
 from common.models import Paper, Version, setup_database_connections
-from common.types import ArxivId, BoundingBox, FloatRectangle
+from common.types import ArxivId, BoundingBox, FloatRectangle, Path
 from peewee import fn
 
 PageNumber = int
@@ -42,6 +46,22 @@ class AccuracyResults:
 # For example, operators will be ignored because they are not in the gold set. If a symbol
 # does not have an explicit type, it is assumed to be of one of the allowed types.
 GOLD_SYMBOL_TYPES = ["function", "identifier"]
+
+
+def fetch_pdf(arxiv_id: str, dest: Path) -> None:
+    print("Fetching PDF for paper {arxiv_id} from arXiv...", end="")
+    subprocess.run(
+        [
+            "wget",
+            f"https://arxiv.org/pdf/{arxiv_id}",
+            "--user-agent",
+            "Andrew Head <andrewhead@berkeley.edu>",
+            "-O",
+            dest,
+        ],
+        check=True,
+    )
+    print("done.")
 
 
 def fetch_boxes(
@@ -153,14 +173,15 @@ def group_by_page(boxes: List[BoundingBox]) -> Dict[PageNumber, List[BoundingBox
     return by_page
 
 
-def compute_accuracy_for_paper(
+def visualize_differences(
     arxiv_id: ArxivId,
     entity_types: List[str],
     expected_schema: str,
     expected_version: Optional[int],
     actual_schema: str,
     actual_version: Optional[int],
-) -> Optional[AccuracyResults]:
+    output_dir: Path,
+) -> None:
     """ 'actual_version' and 'expected_version' default to the latest version if not provided. """
 
     # Load extracted bounding boxes from the database.
@@ -175,7 +196,7 @@ def compute_accuracy_for_paper(
         logging.warning("Failed to load ground truth bounding boxes.")
         return None
 
-    expected_actual_pairs = []
+    expected_actual_pairs: List[ExpectedActualPair] = []
     key_set: Set[Tuple[int, str]] = set()
     key_set.update(list(expected.keys()), list(actual.keys()))
     for key in sorted(key_set, key=lambda k: (k[1], k[0])):
@@ -189,44 +210,67 @@ def compute_accuracy_for_paper(
                 )
             )
 
-    print(f"Computing page-by-page bounding box accuracies for paper {arxiv_id}....")
-    total_expected = 0
-    total_actual = 0
-    total_matches = 0
+    print(f"Fetching PDF for paper {arxiv_id}...", end="")
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    pdf_path = os.path.join(output_dir, "paper.pdf")
+    fetch_pdf(arxiv_id, pdf_path)
+    print("done.")
+
+    print(f"Rastering PDF for paper {arxiv_id} to images...", end="")
+    images_dir = os.path.join(output_dir, "original-images")
+    raster_pages(output_dir, images_dir, "paper.pdf", "pdf")
+    print("done.")
+
+    annotated_images_dir = os.path.join(output_dir, "annotated-images")
+    if not os.path.exists(annotated_images_dir):
+        os.makedirs(annotated_images_dir)
+
     for pair in expected_actual_pairs:
-        precision, recall, matches = compute_accuracy(
-            pair.actual, pair.expected, minimum_iou=0.35
+        print(
+            "Finding differences in expected and actual bounding boxes for page "
+            + f"{pair.page} of paper {arxiv_id}...",
+            end="",
         )
-        print(f"Accuracy for page {pair.page} entities of type {pair.entity_type}:")
-        print(f"Precision: {precision}")
-        print(f"Recall: {recall}")
-        print(f"# Actual: {len(pair.actual)}")
-        print(f"# Expected: {len(pair.expected)}")
-        print(f"# Matched: {len(matches)}")
-        print()
+        _, __, matches = compute_accuracy(pair.actual, pair.expected, minimum_iou=0.35)
 
-        total_actual += len(pair.actual)
-        total_expected += len(pair.expected)
-        total_matches += len(matches)
+        actual_unmatched = set(pair.actual)
+        expected_unmatched = set(pair.expected)
 
-    print(f"Summary statistics for paper {arxiv_id}:")
-    overall_precision = total_matches / total_actual if total_actual > 0 else None
-    overall_recall = total_matches / total_expected if total_expected > 0 else None
-    print(f"# Actual: {total_actual}")
-    print(f"# Expected: {total_expected}")
-    print(f"# Matches: {total_matches}")
-    print(f"Precision: {overall_precision}")
-    print(f"Recall: {overall_recall}")
-    print()
+        for match in matches:
+            if match[0] in actual_unmatched:
+                actual_unmatched.remove(match[0])
+            if match[1] in expected_unmatched:
+                expected_unmatched.remove(match[1])
 
-    return AccuracyResults(
-        arxiv_id,
-        total_matches,
-        total_expected,
-        total_actual,
-        overall_precision,
-        overall_recall,
-    )
+        image_path = os.path.join(images_dir, f"page-{pair.page + 1}.png")
+        image = cv2.imread(image_path)
+
+        image_height = image.shape[0]
+        image_width = image.shape[1]
+
+        for actual_region in actual_unmatched:
+            for rect in actual_region:
+                left = math.floor(rect.left * image_width)
+                top = math.floor(rect.top * image_height)
+                right = math.ceil(left + rect.width * image_width)
+                bottom = math.ceil(top + rect.height * image_height)
+                cv2.rectangle(
+                    image, (left, top), (right, bottom), (255, 0, 0), 1,
+                )
+
+        for expected_region in expected_unmatched:
+            for rect in expected_region:
+                left = math.floor(rect.left * image_width)
+                top = math.floor(rect.top * image_height)
+                right = math.ceil(left + rect.width * image_width)
+                bottom = math.ceil(top + rect.height * image_height)
+                cv2.rectangle(
+                    image, (left, top), (right, bottom), (0, 255, 0), 1,
+                )
+
+        cv2.imwrite(os.path.join(annotated_images_dir, f"page-{pair.page}.png"), image)
+        print("done.")
 
 
 if __name__ == "__main__":
@@ -270,6 +314,14 @@ if __name__ == "__main__":
         default=["citation", "symbol", "sentence", "equation"],
         choices=["citation", "symbol", "sentence", "equation"],
     )
+    parser.add_argument(
+        "--output-dir",
+        required=True,
+        help=(
+            "Directory into which to put images that show differences between "
+            + "the gold bounding boxes and the detected bounding boxes."
+        ),
+    )
     args = parser.parse_args()
 
     arxiv_ids = load_arxiv_ids_using_args(args)
@@ -285,41 +337,13 @@ if __name__ == "__main__":
     recalls: List[float] = []
 
     for id_ in arxiv_ids:
-        accuracy = compute_accuracy_for_paper(
+        visualize_differences(
             id_,
             args.entity_types,
             args.expected_schema,
             args.expected_version,
             args.actual_schema,
             args.actual_version,
+            os.path.join(args.output_dir, id_),
         )
-
-        if accuracy is None:
-            processing_failures += 1
-            continue
-
-        if accuracy.num_actual > 0 and accuracy.precision:
-            precisions.append(accuracy.precision)
-        else:
-            missing_actual_boxes += 1
-
-        if accuracy.num_expected > 0 and accuracy.recall:
-            recalls.append(accuracy.recall)
-        else:
-            missing_expected_boxes += 1
-
-    print("Summary accuracy for all papers processed:")
-    print(f"# papers that could not be processed: {processing_failures}")
-    print(f"# papers missing actual boxes: {missing_actual_boxes}")
-    print(f"# papers missing expected boxes: {missing_expected_boxes}")
-
-    avg_precision = sum(precisions) / len(precisions) if precisions else None
-    avg_recall = sum(recalls) / len(recalls) if recalls else None
-    min_precision = min(precisions) if precisions else None
-    min_recall = min(recalls) if recalls else None
-
-    print(f"Average precision: {avg_precision}")
-    print(f"Average recall: {avg_recall}")
-    print(f"Minimum precision: {min_precision}")
-    print(f"Minimum recall: {min_recall}")
 

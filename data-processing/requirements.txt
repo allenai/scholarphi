@@ -22,6 +22,10 @@ tqdm
 transformers==2.11.0
 wandb==0.10.11
 
+# S2 service clients
+git+https://github.com/andrewhead/texcompile@a02b282#texcompile
+git+https://github.com/andrewhead/texsymdetect@6310ea2#texsymdetect
+
 # SciSpacy models. See URLs for all available models at https://allenai.github.io/scispacy/.
 https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.2.4/en_core_sci_sm-0.2.4.tar.gz
 https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.2.4/en_core_sci_md-0.2.4.tar.gz
