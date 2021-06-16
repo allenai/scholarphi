@@ -1078,23 +1078,24 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       ];
     }
 
-    const abstractIds =
-      this.props.paperId !== undefined
-        ? Object.keys(
-            data.filter((x) => x.paperId === this.props.paperId!.id)[0]
-              .relatedSents
-          )
-        : [];
-
-    const abstractDiscourseClassification =
-      this.props.paperId !== undefined
-        ? data.filter((x) => x.paperId === this.props.paperId!.id)[0]
-            .abstractDiscourseClassification
-        : {};
-
     const skimmingData = data.filter(
       (x: SkimmingAnnotation) => x.paperId === this.props.paperId!.id
     )[0];
+
+    let abstractIds: string[] = [];
+    let abstractDiscourseClassification: {
+      [id: string]: string | undefined;
+    } = {};
+    if (skimmingData !== undefined) {
+      const relatedSents = skimmingData.relatedSents;
+      if (relatedSents !== undefined) {
+        abstractIds = Object.keys(relatedSents);
+      }
+      if (skimmingData.abstractDiscourseClassification !== undefined) {
+        abstractDiscourseClassification =
+          skimmingData.abstractDiscourseClassification;
+      }
+    }
 
     if (
       !this._jumpedToInitialFocus &&
@@ -1292,6 +1293,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         {this.state.pdfViewerApplication &&
         this.state.pages !== null &&
         this.state.entities !== null &&
+        skimmingData !== undefined &&
         this.state.goldSkimmingEnabled ? (
           <>
             <ScrollbarMarkup
@@ -1423,6 +1425,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     ) : null}
                     {/* Masks to apply typographical cuing for skimming. */}
                     {this.props.paperId !== undefined &&
+                    skimmingData !== undefined &&
                     this.state.skimmingEnabled ? (
                       this.state.goldSkimmingEnabled ? (
                         <DiscourseTagMask
@@ -1445,6 +1448,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       )
                     ) : null}
                     {this.props.paperId !== undefined &&
+                    skimmingData !== undefined &&
                     this.state.abstractExpansionEnabled &&
                     abstractIds.length > 0 &&
                     Object.keys(abstractDiscourseClassification).length > 0 ? (

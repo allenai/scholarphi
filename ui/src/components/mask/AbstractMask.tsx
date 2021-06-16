@@ -11,7 +11,7 @@ interface Props {
   entities: Entities;
   skimmingData: SkimmingAnnotation;
   abstractIds: string[];
-  abstractDiscourseClassification: { [id: string]: string };
+  abstractDiscourseClassification: { [id: string]: string | undefined };
   selectedEntityIds: string[];
   selectedAbstractSentenceId: string;
   setSelectedAbstractSentenceId: (id: string) => void;
