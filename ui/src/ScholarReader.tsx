@@ -1141,12 +1141,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               handleCloseDrawer={this.closeDrawer}
             />
             <PdfjsToolbar>
-              <button
-                onClick={() => this.toggleDrawer("discourse-sentences")}
-                className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
-              >
-                <MenuOpenIcon />
-              </button>
+              {this.state.goldSkimmingEnabled ? (
+                <button
+                  onClick={() => this.toggleDrawer("discourse-sentences")}
+                  className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
+                >
+                  <MenuOpenIcon />
+                </button>
+              ) : null}
               <button
                 onClick={this.toggleSkimming}
                 className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
