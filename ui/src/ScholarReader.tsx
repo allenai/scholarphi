@@ -1,7 +1,7 @@
 import * as api from "./api/api";
 import AbstractCard from "./components/abstract/AbstractCard";
 import AbstractMask from "./components/mask/AbstractMask";
-import { data } from "./components/mask/skimmingData.json";
+import { data } from "./data/skimmingData.json";
 import AppOverlay from "./components/overlay/AppOverlay";
 import Control from "./components/control/Control";
 import DefinitionPreview from "./components/preview/DefinitionPreview";
