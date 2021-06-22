@@ -12,6 +12,7 @@ interface Props {
   context?: Entity;
   handleJumpToContext?: (contextEntityId: string) => void;
   mostRelevantId?: string;
+  color?: string;
   children: string;
 }
 
@@ -30,7 +31,7 @@ class RelevantSnippet extends React.PureComponent<Props> {
   };
 
   render() {
-    const { id, context, children, mostRelevantId } = this.props;
+    const { id, context, children, color, mostRelevantId } = this.props;
     return (
       <>
         <div
@@ -40,6 +41,7 @@ class RelevantSnippet extends React.PureComponent<Props> {
             // of the sentence with the highest probability of relevance.
             // "most-relevant": mostRelevantId === id,
           })}
+          style={{border: `2px solid ${color}`}}
           onClick={this.onClick}
         >
           <RichText>{selectors.cleanTex(children)}</RichText>

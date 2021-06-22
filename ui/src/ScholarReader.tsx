@@ -16,6 +16,7 @@ import EntityCreationToolbar, {
 import EntityPageMask from "./components/mask/EntityPageMask";
 import EquationDiagram from "./components/entity/equation/EquationDiagram";
 import FindBar, { FindQuery } from "./components/search/FindBar";
+import MenuOpenIcon from "@material-ui/icons/MenuOpen";
 import logger from "./logging";
 import MasterControlPanel from "./components/control/MasterControlPanel";
 import PageOverlay from "./components/overlay/PageOverlay";
@@ -754,6 +755,15 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.setState({ drawerMode: "closed" });
   };
 
+  toggleDrawer = (drawerContentType: DrawerContentType): void => {
+    const { drawerMode } = this.state;
+    if (drawerMode === "open") {
+      this.closeDrawer();
+    } else {
+      this.openDrawer(drawerContentType);
+    }
+  };
+
   setMultiselectEnabled = (enabled: boolean): void => {
     this.setState({ multiselectEnabled: enabled });
   };
@@ -1132,6 +1142,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
             />
             <PdfjsToolbar>
               <button
+                onClick={() => this.toggleDrawer("discourse-sentences")}
+                className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
+              >
+                <MenuOpenIcon />
+              </button>
+              <button
                 onClick={this.toggleSkimming}
                 className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
               >
@@ -1239,6 +1255,16 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 }
                 entities={this.state.entities}
                 selectedEntityIds={this.state.selectedEntityIds}
+                discourseTags={skimmingData && skimmingData.discourseTags}
+                customDiscourseTags={
+                  skimmingData && this.state.customDiscourseTags
+                }
+                discourseToColorMap={
+                  skimmingData && this.getDiscourseToColorMap()
+                }
+                deselectedDiscourses={
+                  skimmingData && this.state.deselectedDiscourses
+                }
                 propagateEntityEdits={this.state.propagateEntityEdits}
                 handleJumpToEntity={this.jumpToEntityWithBackMessage}
                 handleClose={this.closeDrawer}

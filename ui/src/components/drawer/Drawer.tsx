@@ -1,18 +1,19 @@
-import { DefiningFormulas } from "./DefiningFormulas";
-import Definitions from "./Definitions";
-import EntityPropertyEditor from "../control/EntityPropertyEditor";
-import { getRemoteLogger } from "../../logging";
-import { Entities } from "../../state";
-import { Entity, EntityUpdateData } from "../../api/types";
-import { PDFViewer } from "../../types/pdfjs-viewer";
-import RelevantSentences from "./RelevantSentences";
-import Usages from "./Usages";
-import * as uiUtils from "../../utils/ui";
-
 import MuiDrawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import React from "react";
+import { Entity, EntityUpdateData } from "../../api/types";
+import { getRemoteLogger } from "../../logging";
+import { Entities } from "../../state";
+import { PDFViewer } from "../../types/pdfjs-viewer";
+import * as uiUtils from "../../utils/ui";
+import EntityPropertyEditor from "../control/EntityPropertyEditor";
+import { DefiningFormulas } from "./DefiningFormulas";
+import Definitions from "./Definitions";
+import DiscourseSentences from "./DiscourseSentences";
+import RelevantSentences from "./RelevantSentences";
+import Usages from "./Usages";
+
 
 const logger = getRemoteLogger();
 
@@ -23,6 +24,7 @@ export type DrawerContentType =
   | "usages"
   | "entity-property-editor"
   | "relevant-sentences"
+  | "discourse-sentences"
   | null;
 
 interface Props {
@@ -31,6 +33,10 @@ interface Props {
   contentType: DrawerContentType;
   entities: Entities | null;
   selectedEntityIds: string[];
+  discourseTags: { [id: string]: string | undefined };
+  customDiscourseTags: { [id: string]: string | undefined };
+  discourseToColorMap: { [discourse: string]: string };
+  deselectedDiscourses: string[];
   propagateEntityEdits: boolean;
   handleClose: () => void;
   handleJumpToEntity: (entityId: string) => void;
@@ -181,6 +187,16 @@ export class Drawer extends React.PureComponent<Props> {
           {contentType === "relevant-sentences" && entities !== null && (
             <RelevantSentences
               selectedEntityIds={selectedEntityIds}
+              entities={entities}
+              handleJumpToEntity={this.props.handleJumpToEntity}
+            />
+          )}
+          {contentType === "discourse-sentences" && entities !== null && (
+            <DiscourseSentences
+              discourseTags={this.props.discourseTags}
+              customDiscourseTags={this.props.customDiscourseTags}
+              discourseToColorMap={this.props.discourseToColorMap}
+              deselectedDiscourses={this.props.deselectedDiscourses}
               entities={entities}
               handleJumpToEntity={this.props.handleJumpToEntity}
             />
