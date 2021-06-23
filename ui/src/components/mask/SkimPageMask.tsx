@@ -3,18 +3,22 @@ import {
   BoundingBox,
   isCitation,
   isSentence,
-  SkimmingAnnotation
+  SkimmingAnnotation,
 } from "../../api/types";
 import { Entities } from "../../state";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
+import HighlightMask from "./HighlightMask";
 import PageMask from "./PageMask";
+
+export type CuingStrategy = "highlight" | "declutter";
 
 interface Props {
   pageView: PDFPageView;
   entities: Entities;
   skimmingData: SkimmingAnnotation;
   opacity: number;
+  cuingStrategy: CuingStrategy;
 }
 
 /**
@@ -22,7 +26,13 @@ interface Props {
  */
 class SkimPageMask extends React.PureComponent<Props> {
   render() {
-    const { pageView, entities, skimmingData, opacity } = this.props;
+    const {
+      pageView,
+      entities,
+      skimmingData,
+      opacity,
+      cuingStrategy,
+    } = this.props;
     const pageNumber = uiUtils.getPageNumber(pageView);
 
     const sentences = Object.fromEntries(
@@ -46,27 +56,44 @@ class SkimPageMask extends React.PureComponent<Props> {
       .concat(citationBoxes);
 
     let showBoxes: BoundingBox[] = [];
-    const ids = [
-      ...skimmingData.metadata,
-      ...skimmingData.abstract,
-      ...skimmingData.conclusion,
-      ...skimmingData.sectionHeaders,
-      ...skimmingData.subsectionHeaders,
-      ...skimmingData.firstFigureCaption,
-      ...skimmingData.captionFirstSentences,
-      ...skimmingData.firstSentences,
-    ];
-    showBoxes = ids
-      .map((id) => sentences[id])
-      .filter((e) => e !== undefined)
-      .map((e) => e.attributes.bounding_boxes)
-      .flat()
-      .filter((b) => b.page === pageNumber);
-    showBoxes = showBoxes.concat(skimmingData.manualBoxes);
+    let mask = null;
+    if (cuingStrategy === "declutter") {
+      const ids = [
+        ...skimmingData.metadata,
+        ...skimmingData.abstract,
+        ...skimmingData.conclusion,
+        ...skimmingData.sectionHeaders,
+        ...skimmingData.subsectionHeaders,
+        ...skimmingData.firstFigureCaption,
+        ...skimmingData.captionFirstSentences,
+        ...skimmingData.firstSentences,
+      ];
+      showBoxes = ids
+        .map((id) => sentences[id])
+        .filter((e) => e !== undefined)
+        .map((e) => e.attributes.bounding_boxes)
+        .flat()
+        .filter((b) => b.page === pageNumber);
+      showBoxes = showBoxes.concat(skimmingData.manualBoxes);
+      mask = (
+        <PageMask
+          pageView={pageView}
+          show={showBoxes}
+          noShow={noShowBoxes}
+          opacity={opacity}
+        />
+      );
+    } else if (cuingStrategy === "highlight") {
+      showBoxes = skimmingData.firstSentences
+        .map((id) => sentences[id])
+        .filter((e) => e !== undefined)
+        .map((e) => e.attributes.bounding_boxes)
+        .flat()
+        .filter((b) => b.page === pageNumber);
+      mask = <HighlightMask pageView={pageView} show={showBoxes} />;
+    }
 
-    return (
-      <PageMask pageView={pageView} show={showBoxes} noShow={noShowBoxes} opacity={opacity} />
-    );
+    return <>{mask}</>;
   }
 }
 

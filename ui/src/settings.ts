@@ -1,4 +1,5 @@
 import { SymbolUnderlineMethod } from "./components/entity/EntityAnnotationLayer";
+import { CuingStrategy } from "./components/mask/SkimPageMask";
 
 /**
  * Configurable app-wide settings. Whenever an experimental feature is added that should be
@@ -104,11 +105,16 @@ export interface Settings {
   /**
    * Show lead sentences with gold summary for decluttering sentences for skimming.
    */
-   goldWithLeadSkimmingEnabled: boolean;
+  goldWithLeadSkimmingEnabled: boolean;
   /**
    * Allow clicks on abstract sentences to reveal related sentences in the text.
    */
   abstractExpansionEnabled: boolean;
+  /**
+   * Cuing strategy used for directing attention toward specific spans of text.
+   *
+   */
+  cuingStrategy: CuingStrategy;
 }
 
 /**
@@ -148,6 +154,14 @@ const PRESETS: Preset[] = [
     skimmingEnabled: true,
     abstractExpansionEnabled: false,
     annotationHintsEnabled: false,
+  },
+  {
+    key: "skim-lead-highlight",
+    primerPageEnabled: false,
+    skimmingEnabled: true,
+    abstractExpansionEnabled: false,
+    annotationHintsEnabled: false,
+    cuingStrategy: "highlight"
   },
   {
     key: "skim-gold",
@@ -202,7 +216,8 @@ export function getSettings(presets?: string[]) {
     skimmingEnabled: false,
     goldSkimmingEnabled: false,
     goldWithLeadSkimmingEnabled: false,
-    abstractExpansionEnabled: false
+    abstractExpansionEnabled: false,
+    cuingStrategy: "declutter"
   };
 
   let settings = DEFAULT_SETTINGS;

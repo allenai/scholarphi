@@ -50,7 +50,7 @@
 /**
  * Abstract overlay and page masks
  */
- .abstract-mask {
+.abstract-mask {
   position: absolute !important;
   top: 0;
   left: 0;
@@ -64,7 +64,17 @@
 
     &.selected {
       fill: rgba(0, 183, 255, 0.986);
-      opacity: 0.05
+      opacity: 0.05;
     }
+  }
+}
+
+/**
+ * Page mask for highlights
+ */
+.highlight-mask {
+  &__highlight {
+    fill: yellow;
+    opacity: 0.2;
   }
 }

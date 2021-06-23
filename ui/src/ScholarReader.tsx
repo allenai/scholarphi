@@ -56,6 +56,7 @@ import {
   Paper,
   Symbol,
   SkimmingAnnotation,
+  BoundingBox,
 } from "./api/types";
 import {
   DocumentLoadedEvent,
@@ -228,14 +229,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
           ...new Set(
             selectedDiscourseEntityIds
               .map(
-                (_id) =>
+                (_id: string) =>
                   this.state.entities?.byId[_id].attributes.bounding_boxes
               )
               .flat()
-              .map((b) =>
+              .map((b: BoundingBox | undefined) =>
                 b !== undefined && b.page !== undefined ? b.page + 1 : null
               )
-              .filter((pn) => pn !== null)
+              .filter((pn: number | null) => pn !== null)
           ),
         ];
 
@@ -1339,7 +1340,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
             ></DiscoursePalette>
           </>
         ) : null}
-        {this.state.skimmingEnabled ? (
+        {this.state.skimmingEnabled && this.state.cuingStrategy === "declutter" ? (
           <div className="opacity-slider">
             <span id="opacity-slider-label">Decluttered opacity</span>
             <Slider
@@ -1472,6 +1473,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                           entities={entities}
                           skimmingData={skimmingData}
                           opacity={this.state.skimOpacity}
+                          cuingStrategy={this.state.cuingStrategy}
                         />
                       )
                     ) : null}
