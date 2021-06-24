@@ -125,4 +125,4 @@ class WriteCitationsOutput(ArxivBatchCommand[CitationData, None]):
 
         print("About to print!!!")
         for entity_info in entity_infos:
-            print(json.dumps(entity_info))
+            print(json.dumps(dataclasses.asdict(entity_info)))
