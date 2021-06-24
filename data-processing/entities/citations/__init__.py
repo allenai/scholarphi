@@ -8,6 +8,7 @@ from .commands.extract_bibitems import ExtractBibitems
 from .commands.locate_citations import LocateCitations
 from .commands.resolve_bibitems import ResolveBibitems
 from .commands.upload_citations import UploadCitations
+from .commands.write_citations_output import WriteCitationsOutput
 from .make_digest import make_digest
 from .types import Bibitem
 
@@ -37,3 +38,7 @@ commands: CommandList = [
 
 citations_pipeline = EntityPipeline("citations", commands, make_digest=make_digest)
 register_entity_pipeline(citations_pipeline)
+
+alternate_commands = [command for command in commands if command != UploadCitations] + [WriteCitationsOutput]
+citations_alternate_pipeline = EntityPipeline("citations-alternate", alternate_commands, make_digest=make_digest)
+register_entity_pipeline(citations_alternate_pipeline)
