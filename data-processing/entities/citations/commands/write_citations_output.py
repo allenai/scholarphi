@@ -132,5 +132,5 @@ class WriteCitationsOutput(ArxivBatchCommand[CitationData, None]):
             print(loaded_version)
             back_to_entity_info = EntityUploadInfo(**loaded_version)
             print(back_to_entity_info)
-            print(entity_info == back_to_entity_info)
+            print(entity_info.__eq__(back_to_entity_info))
             print("\n")
