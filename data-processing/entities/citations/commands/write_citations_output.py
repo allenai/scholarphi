@@ -1,18 +1,18 @@
 import ast
 import dataclasses
+import json
 import logging
 import os.path
 from typing import Dict, Iterator, List, cast
 
 from common import directories, file_utils
-from common.commands.database import DatabaseUploadCommand
+from common.commands.base import ArxivBatchCommand
 from common.types import (
     BoundingBox,
     CitationData,
     EntityUploadInfo,
     SerializableReference,
 )
-from common.upload_entities import upload_entities
 
 from ..types import BibitemMatch
 from ..utils import load_located_citations
@@ -22,7 +22,7 @@ LocationIndex = int
 S2Id = str
 
 
-class UploadCitations(DatabaseUploadCommand[CitationData, None]):
+class WriteCitationsOutput(ArxivBatchCommand[CitationData, None]):
     @staticmethod
     def get_name() -> str:
         return "upload-citations"
@@ -123,4 +123,6 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                 entity_infos.append(entity_info)
                 citation_index += 1
 
-        upload_entities(item.s2_id, item.arxiv_id, entity_infos, self.args.data_version)
+        print("About to print!!!")
+        for entity_info in entity_infos:
+            print(json.dumps(EntityUploadInfo))
