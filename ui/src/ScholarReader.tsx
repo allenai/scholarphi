@@ -134,7 +134,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       entityCreationType: "term",
       propagateEntityEdits: true,
 
-      skimOpacity: 0.4,
+      skimOpacity: 0.3,
       customDiscourseTags: {},
       selectedEntityIdForDiscourseTagAction: "",
       deselectedDiscourses: [],
