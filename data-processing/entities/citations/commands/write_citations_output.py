@@ -25,11 +25,11 @@ S2Id = str
 class WriteCitationsOutput(ArxivBatchCommand[CitationData, None]):
     @staticmethod
     def get_name() -> str:
-        return "upload-citations"
+        return "write-citations-output"
 
     @staticmethod
     def get_description() -> str:
-        return "Upload citation information to the database."
+        return "Write citation information to a file."
 
     def get_arxiv_ids_dirkey(self) -> str:
         return "citations-locations"
@@ -123,16 +123,24 @@ class WriteCitationsOutput(ArxivBatchCommand[CitationData, None]):
                 entity_infos.append(entity_info)
                 citation_index += 1
 
-        self.write_to_file(entity_infos)
+        format_version = "v0"
+        self.write_to_file(entity_infos, format_version)
 
-    def write_to_file(self, entity_infos: List[EntityUploadInfo]) -> None:
+    def write_to_file(self, entity_infos: List[EntityUploadInfo], format_version: str) -> None:
         output_file_name = self.args.citations_output_file
-        logging.info("About to write %d entity infos to %s.", len(entity_infos), output_file_name)
+        logging.info(
+            "About to write %d entity infos to %s (version: %s).",
+            len(entity_infos),
+            output_file_name,
+            format_version
+        )
+        to_write = {
+            "version": format_version,
+            "data": [dataclasses.asdict(entity_info) for entity_info in entity_infos]
+        }
         if os.path.exists(output_file_name):
             # TODO: maybe throw an error instead?
             logging.warning("File %s already exists. Not overwriting. Citation info will not be written.", output_file_name)
         else:
             with open(output_file_name, 'w') as output_file:
-                for entity_info in entity_infos:
-                    json.dump(dataclasses.asdict(entity_info), output_file)
-                    output_file.write("\n")
+                json.dump(to_write, output_file)
