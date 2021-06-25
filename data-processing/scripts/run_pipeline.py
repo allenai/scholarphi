@@ -14,6 +14,7 @@ from common.commands.base import (
     load_arxiv_ids_using_args,
     read_arxiv_ids_from_file,
 )
+from entities.citations.commands.write_citations_output import WriteCitationsOutput
 from common.commands.database import DatabaseUploadCommand
 from common.commands.fetch_arxiv_sources import (
     DEFAULT_S3_ARXIV_SOURCES_BUCKET,
@@ -66,6 +67,8 @@ def run_commands_for_arxiv_ids(
         command_args.schema = pipeline_args.database_schema
         command_args.create_tables = pipeline_args.database_create_tables
         command_args.data_version = pipeline_args.data_version
+        if CommandCls == WriteCitationsOutput:
+            command_args.citations_output_file = pipeline_args.citations_output_file
         if CommandCls == FetchArxivSources:
             command_args.s3_bucket = pipeline_args.s3_arxiv_sources_bucket
         if CommandCls in [StorePipelineLog, StoreResults]:
@@ -327,6 +330,13 @@ if __name__ == "__main__":
             + "number for each paper for each run of the pipeline."
         ),
     )
+
+    parser.add_argument(
+        "--citations-output-file",
+        type=str,
+        help="Where to write the citations output file.",
+    )
+
     args = parser.parse_args()
 
     # Set up logging
