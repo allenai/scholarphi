@@ -164,6 +164,14 @@ const PRESETS: Preset[] = [
     cuingStrategy: "highlight"
   },
   {
+    key: "skim-fade",
+    primerPageEnabled: false,
+    skimmingEnabled: true,
+    abstractExpansionEnabled: false,
+    annotationHintsEnabled: false,
+    cuingStrategy: "fade"
+  },
+  {
     key: "skim-gold",
     primerPageEnabled: false,
     skimmingEnabled: true,
