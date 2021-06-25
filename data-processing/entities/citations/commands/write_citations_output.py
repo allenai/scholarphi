@@ -123,14 +123,16 @@ class WriteCitationsOutput(ArxivBatchCommand[CitationData, None]):
                 entity_infos.append(entity_info)
                 citation_index += 1
 
-        print("About to print!!!")
-        for entity_info in entity_infos:
-            print(entity_info)
-            json_version = json.dumps(dataclasses.asdict(entity_info))
-            print(json_version)
-            loaded_version = json.loads(json_version)
-            print(loaded_version)
-            back_to_entity_info = EntityUploadInfo(**loaded_version)
-            print(back_to_entity_info)
-            print(entity_info.__eq__(back_to_entity_info))
-            print("\n")
+        self.write_to_file(entity_infos)
+
+    def write_to_file(self, entity_infos: List[EntityUploadInfo]) -> None:
+        output_file_name = self.args.citations_output_file
+        logging.info("About to write %d entity infos to %s.", len(entity_infos), output_file_name)
+        if os.path.exists(output_file_name):
+            # TODO: maybe throw an error instead?
+            logging.warning("File %s already exists. Not overwriting. Citation info will not be written.", output_file_name)
+        else:
+            with open(output_file_name, 'w') as output_file:
+                for entity_info in entity_infos:
+                    json.dump(dataclasses.asdict(entity_info), output_file)
+                    output_file.write("\n")
