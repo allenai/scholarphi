@@ -39,6 +39,7 @@ commands: CommandList = [
 citations_pipeline = EntityPipeline("citations", commands, make_digest=make_digest)
 register_entity_pipeline(citations_pipeline)
 
+# TODO: fix the fact that common commands will run twice
 alternate_commands = [command for command in commands if command != UploadCitations] + [WriteCitationsOutput]
 citations_alternate_pipeline = EntityPipeline("citations-alternate", alternate_commands, make_digest=make_digest)
 register_entity_pipeline(citations_alternate_pipeline)
