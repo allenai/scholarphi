@@ -1,15 +1,9 @@
 from abc import ABC
 from argparse import ArgumentParser
-import dataclasses
-import json
-import logging
-import os
-from typing import Any, List, Optional
+from typing import Any
 
 from common.commands.base import ArxivBatchCommand, I, R
 from common.models import setup_database_connections
-from common.types import ArxivId, EntityUploadInfo, S2Id
-from common.upload_entities import upload_entities
 
 
 class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
