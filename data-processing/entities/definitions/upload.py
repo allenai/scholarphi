@@ -1,5 +1,6 @@
 import logging
 from collections import defaultdict
+import os
 from typing import Dict, List, Optional, Tuple, cast
 
 from common import file_utils
@@ -22,7 +23,8 @@ from common.upload_entities import (
     fetch_entity_models,
     make_data_models,
     make_relationship_models,
-    upload_entities,
+    save_to_file_or_upload_entities,
+    write_to_file,
 )
 from entities.symbols.upload import sid
 
@@ -38,8 +40,8 @@ def upload_definitions(
     # symbols are found in a separate set of commands that exclusively detect symbols.
     # The 'upload_symbol_definitions' function, therefore, needs to integrate data extracted
     # from the definition commands and symbols commands.
-    upload_term_definitions(processing_summary, data_version)
-    upload_symbol_definitions(processing_summary, data_version)
+    upload_term_definitions(processing_summary, data_version, output_dir)
+    upload_symbol_definitions(processing_summary, data_version, output_dir)
 
 
 TermName = str
@@ -59,7 +61,7 @@ def is_textual_term(entity: SerializableEntity) -> bool:
 
 
 def upload_term_definitions(
-    processing_summary: PaperProcessingResult, data_version: Optional[int]
+    processing_summary: PaperProcessingResult, data_version: Optional[int], output_dir: Optional[str]
 ) -> None:
     " Upload textual terms and their definitions. "
 
@@ -148,8 +150,13 @@ def upload_term_definitions(
         )
         term_infos.append(term_info)
 
-    upload_entities(
-        processing_summary.s2_id, processing_summary.arxiv_id, term_infos, data_version,
+    save_to_file_or_upload_entities(
+        entity_infos=term_infos,
+        s2_id=processing_summary.s2_id,
+        arxiv_id=processing_summary.arxiv_id,
+        data_version=data_version,
+        output_dir=output_dir,
+        filename="definitions_terms.jsonl"
     )
 
 
@@ -158,9 +165,11 @@ EquationIndex = int
 
 
 def upload_symbol_definitions(
-    processing_summary: PaperProcessingResult, data_version: Optional[int]
+    processing_summary: PaperProcessingResult, data_version: Optional[int], output_dir: Optional[str]
 ) -> None:
     " Upload symbols and their definitions. "
+
+    writing_to_db = output_dir is None
 
     # Associate definitions with symbols as follows:
     # Definitions will be associated with entire equations as per the current implementation
@@ -201,12 +210,19 @@ def upload_symbol_definitions(
         if (entity_id.startswith("definition")) and context is not None:
             contexts_by_definition[entity_id] = context
 
-    # Fetch rows for all entities for this paper that have already been uploaded to the database.
-    # This allows lookup of the row IDs for the sentence that contain definitions of symbols.
-    entity_models = fetch_entity_models(processing_summary.s2_id, data_version)
+    if writing_to_db:
+        # Fetch rows for all entities for this paper that have already been uploaded to the database.
+        # This allows lookup of the row IDs for the sentence that contain definitions of symbols.
+        entity_models = fetch_entity_models(processing_summary.s2_id, data_version)
+    else:
+        entity_models = {}
 
     # Create a list of rows to insert into the database containing definition data.
+    # We'll only use this if we're writing to the db
     entity_data_models: List[EntityDataModel] = []
+    # we'll only use this if we're not writing to the db
+    entity_infos: List[EntityUploadInfo] = []
+
     for entity_summary in processing_summary.entities:
         entity = entity_summary.entity
         if not entity.id_.startswith("definiendum"):
@@ -269,25 +285,52 @@ def upload_symbol_definitions(
         matching_symbols = symbols_by_mathml.get(defined_symbol.mathml)
         if matching_symbols is not None:
             for s in matching_symbols:
-                entity_model = entity_models.get(("symbol", sid(s)))
-                data: EntityData = {
-                    "definitions": definitions,
-                    "definition_texs": definition_texs,
-                    "sources": sources,
-                }
-                entity_data_models.extend(make_data_models(None, entity_model, data))
-
-                relationships: EntityRelationships = {
-                    "definition_sentences": [
-                        EntityReference(type_="sentence", id_=id_)
-                        for id_ in definition_sentence_ids
-                    ],
-                }
-                entity_data_models.extend(
-                    make_relationship_models(
-                        ("symbol", sid(s)), relationships, entity_models
-                    )
+                entity_upload_info = EntityUploadInfo(
+                    id_=sid(s),
+                    type_="symbol",
+                    bounding_boxes=[],
+                    data={
+                        "definitions": definitions,
+                        "definition_texs": definition_texs,
+                        "sources": sources,
+                    },
+                    relationships={
+                        "definition_sentences": [
+                            EntityReference(type_="sentence", id_=id_)
+                            for id_ in definition_sentence_ids
+                        ],
+                    }
                 )
 
-    with output_database.atomic():
-        EntityDataModel.bulk_create(entity_data_models, 200)
+                if writing_to_db:
+                    entity_model = entity_models.get((entity_upload_info.type_, entity_upload_info.id_))
+
+                    # Otherwise mypy complains.
+                    assert entity_upload_info.data is not None, "Impossible."
+                    entity_data_models.extend(make_data_models(None, entity_model, entity_upload_info.data))
+
+                    # Otherwise mypy complains.
+                    assert entity_upload_info.relationships is not None, "Impossible."
+                    entity_data_models.extend(
+                        make_relationship_models(
+                            (entity_upload_info.type_, entity_upload_info.id_), entity_upload_info.relationships, entity_models
+                        )
+                    )
+                else:
+                    entity_infos.append(entity_upload_info)
+
+    if writing_to_db:
+        # double check
+        assert len(entity_infos) == 0, "Expected empty entity_infos as we are writing to the db."
+
+        with output_database.atomic():
+            EntityDataModel.bulk_create(entity_data_models, 200)
+    else:
+        # otherwise mypy complains
+        assert output_dir is not None, "Impossible."
+
+        # double check
+        assert len(entity_data_models) == 0, "Expected empty entity_data_models as we are not writing to the db."
+
+        output_filename = os.path.join(output_dir, "definitions_symbols.jsonl")
+        write_to_file(entity_infos=entity_infos, output_file_name=output_filename)

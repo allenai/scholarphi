@@ -19,7 +19,7 @@ from common.types import (
     SerializableSymbol,
     Symbol,
 )
-from common.upload_entities import upload_entities
+from common.upload_entities import save_to_file_or_upload_entities
 from entities.symbols.types import DefiningFormula
 
 SymbolId = str
@@ -218,6 +218,11 @@ def upload_symbols(
         )
         entity_infos.append(entity_information)
 
-    upload_entities(
-        processing_summary.s2_id, arxiv_id, entity_infos, data_version,
+    save_to_file_or_upload_entities(
+        entity_infos=entity_infos,
+        s2_id=processing_summary.s2_id,
+        arxiv_id=arxiv_id,
+        data_version=data_version,
+        output_dir=output_dir,
+        filename="symbols.jsonl"
     )

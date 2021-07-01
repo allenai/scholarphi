@@ -12,7 +12,7 @@ from common.types import (
     PaperProcessingResult,
     Term,
 )
-from common.upload_entities import upload_entities
+from common.upload_entities import save_to_file_or_upload_entities
 
 
 def upload_terms(
@@ -78,9 +78,11 @@ def upload_terms(
             )
             entity_infos.append(entity_info)
 
-    upload_entities(
-        processing_summary.s2_id,
-        processing_summary.arxiv_id,
-        entity_infos,
-        data_version,
+    save_to_file_or_upload_entities(
+        entity_infos=entity_infos,
+        s2_id=processing_summary.s2_id,
+        arxiv_id=processing_summary.arxiv_id,
+        data_version=data_version,
+        output_dir=output_dir,
+        filename="glossary_terms.jsonl"
     )
