@@ -14,9 +14,13 @@ class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
 
     def __init__(self, args: Any) -> None:
         super().__init__(args)
-        setup_database_connections(
-            schema_name=args.schema, create_tables=args.create_tables
-        )
+        if args.output_dir is None:
+            print("Setting up db connection because there is no output dir.")
+            setup_database_connections(
+                schema_name=args.schema, create_tables=args.create_tables
+            )
+        else:
+            print(f"Not setting up a db connection because an output dir was provided: {args.output_dir}.")
 
     @staticmethod
     def init_parser(parser: ArgumentParser) -> None:

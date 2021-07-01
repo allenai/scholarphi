@@ -14,7 +14,7 @@ from common.commands.base import (
     load_arxiv_ids_using_args,
     read_arxiv_ids_from_file,
 )
-from entities.citations.commands.write_citations_output import WriteCitationsOutput
+from entities.citations.commands.upload_citations import UploadCitations
 from common.commands.database import DatabaseUploadCommand
 from common.commands.fetch_arxiv_sources import (
     DEFAULT_S3_ARXIV_SOURCES_BUCKET,
@@ -67,7 +67,7 @@ def run_commands_for_arxiv_ids(
         command_args.schema = pipeline_args.database_schema
         command_args.create_tables = pipeline_args.database_create_tables
         command_args.data_version = pipeline_args.data_version
-        if CommandCls == WriteCitationsOutput:
+        if CommandCls == UploadCitations:
             command_args.output_dir = pipeline_args.output_dir
         if CommandCls == FetchArxivSources:
             command_args.s3_bucket = pipeline_args.s3_arxiv_sources_bucket
@@ -334,7 +334,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "--output-dir",
         type=str,
-        help="Where to write the outputs.",
+        help=(
+            "The directory in which to write the outputs. "
+            + "Provide this is you want to write to a file rather than the db."
+        ),
     )
 
     args = parser.parse_args()

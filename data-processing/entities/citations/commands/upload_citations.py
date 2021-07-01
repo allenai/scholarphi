@@ -1,5 +1,6 @@
 import ast
 import dataclasses
+import json
 import logging
 import os.path
 from typing import Dict, Iterator, List, cast
@@ -123,4 +124,29 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                 entity_infos.append(entity_info)
                 citation_index += 1
 
-        upload_entities(item.s2_id, item.arxiv_id, entity_infos, self.args.data_version)
+        # TODO: make sure every database upload command has this
+        if self.args.output_dir is None:
+            upload_entities(item.s2_id, item.arxiv_id, entity_infos, self.args.data_version)
+        else:
+            output_file_name = os.path.join(self.args.output_dir, "citations.jsonl")
+            self.write_to_file(entity_infos=entity_infos, output_file_name=output_file_name)
+
+    def write_to_file(self, entity_infos: List[EntityUploadInfo], output_file_name: str) -> None:
+        format_version = "v0"
+
+        logging.info(
+            "About to write %d entity infos to %s (version: %s).",
+            len(entity_infos),
+            output_file_name,
+            format_version
+        )
+        to_write = {
+            "version": format_version,
+            "data": [dataclasses.asdict(entity_info) for entity_info in entity_infos]
+        }
+        if os.path.exists(output_file_name):
+            # TODO: maybe throw an error instead?
+            logging.warning("File %s already exists. Not overwriting. Entity infos will not be written.", output_file_name)
+        else:
+            with open(output_file_name, 'w') as output_file:
+                json.dump(to_write, output_file)
