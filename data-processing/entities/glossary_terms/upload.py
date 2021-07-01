@@ -16,7 +16,7 @@ from common.upload_entities import upload_entities
 
 
 def upload_terms(
-    processing_summary: PaperProcessingResult, data_version: Optional[int]
+    processing_summary: PaperProcessingResult, data_version: Optional[int], output_dir: Optional[str]
 ) -> None:
 
     arxiv_id = processing_summary.arxiv_id

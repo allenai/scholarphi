@@ -670,7 +670,7 @@ class EntityUploadInfo:
 VersionNumber = int
 
 
-EntityUploadCallable = Callable[[PaperProcessingResult, Optional[VersionNumber]], None]
+EntityUploadCallable = Callable[[PaperProcessingResult, Optional[VersionNumber], Optional[str]], None]
 
 
 """

@@ -30,7 +30,7 @@ from .types import Definiendum, TermReference
 
 
 def upload_definitions(
-    processing_summary: PaperProcessingResult, data_version: Optional[int]
+    processing_summary: PaperProcessingResult, data_version: Optional[int], output_dir: Optional[str]
 ) -> None:
 
     # Separate out txtual terms and symbols and process them separately. While references

@@ -30,7 +30,7 @@ def sid(symbol: Union[SerializableSymbol, Symbol]) -> SymbolId:
 
 
 def upload_symbols(
-    processing_summary: PaperProcessingResult, data_version: Optional[int]
+    processing_summary: PaperProcessingResult, data_version: Optional[int], output_dir: Optional[str]
 ) -> None:
 
     arxiv_id = processing_summary.arxiv_id

@@ -7,7 +7,7 @@ from entities.sentences.types import Sentence as SentenceEntity
 
 
 def upload_sentences(
-    processing_summary: PaperProcessingResult, data_version: Optional[int]
+    processing_summary: PaperProcessingResult, data_version: Optional[int], output_dir: Optional[str]
 ) -> None:
 
     entity_infos = []

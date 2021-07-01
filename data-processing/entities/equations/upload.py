@@ -5,7 +5,7 @@ from common.upload_entities import upload_entities
 
 
 def upload_equations(
-    processing_summary: PaperProcessingResult, data_version: Optional[int]
+    processing_summary: PaperProcessingResult, data_version: Optional[int], output_dir: Optional[str]
 ) -> None:
 
     entity_infos = []

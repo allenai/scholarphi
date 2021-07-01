@@ -189,6 +189,6 @@ def make_upload_entities_command(
             return entity_name
 
         def save(self, item: PaperProcessingResult, _: None) -> None:
-            upload_func(item, self.args.data_version)
+            upload_func(item, self.args.data_version, self.args.output_dir)
 
     return C
