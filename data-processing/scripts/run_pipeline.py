@@ -68,7 +68,7 @@ def run_commands_for_arxiv_ids(
         command_args.create_tables = pipeline_args.database_create_tables
         command_args.data_version = pipeline_args.data_version
         if CommandCls == WriteCitationsOutput:
-            command_args.citations_output_file = pipeline_args.citations_output_file
+            command_args.output_dir = pipeline_args.output_dir
         if CommandCls == FetchArxivSources:
             command_args.s3_bucket = pipeline_args.s3_arxiv_sources_bucket
         if CommandCls in [StorePipelineLog, StoreResults]:
@@ -332,9 +332,9 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--citations-output-file",
+        "--output-dir",
         type=str,
-        help="Where to write the citations output file.",
+        help="Where to write the outputs.",
     )
 
     args = parser.parse_args()
