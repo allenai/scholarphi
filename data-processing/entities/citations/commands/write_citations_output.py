@@ -127,7 +127,7 @@ class WriteCitationsOutput(ArxivBatchCommand[CitationData, None]):
         self.write_to_file(entity_infos, format_version)
 
     def write_to_file(self, entity_infos: List[EntityUploadInfo], format_version: str) -> None:
-        output_file_name = self.args.citations_output_file
+        output_file_name = os.path.join(self.args.output_dir, "citations.jsonl")
         logging.info(
             "About to write %d entity infos to %s (version: %s).",
             len(entity_infos),
