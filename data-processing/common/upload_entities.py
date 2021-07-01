@@ -1,4 +1,7 @@
+import dataclasses
+import json
 import logging
+import os
 from typing import Any, Dict, List, Optional, Tuple
 
 from peewee import fn
@@ -309,3 +312,42 @@ def make_relationship_models(
                     )
 
     return models
+
+
+def write_to_file(entity_infos: List[EntityUploadInfo], output_file_name: str) -> None:
+    format_version = "v0"
+
+    logging.info(
+        "About to write %d entity infos to %s (version: %s).",
+        len(entity_infos),
+        output_file_name,
+        format_version,
+    )
+    to_write = {
+        "version": format_version,
+        "data": [dataclasses.asdict(entity_info) for entity_info in entity_infos],
+    }
+    if os.path.exists(output_file_name):
+        # TODO: maybe throw an error instead?
+        logging.warning(
+            "File %s already exists. Not overwriting. Entity infos will not be written.",
+            output_file_name,
+        )
+    else:
+        with open(output_file_name, "w") as output_file:
+            json.dump(to_write, output_file)
+
+
+def save_to_file_or_upload_entities(
+    entity_infos: List[EntityUploadInfo],
+    s2_id: S2Id,
+    arxiv_id: ArxivId,
+    data_version: Optional[int],
+    output_dir: Optional[str],
+    filename: str,
+) -> None:
+    if output_dir is None:
+        upload_entities(s2_id, arxiv_id, entity_infos, data_version)
+    else:
+        output_file_name = os.path.join(output_dir, filename)
+        write_to_file(entity_infos=entity_infos, output_file_name=output_file_name)

@@ -12,7 +12,7 @@ from common.types import (
     EntityUploadInfo,
     SerializableReference,
 )
-from common.upload_entities import upload_entities
+from common.upload_entities import save_to_file_or_upload_entities
 
 from ..types import BibitemMatch
 from ..utils import load_located_citations
@@ -124,10 +124,11 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                 citation_index += 1
 
         # TODO: make sure every database upload command subclass does this
-        self.save_to_file_or_upload_entities(
+        save_to_file_or_upload_entities(
             entity_infos=entity_infos,
             s2_id=item.s2_id,
             arxiv_id=item.arxiv_id,
             data_version=self.args.data_version,
+            output_dir=self.args.output_dir,
             filename="citations.jsonl"
         )
