@@ -877,6 +877,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         this.toggleSkimming();
       }
     });
+
+    if (this.state.faqEnabled) {
+      this.openDrawer("faq");
+    }
   }
 
   subscribeToPDFViewerStateChanges = (
@@ -1142,14 +1146,21 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               handleCloseDrawer={this.closeDrawer}
             />
             <PdfjsToolbar>
-              {this.state.goldSkimmingEnabled ? (
+              {this.state.goldSkimmingEnabled || this.state.faqEnabled ? (
                 <button
-                  onClick={() => this.toggleDrawer("discourse-sentences")}
+                  onClick={() => {
+                    if (this.state.faqEnabled) {
+                      this.toggleDrawer("faq");
+                    } else {
+                      this.toggleDrawer("discourse-sentences");
+                    }
+                  }}
                   className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
                 >
                   <MenuOpenIcon />
                 </button>
               ) : null}
+
               <button
                 onClick={this.toggleSkimming}
                 className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
@@ -1268,6 +1279,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 deselectedDiscourses={
                   skimmingData && this.state.deselectedDiscourses
                 }
+                faqs={
+                  skimmingData && skimmingData.faqs || {}
+                }
                 propagateEntityEdits={this.state.propagateEntityEdits}
                 handleJumpToEntity={this.jumpToEntityWithBackMessage}
                 handleClose={this.closeDrawer}
@@ -1340,7 +1354,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
             ></DiscoursePalette>
           </>
         ) : null}
-        {this.state.skimmingEnabled && this.state.cuingStrategy === "declutter" ? (
+        {this.state.skimmingEnabled &&
+        this.state.cuingStrategy === "declutter" ? (
           <div className="opacity-slider">
             <span id="opacity-slider-label">Decluttered opacity</span>
             <Slider

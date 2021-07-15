@@ -11,6 +11,7 @@ import EntityPropertyEditor from "../control/EntityPropertyEditor";
 import { DefiningFormulas } from "./DefiningFormulas";
 import Definitions from "./Definitions";
 import DiscourseSentences from "./DiscourseSentences";
+import FrequentlyAskedQuestions from "./FrequentlyAskedQuestions";
 import RelevantSentences from "./RelevantSentences";
 import Usages from "./Usages";
 
@@ -25,6 +26,7 @@ export type DrawerContentType =
   | "entity-property-editor"
   | "relevant-sentences"
   | "discourse-sentences"
+  | "faq"
   | null;
 
 interface Props {
@@ -37,6 +39,7 @@ interface Props {
   customDiscourseTags: { [id: string]: string | undefined };
   discourseToColorMap: { [discourse: string]: string };
   deselectedDiscourses: string[];
+  faqs: { [id: string]: string };
   propagateEntityEdits: boolean;
   handleClose: () => void;
   handleJumpToEntity: (entityId: string) => void;
@@ -108,6 +111,7 @@ export class Drawer extends React.PureComponent<Props> {
       contentType,
       entities,
       selectedEntityIds,
+      faqs,
     } = this.props;
 
     let firstSelectedEntity: Entity | null = null;
@@ -197,6 +201,13 @@ export class Drawer extends React.PureComponent<Props> {
               customDiscourseTags={this.props.customDiscourseTags}
               discourseToColorMap={this.props.discourseToColorMap}
               deselectedDiscourses={this.props.deselectedDiscourses}
+              entities={entities}
+              handleJumpToEntity={this.props.handleJumpToEntity}
+            />
+          )}
+          {contentType === "faq" && entities !== null && (
+            <FrequentlyAskedQuestions
+              faqs={faqs}
               entities={entities}
               handleJumpToEntity={this.props.handleJumpToEntity}
             />

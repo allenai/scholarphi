@@ -115,6 +115,10 @@ export interface Settings {
    *
    */
   cuingStrategy: CuingStrategy;
+  /**
+   * Show frequently asked questions as drawer content.
+   */
+  faqEnabled: boolean;
 }
 
 /**
@@ -161,7 +165,7 @@ const PRESETS: Preset[] = [
     skimmingEnabled: true,
     abstractExpansionEnabled: false,
     annotationHintsEnabled: false,
-    cuingStrategy: "highlight"
+    cuingStrategy: "highlight",
   },
   {
     key: "skim-fade",
@@ -169,7 +173,7 @@ const PRESETS: Preset[] = [
     skimmingEnabled: true,
     abstractExpansionEnabled: false,
     annotationHintsEnabled: false,
-    cuingStrategy: "fade"
+    cuingStrategy: "fade",
   },
   {
     key: "skim-gold",
@@ -193,7 +197,14 @@ const PRESETS: Preset[] = [
     primerPageEnabled: false,
     skimmingEnabled: false,
     abstractExpansionEnabled: true,
-  }
+  },
+  {
+    key: "skim-faq",
+    primerPageEnabled: false,
+    skimmingEnabled: false,
+    cuingStrategy: "highlight",
+    faqEnabled: true,
+  },
 ];
 
 /**
@@ -225,6 +236,7 @@ export function getSettings(presets?: string[]) {
     goldSkimmingEnabled: false,
     goldWithLeadSkimmingEnabled: false,
     abstractExpansionEnabled: false,
+    faqEnabled: false,
     cuingStrategy: "declutter"
   };
 

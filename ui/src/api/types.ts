@@ -415,4 +415,5 @@ export interface SkimmingAnnotation {
   noShow: string[];
   goldSummary: string[];
   discourseTags: {};
+  faqs?: {};
 }
