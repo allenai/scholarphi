@@ -91,6 +91,7 @@ class SkimPageMask extends React.PureComponent<Props> {
         entities,
         pageNumber
       );
+      showBoxes = showBoxes.concat(skimmingData.manualBoxes);
       mask = <HighlightMask pageView={pageView} show={showBoxes} />;
     } else if (cuingStrategy === "fade") {
       const opacityMultiplier = 0.1; // factor of opacity increase between sentences in a paragraph
