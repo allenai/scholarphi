@@ -376,6 +376,7 @@ export function isSentence(entity: Entity): entity is Sentence {
  * coordinates when processing PDFs and PostScript files with Python.
  */
 export interface BoundingBox {
+  comment?: string;
   source?: string;
   /**
    * Page indexes start at 0.
