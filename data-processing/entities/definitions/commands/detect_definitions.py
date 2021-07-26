@@ -602,7 +602,10 @@ class DetectDefinitions(
 
         # Load the pre-trained definition detection model.
         prediction_types = ["AI2020", "DocDef2", "W00"]
-        model = DefinitionDetectionModel(prediction_types)
+        if self.args.definitions_base_url is not None:
+            model = DefinitionDetectionModel(prediction_types, self.args.definitions_base_url)
+        else:
+            model = DefinitionDetectionModel(prediction_types)
 
         definition_index = 0
         features = []

@@ -28,6 +28,7 @@ from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
 from common.fetch_arxiv import FetchFromArxivException
 from common.make_digest import make_paper_digest
 from common.types import PipelineDigest
+from entities.definitions.commands.detect_definitions import DetectDefinitions
 
 from scripts.commands import (
     ENTITY_COMMANDS,
@@ -70,6 +71,8 @@ def run_commands_for_arxiv_ids(
             command_args.s3_bucket = pipeline_args.s3_arxiv_sources_bucket
         if CommandCls in [StorePipelineLog, StoreResults]:
             command_args.s3_bucket = pipeline_args.s3_output_bucket
+        if CommandCls == DetectDefinitions:
+            command_args.definitions_base_url = pipeline_args.definitions_base_url
 
         if CommandCls == StorePipelineLog:
             logging.debug("Flushing file log before storing pipeline logs.")
@@ -326,6 +329,11 @@ if __name__ == "__main__":
             "Version number to assign to the uploaded data. Defaults to creating a new version "
             + "number for each paper for each run of the pipeline."
         ),
+    )
+    parser.add_argument(
+        "--definitions-base-url",
+        type=str,
+        help="Base url for definition model paths."
     )
     args = parser.parse_args()
 
