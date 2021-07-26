@@ -2,6 +2,10 @@
   width: @document-snippets-container-width;
   padding-left: @padding;
   padding-right: @padding;
+  padding-top: 30px;
+  &:last-child {
+    padding-bottom: 30px;
+  }
 
   > * {
     margin-top: @padding;
@@ -66,9 +70,9 @@
    */
   line-height: 1.5em;
   cursor: pointer;
-  &:hover {
-    background: rgb(223, 231, 240);
-  }
+  // &:hover {
+  //   background: rgb(223, 231, 240);
+  // }
 
   &.most-relevant {
     border: 2px dashed rgb(20, 65, 167);

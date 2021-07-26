@@ -15,7 +15,6 @@ import FrequentlyAskedQuestions from "./FrequentlyAskedQuestions";
 import RelevantSentences from "./RelevantSentences";
 import Usages from "./Usages";
 
-
 const logger = getRemoteLogger();
 
 export type DrawerMode = "open" | "closed";
@@ -36,7 +35,6 @@ interface Props {
   entities: Entities | null;
   selectedEntityIds: string[];
   discourseTags: { [id: string]: string | undefined };
-  customDiscourseTags: { [id: string]: string | undefined };
   discourseToColorMap: { [discourse: string]: string };
   deselectedDiscourses: string[];
   faqs: { [id: string]: string };
@@ -49,6 +47,7 @@ interface Props {
     updates: EntityUpdateData
   ) => Promise<boolean>;
   handleDeleteEntity: (id: string) => Promise<boolean>;
+  handleClickDiscourseChip: (discourse: string) => void;
 }
 
 export class Drawer extends React.PureComponent<Props> {
@@ -132,7 +131,7 @@ export class Drawer extends React.PureComponent<Props> {
       <MuiDrawer
         className="drawer"
         variant="persistent"
-        anchor="right"
+        anchor="left"
         /*
          * If for the drawer has been requested to open but there's nothing to show
          * in it, don't show it.
@@ -140,13 +139,13 @@ export class Drawer extends React.PureComponent<Props> {
         open={mode === "open" && contentType !== null}
         onScroll={this.onScroll}
       >
-        <div className="drawer__header">
+        {/* <div className="drawer__header">
           <div className="drawer__close_icon">
             <IconButton size="small" onClick={this.closeDrawer}>
               <ChevronRightIcon />
             </IconButton>
           </div>
-        </div>
+        </div> */}
         <div className="drawer__content">
           {contentType === "entity-property-editor" && (
             <EntityPropertyEditor
@@ -198,11 +197,11 @@ export class Drawer extends React.PureComponent<Props> {
           {contentType === "discourse-sentences" && entities !== null && (
             <DiscourseSentences
               discourseTags={this.props.discourseTags}
-              customDiscourseTags={this.props.customDiscourseTags}
               discourseToColorMap={this.props.discourseToColorMap}
               deselectedDiscourses={this.props.deselectedDiscourses}
               entities={entities}
               handleJumpToEntity={this.props.handleJumpToEntity}
+              handleClickDiscourseChip={this.props.handleClickDiscourseChip}
             />
           )}
           {contentType === "faq" && entities !== null && (

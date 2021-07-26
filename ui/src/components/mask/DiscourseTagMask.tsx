@@ -1,7 +1,7 @@
-import { Filter } from "@material-ui/icons";
 import React from "react";
 import {
   BoundingBox,
+  Entity,
   isCitation,
   isSentence,
   SkimmingAnnotation,
@@ -10,6 +10,7 @@ import { Entities } from "../../state";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
 import { DiscourseTag } from "../discourse/DiscourseTag";
+import HighlightMask from "./HighlightMask";
 import PageMask from "./PageMask";
 
 interface Props {
@@ -18,9 +19,18 @@ interface Props {
   skimmingData: SkimmingAnnotation;
   showLead: boolean;
   opacity: number;
-  customDiscourseTags: object;
+  discourseTags: object;
   discourseToColorMap: { [discourse: string]: string };
   deselectedDiscourses: string[];
+  cuingStrategy: string;
+}
+
+export interface DiscourseObj {
+  color: string;
+  discourse: string;
+  entity: Entity;
+  id: string;
+  tagLocation: BoundingBox;
 }
 
 interface State {
@@ -35,6 +45,21 @@ class DiscourseTagMask extends React.PureComponent<Props, State> {
     super(props);
     this.state = { highlight: [] };
   }
+
+  getFilteredBoundingBoxes = (
+    ids: string[],
+    entities: Entities,
+    pageNumber: number
+  ) => {
+    return ids
+      .map((id) => entities.byId[id])
+      .filter((e) => isSentence(e))
+      .filter((e) => e.attributes.bounding_boxes.length !== 0)
+      .filter((e) => e !== undefined)
+      .map((e) => e.attributes.bounding_boxes)
+      .flat()
+      .filter((b) => b.page === pageNumber);
+  };
 
   onTagMouseOver = (entityId: string) => {
     this.setState({
@@ -51,9 +76,10 @@ class DiscourseTagMask extends React.PureComponent<Props, State> {
       pageView,
       entities,
       skimmingData,
+      cuingStrategy,
       showLead,
       opacity,
-      customDiscourseTags,
+      discourseTags,
       discourseToColorMap,
       deselectedDiscourses,
     } = this.props;
@@ -92,12 +118,9 @@ class DiscourseTagMask extends React.PureComponent<Props, State> {
       ids = ids.concat(skimmingData.firstSentences);
     }
 
-    ids = ids.concat(Object.keys(customDiscourseTags));
+    ids = ids.concat(Object.keys(discourseTags));
 
-    let discourseObjs = Object.entries({
-      ...skimmingData.discourseTags,
-      ...customDiscourseTags,
-    })
+    let discourseObjs = Object.entries(discourseTags)
       .map(([id, discourse]) => ({
         id: id,
         entity: sentences[id],
@@ -130,25 +153,32 @@ class DiscourseTagMask extends React.PureComponent<Props, State> {
 
     return (
       <>
-        {discourseObjs.map((d, i) => (
-          <DiscourseTag
-            pageView={this.props.pageView}
-            anchor={d.tagLocation}
-            content={<span>{d.discourse}</span>}
-            color={d.color}
-            entityId={d.id}
-            onMouseOver={this.onTagMouseOver}
-            onMouseOut={this.onTagMouseOut}
-            key={i}
+        {discourseObjs
+          .filter((d) => d.discourse !== "Highlight")
+          .map((d, i) => (
+            <DiscourseTag
+              pageView={pageView}
+              anchor={d.tagLocation}
+              content={<span>{d.discourse}</span>}
+              color={d.color}
+              entityId={d.id}
+              onMouseOver={this.onTagMouseOver}
+              onMouseOut={this.onTagMouseOut}
+              key={i}
+            />
+          ))}
+        {cuingStrategy === "declutter" && (
+          <PageMask
+            pageView={pageView}
+            show={showBoxes}
+            noShow={noShowBoxes}
+            opacity={opacity}
+            highlight={this.state.highlight}
           />
-        ))}
-        <PageMask
-          pageView={pageView}
-          show={showBoxes}
-          noShow={noShowBoxes}
-          opacity={opacity}
-          highlight={this.state.highlight}
-        />
+        )}
+        {cuingStrategy === "highlight" && (
+          <HighlightMask pageView={pageView} discourseObjs={discourseObjs} />
+        )}
       </>
     );
   }

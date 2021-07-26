@@ -23,6 +23,10 @@
   }
 }
 
+.scholar-reader-discourse-tag.marked-as-read {
+  opacity: 0.6 !important;
+}
+
 /**
  * Rule from sidenote to anchor
  */
@@ -112,26 +116,26 @@
       margin-top: 10px;
     }
   }
+}
 
-  .discourse-chip-palette {
-    margin: 0 auto;
-    width: 95%;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
+.discourse-chip-palette {
+  margin: 0 auto;
+  width: 95%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
 
-    .discourse-chip {
-      margin: 2px 2px;
-      border: 1px solid grey;
+  .discourse-chip {
+    margin: 2px 2px;
+    border: 1px solid grey;
 
-      &.deselected {
-        opacity: 0.5;
-      }
+    &.deselected {
+      opacity: 0.5;
     }
+  }
 
-    .discourse-chip-label {
-      font-weight: bold;
-      font-size: 14px;
-    }
+  .discourse-chip-label {
+    font-weight: bold;
+    font-size: 14px;
   }
 }

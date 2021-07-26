@@ -58,7 +58,8 @@ interface Props {
   handleSelectedForDiscourseTag?: (entityId: string) => void;
   selectedEntityIdForDiscourseTagAction: string;
   discourseOptions: string[];
-  customDiscourseTags: { [entityId: string]: string };
+  discourseTags: { [entityId: string]: string };
+  markHighlightAsRead?: (entityId: string) => void;
 }
 
 class EntityAnnotationLayer extends React.Component<Props> {
@@ -138,7 +139,20 @@ class EntityAnnotationLayer extends React.Component<Props> {
      * Allow users to interactively add and remove discourse tags for sentence entities.
      */
     if (this.props.handleSelectedForDiscourseTag !== undefined) {
-      this.props.handleSelectedForDiscourseTag(sentenceEntity.id);
+      if (event.metaKey) {
+        this.props.handleSelectedForDiscourseTag(sentenceEntity.id);
+        const prevDiscourse = this.props.discourseTags[sentenceEntity.id];
+        if (prevDiscourse === "" || prevDiscourse === undefined) {
+          this.props.handleCreateCustomDiscourseTag(
+            sentenceEntity.id,
+            "Highlight"
+          );
+        }
+      } else {
+        if (this.props.markHighlightAsRead !== undefined) {
+          this.props.markHighlightAsRead(sentenceEntity.id);
+        }
+      }
     }
 
     if (event.altKey) {
@@ -171,6 +185,10 @@ class EntityAnnotationLayer extends React.Component<Props> {
       this.props.selectedEntityIdForDiscourseTagAction,
       discourse
     );
+    this.closeDiscourseActionWidget();
+  };
+
+  closeDiscourseActionWidget = () => {
     if (this.props.handleSelectedForDiscourseTag !== undefined) {
       this.props.handleSelectedForDiscourseTag("");
     }
@@ -202,7 +220,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
       handleSelectEntityAnnotation,
       selectedEntityIdForDiscourseTagAction,
       discourseOptions,
-      customDiscourseTags,
+      discourseTags,
     } = this.props;
 
     const pageNumber = uiUtils.getPageNumber(pageView);
@@ -223,14 +241,13 @@ class EntityAnnotationLayer extends React.Component<Props> {
               this.props.handleDeleteCustomDiscourseTag(
                 selectedEntityIdForDiscourseTagAction
               );
-              if (this.props.handleSelectedForDiscourseTag !== undefined) {
-                this.props.handleSelectedForDiscourseTag("");
-              }
+              this.closeDiscourseActionWidget();
             }}
             handleCreateCustomDiscourseTag={this.handleCreateCustomDiscourseTag}
+            handleCloseWidget={this.closeDiscourseActionWidget}
             discourseOptions={discourseOptions}
             selectedDiscourseTag={
-              customDiscourseTags[selectedEntityIdForDiscourseTagAction] || ""
+              discourseTags[selectedEntityIdForDiscourseTagAction] || ""
             }
           />
         ) : null}

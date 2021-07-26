@@ -2194,7 +2194,6 @@
         "4992"
       ],
       "discourseTags": {
-        "4775": "Motivation",
         "4776": "Contribution",
         "4780": "Method",
         "4781": "Result",
@@ -2203,13 +2202,11 @@
         "4818": "Method",
         "4848": "Method",
         "4868": "Method",
-        "4869": "Motivation",
         "4943": "Result",
         "4979": "Result",
         "4982": "Result",
         "4985": "Result",
         "4992": "FutureWork",
-        "4757": "Motivation",
         "4759": "Method",
         "4763": "Result"
       }
@@ -5205,7 +5202,26 @@
       "relatedSents": {},
       "abstractDiscourseClassification": {},
       "goldSummary": [],
-      "discourseTags": {}
+      "discourseTags": {
+        "605203": "Contribution",
+        "605204": "Contribution",
+        "605205": "Method",
+        "605208": "Method",
+        "605209": "Result",
+        "605216": "Contribution",
+        "605217": "Contribution",
+        "605218": "Contribution",
+        "605254": "Method",
+        "605270": "Method",
+        "605276": "Method",
+        "605317": "Method",
+        "605351": "Method",
+        "605363": "Method",
+        "605413": "Result",
+        "605428": "Result",
+        "605442": "Result",
+        "605542": "FutureWork"
+      }
     },
     {
       "paperId": "2107.04135",

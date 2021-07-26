@@ -158,7 +158,7 @@ export interface State extends Settings {
   /**
    * Map of entity ids to discourse tags interactively created by a user.
    */
-  customDiscourseTags: {};
+  discourseTags: {};
 
   /**
    * Id of user selected entity for which to update its discourse tag.

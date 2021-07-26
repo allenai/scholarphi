@@ -135,7 +135,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       propagateEntityEdits: true,
 
       skimOpacity: 0.3,
-      customDiscourseTags: {},
+      discourseTags: {},
       selectedEntityIdForDiscourseTagAction: "",
       deselectedDiscourses: [],
 
@@ -872,15 +872,26 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.loadDataFromApi();
 
     // Add keypress listener for toggling skimming overlay
+    // document.addEventListener("keydown", (e) => {
+    //   if (e.code === "KeyF") {
+    //     this.toggleSkimming();
+    //   }
+    // });
+
+    // Add keypress listener for toggling sidebar
     document.addEventListener("keydown", (e) => {
-      if (e.code === "KeyF") {
-        this.toggleSkimming();
+      if (this.state.goldSkimmingEnabled) {
+        if (e.metaKey && e.code === "Slash") {
+          this.toggleDrawer("discourse-sentences");
+        }
       }
     });
 
     if (this.state.faqEnabled) {
       this.openDrawer("faq");
     }
+
+    this.setInitialDiscourseTags();
   }
 
   subscribeToPDFViewerStateChanges = (
@@ -963,9 +974,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
     if (success && !this._backButtonHintShown) {
       this.showSnackbarMessage(
-        "Resume where you left by pressing the browser '←' button."
+        "Resume where you left by pressing the browser '←' (back) button."
       );
-      // this._backButtonHintShown = true;
+      this._backButtonHintShown = true;
     }
   };
 
@@ -1025,20 +1036,20 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
   createCustomDiscourseTag = (entityId: string, discourse: string) => {
     this.setState((prevState) => ({
-      customDiscourseTags: {
-        ...prevState.customDiscourseTags,
+      discourseTags: {
+        ...prevState.discourseTags,
         [entityId]: discourse,
       },
     }));
   };
 
   deleteCustomDiscourseTag = (entityId: string) => {
-    const customDiscourseTags: { [entityId: string]: string } = {
-      ...this.state.customDiscourseTags,
+    const discourseTags: { [entityId: string]: string } = {
+      ...this.state.discourseTags,
     };
-    delete customDiscourseTags[entityId];
+    delete discourseTags[entityId];
     this.setState({
-      customDiscourseTags,
+      discourseTags,
     });
   };
 
@@ -1055,10 +1066,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
   getDiscourseToColorMap = () => {
     return {
+      Highlight: "#F1E7407D",
       Motivation: "#9AC2C57D",
-      Contribution: "#C2C6A77D",
-      Method: "#ECCE8E7D",
-      Experiment: "#75BCE57D",
+      Contribution: "#C2C6A7BD",
+      Method: "#75BCE57D",
+      Experiment: "#ECCE8E7D",
       Result: "#F285A07D",
       FutureWork: "#EDD96D7D",
     };
@@ -1079,6 +1091,20 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         deselectedDiscourses: [...prevState.deselectedDiscourses, discourse],
       }));
     }
+  };
+
+  setInitialDiscourseTags = () => {
+    const skimmingData = data.filter(
+      (x: SkimmingAnnotation) => x.paperId === this.props.paperId!.id
+    )[0];
+    let discourseTags = {};
+    if (
+      skimmingData !== undefined &&
+      skimmingData.discourseTags !== undefined
+    ) {
+      discourseTags = skimmingData.discourseTags;
+    }
+    this.setState({ discourseTags });
   };
 
   render() {
@@ -1269,25 +1295,21 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 }
                 entities={this.state.entities}
                 selectedEntityIds={this.state.selectedEntityIds}
-                discourseTags={skimmingData && skimmingData.discourseTags}
-                customDiscourseTags={
-                  skimmingData && this.state.customDiscourseTags
-                }
+                discourseTags={this.state.discourseTags}
                 discourseToColorMap={
                   skimmingData && this.getDiscourseToColorMap()
                 }
                 deselectedDiscourses={
                   skimmingData && this.state.deselectedDiscourses
                 }
-                faqs={
-                  skimmingData && skimmingData.faqs || {}
-                }
+                faqs={(skimmingData && skimmingData.faqs) || {}}
                 propagateEntityEdits={this.state.propagateEntityEdits}
                 handleJumpToEntity={this.jumpToEntityWithBackMessage}
                 handleClose={this.closeDrawer}
                 handleUpdateEntity={this.updateEntity}
                 handleDeleteEntity={this.deleteEntity}
                 handleSetPropagateEntityEdits={this.setPropagateEntityEdits}
+                handleClickDiscourseChip={this.clickDiscourseChip}
               />
               {this.state.definitionPreviewEnabled &&
               this.state.pages !== null &&
@@ -1342,16 +1364,17 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
             <ScrollbarMarkup
               numPages={this.state.pdfViewerApplication?.pdfDocument?.numPages}
               entities={this.state.entities}
-              skimmingData={skimmingData}
-              customDiscourseTags={this.state.customDiscourseTags}
+              discourseTags={this.state.discourseTags}
               discourseToColorMap={this.getDiscourseToColorMap()}
               deselectedDiscourses={this.state.deselectedDiscourses}
             ></ScrollbarMarkup>
-            <DiscoursePalette
-              discourseToColorMap={this.getDiscourseToColorMap()}
-              deselectedDiscourses={this.state.deselectedDiscourses}
-              handleClickDiscourseChip={this.clickDiscourseChip}
-            ></DiscoursePalette>
+            {this.state.discoursePaletteEnabled && (
+              <DiscoursePalette
+                discourseToColorMap={this.getDiscourseToColorMap()}
+                deselectedDiscourses={this.state.deselectedDiscourses}
+                handleClickDiscourseChip={this.clickDiscourseChip}
+              ></DiscoursePalette>
+            )}
           </>
         ) : null}
         {this.state.skimmingEnabled &&
@@ -1476,9 +1499,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                           pageView={pageView}
                           entities={entities}
                           skimmingData={skimmingData}
+                          cuingStrategy={this.state.cuingStrategy}
                           showLead={this.state.goldWithLeadSkimmingEnabled}
                           opacity={this.state.skimOpacity}
-                          customDiscourseTags={this.state.customDiscourseTags}
+                          discourseTags={this.state.discourseTags}
                           discourseToColorMap={this.getDiscourseToColorMap()}
                           deselectedDiscourses={this.state.deselectedDiscourses}
                         ></DiscourseTagMask>
@@ -1572,7 +1596,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                           this.state.selectedEntityIdForDiscourseTagAction
                         }
                         discourseOptions={this.getDiscourseOptions()}
-                        customDiscourseTags={this.state.customDiscourseTags}
+                        discourseTags={this.state.discourseTags}
+                        markHighlightAsRead={
+                          this.state.cuingStrategy === "highlight"
+                            ? uiUtils.markHighlightAsRead
+                            : undefined
+                        }
                       />
                     )}
                     {/* Equation diagram overlays. */}

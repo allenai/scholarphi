@@ -22,14 +22,14 @@
    */
   &:hover .scholar-reader-annotation-span {
     // background-color: fade(@highlight-color, @highlight-hover-opacity-percent);
-    cursor: pointer;
+    // cursor: pointer;
   }
 
   /**
    * Highlight all spans of an annotation when a user is providing a discourse tag
    */
   .scholar-reader-annotation-span.selected-for-tagging {
-    background-color: fade(@highlight-color, 15%);
+    // background-color: fade(@highlight-color, 15%);
   }
 
   /**
@@ -68,7 +68,8 @@
  */
 .scholar-reader-annotation-span.jump-target {
   background-color: fade(@highlight-color, @highlight-hover-opacity-percent);
-  // transition: background-color ease-out;
+  transition: opacity 2s;
+  opacity: 0;
   // animation-name: fade;
   // animation-duration: 20s;
 }

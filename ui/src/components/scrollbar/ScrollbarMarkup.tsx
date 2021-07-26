@@ -1,12 +1,11 @@
 import React from "react";
-import { SkimmingAnnotation } from "../../api/types";
 import { Entities } from "../../state";
+import * as uiUtils from "../../utils/ui";
 
 interface Props {
   numPages: number;
   entities: Entities;
-  skimmingData: SkimmingAnnotation;
-  customDiscourseTags: object;
+  discourseTags: object;
   discourseToColorMap: { [discourse: string]: string };
   deselectedDiscourses: string[];
 }
@@ -38,16 +37,12 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
   render() {
     const {
       entities,
-      skimmingData,
-      customDiscourseTags,
+      discourseTags,
       discourseToColorMap,
       deselectedDiscourses,
     } = this.props;
 
-    const discourseObjs = Object.entries({
-      ...skimmingData.discourseTags,
-      ...customDiscourseTags,
-    })
+    const discourseObjs = Object.entries(discourseTags)
       .map(([id, discourse]) => ({
         id: id,
         entity: entities.byId[id],
@@ -63,6 +58,8 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
       }))
       .filter((e) => !deselectedDiscourses.includes(e.discourse));
 
+    const readSentences = uiUtils.getReadSentences();
+
     return (
       <>
         {ScrollbarMarkup.scrollbarHeight !== undefined ? (
@@ -77,21 +74,24 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
               right: 0,
             }}
           >
-            {discourseObjs.map((d, i) => (
-              <div
-                style={{
-                  position: "absolute",
-                  top: this.mapDiscourseToScrollBar(
-                    d.entity.attributes.bounding_boxes[0].page,
-                    d.entity.attributes.bounding_boxes[0].top
-                  ),
-                  width: ScrollbarMarkup.scrollbarWidth,
-                  height: ScrollbarMarkup.scrollbarMarkHeight,
-                  background: d.color,
-                }}
-                key={`scrollbar-mark-${i}`}
-              ></div>
-            ))}
+            {discourseObjs
+              .filter((d) => !readSentences.includes(d.entity.id))
+              .map((d, i) => (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: this.mapDiscourseToScrollBar(
+                      d.entity.attributes.bounding_boxes[0].page,
+                      d.entity.attributes.bounding_boxes[0].top
+                    ),
+                    width: ScrollbarMarkup.scrollbarWidth,
+                    height: ScrollbarMarkup.scrollbarMarkHeight,
+                    background: uiUtils.addAlpha(d.color, 0.9),
+                    border: "1px solid grey"
+                  }}
+                  key={`scrollbar-mark-${i}`}
+                ></div>
+              ))}
           </div>
         ) : null}
       </>

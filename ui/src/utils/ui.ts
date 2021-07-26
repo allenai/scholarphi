@@ -395,7 +395,43 @@ export function getElementCoordinates(element: HTMLElement) {
  * TODO(andrewhead): Handle the case of arXiv publications that have multiple versions. How do we
  * make sure we're querying for the same version of paper data as the paper that was opened?
  */
- export function extractArxivId(url: string): string | undefined {
+export function extractArxivId(url: string): string | undefined {
   const matches = url.match(/arxiv\.org\/pdf\/(.*)(?:\.pdf)/) || [];
   return matches[1];
+}
+
+export function addAlpha(color: string, opacity: number): string {
+  // Keep first character (#) denoting hex value, and next six characters denoting RGB values
+  color = color.substring(0, 7);
+  const _opacity = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);
+  return color + _opacity.toString(16).toUpperCase();
+}
+
+export function markHighlightAsRead(
+  entityId: string,
+  toggle: boolean = true
+): void {
+  const tagElem = document.querySelector<HTMLElement>(
+    `#discourse-tag-${entityId}`
+  );
+  if (tagElem) {
+    tagElem.classList.contains("marked-as-read")
+      ? toggle && tagElem.classList.remove("marked-as-read")
+      : tagElem.classList.add("marked-as-read");
+    Array.from(
+      document.querySelectorAll<HTMLElement>(`.highlight-${entityId}`)
+    ).map((e) => {
+      e.classList.contains("marked-as-read")
+        ? toggle && e.classList.remove("marked-as-read")
+        : e.classList.add("marked-as-read");
+    });
+  }
+}
+
+export function getReadSentences(): (string | undefined)[] {
+  return Array.from(
+    document.getElementsByClassName(
+      "scholar-reader-discourse-tag marked-as-read"
+    )
+  ).map((e) => e.id.split("-").pop());
 }

@@ -87,6 +87,7 @@ export class DiscourseTag extends React.PureComponent<Props> {
         />
         <Card
           className={classNames("scholar-reader-discourse-tag", `side-${side}`)}
+          id={`discourse-tag-${this.props.entityId}`}
           style={{
             top: sidenoteTop,
             backgroundColor: color !== undefined ? color : undefined,

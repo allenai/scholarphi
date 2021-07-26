@@ -1,15 +1,18 @@
+import Chip from "@material-ui/core/Chip";
+import classNames from "classnames";
 import React from "react";
 import { isSentence, Sentence } from "../../api/types";
 import { Entities } from "../../state";
+import * as uiUtils from "../../utils/ui";
 import RelevantSnippet from "./RelevantSnippet";
 
 interface Props {
   entities: Entities;
   discourseTags: { [id: string]: string | undefined };
-  customDiscourseTags: { [id: string]: string | undefined };
   discourseToColorMap: { [discourse: string]: string };
   deselectedDiscourses: string[];
   handleJumpToEntity: (id: string) => void;
+  handleClickDiscourseChip: (discourse: string) => void;
 }
 
 export class DiscourseSentences extends React.PureComponent<Props> {
@@ -17,15 +20,11 @@ export class DiscourseSentences extends React.PureComponent<Props> {
     const {
       entities,
       discourseTags,
-      customDiscourseTags,
       discourseToColorMap,
       deselectedDiscourses,
     } = this.props;
 
-    const relevantSentences = Object.entries({
-      ...discourseTags,
-      ...customDiscourseTags,
-    })
+    const relevantSentences = Object.entries(discourseTags)
       .filter(([_, discourse]) => {
         if (discourse !== undefined) {
           return !deselectedDiscourses.includes(discourse);
@@ -49,8 +48,30 @@ export class DiscourseSentences extends React.PureComponent<Props> {
       {}
     );
 
+    const readSentences = uiUtils.getReadSentences();
+    const activeDiscourses = [...new Set(Object.values(discourseTags))];
+
     return (
       <div className="document-snippets discourse-sentences">
+        <div className={"discourse-chip-palette"}>
+          {activeDiscourses.map((d) => {
+            if (d !== undefined) {
+              return (
+                <Chip
+                  className={classNames("discourse-chip", {
+                    deselected: deselectedDiscourses.includes(d),
+                  })}
+                  label={<span className={"discourse-chip-label"}>{d}</span>}
+                  key={d}
+                  onClick={() => this.props.handleClickDiscourseChip(d)}
+                  style={{ backgroundColor: discourseToColorMap[d!] }}
+                  variant="outlined"
+                />
+              );
+            }
+          })}
+        </div>
+
         {Object.entries(relevantSentencesByPage).map(([page, sents], i) => (
           <React.Fragment key={i}>
             <p className="relevant-sentence-page-header">
@@ -59,8 +80,7 @@ export class DiscourseSentences extends React.PureComponent<Props> {
             {sents.map((sent) => {
               let color = undefined;
               if (sent.id !== undefined) {
-                const discourse =
-                  discourseTags[sent.id] || customDiscourseTags[sent.id];
+                const discourse = discourseTags[sent.id];
                 if (discourse !== undefined) {
                   color = discourseToColorMap[discourse];
                 }
@@ -71,8 +91,16 @@ export class DiscourseSentences extends React.PureComponent<Props> {
                     key={sent.id}
                     id={sent.id}
                     context={sent}
-                    color={color}
-                    handleJumpToContext={this.props.handleJumpToEntity}
+                    markedAsRead={readSentences.includes(sent.id)}
+                    color={
+                      color !== undefined
+                        ? uiUtils.addAlpha(color, 0.3)
+                        : undefined
+                    }
+                    handleJumpToContext={(id) => {
+                      this.props.handleJumpToEntity(id);
+                      uiUtils.markHighlightAsRead(id, /** toggle= */ false);
+                    }}
                     mostRelevantId={
                       relevantSentences.length > 0
                         ? relevantSentences[0].id
@@ -88,7 +116,6 @@ export class DiscourseSentences extends React.PureComponent<Props> {
         ))}
       </div>
     );
-    return <div></div>;
   }
 }
 

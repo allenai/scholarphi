@@ -3,6 +3,7 @@ import FormControl from "@material-ui/core/FormControl";
 import IconButton from "@material-ui/core/IconButton";
 import Select from "@material-ui/core/Select";
 import MuiTooltip from "@material-ui/core/Tooltip";
+import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
 import React from "react";
 import { BoundingBox } from "../../api/types";
@@ -15,6 +16,7 @@ interface Props {
   anchor: BoundingBox;
   handleDeleteCustomDiscourseTag: () => void;
   handleCreateCustomDiscourseTag: (discourse: string) => void;
+  handleCloseWidget: () => void;
   discourseOptions: string[];
   selectedDiscourseTag: string;
 }
@@ -34,11 +36,16 @@ class DiscourseTagActionWidget extends React.PureComponent<Props> {
   render() {
     const { pageView, anchor, className, discourseOptions } = this.props;
 
+    const pageNumber = uiUtils.getPageNumber(pageView);
+    if (anchor.page !== pageNumber) {
+      return false;
+    }
+
     /*
      * Align the horizontal center of the tooltip with the center of the anchor.
      */
     const anchorPosition = uiUtils.getPositionInPageView(pageView, anchor);
-    const tooltipCenterX = anchorPosition.left + anchorPosition.width + 2;
+    const tooltipCenterX = anchorPosition.left + anchorPosition.width / 2;
     let style: React.CSSProperties = {
       left: tooltipCenterX,
       transform: "translate(-50%, 0)",
@@ -56,10 +63,13 @@ class DiscourseTagActionWidget extends React.PureComponent<Props> {
           <FormControl className="discourse-select">
             <Select
               native
-              value={this.props.selectedDiscourseTag}
+              value={
+                this.props.selectedDiscourseTag === "Highlight"
+                  ? ""
+                  : this.props.selectedDiscourseTag
+              }
               onChange={this.handleDiscourseSelected}
             >
-              <option key="default" value="" disabled />
               {discourseOptions.map((d) => (
                 <option key={d} value={d}>
                   {d}
@@ -73,6 +83,11 @@ class DiscourseTagActionWidget extends React.PureComponent<Props> {
               onClick={this.props.handleDeleteCustomDiscourseTag}
             >
               <DeleteIcon />
+            </IconButton>
+          </MuiTooltip>
+          <MuiTooltip title={"Close widget"}>
+            <IconButton size="small" onClick={this.props.handleCloseWidget}>
+              <CloseIcon />
             </IconButton>
           </MuiTooltip>
         </div>

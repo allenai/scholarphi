@@ -119,6 +119,10 @@ export interface Settings {
    * Show frequently asked questions as drawer content.
    */
   faqEnabled: boolean;
+  /**
+   * Show palette for filtering discourses.
+   */
+  discoursePaletteEnabled: boolean;
 }
 
 /**
@@ -184,6 +188,15 @@ const PRESETS: Preset[] = [
     annotationHintsEnabled: false,
   },
   {
+    key: "skim-gold-highlight",
+    primerPageEnabled: false,
+    skimmingEnabled: true,
+    goldSkimmingEnabled: true,
+    abstractExpansionEnabled: false,
+    annotationHintsEnabled: false,
+    cuingStrategy: "highlight",
+  },
+  {
     key: "skim-gold-lead",
     primerPageEnabled: false,
     skimmingEnabled: true,
@@ -237,7 +250,8 @@ export function getSettings(presets?: string[]) {
     goldWithLeadSkimmingEnabled: false,
     abstractExpansionEnabled: false,
     faqEnabled: false,
-    cuingStrategy: "declutter"
+    cuingStrategy: "declutter",
+    discoursePaletteEnabled: false,
   };
 
   let settings = DEFAULT_SETTINGS;
@@ -358,5 +372,10 @@ export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
     key: "abstractExpansionEnabled",
     type: "flag",
     label: "Details on demand from abstract",
+  },
+  {
+    key: "discoursePaletteEnabled",
+    type: "flag",
+    label: "Enable palette for filtering discourses",
   },
 ];
