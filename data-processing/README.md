@@ -202,6 +202,24 @@ Alternatively, you can run just the slow tests with:
 pytest -m slow
 ```
 
+### A note on tests around definitions
+
+Some tests around the definitions pipeline need to download
+some things. By default, they use this as the base url:
+
+```
+https://scholarphi.s3-us-west-1.amazonaws.com/
+```
+
+If you do not have access to the relevant bucket, those tests
+will fail. To use a different base url for the tests, export
+it as an environment variable called `DEFINITIONS_BASE_URL`
+before running the tests:
+
+```
+export DEFINITIONS_BASE_URL=<alternative base url>
+```
+
 ## Troubleshooting the installation
 
 ### Installing psycopg2

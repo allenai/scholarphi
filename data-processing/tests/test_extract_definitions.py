@@ -2,6 +2,7 @@
 # how test fixtures (e.g., for initializing NLP models) are used in Pytest.
 # pylint: disable=redefined-outer-name
 
+import os
 import pytest
 from entities.definitions.commands.detect_definitions import (
     DefinitionDetectionModel,
@@ -13,7 +14,11 @@ from entities.definitions.commands.detect_definitions import (
 
 @pytest.fixture(scope="module")
 def model():
-    model = DefinitionDetectionModel(["AI2020", "DocDef2", "W00"])
+    maybe_base_url = os.environ.get("DEFINITIONS_BASE_URL")
+    if maybe_base_url is None:
+        model = DefinitionDetectionModel(["AI2020", "DocDef2", "W00"])
+    else:
+        model = DefinitionDetectionModel(["AI2020", "DocDef2", "W00"], maybe_base_url)
     return model
 
 

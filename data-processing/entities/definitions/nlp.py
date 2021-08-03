@@ -26,7 +26,11 @@ MODEL_CLASSES = {
 
 
 class DefinitionDetectionModel:
-    def __init__(self, prediction_types: List[str]) -> None:
+    def __init__(
+        self,
+        prediction_types: List[str],
+        base_url: str = "https://scholarphi.s3-us-west-1.amazonaws.com/"
+    ) -> None:
 
         # Initialize modules for featurization.
         # To use a smaller model, swap out the parameter with "en_core_sci_sm"
@@ -48,17 +52,17 @@ class DefinitionDetectionModel:
         # Initialize modules for transformer-based inference model based on the prediction_type
         self.model_paths = {
             "W00": {
-                "baseURL": "https://scholarphi.s3-us-west-1.amazonaws.com/",
+                "baseURL": base_url,
                 "file": "termdef.zip",
                 "type": "term-def",
             },
             "AI2020": {
-                "baseURL": "https://scholarphi.s3-us-west-1.amazonaws.com/",
+                "baseURL": base_url,
                 "file": "abbrexp.zip",
                 "type": "abbr-exp",
             },
             "DocDef2": {
-                "baseURL": "https://scholarphi.s3-us-west-1.amazonaws.com/",
+                "baseURL": base_url,
                 "file": "symnick.zip",
                 "type": "sym-nick",
             },
