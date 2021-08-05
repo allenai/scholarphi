@@ -148,16 +148,16 @@ export function getSettings(presets?: string[]) {
     annotationHintsEnabled: true,
     glossesEnabled: true,
     initialFocus: null,
-    glossStyle: "tooltip",
+    glossStyle: "tooltip", // from "tooltip"
     textSelectionMenuEnabled: false,
     citationGlossesEnabled: true,
     definitionsInSymbolGloss: false,
-    termGlossesEnabled: false,
+    termGlossesEnabled: true, //swapped
     symbolUnderlineMethod: "top-level-symbols",
     symbolSearchEnabled: true,
     declutterEnabled: true,
-    definitionPreviewEnabled: false,
-    equationDiagramsEnabled: false,
+    definitionPreviewEnabled: true, //swapped 
+    equationDiagramsEnabled: true, //swapped
     useDefinitionsForDiagramLabels: false,
     entityCreationEnabled: false,
     entityEditingEnabled: false,

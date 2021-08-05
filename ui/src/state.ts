@@ -155,6 +155,7 @@ export const KNOWN_ENTITY_TYPES = [
   "equation",
   "sentence",
   "term",
+  "experience",//added
 ] as const;
 export type KnownEntityType = typeof KNOWN_ENTITY_TYPES[number];
 export type Papers = { [s2Id: string]: Paper };
@@ -183,7 +184,7 @@ export interface PageModel {
 
 export interface PaperId {
   id: string;
-  type: "s2" | "arxiv";
+  type: "s2" | "arxiv" | "localfile";
 }
 
 /**

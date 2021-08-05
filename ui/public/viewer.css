@@ -1265,10 +1265,10 @@ html[dir="rtl"] .secondaryToolbarButton::before {
 }
 
 html[dir='ltr'] .toolbarButton#sidebarToggle::before {
-  content: url(images/toolbarButton-sidebarToggle.png);
+  /* content: url(images/toolbarButton-sidebarToggle.png); */
 }
 html[dir='rtl'] .toolbarButton#sidebarToggle::before {
-  content: url(images/toolbarButton-sidebarToggle-rtl.png);
+  /* content: url(images/toolbarButton-sidebarToggle-rtl.png); */
 }
 
 html[dir='ltr'] .toolbarButton#secondaryToolbarToggle::before {
@@ -2095,10 +2095,10 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   }
 
   html[dir='ltr'] .toolbarButton#sidebarToggle::before {
-    content: url(images/toolbarButton-sidebarToggle@2x.png);
+    /* content: url(images/toolbarButton-sidebarToggle@2x.png); */
   }
   html[dir='rtl'] .toolbarButton#sidebarToggle::before {
-    content: url(images/toolbarButton-sidebarToggle-rtl@2x.png);
+    /* content: url(images/toolbarButton-sidebarToggle-rtl@2x.png); */
   }
 
   html[dir='ltr'] .toolbarButton#secondaryToolbarToggle::before {

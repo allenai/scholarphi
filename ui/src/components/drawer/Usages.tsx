@@ -1,7 +1,7 @@
 import * as selectors from "../../selectors";
 import Snippet from "./Snippet";
 import { Entities } from "../../state";
-import { isSymbol, isTerm, Symbol, Term } from "../../api/types";
+import { isPaperQuestion, isSymbol, isTerm, Symbol, Term, PaperQuestion } from "../../api/types";
 import * as uiUtils from "../../utils/ui";
 
 import React from "react";
@@ -18,8 +18,8 @@ export class Usages extends React.PureComponent<Props> {
     const selectedEntityIdsWithUsages = selectedEntityIds
       .map((id) => entities.byId[id])
       .filter((e) => e !== undefined)
-      .filter((e) => isTerm(e) || isSymbol(e))
-      .map((e) => e as Term | Symbol);
+      .filter((e) => isTerm(e) || isSymbol(e) || isPaperQuestion(e))
+      .map((e) => e as Term | Symbol | PaperQuestion);
 
     const entityIds = selectedEntityIdsWithUsages.map((e) => e.id);
     const usages = selectors.usages(entityIds, entities);

@@ -1,9 +1,9 @@
-import { DrawerContentType } from "../drawer/Drawer";
-import { getRemoteLogger } from "../../logging";
-import { EntityPageLink, RichText } from "../common";
-import * as selectors from "../../selectors";
-import { Entities } from "../../state";
-import { Term } from "../../api/types";
+import { DrawerContentType } from "../../drawer/Drawer";
+import { getRemoteLogger } from "../../../logging";
+import { EntityPageLink, RichText } from "../../common";
+import * as selectors from "../../../selectors";
+import { Entities } from "../../../state";
+import { Term, PaperQuestion } from "../../../api/types";
 
 import IconButton from "@material-ui/core/IconButton";
 import MuiTooltip from "@material-ui/core/Tooltip";
@@ -12,10 +12,11 @@ import Toc from "@material-ui/icons/Toc";
 import classNames from "classnames";
 import React from "react";
 
+
 const logger = getRemoteLogger();
 
 interface Props {
-  term: Term;
+  question: PaperQuestion;
   entities: Entities;
   showDrawerActions?: boolean;
   handleOpenDrawer: (contentType: DrawerContentType) => void;
@@ -26,7 +27,13 @@ interface State {
   closed: boolean;
 }
 
-class SimpleTermGloss extends React.PureComponent<Props, State> {
+/**
+ * A question for a paper that links to a specific area in a document, 
+ * This is heavily based on SimpleTermGloss .
+ */
+
+
+class PaperQuestionGloss extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -38,7 +45,7 @@ class SimpleTermGloss extends React.PureComponent<Props, State> {
 
   componentDidMount() {
     logger.log("debug", "rendered-term-tooltip", {
-      term: selectors.termLogData(this.props.term),
+      question: this.props.question.id,
     });
   }
 
@@ -53,25 +60,23 @@ class SimpleTermGloss extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { entities, term } = this.props;
+    const { entities, question } = this.props;
 
     /*
      * Try to find definition and nickname right before the symbol.
      */
     let definition =
-      selectors.adjacentDefinition(term.id, entities, "before") ||
-      selectors.adjacentDefinition(term.id, entities, "after");
+      selectors.adjacentDefinition(question.id, entities, "before") ||
+      selectors.adjacentDefinition(question.id, entities, "after");
 
-    console.log("entities:", entities);
-    console.log("definition:", definition);
 
-    const definedHere = selectors.inDefinition(term.id, entities);
+    const definedHere = selectors.inDefinition(question.id, entities);
 
     if (!definedHere && definition === null) {
       return null;
     }
 
-    const usages = selectors.usages([term.id], entities);
+    const usages = selectors.usages([question.id], entities);
 
     /*
      * Find most recent definition.
@@ -94,9 +99,9 @@ class SimpleTermGloss extends React.PureComponent<Props, State> {
                       <p>
                         {definition !== null && (
                           <>
-                            <RichText>{`${definition.excerpt}`}</RichText>{" "}
+                            <RichText>{`${this.props.question.attributes.question_text}`}</RichText>{" "}
                             <EntityPageLink
-                              id={`term-${term.id}-definition-link`}
+                              id={`term-${question.id}-definition-link`}
                               entity={definition.contextEntity}
                               handleJumpToEntity={this.props.handleJumpToEntity}
                             />
@@ -144,4 +149,5 @@ class SimpleTermGloss extends React.PureComponent<Props, State> {
   }
 }
 
-export default SimpleTermGloss;
+export default PaperQuestionGloss;
+

@@ -31,10 +31,13 @@ if (params.file instanceof Array) {
 }
 
 let paperId: PaperId | undefined = undefined;
+// added: have an else that runs the pdf anyways
 if (url !== undefined) {
   const arxivId = extractArxivId(url);
   if (arxivId !== undefined) {
     paperId = { type: "arxiv", id: arxivId };
+  } else {
+    paperId = { type: "localfile", id: url };
   }
 }
 

@@ -33,6 +33,8 @@ class RemoteLogger {
     data?: any,
     debounce?: number
   ) {
+
+    console.log(level, eventType, data, debounce); // added
     if (eventType !== undefined && debounce !== undefined && debounce > 0) {
       /*
        * If debouncing is requested, only log the data once the interval has passed.
@@ -54,6 +56,7 @@ class RemoteLogger {
 
   async _log(level: LogLevel, eventType?: string, data?: any) {
     const logData = this._prepareData(data);
+
     return axios
       .post("/api/log", {
         username: this._username,

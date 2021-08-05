@@ -12,6 +12,10 @@ import React from "react";
 import ReactDOM from "react-dom";
 import FeedbackLink from "../common/FeedbackLink";
 
+import PaperQuestion from "../entity/questions/PaperQuestionGloss";
+// import PaperQuestionList from "../entity/questions/PaperQuestionList";
+// import * as testQuestions from "../../../questions.json";
+
 interface Props {
   paperId?: PaperId;
   pdfViewer: PDFViewer;
@@ -77,6 +81,10 @@ class PrimerPage extends React.PureComponent<Props> {
       areCitationsLoading,
     } = this.props;
 
+    // console.log(testQuestions);
+
+    // const questions = testQuestions.map((d) => <PaperQuestion id={d.id} text={d.text}></PaperQuestion>);
+    
     /*
      * The width of the primer should be the same as the width of the first page. The height of
      * the primer can be determined dynamically from its content.
@@ -97,15 +105,26 @@ class PrimerPage extends React.PureComponent<Props> {
 
     const instructions = (
       <>
-        <p className="primer-page__header">Introducing Semantic Reader Beta</p>
+        <p className="primer-page__header">Read this first!</p>
         <p>
-          Semantic Reader puts relevant information directly in the context of the paper you are reading.
-          The features currently supported in this reader are:
+        There is a lot of information in this paper, and some of it might not be useful to you. 
+        We recommend you read this paper strategically. 
+        To help out, we have highlighted some common questions that provide useful information in the paper. 
+        Click on the "FAQs" in the upper left corner to see these questions.
         </p>
-        <ul className="feature-list">
+        <p> 
+        Many of the complicated terms in the article are defined for you, especially those around highlighted sections. 
+        Click on a boxed term to see a definition. 
+        If a term doesn’t have a definition, the system does not think it is directly related to understanding the findings of the article.  
+        </p>
+        <p>
+          When judging the relevance of this paper to your situation,  note that none of the treatments here are FDA approved, though some are in clinical trials. 
+        </p>
+        {/* <ul className="feature-list">
           <li>Citations - Click a citation to see the abstract for that citation</li>
           <li>Symbols - Click a mathematical symbol to see its usages throughout the paper</li>
-        </ul>
+        </ul> */}
+        {/* <PaperQuestionList questions={ questions }></PaperQuestionList> */}
         <p>
           This reading application is based on research from the Semantic Scholar team at AI2,
           UC Berkeley and the University of Washington,
@@ -120,7 +139,7 @@ class PrimerPage extends React.PureComponent<Props> {
         {paperId && paperId.type === "arxiv" && (
           <p className="primer-page__smaller-text">
             By using this tool you agree to the terms outlined in our <a href="https://allenai.org/privacy-policy">Privacy Policy</a>.
-            View and download <a href={`https://arxiv.org/pdf/${paperId.id}.pdf`}>this PDF</a> on arXiv.
+            {/* View and download <a href={`https://arxiv.org/pdf/${paperId.id}.pdf`}>this PDF</a> on arXiv. */}
           </p>
         )}
         <hr />

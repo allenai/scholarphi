@@ -1,0 +1,486 @@
+[
+  {
+    "id": "3",
+    "type": "experience",
+    "attributes": {
+      "bounding_boxes": [
+        {
+          "page": 0,
+          "left": 0.806723,
+          "top": 0.2,
+          "width": 0.0756303,
+          "height": 0.00950119
+        }
+      ],
+      "experience_id": "f2bb938daf8972ac309c25dab900a79070e1917c",
+      "urls": ["Medline"],
+      "snippets": ["Lupus is an autoimmune disease. This means that your immune system attacks healthy cells and tissues by mistake. This can damage many parts of the body, including the joints, skin, kidneys, heart, lungs, blood vessels, and brain. Anyone can get lupus, but women are most at risk. Lupus is two to three times more common in African American women than in white women. It's also more common in Hispanic, Asian, and Native American women. African American and Hispanic women are more likely to have severe forms of lupus.Lupus is an autoimmune disease. This means that your immune system attacks healthy cells and tissues by mistake. This can damage many parts of the body, including the joints, skin, kidneys, heart, lungs, blood vessels, and brain. Anyone can get lupus, but women are most at risk. Lupus is two to three times more common in African American women than in white women. It's also more common in Hispanic, Asian, and Native American women. African American and Hispanic women are more likely to have severe forms of lupus.Lupus is an autoimmune disease. This means that your immune system attacks healthy cells and tissues by mistake. This can damage many parts of the body, including the joints, skin, kidneys, heart, lungs, blood vessels, and brain. Anyone can get lupus, but women are most at risk. Lupus is two to three times more common in African American women than in white women. It's also more common in Hispanic, Asian, and Native American women. African American and Hispanic women are more likely to have severe forms of lupus.Lupus is an autoimmune disease. This means that your immune system attacks healthy cells and tissues by mistake. This can damage many parts of the body, including the joints, skin, kidneys, heart, lungs, blood vessels, and brain. Anyone can get lupus, but women are most at risk. Lupus is two to three times more common in African American women than in white women. It's also more common in Hispanic, Asian, and Native American women. African American and Hispanic women are more likely to have severe forms of lupus.Lupus is an autoimmune disease. This means that your immune system attacks healthy cells and tissues by mistake. This can damage many parts of the body, including the joints, skin, kidneys, heart, lungs, blood vessels, and brain. Anyone can get lupus, but women are most at risk. Lupus is two to three times more common in African American women than in white women. It's also more common in Hispanic, Asian, and Native American women. African American and Hispanic women are more likely to have severe forms of lupus.Lupus is an autoimmune disease. This means that your immune system attacks healthy cells and tissues by mistake. This can damage many parts of the body, including the joints, skin, kidneys, heart, lungs, blood vessels, and brain. Anyone can get lupus, but women are most at risk. Lupus is two to three times more common in African American women than in white women. It's also more common in Hispanic, Asian, and Native American women. African American and Hispanic women are more likely to have severe forms of lupus."],
+      "source": "tex-pipeline",
+      "tags": []
+    },
+    "relationships": {}
+  },
+  {
+    "id": "1243",
+    "type": "experience",
+    "attributes": {
+      "bounding_boxes": [
+        {
+          "page": 1,
+          "left": 0.272,
+          "top": 0.325,
+          "width": 0.0756303,
+          "height": 0.00950119
+        }
+      ],
+      "experience_id": "g2bb938daf8972ac309c25dab900a79070e1917c",
+      "urls": ["Medline"],
+      "snippets": ["Anti-double stranded DNA (Anti-dsDNA) antibodies are a group of anti-nuclear antibodies (ANA) the target antigen of which is double stranded DNA. Presence of anti-dsDNA antibodies are suggestive of SLE, however an absence of the antibodies does not rule out the disease. The levels of circulating anti-dsDNA antibodies fluctuate with disease activity in SLE. Increases in titres of the antibodies can coincide with, or even precede an increase of disease activity."],
+      "source": "tex-pipeline",
+      "tags": []
+    },
+    "relationships": {}
+  },
+  {
+    "id": "13",
+    "type": "answerSentence",
+    "attributes": {
+      "bounding_boxes": [
+        {
+          "page": 1,
+          "left": 0.05,
+          "top": 0.53,
+          "width": 0.45,
+          "height": 0.15
+        }
+      ],
+      "name":"Test Answer Sentence",
+      "text": "This is Test Questions's text answer",
+      "simplified_text": "Systemic Lupus Erythematosus is a disease that affects about 5 million people in the world, mostly women. It is an autoimmune disease, which means that your body attacks itself. It can affect many different parts of your body, including your kidneys and your brain. It can be unpredictable, meaning that it can change from being active to being quiet. It can flare up when you get sick or have a cold.",
+      "tex": "f2bb938daf83422ac309c25dab900a79070e1917c",
+      "tex_start": 0,
+      "tex_end": 5,
+      "source": "tex-pipeline",
+      "tags": []
+    },
+    "relationships": {
+      "question": {"type":"question", "id":"11"},
+      "definition_sentences": [{"type":"answerSentence", "id":"18"}],
+      "snippet_sentences": [{"type":"answerSentence", "id":"18"}]
+    }
+  },
+  {
+    "id": "18",
+    "type": "answerSentence",
+    "attributes": {
+      "bounding_boxes": [
+        {
+          "page": 2,
+          "left": 0.05,
+          "top": 0.53,
+          "width": 0.45,
+          "height": 0.15
+        }
+      ],
+      "name":"Test Answer Sentence",
+      "text": "This is Test Questions's text answer",
+      "simplified_text": "This is the second jump for an answer.",
+      "tex": "g2bb938daf83422ac309c25dab900a79070e1917a",
+      "tex_start": 0,
+      "tex_end": 5,
+      "source": "tex-pipeline",
+      "tags": []
+    },
+    "relationships": {
+      "question": {"type":"question", "id":"11"},
+      "definition_sentences": [{"type":"sentence", "id":"14"}],
+      "snippet_sentences": [{"type":"sentence", "id":"14"}]
+    }
+  },
+  {
+    "id": "1253",
+    "type": "experience",
+    "attributes": {
+      "bounding_boxes": [
+        {
+          "page": 1,
+          "left": 0.1,
+          "top": 0.55,
+          "width": 0.0756303,
+          "height": 0.00950119
+        }
+      ],
+      "experience_id": "g2bb938daf8972ac309c25dab900a79070e1917c",
+      "urls": ["Medline"],
+      "snippets": ["Anti-double stranded DNA (Anti-dsDNA) antibodies are a group of anti-nuclear antibodies (ANA) the target antigen of which is double stranded DNA. Presence of anti-dsDNA antibodies are suggestive of SLE, however an absence of the antibodies does not rule out the disease. The levels of circulating anti-dsDNA antibodies fluctuate with disease activity in SLE. Increases in titres of the antibodies can coincide with, or even precede an increase of disease activity."],
+      "source": "tex-pipeline",
+      "tags": []
+    },
+    "relationships": {}
+  },
+  {
+    "id": "14",
+    "type": "sentence",
+    "attributes": {
+      "bounding_boxes": [
+        {
+          "page": 2,
+          "left": 0.2,
+          "top": 0.2,
+          "width": 0.0756303,
+          "height": 0.00950119
+        }
+      ],
+      "name":"Test Answer 2 Sentence",
+      "text": "This is Test Questions's text answer v2",
+      "tex": "f2bb938daf8972ac309c25dab900a79070e1917c",
+      "tex_start": 0,
+      "tex_end": 5,
+      "source": "tex-pipeline",
+      "tags": []
+    }
+  },
+  {
+    "id": "11",
+    "type": "question",
+    "attributes": {
+      "bounding_boxes": [
+        {
+          "page": 0,
+          "left": 0.7,
+          "top": 0.2,
+          "width": 0.0756303,
+          "height": 0.00950119
+        }
+      ],
+      "name":"Test Question",
+      "tex": "f2bb938daf8972ac309c25dab900a79070e1917c",
+      "question_text": "What condition does this paper study?",
+      "answer_text": "This paper studies new treaments for Systemic Lupus Erythematosus (SLE).",
+      "definitions": ["This is the first answering sentence to the question"],
+      "definition_texs": ["This is the answering text that gets rendered in the sidebar"],
+      "sources": ["sources"],
+      "snippets": ["This is the snippet of the answering sentence", "Second Snippet"],
+      "source": "tex-pipeline",
+      "tags": []
+    },
+    "relationships": {
+      "sentence": {"type":"none", "id":"5"},
+      "definition_sentences": [{"type":"answerSentence", "id":"13"}],
+      "snippet_sentences": [{"type":"answerSentence", "id":"13"}]
+    }
+  },
+  {
+    "id": "234",
+    "type": "question",
+    "attributes": {
+      "bounding_boxes": [
+        {
+          "page": 0,
+          "left": 0.7,
+          "top": 0.2,
+          "width": 0.0756303,
+          "height": 0.00950119
+        }
+      ],
+      "name":"Test Question 2",
+      "tex": "f2bb938daf8972ac309c25dab900a79070e1917c",
+      "question_text": "How is the condition usually treated?",
+      "answer_text": "This paper studies new treaments for Systemic Lupus Erythematosus (SLE).",
+      "definitions": ["This is the first answering sentence to the question"],
+      "definition_texs": ["This is the answering text that gets rendered in the sidebar"],
+      "sources": ["sources"],
+      "snippets": ["This is the snippet of the answering sentence", "Second Snippet"],
+      "source": "tex-pipeline",
+      "tags": []
+    },
+    "relationships": {
+      "sentence": {"type":"none", "id":"5"},
+      "definition_sentences": [{"type":"sentence", "id":"3096855"}],
+      "snippet_sentences": [{"type":"sentence", "id":"3096855"}]
+    }
+  },
+
+  {
+    "id": "1",
+    "type": "term",
+    "attributes": {
+      "bounding_boxes": [
+        {
+          "page": 0,
+          "left": 0.5,
+          "top": 0.23,
+          "width": 0.0756303,
+          "height": 0.00950119
+        }
+      ],
+      "name":"Test",
+      "tex": "f2bb938daf8972ac309c25dab900a79070e1917c",
+      "term_type": "Test",
+      "definitions": ["Definitions"],
+      "definition_texs": ["This is the definition text that gets rendered in the sidebar"],
+      "sources": ["sources"],
+      "snippets": ["This is the snipper sentence"],
+      "source": "tex-pipeline",
+      "tags": []
+    },
+    "relationships": {
+      "sentence": {"type":"None", "id":"5"},
+      "definition_sentences": [{"type":"sentence", "id":"12"}],
+      "snippet_sentences": [{"type":"sentence", "id":"12"}]
+    }
+  },
+  {
+    "id": "12",
+    "type": "sentence",
+    "attributes": {
+      "bounding_boxes": [
+        {
+          "page": 1,
+          "left": 0.5,
+          "top": 0.5,
+          "width": 0.0756303,
+          "height": 0.00950119
+        }
+      ],
+      "name":"Test Sentence",
+      "text": "This is Test's text",
+      "tex": "f2bb938daf8972ac309c25dab900a79070e1917c",
+      "tex_start": 0,
+      "tex_end": 5,
+      "source": "tex-pipeline",
+      "tags": []
+    }
+  },
+  {
+    "id": "2",
+    "type": "symbol",
+    "attributes": {
+      "bounding_boxes": [
+        {
+          "page": 0,
+          "left": 0.5,
+          "top": 0.285036,
+          "width": 0.0756303,
+          "height": 0.00950119
+        }
+      ],
+      "tex": "f2bb938daf8972ac309c25dab900a79070e1917c",
+      "type": "identifier",
+      "mathml": "mathml",
+      "mathml_near_matches": [],
+      "is_definition": true,
+      "diagram_label": null,
+      "nicknames": [],
+      "definitions": [],
+      "defining_formulas": [],
+      "passages": [],
+      "snippets": "snippets",
+      "source": "tex-pipeline",
+      "tags": []
+    },
+    "relationships": {
+      "sentence": {"type":"None", "id":"None"},
+      "parent": {"type":"None", "id":"None"},
+      "children": [{"type":"None", "id":"None"}],
+      "equation": {"type":"None", "id":"None"},
+      "nickname_sentences": [],
+      "definition_sentences": [],
+      "defining_formula_equations": [],
+      "snippet_sentences": []
+    }
+  },
+  {
+    "id": "3090838",
+    "type": "citation",
+    "attributes": {
+      "bounding_boxes": [
+        {
+          "page": 5,
+          "left": 0.29916,
+          "top": 0.619952,
+          "width": 0.176471,
+          "height": 0.00950119
+        }
+      ],
+      "paper_id": "9405d0388f90ba1432ef13c21309d8363860e22e",
+      "source": "tex-pipeline",
+      "tags": []
+    },
+    "relationships": {}
+  },
+  {
+    "id": "3096855",
+    "type": "sentence",
+    "attributes": {
+      "bounding_boxes": [
+        {
+          "page": 0,
+          "left": 0.280672,
+          "top": 0.171021,
+          "width": 0.448739,
+          "height": 0.0142518
+        }
+      ],
+      "source": "tex-pipeline",
+      "tags": [],
+      "tex": "\\{strubell, pat, mccallum\\}@cs.umass.edu",
+      "tex_start": 1465,
+      "tex_end": 1505,
+      "text": "\\{strubell, pat, mccallum\\}@cs.umass.edu"
+    },
+    "relationships": {}
+  },
+  {
+    "id": "3096856",
+    "type": "sentence",
+    "attributes": {
+      "bounding_boxes": [
+        {
+          "page": 0,
+          "left": 0.415126,
+          "top": 0.186461,
+          "width": 0.178151,
+          "height": 0.0154394
+        }
+      ],
+      "source": "tex-pipeline",
+      "tags": [],
+      "tex": "$^2$Google AI Language",
+      "tex_start": 1512,
+      "tex_end": 1534,
+      "text": "EQUATION_DEPTH_0_START ^2 EQUATION_DEPTH_0_END Google AI Language"
+    },
+    "relationships": {}
+  },
+  {
+    "id": "3096857",
+    "type": "sentence",
+    "attributes": {
+      "bounding_boxes": [
+        {
+          "page": 0,
+          "left": 0.445378,
+          "top": 0.205463,
+          "width": 0.117647,
+          "height": 0.0106888
+        }
+      ],
+      "source": "tex-pipeline",
+      "tags": [],
+      "tex": "New York, NY",
+      "tex_start": 1540,
+      "tex_end": 1552,
+      "text": "New York, NY"
+    },
+    "relationships": {}
+  },
+  {
+    "id": "3096858",
+    "type": "sentence",
+    "attributes": {
+      "bounding_boxes": [
+        {
+          "page": 0,
+          "left": 0.347899,
+          "top": 0.220903,
+          "width": 0.315966,
+          "height": 0.0142518
+        }
+      ],
+      "source": "tex-pipeline",
+      "tags": [],
+      "tex": "\\{andor, djweiss\\}@google.com",
+      "tex_start": 1562,
+      "tex_end": 1591,
+      "text": "\\{andor, djweiss\\}@google.com"
+    },
+    "relationships": {}
+  },
+  {
+    "id": "3096859",
+    "type": "sentence",
+    "attributes": {
+      "bounding_boxes": [
+        {
+          "page": 0,
+          "left": 0.14958,
+          "top": 0.319477,
+          "width": 0.184874,
+          "height": 0.0106888
+        },
+        {
+          "page": 0,
+          "left": 0.14958,
+          "top": 0.305226,
+          "width": 0.309244,
+          "height": 0.0106888
+        },
+        {
+          "page": 0,
+          "left": 0.14958,
+          "top": 0.290974,
+          "width": 0.309244,
+          "height": 0.0106888
+        }
+      ],
+      "source": "tex-pipeline",
+      "tags": [],
+      "tex": "Current state-of-the-art semantic role labeling (SRL) uses a deep neural network with no explicit linguistic features.",
+      "tex_start": 1649,
+      "tex_end": 1767,
+      "text": "Current state-of-the-art semantic role labeling (SRL) uses a deep neural network with no explicit linguistic features."
+    },
+    "relationships": {}
+  },
+  {
+    "id": "3096860",
+    "type": "sentence",
+    "attributes": {
+      "bounding_boxes": [
+        {
+          "page": 0,
+          "left": 0.151261,
+          "top": 0.375297,
+          "width": 0.176471,
+          "height": 0.0106888
+        },
+        {
+          "page": 0,
+          "left": 0.14958,
+          "top": 0.361045,
+          "width": 0.309244,
+          "height": 0.0106888
+        },
+        {
+          "page": 0,
+          "left": 0.151261,
+          "top": 0.347981,
+          "width": 0.307563,
+          "height": 0.0106888
+        },
+        {
+          "page": 0,
+          "left": 0.151261,
+          "top": 0.333729,
+          "width": 0.307563,
+          "height": 0.0106888
+        },
+        {
+          "page": 0,
+          "left": 0.352941,
+          "top": 0.319477,
+          "width": 0.105882,
+          "height": 0.0106888
+        }
+      ],
+      "source": "tex-pipeline",
+      "tags": [],
+      "tex": "However, prior work has shown that gold syntax trees can dramatically improve SRL decoding, suggesting the possibility of increased accuracy from explicit modeling of syntax.",
+      "tex_start": 1769,
+      "tex_end": 1943,
+      "text": "However, prior work has shown that gold syntax trees can dramatically improve SRL decoding, suggesting the possibility of increased accuracy from explicit modeling of syntax."
+    },
+    "relationships": {}
+  }
+]

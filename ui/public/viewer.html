@@ -40,6 +40,7 @@ See https://github.com/adobe-type-tools/cmap-resources
 
     <!-- Semantic Reader specific -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="custom.css"/>
 
     <script type="text/javascript">
       (window.heap = window.heap || []),
@@ -98,25 +99,34 @@ See https://github.com/adobe-type-tools/cmap-resources
 
       <div id="sidebarContainer">
         <div id="toolbarSidebar">
-          <div class="splitToolbarButton toggled">
-            <button id="viewThumbnail" class="toolbarButton toggled" title="Show Thumbnails" tabindex="2" data-l10n-id="thumbs">
+          <div class="splitToolbarButton">
+            <button id="viewThumbnail" class="toolbarButton hidden" title="Show Thumbnails" tabindex="2" data-l10n-id="thumbs">
                <span data-l10n-id="thumbs_label">Thumbnails</span>
             </button>
-            <button id="viewOutline" class="toolbarButton" title="Show Document Outline (double-click to expand/collapse all items)" tabindex="3" data-l10n-id="document_outline">
+            <button id="viewOutline" class="toolbarButton hidden" title="Show Document Outline (double-click to expand/collapse all items)" tabindex="3" data-l10n-id="document_outline">
                <span data-l10n-id="document_outline_label">Document Outline</span>
             </button>
-            <button id="viewAttachments" class="toolbarButton" title="Show Attachments" tabindex="4" data-l10n-id="attachments">
+            <button id="viewAttachments" class="toolbarButton hidden" title="Show Attachments" tabindex="4" data-l10n-id="attachments">
                <span data-l10n-id="attachments_label">Attachments</span>
             </button>
+            <!-- Semantic Reader specific -->
+            <button id="viewFAQs" class="toolbarButton" title="Show FAQs" tabindex="5" data-l10n-id="FAQs">
+              <span data-l10n-id="FAQs_label">FAQs</span>
+           </button>
           </div>
         </div>
         <div id="sidebarContent">
-          <div id="thumbnailView">
+          
+          <div id="thumbnailView" class="hidden" style="Display: none;">
           </div>
-          <div id="outlineView" class="hidden">
+          <div id="outlineView" class="hidden" style="Display: none;">
           </div>
-          <div id="attachmentsView" class="hidden">
+          <div id="attachmentsView" class="hidden" style="Display: none;">
           </div>
+          <!-- Semantic Reader specific -->
+          <div id="FAQsView">
+            <div class="faqTitle"> FAQs </div>
+          </div> 
         </div>
         <div id="sidebarResizer" class="hidden"></div>
       </div>  <!-- sidebarContainer -->
@@ -240,8 +250,8 @@ See https://github.com/adobe-type-tools/cmap-resources
           <div id="toolbarContainer">
             <div id="toolbarViewer">
               <div id="toolbarViewerLeft">
-                <button id="sidebarToggle" class="toolbarButton" title="Toggle Sidebar" tabindex="11" data-l10n-id="toggle_sidebar">
-                  <span data-l10n-id="toggle_sidebar_label">Toggle Sidebar</span>
+                <button style="width: 50px;" id="sidebarToggle" class="toolbarButton" title="Toggle Sidebar" tabindex="11" data-l10n-id="toggle_sidebar">
+                  FAQs <span data-l10n-id="toggle_sidebar_label">Toggle Sidebar</span> 
                 </button>
                 <div class="toolbarButtonSpacer"></div>
                 <button id="viewFind" class="toolbarButton" title="Find in Document" tabindex="12" data-l10n-id="findbar">
