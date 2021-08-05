@@ -147,6 +147,12 @@ function(
             }
         },
         spec: {
+            strategy: {
+                type: 'RollingUpdate',
+                rollingUpdate: {
+                    maxSurge: replicas // This makes deployments faster.
+                }
+            },
             revisionHistoryLimit: 3,
             replicas: replicas,
             selector: {
@@ -253,9 +259,26 @@ function(
         }
     };
 
+    local pdb = {
+        apiVersion: 'policy/v1beta1',
+        kind: 'PodDisruptionBudget',
+        metadata: {
+            name: fullyQualifiedName,
+            namespace: namespaceName,
+            labels: labels,
+        },
+        spec: {
+            minAvailable: if replicas > 1 then 1 else 0,
+            selector: {
+                matchLabels: selectorLabels,
+            },
+        },
+    };
+
     [
         namespace,
         ingress,
         deployment,
-        service
+        service,
+        pdb
     ]
