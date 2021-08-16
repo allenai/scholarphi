@@ -22,6 +22,9 @@ import dataclasses
 
 import texcompile.client as texcompile
 import texsymdetect.client as texsymdetect
+from doc2json.tex2json.tex_to_xml import normalize_latex, norm_latex_to_xml
+from doc2json.tex2json.xml_to_json import convert_latex_xml_to_s2orc_json
+
 
 
 if __name__ == '__main__':
@@ -36,6 +39,17 @@ if __name__ == '__main__':
     os.makedirs(args.output_dir, exist_ok=True)
     os.makedirs(args.temp_dir, exist_ok=True)
     shutil.copytree(src=args.input_latex_dir, dst=args.temp_dir)
+
+    # for testing;
+    class Args:
+        pass
+    args = Args()
+    args.input_latex_dir = 'data/1601.00978v1/'
+    args.output_dir = 'data/1601.00978v1/'
+
+    # call aws s3 cp s3://ai2-s2-scholarphi-pipeline-dev/daq/arxiv-source-data/bymonth/1601/1601.00978v1 data/1601.00978v1/1601.00978v1.tar.gz
+    # tar -xzvf data/1601.00978v1/1601.00978v1.tar.gz --directory data/1601.00978v1/
+
 
     # Step 1 - Compile LaTeX to PDF
     result: texcompile.Result = texcompile.compile(sources_dir=args.input_tex_dir,
@@ -69,6 +83,16 @@ if __name__ == '__main__':
 
     #
     # Step 3a.  run S2ORC latex parser on LaTex projects;  do the char-level fuzzy matching
+    args.latex_norm_dir = 'data/latex_norm/'
+    args.latex_norm_log = 'data/latex_norm/log.txt'
+    args.latex_xml_dir = 'data/latex_xml/'
+    args.latex_xml_err = 'data/latex_xml/err.txt'
+    args.latex_xml_log = 'data/latex_xml/log.txt'
+    os.makedirs(args.latex_norm_dir, exist_ok=True)
+    os.makedirs(args.latex_xml_dir, exist_ok=True)
+    norm_output_dir = normalize_latex(latex_dir=args.input_latex_dir, norm_dir=args.latex_norm_dir, norm_log_file=args.latex_norm_log, cleanup=False)
+    xml_output_dir = norm_latex_to_xml(norm_dir=norm_output_dir, xml_dir=args.latex_xml_dir, xml_err_file=args.latex_xml_err, xml_log_file=args.latex_xml_log, cleanup=False)
+    process_tex_file(input_file='1601.00978v1', temp_dir='s2orc_doc2json/temp/', output_dir='s2orc_doc2json/out/', log_dir='s2orc_doc2json/log')
 
 
     #
