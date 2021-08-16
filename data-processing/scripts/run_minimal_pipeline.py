@@ -13,6 +13,7 @@ from typing import List
 
 import os
 import requests
+import json
 
 import argparse
 import tempfile
@@ -24,6 +25,7 @@ import texcompile.client as texcompile
 import texsymdetect.client as texsymdetect
 from doc2json.tex2json.tex_to_xml import normalize_latex, norm_latex_to_xml
 from doc2json.tex2json.xml_to_json import convert_latex_xml_to_s2orc_json
+
 
 
 
@@ -79,7 +81,7 @@ if __name__ == '__main__':
 
 
     # Step 3 - Get tokens from PDF
-
+    
 
     #
     # Step 3a.  run S2ORC latex parser on LaTex projects;  do the char-level fuzzy matching
@@ -88,11 +90,17 @@ if __name__ == '__main__':
     args.latex_xml_dir = 'data/latex_xml/'
     args.latex_xml_err = 'data/latex_xml/err.txt'
     args.latex_xml_log = 'data/latex_xml/log.txt'
+    args.latex_s2orc_dir = 'data/s2orc/'
+    args.latex_s2orc_json = 'data/s2orc/s2orc.json'
     os.makedirs(args.latex_norm_dir, exist_ok=True)
     os.makedirs(args.latex_xml_dir, exist_ok=True)
+    os.makedirs(args.latex_s2orc_dir, exist_ok=True)
     norm_output_dir = normalize_latex(latex_dir=args.input_latex_dir, norm_dir=args.latex_norm_dir, norm_log_file=args.latex_norm_log, cleanup=False)
-    xml_output_dir = norm_latex_to_xml(norm_dir=norm_output_dir, xml_dir=args.latex_xml_dir, xml_err_file=args.latex_xml_err, xml_log_file=args.latex_xml_log, cleanup=False)
-    process_tex_file(input_file='1601.00978v1', temp_dir='s2orc_doc2json/temp/', output_dir='s2orc_doc2json/out/', log_dir='s2orc_doc2json/log')
+    xml_output_path = norm_latex_to_xml(norm_dir=norm_output_dir, xml_dir=args.latex_xml_dir, xml_err_file=args.latex_xml_err, xml_log_file=args.latex_xml_log, cleanup=False)
+    s2orc_paper = convert_latex_xml_to_s2orc_json(xml_fpath=xml_output_path, log_dir=args.latex_s2orc_dir)
+    paper_dict = s2orc_paper.as_json()
+    with open(args.latex_s2orc_json, 'w') as f_out:
+        json.dump(paper_dict, f_out, indent=4)
 
 
     #
