@@ -36,3 +36,6 @@ pytest==5.3.1
 # ScholarPhi-specific dependencies
 git+https://github.com/andrewhead/texsymdetect
 git+https://github.com/andrewhead/texcompile
+
+# S2ORC DOC2JSON
+git+https://github.com/allenai/s2orc-doc2json.git
