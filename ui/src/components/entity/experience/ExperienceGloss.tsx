@@ -82,6 +82,9 @@ interface Props {
       const Definitions = UrlDefinitions.map((d) => 
         <RichText>{`${ d.snippet }`}</RichText>);
 
+      const urls = UrlDefinitions.map((d) => 
+        <MedlineLink url={ d.url }>{ d.url }</MedlineLink>);
+
 
       return (
         <div className={classNames("gloss", "term-gloss", "simple-gloss")}>
@@ -89,7 +92,8 @@ interface Props {
           <table>
             <tbody>
               <td>
-              <div className="simple-gloss__definition-container"> {Definitions} </div>
+              <div className="simple-gloss__definition-container"> {Definitions} </div> 
+              <div className="simple-gloss__definition-container"> {urls} </div> 
               </td>
             </tbody>
           </table>

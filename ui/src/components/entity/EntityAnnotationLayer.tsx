@@ -10,6 +10,7 @@ import {
   isExperience,
   isPaperQuestion,
   isAnswerSentence,
+  isSectionHeader,
   Paper,
 } from "../../api/types";
 import * as selectors from "../../selectors";
@@ -22,6 +23,8 @@ import LazyCitationGloss from "./citation/LazyCitationGloss";
 import ExperienceGloss from "./experience/ExperienceGloss";
 import FAQ from "./questions/FAQ";
 import AnswerSentenceGloss from "./answers/AnswerSentenceGloss";
+import SectionHeaderGloss from "./headers/SectionHeaderGloss";
+
 import EntityAnnotation from "./EntityAnnotation";
 import SimpleSymbolGloss from "./SimpleSymbolGloss";
 import SimpleTermGloss from "./SimpleTermGloss";
@@ -332,39 +335,6 @@ class EntityAnnotationLayer extends React.Component<Props> {
           );
           // added - paperQuestion
         } 
-        // else if (
-        //     citationAnnotationsEnabled &&
-        //     isPaperQuestion(entity) &&
-        //     entity.attributes.name !== null
-        //   ) {
-        //     return (
-        //       <EntityAnnotation
-        //         key={annotationId}
-        //         id={annotationId}
-        //         entity={entity}
-        //         className="term-annotation"
-        //         pageView={pageView}
-        //         underline={showAnnotations}
-        //         glossStyle={glossStyle}
-        //         glossContent={
-        //           showGlosses ? (
-        //             <PaperQuestionGloss
-        //               question={entity}
-        //               entities={entities}
-        //               showDrawerActions={true}
-        //               handleJumpToEntity={this.props.handleJumpToEntity}
-        //               handleOpenDrawer={this.props.handleOpenDrawer}
-        //             />
-        //           ) : null
-        //         }
-        //         selected={isSelected}
-        //         selectedSpanIds={selectedSpanIds}
-        //         active={annotationInteractionEnabled}
-        //         isFindSelection={isFindSelection}
-        //         isFindMatch={isMatch}
-        //         handleSelect={handleSelectEntityAnnotation}
-        //       />
-        //     );
         else if (
           isPaperQuestion(entity) &&
           entity.attributes.name !== null
@@ -567,6 +537,25 @@ class EntityAnnotationLayer extends React.Component<Props> {
                 tooltipPlacement="below"
                 handleSelect={handleSelectEntityAnnotation}
               />
+            ); 
+          }
+          else if (isSectionHeader(entity)) {
+            return (
+              <EntityAnnotation
+              key={annotationId}
+              id={annotationId}
+              entity={entity}
+              className={classNames("section-header-annotation")}
+              pageView={pageView}
+              underline={showAnnotations}
+              glossStyle='sidenote'
+              glossContent={null}
+              selected={isSelected}
+              active={annotationInteractionEnabled}
+              selectedSpanIds={selectedSpanIds}
+              handleSelect={handleSelectEntityAnnotation}>
+                <p> Here </p>
+              </EntityAnnotation>
             ); 
           } else {
             return null;

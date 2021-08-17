@@ -603,7 +603,7 @@ html[dir='rtl'] #outerContainer.sidebarOpen #sidebarContainer {
 }
 
 #sidebarContent {
-  top: 80px;
+  top: 30px;
   bottom: 0;
   overflow: auto;
   -webkit-overflow-scrolling: touch;

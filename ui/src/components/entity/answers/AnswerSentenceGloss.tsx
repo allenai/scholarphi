@@ -1,5 +1,5 @@
 import React from "react";
-import { AnswerSentence, PaperQuestion } from "../../../api/types";
+import { AnswerSentence, PaperQuestion, Relationship } from "../../../api/types";
 import { EntityLink } from "../../common";
 import { Entities } from "../../../state";
 import { Nullable } from '../../../types/ui';
@@ -32,6 +32,35 @@ interface Props {
             null
           );
 
+        // if the length of the coaster is longer than 0 then 
+        // (1) find the index of this answer in the coaster and 
+        // (2) make an indicator element for the gloss
+        let coaster = this.props.answer.relationships.coaster as Relationship[];
+        let coasterIndicator = null;
+
+        if (coaster.length > 0){
+            // function for getting index of this answer in the coaster
+            const isThisAnswer = (element: Relationship) => element['id'] === this.props.answer['id'];
+            const thisAnswerIndex = coaster.findIndex(isThisAnswer);
+            coasterIndicator = <p> You are on {thisAnswerIndex + 1} of {coaster.length} answers. </p> 
+        } 
+
+        let detailJump = this.props.answer.relationships.more_details.id ? 
+            <EntityLink
+                id={this.props.answer.id ? `${this.props.answer.id}-clickable-link` : undefined}
+                className="subtle"
+                entityId={this.props.answer.relationships.more_details.id} 
+                handleJumpToEntity={this.props.handleJumpToEntity}
+            > Jump to more detailed answer. </EntityLink> : null;
+
+        let backJump = this.props.answer.relationships.less_details.id ? 
+            <EntityLink
+                id={this.props.answer.id ? `${this.props.answer.id}-clickable-link` : undefined}
+                className="subtle"
+                entityId={this.props.answer.relationships.less_details.id} 
+                handleJumpToEntity={this.props.handleJumpToEntity}
+            > Jump to more general answer. </EntityLink> : null;
+
         const divStyle = {
             overflow: 'scroll',
             maxHeight: '90px',
@@ -48,12 +77,9 @@ interface Props {
                         </p>
                     </div>
                         <div className="paper-summary__section"> <strong> Simple answer: </strong> { definition } </div> 
-                        <EntityLink
-                            id={this.props.answer.id ? `${this.props.answer.id}-clickable-link` : undefined}
-                            className="subtle"
-                            entityId={this.props.answer.relationships.definition_sentences[0].id} // this breaks, it is undefined
-                            handleJumpToEntity={this.props.handleJumpToEntity}
-                        > Jump to further section. </EntityLink>
+                        <p> {backJump} </p>
+                        {coasterIndicator}
+                        <p> {detailJump} </p>
                     </div>
                 </div>
             </div>

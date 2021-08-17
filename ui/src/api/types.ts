@@ -90,7 +90,7 @@ export interface EntityGetResponse {
 /**
  * Use type guards (e.g., 'isSymbol') to distinguish between types of entities.
  */
-export type Entity = GenericEntity | Symbol | Term | Citation | Sentence | Experience | PaperQuestion | AnswerSentence;
+export type Entity = GenericEntity | Symbol | Term | Citation | Sentence | Experience | PaperQuestion | AnswerSentence | SectionHeader;
 
 /**
  * All entity specifications should extend BaseEntity. To make specific relationship properties
@@ -355,7 +355,7 @@ export function isSentence(entity: Entity): entity is Sentence {
   return entity.type === "sentence";
 }
 
-/* Three new types added: Experience & Questions & Sentence Answers */
+/* New types added: Experience & Questions & Sentence Answers & Section Headers */
 
 /* Experiences are overlayed information for specific terms in the document
 * They include definitions drawn from multiple different sources (urls)
@@ -416,8 +416,10 @@ export interface AnswerSentence extends BaseEntity {
 
 export interface AnswerSentenceRelationships {
   question: Relationship;
-  definition_sentences: Relationship[];
-  snippet_sentences: Relationship[];
+  more_details: Relationship;
+  less_details: Relationship;
+  coaster: Relationship[];
+  // snippet_sentences: Relationship[];
 }
 
 export interface AnswerSentenceAttributes extends BaseEntityAttributes {
@@ -426,10 +428,28 @@ export interface AnswerSentenceAttributes extends BaseEntityAttributes {
   tex: string | null;
   tex_start: number | null;
   tex_end: number | null;
+
 }
 
 export function isAnswerSentence(entity: Entity): entity is AnswerSentence {
   return entity.type === "answerSentence";
+}
+
+/* Section headers are simplified explanations of what is going on in a section
+*/
+export interface SectionHeader extends BaseEntity {
+  type: "sectionHeader";
+  attributes: SectionHeaderAttributes;
+  relationships: {};
+}
+
+export interface SectionHeaderAttributes extends BaseEntityAttributes {
+  summary: string;
+  points: string[];
+}
+
+export function isSectionHeader(entity: Entity): entity is SectionHeader {
+  return entity.type === "sectionHeader";
 }
 
 

@@ -62,7 +62,8 @@ import classNames from "classnames";
 import React from "react";
 
 //added 
-import * as testEntities from './entities.json';
+// import * as testEntities from './data/entities.json';
+import * as testEntities from './data/auto_PAWLS_SPUI_annotations.json';
 
 interface Props {
   paperId?: PaperId;
@@ -727,6 +728,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       
       const entities = myObj[myKey as keyof jsonOjbect] as Entity[]; 
 
+
       // const entities = await api.getDedupedEntities(this.props.paperId.id, true);
       this.setState({
         entities: stateUtils.createRelationalStoreFromArray(entities, "id"),
@@ -819,6 +821,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.setState({
       jumpTarget: id,
     });
+
+    /*
+    * added: also select the entity
+    */
+   this.selectEntity(id);
 
     return true;
   }
