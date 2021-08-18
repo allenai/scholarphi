@@ -1,0 +1,26 @@
+{
+  "S3_PREFIX_ARXIV_LATEX_SOURCES": "s3://...",
+  "TEXCOMPILE": {
+    "HOST": "0.0.0.0",
+    "PORT": 8000
+  },
+  "TEXSYMDETECT": {
+    "HOST": "0.0.0.0",
+    "PORT": 8001
+  },
+  "SPP": {
+    "HOST": "0.0.0.0",
+    "PORT": 8002
+  },
+  "HEDDEX": {
+    "HOST": "0.0.0.0",
+    "PORT": 8003
+  },
+  "SCHOLARPHI_PSQL_DB": {
+    "HOST": "...",
+    "DBNAME": "...",
+    "USER": "...",
+    "PASSWORD": "...",
+    "PORT": "..."
+  }
+}
