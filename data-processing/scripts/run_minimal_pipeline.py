@@ -27,6 +27,12 @@ from doc2json.tex2json.tex_to_xml import normalize_latex, norm_latex_to_xml
 from doc2json.tex2json.xml_to_json import convert_latex_xml_to_s2orc_json
 
 
+# TODO: reorg dir structure
+# TODO: move to outside data-proc
+# TODO: pull PDF from arxiv for SPP
+# TOOD: get SPP working
+# TODO: get s2orc running
+
 
 
 if __name__ == '__main__':
@@ -82,6 +88,7 @@ if __name__ == '__main__':
 
     # Step 3 - Get tokens from PDF
     
+
 
     #
     # Step 3a.  run S2ORC latex parser on LaTex projects;  do the char-level fuzzy matching
