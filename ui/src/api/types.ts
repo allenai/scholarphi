@@ -419,7 +419,6 @@ export interface AnswerSentenceRelationships {
   more_details: Relationship;
   less_details: Relationship;
   coaster: Relationship[];
-  // snippet_sentences: Relationship[];
 }
 
 export interface AnswerSentenceAttributes extends BaseEntityAttributes {

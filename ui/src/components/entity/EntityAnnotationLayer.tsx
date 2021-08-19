@@ -541,7 +541,8 @@ class EntityAnnotationLayer extends React.Component<Props> {
           }
           else if (isSectionHeader(entity)) {
             return (
-              <EntityAnnotation
+              <SectionHeaderGloss
+              header={entity}
               key={annotationId}
               id={annotationId}
               entity={entity}
@@ -552,11 +553,8 @@ class EntityAnnotationLayer extends React.Component<Props> {
               glossContent={null}
               selected={isSelected}
               active={annotationInteractionEnabled}
-              selectedSpanIds={selectedSpanIds}
-              handleSelect={handleSelectEntityAnnotation}>
-                <p> Here </p>
-              </EntityAnnotation>
-            ); 
+              selectedSpanIds={selectedSpanIds}/>
+         ); 
           } else {
             return null;
           }

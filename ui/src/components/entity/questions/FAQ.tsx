@@ -3,7 +3,7 @@ import { getRemoteLogger } from "../../../logging";
 import { EntityPageLink, RichText, EntityLink } from "../../common";
 import * as selectors from "../../../selectors";
 import { Entities } from "../../../state";
-import { Term, PaperQuestion } from "../../../api/types";
+import { Term, PaperQuestion, AnswerSentence, Relationship } from "../../../api/types";
 import ReactDOM from "react-dom";
 
 
@@ -66,9 +66,7 @@ interface State {
       let definition =
         selectors.adjacentDefinition(question.id, entities, "before") ||
         selectors.adjacentDefinition(question.id, entities, "after");
-  
-      console.log("definition:", definition);
-  
+    
       const definedHere = selectors.inDefinition(question.id, entities);
   
       if (!definedHere && definition === null) {
@@ -79,11 +77,37 @@ interface State {
       const FAQsContainer = document.getElementById(
         "FAQsView"
       );
-      console.log("usages:", usages);
-  
-      /*
-       * Find most recent definition.
-       */
+
+      // display the whole coaster
+      const firstAnswer = definition? definition.contextEntity as AnswerSentence : null;
+      const answerCoaster = firstAnswer? firstAnswer.relationships.coaster as Relationship[] : null;
+
+      let coasterIndicator = null;
+
+        if (answerCoaster !== null && answerCoaster.length > 0){
+
+          // make general jump
+          let generalAnswer = answerCoaster[0] ? 
+            <EntityLink
+                id={answerCoaster[0].id ? `${answerCoaster[0].id}-clickable-link` : undefined}
+                className="subtle"
+                entityId={answerCoaster[0].id} 
+                handleJumpToEntity={this.props.handleJumpToEntity}
+            > General answer. </EntityLink> : null;
+
+          let details = answerCoaster.slice(1).map((answer, i) => {
+            return (<EntityLink
+              id={answer.id ? `${answer.id}-clickable-link` : undefined}
+              className="subtle"
+              entityId={answer.id} 
+              handleJumpToEntity={this.props.handleJumpToEntity}
+          > Details {i} </EntityLink>
+            );
+          });
+        } 
+
+
+      // render the FAQs in the sidebar with a portal
       return FAQsContainer
       ? ReactDOM.createPortal(
         <div
