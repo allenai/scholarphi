@@ -80,6 +80,7 @@ export class AnnotationSpan extends React.PureComponent<Props> {
     let span = (
       <div
         ref={this.focusIfSelected}
+        id={this.props.id}
         className={classNames(
           "scholar-reader-annotation-span",
           this.props.className,

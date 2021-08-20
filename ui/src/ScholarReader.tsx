@@ -63,7 +63,7 @@ import React from "react";
 
 //added 
 // import * as testEntities from './data/entities.json';
-import * as testEntities from './data/auto_PAWLS_SPUI_annotations.json';
+import * as testEntities from './data/auto_PAWLS_SPUI_annotations_ldh.json';
 
 interface Props {
   paperId?: PaperId;
@@ -857,7 +857,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       this._jumpedToInitialFocus = true;
     }
 
-    // TODO: this is where you will render the FAQs
     return (
       <>
         {this.state.pdfViewerApplication !== null &&

@@ -521,7 +521,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
                 pageView={pageView}
                 entity={entity}
                 active={annotationInteractionEnabled}
-                underline={true}
+                underline={false}
                 selected={isSelected}
                 selectedSpanIds={selectedSpanIds}
                 glossStyle={glossStyle}

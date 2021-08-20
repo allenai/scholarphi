@@ -262,12 +262,10 @@ export function orderExcerpts(
   for (let i = 0; i < excerpts.length; i++) {
     const excerpt = excerpts[i];
     const context = contexts[i];
-    console.log('in orderExcerpts:', excerpt, context);
     if (context === undefined || context.id === null) {
       continue;
     }
     const contextEntity = entities.byId[context.id];
-    console.log('contextEntity:', contextEntity);
     if (contextEntity === undefined) {
       continue;
     }
@@ -294,7 +292,6 @@ export function adjacentDefinition(
   const entity = entities.byId[entityId];
   const contexts = definitions([entityId], entities);
 
-  console.log('contexts:', contexts);
   if (
     entity === undefined ||
     !(isTerm(entity) || isPaperQuestion(entity) || isSymbol(entity)) || isAnswerSentence(entity) ||
@@ -332,7 +329,6 @@ export function definitions(
   const contexts = entitiesWithDefinitions
     .map((s) => s.relationships.definition_sentences)
     .flat();
-  console.log(definitions, contexts);
   return orderExcerpts(definitions, contexts, entities);
 }
 

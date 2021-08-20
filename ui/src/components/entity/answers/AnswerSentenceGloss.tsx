@@ -42,7 +42,7 @@ interface Props {
             // function for getting index of this answer in the coaster
             const isThisAnswer = (element: Relationship) => element['id'] === this.props.answer['id'];
             const thisAnswerIndex = coaster.findIndex(isThisAnswer);
-            coasterIndicator = <p> You are on {thisAnswerIndex + 1} of {coaster.length} answers. </p> 
+            coasterIndicator = <span> {thisAnswerIndex + 1} of {coaster.length} answers. </span> 
         } 
 
         let detailJump = this.props.answer.relationships.more_details.id ? 
@@ -51,7 +51,7 @@ interface Props {
                 className="subtle"
                 entityId={this.props.answer.relationships.more_details.id} 
                 handleJumpToEntity={this.props.handleJumpToEntity}
-            > Jump to more detailed answer. </EntityLink> : null;
+            > {'>>'} </EntityLink> : null;
 
         let backJump = this.props.answer.relationships.less_details.id ? 
             <EntityLink
@@ -59,7 +59,7 @@ interface Props {
                 className="subtle"
                 entityId={this.props.answer.relationships.less_details.id} 
                 handleJumpToEntity={this.props.handleJumpToEntity}
-            > Jump to more general answer. </EntityLink> : null;
+            > {'<<'} </EntityLink> : null;
 
         const divStyle = {
             overflow: 'scroll',
@@ -77,9 +77,7 @@ interface Props {
                         </p>
                     </div>
                         <div className="paper-summary__section"> <strong> Simple answer: </strong> { definition } </div> 
-                        <p> {backJump} </p>
-                        {coasterIndicator}
-                        <p> {detailJump} </p>
+                        <p> {backJump} {coasterIndicator} {detailJump} </p>
                     </div>
                 </div>
             </div>

@@ -34,7 +34,6 @@ class RemoteLogger {
     debounce?: number
   ) {
 
-    console.log(level, eventType, data, debounce); // added
     if (eventType !== undefined && debounce !== undefined && debounce > 0) {
       /*
        * If debouncing is requested, only log the data once the interval has passed.

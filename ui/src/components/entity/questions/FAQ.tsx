@@ -82,29 +82,48 @@ interface State {
       const firstAnswer = definition? definition.contextEntity as AnswerSentence : null;
       const answerCoaster = firstAnswer? firstAnswer.relationships.coaster as Relationship[] : null;
 
-      let coasterIndicator = null;
+      
+      const answerEntities = answerCoaster? answerCoaster.map((a) => {
+        if (typeof(a.id) === 'string') {
+          return this.props.entities.byId[a.id];
+        } else{
+          return null
+        }
+      }) : null;
+      // const answerEntities = typeof(answerIds) === 'object'? this.props.entities.byId[[answerIds]]: null;
+      // yes this is very hacky: getting entity annotation ids for the answers to highlight them
+
+      const answerAnnotations = (answerEntities !== null && answerEntities.length > 0)? answerEntities.map((a) => {
+          let elementId = a? `entity-${a.id}-page-${a.attributes.bounding_boxes[0].page}-annotation-span-0` as string: null;
+          console.log(elementId);
+          return elementId? document.getElementById(elementId): null;
+        }) : null;
+      
+        "entity-237-page-16-annotation-span-0"
+      console.log(answerAnnotations);
+
+      let details = null;
+
+      const generalAnswer = definition? <EntityLink
+        id={`term-${question.id}-definition-link`}
+        className="subtle"
+        entityId={definition.contextEntity.id}
+        handleJumpToEntity={this.props.handleJumpToEntity}
+        > General Answer </EntityLink> : null;
 
         if (answerCoaster !== null && answerCoaster.length > 0){
 
-          // make general jump
-          let generalAnswer = answerCoaster[0] ? 
-            <EntityLink
-                id={answerCoaster[0].id ? `${answerCoaster[0].id}-clickable-link` : undefined}
-                className="subtle"
-                entityId={answerCoaster[0].id} 
-                handleJumpToEntity={this.props.handleJumpToEntity}
-            > General answer. </EntityLink> : null;
-
-          let details = answerCoaster.slice(1).map((answer, i) => {
+          details = answerCoaster.slice(1).map((answer, i) => {
             return (<EntityLink
               id={answer.id ? `${answer.id}-clickable-link` : undefined}
               className="subtle"
               entityId={answer.id} 
               handleJumpToEntity={this.props.handleJumpToEntity}
-          > Details {i} </EntityLink>
+          > ☐ </EntityLink>
             );
           });
         } 
+
 
 
       // render the FAQs in the sidebar with a portal
@@ -126,14 +145,9 @@ interface State {
                             <>
                               <p className="gloss__header">{`${this.props.question.attributes.question_text}`}</p>
 
-
                               <span className="gloss__section">{`${this.props.question.attributes.answer_text}`}</span>
-                              <EntityLink
-                                id={`term-${question.id}-definition-link`}
-                                className="subtle"
-                                entityId={definition.contextEntity.id}
-                                handleJumpToEntity={this.props.handleJumpToEntity}
-                                > Jump to section </EntityLink>{"."}
+                              {generalAnswer} {"."}
+                              {details !== null && (<span> Details: {details}</span>)}
                             </>
                           )}
                         </div>
