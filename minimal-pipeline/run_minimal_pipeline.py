@@ -9,7 +9,7 @@
 
 """
 
-from typing import List
+from typing import List, Dict
 
 import os
 import requests
@@ -21,14 +21,18 @@ import shutil
 
 import dataclasses
 
+
+
 import texcompile.client as texcompile
 import texsymdetect.client as texsymdetect
 from doc2json.tex2json.tex_to_xml import normalize_latex, norm_latex_to_xml
 from doc2json.tex2json.xml_to_json import convert_latex_xml_to_s2orc_json
 
+from utils.arxiv_utils import fetch_pdf_from_arxiv, parse_arxiv_id
+from utils.s3_utils import download_from_s3
+
 
 # TODO: reorg dir structure
-# TODO: move to outside data-proc
 # TODO: pull PDF from arxiv for SPP
 # TOOD: get SPP working
 # TODO: get s2orc running
@@ -38,14 +42,27 @@ from doc2json.tex2json.xml_to_json import convert_latex_xml_to_s2orc_json
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input_latex_dir', required=True, help='path to directory of latex project')
-    parser.add_argument('--output_dir', required=True, help='path to output dir')
-    parser.add_argument('--temp_dir', required=True, help='path to directory to hold temp processing output')
+    parser.add_argument('--arxiv_id', required=True, help='arXiv ID')
+    parser.add_argument('--output_root', required=True, help='path to root dir that stores output')
     parser.add_argument('--config_json', required=True, help='config JSON file')
     args = parser.parse_args()
 
-    os.makedirs(args.output_dir, exist_ok=True)
-    os.makedirs(args.temp_dir, exist_ok=True)
+    # setup config
+    with open(args.config_json) as f_in:
+        config_dict = json.load(f_in)
+
+    # setup output dir for this arXiv ID
+    output_dir = os.path.join(args.output_dir, args.arxiv_id)
+    os.makedirs(output_dir, exist_ok=True)
+
+    # get PDF for this arXiv ID
+    pdf_path = os.path.join(output_dir, f'{args.arxiv_id}.pdf')
+    fetch_pdf_from_arxiv(arxiv_id=args.arxiv_id, target_path=pdf_path)
+
+    # get LaTeX package for this arXiv ID from s3
+    download_from_s3(s3_bucket_name=config_dict['S3_LATEX_SOURCES']['BUCKET'],
+                     s3_fname=config_dict['S3_LATX_SOURCES'][''])
+
     shutil.copytree(src=args.input_latex_dir, dst=args.temp_dir)
 
     # for testing;
@@ -61,7 +78,7 @@ if __name__ == '__main__':
 
     # Step 1 - Compile LaTeX to PDF
     result: texcompile.Result = texcompile.compile(sources_dir=args.input_tex_dir,
-                                                   output_dir=args.output_dir,
+                                                   output_dir=output_dir,
                                                    host='http://s2research-desktop2.corp.ai2',
                                                    port=8000)
     print(f'Finished: {result.success}')

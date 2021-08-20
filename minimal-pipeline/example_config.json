@@ -1,5 +1,8 @@
 {
-  "S3_PREFIX_ARXIV_LATEX_SOURCES": "s3://...",
+  "S3_LATEX_SOURCES": {
+    "BUCKET": "s3://...",
+    "PREFIX": "..."
+  },
   "TEXCOMPILE": {
     "HOST": "0.0.0.0",
     "PORT": 8000
