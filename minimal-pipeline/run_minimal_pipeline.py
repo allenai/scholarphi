@@ -28,6 +28,7 @@ import texsymdetect.client as texsymdetect
 from doc2json.tex2json.tex_to_xml import normalize_latex, norm_latex_to_xml
 from doc2json.tex2json.xml_to_json import convert_latex_xml_to_s2orc_json
 
+from utils.tar_utils import unpack_archive
 from utils.arxiv_utils import fetch_pdf_from_arxiv, parse_arxiv_id
 from utils.s3_utils import download_from_s3
 
@@ -47,23 +48,39 @@ if __name__ == '__main__':
     parser.add_argument('--config_json', required=True, help='config JSON file')
     args = parser.parse_args()
 
+    class Args:
+        pass
+    args = Args()
+    args.arxiv_id = '1601.00978v1'
+    args.output_root = '/Users/kylel/ai2/reader/minimal-pipeline/data/'
+    args.config_json = '/Users/kylel/ai2/reader/minimal-pipeline/_config.json'
+
     # setup config
     with open(args.config_json) as f_in:
         config_dict = json.load(f_in)
 
     # setup output dir for this arXiv ID
-    output_dir = os.path.join(args.output_dir, args.arxiv_id)
+    output_dir = os.path.join(args.output_root, args.arxiv_id)
     os.makedirs(output_dir, exist_ok=True)
 
     # get PDF for this arXiv ID
     pdf_path = os.path.join(output_dir, f'{args.arxiv_id}.pdf')
     fetch_pdf_from_arxiv(arxiv_id=args.arxiv_id, target_path=pdf_path)
+    assert os.path.exists(pdf_path), f'Failed fetching PDF for {args.arxiv_id} to {pdf_path}'
 
-    # get LaTeX package for this arXiv ID from s3
-    download_from_s3(s3_bucket_name=config_dict['S3_LATEX_SOURCES']['BUCKET'],
-                     s3_fname=config_dict['S3_LATX_SOURCES'][''])
+    # get LaTeX .tar.gz package for this arXiv ID from s3
+    parsed_arxiv_id = parse_arxiv_id(arxiv_id=args.arxiv_id)
+    s3_fname = os.path.join(config_dict['S3_LATEX_SOURCES']['PREFIX'], parsed_arxiv_id['yearmonth'], args.arxiv_id)
+    latex_targz_path = os.path.join(output_dir, f'{args.arxiv_id}.tar.gz')
+    download_from_s3(s3_bucket_name=config_dict['S3_LATEX_SOURCES']['BUCKET'], s3_fname=s3_fname,
+                     target_path=latex_targz_path)
 
-    shutil.copytree(src=args.input_latex_dir, dst=args.temp_dir)
+    # unpack LaTeX tarball
+    latex_source_dir = os.path.join(output_dir, f'{args.arxiv_id}/source/')
+    unpack_archive(archive_path=latex_targz_path, dest_dir=latex_source_dir)
+
+    raise Exception
+
 
     # for testing;
     class Args:
