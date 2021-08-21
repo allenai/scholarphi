@@ -16,6 +16,13 @@ pytest==5.3.1
 git+https://github.com/andrewhead/texsymdetect
 git+https://github.com/andrewhead/texcompile
 
+
+# PDF parsing
+git+https://github.com/allenai/mmda
+intervaltree==3.1.0
+pdf2image
+
+
 # S2ORC DOC2JSON
 git+https://github.com/allenai/s2orc-doc2json.git
 python-magic==0.4.18
