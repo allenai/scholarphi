@@ -48,6 +48,11 @@ if __name__ == '__main__':
     parser.add_argument('--config_json', required=True, help='config JSON file')
     args = parser.parse_args()
 
+
+    # call aws s3 cp s3://ai2-s2-scholarphi-pipeline-dev/daq/arxiv-source-data/bymonth/1601/1601.00978v1 data/1601.00978v1/1601.00978v1.tar.gz
+    # tar -xzvf data/1601.00978v1/1601.00978v1.tar.gz --directory data/1601.00978v1/
+
+
     class Args:
         pass
     args = Args()
@@ -74,48 +79,31 @@ if __name__ == '__main__':
     latex_targz_path = os.path.join(output_dir, f'{args.arxiv_id}.tar.gz')
     download_from_s3(s3_bucket_name=config_dict['S3_LATEX_SOURCES']['BUCKET'], s3_fname=s3_fname,
                      target_path=latex_targz_path)
+    assert os.path.exists(latex_targz_path), f'Failed fetching LaTeX package for {args.arxiv_id} to {latex_targz_path}'
 
     # unpack LaTeX tarball
     latex_source_dir = os.path.join(output_dir, f'{args.arxiv_id}/source/')
     unpack_archive(archive_path=latex_targz_path, dest_dir=latex_source_dir)
+    assert os.path.exists(latex_source_dir), f'Failed unpacking LaTeX package {latex_targz_path} to {latex_source_dir}'
 
-    raise Exception
+    ################################################################################################################
 
-
-    # for testing;
-    class Args:
-        pass
-    args = Args()
-    args.input_latex_dir = 'data/1601.00978v1/'
-    args.output_dir = 'data/1601.00978v1/'
-
-    # call aws s3 cp s3://ai2-s2-scholarphi-pipeline-dev/daq/arxiv-source-data/bymonth/1601/1601.00978v1 data/1601.00978v1/1601.00978v1.tar.gz
-    # tar -xzvf data/1601.00978v1/1601.00978v1.tar.gz --directory data/1601.00978v1/
-
-
-    # Step 1 - Compile LaTeX to PDF
-    result: texcompile.Result = texcompile.compile(sources_dir=args.input_tex_dir,
-                                                   output_dir=output_dir,
-                                                   host='http://s2research-desktop2.corp.ai2',
-                                                   port=8000)
-    print(f'Finished: {result.success}')
-    print(f'Main Tex file: {result.main_tex_files}')    # Output: ['craternn.tex']
-    print(f'Main output files: {result.output_files}')  # Output: [{ 'type': 'pdf', 'name': 'craternn.pdf' }]
-
-    if len(result.main_tex_files) > 1:
-        raise NotImplementedError(f'Multiple main TeX files: {result.main_tex_files}')
-    if len(result.output_files) > 1:
-        raise NotImplementedError(f'Multiple output files: {result.output_files}')
+    # Step 1 - Compile LaTeX package.  We don't need the resulting PDF, but we need the LaTeX to be compile-able.
+    result: texcompile.Result = texcompile.compile(sources_dir=latex_source_dir,
+                                                   output_dir=latex_source_dir,
+                                                   host=config_dict['TEXCOMPILE']['HOST'],
+                                                   port=config_dict['TEXCOMPILE']['PORT'])
+    assert result.success, f'Failed compiling LateX package {latex_source_dir}'
+    assert len(result.main_tex_files) == 1, f'Multiple main TeX files: {result.main_tex_files}'
+    assert len(result.output_files) == 1, f'Multiple output files: {result.output_files}'
     for output_file in result.output_files:
-        output_path = os.path.join(args.output_dir, output_file['name'])
-        if not os.path.exists(output_path):
-            raise FileNotFoundError(f'Cant find {output_path}')
+        output_path = os.path.join(latex_source_dir, output_file.name)
+        assert os.path.exists(output_path), f'Cant find {output_path}'
 
-
-    # Step 2 - Detect symbols from LaTeX
-    symbols: List[texsymdetect.Symbol] = texsymdetect.detect_symbols(sources_dir=args.input_tex_dir,
-                                                                     host='http://s2research-desktop2.corp.ai2',
-                                                                     port=8001)
+    # Step 2 - Detect symbols from LaTeX package.
+    symbols: List[texsymdetect.Symbol] = texsymdetect.detect_symbols(sources_dir=latex_source_dir,
+                                                                     host=config_dict['TEXSYMDETECT']['HOST'],
+                                                                     port=config_dict['TEXSYMDETECT']['PORT'])
     print(f'Found {len(symbols)} symbols.')
     print(f'e.g. {symbols[0]}')
 
