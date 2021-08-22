@@ -64,7 +64,9 @@ if __name__ == '__main__':
     args = Args()
     args.arxiv_id = '1601.00978v1'
     args.output_root = '/Users/kylel/ai2/reader/minimal-pipeline/data/'
+    args.output_root = '/home/kylel/scholar-reader/minimal-pipeline/data/'
     args.config_json = '/Users/kylel/ai2/reader/minimal-pipeline/_config.json'
+    args.config_json = '/home/kylel/scholar-reader/minimal-pipeline/_config.json'
 
     # setup config
     with open(args.config_json) as f_in:
@@ -88,7 +90,7 @@ if __name__ == '__main__':
     assert os.path.exists(latex_targz_path), f'Failed fetching LaTeX package for {args.arxiv_id} to {latex_targz_path}'
 
     # unpack LaTeX tarball
-    latex_source_dir = os.path.join(output_dir, f'{args.arxiv_id}/source/')
+    latex_source_dir = os.path.join(output_dir, 'source/')
     unpack_archive(archive_path=latex_targz_path, dest_dir=latex_source_dir)
     assert os.path.exists(latex_source_dir), f'Failed unpacking LaTeX package {latex_targz_path} to {latex_source_dir}'
 
@@ -139,15 +141,18 @@ if __name__ == '__main__':
     norm_output_dir = normalize_latex(latex_dir=latex_source_dir,
                                       norm_dir=s2orc_latex_norm_dir,
                                       norm_log_file=s2orc_latex_norm_log, cleanup=False)
+    print(f'Normalized LaTeX {latex_source_dir} to {s2orc_latex_norm_dir}')
     xml_output_path = norm_latex_to_xml(norm_dir=norm_output_dir,
                                         xml_dir=s2orc_latex_xml_dir,
                                         xml_err_file=s2orc_latex_xml_err,
                                         xml_log_file=s2orc_latex_xml_log, cleanup=False)
+    print(f'Tralics LaTeX {norm_output_dir} to XML {xml_output_path}')
     s2orc_paper = convert_latex_xml_to_s2orc_json(xml_fpath=xml_output_path,
                                                   log_dir=s2orc_latex_dir)
     s2orc_paper_dict = s2orc_paper.as_json()
     with open(s2orc_latex_json_path, 'w') as f_out:
         json.dump(s2orc_paper_dict, f_out, indent=4)
+    assert os.path.exists(s2orc_latex_json_path), f'Cant find S2ORC JSON at {s2orc_latex_json_path}'
 
 
     #
