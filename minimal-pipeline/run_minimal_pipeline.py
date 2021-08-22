@@ -25,8 +25,10 @@ import dataclasses
 import texcompile.client as texcompile
 import texsymdetect.client as texsymdetect
 
+from mmda.types.annotation import SpanGroup
 from mmda.types.document import Document
 from mmda.parsers.symbol_scraper_parser import SymbolScraperParser
+from utils.mmda_utils import tokens_to_words
 
 from doc2json.tex2json.tex_to_xml import normalize_latex, norm_latex_to_xml
 from doc2json.tex2json.xml_to_json import convert_latex_xml_to_s2orc_json
@@ -34,6 +36,7 @@ from doc2json.tex2json.xml_to_json import convert_latex_xml_to_s2orc_json
 from utils.tar_utils import unpack_archive
 from utils.arxiv_utils import fetch_pdf_from_arxiv, parse_arxiv_id
 from utils.s3_utils import download_from_s3
+
 
 
 # TODO: reorg dir structure
@@ -111,16 +114,17 @@ if __name__ == '__main__':
     print(f'e.g. {symbols[0]}')
 
 
-    # Step 3 - Get tokens from PDF using Sscraper
+    # Step 3 - Get words from PDF using Sscraper
     sscraper_dir = os.path.join(output_dir, 'sscraper/')
     os.makedirs(sscraper_dir, exist_ok=True)
     sscraper_json_path = os.path.join(sscraper_dir, f'{args.arxiv_id}.json')
     parser = SymbolScraperParser(sscraper_bin_path=config_dict['SSCRAPER']['BINARY'])
     doc: Document = parser.parse(input_pdf_path=pdf_path, output_json_path=sscraper_json_path, tempdir=sscraper_dir)
-    [token.symbols for token in doc.tokens][0]
+    words: List[SpanGroup] = tokens_to_words(tokens=doc.tokens)
+
 
     #
-    # Step 3a.  run S2ORC latex parser on LaTex projects;  do the char-level fuzzy matching
+    # Step 4 -  run S2ORC latex parser on LaTex projects;  do the char-level fuzzy matching
     args.latex_norm_dir = 'data/latex_norm/'
     args.latex_norm_log = 'data/latex_norm/log.txt'
     args.latex_xml_dir = 'data/latex_xml/'
