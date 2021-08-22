@@ -121,30 +121,37 @@ if __name__ == '__main__':
     parser = SymbolScraperParser(sscraper_bin_path=config_dict['SSCRAPER']['BINARY'])
     doc: Document = parser.parse(input_pdf_path=pdf_path, output_json_path=sscraper_json_path, tempdir=sscraper_dir)
     words: List[SpanGroup] = tokens_to_words(tokens=doc.tokens)
+    print(f'Found {len(words)} words')
+    print(f'e.g. {[word.text for word in words[:10]]}')
 
 
-    #
     # Step 4 -  run S2ORC latex parser on LaTex projects;  do the char-level fuzzy matching
-    args.latex_norm_dir = 'data/latex_norm/'
-    args.latex_norm_log = 'data/latex_norm/log.txt'
-    args.latex_xml_dir = 'data/latex_xml/'
-    args.latex_xml_err = 'data/latex_xml/err.txt'
-    args.latex_xml_log = 'data/latex_xml/log.txt'
-    args.latex_s2orc_dir = 'data/s2orc/'
-    args.latex_s2orc_json = 'data/s2orc/s2orc.json'
-    os.makedirs(args.latex_norm_dir, exist_ok=True)
-    os.makedirs(args.latex_xml_dir, exist_ok=True)
-    os.makedirs(args.latex_s2orc_dir, exist_ok=True)
-    norm_output_dir = normalize_latex(latex_dir=args.input_latex_dir, norm_dir=args.latex_norm_dir, norm_log_file=args.latex_norm_log, cleanup=False)
-    xml_output_path = norm_latex_to_xml(norm_dir=norm_output_dir, xml_dir=args.latex_xml_dir, xml_err_file=args.latex_xml_err, xml_log_file=args.latex_xml_log, cleanup=False)
-    s2orc_paper = convert_latex_xml_to_s2orc_json(xml_fpath=xml_output_path, log_dir=args.latex_s2orc_dir)
-    paper_dict = s2orc_paper.as_json()
-    with open(args.latex_s2orc_json, 'w') as f_out:
-        json.dump(paper_dict, f_out, indent=4)
+    s2orc_latex_dir = os.path.join(output_dir, 's2orc/')
+    s2orc_latex_norm_dir = os.path.join(s2orc_latex_dir,  'norm/')
+    s2orc_latex_norm_log = os.path.join(s2orc_latex_norm_dir, 'log.txt')
+    s2orc_latex_xml_dir = os.path.join(s2orc_latex_dir,  'xml/')
+    s2orc_latex_xml_err = os.path.join(s2orc_latex_xml_dir, 'err.txt')
+    s2orc_latex_xml_log = os.path.join(s2orc_latex_xml_dir, 'log.txt')
+    s2orc_latex_json_path = os.path.join(s2orc_latex_dir, 's2orc.json')
+    os.makedirs(s2orc_latex_dir, exist_ok=True)
+    os.makedirs(s2orc_latex_norm_dir, exist_ok=True)
+    os.makedirs(s2orc_latex_xml_dir, exist_ok=True)
+    norm_output_dir = normalize_latex(latex_dir=latex_source_dir,
+                                      norm_dir=s2orc_latex_norm_dir,
+                                      norm_log_file=s2orc_latex_norm_log, cleanup=False)
+    xml_output_path = norm_latex_to_xml(norm_dir=norm_output_dir,
+                                        xml_dir=s2orc_latex_xml_dir,
+                                        xml_err_file=s2orc_latex_xml_err,
+                                        xml_log_file=s2orc_latex_xml_log, cleanup=False)
+    s2orc_paper = convert_latex_xml_to_s2orc_json(xml_fpath=xml_output_path,
+                                                  log_dir=s2orc_latex_dir)
+    s2orc_paper_dict = s2orc_paper.as_json()
+    with open(s2orc_latex_json_path, 'w') as f_out:
+        json.dump(s2orc_paper_dict, f_out, indent=4)
 
 
     #
-    # Step 4  (format SPP output to be suitable for HEDDEX defs)
+    # Step 5  (format SPP output to be suitable for HEDDEX defs)
     #
 
 
