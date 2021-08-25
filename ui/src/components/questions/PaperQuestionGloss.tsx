@@ -1,9 +1,9 @@
-import { DrawerContentType } from "../../drawer/Drawer";
-import { getRemoteLogger } from "../../../logging";
-import { EntityPageLink, RichText } from "../../common";
-import * as selectors from "../../../selectors";
-import { Entities } from "../../../state";
-import { Term, PaperQuestion } from "../../../api/types";
+import { DrawerContentType } from "../drawer/Drawer";
+import { getRemoteLogger } from "../../logging";
+import { EntityPageLink, RichText } from "../common";
+import * as selectors from "../../selectors";
+import { Entities } from "../../state";
+import { Term, PaperQuestion } from "../../api/types";
 
 import IconButton from "@material-ui/core/IconButton";
 import MuiTooltip from "@material-ui/core/Tooltip";

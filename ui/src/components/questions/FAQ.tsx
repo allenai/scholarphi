@@ -1,9 +1,9 @@
-import { DrawerContentType } from "../../drawer/Drawer";
-import { getRemoteLogger } from "../../../logging";
-import { EntityPageLink, RichText, EntityLink } from "../../common";
-import * as selectors from "../../../selectors";
-import { Entities } from "../../../state";
-import { Term, PaperQuestion, AnswerSentence, Relationship } from "../../../api/types";
+import { DrawerContentType } from "../drawer/Drawer";
+import { getRemoteLogger } from "../../logging";
+import { EntityPageLink, RichText, EntityLink } from "../common";
+import * as selectors from "../../selectors";
+import { Entities } from "../../state";
+import { Term, PaperQuestion, AnswerSentence, Relationship } from "../../api/types";
 import ReactDOM from "react-dom";
 
 
@@ -20,7 +20,12 @@ const logger = getRemoteLogger();
 interface Props {
   question: PaperQuestion;
   entities: Entities;
+  isSelected: boolean;
+  isHovered: boolean;
   handleJumpToEntity: (entityId: string) => void;
+  handleMouseOver: (entityId: string)=> void;
+  handleMouseOut: (entityId: string)=> void;
+  handleClick: (entityId: string)=> void;
 }
 
 interface State {
@@ -41,6 +46,9 @@ interface State {
       };
       this.onClickUsagesButton = this.onClickUsagesButton.bind(this);
       this.onClickClose = this.onClickClose.bind(this);
+      this.onClick = this.onClick.bind(this);
+      this.onMouseOver = this.onMouseOver.bind(this);
+      this.onMouseOut= this.onMouseOut.bind(this);
     }
   
     componentDidMount() {
@@ -55,6 +63,20 @@ interface State {
   
     onClickClose() {
       logger.log("debug", "clicked-dismiss-term-tooltip");
+    }
+
+    onMouseOver() {
+      console.log('In');
+      this.props.handleMouseOver(this.props.question.id);
+    }
+
+    onMouseOut() {
+      console.log('Out');
+      this.props.handleMouseOut(this.props.question.id);
+    }
+
+    onClick() {
+      this.props.handleClick(this.props.question.id);
     }
   
     render() {
@@ -99,7 +121,6 @@ interface State {
           return elementId? document.getElementById(elementId): null;
         }) : null;
       
-        "entity-237-page-16-annotation-span-0"
       console.log(answerAnnotations);
 
       let details = null;
@@ -124,13 +145,16 @@ interface State {
           });
         } 
 
+        const FAQClass = this.props.isSelected? "faq-selected" : "faq";
 
+        const FAQClassHovered = this.props.isHovered? "faq-hovered" : "faq";
 
       // render the FAQs in the sidebar with a portal
-      return FAQsContainer
-      ? ReactDOM.createPortal(
-        <div
-          className={classNames("gloss", "faq-gloss", "simple-gloss")}
+      return (<div
+          className={classNames("document-snippets usages", FAQClass, FAQClassHovered)}
+          onClick={this.onClick}
+          onMouseOver={this.onMouseOver}
+          onMouseOut={this.onMouseOut}
         >
           <table>
             <tbody>
@@ -143,9 +167,9 @@ interface State {
                         <div>
                           {definition !== null && (
                             <>
-                              <p className="gloss__header">{`${this.props.question.attributes.question_text}`}</p>
+                              <p className="drawer__content__header">{`${this.props.question.attributes.question_text}`}</p>
 
-                              <span className="gloss__section">{`${this.props.question.attributes.answer_text}`}</span>
+                              <span className="drawer__content__section">{`${this.props.question.attributes.answer_text}`}</span>
                               {generalAnswer} {"."}
                               {details !== null && (<span> Details: {details}</span>)}
                             </>
@@ -158,8 +182,7 @@ interface State {
               </tr>
             </tbody>
           </table>
-        </div>, FAQsContainer)
-     : null;
+        </div>);
     }
   }
   

@@ -12,6 +12,7 @@ import EntityCreationToolbar, {
 import EntityPageMask from "./components/mask/EntityPageMask";
 import EquationDiagram from "./components/entity/equation/EquationDiagram";
 import FindBar, { FindQuery } from "./components/search/FindBar";
+import FAQBar from "./components/questions/FAQBar";
 import logger from "./logging";
 import MainControlPanel from "./components/control/MainControlPanel";
 import PageOverlay from "./components/overlay/PageOverlay";
@@ -63,7 +64,7 @@ import React from "react";
 
 //added 
 // import * as testEntities from './data/entities.json';
-import * as testEntities from './data/auto_PAWLS_SPUI_annotations_ldh.json';
+import * as testEntities from './data/auto_PAWLS_SPUI_annotations.json';
 
 interface Props {
   paperId?: PaperId;
@@ -114,7 +115,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       findMatchIndex: null,
       findMatchCount: null,
       findMatchedEntities: null,
-      drawerMode: "closed",
+      drawerMode: "open", //swapped
       drawerContentType: null,
       snackbarMode: "closed",
       snackbarActivationTimeMs: null,
@@ -123,6 +124,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       entityCreationAreaSelectionMethod: "text-selection",
       entityCreationType: "term",
       propagateEntityEdits: true,
+
+      FAQHoveredID: null,
+      selectedFAQID: null,
 
       ...settings,
     };
@@ -167,6 +171,18 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
   selectEntity = (id: string): void => {
     this.selectEntityAnnotation(id);
+  }
+
+  handleFAQMouseOver = (id: string): void => {
+    this.setState({ FAQHoveredID: id });
+  }
+
+  handleFAQMouseOut = (id: string): void => {
+    this.setState({ FAQHoveredID: null });
+  }
+
+  handleFAQClick = (id: string): void => {
+    this.setState({ selectedFAQID: id });
   }
 
   selectEntityAnnotation = (
@@ -573,6 +589,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     });
   }
 
+  toggleDrawer = (): void => {
+    if(this.state.drawerMode === "open") {
+      this.setState({drawerMode: "closed",});
+    } else {
+      this.setState({drawerMode: "open",});
+    }
+  }
+
   closeDrawer = (): void => {
     logger.log("debug", "close-drawer");
     this.setState({ drawerMode: "closed" });
@@ -875,7 +899,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               handleCloseSnackbar={this.closeSnackbar}
               handleCloseDrawer={this.closeDrawer}
             />
-            <PdfjsToolbar>
+            {/* <PdfjsToolbar>
               <button
                 onClick={this.toggleAnnotationHints}
                 className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
@@ -884,6 +908,19 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                   {this.state.annotationHintsEnabled
                     ? "Hide Underlines"
                     : "Show Underlines"}
+                </span>
+              </button>
+            </PdfjsToolbar> */}
+            {/* For the FAQs */}
+            <PdfjsToolbar>
+              <button
+                onClick={this.toggleDrawer}
+                className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
+              >
+                <span>
+                  {this.state.drawerMode
+                    ? "Show FAQs"
+                    : "Hide FAQs"}
                 </span>
               </button>
             </PdfjsToolbar>
@@ -1003,6 +1040,22 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                   selectedEntityIds={this.state.selectedEntityIds}
                 />
               ) : null}
+              <FAQBar
+                pdfViewer={this.state.pdfViewer}
+                mode={this.state.drawerMode}
+                contentType={"definitions"}
+                entities={this.state.entities}
+                selectedEntityIds={this.state.selectedEntityIds}
+                propagateEntityEdits={this.state.propagateEntityEdits}
+                handleJumpToEntity={this.jumpToEntityWithBackMessage}
+                handleClose={this.closeDrawer}
+                handleMouseOver={this.handleFAQMouseOver}
+                handleMouseOut={this.handleFAQMouseOut}
+                handleClick={this.handleFAQClick}
+                handleSetPropagateEntityEdits={this.setPropagateEntityEdits}
+                FAQHoveredID={this.state.FAQHoveredID}
+                selectedFAQID={this.state.selectedFAQID}
+                  />
             </ViewerOverlay>
           </>
         ) : null}
@@ -1163,6 +1216,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                         handleShowSnackbarMessage={this.showSnackbarMessage}
                         handleJumpToEntity={this.jumpToEntityWithBackMessage}
                         handleOpenDrawer={this.openDrawer}
+
+                        FAQHoveredID={this.state.FAQHoveredID}
+                        selectedFAQID={this.state.selectedFAQID}
+
                       />
                     )}
                     {/* Equation diagram overlays. */}

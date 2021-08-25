@@ -113,12 +113,12 @@
 
   &.answer-sentence-annotation {
     z-index: @sentence-annotation-z-index;
-    background-color: fade(yellow, 30%);
+    // background-color: fade(yellow, 30%);
   }
 
   &.answer-sentence-annotation-selected {
     z-index: @sentence-annotation-z-index;
-    background-color: fade(rgb(255, 0, 212), 30%);
+    background-color: fade(yellow, 30%);
   }
 
   &.equation-annotation {
@@ -128,6 +128,18 @@
   &:not(.sentence-annotation) {
     z-index: @default-annotation-z-index;
   }
+}
+
+
+.faq-selected {
+  padding-bottom: 0.2%;
+  border: @underline-width fade(@underline-color, 70%) dotted;
+  background-color: fade(yellow, 30%);
+}
+
+.faq-hovered {
+  padding-bottom: 0.2%;
+  border: @underline-width fade(@underline-color, 70%) dotted;
 }
 
 /**

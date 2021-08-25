@@ -146,6 +146,17 @@ export interface State extends Settings {
    * all other appearances of the same term).
    */
   propagateEntityEdits: boolean;
+  /*
+  Added for FAQ hovering. 
+
+  One specifies which FAQ is being hovered over in the sidebar
+
+  The other specifies if an FAQ was clicked on, which case it becomes the active FAQ
+  
+  */
+  FAQHoveredID: string | null;
+  selectedFAQID: string | null;
+
 }
 
 export type Entities = RelationalStore<Entity>;

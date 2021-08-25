@@ -21,7 +21,7 @@ import * as uiUtils from "../../utils/ui";
 import { DrawerContentType } from "../drawer/Drawer";
 import LazyCitationGloss from "./citation/LazyCitationGloss";
 import ExperienceGloss from "./experience/ExperienceGloss";
-import FAQ from "./questions/FAQ";
+import FAQ from "../questions/FAQ";
 import AnswerSentenceGloss from "./answers/AnswerSentenceGloss";
 import SectionHeaderGloss from "./headers/SectionHeaderGloss";
 
@@ -62,12 +62,13 @@ interface Props {
   handleJumpToEntity: (entityId: string) => void;
   handleOpenDrawer: (contentType: DrawerContentType) => void;
   cachePaper: (paper: Paper) => void;
+  selectedFAQID : string | null;
+  FAQHoveredID : string | null;
 }
 
 class EntityAnnotationLayer extends React.Component<Props> {
   constructor(props: Props) {
     super(props);
-    console.log(props);
     this.onClickSentence = this.onClickSentence.bind(this);
   }
 
@@ -335,18 +336,19 @@ class EntityAnnotationLayer extends React.Component<Props> {
           );
           // added - paperQuestion
         } 
-        else if (
-          isPaperQuestion(entity) &&
-          entity.attributes.name !== null
-        ) {
-          return (
-            <FAQ
-              question={entity}
-              entities={entities}
-              handleJumpToEntity={this.props.handleJumpToEntity}
-            />
-          );
-          } else if (isEquation(entity) && this.shouldShowEquation(entity.id)) {
+        // else if (
+        //   isPaperQuestion(entity) &&
+        //   entity.attributes.name !== null
+        // ) {
+        //   return (
+        //     <FAQ
+        //       question={entity}
+        //       entities={entities}
+        //       handleJumpToEntity={this.props.handleJumpToEntity}
+        //     />
+        //   );
+        //   } 
+        else if (isEquation(entity) && this.shouldShowEquation(entity.id)) {
             return (
               <EntityAnnotation
                 key={annotationId}
@@ -511,17 +513,24 @@ class EntityAnnotationLayer extends React.Component<Props> {
               />
             );
           } else if (isAnswerSentence(entity)) {
+            // figure out if this answer sentence should be highlighted
+            const selectedFAQ = this.props.selectedFAQID;
+            const hoveredFAQ = this.props.FAQHoveredID;
+
+            const shouldHighlight = selectedFAQ || hoveredFAQ? entity.relationships.question.id === selectedFAQ || entity.relationships.question.id === hoveredFAQ  : false;
+
+            const annotationClass = shouldHighlight? "answer-sentence-annotation-selected" : "answer-sentence-annotation";
             return (
               <EntityAnnotation
                 key={annotationId}
-                className={classNames("answer-sentence-annotation", {
+                className={classNames(annotationClass, {
                   "jump-target": isJumpTarget,
                 })}
                 id={annotationId}
                 pageView={pageView}
                 entity={entity}
                 active={annotationInteractionEnabled}
-                underline={false}
+                underline={shouldHighlight}
                 selected={isSelected}
                 selectedSpanIds={selectedSpanIds}
                 glossStyle={glossStyle}

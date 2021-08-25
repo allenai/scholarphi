@@ -12,7 +12,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import FeedbackLink from "../common/FeedbackLink";
 
-import PaperQuestion from "../entity/questions/PaperQuestionGloss";
+import PaperQuestion from "../questions/PaperQuestionGloss";
 // import PaperQuestionList from "../entity/questions/PaperQuestionList";
 // import * as testQuestions from "../../../questions.json";
 
