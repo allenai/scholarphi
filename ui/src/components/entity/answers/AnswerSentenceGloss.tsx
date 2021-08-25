@@ -66,7 +66,7 @@ interface Props {
             maxHeight: '90px',
         };
         const definition = this.props.answer.attributes.simplified_text;
-
+        console.log(this.props.answer);
         return (
             <div className="gloss citation-gloss">
                 <div className="gloss__section">

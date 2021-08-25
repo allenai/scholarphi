@@ -26,6 +26,7 @@ import {
   ConfigurableSetting,
   CONFIGURABLE_SETTINGS,
   getSettings,
+  getPDFReaderOnlySettings,
   GlossStyle,
 } from "./settings";
 import {
@@ -912,7 +913,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               </button>
             </PdfjsToolbar> */}
             {/* For the FAQs */}
-            <PdfjsToolbar>
+            {this.state.FAQsEnabled? <PdfjsToolbar>
               <button
                 onClick={this.toggleDrawer}
                 className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
@@ -923,7 +924,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     : "Hide FAQs"}
                 </span>
               </button>
-            </PdfjsToolbar>
+            </PdfjsToolbar> : null }
             <PdfjsBrandbar />
             <ViewerOverlay
               pdfViewer={this.state.pdfViewer}
@@ -1040,7 +1041,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                   selectedEntityIds={this.state.selectedEntityIds}
                 />
               ) : null}
-              <FAQBar
+              {this.state.FAQsEnabled? <FAQBar
                 pdfViewer={this.state.pdfViewer}
                 mode={this.state.drawerMode}
                 contentType={"definitions"}
@@ -1055,7 +1056,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 handleSetPropagateEntityEdits={this.setPropagateEntityEdits}
                 FAQHoveredID={this.state.FAQHoveredID}
                 selectedFAQID={this.state.selectedFAQID}
-                  />
+                  /> : null }
             </ViewerOverlay>
           </>
         ) : null}

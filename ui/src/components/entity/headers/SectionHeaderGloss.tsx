@@ -42,7 +42,7 @@ interface Props {
 
         const boundingBoxes = this.props.entity.attributes.bounding_boxes;
 
-        console.log(boundingBoxes);
+        console.log(this.props.entity);
         // update so to the side of the text
         boundingBoxes.map((box) => {box['left'] = box['left'] - 0.07});
 

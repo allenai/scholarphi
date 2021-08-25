@@ -10,14 +10,7 @@ interface Props {
 class MedlineLink extends React.PureComponent<Props, {}> {
   render() {
     return (
-      <p> Retreived from <a
-        className="medline-link"
-        target="_blank"
-        rel="noopener noreferrer"
-        href={this.props.url}
-      >
-        {this.props.children}
-      </a> </p>
+      <p> Retreived from {this.props.url} </p>
     );
   }
 }

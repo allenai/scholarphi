@@ -519,7 +519,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
 
             const shouldHighlight = selectedFAQ || hoveredFAQ? entity.relationships.question.id === selectedFAQ || entity.relationships.question.id === hoveredFAQ  : false;
 
-            const annotationClass = shouldHighlight? "answer-sentence-annotation-selected" : "answer-sentence-annotation";
+            const annotationClass = shouldHighlight? "answer-sentence-annotation-selected" : "answer-sentence-annotation-selected";
             return (
               <EntityAnnotation
                 key={annotationId}
@@ -549,6 +549,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
             ); 
           }
           else if (isSectionHeader(entity)) {
+            console.log(entity);
             return (
               <SectionHeaderGloss
               header={entity}
