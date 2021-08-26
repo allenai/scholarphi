@@ -27,7 +27,7 @@ function(
     local topLevelDomain = '.apps.allenai.org';
 
     // This just makes sure we don't accidentally blow away production.
-    assert env !== 'prod';
+    assert env != 'prod';
 
     local hosts = [ config.appName + '.' + env + topLevelDomain ];
     local replicas = 1;
