@@ -1,9 +1,0 @@
-<msubsup s2:start="0" s2:end="14">
-    <mo>∑</mo>
-    <mrow s2:start="5" s2:end="12">
-        <mi s2:start="6" s2:end="7">i</mi>
-        <mo s2:start="8" s2:end="9">=</mo>
-        <mn s2:start="10" s2:end="11">0</mn>
-    </mrow>
-    <mi s2:start="13" s2:end="14">N</mi>
-</msubsup>

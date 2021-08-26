@@ -1,0 +1,34 @@
+version: '3'
+services:
+  papersrv:
+    build: ./papersrv
+    volumes:
+    - ./papersrv/paper:/papers/paper
+    ports:
+    - 3002:3002
+  api:
+    build: ./api
+    volumes:
+    - ./api:/api
+    environment:
+    - PYTHONUNBUFFERED=1
+    ports:
+    - 8000:8000
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile-dev
+    volumes:
+    - ./ui/src:/ui/src
+    environment:
+    - NODE_ENV=development
+    ports:
+    - 3001:3001
+  proxy:
+    build: ./proxy
+    ports:
+    - 8080:8080
+    depends_on:
+    - ui
+    - api
+    - papersrv

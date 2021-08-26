@@ -47,14 +47,14 @@ class FAQBar extends React.PureComponent<Props> {
         this.onScroll = this.onScroll.bind(this);
         this.closeDrawer = this.closeDrawer.bind(this);
       }
-    
+
       componentWillUnmount() {
         const { pdfViewer } = this.props;
         if (pdfViewer != null) {
           this.removePdfPositioningForDrawerOpen(pdfViewer.container);
         }
       }
-    
+
       onScroll(event: React.UIEvent<HTMLDivElement>) {
         if (event.target instanceof HTMLDivElement) {
           logger.log(
@@ -67,14 +67,14 @@ class FAQBar extends React.PureComponent<Props> {
           );
         }
       }
-    
+
       positionPdfForDrawerOpen(
         pdfViewerContainer: HTMLElement,
         drawerContentType: string
       ) {
         pdfViewerContainer.classList.add(`drawer-${drawerContentType}`);
       }
-    
+
       removePdfPositioningForDrawerOpen(pdfViewerContainer: HTMLElement) {
         pdfViewerContainer.classList.forEach((c) => {
           if (c.indexOf("drawer-") !== -1) {
@@ -82,7 +82,7 @@ class FAQBar extends React.PureComponent<Props> {
           }
         });
       }
-    
+
       closeDrawer() {
         if (this.props.mode !== "closed") {
           this.props.handleClose();
@@ -95,21 +95,23 @@ class FAQBar extends React.PureComponent<Props> {
              * Unpack entity data.
              */
             const entity = this.props.entities.byId[entityId];
-            const isSelected = this.props.selectedFAQID? entityId === this.props.selectedFAQID : false; 
-            const isHovered = this.props.FAQHoveredID? entityId === this.props.FAQHoveredID : false; 
-
+            const isSelected = this.props.selectedFAQID? entityId === this.props.selectedFAQID : false;
+            const isHovered = this.props.FAQHoveredID? entityId === this.props.FAQHoveredID : false;
 
             if (isPaperQuestion(entity)) {
-                return (<FAQ
-                question={entity}
-                isSelected={isSelected}
-                isHovered={isHovered}
-                entities={this.props.entities}
-                handleJumpToEntity={this.props.handleJumpToEntity}
-                handleMouseOver={this.props.handleMouseOver}
-                handleMouseOut={this.props.handleMouseOut}
-                handleClick={this.props.handleClick}
-              />);
+              return (
+                <FAQ
+                  key={entity.id}
+                  question={entity}
+                  isSelected={isSelected}
+                  isHovered={isHovered}
+                  entities={this.props.entities}
+                  handleJumpToEntity={this.props.handleJumpToEntity}
+                  handleMouseOver={this.props.handleMouseOver}
+                  handleMouseOut={this.props.handleMouseOut}
+                  handleClick={this.props.handleClick}
+                />
+              );
             }
         }) : null;
     }
@@ -125,16 +127,9 @@ class FAQBar extends React.PureComponent<Props> {
         pdfViewer,
         mode,
         contentType,
-        entities,
-        selectedEntityIds,
       } = this.props;
-  
 
-      let firstSelectedEntity: Entity | null = null;
-      if (entities !== null && selectedEntityIds.length > 0) {
-        firstSelectedEntity = entities.byId[selectedEntityIds[0]] || null;
-      }
-  
+
       if (pdfViewer != null) {
         if (mode === "open" && contentType !== null) {
           this.removePdfPositioningForDrawerOpen(pdfViewer.container);
@@ -143,38 +138,35 @@ class FAQBar extends React.PureComponent<Props> {
           this.removePdfPositioningForDrawerOpen(pdfViewer.container);
         }
       }
-  
+
       const FAQs = this.getFAQs();
 
       return (
         <MuiDrawer
-        className="drawer"
-        variant="persistent"
-        anchor="right"
-        /*
-         * If for the drawer has been requested to open but there's nothing to show
-         * in it, don't show it.
-         */
-        open={mode === "open"}
-        onScroll={this.onScroll}
-      >  
-      <div className="drawer__header">
-          <div className="drawer__close_icon">
-            <IconButton size="small" onClick={this.closeDrawer}>
-              <ChevronRightIcon />
-            </IconButton>
+          className="drawer"
+          variant="persistent"
+          anchor="right"
+          /*
+           * If for the drawer has been requested to open but there's nothing to show
+           * in it, don't show it.
+           */
+          open={mode === "open"}
+          onScroll={this.onScroll}
+        >
+          <div className="drawer__header">
+              <div className="drawer__close_icon">
+                <IconButton size="small" onClick={this.closeDrawer}>
+                  <ChevronRightIcon />
+                </IconButton>
+              </div>
+              {' '}
+              <p className="drawer__header__content">FAQs</p>
+              <p> Hover or click on a question to highlight it's answer in the document!</p>
           </div>
-          {' '}
-          <p className="drawer__header__content">FAQs</p> 
-          <p> Hover or click on a question to highlight it's answer in the document!</p>
-      </div>
-
-      
-
-        <div className="drawer__content">
+          <div className="drawer__content">
             {FAQs}
-        </div>
-       </MuiDrawer>
+           </div>
+        </MuiDrawer>
       );
   }
 }

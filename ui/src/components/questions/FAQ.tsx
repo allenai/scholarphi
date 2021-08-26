@@ -33,8 +33,8 @@ interface State {
 }
 
 /**
- * A question for a paper that links to a specific area in a document, 
- * This is heavily based on SimpleTermGloss and similar to PaperQuestionGloss, but 
+ * A question for a paper that links to a specific area in a document,
+ * This is heavily based on SimpleTermGloss and similar to PaperQuestionGloss, but
  * instead get's rendered in a sidebar
  */
 
@@ -50,51 +50,49 @@ interface State {
       this.onMouseOver = this.onMouseOver.bind(this);
       this.onMouseOut= this.onMouseOut.bind(this);
     }
-  
+
     componentDidMount() {
       logger.log("debug", "rendered-term-tooltip", {
         question: this.props.question.id,
       });
     }
-  
+
     onClickUsagesButton() {
       logger.log("debug", "clicked-open-term-usages");
     }
-  
+
     onClickClose() {
       logger.log("debug", "clicked-dismiss-term-tooltip");
     }
 
     onMouseOver() {
-      console.log('In');
       this.props.handleMouseOver(this.props.question.id);
     }
 
     onMouseOut() {
-      console.log('Out');
       this.props.handleMouseOut(this.props.question.id);
     }
 
     onClick() {
       this.props.handleClick(this.props.question.id);
     }
-  
+
     render() {
       const { entities, question } = this.props;
-  
+
       /*
        * Try to find definition and nickname right before the symbol.
        */
       let definition =
         selectors.adjacentDefinition(question.id, entities, "before") ||
         selectors.adjacentDefinition(question.id, entities, "after");
-    
+
       const definedHere = selectors.inDefinition(question.id, entities);
-  
+
       if (!definedHere && definition === null) {
         return null;
       }
-  
+
       const usages = selectors.usages([question.id], entities);
       const FAQsContainer = document.getElementById(
         "FAQsView"
@@ -104,7 +102,7 @@ interface State {
       const firstAnswer = definition? definition.contextEntity as AnswerSentence : null;
       const answerCoaster = firstAnswer? firstAnswer.relationships.coaster as Relationship[] : null;
 
-      
+
       const answerEntities = answerCoaster? answerCoaster.map((a) => {
         if (typeof(a.id) === 'string') {
           return this.props.entities.byId[a.id];
@@ -117,15 +115,13 @@ interface State {
 
       const answerAnnotations = (answerEntities !== null && answerEntities.length > 0)? answerEntities.map((a) => {
           let elementId = a? `entity-${a.id}-page-${a.attributes.bounding_boxes[0].page}-annotation-span-0` as string: null;
-          console.log(elementId);
           return elementId? document.getElementById(elementId): null;
         }) : null;
-      
-      console.log(answerAnnotations);
 
       let details = null;
 
       const generalAnswer = definition? <EntityLink
+        key={question.id}
         id={`term-${question.id}-definition-link`}
         className="subtle"
         entityId={definition.contextEntity.id}
@@ -136,14 +132,15 @@ interface State {
 
           details = answerCoaster.slice(1).map((answer, i) => {
             return (<EntityLink
+              key={answer.id}
               id={answer.id ? `${answer.id}-clickable-link` : undefined}
               className="subtle"
-              entityId={answer.id} 
+              entityId={answer.id}
               handleJumpToEntity={this.props.handleJumpToEntity}
           > ☐ </EntityLink>
             );
           });
-        } 
+        }
 
         const FAQClass = this.props.isSelected? "faq-selected" : "faq";
 
@@ -185,7 +182,7 @@ interface State {
         </div>);
     }
   }
-  
+
   export default FAQ;
-  
+
 

@@ -1,0 +1,15 @@
+FROM node:14 as build
+WORKDIR /ui
+
+# Install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy over the source code and build
+COPY . .
+ARG NODE_ENV
+ENV NODE_ENV ${NODE_ENV:-development}
+
+ENTRYPOINT [ "npm" ]
+CMD [ "start" ]
+

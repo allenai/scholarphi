@@ -194,7 +194,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
     selectedEntities = selectedEntityIds.map((id) => entities.byId[id]);
 
     return (
-      <> 
+      <>
         {entities.all.map((entityId) => { //added: for entities
           /*
            * Unpack entity data.
@@ -335,7 +335,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
             />
           );
           // added - paperQuestion
-        } 
+        }
         // else if (
         //   isPaperQuestion(entity) &&
         //   entity.attributes.name !== null
@@ -347,7 +347,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
         //       handleJumpToEntity={this.props.handleJumpToEntity}
         //     />
         //   );
-        //   } 
+        //   }
         else if (isEquation(entity) && this.shouldShowEquation(entity.id)) {
             return (
               <EntityAnnotation
@@ -546,10 +546,9 @@ class EntityAnnotationLayer extends React.Component<Props> {
                 tooltipPlacement="below"
                 handleSelect={handleSelectEntityAnnotation}
               />
-            ); 
+            );
           }
           else if (isSectionHeader(entity)) {
-            console.log(entity);
             return (
               <SectionHeaderGloss
               header={entity}
@@ -564,7 +563,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
               selected={isSelected}
               active={annotationInteractionEnabled}
               selectedSpanIds={selectedSpanIds}/>
-         ); 
+         );
           } else {
             return null;
           }

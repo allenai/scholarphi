@@ -102,8 +102,7 @@ export function definingSentences(
       .map((id) => entities.byId[id])
       .filter((e) => e !== undefined)
       .filter(isAnswerSentence)
-      .map((e) => [...e.relationships.definition_sentences.map((r) => r.id)])
-      .flat()
+      .map((e) => e.relationships.question.id)
       .filter((id) => id !== null)
   );
 
