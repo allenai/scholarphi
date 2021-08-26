@@ -7,6 +7,10 @@ import {
   isSentence,
   isSymbol,
   isTerm,
+  isExperience,
+  isPaperQuestion,
+  isAnswerSentence,
+  isSectionHeader,
   Paper,
 } from "../../api/types";
 import * as selectors from "../../selectors";
@@ -16,6 +20,11 @@ import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
 import { DrawerContentType } from "../drawer/Drawer";
 import LazyCitationGloss from "./citation/LazyCitationGloss";
+import ExperienceGloss from "./experience/ExperienceGloss";
+import FAQ from "../questions/FAQ";
+import AnswerSentenceGloss from "./answers/AnswerSentenceGloss";
+import SectionHeaderGloss from "./headers/SectionHeaderGloss";
+
 import EntityAnnotation from "./EntityAnnotation";
 import SimpleSymbolGloss from "./SimpleSymbolGloss";
 import SimpleTermGloss from "./SimpleTermGloss";
@@ -53,6 +62,8 @@ interface Props {
   handleJumpToEntity: (entityId: string) => void;
   handleOpenDrawer: (contentType: DrawerContentType) => void;
   cachePaper: (paper: Paper) => void;
+  selectedFAQID : string | null;
+  FAQHoveredID : string | null;
 }
 
 class EntityAnnotationLayer extends React.Component<Props> {
@@ -183,8 +194,8 @@ class EntityAnnotationLayer extends React.Component<Props> {
     selectedEntities = selectedEntityIds.map((id) => entities.byId[id]);
 
     return (
-      <>
-        {entities.all.map((entityId) => {
+      <> 
+        {entities.all.map((entityId) => { //added: for entities
           /*
            * Unpack entity data.
            */
@@ -225,7 +236,6 @@ class EntityAnnotationLayer extends React.Component<Props> {
           const isJumpTarget = jumpTarget === entityId;
           const inDefinition = selectors.inDefinition(entityId, entities);
           const hasDefinition = selectors.hasDefinition(entityId, entities);
-
           if (
             termAnnotationsEnabled &&
             isTerm(entity) &&
@@ -296,7 +306,49 @@ class EntityAnnotationLayer extends React.Component<Props> {
                 handleSelect={handleSelectEntityAnnotation}
               />
             );
-          } else if (isEquation(entity) && this.shouldShowEquation(entity.id)) {
+        // added - experience
+        } else if (
+          citationAnnotationsEnabled &&
+          isExperience(entity) &&
+          entity.attributes.experience_id !== null
+        ) {
+          return (
+            <EntityAnnotation
+              key={annotationId}
+              id={annotationId}
+              entity={entity}
+              className="citation-annotation"
+              pageView={pageView}
+              underline={showAnnotations}
+              glossStyle={glossStyle}
+              glossContent={
+                showGlosses ? (
+                  <ExperienceGloss
+                    experience={entity}
+                  />
+                ) : null
+              }
+              selected={isSelected}
+              active={annotationInteractionEnabled}
+              selectedSpanIds={selectedSpanIds}
+              handleSelect={handleSelectEntityAnnotation}
+            />
+          );
+          // added - paperQuestion
+        } 
+        // else if (
+        //   isPaperQuestion(entity) &&
+        //   entity.attributes.name !== null
+        // ) {
+        //   return (
+        //     <FAQ
+        //       question={entity}
+        //       entities={entities}
+        //       handleJumpToEntity={this.props.handleJumpToEntity}
+        //     />
+        //   );
+        //   } 
+        else if (isEquation(entity) && this.shouldShowEquation(entity.id)) {
             return (
               <EntityAnnotation
                 key={annotationId}
@@ -452,14 +504,67 @@ class EntityAnnotationLayer extends React.Component<Props> {
                 id={annotationId}
                 pageView={pageView}
                 entity={entity}
-                active={annotationInteractionEnabled && copySentenceOnClick}
-                underline={false}
+                active={annotationInteractionEnabled}
+                underline={true}
                 selected={false}
                 selectedSpanIds={null}
                 onClick={this.onClickSentence}
                 handleSelect={this.props.handleSelectEntityAnnotation}
               />
             );
+          } else if (isAnswerSentence(entity)) {
+            // figure out if this answer sentence should be highlighted
+            const selectedFAQ = this.props.selectedFAQID;
+            const hoveredFAQ = this.props.FAQHoveredID;
+
+            const shouldHighlight = selectedFAQ || hoveredFAQ? entity.relationships.question.id === selectedFAQ || entity.relationships.question.id === hoveredFAQ  : false;
+
+            const annotationClass = shouldHighlight? "answer-sentence-annotation-selected" : "answer-sentence-annotation-selected";
+            return (
+              <EntityAnnotation
+                key={annotationId}
+                className={classNames(annotationClass, {
+                  "jump-target": isJumpTarget,
+                })}
+                id={annotationId}
+                pageView={pageView}
+                entity={entity}
+                active={annotationInteractionEnabled}
+                underline={shouldHighlight}
+                selected={isSelected}
+                selectedSpanIds={selectedSpanIds}
+                glossStyle={glossStyle}
+                glossContent={
+                  showGlosses ? (
+                    <AnswerSentenceGloss
+                      answer={entity}
+                      entities={entities}
+                      handleJumpToEntity={this.props.handleJumpToEntity}
+                    />
+                  ) : null
+                }
+                tooltipPlacement="below"
+                handleSelect={handleSelectEntityAnnotation}
+              />
+            ); 
+          }
+          else if (isSectionHeader(entity)) {
+            console.log(entity);
+            return (
+              <SectionHeaderGloss
+              header={entity}
+              key={annotationId}
+              id={annotationId}
+              entity={entity}
+              className={classNames("section-header-annotation")}
+              pageView={pageView}
+              underline={showAnnotations}
+              glossStyle='sidenote'
+              glossContent={null}
+              selected={isSelected}
+              active={annotationInteractionEnabled}
+              selectedSpanIds={selectedSpanIds}/>
+         ); 
           } else {
             return null;
           }

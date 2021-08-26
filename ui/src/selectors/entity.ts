@@ -5,10 +5,13 @@ import {
   isSentence,
   isSymbol,
   isTerm,
+  isPaperQuestion,
   Relationship,
   Sentence,
   Symbol,
   Term,
+  PaperQuestion,
+  isAnswerSentence,
 } from "../api/types";
 import { Entities } from "../state";
 import { Rectangle } from "../types/ui";
@@ -77,6 +80,28 @@ export function definingSentences(
       .map((id) => entities.byId[id])
       .filter((e) => e !== undefined)
       .filter(isTerm)
+      .map((e) => [...e.relationships.definition_sentences.map((r) => r.id)])
+      .flat()
+      .filter((id) => id !== null)
+  );
+
+  /*
+   * Accumulate defining sentences for questions.
+   */
+  sentenceIds.push(
+    ...entityIds
+      .map((id) => entities.byId[id])
+      .filter((e) => e !== undefined)
+      .filter(isPaperQuestion)
+      .map((e) => [...e.relationships.definition_sentences.map((r) => r.id)])
+      .flat()
+      .filter((id) => id !== null)
+  );
+  sentenceIds.push(
+    ...entityIds
+      .map((id) => entities.byId[id])
+      .filter((e) => e !== undefined)
+      .filter(isAnswerSentence)
       .map((e) => [...e.relationships.definition_sentences.map((r) => r.id)])
       .flat()
       .filter((id) => id !== null)
@@ -266,13 +291,15 @@ export function adjacentDefinition(
 ) {
   const entity = entities.byId[entityId];
   const contexts = definitions([entityId], entities);
+
   if (
     entity === undefined ||
-    !(isTerm(entity) || isSymbol(entity)) ||
+    !(isTerm(entity) || isPaperQuestion(entity) || isSymbol(entity)) || isAnswerSentence(entity) ||
     contexts.length === 0
   ) {
     return null;
   }
+  
   const sentenceId = entity.relationships.sentence.id;
   return adjacentContext(sentenceId, entities, contexts, where);
 }
@@ -288,11 +315,11 @@ export function definitions(
   const entitiesWithDefinitions = entityIds
     .map((id) => entities.byId[id])
     .filter((e) => e !== undefined)
-    .filter((e) => isTerm(e) || isSymbol(e))
+    .filter((e) => isTerm(e) || isSymbol(e) || isPaperQuestion(e) || isAnswerSentence(e))
     .map((e) => e as Term | Symbol);
   const definitions = entitiesWithDefinitions
     .map((e) => {
-      if (isTerm(e)) {
+      if (isTerm(e) || isPaperQuestion(e) || isAnswerSentence(e)) {
         return e.attributes.definition_texs;
       } else {
         return e.attributes.definitions;
@@ -310,7 +337,7 @@ export function inDefinition(entityId: string, entities: Entities) {
   if (entity === undefined || (!isSymbol(entity) && !isTerm(entity))) {
     return false;
   }
-  if (isTerm(entity)) {
+  if (isTerm(entity) || isPaperQuestion(entity) || isAnswerSentence(entity)) {
     return entity.relationships.definition_sentences.some(
       (r) => r.id !== null && r.id === entity.relationships.sentence.id
     );
@@ -333,7 +360,7 @@ export function hasDefinition(entityId: string, entities: Entities) {
   if (entity === undefined || !(isSymbol(entity) || isTerm(entity))) {
     return false;
   }
-  if (isTerm(entity)) {
+  if (isTerm(entity) || isPaperQuestion(entity) || isAnswerSentence(entity)) {
     return entity.attributes.definition_texs.length > 0;
   }
   if (isSymbol(entity)) {
@@ -397,8 +424,8 @@ export function usages(entityIds: string[], entities: Entities) {
   const entitiesWithUsages = entityIds
     .map((id) => entities.byId[id])
     .filter((e) => e !== undefined)
-    .filter((e) => isTerm(e) || isSymbol(e))
-    .map((e) => e as Term | Symbol);
+    .filter((e) => isTerm(e) || isSymbol(e) || isPaperQuestion(e) || isAnswerSentence(e))
+    .map((e) => e as Term | Symbol | PaperQuestion);
   const snippets = entitiesWithUsages.map((e) => e.attributes.snippets).flat();
   const contexts = entitiesWithUsages
     .map((s) => s.relationships.snippet_sentences)

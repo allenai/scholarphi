@@ -1,0 +1,15 @@
+.faqTitle {
+    
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 20px;
+    line-height: 46px;
+
+    /* or 230% */
+    align-items: center;
+    text-align: center;
+
+    /* Light Blue */
+    color: #eeeeee;
+}

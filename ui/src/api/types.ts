@@ -90,7 +90,7 @@ export interface EntityGetResponse {
 /**
  * Use type guards (e.g., 'isSymbol') to distinguish between types of entities.
  */
-export type Entity = GenericEntity | Symbol | Term | Citation | Sentence;
+export type Entity = GenericEntity | Symbol | Term | Citation | Sentence | Experience | PaperQuestion | AnswerSentence | SectionHeader;
 
 /**
  * All entity specifications should extend BaseEntity. To make specific relationship properties
@@ -354,6 +354,105 @@ export interface SentenceAttributes extends BaseEntityAttributes {
 export function isSentence(entity: Entity): entity is Sentence {
   return entity.type === "sentence";
 }
+
+/* New types added: Experience & Questions & Sentence Answers & Section Headers */
+
+/* Experiences are overlayed information for specific terms in the document
+* They include definitions drawn from multiple different sources (urls)
+*/
+export interface Experience extends BaseEntity {
+  type: "experience";
+  attributes: ExperienceAttributes;
+  relationships: {};
+}
+
+export interface ExperienceAttributes extends BaseEntityAttributes {
+  experience_id: string | null;
+  snippets: string[];
+  urls: string[];
+}
+
+export function isExperience(entity: Entity): entity is Experience {
+  return entity.type === "experience";
+}
+
+/* Questions are overlayed FAQs for a document
+* Each question can contain multiple places to jump to that answer the question
+*/
+export interface PaperQuestion extends BaseEntity {
+  type: "question";
+  attributes: PaperQuestionAttributes;
+  relationships: PaperQuestionRelationships;
+}
+
+export interface PaperQuestionRelationships {
+  sentence: Relationship;
+  definition_sentences: Relationship[];
+  snippet_sentences: Relationship[];
+}
+
+export interface PaperQuestionAttributes extends BaseEntityAttributes {
+  name: string | null;
+  question_text : string;
+  answer_text : string;
+  definitions: string[];
+  definition_texs: string[];
+  snippets: string[];
+}
+
+
+export function isPaperQuestion(entity: Entity): entity is PaperQuestion {
+  return entity.type === "question";
+}
+
+/* Sentences answers are answers to paper questions. They work similar to sentences but are highlighted and can be clicked
+ to get a simplified answer */
+
+export interface AnswerSentence extends BaseEntity {
+  type: "answerSentence";
+  attributes: AnswerSentenceAttributes;
+  relationships: AnswerSentenceRelationships;
+}
+
+export interface AnswerSentenceRelationships {
+  question: Relationship;
+  more_details: Relationship;
+  less_details: Relationship;
+  coaster: Relationship[];
+}
+
+export interface AnswerSentenceAttributes extends BaseEntityAttributes {
+  text: string | null;
+  simplified_text: string | null;
+  tex: string | null;
+  tex_start: number | null;
+  tex_end: number | null;
+
+}
+
+export function isAnswerSentence(entity: Entity): entity is AnswerSentence {
+  return entity.type === "answerSentence";
+}
+
+/* Section headers are simplified explanations of what is going on in a section
+*/
+export interface SectionHeader extends BaseEntity {
+  type: "sectionHeader";
+  attributes: SectionHeaderAttributes;
+  relationships: {};
+}
+
+export interface SectionHeaderAttributes extends BaseEntityAttributes {
+  summary: string;
+  points: string[];
+}
+
+export function isSectionHeader(entity: Entity): entity is SectionHeader {
+  return entity.type === "sectionHeader";
+}
+
+
+
 
 /**
  * Matches the schema of the data in the 'boundingbox' table in the database.  'left', 'top',

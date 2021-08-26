@@ -38,6 +38,10 @@
     padding-bottom: 0.2%;
     border-bottom: @underline-width fade(@underline-color, 70%) dotted;
   }
+  .scholar-reader-annotation-span.section-header-annotation.underline:not(.ancestor-of-selection) {
+    padding-bottom: 0%;
+    border: @underline-width fade(@underline-color, 70%) dotted;
+  }
 }
 
 /**
@@ -92,6 +96,11 @@
   background-color: fade(yellow, 30%);
 }
 
+// .scholar-reader-annotation-span.section-header-annotation {
+//   background-color: fade(yellow, 30%);
+//   border-bottom: 1rem fade(@underline-color, 70%) solid;
+// }
+
 /**
  * Set z-index of annotation spans to minimize occlusion. For example, sentences annotations will
  * often contain the full area of other annotations. To allow the other annotations to be
@@ -102,6 +111,16 @@
     z-index: @sentence-annotation-z-index;
   }
 
+  &.answer-sentence-annotation {
+    z-index: @sentence-annotation-z-index;
+    // background-color: fade(yellow, 30%);
+  }
+
+  &.answer-sentence-annotation-selected {
+    z-index: @sentence-annotation-z-index;
+    background-color: fade(yellow, 30%);
+  }
+
   &.equation-annotation {
     z-index: @equation-annotation-z-index;
   }
@@ -109,6 +128,18 @@
   &:not(.sentence-annotation) {
     z-index: @default-annotation-z-index;
   }
+}
+
+
+.faq-selected {
+  padding-bottom: 0.2%;
+  border: @underline-width fade(@underline-color, 70%) dotted;
+  background-color: fade(yellow, 30%);
+}
+
+.faq-hovered {
+  padding-bottom: 0.2%;
+  border: @underline-width fade(@underline-color, 70%) dotted;
 }
 
 /**

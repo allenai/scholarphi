@@ -18,6 +18,9 @@ import {
 import * as validation from "./types/validation";
 import { DBConfig } from "./conf";
 
+// import * as testEntities from './entities.json';
+
+
 /**
  * Create a Knex query builder that can be used to submit queries to the database.
  */
@@ -274,6 +277,11 @@ export class Connection {
   }
 
   async getEntitiesForPaper(paperSelector: PaperSelector, entityTypes: EntityType[], includeDuplicateSymbolData: boolean, slim: boolean, version?: number) {
+
+    // added
+    console.log('From the DB...')
+    // console.log(testEntities['default']);
+    
     if (version === undefined) {
       try {
         let latestVersion = await this.getLatestPaperDataVersion(paperSelector);
@@ -371,6 +379,8 @@ export class Connection {
     /**
      * Create entities from entity data.
      */
+
+
     const entities: Entity[] = entityRows
       .map((entityRow) => {
         const boundingBoxRowsForEntity =
@@ -415,7 +425,7 @@ export class Connection {
    */
   async getDedupedEntitiesForPaper(paperSelector: PaperSelector, entityTypes: EntityType[], version?: number) {
     const entities = await this.getEntitiesForPaper(paperSelector, entityTypes, false, true, version);
-
+    
     // Short-circuit fancy behavior below if we don't need the shared symbol data.
     if (entityTypes.indexOf("symbol") === -1 && entityTypes.length > 0) {
       return {

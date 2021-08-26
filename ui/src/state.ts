@@ -146,6 +146,17 @@ export interface State extends Settings {
    * all other appearances of the same term).
    */
   propagateEntityEdits: boolean;
+  /*
+  Added for FAQ hovering. 
+
+  One specifies which FAQ is being hovered over in the sidebar
+
+  The other specifies if an FAQ was clicked on, which case it becomes the active FAQ
+  
+  */
+  FAQHoveredID: string | null;
+  selectedFAQID: string | null;
+
 }
 
 export type Entities = RelationalStore<Entity>;
@@ -155,6 +166,7 @@ export const KNOWN_ENTITY_TYPES = [
   "equation",
   "sentence",
   "term",
+  "experience",//added
 ] as const;
 export type KnownEntityType = typeof KNOWN_ENTITY_TYPES[number];
 export type Papers = { [s2Id: string]: Paper };
@@ -183,7 +195,7 @@ export interface PageModel {
 
 export interface PaperId {
   id: string;
-  type: "s2" | "arxiv";
+  type: "s2" | "arxiv" | "localfile";
 }
 
 /**

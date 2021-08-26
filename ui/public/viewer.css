@@ -603,7 +603,7 @@ html[dir='rtl'] #outerContainer.sidebarOpen #sidebarContainer {
 }
 
 #sidebarContent {
-  top: 80px;
+  top: 30px;
   bottom: 0;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
@@ -2095,10 +2095,10 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   }
 
   html[dir='ltr'] .toolbarButton#sidebarToggle::before {
-    content: url(images/toolbarButton-sidebarToggle@2x.png);
+    /* content: url(images/toolbarButton-sidebarToggle@2x.png); */
   }
   html[dir='rtl'] .toolbarButton#sidebarToggle::before {
-    content: url(images/toolbarButton-sidebarToggle-rtl@2x.png);
+    /* content: url(images/toolbarButton-sidebarToggle-rtl@2x.png); */
   }
 
   html[dir='ltr'] .toolbarButton#secondaryToolbarToggle::before {

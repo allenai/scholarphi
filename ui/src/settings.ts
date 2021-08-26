@@ -37,6 +37,10 @@ export interface Settings {
    */
   glossesEnabled: boolean;
   /**
+   * Show FAQs in sidebar
+   */
+   FAQsEnabled: boolean;
+  /**
    * Show glosses for citations containing paper summary information.
    */
   citationGlossesEnabled: boolean;
@@ -147,17 +151,18 @@ export function getSettings(presets?: string[]) {
     annotationInteractionEnabled: true,
     annotationHintsEnabled: true,
     glossesEnabled: true,
+    FAQsEnabled: true,
     initialFocus: null,
-    glossStyle: "tooltip",
+    glossStyle: "tooltip", // from "tooltip"
     textSelectionMenuEnabled: false,
     citationGlossesEnabled: true,
     definitionsInSymbolGloss: false,
-    termGlossesEnabled: false,
+    termGlossesEnabled: true, //swapped
     symbolUnderlineMethod: "top-level-symbols",
     symbolSearchEnabled: true,
     declutterEnabled: true,
-    definitionPreviewEnabled: false,
-    equationDiagramsEnabled: false,
+    definitionPreviewEnabled: true, //swapped 
+    equationDiagramsEnabled: true, //swapped
     useDefinitionsForDiagramLabels: false,
     entityCreationEnabled: false,
     entityEditingEnabled: false,
@@ -166,6 +171,47 @@ export function getSettings(presets?: string[]) {
   };
 
   let settings = DEFAULT_SETTINGS;
+  if (presets) {
+    for (const preset of presets) {
+      for (const p of PRESETS) {
+        if (p.key === preset) {
+          settings = { ...settings, ...p };
+        }
+      }
+    }
+  }
+  return settings;
+}
+
+
+export function getPDFReaderOnlySettings(presets?: string[]) {
+  const PDF_READER_SETTINGS: Settings = {
+    primerPageEnabled: false,
+    primerPageGlossaryEnabled: false,
+    primerInstructionsEnabled: false,
+    annotationInteractionEnabled: false,
+    annotationHintsEnabled: false,
+    glossesEnabled: false,
+    FAQsEnabled: false,
+    initialFocus: null,
+    glossStyle: "tooltip", // from "tooltip"
+    textSelectionMenuEnabled: false,
+    citationGlossesEnabled: false,
+    definitionsInSymbolGloss: false,
+    termGlossesEnabled: false, 
+    symbolUnderlineMethod: "top-level-symbols",
+    symbolSearchEnabled: false,
+    declutterEnabled: false,
+    definitionPreviewEnabled: false, 
+    equationDiagramsEnabled: false, 
+    useDefinitionsForDiagramLabels: false,
+    entityCreationEnabled: false,
+    entityEditingEnabled: false,
+    sentenceTexCopyOnOptionClickEnabled: false,
+    glossEvaluationEnabled: false,
+  };
+
+  let settings = PDF_READER_SETTINGS;
   if (presets) {
     for (const preset of presets) {
       for (const p of PRESETS) {

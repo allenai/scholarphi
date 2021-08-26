@@ -90,6 +90,7 @@ export async function getEntities(arxivId: string, getAllEntities?: boolean) {
 }
 
 export async function getPaper(s2Id: string): Promise<Nullable<Paper>> {
+  console.log("Getting paper....", s2Id);
   const data = await doGet(
     axios.get<Paper>(`/api/v0/paper/${encodeURIComponent(s2Id)}`, {
     }));
@@ -263,6 +264,7 @@ export async function getDedupedEntities(arxivId: string, getAllEntities?: boole
       }
     )
   );
+  console.log(data); //added
   return data?.data || [];
 }
 
@@ -270,6 +272,7 @@ export async function postEntity(
   arxivId: string,
   data: EntityCreateData
 ): Promise<Entity | null> {
+  console.log("posted function"); //added
   try {
     const response = await axios.post(
       `/api/v0/papers/arxiv:${encodeURIComponent(arxivId)}/entities`,

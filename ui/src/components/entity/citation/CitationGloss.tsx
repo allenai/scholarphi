@@ -3,6 +3,8 @@ import PaperSummary from "./PaperSummary";
 import { PaperId } from "../../../state";
 import { Citation, Paper } from "../../../api/types";
 import { VoteButton } from "../../common";
+import { LinearProgress, Accordion, AccordionSummary, AccordionDetails, Typography} from "@material-ui/core";
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 interface Props {
   paper: Paper;
@@ -16,10 +18,20 @@ export class CitationGloss extends React.PureComponent<Props> {
     return (
       <div className="gloss citation-gloss">
         <div className="gloss__section">
-          <PaperSummary
-            paper={this.props.paper}
-            openedPaperId={this.props.openedPaperId}
-          />
+        <Accordion>
+                <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header">                    
+                </AccordionSummary>
+                <AccordionDetails>
+                    <PaperSummary
+                    paper={this.props.paper}
+                    openedPaperId={this.props.openedPaperId}
+                    />
+                </AccordionDetails>
+            </Accordion>
+
         </div>
         {this.props.evaluationEnabled ? (
           <div className="citation-gloss__vote-button">
