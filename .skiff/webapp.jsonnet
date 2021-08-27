@@ -157,6 +157,7 @@ function(
                         {
                             name: fullyQualifiedName + '-api',
                             image: apiImage,
+                            args: [ 'start.py', '--prod' ],
                             readinessProbe: {
                                 httpGet: {
                                     port: apiPort,
