@@ -11,27 +11,32 @@
 local config = import '../skiff.json';
 
 function(
-    apiImage, uiImage, ingressImage, cause, sha, env='staging', branch='', repo='',
+    uiImage,
+    paperSrvImage,
+    apiImage,
+    proxyImage,
+    cause,
+    sha,
+    env='staging',
+    branch='',
+    repo='',
     buildId=''
 )
     // We only allow registration of hostnames attached to '*.apps.allenai.org'
     // at this point. If you need a custom domain, contact us: reviz@allenai.org.
     local topLevelDomain = '.apps.allenai.org';
-    local hosts =
-        if env == 'prod' then
-            [ config.appName + topLevelDomain, 'scholarphi.semanticscholar.org' ]
-        else
-            [ config.appName + '.' + env + topLevelDomain ];
 
-    // In production we run two versions of your application, as to ensure that
-    // if one instance goes down or is busy, end users can still use the application.
-    // In all other environments we run a single instance to save money.
-    local replicas = (
-        if env == 'prod' then
-            2
-        else
-            1
-    );
+    // This just makes sure we don't accidentally blow away production.
+    assert env != 'prod';
+
+    local hosts = [ config.appName + '.' + env + topLevelDomain ];
+    local replicas = 1;
+
+    // There's a lot of ports to keep track of, so we put them all in one place.
+    local uiPort = 3001;
+    local paperSrvPort = 3002;
+    local apiPort = 8000;
+    local proxyPort = 8080;
 
     // Each app gets it's own namespace.
     local namespaceName = config.appName;
@@ -68,24 +73,6 @@ function(
         "apps.allenai.org/branch": branch,
         "apps.allenai.org/repo": repo,
         "apps.allenai.org/build": buildId
-    };
-
-    local ingressPort = 80;
-    local apiPort = 3000;
-
-    local ingressHealthCheck = {
-        port: ingressPort,
-        scheme: 'HTTP'
-    };
-
-    local apiHealthCheck = {
-        port: apiPort,
-        scheme: 'HTTP'
-    };
-
-    local uiHealthCheck = {
-        port: 4000,
-        scheme: 'HTTP'
     };
 
     local namespace = {
@@ -125,7 +112,7 @@ function(
                             {
                                 backend: {
                                     serviceName: fullyQualifiedName,
-                                    servicePort: ingressPort
+                                    servicePort: proxyPort
                                 }
                             }
                         ]
@@ -166,70 +153,72 @@ function(
                     annotations: annotations
                 },
                 spec: {
-                    volumes: [
-                        {
-                            name: fullyQualifiedName + '-db-password',
-                            secret: {
-                                secretName: 'db'
-                            }
-                        },
-                    ],
                     containers: [
                         {
                             name: fullyQualifiedName + '-api',
                             image: apiImage,
                             readinessProbe: {
-                                httpGet: apiHealthCheck + {
-                                    path: '/api/health'
+                                httpGet: {
+                                    port: apiPort,
+                                    scheme: 'HTTP',
+                                    path: '/'
                                 }
                             },
                             resources: {
                                 requests: {
-                                    cpu: '0.5',
-                                    memory: '1.4Gi'
+                                    cpu: '0.1',
+                                    memory: '100M'
                                 }
-                            },
-                            env: [
-                                {
-                                    name: 'SECRETS_FILE',
-                                    value: '/secrets/secret.json'
-                                },
-                            ],
-                            volumeMounts: [
-                                {
-                                    name: fullyQualifiedName + '-db-password',
-                                    mountPath: '/secrets',
-                                    readOnly: true
-                                }
-                            ],
+                            }
                         },
                         {
                             name: fullyQualifiedName + '-ui',
                             image: uiImage,
                             readinessProbe: {
-                                httpGet: uiHealthCheck + {
-                                    path: '/?check=rdy'
+                                httpGet: {
+                                    port: uiPort,
+                                    scheme: 'HTTP',
+                                    path: '/'
                                 }
                             },
                             resources: {
                                 requests: {
-                                   cpu: '0.2',
-                                   memory: '500Mi'
+                                   cpu: '0.1',
+                                   memory: '100M'
                                 }
                             }
                         },
                         {
-                            name: fullyQualifiedName + '-ingress',
-                            image: ingressImage,
+                            name: fullyQualifiedName + '-papersrv',
+                            image: paperSrvImage,
                             readinessProbe: {
-                                httpGet: ingressHealthCheck + {
-                                    path: '/?check=rdy'
+                                httpGet: {
+                                    port: paperSrvPort,
+                                    scheme: 'HTTP',
+                                    path: '/health'
                                 }
                             },
                             resources: {
                                 requests: {
-                                   cpu: '0.2',
-                                   memory: '500Mi'
+                                   cpu: '0.1',
+                                   memory: '100Mi'
+                                }
+                            }
+                        },
+                        {
+                            name: fullyQualifiedName + '-proxy',
+                            image: proxyImage,
+                            readinessProbe: {
+                                httpGet: {
+                                    port: proxyPort,
+                                    scheme: 'HTTP',
+                                    path: '/health'
+                                }
+                            },
+                            resources: {
+                                requests: {
+                                   cpu: '0.1',
+                                   memory: '100Mi'
                                 }
                             }
                         }
@@ -252,33 +241,16 @@ function(
             selector: selectorLabels,
             ports: [
                 {
-                    port: ingressPort,
+                    port: proxyPort,
                     name: 'http'
                 }
             ]
         }
     };
 
-    local pdb = {
-        apiVersion: 'policy/v1beta1',
-        kind: 'PodDisruptionBudget',
-        metadata: {
-            name: fullyQualifiedName,
-            namespace: namespaceName,
-            labels: labels,
-        },
-        spec: {
-            minAvailable: if replicas > 1 then 1 else 0,
-            selector: {
-                matchLabels: selectorLabels,
-            },
-        },
-    };
-
     [
         namespace,
         ingress,
         deployment,
-        service,
-        pdb
+        service
     ]

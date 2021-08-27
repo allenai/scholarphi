@@ -1,5 +1,9 @@
 # Scholar Reader
 
+**This is a forked version of ScholarPhi that's being used to experiment
+  with techniques for making medical literature more approachable. Some of
+  documentation may accordingly be out of date.**
+
 The user interface, API, and data processing scripts for an 
 augmented PDF reader application.
 
@@ -18,19 +22,16 @@ extract entities and their bounding boxes from papers.
 
 ## Quick Start
 
-In order to run the reader app locally (pointing to the production api) you only need to do 
+Make sure you have [Docker](https://docker.com) installed, then run:
 
 ```bash
-cd ui
-npm install 
-npm start
+docker compose up --build
 ```
 
-See [ui/README.md](ui/README.md) for more details on how to use the reader.
+Once that command completes you should be able to navigate to 
+[http://localhost:8080/?file=/paper/LDH_surgery.pdf](http://localhost:8080/?file=/paper/LDH_surgery.pdf).
 
-However, if you want to run the *api* locally as well you'll have to:
-- Follow the instructions in [api/README.md](api/README.md) to run the api locally
-- In another terminal, run the reader app in the /ui directory via `npm run dev`
+See [ui/README.md](ui/README.md) for more details on how to use the reader.
 
 ## Style guidelines
 

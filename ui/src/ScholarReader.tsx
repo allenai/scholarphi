@@ -63,7 +63,7 @@ import ViewerOverlay from "./components/overlay/ViewerOverlay";
 import classNames from "classnames";
 import React from "react";
 
-//added 
+//added
 // import * as testEntities from './data/entities.json';
 import * as testEntities from './data/auto_PAWLS_SPUI_annotations.json';
 
@@ -88,7 +88,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     logger.setContext(loggingContext);
 
     this.state = {
-      entities: null,
+      entities: { all: [], byId: {} },
       lazyPapers: new Map(),
 
       pages: null,
@@ -338,21 +338,17 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
   createEntity = async (data: EntityCreateData): Promise<string | null> => {
     if (this.props.paperId !== undefined) {
-      console.log("Trying to create entity...");
       const createdEntity = await api.postEntity(this.props.paperId.id, data);
       if (createdEntity !== null) {
         this.setState((prevState) => ({
           /*
            * Add the entity to memory
            */
-          entities:
-            prevState.entities !== null
-              ? stateUtils.add(
-                  prevState.entities,
-                  createdEntity.id,
-                  createdEntity
-                )
-              : null,
+          entities: stateUtils.add(
+              prevState.entities,
+              createdEntity.id,
+              createdEntity
+            ),
           /*
            * Select the new entity
            */
@@ -484,7 +480,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     /*
      * Patch entities, saving which ones were successfully updated.
      */
-    console.log("Patching...");
     const patchedEntities = await Promise.all(
       entitiesToPatch.map((id) =>
         api.patchEntity(paperId.id, { ...updateData, id })
@@ -527,7 +522,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   deleteEntity = async (id: string): Promise<boolean> => {
-    console.log("deleting....");
     if (this.props.paperId !== undefined) {
       const result = await api.deleteEntity(this.props.paperId.id, id);
       if (result) {
@@ -535,10 +529,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
           /*
            * Delete the entity from memory.
            */
-          const updatedEntities =
-            prevState.entities !== null
-              ? stateUtils.del(prevState.entities, id)
-              : null;
+          const updatedEntities = stateUtils.del(prevState.entities, id);
 
           /*
            * Deselect the entity if it's currently selected.
@@ -742,27 +733,19 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   loadDataFromApi = async (): Promise<void> => {
-    console.log("Paper id:", this.props.paperId);
     // if (this.props.paperId !== undefined && this.props.paperId.type === "arxiv") { // swapped
     if (true) {
       const loadingStartTime = performance.now();
-      //added - casting for keeping errors for using json - https://stackoverflow.com/questions/40358434/typescript-ts7015-element-implicitly-has-an-any-type-because-index-expression
-      interface jsonOjbect { default: any[] }
-      const myObj: jsonOjbect = testEntities;
-      const myKey: string = 'default';
-      
-      const entities = myObj[myKey as keyof jsonOjbect] as Entity[]; 
 
+      // trick the typescript compiler, which gets the type of testEntities
+      // wrong for some reason.
+      const entitiesFromJson = testEntities as any as { default: Entity[] };
+      const entities = entitiesFromJson.default;
 
       // const entities = await api.getDedupedEntities(this.props.paperId.id, true);
       this.setState({
         entities: stateUtils.createRelationalStoreFromArray(entities, "id"),
       });
-
-      
-      // // added 
-      // entities = testEntities;
-      console.log(testEntities); // added
 
       const citationS2Ids = entities
         .filter(isCitation)

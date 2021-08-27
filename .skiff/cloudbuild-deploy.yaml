@@ -2,21 +2,16 @@
 # It can be attached to a variety of triggers, the default being whenever
 # someone merges changes to the main branch.
 steps:
-# Pull down the latest versions of each Docker image, so the build is faster.
-- id: 'api.pull'
+
+#
+# UI
+#
+- id: 'ui.base.pull'
   name: 'gcr.io/cloud-builders/docker'
   entrypoint: '/bin/bash'
   args: [
     '-c',
-    'docker pull gcr.io/$PROJECT_ID/$REPO_NAME-api:latest || exit 0'
-  ]
-  waitFor: [ '-' ]
-- id: 'ui-build.pull'
-  name: 'gcr.io/cloud-builders/docker'
-  entrypoint: '/bin/bash'
-  args: [
-    '-c',
-    'docker pull gcr.io/$PROJECT_ID/$REPO_NAME-ui-build:latest || exit 0'
+    'docker pull gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-ui-base:latest || exit 0'
   ]
   waitFor: [ '-' ]
 - id: 'ui.pull'
@@ -24,91 +19,139 @@ steps:
   entrypoint: '/bin/bash'
   args: [
     '-c',
-    'docker pull gcr.io/$PROJECT_ID/$REPO_NAME-ui:latest || exit 0'
+    'docker pull gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-ui:latest || exit 0'
   ]
   waitFor: [ '-' ]
-- id: 'ingress.pull'
-  name: 'gcr.io/cloud-builders/docker'
-  entrypoint: '/bin/bash'
-  args: [
-    '-c',
-    'docker pull gcr.io/$PROJECT_ID/$REPO_NAME-ingress:latest || exit 0'
-  ]
-  waitFor: [ '-' ]
-# Build docker images for each piece of the puzzle
-- id: 'api.build'
-  name: 'gcr.io/cloud-builders/docker'
-  args: [
-    'build',
-    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-api:latest',
-    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-api:$COMMIT_SHA',
-    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-api:latest',
-    '.',
-    '--build-arg', 'NODE_ENV=production'
-  ]
-  waitFor: [ 'api.pull' ]
-  dir: 'api'
-- id: 'ui-build.build'
+- id: 'ui.base.build'
   name: 'gcr.io/cloud-builders/docker'
   args: [
     'build',
     '--target', 'build',
-    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui-build:latest',
-    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui-build:$COMMIT_SHA',
-    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui-build:latest',
+    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-ui-base:latest',
+    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-ui-base:$COMMIT_SHA',
+    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-ui-base:latest',
     '.',
     '--build-arg', 'NODE_ENV=production'
   ]
-  waitFor: [ 'ui-build.pull' ]
+  waitFor: [ 'ui.base.pull' ]
   dir: 'ui'
-- id: 'ui.build'
+- id: 'ui.runtime.build'
   name: 'gcr.io/cloud-builders/docker'
   args: [
     'build',
-    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui:latest',
-    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui:$COMMIT_SHA',
-    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui:latest',
-    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui-build:latest',
+    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-ui:latest',
+    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-ui:$COMMIT_SHA',
+    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-ui:latest',
+    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-ui-base:latest',
     '.',
     '--build-arg', 'NODE_ENV=production',
     '--build-arg', 'BABEL_ENV=production'
   ]
-  waitFor: [ 'ui.pull', 'ui-build.build' ]
+  waitFor: [ 'ui.pull', 'ui.base.build' ]
   dir: 'ui'
-- id: 'ingress.build'
-  name: 'gcr.io/cloud-builders/docker'
-  args: [
-    'build',
-    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-ingress:latest',
-    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-ingress:$COMMIT_SHA',
-    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-ingress:latest',
-    '.',
-    '--build-arg', 'CONF_FILE=prod.conf'
-  ]
-  waitFor: [ 'ingress.pull' ]
-  dir: 'ingress'
-- id: 'api.push'
-  name: 'gcr.io/cloud-builders/docker'
-  args: [
-    'push',
-    'gcr.io/$PROJECT_ID/$REPO_NAME-api:$COMMIT_SHA',
-  ]
-  waitFor: [ 'api.build' ]
 - id: 'ui.push'
   name: 'gcr.io/cloud-builders/docker'
   args: [
     'push',
-    'gcr.io/$PROJECT_ID/$REPO_NAME-ui:$COMMIT_SHA',
+    'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-ui:$COMMIT_SHA',
   ]
-  waitFor: [ 'ui.build' ]
-- id: 'ingress.push'
+  waitFor: [ 'ui.runtime.build' ]
+
+#
+# API
+#
+- id: 'api.pull'
+  name: 'gcr.io/cloud-builders/docker'
+  entrypoint: '/bin/bash'
+  args: [
+    '-c',
+    'docker pull gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-api:latest || exit 0'
+  ]
+  waitFor: [ '-' ]
+- id: 'api.build'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'build',
+    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-api:latest',
+    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-api:$COMMIT_SHA',
+    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-api:latest',
+    '.',
+    '--build-arg', 'FLASK_ENV=production',
+  ]
+  waitFor: [ 'api.pull' ]
+  dir: 'api'
+- id: 'api.push'
   name: 'gcr.io/cloud-builders/docker'
   args: [
     'push',
-    'gcr.io/$PROJECT_ID/$REPO_NAME-ingress:$COMMIT_SHA'
+    'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-api:$COMMIT_SHA',
   ]
-  waitFor: [ 'ingress.build' ]
-# Generate our Kubernetes configuration
+  waitFor: [ 'api.build' ]
+
+#
+# PaperSrv
+#
+- id: 'papersrv.pull'
+  name: 'gcr.io/cloud-builders/docker'
+  entrypoint: '/bin/bash'
+  args: [
+    '-c',
+    'docker pull gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-papersrv:latest || exit 0'
+  ]
+  waitFor: [ '-' ]
+- id: 'papersrv.build'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'build',
+    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-papersrv:latest',
+    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-papersrv:$COMMIT_SHA',
+    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-papersrv:latest',
+    '.',
+  ]
+  waitFor: [ 'papersrv.pull' ]
+  dir: 'papersrv'
+- id: 'papersrv.push'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'push',
+    'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-papersrv:$COMMIT_SHA',
+  ]
+  waitFor: [ 'papersrv.build' ]
+
+#
+# Proxy
+#
+- id: 'proxy.pull'
+  name: 'gcr.io/cloud-builders/docker'
+  entrypoint: '/bin/bash'
+  args: [
+    '-c',
+    'docker pull gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-proxy:latest || exit 0'
+  ]
+  waitFor: [ '-' ]
+- id: 'proxy.build'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'build',
+    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-proxy:latest',
+    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-proxy:$COMMIT_SHA',
+    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-proxy:latest',
+    '.',
+    '--build-arg', 'CONF_FILE=prod.conf'
+  ]
+  waitFor: [ 'proxy.pull' ]
+  dir: 'proxy'
+- id: 'proxy.push'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'push',
+    'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-proxy:$COMMIT_SHA',
+  ]
+  waitFor: [ 'proxy.build' ]
+
+#
+# Deploy
+#
 - id: 'config'
   name: 'gcr.io/ai2-reviz/jsonnet'
   args: [
@@ -116,9 +159,10 @@ steps:
     '-y',
     '--output-file', './webapp.json',
     '--tla-str', 'env=$_ENV',
-    '--tla-str', 'apiImage=gcr.io/$PROJECT_ID/$REPO_NAME-api:$COMMIT_SHA',
-    '--tla-str', 'uiImage=gcr.io/$PROJECT_ID/$REPO_NAME-ui:$COMMIT_SHA',
-    '--tla-str', 'ingressImage=gcr.io/$PROJECT_ID/$REPO_NAME-ingress:$COMMIT_SHA',
+    '--tla-str', 'uiImage=gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-ui:$COMMIT_SHA',
+    '--tla-str', 'apiImage=gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-api:$COMMIT_SHA',
+    '--tla-str', 'proxyImage=gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-proxy:$COMMIT_SHA',
+    '--tla-str', 'paperSrvImage=gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-papersrv:$COMMIT_SHA',
     '--tla-str', 'sha=$COMMIT_SHA',
     '--tla-str', 'cause=Automated Skiff Deploy SHA:$COMMIT_SHA BUILD:$BUILD_ID',
     '--tla-str', 'branch=$BRANCH_NAME',
@@ -128,7 +172,6 @@ steps:
   ]
   dir: '.skiff'
   waitFor: [ '-' ]
-# Deploy the image to Kubernetes
 - id: 'deploy'
   name: 'gcr.io/ai2-reviz/rudder'
   args: [
@@ -137,19 +180,23 @@ steps:
     'webapp.json'
   ]
   dir: '.skiff'
-  waitFor: [ 'api.push', 'ui.push', 'ingress.push' ]
+  waitFor: [ 'api.push', 'ui.push', 'proxy.push', 'papersrv.push' ]
+
 substitutions:
   _ENV: staging
 images: [
-  'gcr.io/$PROJECT_ID/$REPO_NAME-api:$COMMIT_SHA',
-  'gcr.io/$PROJECT_ID/$REPO_NAME-api:latest',
-  'gcr.io/$PROJECT_ID/$REPO_NAME-ui:$COMMIT_SHA',
-  'gcr.io/$PROJECT_ID/$REPO_NAME-ui:latest',
-  'gcr.io/$PROJECT_ID/$REPO_NAME-ingress:$COMMIT_SHA',
-  'gcr.io/$PROJECT_ID/$REPO_NAME-ingress:latest',
-  'gcr.io/$PROJECT_ID/$REPO_NAME-ui-build:latest'
+  'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-ui:$COMMIT_SHA',
+  'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-ui:latest',
+  'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-ui-base:latest',
+  'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-ui-base:$COMMIT_SHA',
+  'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-api:$COMMIT_SHA',
+  'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-api:latest',
+  'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-proxy:$COMMIT_SHA',
+  'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-proxy:latest',
+  'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-papersrv:$COMMIT_SHA',
+  'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-papersrv:latest'
 ]
 artifacts:
   objects:
-    location: 'gs://skiff-archive/$REPO_NAME/$_ENV/$BUILD_ID/$COMMIT_SHA'
+    location: 'gs://skiff-archive/$REPO_NAME-$BRANCH_NAME/$_ENV/$BUILD_ID/$COMMIT_SHA'
     paths: ['.skiff/webapp.json']
