@@ -167,7 +167,7 @@ function(
                             resources: {
                                 requests: {
                                     cpu: '0.1',
-                                    memory: '500MB'
+                                    memory: '100M'
                                 }
                             }
                         },
