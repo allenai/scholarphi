@@ -137,6 +137,7 @@ steps:
     '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-proxy:$COMMIT_SHA',
     '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-proxy:latest',
     '.',
+    '--build-arg', 'CONF_FILE=prod.conf'
   ]
   waitFor: [ 'proxy.pull' ]
   dir: 'proxy'
