@@ -24,6 +24,7 @@ import ExperienceGloss from "./experience/ExperienceGloss";
 import FAQ from "../questions/FAQ";
 import AnswerSentenceGloss from "./answers/AnswerSentenceGloss";
 import SectionHeaderGloss from "./headers/SectionHeaderGloss";
+import SectionHeaderImage from "./headers/HeaderImage";
 
 import EntityAnnotation from "./EntityAnnotation";
 import SimpleSymbolGloss from "./SimpleSymbolGloss";
@@ -336,18 +337,6 @@ class EntityAnnotationLayer extends React.Component<Props> {
           );
           // added - paperQuestion
         } 
-        // else if (
-        //   isPaperQuestion(entity) &&
-        //   entity.attributes.name !== null
-        // ) {
-        //   return (
-        //     <FAQ
-        //       question={entity}
-        //       entities={entities}
-        //       handleJumpToEntity={this.props.handleJumpToEntity}
-        //     />
-        //   );
-        //   } 
         else if (isEquation(entity) && this.shouldShowEquation(entity.id)) {
             return (
               <EntityAnnotation
@@ -549,21 +538,32 @@ class EntityAnnotationLayer extends React.Component<Props> {
             ); 
           }
           else if (isSectionHeader(entity)) {
-            console.log(entity);
-            return (
-              <SectionHeaderGloss
-              header={entity}
+            return (<div className="section-header-annotation">
+              <SectionHeaderImage
+                entity={entity}
+                pageView={pageView}
+              /> 
+              <EntityAnnotation
               key={annotationId}
               id={annotationId}
               entity={entity}
-              className={classNames("section-header-annotation")}
+              className="section-header-annotation"
               pageView={pageView}
-              underline={showAnnotations}
-              glossStyle='sidenote'
-              glossContent={null}
+              underline={false}
+              glossStyle={glossStyle}
+              glossContent={
+                showGlosses ? (
+                  <SectionHeaderGloss
+                    header={entity}
+                  />
+                ) : null
+              }
               selected={isSelected}
               active={annotationInteractionEnabled}
-              selectedSpanIds={selectedSpanIds}/>
+              selectedSpanIds={selectedSpanIds}
+              handleSelect={handleSelectEntityAnnotation}
+            />
+            </div>
          ); 
           } else {
             return null;

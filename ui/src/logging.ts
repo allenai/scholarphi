@@ -50,6 +50,7 @@ class RemoteLogger {
       return;
     }
 
+    console.log("Logging:", eventType);
     this._log(level, eventType, data);
   }
 

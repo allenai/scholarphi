@@ -116,7 +116,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       findMatchIndex: null,
       findMatchCount: null,
       findMatchedEntities: null,
-      drawerMode: "open", //swapped
+      drawerMode: "closed", //swapped
       drawerContentType: null,
       snackbarMode: "closed",
       snackbarActivationTimeMs: null,

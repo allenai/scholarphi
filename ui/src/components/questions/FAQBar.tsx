@@ -9,6 +9,7 @@ import React from "react";
 import MuiDrawer from "@material-ui/core/Drawer";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import ReactDOM from "react-dom";
 
 const logger = getRemoteLogger();
 
@@ -144,38 +145,56 @@ class FAQBar extends React.PureComponent<Props> {
         }
       }
   
+      const FAQBarContainer = document.getElementById(
+        "FAQBar"
+      );
+
       const FAQs = this.getFAQs();
 
-      return (
-        <MuiDrawer
-        className="drawer"
-        variant="persistent"
-        anchor="right"
-        /*
-         * If for the drawer has been requested to open but there's nothing to show
-         * in it, don't show it.
-         */
-        open={mode === "open"}
-        onScroll={this.onScroll}
-      >  
-      <div className="drawer__header">
-          <div className="drawer__close_icon">
-            <IconButton size="small" onClick={this.closeDrawer}>
-              <ChevronRightIcon />
-            </IconButton>
-          </div>
+      const BarContent = (<div className="drawer"> 
+        <div className="drawer__header">
           {' '}
-          <p className="drawer__header__content">FAQs</p> 
-          <p> Hover or click on a question to highlight it's answer in the document!</p>
+        <p className="drawer__header__content">FAQs</p> 
+        <p> Hover or click on a question to highlight it's answer in the document!</p>
       </div>
+      <div className="drawer__content">
+          {FAQs}
+      </div>
+    </div>);
+
+      return FAQBarContainer? (ReactDOM.createPortal(BarContent, FAQBarContainer)):null;
+
+
+
+      //   <MuiDrawer
+      //   className="drawer"
+      //   variant="persistent"
+      //   anchor="right"
+      //   /*
+      //    * If for the drawer has been requested to open but there's nothing to show
+      //    * in it, don't show it.
+      //    */
+      //   open={mode === "open"}
+      //   onScroll={this.onScroll}
+      // >  
+      // <div className="drawer__header">
+      //     <div className="drawer__close_icon">
+      //       <IconButton size="small" onClick={this.closeDrawer}>
+      //         <ChevronRightIcon />
+      //       </IconButton>
+      //     </div>
+      //     {' '}
+      //     <p className="drawer__header__content">FAQs</p> 
+      //     <p> Hover or click on a question to highlight it's answer in the document!</p>
+      // </div>
 
       
 
-        <div className="drawer__content">
-            {FAQs}
-        </div>
-       </MuiDrawer>
-      );
+      //   <div className="drawer__content">
+      //       {FAQs}
+      //   </div>
+      //  </MuiDrawer>
+      // );
   }
 }
 
