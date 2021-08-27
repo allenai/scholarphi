@@ -1,18 +1,12 @@
-import { DrawerContentType } from "../drawer/Drawer";
-import { getRemoteLogger } from "../../logging";
-import { EntityPageLink, RichText, EntityLink } from "../common";
-import * as selectors from "../../selectors";
-import { Entities } from "../../state";
-import { Term, PaperQuestion, AnswerSentence, Relationship } from "../../api/types";
-import ReactDOM from "react-dom";
-
-
-import IconButton from "@material-ui/core/IconButton";
-import MuiTooltip from "@material-ui/core/Tooltip";
-import Close from "@material-ui/icons/Close";
-import Toc from "@material-ui/icons/Toc";
 import classNames from "classnames";
 import React from "react";
+import { AnswerSentence, PaperQuestion, Relationship } from "../../api/types";
+import { getRemoteLogger } from "../../logging";
+import * as selectors from "../../selectors";
+import { Entities } from "../../state";
+import { EntityLink } from "../common";
+
+
 
 
 const logger = getRemoteLogger();
@@ -156,33 +150,16 @@ interface State {
           onMouseOver={this.onMouseOver}
           onMouseOut={this.onMouseOut}
         >
-          <table>
-            <tbody>
-              <tr>
-                {(definedHere || definition) && (
-                  <td>
-                    <div className="simple-gloss__definition-container">
-                      {definedHere && <p>Defined here.</p>}
-                      {!definedHere && definition !== null && (
-                        <div>
-                          {definition !== null && (
-                            <>
-                              <p className="drawer__content__header">{`${this.props.question.attributes.question_text}`}</p>
+          {definition !== null && (
+            <>
+              <p className="drawer__content__header">{`${this.props.question.attributes.question_text}`}</p>
 
-                              <span className="drawer__content__section">{`${this.props.question.attributes.answer_text}`}</span>
-                              {generalAnswer} {"."}
-                              {details !== null && (<span> Details: {details}</span>)}
-                            </>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                )}
-              </tr>
-            </tbody>
-          </table>
-        </div>);
+              <span className="drawer__content__section">{`${this.props.question.attributes.answer_text}`}</span>
+              {generalAnswer} {"."}
+              {details !== null && (<span> Details: {details}</span>)}
+            </>
+          )}
+          </div>);
     }
   }
   

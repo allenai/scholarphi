@@ -1,15 +1,11 @@
-import { getRemoteLogger } from "../../logging";
-import * as uiUtils from "../../utils/ui";
-import { PDFViewer } from "../../types/pdfjs-viewer";
-import { Entities } from "../../state";
-import { Entity, isPaperQuestion } from "../../api/types";
-import FAQ from "../questions/FAQ";
-import IconButton from "@material-ui/core/IconButton";
 import React from "react";
-import MuiDrawer from "@material-ui/core/Drawer";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import { makeStyles, useTheme } from '@material-ui/core/styles';
 import ReactDOM from "react-dom";
+import { isPaperQuestion } from "../../api/types";
+import { getRemoteLogger } from "../../logging";
+import { Entities } from "../../state";
+import { PDFViewer } from "../../types/pdfjs-viewer";
+import * as uiUtils from "../../utils/ui";
+import FAQ from "../questions/FAQ";
 
 const logger = getRemoteLogger();
 
@@ -45,15 +41,15 @@ class FAQBar extends React.PureComponent<Props> {
 
     constructor(props: Props) {
         super(props);
-        this.onScroll = this.onScroll.bind(this);
-        this.closeDrawer = this.closeDrawer.bind(this);
+        // this.onScroll = this.onScroll.bind(this);
+        // this.closeDrawer = this.closeDrawer.bind(this);
       }
     
       componentWillUnmount() {
-        const { pdfViewer } = this.props;
-        if (pdfViewer != null) {
-          this.removePdfPositioningForDrawerOpen(pdfViewer.container);
-        }
+        // const { pdfViewer } = this.props;
+        // if (pdfViewer != null) {
+        //   this.removePdfPositioningForDrawerOpen(pdfViewer.container);
+        // }
       }
     
       onScroll(event: React.UIEvent<HTMLDivElement>) {
@@ -131,19 +127,19 @@ class FAQBar extends React.PureComponent<Props> {
       } = this.props;
   
 
-      let firstSelectedEntity: Entity | null = null;
-      if (entities !== null && selectedEntityIds.length > 0) {
-        firstSelectedEntity = entities.byId[selectedEntityIds[0]] || null;
-      }
+      // let firstSelectedEntity: Entity | null = null;
+      // if (entities !== null && selectedEntityIds.length > 0) {
+      //   firstSelectedEntity = entities.byId[selectedEntityIds[0]] || null;
+      // }
   
-      if (pdfViewer != null) {
-        if (mode === "open" && contentType !== null) {
-          this.removePdfPositioningForDrawerOpen(pdfViewer.container);
-          this.positionPdfForDrawerOpen(pdfViewer.container, contentType);
-        } else {
-          this.removePdfPositioningForDrawerOpen(pdfViewer.container);
-        }
-      }
+      // if (pdfViewer != null) {
+      //   if (mode === "open" && contentType !== null) {
+      //     this.removePdfPositioningForDrawerOpen(pdfViewer.container);
+      //     this.positionPdfForDrawerOpen(pdfViewer.container, contentType);
+      //   } else {
+      //     this.removePdfPositioningForDrawerOpen(pdfViewer.container);
+      //   }
+      // }
   
       const FAQBarContainer = document.getElementById(
         "FAQBar"
@@ -151,16 +147,13 @@ class FAQBar extends React.PureComponent<Props> {
 
       const FAQs = this.getFAQs();
 
-      const BarContent = (<div className="drawer"> 
-        <div className="drawer__header">
-          {' '}
+      const BarContent = (<><div>
         <p className="drawer__header__content">FAQs</p> 
         <p> Hover or click on a question to highlight it's answer in the document!</p>
       </div>
       <div className="drawer__content">
           {FAQs}
-      </div>
-    </div>);
+      </div></>);
 
       return FAQBarContainer? (ReactDOM.createPortal(BarContent, FAQBarContainer)):null;
 
