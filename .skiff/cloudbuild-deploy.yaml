@@ -166,7 +166,7 @@ steps:
     '--tla-str', 'sha=$COMMIT_SHA',
     '--tla-str', 'cause=Automated Skiff Deploy SHA:$COMMIT_SHA BUILD:$BUILD_ID',
     '--tla-str', 'branch=$BRANCH_NAME',
-    '--tla-str', 'repo=$REPO_NAME-$BRANCH_NAME',
+    '--tla-str', 'repo=$REPO_NAME',
     '--tla-str', 'buildId=$BUILD_ID',
     './webapp.jsonnet'
   ]
