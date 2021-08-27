@@ -627,7 +627,7 @@ html[dir='rtl'] #sidebarContent {
   top: 80px;
   right: 0;
   bottom: 0;
-  left: 5%;
+  left: 25%;
   outline: none;
 }
 #viewerContainer:not(.pdfPresentationMode) {
@@ -731,7 +731,7 @@ html[dir='rtl'] #toolbarContainer, .findbar, .secondaryToolbar {
 /* Added for FAQs on the reader */
 #FAQBar {
   background-color: white;
-  height: 80%;
+  height: calc(100% - 80px);
   width: 25%;
   overflow-y: scroll;
   position: absolute;
