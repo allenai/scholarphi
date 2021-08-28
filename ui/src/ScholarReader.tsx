@@ -191,8 +191,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     annotationId?: string,
     annotationSpanId?: string
   ): void => {
+
+    const entityType = this.state.entities?.byId[entityId].type; 
     logger.log("debug", "select-entity", {
       entityId,
+      entityType,
       annotationId,
       annotationSpanId,
     });
