@@ -1,0 +1,47 @@
+/* Added for FAQs on the reader */
+#FAQBar {
+  height: calc(100% - 80px);
+  width: 25%;
+  margin: 4px;
+  overflow-y: scroll;
+  position: absolute;
+  left: 0;
+  font-family: @s2-font-family;
+  font-weight: lighter;
+  font-size: 14px;
+}
+
+.faq__content {
+  padding: @padding;
+  background-color: @s2-primary-color;
+  border-radius: @border-radius;
+  color: white;
+
+  &__header {
+    font-weight: bolder;
+    padding: @padding / 2;
+  }
+}
+
+.faq {
+  border: @border-width solid rgba(0, 0, 0, 0);
+  border-radius: @border-radius;
+  padding: @padding / 2;
+
+  p {
+    padding-bottom: @padding / 2;
+  }
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    background-color: lighten(@s2-primary-color, 10);
+  }
+
+  &-selected {
+    border-color: rgba(255, 255, 255, 1);
+  }
+
+  &__question {
+    font-weight: bold;
+  }
+}

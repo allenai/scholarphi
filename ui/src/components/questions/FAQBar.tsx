@@ -9,7 +9,6 @@ import FAQ from "../questions/FAQ";
 
 const logger = getRemoteLogger();
 
-
 export type DrawerMode = "open" | "closed";
 export type DrawerContentType =
   | "definitions"
@@ -25,79 +24,81 @@ interface Props {
   entities: Entities;
   selectedEntityIds: string[];
   propagateEntityEdits: boolean;
-  selectedFAQID : string | null;
-  FAQHoveredID : string | null;
+  selectedFAQID: string | null;
+  FAQHoveredID: string | null;
   handleClose: () => void;
-  handleMouseOver: (entityId: string)=> void;
-  handleMouseOut: (entityId: string)=> void;
-  handleClick: (entityId: string)=> void;
+  handleMouseOver: (entityId: string) => void;
+  handleMouseOut: (entityId: string) => void;
+  handleClick: (entityId: string) => void;
   handleJumpToEntity: (entityId: string) => void;
   handleSetPropagateEntityEdits: (propagate: boolean) => void;
-
 }
 
 class FAQBar extends React.PureComponent<Props> {
+  constructor(props: Props) {
+    super(props);
+    // this.onScroll = this.onScroll.bind(this);
+    // this.closeDrawer = this.closeDrawer.bind(this);
+  }
 
+  componentWillUnmount() {
+    // const { pdfViewer } = this.props;
+    // if (pdfViewer != null) {
+    //   this.removePdfPositioningForDrawerOpen(pdfViewer.container);
+    // }
+  }
 
-    constructor(props: Props) {
-        super(props);
-        // this.onScroll = this.onScroll.bind(this);
-        // this.closeDrawer = this.closeDrawer.bind(this);
-      }
-    
-      componentWillUnmount() {
-        // const { pdfViewer } = this.props;
-        // if (pdfViewer != null) {
-        //   this.removePdfPositioningForDrawerOpen(pdfViewer.container);
-        // }
-      }
-    
-      onScroll(event: React.UIEvent<HTMLDivElement>) {
-        if (event.target instanceof HTMLDivElement) {
-          logger.log(
-            "debug",
-            "scroll-drawer",
-            {
-              scroll: uiUtils.getScrollCoordinates(event.target),
-            },
-            500
-          );
-        }
-      }
-    
-      positionPdfForDrawerOpen(
-        pdfViewerContainer: HTMLElement,
-        drawerContentType: string
-      ) {
-        pdfViewerContainer.classList.add(`drawer-${drawerContentType}`);
-      }
-    
-      removePdfPositioningForDrawerOpen(pdfViewerContainer: HTMLElement) {
-        pdfViewerContainer.classList.forEach((c) => {
-          if (c.indexOf("drawer-") !== -1) {
-            pdfViewerContainer.classList.remove(c);
-          }
-        });
-      }
-    
-      closeDrawer() {
-        if (this.props.mode !== "closed") {
-          this.props.handleClose();
-        }
-      }
+  onScroll(event: React.UIEvent<HTMLDivElement>) {
+    if (event.target instanceof HTMLDivElement) {
+      logger.log(
+        "debug",
+        "scroll-drawer",
+        {
+          scroll: uiUtils.getScrollCoordinates(event.target),
+        },
+        500
+      );
+    }
+  }
 
-      getFAQs() {
-        return this.props.entities? this.props.entities.all.map((entityId) => {
-            /*
-             * Unpack entity data.
-             */
-            const entity = this.props.entities.byId[entityId];
-            const isSelected = this.props.selectedFAQID? entityId === this.props.selectedFAQID : false; 
-            const isHovered = this.props.FAQHoveredID? entityId === this.props.FAQHoveredID : false; 
+  positionPdfForDrawerOpen(
+    pdfViewerContainer: HTMLElement,
+    drawerContentType: string
+  ) {
+    pdfViewerContainer.classList.add(`drawer-${drawerContentType}`);
+  }
 
+  removePdfPositioningForDrawerOpen(pdfViewerContainer: HTMLElement) {
+    pdfViewerContainer.classList.forEach((c) => {
+      if (c.indexOf("drawer-") !== -1) {
+        pdfViewerContainer.classList.remove(c);
+      }
+    });
+  }
 
-            if (isPaperQuestion(entity)) {
-                return (<FAQ
+  closeDrawer() {
+    if (this.props.mode !== "closed") {
+      this.props.handleClose();
+    }
+  }
+
+  getFAQs() {
+    return this.props.entities
+      ? this.props.entities.all.map((entityId) => {
+          /*
+           * Unpack entity data.
+           */
+          const entity = this.props.entities.byId[entityId];
+          const isSelected = this.props.selectedFAQID
+            ? entityId === this.props.selectedFAQID
+            : false;
+          const isHovered = this.props.FAQHoveredID
+            ? entityId === this.props.FAQHoveredID
+            : false;
+
+          if (isPaperQuestion(entity)) {
+            return (
+              <FAQ
                 question={entity}
                 isSelected={isSelected}
                 isHovered={isHovered}
@@ -106,11 +107,12 @@ class FAQBar extends React.PureComponent<Props> {
                 handleMouseOver={this.props.handleMouseOver}
                 handleMouseOut={this.props.handleMouseOut}
                 handleClick={this.props.handleClick}
-              />);
-            }
-        }) : null;
-    }
-
+              />
+            );
+          }
+        })
+      : null;
+  }
 
   render() {
     /**
@@ -118,76 +120,73 @@ class FAQBar extends React.PureComponent<Props> {
      * notify the PDF viewer by adding a class, as the PDF viewer otherwise has no knowledge of the
      * state of this React application.
      */
-     const {
-        pdfViewer,
-        mode,
-        contentType,
-        entities,
-        selectedEntityIds,
-      } = this.props;
-  
+    const {
+      pdfViewer,
+      mode,
+      contentType,
+      entities,
+      selectedEntityIds,
+    } = this.props;
 
-      // let firstSelectedEntity: Entity | null = null;
-      // if (entities !== null && selectedEntityIds.length > 0) {
-      //   firstSelectedEntity = entities.byId[selectedEntityIds[0]] || null;
-      // }
-  
-      // if (pdfViewer != null) {
-      //   if (mode === "open" && contentType !== null) {
-      //     this.removePdfPositioningForDrawerOpen(pdfViewer.container);
-      //     this.positionPdfForDrawerOpen(pdfViewer.container, contentType);
-      //   } else {
-      //     this.removePdfPositioningForDrawerOpen(pdfViewer.container);
-      //   }
-      // }
-  
-      const FAQBarContainer = document.getElementById(
-        "FAQBar"
-      );
+    // let firstSelectedEntity: Entity | null = null;
+    // if (entities !== null && selectedEntityIds.length > 0) {
+    //   firstSelectedEntity = entities.byId[selectedEntityIds[0]] || null;
+    // }
 
-      const FAQs = this.getFAQs();
+    // if (pdfViewer != null) {
+    //   if (mode === "open" && contentType !== null) {
+    //     this.removePdfPositioningForDrawerOpen(pdfViewer.container);
+    //     this.positionPdfForDrawerOpen(pdfViewer.container, contentType);
+    //   } else {
+    //     this.removePdfPositioningForDrawerOpen(pdfViewer.container);
+    //   }
+    // }
 
-      const BarContent = (<><div>
-        <p className="drawer__header__content">FAQs</p> 
-        <p> Hover or click on a question to highlight it's answer in the document!</p>
+    const FAQBarContainer = document.getElementById("FAQBar");
+
+    const FAQs = this.getFAQs();
+
+    const BarContent = (
+      <div className="faq__content">
+        {/* <p className="faq__content__header">FAQs</p> */}
+        <p className="faq__content__header">
+          Click a question to find an answer in the article.
+        </p>
+        {FAQs}
       </div>
-      <div className="drawer__content">
-          {FAQs}
-      </div></>);
+    );
 
-      return FAQBarContainer? (ReactDOM.createPortal(BarContent, FAQBarContainer)):null;
+    return FAQBarContainer
+      ? ReactDOM.createPortal(BarContent, FAQBarContainer)
+      : null;
 
+    //   <MuiDrawer
+    //   className="drawer"
+    //   variant="persistent"
+    //   anchor="right"
+    //   /*
+    //    * If for the drawer has been requested to open but there's nothing to show
+    //    * in it, don't show it.
+    //    */
+    //   open={mode === "open"}
+    //   onScroll={this.onScroll}
+    // >
+    // <div className="drawer__header">
+    //     <div className="drawer__close_icon">
+    //       <IconButton size="small" onClick={this.closeDrawer}>
+    //         <ChevronRightIcon />
+    //       </IconButton>
+    //     </div>
+    //     {' '}
+    //     <p className="drawer__header__content">FAQs</p>
+    //     <p> Hover or click on a question to highlight it's answer in the document!</p>
+    // </div>
 
-
-      //   <MuiDrawer
-      //   className="drawer"
-      //   variant="persistent"
-      //   anchor="right"
-      //   /*
-      //    * If for the drawer has been requested to open but there's nothing to show
-      //    * in it, don't show it.
-      //    */
-      //   open={mode === "open"}
-      //   onScroll={this.onScroll}
-      // >  
-      // <div className="drawer__header">
-      //     <div className="drawer__close_icon">
-      //       <IconButton size="small" onClick={this.closeDrawer}>
-      //         <ChevronRightIcon />
-      //       </IconButton>
-      //     </div>
-      //     {' '}
-      //     <p className="drawer__header__content">FAQs</p> 
-      //     <p> Hover or click on a question to highlight it's answer in the document!</p>
-      // </div>
-
-      
-
-      //   <div className="drawer__content">
-      //       {FAQs}
-      //   </div>
-      //  </MuiDrawer>
-      // );
+    //   <div className="drawer__content">
+    //       {FAQs}
+    //   </div>
+    //  </MuiDrawer>
+    // );
   }
 }
 
