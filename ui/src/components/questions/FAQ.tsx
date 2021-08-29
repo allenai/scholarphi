@@ -159,7 +159,7 @@ class FAQ extends React.PureComponent<Props, State> {
     // render the FAQs in the sidebar with a portal
     return (
       <div
-        // Handle hover through pseudoselectors
+        // Handle hover through pseudoselectors.
         // className={classNames("faq", FAQClass, FAQClassHovered)}
         className={classNames("faq", FAQClass)}
         onClick={this.onClick}
