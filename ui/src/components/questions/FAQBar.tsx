@@ -27,8 +27,8 @@ interface Props {
   selectedFAQID: string | null;
   FAQHoveredID: string | null;
   handleClose: () => void;
-  handleMouseOver: (entityId: string) => void;
-  handleMouseOut: (entityId: string) => void;
+  handleMouseEnter: (entityId: string) => void;
+  handleMouseLeave: (entityId: string) => void;
   handleClick: (entityId: string) => void;
   handleJumpToEntity: (entityId: string) => void;
   handleSetPropagateEntityEdits: (propagate: boolean) => void;
@@ -104,8 +104,8 @@ class FAQBar extends React.PureComponent<Props> {
                 isHovered={isHovered}
                 entities={this.props.entities}
                 handleJumpToEntity={this.props.handleJumpToEntity}
-                handleMouseOver={this.props.handleMouseOver}
-                handleMouseOut={this.props.handleMouseOut}
+                handleMouseOver={this.props.handleMouseEnter}
+                handleMouseOut={this.props.handleMouseLeave}
                 handleClick={this.props.handleClick}
               />
             );

@@ -171,12 +171,17 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.selectEntityAnnotation(id);
   };
 
-  handleFAQMouseOver = (id: string): void => {
+  handleFAQMouseEnter = (id: string): void => {
     this.setState({ FAQHoveredID: id });
   };
 
-  handleFAQMouseOut = (id: string): void => {
-    this.setState({ FAQHoveredID: null });
+  handleFAQMouseLeave = (id: string): void => {
+    this.setState((state) => {
+      if (state.FAQHoveredID === id) {
+        return { FAQHoveredID: null };
+      }
+      return { FAQHoveredID: id };
+    });
   };
 
   handleFAQClick = (id: string): void => {
@@ -1061,8 +1066,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                   propagateEntityEdits={this.state.propagateEntityEdits}
                   handleJumpToEntity={this.jumpToEntityWithBackMessage}
                   handleClose={this.closeDrawer}
-                  handleMouseOver={this.handleFAQMouseOver}
-                  handleMouseOut={this.handleFAQMouseOut}
+                  handleMouseEnter={this.handleFAQMouseEnter}
+                  handleMouseLeave={this.handleFAQMouseLeave}
                   handleClick={this.handleFAQClick}
                   handleSetPropagateEntityEdits={this.setPropagateEntityEdits}
                   FAQHoveredID={this.state.FAQHoveredID}

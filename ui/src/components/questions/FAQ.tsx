@@ -38,8 +38,8 @@ class FAQ extends React.PureComponent<Props, State> {
     this.onClickUsagesButton = this.onClickUsagesButton.bind(this);
     this.onClickClose = this.onClickClose.bind(this);
     this.onClick = this.onClick.bind(this);
-    this.onMouseOver = this.onMouseOver.bind(this);
-    this.onMouseOut = this.onMouseOut.bind(this);
+    this.onMouseEnter = this.onMouseEnter.bind(this);
+    this.onMouseLeave = this.onMouseLeave.bind(this);
   }
 
   componentDidMount() {
@@ -56,12 +56,12 @@ class FAQ extends React.PureComponent<Props, State> {
     logger.log("debug", "clicked-dismiss-term-tooltip");
   }
 
-  onMouseOver() {
+  onMouseEnter() {
     console.log("In");
     this.props.handleMouseOver(this.props.question.id);
   }
 
-  onMouseOut() {
+  onMouseLeave() {
     console.log("Out");
     this.props.handleMouseOut(this.props.question.id);
   }
@@ -163,8 +163,8 @@ class FAQ extends React.PureComponent<Props, State> {
         // className={classNames("faq", FAQClass, FAQClassHovered)}
         className={classNames("faq", FAQClass)}
         onClick={this.onClick}
-        onMouseOver={this.onMouseOver}
-        onMouseOut={this.onMouseOut}
+        onMouseEnter={this.onMouseEnter}
+        onMouseLeave={this.onMouseLeave}
       >
         <p className="faq__question">{`${this.props.question.attributes.question_text}`}</p>
         <p className="faq__answer">{`${this.props.question.attributes.answer_text}`}</p>
