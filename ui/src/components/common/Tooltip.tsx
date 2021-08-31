@@ -4,7 +4,7 @@ import { BoundingBox } from "../../api/types";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
 
-export type TooltipPlacement = "above" | "below";
+export type TooltipPlacement = "above" | "below" | "lower-right" | "upper-right";
 
 interface Props {
   /**
@@ -57,7 +57,16 @@ export class Tooltip extends React.PureComponent<Props> {
     if (placement === "below") {
       style.top =
         anchorPosition.top + anchorPosition.height + TOOLTIP_VERTICAL_MARGIN;
-    } else {
+    } else if (placement === "lower-right") {
+      style.transform = "";
+      style.top =
+        anchorPosition.top + anchorPosition.height + TOOLTIP_VERTICAL_MARGIN;
+    } else if (placement === "upper-right") {
+      // style.transform = "";
+      const { height: pageHeight } = uiUtils.getPageViewDimensions(pageView);
+      style.bottom = pageHeight - anchorPosition.top + TOOLTIP_VERTICAL_MARGIN;
+    }
+    else {
       const { height: pageHeight } = uiUtils.getPageViewDimensions(pageView);
       style.bottom = pageHeight - anchorPosition.top + TOOLTIP_VERTICAL_MARGIN;
     }

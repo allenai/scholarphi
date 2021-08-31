@@ -35,13 +35,26 @@
   }
 
   .scholar-reader-annotation-span.underline:not(.ancestor-of-selection) {
-    padding-bottom: 0.2%;
+    padding-bottom: 0%;
     border-bottom: @underline-width fade(@underline-color, 70%) dotted;
   }
-  .scholar-reader-annotation-span.section-header-annotation.underline:not(.ancestor-of-selection) {
-    padding-bottom: 0%;
-    border: @underline-width fade(@underline-color, 70%) dotted;
+  .scholar-reader-annotation-span.section-header-annotation-img.underline:not(.ancestor-of-selection) {
+    border-bottom: none;
   }
+}
+
+.section-header-annotation-img {
+  padding-bottom: 1%;
+  background-image: url(./../../public/images/SectionHeaderIndicator.png);
+  background-repeat: no-repeat;
+  border-bottom: none;
+}
+
+.section-header-annotation-img-flipped {
+  padding-bottom: 1%;
+  background-image: url(./../../public/images/SectionHeaderIndicatorFlipped.png);
+  background-repeat: no-repeat;
+  border-bottom: none;
 }
 
 /**
@@ -128,18 +141,6 @@
   &:not(.sentence-annotation) {
     z-index: @default-annotation-z-index;
   }
-}
-
-
-.faq-selected {
-  padding-bottom: 0.2%;
-  border: @underline-width fade(@underline-color, 70%) dotted;
-  background-color: fade(yellow, 30%);
-}
-
-.faq-hovered {
-  padding-bottom: 0.2%;
-  border: @underline-width fade(@underline-color, 70%) dotted;
 }
 
 /**

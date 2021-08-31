@@ -1,32 +1,50 @@
+import classNames from "classnames";
+import React from "react";
 import * as api from "./api/api";
-import AppOverlay from "./components/overlay/AppOverlay";
+import {
+  Entity,
+  EntityCreateData,
+  EntityUpdateData,
+  isAnswerSentence,
+  isCitation,
+  isEquation,
+  isSymbol,
+  isTerm,
+  Paper,
+  Symbol,
+} from "./api/types";
 import Control from "./components/control/Control";
-import DefinitionPreview from "./components/preview/DefinitionPreview";
-import { Drawer, DrawerContentType } from "./components/drawer/Drawer";
-import EntityAnnotationLayer from "./components/entity/EntityAnnotationLayer";
 import EntityCreationCanvas from "./components/control/EntityCreationCanvas";
 import EntityCreationToolbar, {
   AreaSelectionMethod,
   createCreateEntityDataWithBoxes,
 } from "./components/control/EntityCreationToolbar";
-import EntityPageMask from "./components/mask/EntityPageMask";
-import EquationDiagram from "./components/entity/equation/EquationDiagram";
-import FindBar, { FindQuery } from "./components/search/FindBar";
-import FAQBar from "./components/questions/FAQBar";
-import logger from "./logging";
 import MainControlPanel from "./components/control/MainControlPanel";
-import PageOverlay from "./components/overlay/PageOverlay";
-import PdfjsToolbar from "./components/pdfjs/PdfjsToolbar";
-import PdfjsBrandbar from "./components/pdfjs/PdfjsBrandbar";
-import PrimerPage from "./components/primer/PrimerPage";
+import TextSelectionMenu from "./components/control/TextSelectionMenu";
+import { Drawer, DrawerContentType } from "./components/drawer/Drawer";
+import EntityAnnotationLayer from "./components/entity/EntityAnnotationLayer";
+import EquationDiagram from "./components/entity/equation/EquationDiagram";
+import EntityPageMask from "./components/mask/EntityPageMask";
 import SearchPageMask from "./components/mask/SearchPageMask";
+import AppOverlay from "./components/overlay/AppOverlay";
+import PageOverlay from "./components/overlay/PageOverlay";
+import ViewerOverlay from "./components/overlay/ViewerOverlay";
+import PdfjsBrandbar from "./components/pdfjs/PdfjsBrandbar";
+import PdfjsToolbar from "./components/pdfjs/PdfjsToolbar";
+import DefinitionPreview from "./components/preview/DefinitionPreview";
+import PrimerPage from "./components/primer/PrimerPage";
+import FAQBar from "./components/questions/FAQBar";
+import FindBar, { FindQuery } from "./components/search/FindBar";
+//added
+// import * as testEntities from './data/entities.json';
+import * as testEntities from "./data/auto_PAWLS_SPUI_annotations.json";
+import logger from "./logging";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
 import {
   ConfigurableSetting,
   CONFIGURABLE_SETTINGS,
   getSettings,
-  getPDFReaderOnlySettings,
   GlossStyle,
 } from "./settings";
 import {
@@ -38,19 +56,6 @@ import {
   SymbolFilters,
 } from "./state";
 import "./style/index.less";
-import TextSelectionMenu from "./components/control/TextSelectionMenu";
-import {
-  Entity,
-  EntityCreateData,
-  EntityUpdateData,
-  isCitation,
-  isExperience,
-  isEquation,
-  isSymbol,
-  isTerm,
-  Paper,
-  Symbol,
-} from "./api/types";
 import {
   DocumentLoadedEvent,
   PageRenderedEvent,
@@ -58,14 +63,6 @@ import {
 } from "./types/pdfjs-viewer";
 import * as stateUtils from "./utils/state";
 import * as uiUtils from "./utils/ui";
-import ViewerOverlay from "./components/overlay/ViewerOverlay";
-
-import classNames from "classnames";
-import React from "react";
-
-//added
-// import * as testEntities from './data/entities.json';
-import * as testEntities from './data/auto_PAWLS_SPUI_annotations.json';
 
 interface Props {
   paperId?: PaperId;
@@ -116,7 +113,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       findMatchIndex: null,
       findMatchCount: null,
       findMatchedEntities: null,
-      drawerMode: "open", //swapped
+      drawerMode: "closed", //swapped
       drawerContentType: null,
       snackbarMode: "closed",
       snackbarActivationTimeMs: null,
@@ -137,42 +134,59 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.setState((prevState) => ({
       controlPanelShowing: !prevState.controlPanelShowing,
     }));
-  }
+  };
 
   toggleAnnotationHints = (): void => {
     this.setState((prevState) => ({
       annotationHintsEnabled: !prevState.annotationHintsEnabled,
     }));
-  }
+  };
 
   setAnnotationHintsEnabled = (enabled: boolean): void => {
     this.setState({ annotationHintsEnabled: enabled });
-  }
+  };
 
   setGlossStyle = (style: GlossStyle): void => {
     this.setState({ glossStyle: style });
-  }
+  };
 
   closeControlPanel = (): void => {
     this.setState({ controlPanelShowing: false });
-  }
+  };
 
   handleChangeSetting = (setting: ConfigurableSetting, value: any): void => {
     this.setState({
       [setting.key]: value,
     } as State);
-  }
+  };
 
   setTextSelection = (selection: Selection | null): void => {
     this.setState({
       textSelection: selection,
       textSelectionChangeMs: Date.now(),
     });
-  }
+  };
 
   selectEntity = (id: string): void => {
     this.selectEntityAnnotation(id);
-  }
+  };
+
+  handleFAQMouseEnter = (id: string): void => {
+    this.setState({ FAQHoveredID: id });
+  };
+
+  handleFAQMouseLeave = (id: string): void => {
+    this.setState((state) => {
+      if (state.FAQHoveredID === id) {
+        return { FAQHoveredID: null };
+      }
+      return { FAQHoveredID: id };
+    });
+  };
+
+  handleFAQClick = (id: string): void => {
+    this.setState({ selectedFAQID: id });
+  };
 
   handleFAQMouseOver = (id: string): void => {
     this.setState({ FAQHoveredID: id });
@@ -182,17 +196,15 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.setState({ FAQHoveredID: null });
   }
 
-  handleFAQClick = (id: string): void => {
-    this.setState({ selectedFAQID: id });
-  }
-
   selectEntityAnnotation = (
     entityId: string,
     annotationId?: string,
     annotationSpanId?: string
   ): void => {
+    const entityType = this.state.entities?.byId[entityId].type;
     logger.log("debug", "select-entity", {
       entityId,
+      entityType,
       annotationId,
       annotationSpanId,
     });
@@ -303,7 +315,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         jumpTarget: null,
       } as State;
     });
-  }
+  };
 
   clearEntitySelection = (): void => {
     logger.log("debug", "clear-entity-selection");
@@ -326,18 +338,21 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       selectedEntityIds: [],
       jumpTarget: null,
     });
-  }
+  };
 
   setEntityCreationType = (type: KnownEntityType): void => {
     this.setState({ entityCreationType: type });
-  }
+  };
 
-  setEntityCreationAreaSelectionMethod = (method: AreaSelectionMethod): void => {
+  setEntityCreationAreaSelectionMethod = (
+    method: AreaSelectionMethod
+  ): void => {
     this.setState({ entityCreationAreaSelectionMethod: method });
-  }
+  };
 
   createEntity = async (data: EntityCreateData): Promise<string | null> => {
     if (this.props.paperId !== undefined) {
+      console.log("Trying to create entity...");
       const createdEntity = await api.postEntity(this.props.paperId.id, data);
       if (createdEntity !== null) {
         this.setState((prevState) => ({
@@ -358,7 +373,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       }
     }
     return null;
-  }
+  };
 
   createParentSymbol = async (childSymbols: Symbol[]): Promise<boolean> => {
     /*
@@ -437,7 +452,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     }
 
     return true;
-  }
+  };
 
   updateEntity = async (
     entity: Entity,
@@ -480,6 +495,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     /*
      * Patch entities, saving which ones were successfully updated.
      */
+    console.log("Patching...");
     const patchedEntities = await Promise.all(
       entitiesToPatch.map((id) =>
         api.patchEntity(paperId.id, { ...updateData, id })
@@ -519,9 +535,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
     const completeSuccess = entitiesToPatch.length === patchedEntities.length;
     return completeSuccess;
-  }
+  };
 
   deleteEntity = async (id: string): Promise<boolean> => {
+    console.log("deleting....");
     if (this.props.paperId !== undefined) {
       const result = await api.deleteEntity(this.props.paperId.id, id);
       if (result) {
@@ -555,7 +572,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       }
     }
     return false;
-  }
+  };
 
   showSnackbarMessage = (message: string): void => {
     this.setState({
@@ -563,7 +580,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       snackbarActivationTimeMs: Date.now(),
       snackbarMessage: message,
     });
-  }
+  };
 
   closeSnackbar = (): void => {
     this.setState({
@@ -571,7 +588,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       snackbarActivationTimeMs: null,
       snackbarMessage: null,
     });
-  }
+  };
 
   openDrawer = (drawerContentType: DrawerContentType): void => {
     logger.log("debug", "request-open-drawer", { drawerContentType });
@@ -579,30 +596,31 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       drawerMode: "open",
       drawerContentType,
     });
-  }
+  };
 
   toggleDrawer = (): void => {
-    if(this.state.drawerMode === "open") {
-      this.setState({drawerMode: "closed",});
+    if (this.state.drawerMode === "open") {
+      this.setState({ drawerMode: "closed" });
     } else {
-      this.setState({drawerMode: "open",});
+      this.setState({ drawerMode: "open" });
     }
-  }
+  };
+
 
   closeDrawer = (): void => {
     logger.log("debug", "close-drawer");
     this.setState({ drawerMode: "closed" });
-  }
+  };
 
   setMultiselectEnabled = (enabled: boolean): void => {
     this.setState({ multiselectEnabled: enabled });
-  }
+  };
 
   setPropagateEntityEdits = (propagate: boolean): void => {
     this.setState({
       propagateEntityEdits: propagate,
     });
-  }
+  };
 
   startTextSearch = (): void => {
     logger.log("debug", "start-text-search");
@@ -611,12 +629,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       findActivationTimeMs: Date.now(),
       findMode: "pdfjs-builtin-find",
     });
-  }
+  };
 
   setFindMatchCount = (findMatchCount: number | null): void => {
     logger.log("debug", "find-match-count-updated", { count: findMatchCount });
     this.setState({ findMatchCount });
-  }
+  };
 
   setFindMatchIndex = (findMatchIndex: number | null): void => {
     logger.log("debug", "find-match-index-updated", {
@@ -635,7 +653,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       }
       return { findMatchIndex };
     });
-  }
+  };
 
   setFindQuery = (findQuery: FindQuery): void => {
     this.setState((state) => {
@@ -671,7 +689,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       }
       return { findQuery } as State;
     });
-  }
+  };
 
   closeFindBar = (): void => {
     logger.log("debug", "find-close");
@@ -684,7 +702,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       findMatchIndex: null,
       findMatchedEntities: null,
     });
-  }
+  };
 
   componentDidMount() {
     waitForPDFViewerInitialization().then((application) => {
@@ -701,7 +719,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.loadDataFromApi();
   }
 
-  subscribeToPDFViewerStateChanges = (pdfViewerApplication: PDFViewerApplication): void => {
+  subscribeToPDFViewerStateChanges = (
+    pdfViewerApplication: PDFViewerApplication
+  ): void => {
     const { eventBus, pdfDocument, pdfViewer } = pdfViewerApplication;
 
     if (pdfDocument !== null) {
@@ -730,7 +750,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         },
       });
     });
-  }
+  };
 
   loadDataFromApi = async (): Promise<void> => {
     // if (this.props.paperId !== undefined && this.props.paperId.type === "arxiv") { // swapped
@@ -747,6 +767,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         entities: stateUtils.createRelationalStoreFromArray(entities, "id"),
       });
 
+      // // added
+      // entities = testEntities;
+      console.log(testEntities); // added
+
       const citationS2Ids = entities
         .filter(isCitation)
         .map((c) => c.attributes.paper_id)
@@ -755,18 +779,25 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
       if (window.heap) {
         const loadingTimeMS = Math.round(performance.now() - loadingStartTime);
-        window.heap.track("paper-loaded", { loadingTimeMS, numEntities: entities.length, numCitations: citationS2Ids.length });
+        window.heap.track("paper-loaded", {
+          loadingTimeMS,
+          numEntities: entities.length,
+          numCitations: citationS2Ids.length,
+        });
       }
     }
-  }
+  };
 
   cachePaper = (paper: Paper, cb?: () => void): void => {
     const paperMap = new Map(this.state.lazyPapers);
     paperMap.set(paper.s2Id, paper);
-    this.setState({
-      lazyPapers: paperMap,
-    }, cb);
-  }
+    this.setState(
+      {
+        lazyPapers: paperMap,
+      },
+      cb
+    );
+  };
 
   jumpToEntityWithBackMessage = (id: string): void => {
     const success = this.jumpToEntity(id);
@@ -777,7 +808,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       );
       // this._backButtonHintShown = true;
     }
-  }
+  };
 
   jumpToEntity = (id: string): boolean => {
     /*
@@ -831,12 +862,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     });
 
     /*
-    * added: also select the entity
-    */
-   this.selectEntity(id);
+     * added: also select the entity
+     */
+    this.selectEntity(id);
 
     return true;
-  }
+  };
 
   render() {
     let findMatchEntityId: string | null = null;
@@ -896,18 +927,18 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               </button>
             </PdfjsToolbar> */}
             {/* For the FAQs */}
-            {this.state.FAQsEnabled? <PdfjsToolbar>
-              <button
-                onClick={this.toggleDrawer}
-                className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
-              >
-                <span>
-                  {this.state.drawerMode
-                    ? "Show FAQs"
-                    : "Hide FAQs"}
-                </span>
-              </button>
-            </PdfjsToolbar> : null }
+            {this.state.FAQsEnabled ? (
+              <PdfjsToolbar>
+                <button
+                  onClick={this.toggleDrawer}
+                  className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
+                >
+                  <span>
+                    {this.state.drawerMode ? "Show FAQs" : "Hide FAQs"}
+                  </span>
+                </button>
+              </PdfjsToolbar>
+            ) : null}
             <PdfjsBrandbar />
             <ViewerOverlay
               pdfViewer={this.state.pdfViewer}
@@ -1024,22 +1055,24 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                   selectedEntityIds={this.state.selectedEntityIds}
                 />
               ) : null}
-              {this.state.FAQsEnabled? <FAQBar
-                pdfViewer={this.state.pdfViewer}
-                mode={this.state.drawerMode}
-                contentType={"definitions"}
-                entities={this.state.entities}
-                selectedEntityIds={this.state.selectedEntityIds}
-                propagateEntityEdits={this.state.propagateEntityEdits}
-                handleJumpToEntity={this.jumpToEntityWithBackMessage}
-                handleClose={this.closeDrawer}
-                handleMouseOver={this.handleFAQMouseOver}
-                handleMouseOut={this.handleFAQMouseOut}
-                handleClick={this.handleFAQClick}
-                handleSetPropagateEntityEdits={this.setPropagateEntityEdits}
-                FAQHoveredID={this.state.FAQHoveredID}
-                selectedFAQID={this.state.selectedFAQID}
-                  /> : null }
+              {this.state.FAQsEnabled ? (
+                <FAQBar
+                  pdfViewer={this.state.pdfViewer}
+                  mode={this.state.drawerMode}
+                  contentType={"definitions"}
+                  entities={this.state.entities}
+                  selectedEntityIds={this.state.selectedEntityIds}
+                  propagateEntityEdits={this.state.propagateEntityEdits}
+                  handleJumpToEntity={this.jumpToEntityWithBackMessage}
+                  handleClose={this.closeDrawer}
+                  handleMouseEnter={this.handleFAQMouseEnter}
+                  handleMouseLeave={this.handleFAQMouseLeave}
+                  handleClick={this.handleFAQClick}
+                  handleSetPropagateEntityEdits={this.setPropagateEntityEdits}
+                  FAQHoveredID={this.state.FAQHoveredID}
+                  selectedFAQID={this.state.selectedFAQID}
+                />
+              ) : null}
             </ViewerOverlay>
           </>
         ) : null}
@@ -1130,6 +1163,30 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     pageNumber
                   )[0] || null;
 
+                const pageHasAnswerForHoveredFAQ =
+                  entities.all
+                    .map((id) => entities.byId[id])
+                    .filter(isAnswerSentence)
+                    .filter(
+                      (s) =>
+                        s.relationships.question.id == this.state.FAQHoveredID
+                    ).length > 0;
+                const FAQHoveredID = pageHasAnswerForHoveredFAQ
+                  ? this.state.FAQHoveredID
+                  : null;
+
+                const pageHasAnswerForSelectedFAQ =
+                  entities.all
+                    .map((id) => entities.byId[id])
+                    .filter(isAnswerSentence)
+                    .filter(
+                      (s) =>
+                        s.relationships.question.id == this.state.selectedFAQID
+                    ).length > 0;
+                const selectedFAQID = pageHasAnswerForSelectedFAQ
+                  ? this.state.selectedFAQID
+                  : null;
+
                 return (
                   <PageOverlay key={key} pageView={pageView}>
                     {/* Mask for highlighting results from in-situ search. */}
@@ -1183,7 +1240,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                         }
                         termAnnotationsEnabled={this.state.termGlossesEnabled}
                         symbolUnderlineMethod={this.state.symbolUnderlineMethod}
-                        definitionsInSymbolGloss={this.state.definitionsInSymbolGloss}
+                        definitionsInSymbolGloss={
+                          this.state.definitionsInSymbolGloss
+                        }
                         glossStyle={this.state.glossStyle}
                         glossEvaluationEnabled={
                           this.state.glossEvaluationEnabled
@@ -1200,10 +1259,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                         handleShowSnackbarMessage={this.showSnackbarMessage}
                         handleJumpToEntity={this.jumpToEntityWithBackMessage}
                         handleOpenDrawer={this.openDrawer}
-
-                        FAQHoveredID={this.state.FAQHoveredID}
-                        selectedFAQID={this.state.selectedFAQID}
-
+                        FAQHoveredID={FAQHoveredID}
+                        selectedFAQID={selectedFAQID}
                       />
                     )}
                     {/* Equation diagram overlays. */}
