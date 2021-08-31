@@ -117,10 +117,12 @@ const PRESETS: Preset[] = [
   {
     key: "demo",
     primerInstructionsEnabled: false,
-    useDefinitionsForDiagramLabels: true,
+    // useDefinitionsForDiagramLabels: true,
     termGlossesEnabled: true,
     declutterEnabled: true,
     equationDiagramsEnabled: true,
+    symbolUnderlineMethod: "defined-symbols",
+    definitionsInSymbolGloss: true
   },
   {
     key: "sab",
