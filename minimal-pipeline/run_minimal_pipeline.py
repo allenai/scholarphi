@@ -155,9 +155,9 @@ if __name__ == '__main__':
     assert os.path.exists(s2orc_latex_json_path), f'Cant find S2ORC JSON at {s2orc_latex_json_path}'
 
 
-    #
-    # Step 5  (format SPP output to be suitable for HEDDEX defs)
-    #
+    # Step 5 - (format SPP output to be suitable for HEDDEX defs)
+
+
 
 
     #
