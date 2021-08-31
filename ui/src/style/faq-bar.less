@@ -1,9 +1,20 @@
 /* Added for FAQs on the reader */
 #FAQBar {
-  height: calc(100% - 80px);
+  height: calc(100% - 84px);
   width: 25%;
   margin: 4px;
+
+  /* Scroll (but hide scroll bar) */
   overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+
+  &::-webkit-scrollbar {
+    /* WebKit */
+    width: 0;
+    height: 0;
+  }
+
   position: absolute;
   left: 0;
   font-family: @s2-font-family;
