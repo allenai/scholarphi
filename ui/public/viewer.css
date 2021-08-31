@@ -633,8 +633,10 @@ html[dir="rtl"] #sidebarContent {
   top: 80px;
   right: 0;
   bottom: 0;
-  left: calc(25% + 2%);
   outline: none;
+
+  left: 0;
+  padding-left: calc(25% + 2%);
 }
 #viewerContainer:not(.pdfPresentationMode) {
   transition-duration: 200ms;
