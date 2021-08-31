@@ -10,6 +10,7 @@ import {
   isSentence,
   isSymbol,
   isTerm,
+  isPaperQuestion,
   Paper,
 } from "../../api/types";
 import * as selectors from "../../selectors";
@@ -20,8 +21,10 @@ import * as uiUtils from "../../utils/ui";
 import { DrawerContentType } from "../drawer/Drawer";
 import AnswerSentenceGloss from "./answers/AnswerSentenceGloss";
 import LazyCitationGloss from "./citation/LazyCitationGloss";
-import EntityAnnotation from "./EntityAnnotation";
+import FAQ from "../questions/FAQ";
+
 import ExperienceGloss from "./experience/ExperienceGloss";
+import EntityAnnotation from "./EntityAnnotation";
 import SectionHeaderImage from "./headers/HeaderImage";
 import SectionHeaderGloss from "./headers/SectionHeaderGloss";
 import SimpleSymbolGloss from "./SimpleSymbolGloss";

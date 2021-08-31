@@ -6,7 +6,6 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 module.exports = (env, argv) => {
   const mode = argv.mode;
   const devtool = mode === "development" ? "eval-source-map" : undefined;
-  const proxyHost = env.PROXY ? env.PROXY : "https://s2-reader.apps.allenai.org";
   return {
     entry: {
       list: ['react-hot-loader/patch', './src/papers/index.tsx'],
@@ -98,13 +97,7 @@ module.exports = (env, argv) => {
       allowedHosts: ['ui'],
       historyApiFallback: true,
       port: 3001,
-      proxy: {
-        "/api": {
-          target: proxyHost,
-          secure: false,
-          changeOrigin: true
-        }
-      },
+      sockPort: 8080,
       // Apparently webpack's dev server doesn't write files to disk. This makes it hard to
       // debug the build process, as there's no way to examine the output. We change this
       // setting so that it's easier to inspect what's built. This in theory might make things

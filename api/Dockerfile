@@ -1,37 +1,28 @@
-FROM node:12.20.0-alpine3.12 AS build
+FROM python:3.8.6
 
-WORKDIR /app
+# Uncomment the following lines to make PyTorch available to your application.
+# See https://skiff.allenai.org/gpu.html for more details.
+#
+# ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64
+# ENV NVIDIA_VISIBLE_DEVICES all
+# ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
+# RUN pip install torch==1.7.0+cu101 -f https://download.pytorch.org/whl/torch_stable.html
 
-# Install all depenedencies. Doing this separately speeds up the build as it
-# avoids reinstalling the dependencies everytime the source code changes.
-COPY package*.json ./
-RUN npm install
+WORKDIR /api
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
 # Copy over the source code
-COPY . .
+COPY app app/
+COPY start.py .
 
-# Compile from TypeScript to JavaScript
-ARG NODE_ENV
-ENV NODE_ENV ${NODE_ENV:-production}
-RUN npm run build
+# This enables the Flask debugger and activates code that restarts the
+# API as you make changes
+ARG FLASK_ENV=development
+ENV FLASK_ENV $FLASK_ENV
 
-# We use what's called a "multi stage" build to reduce the size of the final
-# image. This allows us to ditch the dependencies and other build time stuff
-# that aren't needed at runtime.
-FROM node:12.20.0-alpine3.12 AS runtime
-
-WORKDIR /app
-
-# Install runtime dependencies only.
-COPY --from=build /app/package*.json ./
-RUN npm install --production
-
-# Copy over the build artifacts from the prior stage.
-COPY --from=build /app/build ./build
-
-ENV NODE_ENV ${NODE_ENV:-production}
-
-# Kick things off. We use `npm` instead of `node` directly so that signals
-# are handled properly.
-ENTRYPOINT [ "npm" ]
-CMD [ "run", "start:prod" ]
+# Kick things off
+ENTRYPOINT [ "python" ]
+CMD [ "start.py" ]

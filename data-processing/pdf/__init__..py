@@ -1,1 +1,0 @@
-# For extraction of entities directly from a PDF

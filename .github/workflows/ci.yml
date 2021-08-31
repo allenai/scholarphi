@@ -21,20 +21,7 @@ jobs:
       # one step to another. The layers should be cached, so it should be really fast.
       # We run the build in a separate step above so that there's nice output if something
       # doesn't work.
-      - run: docker run --name ui --rm -d -p 4000:4000 $(docker build -q .)
+      - run: docker run --name ui --rm -d -p 3001:3001 $(docker build -q .)
       # Do a simple check that the server returns 200
-      - run: curl --fail http://localhost:4000
+      - run: curl --fail http://localhost:3001
       - run: docker stop ui
-  api:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: api
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12.21.0
-      - run: npm install
-      - run: ./bin/start_local_db.sh
-      - run: npm test

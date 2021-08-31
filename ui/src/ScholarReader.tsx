@@ -85,7 +85,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     logger.setContext(loggingContext);
 
     this.state = {
-      entities: null,
+      entities: { all: [], byId: {} },
       lazyPapers: new Map(),
 
       pages: null,
@@ -187,6 +187,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   handleFAQClick = (id: string): void => {
     this.setState({ selectedFAQID: id });
   };
+
+  handleFAQMouseOver = (id: string): void => {
+    this.setState({ FAQHoveredID: id });
+  }
+
+  handleFAQMouseOut = (id: string): void => {
+    this.setState({ FAQHoveredID: null });
+  }
 
   selectEntityAnnotation = (
     entityId: string,
@@ -351,14 +359,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
           /*
            * Add the entity to memory
            */
-          entities:
-            prevState.entities !== null
-              ? stateUtils.add(
-                  prevState.entities,
-                  createdEntity.id,
-                  createdEntity
-                )
-              : null,
+          entities: stateUtils.add(
+              prevState.entities,
+              createdEntity.id,
+              createdEntity
+            ),
           /*
            * Select the new entity
            */
@@ -541,10 +546,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
           /*
            * Delete the entity from memory.
            */
-          const updatedEntities =
-            prevState.entities !== null
-              ? stateUtils.del(prevState.entities, id)
-              : null;
+          const updatedEntities = stateUtils.del(prevState.entities, id);
 
           /*
            * Deselect the entity if it's currently selected.
@@ -603,6 +605,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       this.setState({ drawerMode: "open" });
     }
   };
+
 
   closeDrawer = (): void => {
     logger.log("debug", "close-drawer");
@@ -750,18 +753,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   loadDataFromApi = async (): Promise<void> => {
-    console.log("Paper id:", this.props.paperId);
     // if (this.props.paperId !== undefined && this.props.paperId.type === "arxiv") { // swapped
     if (true) {
       const loadingStartTime = performance.now();
-      //added - casting for keeping errors for using json - https://stackoverflow.com/questions/40358434/typescript-ts7015-element-implicitly-has-an-any-type-because-index-expression
-      interface jsonOjbect {
-        default: any[];
-      }
-      const myObj: jsonOjbect = testEntities;
-      const myKey: string = "default";
 
-      const entities = myObj[myKey as keyof jsonOjbect] as Entity[];
+      // trick the typescript compiler, which gets the type of testEntities
+      // wrong for some reason.
+      const entitiesFromJson = testEntities as any as { default: Entity[] };
+      const entities = entitiesFromJson.default;
 
       // const entities = await api.getDedupedEntities(this.props.paperId.id, true);
       this.setState({

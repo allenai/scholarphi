@@ -33,7 +33,6 @@ class RemoteLogger {
     data?: any,
     debounce?: number
   ) {
-    // console.log("Logging:", eventType, data);
 
     if (eventType !== undefined && debounce !== undefined && debounce > 0) {
       /*
