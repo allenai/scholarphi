@@ -65,22 +65,27 @@ interface Props {
       };
 
 
-      const AccordianDefinitions = UrlDefinitions.map((d) => 
-      <Accordion>
-          <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls={"panel-content ${ d.url }"}
-                id={"panel-header ${ d.url }"}>  
-                    <MedlineLink url={ d.url }>{ d.url }</MedlineLink>                  
-                </AccordionSummary>
-                <AccordionDetails>
-                <div className="paper-summary" style={ divStyle }> { d.snippet } </div>
-                </AccordionDetails>
-            </Accordion>
-        );
+      // const AccordianDefinitions = UrlDefinitions.map((d) => 
+      // <Accordion>
+      //     <AccordionSummary
+      //           expandIcon={<ExpandMoreIcon />}
+      //           aria-controls={"panel-content ${ d.url }"}
+      //           id={"panel-header ${ d.url }"}>  
+      //               <MedlineLink url={ d.url }>{ d.url }</MedlineLink>                  
+      //           </AccordionSummary>
+      //           <AccordionDetails>
+      //           <div className="paper-summary" style={ divStyle }> { d.snippet } </div>
+      //           </AccordionDetails>
+      //       </Accordion>
+      //   );
       
       const Definitions = UrlDefinitions.map((d) => 
-        <RichText>{`${ d.snippet }`}</RichText>);
+      <div className="experience-summary__section">
+        <p className="experience-summary__abstract">
+          {`${ d.snippet }`}
+        </p>
+      </div>
+      );
 
       const urls = UrlDefinitions.map((d) => 
         <MedlineLink url={ d.url }>{ d.url }</MedlineLink>);
@@ -92,8 +97,15 @@ interface Props {
           <table>
             <tbody>
               <td>
-              <div className="simple-gloss__definition-container"> {Definitions} </div> 
-              <div className="simple-gloss__definition-container"> {urls} </div> 
+              <div className="experience-summary">
+              {Definitions}
+              </div>
+              <div className="experience-summary__section">
+                {urls}
+              </div>
+
+              {/* <div className="simple-gloss__definition-container"> {Definitions} </div> 
+              <div className="simple-gloss__definition-container"> {urls} </div>  */}
               </td>
             </tbody>
           </table>

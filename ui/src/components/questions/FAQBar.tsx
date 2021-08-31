@@ -42,10 +42,6 @@ class FAQBar extends React.PureComponent<Props> {
   }
 
   componentWillUnmount() {
-    // const { pdfViewer } = this.props;
-    // if (pdfViewer != null) {
-    //   this.removePdfPositioningForDrawerOpen(pdfViewer.container);
-    // }
   }
 
   onScroll(event: React.UIEvent<HTMLDivElement>) {
@@ -128,19 +124,6 @@ class FAQBar extends React.PureComponent<Props> {
       selectedEntityIds,
     } = this.props;
 
-    // let firstSelectedEntity: Entity | null = null;
-    // if (entities !== null && selectedEntityIds.length > 0) {
-    //   firstSelectedEntity = entities.byId[selectedEntityIds[0]] || null;
-    // }
-
-    // if (pdfViewer != null) {
-    //   if (mode === "open" && contentType !== null) {
-    //     this.removePdfPositioningForDrawerOpen(pdfViewer.container);
-    //     this.positionPdfForDrawerOpen(pdfViewer.container, contentType);
-    //   } else {
-    //     this.removePdfPositioningForDrawerOpen(pdfViewer.container);
-    //   }
-    // }
 
     const FAQBarContainer = document.getElementById("FAQBar");
 
@@ -149,9 +132,14 @@ class FAQBar extends React.PureComponent<Props> {
     const BarContent = (
       <div className="faq__content">
         {/* <p className="faq__content__header">FAQs</p> */}
-        <p className="faq__content__header">
-          Click a question to find an answer in the article.
-        </p>
+        <p className="faq__content__header"> There is a lot of information in this paper, and some of it might not be useful to you.</p>
+
+        <p className="faq__content__header"> To help out, we have highlighted some common questions that provide useful information in the paper. </p>
+
+        <p className="faq__content__header"> Each question has a short answer here. Click on the "Jump to text" link to find sections relevant to that question in the paper.</p>
+
+        <p className="faq__content__header"> Questions: </p>
+        {' '}
         {FAQs}
       </div>
     );
@@ -159,34 +147,6 @@ class FAQBar extends React.PureComponent<Props> {
     return FAQBarContainer
       ? ReactDOM.createPortal(BarContent, FAQBarContainer)
       : null;
-
-    //   <MuiDrawer
-    //   className="drawer"
-    //   variant="persistent"
-    //   anchor="right"
-    //   /*
-    //    * If for the drawer has been requested to open but there's nothing to show
-    //    * in it, don't show it.
-    //    */
-    //   open={mode === "open"}
-    //   onScroll={this.onScroll}
-    // >
-    // <div className="drawer__header">
-    //     <div className="drawer__close_icon">
-    //       <IconButton size="small" onClick={this.closeDrawer}>
-    //         <ChevronRightIcon />
-    //       </IconButton>
-    //     </div>
-    //     {' '}
-    //     <p className="drawer__header__content">FAQs</p>
-    //     <p> Hover or click on a question to highlight it's answer in the document!</p>
-    // </div>
-
-    //   <div className="drawer__content">
-    //       {FAQs}
-    //   </div>
-    //  </MuiDrawer>
-    // );
   }
 }
 

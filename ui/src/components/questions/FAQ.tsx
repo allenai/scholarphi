@@ -57,12 +57,10 @@ class FAQ extends React.PureComponent<Props, State> {
   }
 
   onMouseEnter() {
-    console.log("In");
     this.props.handleMouseOver(this.props.question.id);
   }
 
   onMouseLeave() {
-    console.log("Out");
     this.props.handleMouseOut(this.props.question.id);
   }
 
@@ -115,12 +113,10 @@ class FAQ extends React.PureComponent<Props, State> {
             let elementId = a
               ? (`entity-${a.id}-page-${a.attributes.bounding_boxes[0].page}-annotation-span-0` as string)
               : null;
-            console.log(elementId);
             return elementId ? document.getElementById(elementId) : null;
           })
         : null;
 
-    console.log(answerAnnotations);
 
     let details = null;
 
@@ -132,7 +128,7 @@ class FAQ extends React.PureComponent<Props, State> {
         handleJumpToEntity={this.props.handleJumpToEntity}
       >
         {" "}
-        General Answer{" "}
+        Jumpt to text{" "}
       </EntityLink>
     ) : null;
 
@@ -146,7 +142,7 @@ class FAQ extends React.PureComponent<Props, State> {
             handleJumpToEntity={this.props.handleJumpToEntity}
           >
             {" "}
-            ☐{" "}
+            1{" "}
           </EntityLink>
         );
       });
@@ -169,7 +165,7 @@ class FAQ extends React.PureComponent<Props, State> {
         <p className="faq__question">{`${this.props.question.attributes.question_text}`}</p>
         <p className="faq__answer">{`${this.props.question.attributes.answer_text}`}</p>
         {generalAnswer} {"."}
-        {details !== null && <span> Details: {details}</span>}
+        {details !== null && <span> Relevant passage(s): {details}</span>}
       </div>
     );
   }

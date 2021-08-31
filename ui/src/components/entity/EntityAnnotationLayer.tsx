@@ -529,7 +529,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
                     />
                   ) : null
                 }
-                tooltipPlacement="below"
+                tooltipPlacement="above"
                 handleSelect={handleSelectEntityAnnotation}
               />
             );
@@ -549,6 +549,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
                     showGlosses ? <SectionHeaderGloss header={entity} /> : null
                   }
                   selected={isSelected}
+                  tooltipPlacement="upper-right"
                   active={annotationInteractionEnabled}
                   selectedSpanIds={selectedSpanIds}
                   handleSelect={handleSelectEntityAnnotation}

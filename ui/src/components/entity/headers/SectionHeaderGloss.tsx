@@ -73,10 +73,11 @@ interface Props {
                 <div className="paper-summary">
                     <div className="paper-summary__section">
                         <p className="paper-summary__title">
-                            { this.props.header.attributes.summary }
+                            Section summary:
                         </p>
+                        { this.props.header.attributes.summary }
                     </div>
-                        <div className="paper-summary__section"> {bullets} </div> 
+                        {/* <div className="paper-summary__section"> {bullets} </div>  */}
                     </div>
                 </div>
             </div>

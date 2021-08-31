@@ -62,8 +62,6 @@ class SimpleTermGloss extends React.PureComponent<Props, State> {
       selectors.adjacentDefinition(term.id, entities, "before") ||
       selectors.adjacentDefinition(term.id, entities, "after");
 
-    console.log("entities:", entities);
-    console.log("definition:", definition);
 
     const definedHere = selectors.inDefinition(term.id, entities);
 
