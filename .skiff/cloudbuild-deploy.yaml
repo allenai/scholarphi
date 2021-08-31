@@ -39,13 +39,12 @@ steps:
   name: 'gcr.io/cloud-builders/docker'
   args: [
     'build',
+    '--target', 'runtime',
     '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-ui:latest',
     '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-ui:$COMMIT_SHA',
     '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-ui:latest',
-    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-ui-base:latest',
-    '.',
-    '--build-arg', 'NODE_ENV=production',
-    '--build-arg', 'BABEL_ENV=production'
+    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-$BRANCH_NAME-ui-base:$COMMIT_SHA',
+    '.'
   ]
   waitFor: [ 'ui.pull', 'ui.base.build' ]
   dir: 'ui'
