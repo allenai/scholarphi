@@ -28,3 +28,9 @@ yarn-error.log*
 # pycharm
 .idea
 .python-version
+
+# Python cache files
+**.pyc
+**/__pycache__
+.dockerignore
+
