@@ -127,8 +127,7 @@ class FAQ extends React.PureComponent<Props, State> {
         entityId={definition.contextEntity.id}
         handleJumpToEntity={this.props.handleJumpToEntity}
       >
-        {" "}
-        Jumpt to text{" "}
+        {" ("}1{") "}
       </EntityLink>
     ) : null;
 
@@ -141,8 +140,7 @@ class FAQ extends React.PureComponent<Props, State> {
             entityId={answer.id}
             handleJumpToEntity={this.props.handleJumpToEntity}
           >
-            {" "}
-            1{" "}
+            {" ("}{i+2}{") "}
           </EntityLink>
         );
       });
@@ -164,8 +162,8 @@ class FAQ extends React.PureComponent<Props, State> {
       >
         <p className="faq__question">{`${this.props.question.attributes.question_text}`}</p>
         <p className="faq__answer">{`${this.props.question.attributes.answer_text}`}</p>
-        {generalAnswer} {"."}
-        {details !== null && <span> Relevant passage(s): {details}</span>}
+        Relevant passage(s): {generalAnswer} {details}
+        {/* {details !== null && <span>: {details}</span>} */}
       </div>
     );
   }

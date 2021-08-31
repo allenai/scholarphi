@@ -139,6 +139,7 @@ class FAQBar extends React.PureComponent<Props> {
         <p className="faq__content__header"> Each question has a short answer here. Click on the "Jump to text" link to find sections relevant to that question in the paper.</p>
 
         <p className="faq__content__header"> Questions: </p>
+        
         {' '}
         {FAQs}
       </div>
