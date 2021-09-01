@@ -117,10 +117,16 @@ const PRESETS: Preset[] = [
   {
     key: "demo",
     primerInstructionsEnabled: false,
-    // useDefinitionsForDiagramLabels: true,
+    useDefinitionsForDiagramLabels: true,
     termGlossesEnabled: true,
     declutterEnabled: true,
     equationDiagramsEnabled: true,
+  },
+  {
+    key: "sab-2021",
+    primerInstructionsEnabled: false,
+    termGlossesEnabled: true,
+    declutterEnabled: true,
     symbolUnderlineMethod: "defined-symbols",
     definitionsInSymbolGloss: true
   },
