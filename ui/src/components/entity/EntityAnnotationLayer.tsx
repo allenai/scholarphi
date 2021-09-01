@@ -10,7 +10,6 @@ import {
   isSentence,
   isSymbol,
   isTerm,
-  isPaperQuestion,
   Paper,
 } from "../../api/types";
 import * as selectors from "../../selectors";
@@ -21,10 +20,8 @@ import * as uiUtils from "../../utils/ui";
 import { DrawerContentType } from "../drawer/Drawer";
 import AnswerSentenceGloss from "./answers/AnswerSentenceGloss";
 import LazyCitationGloss from "./citation/LazyCitationGloss";
-import FAQ from "../questions/FAQ";
-
-import ExperienceGloss from "./experience/ExperienceGloss";
 import EntityAnnotation from "./EntityAnnotation";
+import ExperienceGloss from "./experience/ExperienceGloss";
 import SectionHeaderImage from "./headers/HeaderImage";
 import SectionHeaderGloss from "./headers/SectionHeaderGloss";
 import SimpleSymbolGloss from "./SimpleSymbolGloss";
@@ -319,7 +316,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
                 key={annotationId}
                 id={annotationId}
                 entity={entity}
-                className="citation-annotation"
+                className="term-annotation"
                 pageView={pageView}
                 underline={showAnnotations}
                 glossStyle={glossStyle}
@@ -532,7 +529,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
                     />
                   ) : null
                 }
-                tooltipPlacement="above"
+                tooltipPlacement="lower-left"
                 handleSelect={handleSelectEntityAnnotation}
               />
             );

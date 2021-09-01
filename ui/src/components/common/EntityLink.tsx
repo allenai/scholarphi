@@ -18,7 +18,7 @@ export class EntityLink extends React.PureComponent<Props> {
     this.onClick = this.onClick.bind(this);
   }
 
-  onClick() {
+  onClick(e: MouseEvent<HTMLSpanElement>) {
     logger.log("debug", "clicked-jump-to-context", {
       id: this.props.id,
       entityId: this.props.entityId,
@@ -30,6 +30,7 @@ export class EntityLink extends React.PureComponent<Props> {
     if (this.props.entityId) {
       this.props.handleJumpToEntity(this.props.entityId);
     }
+    e.stopPropagation();
   }
 
   render() {

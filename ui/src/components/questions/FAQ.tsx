@@ -65,6 +65,22 @@ class FAQ extends React.PureComponent<Props, State> {
   }
 
   onClick() {
+    const { entities, question } = this.props;
+
+    const firstAnswerId = question?question.relationships.definition_sentences[0].id:null;
+
+    // both jump to the new entity and call the handler for updating the selected FAQ
+    logger.log("debug", "clicked-jump-to-context", {
+      id: this.props.question.id,
+      entityId: firstAnswerId,
+      linkText:
+        typeof this.props.children === "string"
+          ? this.props.children
+          : undefined,
+    });
+    if (firstAnswerId) {
+      this.props.handleJumpToEntity(firstAnswerId);
+    }
     this.props.handleClick(this.props.question.id);
   }
 
