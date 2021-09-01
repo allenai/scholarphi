@@ -37,7 +37,7 @@ import FAQBar from "./components/questions/FAQBar";
 import FindBar, { FindQuery } from "./components/search/FindBar";
 //added
 // import * as testEntities from './data/entities.json';
-import * as testEntities from "./data/auto_PAWLS_SPUI_annotations.json";
+import * as testEntities from "./data/auto_PAWLS_SPUI_annotations_tag_filtered.json";
 import logger from "./logging";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";

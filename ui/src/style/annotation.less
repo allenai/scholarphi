@@ -124,6 +124,10 @@
     z-index: @sentence-annotation-z-index;
   }
 
+  &:not(.sentence-annotation) {
+    z-index: @default-annotation-z-index;
+  }
+  // needs to be after checking for not sentence annotation
   &.answer-sentence-annotation {
     z-index: @sentence-annotation-z-index;
     // background-color: fade(yellow, 30%);
@@ -136,10 +140,6 @@
 
   &.equation-annotation {
     z-index: @equation-annotation-z-index;
-  }
-
-  &:not(.sentence-annotation) {
-    z-index: @default-annotation-z-index;
   }
 }
 

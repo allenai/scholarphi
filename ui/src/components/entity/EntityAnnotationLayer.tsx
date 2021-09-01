@@ -316,7 +316,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
                 key={annotationId}
                 id={annotationId}
                 entity={entity}
-                className="citation-annotation"
+                className="term-annotation"
                 pageView={pageView}
                 underline={showAnnotations}
                 glossStyle={glossStyle}
