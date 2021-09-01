@@ -145,7 +145,7 @@ const PRESETS: Preset[] = [
  */
 export function getSettings(presets?: string[]) {
   const DEFAULT_SETTINGS: Settings = {
-    primerPageEnabled: true,
+    primerPageEnabled: false,
     primerPageGlossaryEnabled: false,
     primerInstructionsEnabled: true,
     annotationInteractionEnabled: true,
