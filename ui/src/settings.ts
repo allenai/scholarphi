@@ -111,9 +111,14 @@ interface Preset extends Partial<Settings> {
 }
 
 /**
- * Define new presets for settings here.
+ * Define new presets for settings here. The user interface can be loaded with a
+ * preset by using "&preset=<key>" as a query parameter, with the available keys
+ * defined in the 'key' properties of each preset below.
  */
 const PRESETS: Preset[] = [
+  /*
+   * ScholarPhi public demo circa September 2020.
+   */
   {
     key: "demo",
     primerInstructionsEnabled: false,
@@ -122,6 +127,10 @@ const PRESETS: Preset[] = [
     declutterEnabled: true,
     equationDiagramsEnabled: true,
   },
+  /*
+   * Demo for the AI2 Scientific Adivsory board readings in September 2021.
+   * Experimental definitions of symbols and abbreviations are shown, but not equation diagrams.
+   */
   {
     key: "sab-2021",
     primerInstructionsEnabled: false,
@@ -130,6 +139,9 @@ const PRESETS: Preset[] = [
     symbolUnderlineMethod: "defined-symbols",
     definitionsInSymbolGloss: true
   },
+  /*
+   * Demo for AI2 Scientific Advisory board readings in September 2020.
+   */
   {
     key: "sab",
     termGlossesEnabled: false,
@@ -137,6 +149,10 @@ const PRESETS: Preset[] = [
     symbolUnderlineMethod: "defined-symbols",
     primerInstructionsEnabled: true,
   },
+  /*
+   * Demo for AI2 Scientific Advisory board readings in September 2020.
+   * "Light" configuration with symbol definitions and equation diagrams turned off.
+  */
   {
     key: "sab-lite",
     symbolUnderlineMethod: "top-level-symbols",
