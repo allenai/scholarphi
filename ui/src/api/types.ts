@@ -45,8 +45,8 @@ export interface Paper {
   year: number | null;
   influentialCitationCount?: number;
   citationVelocity?: number;
-  inboundCitations: number;  // numCitedBy in S2 API
-  outboundCitations: number;  // numCiting in S2 API
+  inboundCitations: number; // numCitedBy in S2 API
+  outboundCitations: number; // numCiting in S2 API
 }
 
 export interface PaperWithEntityCounts extends PaperIdWithEntityCounts {
@@ -395,4 +395,23 @@ export interface LogEntryCreatePayload {
   level: string;
   event_type: string | null;
   data: any;
+}
+
+export interface RhetoricUnit {
+  text: string;
+  label: string;
+  bboxes: BoundingBox[];
+  section: string;
+  prob: number | null;
+  is_author_statement: boolean;
+  is_in_expected_section: boolean;
+}
+
+export interface DiscourseObj {
+  id: string;
+  entity: RhetoricUnit;
+  label: string;
+  bboxes: BoundingBox[];
+  tagLocation: BoundingBox;
+  color: string;
 }

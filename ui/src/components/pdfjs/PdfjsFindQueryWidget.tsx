@@ -161,16 +161,20 @@ export class PdfjsFindQueryWidget extends React.PureComponent<Props, State> {
       return;
     }
     if (this.pdfjsEventBus !== undefined) {
-      this.pdfjsEventBus.dispatch("find", {
-        source: window,
-        type: eventName.substring("find".length),
-        query,
-        phraseSearch: true,
-        caseSensitive: this.state.matchCase,
-        entireWord: false,
-        highlightAll: true,
-        findPrevious: findPrevious || false,
-      });
+      if (eventName === "findbarclose") {
+        this.pdfjsEventBus.dispatch(eventName, { source: window });
+      } else {
+        this.pdfjsEventBus.dispatch("find", {
+          source: window,
+          type: eventName.substring("find".length),
+          query,
+          phraseSearch: true,
+          caseSensitive: this.state.matchCase,
+          entireWord: false,
+          highlightAll: true,
+          findPrevious: findPrevious || false,
+        });
+      }
     }
   }
 

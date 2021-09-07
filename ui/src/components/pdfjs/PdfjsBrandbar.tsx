@@ -15,10 +15,10 @@ class PdfjsBrandbar extends React.PureComponent {
         <S2LogoMarkOnly />
         <span className="brandbar__app-title">
           <span className="brandbar__app-title__word1">SEMANTIC</span>&nbsp;
-          <span className="brandbar__app-title__word2">READER</span>
+          <span className="brandbar__app-title__word2">SKIMMER</span>
         </span>
         <span className="brandbar__seperator"/>
-        <span className="brandbar__app-subtitle">In collaboration with UC Berkeley</span>
+        <span className="brandbar__app-subtitle">In collaboration with UC Berkeley and UW</span>
       </div>
       <div className="brandbar__right"></div>
     </div>);

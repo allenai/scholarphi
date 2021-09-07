@@ -146,6 +146,8 @@ export interface State extends Settings {
    * all other appearances of the same term).
    */
   propagateEntityEdits: boolean;
+
+  skimOpacity: number;
 }
 
 export type Entities = RelationalStore<Entity>;

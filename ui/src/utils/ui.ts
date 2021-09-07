@@ -399,3 +399,10 @@ export function getElementCoordinates(element: HTMLElement) {
   const matches = url.match(/arxiv\.org\/pdf\/(.*)(?:\.pdf)/) || [];
   return matches[1];
 }
+
+export function updateAlpha(color: string, opacity: number): string {
+  // Keep first character (#) denoting hex value, and next six characters denoting RGB values
+  color = color.substring(0, 7);
+  const _opacity = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);
+  return color + _opacity.toString(16).toUpperCase();
+}

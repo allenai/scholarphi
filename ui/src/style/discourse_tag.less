@@ -1,0 +1,26 @@
+.scholar-reader-discourse-tag {
+  position: absolute;
+  padding: 4px;
+  font-weight: bold;
+  width: fit-content;
+
+  &.side-left {
+    right: 90%;
+    margin-right: @sidenote-margin;
+  }
+
+  &.side-right {
+    left: 90%;
+    margin-left: @sidenote-margin;
+  }
+
+  &:hover {
+    z-index: 1000;
+  }
+}
+
+.discourse-tag-rule {
+  position: absolute;
+  border: none;
+  border-top: 1px dotted grey;
+}

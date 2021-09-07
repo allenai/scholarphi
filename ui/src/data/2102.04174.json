@@ -1,0 +1,2497 @@
+[
+  {
+    "text": "It contributes to scholarship by combining planning and inference with model-based approaches at the level of individual learners and items. ",
+    "label": "Contribution",
+    "bboxes": [
+      {
+        "left": 0.3621993464052288,
+        "top": 0.74339898989899,
+        "width": 0.5177941176470588,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7606957070707071,
+        "width": 0.3247777777777777,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "In this paper, we propose an approach that builds on the literature described above and draws its contributions together in a single system, with ",
+    "label": "Contribution",
+    "bboxes": [
+      {
+        "left": 0.18000163398692812,
+        "top": 0.2162512626262626,
+        "width": 0.7002810457516339,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.2335479797979798,
+        "width": 0.14509150326797385,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "2 RELATEDWORK 2.3 Our technique",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The main contribution represented by this paper has less to do with the performance of an end-to-end method than it does with proposing a modular framework that, in contrast to prior methods, clearly advances our tackling of multiple aspects of learning. ",
+    "label": "Contribution",
+    "bboxes": [
+      {
+        "left": 0.1362794117647059,
+        "top": 0.7421982323232323,
+        "width": 0.6837173202614379,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7594949494949494,
+        "width": 0.7,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.776790404040404,
+        "width": 0.16593464052287582,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "7 DISCUSSION AND CONCLUSIONS",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Although this approach is easy to implement, computationally inexpensive, and applicable across different contexts [8, 12] and while there is evidence that it yields benefits in terms of learning optimization [20], its ability to adapt to the individuals characteristics is limited. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.4178251633986928,
+        "top": 0.5358446969696969,
+        "width": 0.46378758169934653,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.5531401515151515,
+        "width": 0.700001633986928,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.5704368686868687,
+        "width": 0.4743088235294117,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Model-based approaches, on the other hand, utilize a predictive model of (human) memory to select interventions or schedule practice sessions [4, 11, 14, 17, 22, 23]. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.8025947712418301,
+        "top": 0.5877335858585859,
+        "width": 0.07740196078431372,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6050290404040404,
+        "width": 0.6999918300653595,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6223257575757576,
+        "width": 0.23250653594771245,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Predicting the effects of teaching interventions on human learning is challenging, however. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.3628813131313131,
+        "width": 0.5414035947712419,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "No planning is implemented in this technique, though, because the intelligent tutoring system uses a heuristic for item selection: it employs a threshold  such that it presents the user with any item for which the predicted probability of recall falls below the threshold set. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.35999019607843136,
+        "top": 0.5092462121212121,
+        "width": 0.4600065359477125,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.5265416666666667,
+        "width": 0.6999967320261438,
+        "height": 0.011445707070707023,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.5438383838383839,
+        "width": 0.432437908496732,
+        "height": 0.011320707070706981,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Model-free and model-based learning",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "However, their context does not assume sessions separated by long breaks, so the scope for application of their results is limited.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.5314983660130719,
+        "top": 0.5784305555555556,
+        "width": 0.2885065359477125,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.5957272727272727,
+        "width": 0.4733153594771242,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Model-free and model-based learning",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "[17] too based their intelligent tutoring system on ACT-R [1, 15, 16], but they provided a non-myopic planning technique in addition. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.341937908496732,
+        "top": 0.6256022727272726,
+        "width": 0.47844771241830075,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6428989898989899,
+        "width": 0.3384509803921569,
+        "height": 0.011320707070707203,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Model-free and model-based learning",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Model-based approaches, in contrast, rely on a predictive model of human memory for scheduling the reviews.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.18741339869281046,
+        "top": 0.44477777777777777,
+        "width": 0.6325800653594772,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.462074494949495,
+        "width": 0.049359477124182996,
+        "height": 0.011320707070707037,
+        "page": 2
+      }
+    ],
+    "section": "",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "[25] offered useful extension to that work; however, the purpose of the optimization for the latter studies is quite different from ours. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.3772565359477124,
+        "top": 0.7938484848484848,
+        "width": 0.44273692810457527,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.8111439393939395,
+        "width": 0.35738398692810464,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Model-free and model-based learning",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "It assumes that the probability of recall decays exponentially but that the decay increases each time a given item is reviewed. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6009217171717172,
+        "width": 0.6999918300653595,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6182184343434344,
+        "width": 0.05759313725490196,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "4 IMPLEMENTATION 4.1 The psychologist: The model and inference",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "This model diverges from the EF model in that the parameters ( ,  ) are not global for a specific user but defined for each item separately. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.4439673202614379,
+        "top": 0.7926477272727274,
+        "width": 0.3760375816993464,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.12073366013071894,
+        "top": 0.8099431818181818,
+        "width": 0.44323856209150325,
+        "height": 0.013041666666666618,
+        "page": 4
+      }
+    ],
+    "section": "4 IMPLEMENTATION 4.1 The psychologist: The model and inference",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "At each iteration  , only one item can be selected, even though it may be time to review several items under the aforementioned criterion. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.1362794117647059,
+        "top": 0.5691085858585858,
+        "width": 0.6837238562091503,
+        "height": 0.011445707070707023,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.586405303030303,
+        "width": 0.15529575163398696,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.1 The baseline: The Leitner system",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "An item that was not selected at  even though  was equal to (or past) its time for review is added to a waiting queue. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.27893954248366015,
+        "top": 0.586405303030303,
+        "width": 0.541607843137255,
+        "height": 0.011445707070707023,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6037020202020202,
+        "width": 0.17019771241830067,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.1 The baseline: The Leitner system",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Our tests applied two variants of the model: a nonitem-specific one, wherein each user has a specific parameterization but all the items from any given user share the same parameterization (for proof of concept), and an item-specific one, in which, for each user, each item has a specific parameterization (offering finer granularity). ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.5059035947712418,
+        "top": 0.7433068181818181,
+        "width": 0.31671732026143795,
+        "height": 0.013935606060606176,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7606035353535354,
+        "width": 0.6999901960784314,
+        "height": 0.013935606060605954,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7778989898989899,
+        "width": 0.700001633986928,
+        "height": 0.013935606060606176,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.795195707070707,
+        "width": 0.30987418300653596,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.2 Methods",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Each box plot extends from the lowest to the highest quartile of the frequencies observed (the central line denotes the median, and the whiskers refer to an IQR of 1.5).",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.7896363636363637,
+        "width": 0.6837156862745097,
+        "height": 0.011320707070706981,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.8069318181818183,
+        "width": 0.31266666666666665,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.2 Methods",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "This time, no significant difference is visible for the CS teacher (  = 4551 . ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.2920081699346405,
+        "top": 0.811760101010101,
+        "width": 0.45328104575163397,
+        "height": 0.013324494949494947,
+        "page": 8
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.3 Results",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In the non-item-specific condition with an omniscient psychologist (see Figure 2), the simplest scenario under our framework, the number of items learned does not differ between the myopic (M) and Leitner (L) teachers (  = 5650 . 0,  = 0 . 110,   = 0 . 221,  = 100  2), while the conservative-sampling (CS) teacher significantly outperforms the Leitner one (  = 8539 . 0,  < 0 . 001,   < 0 . 001,  = 100  2). ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6042045454545454,
+        "width": 0.7002728758169934,
+        "height": 0.013935606060606176,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6215012626262626,
+        "width": 0.701609477124183,
+        "height": 0.013324494949494947,
+        "page": 8
+      },
+      {
+        "left": 0.11970751633986927,
+        "top": 0.6387967171717172,
+        "width": 0.7002892156862746,
+        "height": 0.013324494949494947,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6560934343434344,
+        "width": 0.389343137254902,
+        "height": 0.013324494949494947,
+        "page": 8
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.3 Results",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The ratio between the items learned and all items seen is significantly different from the baseline value for both model-based teachers (M vs. L:  = 1836 . 5,  < 0 . 001,   < 0 . 001,  = 100  2; CS vs. L:  = 8250 . 0,  < 0 . 001,   < 0 . 001,  = 100  2): the myopic teacher leaves more items unlearned among those seen (at least once) by the learner than the baseline teacher, while the CS teacher leaves fewer items unlearned than the baseline.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.5136339869281046,
+        "top": 0.6560934343434344,
+        "width": 0.30636764705882347,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6733901515151516,
+        "width": 0.7016078431372549,
+        "height": 0.013324494949494947,
+        "page": 8
+      },
+      {
+        "left": 0.11970751633986927,
+        "top": 0.6906856060606061,
+        "width": 0.7002859477124183,
+        "height": 0.013324494949494947,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7079823232323232,
+        "width": 0.6999983660130719,
+        "height": 0.013969696969696965,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7252790404040405,
+        "width": 0.24128594771241835,
+        "height": 0.013969696969696965,
+        "page": 8
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.3 Results",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "For each user, the model-based planning system used the ISEF memory model, but the planning was based either on a myopic sampling algorithm or on a conservative-sampling algorithm. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.48969281045751634,
+        "top": 0.378300505050505,
+        "width": 0.3303055555555555,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.3955972222222222,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.41289393939393937,
+        "width": 0.06076307189542483,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "6 THE USER STUDY 6.1 Methods",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In contrast against the corresponding results obtained with artificial learners, no significant difference was visible between the CS and the Leitner teacher (  = 434 . 5,  = 0 . 828,   = 1 . 655,  = 29  2). ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.7393856209150327,
+        "top": 0.6895416666666666,
+        "width": 0.14060784313725505,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7068371212121213,
+        "width": 0.6999918300653595,
+        "height": 0.011320707070706981,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7241338383838384,
+        "width": 0.36234640522875805,
+        "height": 0.013324494949494947,
+        "page": 11
+      }
+    ],
+    "section": "6 THE USER STUDY 6.2 Results",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In a parallel with the artificial agents in the item-specific condition with a non-omniscient psychologist, the ratio of items learned to items seen for the myopic teacher was below the baseline figure (  = 435,  = 0 . 003,   = 0 . 005,  = 24  2), while no significant difference emerged for the CS teacher (  = 397,  = 0 . 721,   = 1 . 441,  = 29  2).",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.5450898692810457,
+        "top": 0.7241338383838384,
+        "width": 0.33491013071895415,
+        "height": 0.013935606060606176,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7414305555555555,
+        "width": 0.7000032679738561,
+        "height": 0.013935606060606176,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.75872601010101,
+        "width": 0.6999918300653595,
+        "height": 0.013324494949495058,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7760227272727273,
+        "width": 0.3393725490196079,
+        "height": 0.013324494949494947,
+        "page": 11
+      }
+    ],
+    "section": "6 THE USER STUDY 6.2 Results",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We were surprised to find, however, that with human learners the myopic teacher, which greedily picks the best next item to show, fared better than did the longer-term planning approach. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.6925179738562092,
+        "top": 0.6211249999999999,
+        "width": 0.1274738562091503,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6384204545454546,
+        "width": 0.700281045751634,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6557171717171717,
+        "width": 0.26841013071895425,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "7 DISCUSSION AND CONCLUSIONS",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Our work extends research on model-based approaches for tutoring systems by offering a modular framework to combine online inference specific to each user and each item with online planning that takes the learners time constraints into account. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.1200016339869281,
+        "top": 0.4654583333333333,
+        "width": 0.6999918300653596,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.48275505050505046,
+        "width": 0.7000032679738563,
+        "height": 0.01393560606060612,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.5000505050505051,
+        "width": 0.15190522875816997,
+        "height": 0.011320707070706981,
+        "page": 12
+      }
+    ],
+    "section": "7 DISCUSSION AND CONCLUSIONS",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The main contribution represented by this paper has less to do with the performance of an end-to-end method than it does with proposing a modular framework that, in contrast to prior methods, clearly advances our tackling of multiple aspects of learning. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.1362794117647059,
+        "top": 0.7421982323232323,
+        "width": 0.6837173202614379,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7594949494949494,
+        "width": 0.7,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.776790404040404,
+        "width": 0.16593464052287582,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "7 DISCUSSION AND CONCLUSIONS",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Finally, we would expect this framework to hold great potential for extension to other application contexts wherein adaptation to the user and other individualization would be beneficial.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.2906666666666667,
+        "top": 0.2250366161616162,
+        "width": 0.5893316993464051,
+        "height": 0.011320707070707037,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.24233333333333332,
+        "width": 0.5267614379084966,
+        "height": 0.011320707070707065,
+        "page": 13
+      }
+    ],
+    "section": "7 DISCUSSION AND CONCLUSIONS",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Rarely is the goal to maximize knowledge at the time of learning, as opposed to some later stage/point (e.g. an exam date).",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4493636363636364,
+        "width": 0.6999950980392157,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4666590909090909,
+        "width": 0.03287745098039216,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Intelligent tutoring [2] addresses the problem of designing teaching interventions  any materials, practice, and feedback delivered by a teacher  for education objectives such as learning a new language or skill. ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.18000163398692812,
+        "top": 0.22451136363636362,
+        "width": 0.7003741830065358,
+        "height": 0.01396969696969702,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.2418080808080808,
+        "width": 0.5189248366013072,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "One of the central challenges for research on intelligent user interfaces is to identify algorithmic principles that can pick the best interventions for reliably improving human learning toward stated objectives in light of realistically obtainable data on the user. ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.18000163398692812,
+        "top": 0.2764002525252525,
+        "width": 0.7000049019607841,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.2936969696969697,
+        "width": 0.7003807189542484,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.31099242424242424,
+        "width": 0.16862745098039209,
+        "height": 0.011320707070707037,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "The computational problem we study is how, when given some learning materials, we can organize them into lessons and reviews such that, over time, human learning is maximized with respect to a set learning objective.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.35256045751633985,
+        "top": 0.31099242424242424,
+        "width": 0.5274330065359478,
+        "height": 0.011320707070707037,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.3282891414141414,
+        "width": 0.7000049019607841,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.3455858585858586,
+        "width": 0.11030718954248367,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "[25] offered useful extension to that work; however, the purpose of the optimization for the latter studies is quite different from ours. ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.3772565359477124,
+        "top": 0.7938484848484848,
+        "width": 0.44273692810457527,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.8111439393939395,
+        "width": 0.35738398692810464,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Model-free and model-based learning",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Aiming to increase the learners knowledge, the teacher sets learning objectives. ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.5750113636363636,
+        "width": 0.48110620915032687,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 INDIVIDUALIZED MODEL-BASED PLANNING 3.1 General characterization of the problem",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The objective of the teacher is to maximize this reward, which depends on the actual memorization by the learner.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.680985294117647,
+        "top": 0.5923068181818182,
+        "width": 0.19900816993464066,
+        "height": 0.011320707070706981,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6096035353535353,
+        "width": 0.4841862745098039,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 INDIVIDUALIZED MODEL-BASED PLANNING 3.1 General characterization of the problem",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The goal of the learner is to learn a finite set of items A = {  1 , 2 , . ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.6783790849673202,
+        "top": 0.38475252525252523,
+        "width": 0.20162418300653595,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4000770202020202,
+        "width": 0.20578758169934638,
+        "height": 0.015296717171717211,
+        "page": 3
+      }
+    ],
+    "section": "3 INDIVIDUALIZED MODEL-BASED PLANNING 3.1 General characterization of the problem",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "or question in a concept-learning task, which can be viewed as a stationary problem (the value of a teaching activity can be assumed to be constant).",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.18000163398692812,
+        "top": 0.12126010101010101,
+        "width": 0.7003807189542484,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.13855555555555557,
+        "width": 0.18940849673202612,
+        "height": 0.011320707070707065,
+        "page": 3
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Model-free and model-based learning",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "A simple learning objective for the teacher is to maximize the number of items learned in the course of the teaching process. ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.4382630718954248,
+        "top": 0.4418623737373737,
+        "width": 0.4417287581699346,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4591590909090909,
+        "width": 0.3029330065359477,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "4 IMPLEMENTATION 4.2 The planner: Reward and planning algorithms",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The planner is in charge of selecting the optimal items to present with regard to achieving some fixed learning objective.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.17956209150326796,
+        "top": 0.41184343434343434,
+        "width": 0.7026928104575164,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "4 IMPLEMENTATION 4.2 The planner: Reward and planning algorithms",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "There were two (roughly 10-minute) training sessions, with 100 questions each, per day for six days, then two evaluation sessions on the seventh day. ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.6654395424836602,
+        "top": 0.4301893939393939,
+        "width": 0.15493954248366004,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.11966339869281045,
+        "top": 0.4474861111111111,
+        "width": 0.7003382352941177,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.4647828282828283,
+        "width": 0.02356699346405229,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "6 THE USER STUDY 6.1 Methods",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Each question consisted of the presentation of a kanji and six possible answers (note that the six-responses setting corresponds to not too high a probability of randomly selecting the correct answer while still not overloading the interface).",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.14723692810457514,
+        "top": 0.4647828282828283,
+        "width": 0.6727630718954248,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.4820782828282828,
+        "width": 0.6999918300653596,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.499375,
+        "width": 0.06018627450980392,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "6 THE USER STUDY 6.1 Methods",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Also, extensions are possible for addressing the nature or type of various teaching objectives: focusing on particular classes of words, paying attention to exam dates, attention to quality over quantity, etc. ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.7106454248366013,
+        "top": 0.15585227272727273,
+        "width": 0.169346405228758,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.17314898989898989,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.19044444444444444,
+        "width": 0.31705718954248363,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": "7 DISCUSSION AND CONCLUSIONS",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Previous work on this topic has mainly explored rule-based and model-based approaches (see Related Work). ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.48395580808080807,
+        "width": 0.6555490196078433,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "The planner, in turn, is endowed with a definition of learning that takes the form of the reward function  and is in charge of, for each time point, selecting the optimal item to present while accounting for the future (see Figure 1).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.6986470588235294,
+        "top": 0.3677310606060606,
+        "width": 0.12296241830065358,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.3850277777777778,
+        "width": 0.700001633986928,
+        "height": 0.011445707070707078,
+        "page": 4
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.4023232323232323,
+        "width": 0.534936274509804,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "3 INDIVIDUALIZED MODEL-BASED PLANNING 3.2 POMDP formulation",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "For the item-counting reward (see Equation 4), myopic sampling induces straightforward behavior. ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.6599785353535353,
+        "width": 0.5963398692810458,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "4 IMPLEMENTATION 4.2 The planner: Reward and planning algorithms",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Note that the bounds for the forgetting rate were within the limits of what we could observe in the user study (even if unlikely) for the time of around one iteration (with  = 0 . 025, the probability of recall falling under 0 . 90 in four seconds) and around one week (with  = 2e  07). ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.21131045751633987,
+        "top": 0.3708194444444445,
+        "width": 0.6690718954248367,
+        "height": 0.011320707070706981,
+        "page": 7
+      },
+      {
+        "left": 0.17956209150326796,
+        "top": 0.3881161616161616,
+        "width": 0.7007173202614378,
+        "height": 0.013324494949494947,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4054128787878788,
+        "width": 0.2886339869281046,
+        "height": 0.013324494949494947,
+        "page": 7
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.2 Methods",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "On the basis of these preliminary simulations, we chose parameters for the next simulations  the ones used for our analysis  such that they equated to agents learning at least one item with a Leitner system (see Figure 2).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.5394248366013071,
+        "top": 0.44000505050505045,
+        "width": 0.34057352941176466,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.45730050505050507,
+        "width": 0.6999918300653596,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.47459722222222217,
+        "width": 0.3032614379084967,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.2 Methods",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In the non-item-specific condition with a non-omniscient psychologist (see Figure 2), the number of items learned is significantly greater for each model-based teacher relative to the baseline (M vs. L:  = 5976 . 5,  = 0 . 017,   = 0 . 033,  = 100  2; CS vs. L:  = 7401 . 5,  < 0 . 001,   < 0 . 001,  = 100  2). ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.1362794117647059,
+        "top": 0.742574494949495,
+        "width": 0.6837140522875818,
+        "height": 0.013935606060605954,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7598712121212121,
+        "width": 0.7016078431372549,
+        "height": 0.013324494949494947,
+        "page": 8
+      },
+      {
+        "left": 0.12007516339869281,
+        "top": 0.7771666666666667,
+        "width": 0.42127287581699346,
+        "height": 0.013324494949494947,
+        "page": 8
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.3 Results",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "In the non-item-specific condition with an omniscient psychologist (see Figure 2), the simplest scenario under our framework, the number of items learned does not differ between the myopic (M) and Leitner (L) teachers (  = 5650 . 0,  = 0 . 110,   = 0 . 221,  = 100  2), while the conservative-sampling (CS) teacher significantly outperforms the Leitner one (  = 8539 . 0,  < 0 . 001,   < 0 . 001,  = 100  2). ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6042045454545454,
+        "width": 0.7002728758169934,
+        "height": 0.013935606060606176,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6215012626262626,
+        "width": 0.701609477124183,
+        "height": 0.013324494949494947,
+        "page": 8
+      },
+      {
+        "left": 0.11970751633986927,
+        "top": 0.6387967171717172,
+        "width": 0.7002892156862746,
+        "height": 0.013324494949494947,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6560934343434344,
+        "width": 0.389343137254902,
+        "height": 0.013324494949494947,
+        "page": 8
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.3 Results",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "In the item-specific condition with an omniscient psychologist (see Figure 3), the number of items learned is significantly greater for both model-based teachers as compared with the Leitner teacher (M vs. L:  = 10 , 000,  < 0 . 001,   < 0 . 001,  = 100  2; CS vs. L:  = 10 , 000,  < 0 . 001,   < 0 . 001,  = 100  2). ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.6560795454545455,
+        "width": 0.6837173202614378,
+        "height": 0.013935606060606065,
+        "page": 9
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6733762626262626,
+        "width": 0.7016078431372548,
+        "height": 0.013324494949494947,
+        "page": 9
+      },
+      {
+        "left": 0.17970915032679738,
+        "top": 0.690671717171717,
+        "width": 0.5270473856209151,
+        "height": 0.01332449494949517,
+        "page": 9
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.3 Results",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Participants connected to a Web-based application displaying a graphical user interface similar to that of other flashcard software (see Figure 1). ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.3948611111111111,
+        "top": 0.3264128787878788,
+        "width": 0.42513888888888884,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.34370833333333334,
+        "width": 0.4289820261437909,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "6 THE USER STUDY 6.1 Methods",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "With human learners (see Figure 4), the number of items learned proved to be significantly greater with the myopic teacher than with the Leitner teacher (  = 174 . 5,  = 0 . 019,   = 0 . 038,  = 24  2). ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.6722449494949495,
+        "width": 0.6837205882352942,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6895416666666666,
+        "width": 0.5543316993464051,
+        "height": 0.013324494949494947,
+        "page": 11
+      }
+    ],
+    "section": "6 THE USER STUDY 6.2 Results",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "We were surprised to find, however, that with human learners the myopic teacher, which greedily picks the best next item to show, fared better than did the longer-term planning approach. ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.6925179738562092,
+        "top": 0.6211249999999999,
+        "width": 0.1274738562091503,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6384204545454546,
+        "width": 0.700281045751634,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6557171717171717,
+        "width": 0.26841013071895425,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "7 DISCUSSION AND CONCLUSIONS",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Firstly, the state of user memory is both latent (that is, not directly observable) and non-stationary (that is, evolving over time, on account of such effects as loss of activation and interference), and an intervention that is ideal for one user may be a poor choice for another user  there are large individual-to-individual differences in forgetting and recall. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.741357843137255,
+        "top": 0.3628813131313131,
+        "width": 0.13891830065359478,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.3801780303030303,
+        "width": 0.6999950980392157,
+        "height": 0.013969696969696965,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.3974747474747475,
+        "width": 0.6999983660130719,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.414770202020202,
+        "width": 0.5659885620915032,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Secondly, planning in this context is particularly difficult: the number of possible sequences is generally large, and the reward is often delayed. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.7496748366013072,
+        "top": 0.414770202020202,
+        "width": 0.13032189542483663,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4320669191919192,
+        "width": 0.7022483660130718,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "No planning is implemented in this technique, though, because the intelligent tutoring system uses a heuristic for item selection: it employs a threshold  such that it presents the user with any item for which the predicted probability of recall falls below the threshold set. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.35999019607843136,
+        "top": 0.5092462121212121,
+        "width": 0.4600065359477125,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.5265416666666667,
+        "width": 0.6999967320261438,
+        "height": 0.011445707070707023,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.5438383838383839,
+        "width": 0.432437908496732,
+        "height": 0.011320707070706981,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Model-free and model-based learning",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Still, the models parameters that support the planning are optimized offline, kept constant, and not fitted to the current users data. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.46233823529411766,
+        "top": 0.6428989898989899,
+        "width": 0.3576552287581699,
+        "height": 0.011320707070707203,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6601944444444445,
+        "width": 0.43371241830065355,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Model-free and model-based learning",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We use   to indicate whether the response was correct (   = 1) or not (   = 0).",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.8605653594771243,
+        "top": 0.540419191919192,
+        "width": 0.019441176470588073,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.5577146464646464,
+        "width": 0.45725163398692814,
+        "height": 0.013324494949494947,
+        "page": 3
+      }
+    ],
+    "section": "3 INDIVIDUALIZED MODEL-BASED PLANNING 3.1 General characterization of the problem",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The teacher must, therefore, rely on a memory model, which serves as a proxy for the learners actual memorization state. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.5120637254901961,
+        "top": 0.6614924242424243,
+        "width": 0.36793464052287583,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6787891414141414,
+        "width": 0.3638104575163399,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 INDIVIDUALIZED MODEL-BASED PLANNING 3.1 General characterization of the problem",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "For solving Equation 1, our proposed technique is to model the overall teaching process for the teacher as a POMDP ( ,,,,  , ) , where  is the set of possible states and  the set of actions,  is a payoff function,  is the statetransition probability,  is the set of observations, and  :       [ 0 , 1 ] defines the probability  (  | , ) =  ( ,, ) . ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.1200016339869281,
+        "top": 0.1428800505050505,
+        "width": 0.6999967320261438,
+        "height": 0.011320707070707065,
+        "page": 4
+      },
+      {
+        "left": 0.12073366013071894,
+        "top": 0.16017676767676767,
+        "width": 0.7017385620915033,
+        "height": 0.013041666666666646,
+        "page": 4
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.17747222222222223,
+        "width": 0.7022532679738562,
+        "height": 0.01332449494949492,
+        "page": 4
+      }
+    ],
+    "section": "3 INDIVIDUALIZED MODEL-BASED PLANNING 3.2 POMDP formulation",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Because the memory states  are not directly observable, the teachers problem at each interaction can be divided into two parts: ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.4042826797385621,
+        "top": 0.28125,
+        "width": 0.41571895424836597,
+        "height": 0.011445707070707078,
+        "page": 4
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.2985467171717172,
+        "width": 0.3432728758169935,
+        "height": 0.011320707070707037,
+        "page": 4
+      }
+    ],
+    "section": "3 INDIVIDUALIZED MODEL-BASED PLANNING 3.2 POMDP formulation",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Therefore, we cut the POMDP into two complementary components, called the psychologist and planner , with the learner here being considered to be the environment. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.2570882352941176,
+        "top": 0.3158421717171717,
+        "width": 0.5629101307189542,
+        "height": 0.013935606060606065,
+        "page": 4
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.3331388888888889,
+        "width": 0.474421568627451,
+        "height": 0.013935606060606065,
+        "page": 4
+      }
+    ],
+    "section": "3 INDIVIDUALIZED MODEL-BASED PLANNING 3.2 POMDP formulation",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Two cases are possible in choosing an item: If at least one item has a probability of recall below  , one can increment the immediate reward by 1 by presenting one of the forgotten items to the learner. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.7962581699346405,
+        "top": 0.6599785353535353,
+        "width": 0.08374346405228761,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6772752525252526,
+        "width": 0.6999918300653595,
+        "height": 0.011445707070707023,
+        "page": 5
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6945707070707071,
+        "width": 0.41808823529411765,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "4 IMPLEMENTATION 4.2 The planner: Reward and planning algorithms",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "At each iteration  , only one item can be selected, even though it may be time to review several items under the aforementioned criterion. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.1362794117647059,
+        "top": 0.5691085858585858,
+        "width": 0.6837238562091503,
+        "height": 0.011445707070707023,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.586405303030303,
+        "width": 0.15529575163398696,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.1 The baseline: The Leitner system",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The selection process is performed thus: ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.2939346405228758,
+        "top": 0.6037020202020202,
+        "width": 0.24579901960784306,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.1 The baseline: The Leitner system",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "More precisely, the algorithm adapts myopic sampling thus: using a myopic planner with a restricted number of items to introduce, our technique evaluates whether presenting the chosen item is compatible with memorizing the set containing all those previously seen by the learner. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.2661683006535948,
+        "top": 0.15585227272727273,
+        "width": 0.5538251633986928,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.17314898989898989,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.19044444444444444,
+        "width": 0.42380882352941185,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "4 IMPLEMENTATION 4.2 The planner: Reward and planning algorithms",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Also, to demonstrate the influence of the inference process on the results (including any interference exhibited), we contrasted two degrees of knowledge held by the psychologist: an 7",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.43355392156862743,
+        "top": 0.795195707070707,
+        "width": 0.3864509803921569,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.8124924242424243,
+        "width": 0.6999967320261439,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.467218954248366,
+        "top": 0.8307196969696969,
+        "width": 0.005299019607843125,
+        "height": 0.008805555555555622,
+        "page": 6
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.2 Methods",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Note that the bounds for the forgetting rate were within the limits of what we could observe in the user study (even if unlikely) for the time of around one iteration (with  = 0 . 025, the probability of recall falling under 0 . 90 in four seconds) and around one week (with  = 2e  07). ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.21131045751633987,
+        "top": 0.3708194444444445,
+        "width": 0.6690718954248367,
+        "height": 0.011320707070706981,
+        "page": 7
+      },
+      {
+        "left": 0.17956209150326796,
+        "top": 0.3881161616161616,
+        "width": 0.7007173202614378,
+        "height": 0.013324494949494947,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4054128787878788,
+        "width": 0.2886339869281046,
+        "height": 0.013324494949494947,
+        "page": 7
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.2 Methods",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Each question consisted of the presentation of a kanji and six possible answers (note that the six-responses setting corresponds to not too high a probability of randomly selecting the correct answer while still not overloading the interface).",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.14723692810457514,
+        "top": 0.4647828282828283,
+        "width": 0.6727630718954248,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.4820782828282828,
+        "width": 0.6999918300653596,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.499375,
+        "width": 0.06018627450980392,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "6 THE USER STUDY 6.1 Methods",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "From our current knowledge, we attribute this finding to the predictive model in our framework, because the results with artificial learners were conclusive while the ones for humans were not. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.39206699346405227,
+        "top": 0.6557171717171717,
+        "width": 0.4279281045751634,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6730138888888889,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6903093434343435,
+        "width": 0.022714052287581707,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "7 DISCUSSION AND CONCLUSIONS",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Moreover, any errors in inference are bound to be compounded in planning, and this could explain why the myopic planner maintained its performance. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.1461470588235294,
+        "top": 0.6903093434343435,
+        "width": 0.6738480392156863,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7076060606060606,
+        "width": 0.21552124183006538,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "7 DISCUSSION AND CONCLUSIONS",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "For instance, it may be possible to include elements such as additional cognitive aspects of memorization, among them subtler ones (such as the shape of the forgetting curve [9, 21] and modeling the spacing effect separately [5, 24]). ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.2895980392156863,
+        "top": 0.776790404040404,
+        "width": 0.5303970588235294,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7940871212121212,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.8113838383838383,
+        "width": 0.14376143790849671,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "7 DISCUSSION AND CONCLUSIONS",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Among other factors for possible consideration are the influence of words similarity and/or of",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.2672516339869281,
+        "top": 0.8113838383838383,
+        "width": 0.5527532679738563,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "7 DISCUSSION AND CONCLUSIONS",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Also, extensions are possible for addressing the nature or type of various teaching objectives: focusing on particular classes of words, paying attention to exam dates, attention to quality over quantity, etc. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.7106454248366013,
+        "top": 0.15585227272727273,
+        "width": 0.169346405228758,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.17314898989898989,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.19044444444444444,
+        "width": 0.31705718954248363,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": "7 DISCUSSION AND CONCLUSIONS",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "In this paper, we address the problem of the teacher, which is to pick item   A that will help the learner to progress.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.24456862745098037,
+        "top": 0.41934469696969695,
+        "width": 0.6354297385620915,
+        "height": 0.013041666666666674,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4366414141414141,
+        "width": 0.05417973856209149,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 INDIVIDUALIZED MODEL-BASED PLANNING 3.1 General characterization of the problem",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The planner, in turn, is endowed with a definition of learning that takes the form of the reward function  and is in charge of, for each time point, selecting the optimal item to present while accounting for the future (see Figure 1).",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.6986470588235294,
+        "top": 0.3677310606060606,
+        "width": 0.12296241830065358,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.3850277777777778,
+        "width": 0.700001633986928,
+        "height": 0.011445707070707078,
+        "page": 4
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.4023232323232323,
+        "width": 0.534936274509804,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "3 INDIVIDUALIZED MODEL-BASED PLANNING 3.2 POMDP formulation",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "These observations highlight the importance of developing more robust planning methods in future work.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.3391846405228758,
+        "top": 0.7076060606060606,
+        "width": 0.4808071895424837,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7249027777777778,
+        "width": 0.1451470588235294,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "7 DISCUSSION AND CONCLUSIONS",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "As presented above, an implementation of this framework with a simple memory model showed favorable results; hence, it warrants further research. ",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.27622549019607845,
+        "top": 0.5000505050505051,
+        "width": 0.5437679738562092,
+        "height": 0.011320707070706981,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.5173472222222222,
+        "width": 0.3589640522875817,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "7 DISCUSSION AND CONCLUSIONS",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "More precisely, the algorithm adapts myopic sampling thus: using a myopic planner with a restricted number of items to introduce, our technique evaluates whether presenting the chosen item is compatible with memorizing the set containing all those previously seen by the learner. ",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.2661683006535948,
+        "top": 0.15585227272727273,
+        "width": 0.5538251633986928,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.17314898989898989,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.19044444444444444,
+        "width": 0.42380882352941185,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "4 IMPLEMENTATION 4.2 The planner: Reward and planning algorithms",
+    "prob": 0.694015383720398,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "For each user, the model-based planning system used the ISEF memory model, but the planning was based either on a myopic sampling algorithm or on a conservative-sampling algorithm. ",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.48969281045751634,
+        "top": 0.378300505050505,
+        "width": 0.3303055555555555,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.3955972222222222,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.41289393939393937,
+        "width": 0.06076307189542483,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "6 THE USER STUDY 6.1 Methods",
+    "prob": 0.5628032088279724,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We used a mixed experimental design. ",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.5527205882352941,
+        "top": 0.34370833333333334,
+        "width": 0.2339477124183006,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "6 THE USER STUDY 6.1 Methods",
+    "prob": 0.4927756190299988,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Unlike our method, these two models nonetheless assume that the best-fitting parameter values are common to the entire population, and the optimization is done offline.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.30230392156862745,
+        "top": 0.7120833333333334,
+        "width": 0.5179787581699347,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.11963562091503267,
+        "top": 0.7293800505050505,
+        "width": 0.48368790849673204,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Model-free and model-based learning",
+    "prob": 0.4833090603351593,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": ",   1 } and we repeat the process.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.5915816993464053,
+        "top": 0.27495328282828285,
+        "width": 0.20525490196078433,
+        "height": 0.015013888888888882,
+        "page": 6
+      }
+    ],
+    "section": "",
+    "prob": 0.44868138432502747,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "A simple learning objective for the teacher is to maximize the number of items learned in the course of the teaching process. ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.4382630718954248,
+        "top": 0.4418623737373737,
+        "width": 0.4417287581699346,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4591590909090909,
+        "width": 0.3029330065359477,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "4 IMPLEMENTATION 4.2 The planner: Reward and planning algorithms",
+    "prob": 0.8755188584327698,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The objective of the teacher is to maximize this reward, which depends on the actual memorization by the learner.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.680985294117647,
+        "top": 0.5923068181818182,
+        "width": 0.19900816993464066,
+        "height": 0.011320707070706981,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6096035353535353,
+        "width": 0.4841862745098039,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 INDIVIDUALIZED MODEL-BASED PLANNING 3.1 General characterization of the problem",
+    "prob": 0.8602877259254456,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Aiming to increase the learners knowledge, the teacher sets learning objectives. ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.5750113636363636,
+        "width": 0.48110620915032687,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 INDIVIDUALIZED MODEL-BASED PLANNING 3.1 General characterization of the problem",
+    "prob": 0.8251826763153076,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "One of the central challenges for research on intelligent user interfaces is to identify algorithmic principles that can pick the best interventions for reliably improving human learning toward stated objectives in light of realistically obtainable data on the user. ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.18000163398692812,
+        "top": 0.2764002525252525,
+        "width": 0.7000049019607841,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.2936969696969697,
+        "width": 0.7003807189542484,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.31099242424242424,
+        "width": 0.16862745098039209,
+        "height": 0.011320707070707037,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": 0.7996655702590942,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "In this paper, we address the problem of the teacher, which is to pick item   A that will help the learner to progress.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.24456862745098037,
+        "top": 0.41934469696969695,
+        "width": 0.6354297385620915,
+        "height": 0.013041666666666674,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4366414141414141,
+        "width": 0.05417973856209149,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 INDIVIDUALIZED MODEL-BASED PLANNING 3.1 General characterization of the problem",
+    "prob": 0.7790708541870117,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In the non-item-specific condition with an omniscient psychologist (see Figure 2), the simplest scenario under our framework, the number of items learned does not differ between the myopic (M) and Leitner (L) teachers (  = 5650 . 0,  = 0 . 110,   = 0 . 221,  = 100  2), while the conservative-sampling (CS) teacher significantly outperforms the Leitner one (  = 8539 . 0,  < 0 . 001,   < 0 . 001,  = 100  2). ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6042045454545454,
+        "width": 0.7002728758169934,
+        "height": 0.013935606060606176,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6215012626262626,
+        "width": 0.701609477124183,
+        "height": 0.013324494949494947,
+        "page": 8
+      },
+      {
+        "left": 0.11970751633986927,
+        "top": 0.6387967171717172,
+        "width": 0.7002892156862746,
+        "height": 0.013324494949494947,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6560934343434344,
+        "width": 0.389343137254902,
+        "height": 0.013324494949494947,
+        "page": 8
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.3 Results",
+    "prob": 0.8042929172515869,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "The learned-to-seen ratio is significantly lower with the myopic and Leitner teachers (  = 0,  < 0 . 001,   < 0 . 001,  = 100  2), while it is higher for the conservative-sampling teacher (  = 10 , 000,  < 0 . 001,   < 0 . 001,  = 100  2).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.710717320261438,
+        "top": 0.690671717171717,
+        "width": 0.16928594771241823,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7079684343434344,
+        "width": 0.7002696078431373,
+        "height": 0.013324494949494947,
+        "page": 9
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7252638888888889,
+        "width": 0.5303872549019607,
+        "height": 0.013324494949494947,
+        "page": 9
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.3 Results",
+    "prob": 0.7726745009422302,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "In contrast against the corresponding results obtained with artificial learners, no significant difference was visible between the CS and the Leitner teacher (  = 434 . 5,  = 0 . 828,   = 1 . 655,  = 29  2). ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.7393856209150327,
+        "top": 0.6895416666666666,
+        "width": 0.14060784313725505,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7068371212121213,
+        "width": 0.6999918300653595,
+        "height": 0.011320707070706981,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7241338383838384,
+        "width": 0.36234640522875805,
+        "height": 0.013324494949494947,
+        "page": 11
+      }
+    ],
+    "section": "6 THE USER STUDY 6.2 Results",
+    "prob": 0.7631032466888428,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "From our current knowledge, we attribute this finding to the predictive model in our framework, because the results with artificial learners were conclusive while the ones for humans were not. ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.39206699346405227,
+        "top": 0.6557171717171717,
+        "width": 0.4279281045751634,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6730138888888889,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6903093434343435,
+        "width": 0.022714052287581707,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "7 DISCUSSION AND CONCLUSIONS",
+    "prob": 0.7513463497161865,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "We evaluated statistical significance via a non-parametric test (Mann-Whitney  , with significance threshold  = 0 . 05). ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.3539673202614379,
+        "top": 0.7377474747474748,
+        "width": 0.5260375816993463,
+        "height": 0.011445707070706912,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7550441919191919,
+        "width": 0.18906209150326794,
+        "height": 0.013324494949494947,
+        "page": 7
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.2 Methods",
+    "prob": 0.7338531613349915,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  }
+]
