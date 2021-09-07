@@ -12,13 +12,13 @@ import {
   isTerm,
   Paper,
   RhetoricUnit,
-  Symbol
+  Symbol,
 } from "./api/types";
 import Control from "./components/control/Control";
 import EntityCreationCanvas from "./components/control/EntityCreationCanvas";
 import EntityCreationToolbar, {
   AreaSelectionMethod,
-  createCreateEntityDataWithBoxes
+  createCreateEntityDataWithBoxes,
 } from "./components/control/EntityCreationToolbar";
 import MainControlPanel from "./components/control/MainControlPanel";
 import TextSelectionMenu from "./components/control/TextSelectionMenu";
@@ -44,7 +44,7 @@ import {
   ConfigurableSetting,
   CONFIGURABLE_SETTINGS,
   getSettings,
-  GlossStyle
+  GlossStyle,
 } from "./settings";
 import {
   Entities,
@@ -52,13 +52,13 @@ import {
   Pages,
   PaperId,
   State,
-  SymbolFilters
+  SymbolFilters,
 } from "./state";
 import "./style/index.less";
 import {
   DocumentLoadedEvent,
   PageRenderedEvent,
-  PDFViewerApplication
+  PDFViewerApplication,
 } from "./types/pdfjs-viewer";
 import * as stateUtils from "./utils/state";
 import * as uiUtils from "./utils/ui";
@@ -842,6 +842,25 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     const discourseToColorMap: {
       [label: string]: string;
     } = this.getDiscourseToColorMap();
+
+    // 1. Remove classifications for "Future Work" (for now)
+    // 2. Remove classifications that are not in the expected section, except for "Method", which does not have an expected section (yet).
+    // 3. Remove certain classifications that are not an "author statement" to improve highlight precision.
+    data = data
+      .filter((r: RhetoricUnit) => !(r.label === "Future Work"))
+      .filter(
+        (r: RhetoricUnit) => r.label === "Method" || r.is_in_expected_section
+      )
+      .filter((r: RhetoricUnit) => {
+        if (
+          ["Objective", "Contribution", "Result", "Method"].includes(r.label)
+        ) {
+          return r.is_author_statement;
+        } else {
+          return true;
+        }
+      });
+
     let discourseObjs = data.map((r: RhetoricUnit, index) => ({
       id: index.toString(),
       entity: r,
@@ -907,9 +926,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     let discourseObjs: DiscourseObj[] = [];
     if (this.props.paperId !== undefined) {
       paperData = Object(data)[this.props.paperId!.id];
-      paperData = paperData.filter(
-        (x: RhetoricUnit) => x.label === "Method" || x.is_in_expected_section
-      );
       discourseObjs = this.makeDiscourseObjects(paperData);
     }
 
