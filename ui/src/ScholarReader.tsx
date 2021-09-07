@@ -37,7 +37,7 @@ import FAQBar from "./components/questions/FAQBar";
 import FindBar, { FindQuery } from "./components/search/FindBar";
 //added
 // import * as testEntities from './data/entities.json';
-import * as testEntities from "./data/auto_PAWLS_SPUI_annotations.json";
+import * as testEntities from "./data/auto_PAWLS_SPUI_annotations_ldh.json";
 import logger from "./logging";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
@@ -832,7 +832,13 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       return false;
     }
 
-    const dest = entities.byId[id].attributes.bounding_boxes[0];
+    // if there are multiple bouding boxes, pick the last one 
+    const entity = entities.byId[id]
+    let dest = entity.attributes.bounding_boxes[0];
+    if (entity.attributes.bounding_boxes.length > 1){
+      dest = entity.attributes.bounding_boxes[entity.attributes.bounding_boxes.length - 1];
+    } 
+    
 
     /*
      * Use the size of the first loaded page to map from ratio-based entity
@@ -864,7 +870,21 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     /*
      * added: also select the entity
      */
-    this.selectEntity(id);
+    
+    const annotationID =  `entity-${id}-annotation`;
+    const annotationSpanIDs = entity.attributes.bounding_boxes
+      .map((box, i) => {
+        const pageNumber = box.page;
+        return `${annotationID}-page-${pageNumber}-span-${i}`;
+      });
+
+    if (entity.attributes.bounding_boxes.length > 1){
+      this.selectEntityAnnotation(id, annotationID, annotationSpanIDs[annotationSpanIDs.length - 1])
+    } else {
+      this.selectEntityAnnotation(id, annotationID, annotationSpanIDs[0])
+    }
+    
+    
 
     return true;
   };

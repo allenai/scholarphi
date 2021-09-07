@@ -132,19 +132,28 @@ export class Annotation extends React.PureComponent<Props> {
             const MAXIMUM_ANNOTATION_HEIGHT = 30;
             return (
               (b.height < MAXIMUM_ANNOTATION_HEIGHT ||
-                this.props.source === "other") &&
-              b.page === uiUtils.getPageNumber(this.props.pageView)
+                this.props.source === "other") && 
+               (b.page === uiUtils.getPageNumber(this.props.pageView))
             );
           })
           .map((box, i) => {
-            const spanId = `${this.props.id}-span-${i}`;
+            const pageNumber = uiUtils.getPageNumber(this.props.pageView);
+
+            // const spanId = `${this.props.id}-span-${i}`;
+            const spanId = `${this.props.id}-page-${pageNumber}-span-${i}`;
+
+            
+
             let isSelected = false;
             if (this.props.selected) {
               isSelected =
                 this.props.selectedSpanIds === null ||
                 this.props.selectedSpanIds.length === 0
-                  ? i === 0
+                  ? i === 0 
                   : this.props.selectedSpanIds.indexOf(spanId) !== -1;
+              if (this.props.boundingBoxes.length > 1){
+                isSelected = this.props.selectedSpanIds === null || this.props.selectedSpanIds.indexOf(spanId) !== -1
+              }
             }
             return (
               <AnnotationSpan

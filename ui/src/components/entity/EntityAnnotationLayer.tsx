@@ -199,7 +199,8 @@ class EntityAnnotationLayer extends React.Component<Props> {
            * Unpack entity data.
            */
           const entity = entities.byId[entityId];
-          const annotationId = `entity-${entityId}-page-${pageNumber}-annotation`;
+          // const annotationId = `entity-${entityId}-page-${pageNumber}-annotation`;
+          const annotationId = `entity-${entityId}-annotation`;
           const boundingBoxes = entity.attributes.bounding_boxes.filter(
             (box) => box.page === pageNumber
           );

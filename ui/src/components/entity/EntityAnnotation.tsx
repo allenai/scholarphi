@@ -42,6 +42,7 @@ class EntityAnnotation extends React.PureComponent<Props> {
   }
 
   onClick(event: React.MouseEvent<HTMLDivElement>) {
+    console.log(this.props.entity.id);
     if (this.props.onClick !== undefined) {
       this.props.onClick(event, this.props.entity);
     }

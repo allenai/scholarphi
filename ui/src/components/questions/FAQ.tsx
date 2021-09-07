@@ -127,7 +127,7 @@ class FAQ extends React.PureComponent<Props, State> {
       answerEntities !== null && answerEntities.length > 0
         ? answerEntities.map((a) => {
             let elementId = a
-              ? (`entity-${a.id}-page-${a.attributes.bounding_boxes[0].page}-annotation-span-0` as string)
+              ? (`entity-${a.id}-annotation-page-${a.attributes.bounding_boxes[0].page}-span-0` as string)
               : null;
             return elementId ? document.getElementById(elementId) : null;
           })
@@ -163,6 +163,8 @@ class FAQ extends React.PureComponent<Props, State> {
     }
 
     const FAQClass = this.props.isSelected ? "faq-selected" : "faq";
+
+    console.log(FAQClass);
 
     // const FAQClassHovered = this.props.isHovered ? "faq-hovered" : "faq";
 
