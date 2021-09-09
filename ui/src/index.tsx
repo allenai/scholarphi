@@ -5,7 +5,7 @@ import ScholarReader from "./ScholarReader";
 import { extractArxivId } from './utils/ui';
 import { PaperId } from "./state";
 import { PDFViewerApplication } from "./types/pdfjs-viewer";
-import * as presetOrders from "./data/presets.json";
+// import * as presetOrders from "./data/presets.json";
 
 
 // interface Ordering {
