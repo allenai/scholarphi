@@ -46,6 +46,7 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
               top: ScrollbarMarkup.scrollbarOffsetTop,
               pointerEvents: "none",
               right: 0,
+              overflowY: "hidden",
             }}
           >
             {discourseObjs.map((d, i) => (
