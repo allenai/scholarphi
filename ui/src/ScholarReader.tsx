@@ -32,6 +32,7 @@ import AppOverlay from "./components/overlay/AppOverlay";
 import PageOverlay from "./components/overlay/PageOverlay";
 import ViewerOverlay from "./components/overlay/ViewerOverlay";
 import PdfjsBrandbar from "./components/pdfjs/PdfjsBrandbar";
+import PdfjsToolbar from "./components/pdfjs/PdfjsToolbar";
 import DefinitionPreview from "./components/preview/DefinitionPreview";
 import PrimerPage from "./components/primer/PrimerPage";
 import ScrollbarMarkup from "./components/scrollbar/ScrollbarMarkup";
@@ -123,6 +124,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       propagateEntityEdits: true,
 
       skimOpacity: 0.5,
+      showSkimmingAnnotations: true,
 
       ...settings,
     };
@@ -137,6 +139,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   toggleAnnotationHints = (): void => {
     this.setState((prevState) => ({
       annotationHintsEnabled: !prevState.annotationHintsEnabled,
+    }));
+  };
+
+  toggleSkimmingAnnotations = (): void => {
+    this.setState((prevState) => ({
+      showSkimmingAnnotations: !prevState.showSkimmingAnnotations,
     }));
   };
 
@@ -852,9 +860,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         (r: RhetoricUnit) => r.label === "Method" || r.is_in_expected_section
       )
       .filter((r: RhetoricUnit) => {
-        if (
-          ["Objective", "Contribution", "Result", "Method"].includes(r.label)
-        ) {
+        if (["Objective", "Contribution", "Result"].includes(r.label)) {
           return r.is_author_statement;
         } else {
           return true;
@@ -947,18 +953,18 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               handleCloseSnackbar={this.closeSnackbar}
               handleCloseDrawer={this.closeDrawer}
             />
-            {/* <PdfjsToolbar>
+            <PdfjsToolbar>
               <button
-                onClick={this.toggleAnnotationHints}
+                onClick={this.toggleSkimmingAnnotations}
                 className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
               >
                 <span>
-                  {this.state.annotationHintsEnabled
-                    ? "Hide Underlines"
-                    : "Show Underlines"}
+                  {this.state.showSkimmingAnnotations
+                    ? "Deactivate skimming"
+                    : "Activate skimming"}
                 </span>
               </button>
-            </PdfjsToolbar> */}
+            </PdfjsToolbar>
             <PdfjsBrandbar />
             <ViewerOverlay
               pdfViewer={this.state.pdfViewer}
@@ -1077,6 +1083,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               ) : null}
               {this.state.pdfViewerApplication &&
                 this.state.pages !== null &&
+                this.state.showSkimmingAnnotations &&
                 discourseObjs.length > 0 && (
                   <ScrollbarMarkup
                     numPages={
@@ -1283,6 +1290,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       )}
 
                     {this.props.paperId !== undefined &&
+                      this.state.showSkimmingAnnotations &&
                       discourseObjs.length > 0 && (
                         <DiscourseTagMask
                           pageView={pageView}
