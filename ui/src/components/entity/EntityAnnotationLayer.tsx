@@ -47,6 +47,8 @@ interface Props {
   glossEvaluationEnabled: boolean;
   citationAnnotationsEnabled: boolean;
   termAnnotationsEnabled: boolean;
+  showHeaders:boolean;
+  showAnswers:boolean;
   symbolUnderlineMethod: SymbolUnderlineMethod;
   definitionsInSymbolGloss: boolean;
   equationDiagramsEnabled: boolean;
@@ -495,7 +497,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
                 handleSelect={this.props.handleSelectEntityAnnotation}
               />
             );
-          } else if (isAnswerSentence(entity)) {
+          } else if (isAnswerSentence(entity) && this.props.showAnswers) {
             // figure out if this answer sentence should be highlighted
             const selectedFAQ = this.props.selectedFAQID;
             const hoveredFAQ = this.props.FAQHoveredID;
@@ -506,7 +508,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
                 : false;
             const annotationClass = shouldHighlight
               ? "answer-sentence-annotation-selected"
-              : "answer-sentence-annotation-selected";
+              : "answer-sentence-annotation";
             return (
               <EntityAnnotation
                 key={annotationId}
@@ -534,7 +536,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
                 handleSelect={handleSelectEntityAnnotation}
               />
             );
-          } else if (isSectionHeader(entity)) {
+          } else if (isSectionHeader(entity) && this.props.showHeaders) {
             return (
               <div className="section-header-annotation">
                 <SectionHeaderImage entity={entity} pageView={pageView} />

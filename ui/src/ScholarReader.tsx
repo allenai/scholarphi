@@ -36,8 +36,8 @@ import PrimerPage from "./components/primer/PrimerPage";
 import FAQBar from "./components/questions/FAQBar";
 import FindBar, { FindQuery } from "./components/search/FindBar";
 //added
-// import * as testEntities from './data/entities.json';
-import * as testEntities from "./data/auto_PAWLS_SPUI_annotations_ldh.json";
+import * as EntitiesLDH from "./data/auto_PAWLS_SPUI_annotations_ldh.json";
+import * as EntitiesSLE from "./data/auto_PAWLS_SPUI_annotations.json";
 import logger from "./logging";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
@@ -81,6 +81,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     }
     if (props.paperId) {
       loggingContext.paperId = props.paperId;
+      let paper_name = props.paperId.id.split('\/');
+      console.log(paper_name[paper_name.length-1])
     }
     logger.setContext(loggingContext);
 
@@ -759,8 +761,19 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
       // trick the typescript compiler, which gets the type of testEntities
       // wrong for some reason.
-      const entitiesFromJson = testEntities as any as { default: Entity[] };
-      const entities = entitiesFromJson.default;
+
+      // make sure you take the correct entities for the paper 
+
+      const paperNameSplit = this.props.paperId?.id.split('\/');
+      const paperName =  paperNameSplit?paperNameSplit[paperNameSplit.length-1] : null;
+      let entitiesFromJson = null;
+
+      if (paperName === "Lupus_Peptides.pdf"){
+        entitiesFromJson = EntitiesSLE as any as { default: Entity[] };
+      } else if (paperName === "LDH_surgery.pdf") {
+        entitiesFromJson = EntitiesLDH as any as { default: Entity[] };
+      }
+      const entities = entitiesFromJson? entitiesFromJson.default : [];
 
       // const entities = await api.getDedupedEntities(this.props.paperId.id, true);
       this.setState({
@@ -768,8 +781,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       });
 
       // // added
-      // entities = testEntities;
-      console.log(testEntities); // added
 
       const citationS2Ids = entities
         .filter(isCitation)
@@ -815,7 +826,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
      * In a past version, these offsets were based roughly off those in the pdf.js "find" functionality:
      * https://github.com/mozilla/pdf.js/blob/16ae7c6960c1296370c1600312f283a68e82b137/web/pdf_find_controller.js#L28-L29
      */
-    const SCROLL_OFFSET_X = -200;
+    const SCROLL_OFFSET_X = 0;
     const SCROLL_OFFSET_Y = +100;
 
     const { pdfViewerApplication, pdfViewer, pages, entities } = this.state;
@@ -838,7 +849,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     if (entity.attributes.bounding_boxes.length > 1){
       dest = entity.attributes.bounding_boxes[entity.attributes.bounding_boxes.length - 1];
     } 
-    
 
     /*
      * Use the size of the first loaded page to map from ratio-based entity
@@ -870,12 +880,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     /*
      * added: also select the entity
      */
-    
     const annotationID =  `entity-${id}-annotation`;
     const annotationSpanIDs = entity.attributes.bounding_boxes
       .map((box, i) => {
         const pageNumber = box.page;
-        return `${annotationID}-page-${pageNumber}-span-${i}`;
+        return `${annotationID}-page-${pageNumber}-span-0`;
       });
 
     if (entity.attributes.bounding_boxes.length > 1){
@@ -883,8 +892,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     } else {
       this.selectEntityAnnotation(id, annotationID, annotationSpanIDs[0])
     }
-    
-    
 
     return true;
   };
@@ -1259,6 +1266,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                           this.state.citationGlossesEnabled
                         }
                         termAnnotationsEnabled={this.state.termGlossesEnabled}
+                        showHeaders={this.state.SectionHeadersEnabled}
+                        showAnswers={this.state.FAQsEnabled}
                         symbolUnderlineMethod={this.state.symbolUnderlineMethod}
                         definitionsInSymbolGloss={
                           this.state.definitionsInSymbolGloss

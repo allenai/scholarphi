@@ -5,6 +5,19 @@ import ScholarReader from "./ScholarReader";
 import { extractArxivId } from './utils/ui';
 import { PaperId } from "./state";
 import { PDFViewerApplication } from "./types/pdfjs-viewer";
+import * as presetOrders from "./data/presets.json";
+
+
+// interface Ordering {
+//   id: {
+//     paper?: string;
+//     preset?: string;
+//     user?: string;
+//   }
+// }
+
+// let order = presetOrders as any as Ordering;
+
 require("mathjax-full/es5/core");
 
 /**
@@ -23,6 +36,7 @@ declare global {
 }
 
 const params = queryString.parse(window.location.search);
+console.log(params);
 let url: string | undefined = undefined;
 if (params.file instanceof Array) {
   url = params.file[0];
@@ -47,6 +61,12 @@ if (params.preset instanceof Array) {
 } else if (typeof params.preset === "string") {
   presets = [params.preset];
 }
+
+// let presetsOrderKey: string | undefined = undefined;
+// if (typeof params.presetOrdersKey === "string") {
+//   order = presetOrders[params.presetOrdersKey];
+//   presets = [params.preset];
+// }
 
 if (params.annotateCitations !== undefined) {
   const element = document.createElement("style");
@@ -92,6 +112,8 @@ let context: any = {};
 if (typeof params.p === "string") {
   context.userId = params.p;
 }
+
+console.log(paperId, presets, context);
 
 ReactDOM.render(
   <ScholarReader paperId={paperId} presets={presets} context={context} />,

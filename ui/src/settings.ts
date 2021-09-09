@@ -40,6 +40,10 @@ export interface Settings {
    * Show FAQs in sidebar
    */
    FAQsEnabled: boolean;
+   /**
+   * Show Section Headers in sidebar
+   */
+  SectionHeadersEnabled: boolean;
   /**
    * Show glosses for citations containing paper summary information.
    */
@@ -138,6 +142,33 @@ const PRESETS: Preset[] = [
     symbolUnderlineMethod: "top-level-symbols",
     equationDiagramsEnabled: false,
   },
+  {
+    key: "definitions",
+    FAQsEnabled: false,
+    SectionHeadersEnabled: false,
+  },
+  {
+    key: "pdf",
+    annotationInteractionEnabled: false,
+    annotationHintsEnabled: false,
+    glossesEnabled: false,
+    FAQsEnabled: false,
+    SectionHeadersEnabled: false,
+    initialFocus: null,
+    citationGlossesEnabled: false,
+    definitionsInSymbolGloss: false,
+    termGlossesEnabled: false, 
+    symbolSearchEnabled: false,
+    declutterEnabled: false,
+    definitionPreviewEnabled: false, 
+    equationDiagramsEnabled: false, 
+    useDefinitionsForDiagramLabels: false,
+    entityCreationEnabled: false,
+    entityEditingEnabled: false,
+    sentenceTexCopyOnOptionClickEnabled: false,
+    glossEvaluationEnabled: false,
+
+  },
 ];
 
 /**
@@ -152,6 +183,7 @@ export function getSettings(presets?: string[]) {
     annotationHintsEnabled: true,
     glossesEnabled: true,
     FAQsEnabled: true,
+    SectionHeadersEnabled: true,
     initialFocus: null,
     glossStyle: "tooltip", // from "tooltip"
     textSelectionMenuEnabled: false,
@@ -193,6 +225,7 @@ export function getPDFReaderOnlySettings(presets?: string[]) {
     annotationHintsEnabled: false,
     glossesEnabled: false,
     FAQsEnabled: false,
+    SectionHeadersEnabled: false,
     initialFocus: null,
     glossStyle: "tooltip", // from "tooltip"
     textSelectionMenuEnabled: false,
