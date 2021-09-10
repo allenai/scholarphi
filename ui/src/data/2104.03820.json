@@ -1,0 +1,4602 @@
+[
+  {
+    "text": "Our work makes three important contributions:",
+    "label": "Contribution",
+    "bboxes": [
+      {
+        "left": 0.4656960784313725,
+        "top": 0.5363699494949495,
+        "width": 0.28579575163398696,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "However, code is unique compared to other kinds of natural languages: code is much more brittle, and swapping even a few characters or tokens can completely change its meaning or effect. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.7353856209150327,
+        "top": 0.13855555555555557,
+        "width": 0.14461764705882363,
+        "height": 0.011320707070707065,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.15585227272727273,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.17314898989898989,
+        "width": 0.27594117647058813,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "[26] discovered that once people observed an automated system make errors, their distrust in the system increased unless an explanation was provided regarding why the system might make an error; however, these explanations also increased trust and reliance on the system even when unwarranted, signaling the importance and difficulty of providing explanations that help people appropriately calibrate their trust. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.6673627450980392,
+        "top": 0.50610101010101,
+        "width": 0.1526339869281047,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.5233977272727273,
+        "width": 0.7000032679738563,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.5406931818181818,
+        "width": 0.6999983660130719,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.557989898989899,
+        "width": 0.6999918300653596,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.5752866161616161,
+        "width": 0.25388398692810465,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Imperfect AI",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Our work examines a different aspect of imperfect AI by focusing on a co-creation scenario that has a lower tolerance for error (e.g. code ought to compile and be free of errors). ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.5036111111111111,
+        "top": 0.6271755050505051,
+        "width": 0.31638562091503275,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6444709595959596,
+        "width": 0.6999918300653595,
+        "height": 0.011320707070706981,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6617676767676768,
+        "width": 0.042686274509803904,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Imperfect AI",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "We created a series of three progressively-enhancing UX variants within the scenario that illustrated different ways that a software engineer might interact with an NMT model to translate source code from one language to another.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.5315718954248366,
+        "top": 0.775455808080808,
+        "width": 0.34891339869281035,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.17963562091503268,
+        "top": 0.7927525252525253,
+        "width": 0.700357843137255,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.8100492424242424,
+        "width": 0.3260277777777777,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 DESIGN SCENARIO",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Although the translated code was syntactically correct, there was a logic error in the translation of a loop that resulted in wrong values being returned. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.5450359477124184,
+        "top": 0.31151893939393943,
+        "width": 0.2753431372549019,
+        "height": 0.011320707070707037,
+        "page": 4
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.32881439393939393,
+        "width": 0.6087058823529412,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "3 DESIGN SCENARIO",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "However, participants ultimately felt that understanding how the NMT model worked was not a prerequisite for being able to put that model to productive use. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.6855424836601307,
+        "top": 0.6149835858585858,
+        "width": 0.13445098039215686,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6322790404040404,
+        "width": 0.6999918300653595,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6495757575757577,
+        "width": 0.14551960784313722,
+        "height": 0.011320707070706981,
+        "page": 6
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P3 expressed the same sentiment, I guess Im a little curious how it works, but maybe I dont wanna know [how it really works]. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.2719477124183006,
+        "top": 0.6668712121212121,
+        "width": 0.5480571895424837,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.11945915032679738,
+        "top": 0.6841679292929292,
+        "width": 0.22023039215686274,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "However, the",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.7418039215686274,
+        "top": 0.8127979797979797,
+        "width": 0.07818790849673207,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P7 described how one of the alternatives more explicitly demonstrated the codes functionality: The first [option] is more Pythonic because its taking advantage of the built-in functionality of an array... however this [second option] is far more explicit... this is whats happening behind the scenes. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.18000163398692812,
+        "top": 0.582290404040404,
+        "width": 0.6999967320261438,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.5995871212121212,
+        "width": 0.6999967320261437,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6168825757575758,
+        "width": 0.3927761437908497,
+        "height": 0.011320707070706981,
+        "page": 7
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P4 also gained insight by comparing two alternate translations: This is clearly... toggling between those two styles of iteration... its interesting to see what the AI is... thinking between these two different programming constructs.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.5764411764705882,
+        "top": 0.6168825757575758,
+        "width": 0.30356372549019606,
+        "height": 0.011320707070706981,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6341792929292929,
+        "width": 0.7022483660130718,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6514747474747474,
+        "width": 0.3796209150326797,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P3 expected that the translator would be able to define this def function signature line with the function name correct, but expressed confusion when the translator wasnt as confident as it could be. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.319202614379085,
+        "top": 0.3461111111111111,
+        "width": 0.5607924836601308,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.36340656565656565,
+        "width": 0.6217630718954248,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Thus, although participants generally said they dont care (P7) about knowing how the translation was produced, explanations of the models mechanics may be helpful for avoiding confusion caused by confidence discrepancies.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.17956209150326796,
+        "top": 0.513104797979798,
+        "width": 0.7020539215686273,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.5304015151515151,
+        "width": 0.6808611111111109,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "It would be different if the i as an index... lets see... is it used? Oh actually it is used... Now theres a mistake the code.. The statement d [ i ] = i, is wrong [but] the other [alternate translation] is correct. (P1)",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.15988398692810457,
+        "top": 0.5847146464646464,
+        "width": 0.620233660130719,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.17517973856209149,
+        "top": 0.602010101010101,
+        "width": 0.5580114379084968,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "5 RESULTS 5.2 Human-AI Patterns of Interaction",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Thus, although many participants expressed a willingness to accept imperfectly-translated code as a starting point, acceptance may depend on how many errors the translated code contains as well as the nature of those errors (e.g. if they are easy to spot and fix, or if they take attention away from the central problem). ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.725564393939394,
+        "width": 0.6853316993464054,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7428598484848485,
+        "width": 0.7000049019607842,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7601565656565656,
+        "width": 0.5177058823529412,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "5 RESULTS 5.3 Utility of Imperfect AI",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In some cases, although not an explicit part of the study, participants actually found the errors in the translation. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.15585227272727273,
+        "width": 0.6859738562091504,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "5 RESULTS 5.3 Utility of Imperfect AI",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "For example, P4 found a string mismatch: There is an actual functional difference here on line 21 of the Python code where theres an extra space inserted into that error string. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.18000163398692812,
+        "top": 0.17314898989898989,
+        "width": 0.6999950980392157,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.17945915032679738,
+        "top": 0.19044444444444444,
+        "width": 0.35301470588235295,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "5 RESULTS 5.3 Utility of Imperfect AI",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "As summarized by P6, If its egregiously wrong then no, Id rather do it myself. But as long as its giving me a head start of any sort, Ill take it. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.3435669934640523,
+        "top": 0.35728661616161617,
+        "width": 0.5364281045751634,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.3745833333333334,
+        "width": 0.3072499999999999,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "5 RESULTS 5.3 Utility of Imperfect AI",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "A lot of us in the software development field, we sometimes have the feeling that for a given problem set, we have to solve the entire problem. But, thats not necessarily true... if you can help someone do part of the task... maybe it will be more effective at smaller, less complex code fragments. Then, [as] you get feedback from users, you build into it more intelligence, then maybe it becomes more effective on larger, more complex pieces of code. (P3)",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.21988562091503266,
+        "top": 0.6361439393939394,
+        "width": 0.6218349673202614,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.21988562091503266,
+        "top": 0.653439393939394,
+        "width": 0.6202271241830066,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.21988562091503266,
+        "top": 0.6707361111111111,
+        "width": 0.620235294117647,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.21988562091503266,
+        "top": 0.6880328282828283,
+        "width": 0.6202320261437908,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.21988562091503266,
+        "top": 0.7053282828282829,
+        "width": 0.1111127450980392,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "5 RESULTS 5.3 Utility of Imperfect AI",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Translation could also help software engineers better understand codebases in languages with which they are less familiar: Ive got a bunch of engineers that know Python, but they dont know Java. So, it might be easier to delve in and spelunk through... auto gen[erated] Python code than it would be to go back and spelunk the original Java. (P4).",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.1362794117647059,
+        "top": 0.40408333333333335,
+        "width": 0.6837156862745097,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.4213800505050505,
+        "width": 0.6999983660130719,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.438675505050505,
+        "width": 0.6986323529411764,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Generating a whole slew of automated unit tests (P4) as well as more realistic test values (P3) ensures that the right hand side code not only runs and doesnt crash but produces expected output (P4). ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.5964709595959595,
+        "width": 0.6837173202614378,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6137676767676767,
+        "width": 0.5337369281045752,
+        "height": 0.011320707070707092,
+        "page": 11
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Many participants described how code translation could be used to take advantage of functionality defined in third party libraries, because the same libraries in Java dont exist in Python, or similar libraries exist but theyre not... syntactically the same. (P0). ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.17314898989898989,
+        "width": 0.6837238562091503,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.19044444444444444,
+        "width": 0.7022483660130718,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.20774116161616163,
+        "width": 0.16701960784313727,
+        "height": 0.011320707070707092,
+        "page": 11
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P10 described, If you had a library that you know was in another language and you want to use it, but they dont have it in your language, thats great. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.3506928104575163,
+        "top": 0.20774116161616163,
+        "width": 0.5293137254901961,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.2250366161616162,
+        "width": 0.3784575163398691,
+        "height": 0.011320707070707037,
+        "page": 11
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P3 discussed how he had to manage libraries for the same set of APIs across multiple languages: Were up to nine different languages now total and and each one seems to have its own, like, name capitalization conventions and things like that. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.5622549019607843,
+        "top": 0.2250366161616162,
+        "width": 0.3177385620915034,
+        "height": 0.011320707070707037,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.24233333333333332,
+        "width": 0.6999901960784313,
+        "height": 0.011320707070707065,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.2596300505050505,
+        "width": 0.44238725490196074,
+        "height": 0.011320707070707037,
+        "page": 11
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P8 described how the code translation process wasnt just about converting from one language to another, but also about identifying opportunities to leverage language-specific features to create more optimal code: The whole point of using the latest version is to tap into the new features... in JDK 8 they have lambdas... it is much faster. If it could do something like this I would use it like hell! ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.4910179738562091,
+        "top": 0.2942222222222222,
+        "width": 0.3889754901960785,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.31151893939393943,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707037,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.32881439393939393,
+        "width": 0.7003807189542482,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.3461111111111111,
+        "width": 0.5514640522875816,
+        "height": 0.011320707070707092,
+        "page": 11
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Although the system did allow for some subsequent actions by the human (e.g. hovering to see confidence scores or clicking to see alternate translations), our tool falls short of the tightly-coupled human-machine interactions envisioned by some of the informants in Seeber et al.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.3737614379084967,
+        "top": 0.19044444444444444,
+        "width": 0.44623366013071897,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.11956209150326796,
+        "top": 0.20774116161616163,
+        "width": 0.70043954248366,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.2250366161616162,
+        "width": 0.48959150326797396,
+        "height": 0.011320707070707037,
+        "page": 12
+      }
+    ],
+    "section": "6 DISCUSSION 6.1 Human-AI Partnerships",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "However, our system was solely driven by human initiative. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.19201633986928104,
+        "top": 0.2596300505050505,
+        "width": 0.3544820261437909,
+        "height": 0.011320707070707037,
+        "page": 12
+      }
+    ],
+    "section": "6 DISCUSSION 6.1 Human-AI Partnerships",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Future work is needed to investigate different kinds of interaction patterns, including different mixed-initiative patterns [43, 82], to understand their effect on a software engineers productivity and capability. ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.5501748366013072,
+        "top": 0.2596300505050505,
+        "width": 0.2698169934640522,
+        "height": 0.011320707070707037,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.27692550505050506,
+        "width": 0.6999901960784314,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.2942222222222222,
+        "width": 0.28084967320261434,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "6 DISCUSSION 6.1 Human-AI Partnerships",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "For example, we believe that there is a richer design space in which AI translations can be provided at a number of different granularities, from highly-automated, bulk translation of large codebases to highly-controlled, real-time translation of code as it is being written.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.4044983660130719,
+        "top": 0.2942222222222222,
+        "width": 0.4155,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.31151893939393943,
+        "width": 0.7000032679738563,
+        "height": 0.011320707070707037,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.32881439393939393,
+        "width": 0.4891813725490196,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "6 DISCUSSION 6.1 Human-AI Partnerships",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "However, more work is needed to understand how such visualizations and other explanatory methods impact peoples willingness to use generative models and their productivity in using them.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.7647222222222222,
+        "top": 0.6228510101010101,
+        "width": 0.05688725490196078,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6401477272727273,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070706981,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6574431818181818,
+        "width": 0.3733954248366013,
+        "height": 0.011320707070706981,
+        "page": 12
+      }
+    ],
+    "section": "6 DISCUSSION 6.2 Toward Explainable Generative AI",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Although the import of generative capabilities may seem to be about the production of an artifact itself, we found that they instead may also be a means rather than just an end . ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.734733660130719,
+        "top": 0.20774116161616163,
+        "width": 0.14526960784313725,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.2250366161616162,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707037,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.24233333333333332,
+        "width": 0.19047058823529414,
+        "height": 0.013969696969696993,
+        "page": 13
+      }
+    ],
+    "section": "6 DISCUSSION 6.3 Future Directions for Generative AI in Application Modernization",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Although we have discovered that our design scenario did demonstrate compelling user experiences, we caution that our results may not generalize to other domains or use cases beyond the code translation task we examined (e.g. using generative models for molecular discovery). ",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.3518071895424837,
+        "top": 0.4014583333333333,
+        "width": 0.5284705882352941,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4187550505050505,
+        "width": 0.7,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4360517676767677,
+        "width": 0.435392156862745,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": "7 LIMITATIONS",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Future work should explore how different patterns of interaction and initiative, as well as capabilities beyond code translation, can enable effective human-AI partnerships with generative models that produce better outcomes than what could be accomplished by either party alone.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.5499705882352941,
+        "top": 0.7681388888888888,
+        "width": 0.33002287581699363,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7854356060606061,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070706981,
+        "page": 13
+      },
+      {
+        "left": 0.17945915032679738,
+        "top": 0.8027323232323232,
+        "width": 0.6550016339869281,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": "8 CONCLUSION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Leveraging the naturalness hypothesis [2]  code is a form of human communication with similar statistical properties as natural languages ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.6600539215686274,
+        "top": 0.7613636363636364,
+        "width": 0.15994771241830075,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7786603535353535,
+        "width": 0.7016029411764706,
+        "height": 0.011320707070707092,
+        "page": 0
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "We address these questions by considering the use of an NMT model within the context of application modernization [27, 64, 72]. ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.3807032828282828,
+        "width": 0.6861993464052287,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.398,
+        "width": 0.11356862745098037,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "The question of how to design effective interactions between human and machine teammates is of great interest to the IUI community. ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.46508006535947716,
+        "top": 0.7568964646464647,
+        "width": 0.3549150326797385,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7741931818181818,
+        "width": 0.4423055555555556,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.3 Co-Creation with Generative AI",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "[81] recently outlined a set of research questions spanning many aspects of human-AI collaboration, such as how tasks should be allocated across both parties and how trust could be established with a machine teammate. ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.6422565359477124,
+        "top": 0.7741931818181818,
+        "width": 0.1777401960784315,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.791489898989899,
+        "width": 0.6999950980392158,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.8087853535353535,
+        "width": 0.43995424836601305,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.3 Co-Creation with Generative AI",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We find their question of how to determine",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.5636078431372549,
+        "top": 0.8087853535353535,
+        "width": 0.2563970588235295,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Less attention has been given to scenarios with objective outcomes, such as in software engineering where correct code is of prime importance. ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.7070245098039216,
+        "top": 0.5963724747474748,
+        "width": 0.1729705882352941,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6136679292929292,
+        "width": 0.661658496732026,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "2 RELATEDWORK 2.3 Co-Creation with Generative AI",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Given that the probabilistic nature of generative models implies the potential for some amount of error in their outputs, we seek to understand the extent to which they may be useful in scenarios that have an objective bar of quality.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.845047385620915,
+        "top": 0.6136679292929292,
+        "width": 0.03494771241830075,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6309646464646465,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6482613636363637,
+        "width": 0.6471192810457516,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "2 RELATEDWORK 2.3 Co-Creation with Generative AI",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Some of this work has examined the extent to which deep generative models provide humans with augmented capabilities, addressing the question of the extent to which the human-AI team produces outcomes better than those produced by either party alone (e.g. [29, 37, 57, 70, 92, 100]). ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.28667483660130716,
+        "top": 0.4752979797979798,
+        "width": 0.5933284313725491,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.49259469696969693,
+        "width": 0.7002696078431372,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.5098901515151516,
+        "width": 0.4178333333333333,
+        "height": 0.011320707070706981,
+        "page": 3
+      }
+    ],
+    "section": "2 RELATEDWORK 2.3 Co-Creation with Generative AI",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "One author led each interview, guiding participants through each phase and asking all interview questions. ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.5073251633986928,
+        "top": 0.6843686868686868,
+        "width": 0.31267647058823533,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7016641414141414,
+        "width": 0.33079901960784314,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "4 METHOD",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The two other authors took running notes in a shared online document and occasionally stepped in to ask clarifying questions, probe deeper on topics of interest, or provide technical explanations for how the translation algorithm worked.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.4544705882352942,
+        "top": 0.7016641414141414,
+        "width": 0.3655245098039215,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7189608585858587,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7362575757575758,
+        "width": 0.33273856209150326,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "4 METHOD",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We also asked specific questions for each variant. ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.17929901960784314,
+        "top": 0.29978156565656566,
+        "width": 0.2858235294117647,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "4 METHOD 4.2 Variant-Specific Questions",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Some participants had questions about the underlying mechanics of the NMT model, as they were curious how it works (P5) and would like to know what its thinking (P10). ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.33141666666666664,
+        "top": 0.5976868686868687,
+        "width": 0.49019444444444443,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6149835858585858,
+        "width": 0.561625816993464,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The place where I can see something like this being very helpful would be where you really have a truly dead codebase thats just a complete black box that nobody can, or wants, to understand... because for that you need understanding if the goal is to keep the darn thing limping while you transition to something else. (P4)",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.15988398692810457,
+        "top": 0.3502790404040404,
+        "width": 0.6202352941176471,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.15988398692810457,
+        "top": 0.367574494949495,
+        "width": 0.620235294117647,
+        "height": 0.011320707070706981,
+        "page": 10
+      },
+      {
+        "left": 0.15988398692810457,
+        "top": 0.3848712121212121,
+        "width": 0.6198333333333333,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Our study is a preliminary examination of how probabilistic generative models can be applied to a use case that requires an objective level of quality. ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.18000163398692812,
+        "top": 0.3841628787878788,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4014583333333333,
+        "width": 0.16816013071895422,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": "7 LIMITATIONS",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "[90] show how such scores encourage use of an autonomous system. ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.795936274509804,
+        "top": 0.6098787878787879,
+        "width": 0.024057189542483703,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6271755050505051,
+        "width": 0.3799656862745099,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Imperfect AI",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We find their question of how to determine",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.5636078431372549,
+        "top": 0.8087853535353535,
+        "width": 0.2563970588235295,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Participants were identified using an internal expertise-location tool that allowed us to find people in a software engineering role with experience in both Java and Python. ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.18000163398692812,
+        "top": 0.16017676767676767,
+        "width": 0.6999918300653596,
+        "height": 0.011320707070707065,
+        "page": 5
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.17747222222222223,
+        "width": 0.36624836601307187,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "4 METHOD 4.1 Participants",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P4 also gained insight by comparing two alternate translations: This is clearly... toggling between those two styles of iteration... its interesting to see what the AI is... thinking between these two different programming constructs.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.5764411764705882,
+        "top": 0.6168825757575758,
+        "width": 0.30356372549019606,
+        "height": 0.011320707070706981,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6341792929292929,
+        "width": 0.7022483660130718,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6514747474747474,
+        "width": 0.3796209150326797,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "P2 said, [If its] 42% confident about this translation, maybe... [there could be] a link that you could click on to see why it is not confident. ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4785126262626263,
+        "width": 0.7003807189542484,
+        "height": 0.011320707070707037,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4958093434343434,
+        "width": 0.1106241830065359,
+        "height": 0.011320707070707037,
+        "page": 7
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Similarly, P6 said, If its trying to highlight that its really not sure that its done a good job here then I should pay attention to this piece and see if it makes sense. ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.1200016339869281,
+        "top": 0.3429583333333333,
+        "width": 0.7003807189542484,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.3602550505050505,
+        "width": 0.28934640522875815,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "5 RESULTS 5.2 Human-AI Patterns of Interaction",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "It would be different if the i as an index... lets see... is it used? Oh actually it is used... Now theres a mistake the code.. The statement d [ i ] = i, is wrong [but] the other [alternate translation] is correct. (P1)",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.15988398692810457,
+        "top": 0.5847146464646464,
+        "width": 0.620233660130719,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.17517973856209149,
+        "top": 0.602010101010101,
+        "width": 0.5580114379084968,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "5 RESULTS 5.2 Human-AI Patterns of Interaction",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "As previously mentioned, P1 discovered a logic error: Ah, see there, now there is a mistake in the code. The statement d [ i ] = i is wrong.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.5361552287581699,
+        "top": 0.19044444444444444,
+        "width": 0.34545098039215694,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.20774116161616163,
+        "width": 0.4758937908496732,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "5 RESULTS 5.3 Utility of Imperfect AI",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Overall, many participants felt that even the erroneous output was desirable and that it would be something they would find useful to have. ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.2250366161616162,
+        "width": 0.6840931372549021,
+        "height": 0.011320707070707037,
+        "page": 9
+      },
+      {
+        "left": 0.17945915032679738,
+        "top": 0.24233333333333332,
+        "width": 0.16245588235294117,
+        "height": 0.011320707070707065,
+        "page": 9
+      }
+    ],
+    "section": "5 RESULTS 5.3 Utility of Imperfect AI",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "One helpful improvement to the code translation user interface would be to show a stronger visual correspondence between input and output source code. ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.3282320261437908,
+        "top": 0.7344722222222222,
+        "width": 0.49176633986928114,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7517676767676768,
+        "width": 0.4176830065359477,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "The place where I can see something like this being very helpful would be where you really have a truly dead codebase thats just a complete black box that nobody can, or wants, to understand... because for that you need understanding if the goal is to keep the darn thing limping while you transition to something else. (P4)",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.15988398692810457,
+        "top": 0.3502790404040404,
+        "width": 0.6202352941176471,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.15988398692810457,
+        "top": 0.367574494949495,
+        "width": 0.620235294117647,
+        "height": 0.011320707070706981,
+        "page": 10
+      },
+      {
+        "left": 0.15988398692810457,
+        "top": 0.3848712121212121,
+        "width": 0.6198333333333333,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Although the system did allow for some subsequent actions by the human (e.g. hovering to see confidence scores or clicking to see alternate translations), our tool falls short of the tightly-coupled human-machine interactions envisioned by some of the informants in Seeber et al.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.3737614379084967,
+        "top": 0.19044444444444444,
+        "width": 0.44623366013071897,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.11956209150326796,
+        "top": 0.20774116161616163,
+        "width": 0.70043954248366,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.2250366161616162,
+        "width": 0.48959150326797396,
+        "height": 0.011320707070707037,
+        "page": 12
+      }
+    ],
+    "section": "6 DISCUSSION 6.1 Human-AI Partnerships",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Interface features such as confidence highlighting helped steer human attention toward potentially problematic areas, and alternate translations provided explanatory power for why a segment of translated code was rated as low confidence by the model; in addition, alternate translations provided clues toward the semantic meaning of the code and helped participants find logical errors in it. ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.28210130718954246,
+        "top": 0.7162499999999999,
+        "width": 0.5982777777777779,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7335467171717173,
+        "width": 0.6999967320261437,
+        "height": 0.011320707070706981,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7508434343434344,
+        "width": 0.6999967320261437,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7681388888888888,
+        "width": 0.36549999999999994,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": "8 CONCLUSION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Given the probabilistic nature of deep learning models, we posit that there will always be some amount of noise in their output; correspondingly, deep generative models that produce code as output may exhibit some amount of deviation from a programmers intentions. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.18000163398692812,
+        "top": 0.20774116161616163,
+        "width": 0.7002810457516339,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.2250366161616162,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707037,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.24233333333333332,
+        "width": 0.19113398692810454,
+        "height": 0.011320707070707065,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "[88]s work on learning bug-fixing patches and TransCoder [79]  are often capable of producing high-quality source code, the code that they generate may not always be error-free 1 .",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.7413741830065359,
+        "top": 0.24233333333333332,
+        "width": 0.13862091503267981,
+        "height": 0.011320707070707065,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.2596300505050505,
+        "width": 0.7003807189542484,
+        "height": 0.011320707070707037,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.27495328282828285,
+        "width": 0.2385506535947712,
+        "height": 0.015941919191919174,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "This context is both timely and relevant: timely, because many organizations are currently faced with the problem of how to migrate complex, legacy applications to the cloud when they do not necessarily have the resources or expertise to do so [34, 36]; and relevant, because NMT models can specifically help in the process of translating from legacy languages or application frameworks (e.g. COBOL, J2EE) into modern ones (e.g. Python, Go).",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.29723529411764704,
+        "top": 0.398,
+        "width": 0.5827647058823529,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.17945915032679738,
+        "top": 0.4152954545454545,
+        "width": 0.7005441176470588,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.43259217171717174,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4498888888888889,
+        "width": 0.6977091503267974,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "[28] found a similar result, that giving a good reason for a poor recommendation made people more likely to accept that poor recommendation. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.46092483660130723,
+        "top": 0.5752866161616161,
+        "width": 0.35907352941176474,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.5925820707070707,
+        "width": 0.5094346405228758,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Imperfect AI",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "[81] recently outlined a set of research questions spanning many aspects of human-AI collaboration, such as how tasks should be allocated across both parties and how trust could be established with a machine teammate. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.6422565359477124,
+        "top": 0.7741931818181818,
+        "width": 0.1777401960784315,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.791489898989899,
+        "width": 0.6999950980392158,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.8087853535353535,
+        "width": 0.43995424836601305,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.3 Co-Creation with Generative AI",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Given that the probabilistic nature of generative models implies the potential for some amount of error in their outputs, we seek to understand the extent to which they may be useful in scenarios that have an objective bar of quality.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.845047385620915,
+        "top": 0.6136679292929292,
+        "width": 0.03494771241830075,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6309646464646465,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6482613636363637,
+        "width": 0.6471192810457516,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "2 RELATEDWORK 2.3 Co-Creation with Generative AI",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "As discussed by Wolf [97, p. 252], scenario-based design [is] a method that anticipates and leverages scenarios of possible use early on in system development. (italics in original). ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.8645130718954248,
+        "top": 0.7408636363636364,
+        "width": 0.015485294117646986,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7581603535353535,
+        "width": 0.6999967320261438,
+        "height": 0.013969696969697076,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.775455808080808,
+        "width": 0.34738725490196076,
+        "height": 0.013969696969697076,
+        "page": 3
+      }
+    ],
+    "section": "3 DESIGN SCENARIO",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Each variant appeared as a partially-functional prototype, through which participants could explore features of interest. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.7441045751633987,
+        "top": 0.13855555555555557,
+        "width": 0.07589379084967318,
+        "height": 0.011320707070707065,
+        "page": 4
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.15585227272727273,
+        "width": 0.6380718954248366,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "3 DESIGN SCENARIO",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Participants were informed that the translation results were produced by an AI system and that the translations may be imperfect. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.49800326797385625,
+        "top": 0.580590909090909,
+        "width": 0.3219983660130718,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.11945915032679738,
+        "top": 0.5978876262626263,
+        "width": 0.4535294117647058,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "4 METHOD",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We begin by highlighting the difficulties faced by our software engineers in modernizing legacy applications, motivating the need for AI support. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.6642386363636363,
+        "width": 0.6853316993464053,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6815340909090909,
+        "width": 0.20596568627450976,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "5 RESULTS",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "For Figure 1B, we asked participants if they understood why the highlighted tokens were highlighted, and what other information could help them better understand the AIs confidence. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.7995915032679739,
+        "top": 0.3343737373737374,
+        "width": 0.08202614379084949,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.17945915032679738,
+        "top": 0.3516704545454546,
+        "width": 0.7005457516339869,
+        "height": 0.011320707070707037,
+        "page": 5
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.3689671717171717,
+        "width": 0.33134477124183004,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "4 METHOD 4.2 Variant-Specific Questions",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "For Figure 1C, we asked participants if they understood why the AI produced the alternatives it produced, and what other information could help them better understand how those alternatives were generated.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.5149869281045752,
+        "top": 0.3689671717171717,
+        "width": 0.36539542483660126,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.3862626262626263,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.40355934343434346,
+        "width": 0.16886764705882354,
+        "height": 0.011320707070707037,
+        "page": 5
+      }
+    ],
+    "section": "4 METHOD 4.2 Variant-Specific Questions",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Thus, in our discussions with participants around the topic of trust, our emphasis was on understanding their attitudes toward acceptance of AI-generated code through their expressions of desire to incorporate (or not incorporate) such code in their work  i.e. their willing[ness] to act, rather than their past behavior of having acted, as no participants had previously encountered a code-generating AI system.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.5,
+        "top": 0.40617929292929295,
+        "width": 0.32000163398692816,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.42347601010101005,
+        "width": 0.700281045751634,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.44077146464646466,
+        "width": 0.700281045751634,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.4580681818181818,
+        "width": 0.7008594771241831,
+        "height": 0.011320707070707037,
+        "page": 6
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "He described a situation in which individual contributors working on a code conversion task dont have to understand how the background of the application of the AI works, [because] they have to do the conversion [task]. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.8025277777777777,
+        "top": 0.7782045454545454,
+        "width": 0.01746895424836603,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7955012626262626,
+        "width": 0.7000032679738561,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.8127979797979797,
+        "width": 0.6181160130718955,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "As a user, you... accept whats going on here as a useful and correct process and you probably do not even care how its done because it will speed up your work... and at the end of the day, youll say, okay, Im done. (P1)",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.15988398692810457,
+        "top": 0.7424835858585859,
+        "width": 0.620235294117647,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.15988398692810457,
+        "top": 0.759780303030303,
+        "width": 0.6197320261437909,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P7 described how one of the alternatives more explicitly demonstrated the codes functionality: The first [option] is more Pythonic because its taking advantage of the built-in functionality of an array... however this [second option] is far more explicit... this is whats happening behind the scenes. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.18000163398692812,
+        "top": 0.582290404040404,
+        "width": 0.6999967320261438,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.5995871212121212,
+        "width": 0.6999967320261437,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6168825757575758,
+        "width": 0.3927761437908497,
+        "height": 0.011320707070706981,
+        "page": 7
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Understanding the models operation could also eliminate some of the confusion caused by the confidence highlights in Figure 1B. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.2250366161616162,
+        "width": 0.6837124183006537,
+        "height": 0.011320707070707037,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.24233333333333332,
+        "width": 0.07773856209150323,
+        "height": 0.011320707070707065,
+        "page": 7
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P3 expected that the translator would be able to define this def function signature line with the function name correct, but expressed confusion when the translator wasnt as confident as it could be. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.319202614379085,
+        "top": 0.3461111111111111,
+        "width": 0.5607924836601308,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.36340656565656565,
+        "width": 0.6217630718954248,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P2 said, [If its] 42% confident about this translation, maybe... [there could be] a link that you could click on to see why it is not confident. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4785126262626263,
+        "width": 0.7003807189542484,
+        "height": 0.011320707070707037,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4958093434343434,
+        "width": 0.1106241830065359,
+        "height": 0.011320707070707037,
+        "page": 7
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Thus, although participants generally said they dont care (P7) about knowing how the translation was produced, explanations of the models mechanics may be helpful for avoiding confusion caused by confidence discrepancies.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.17956209150326796,
+        "top": 0.513104797979798,
+        "width": 0.7020539215686273,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.5304015151515151,
+        "width": 0.6808611111111109,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "architects overseeing the entire project have to know how this AI is working because they are the ones responsible for making this [code translation] project [happen].",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.18000163398692812,
+        "top": 0.12126010101010101,
+        "width": 0.6999901960784313,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.13855555555555557,
+        "width": 0.3186437908496731,
+        "height": 0.011320707070707065,
+        "page": 7
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P4 specifically called out how code reviews are used to give people feedback to improve their skills and how such reviews could be used to improve the NMT model.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.6023415032679739,
+        "top": 0.6969078282828283,
+        "width": 0.27765849673202614,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7142045454545455,
+        "width": 0.6992320261437909,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "With humans, you can teach through review...if somebody is continuously making these kind of mistakes, and were catching them in review, that person is going to get annoyed by a million comments... you could probably have some sort of reinforcement or sort of iterative learning in your model that would teach it. (P4)",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.21988562091503266,
+        "top": 0.7398131313131313,
+        "width": 0.6218267973856211,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.21988562091503266,
+        "top": 0.7571098484848484,
+        "width": 0.6202287581699346,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.21988562091503266,
+        "top": 0.7744065656565657,
+        "width": 0.619748366013072,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "That just confuses me because this line of code is syntactically correct. I would write that line of code with 100% confidence. Im confused about why the translator would be confused about that assignment. (P0)",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.21988562091503266,
+        "top": 0.40631313131313135,
+        "width": 0.6202369281045752,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.21988562091503266,
+        "top": 0.42360858585858585,
+        "width": 0.5968660130718955,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Participants also appreciated the feature of the alternate translation UI in which downstream edits could be made when selecting an alternate translation (e.g. because selecting an alternate may have renamed a variable or changed a loop index). ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.1362794117647059,
+        "top": 0.6210934343434343,
+        "width": 0.6837173202614379,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.11945915032679738,
+        "top": 0.6383901515151515,
+        "width": 0.7005359477124182,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6556868686868687,
+        "width": 0.08280392156862747,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "5 RESULTS 5.2 Human-AI Patterns of Interaction",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Their comments provided insight into how these features could be used to drive human-AI workflows and how human actions could provide feedback to improve the NMT model. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.345468954248366,
+        "top": 0.16017676767676767,
+        "width": 0.47452777777777777,
+        "height": 0.011320707070707065,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.17747222222222223,
+        "width": 0.6000310457516341,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "5 RESULTS 5.2 Human-AI Patterns of Interaction",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We learned that the low-confidence highlighting (Figure 1B) could also help developers to organize their work. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.47146241830065366,
+        "top": 0.2737727272727273,
+        "width": 0.3485392156862745,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.11966339869281045,
+        "top": 0.29106944444444444,
+        "width": 0.32970915032679743,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "5 RESULTS 5.2 Human-AI Patterns of Interaction",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P4 emphasized the utility of this approach: Having something to draw my attention to places where its more likely that theres an error would be super helpful. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.5622058823529411,
+        "top": 0.3083661616161616,
+        "width": 0.25951307189542494,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.11834640522875817,
+        "top": 0.32566161616161615,
+        "width": 0.7033039215686274,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "5 RESULTS 5.2 Human-AI Patterns of Interaction",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P5 pointed out that, If you used this [confidence highlighting] on a big code base... you could know where to look, where there might be problems. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.41302941176470587,
+        "top": 0.3602550505050505,
+        "width": 0.4069624183006536,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.377550505050505,
+        "width": 0.47501143790849676,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "5 RESULTS 5.2 Human-AI Patterns of Interaction",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Thus, the meta-information provided by the existence of a highlight can help steer human activity, complementing Louie et al.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.5986601307189542,
+        "top": 0.377550505050505,
+        "width": 0.22133823529411767,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.39484722222222224,
+        "width": 0.5582124183006536,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "5 RESULTS 5.2 Human-AI Patterns of Interaction",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "s notion of how humans may steer the output of a generative model [57]. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.6818823529411765,
+        "top": 0.39484722222222224,
+        "width": 0.13811111111111107,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.41214267676767674,
+        "width": 0.3058398692810458,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "5 RESULTS 5.2 Human-AI Patterns of Interaction",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Many participants also pointed out how edits to low-confidence translated code could serve as feedback to the NMT model to improve its training.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.4296519607843137,
+        "top": 0.41214267676767674,
+        "width": 0.3903529411764706,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.4294393939393939,
+        "width": 0.4909395424836601,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Thus, we questioned whether we would encounter 9",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.5153872549019607,
+        "top": 0.8125239898989899,
+        "width": 0.3048888888888891,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.46734967320261434,
+        "top": 0.8307196969696969,
+        "width": 0.005299019607843236,
+        "height": 0.008805555555555622,
+        "page": 8
+      }
+    ],
+    "section": "",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Once they saw the alternate translations, they began to understand why the NMT model had highlighted certain tokens as low-confidence: precisely because there were alternate ways of translating those tokens. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.49856372549019606,
+        "top": 0.4738510101010101,
+        "width": 0.3214297385620915,
+        "height": 0.011320707070707037,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.49114772727272726,
+        "width": 0.700001633986928,
+        "height": 0.013969696969696965,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.5084444444444445,
+        "width": 0.25410620915032683,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "5 RESULTS 5.2 Human-AI Patterns of Interaction",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Thus, the alternate translations served as explanations for the highlights.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.37777124183006533,
+        "top": 0.5084444444444445,
+        "width": 0.4367598039215687,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "5 RESULTS 5.2 Human-AI Patterns of Interaction",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Both P1 and P3 were able to identify a logical error in the translated code because they reviewed the alternate translations.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.30445424836601304,
+        "top": 0.5430366161616161,
+        "width": 0.5159248366013072,
+        "height": 0.013969696969696965,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.5603333333333333,
+        "width": 0.21128104575163403,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "5 RESULTS 5.2 Human-AI Patterns of Interaction",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Thus, although many participants expressed a willingness to accept imperfectly-translated code as a starting point, acceptance may depend on how many errors the translated code contains as well as the nature of those errors (e.g. if they are easy to spot and fix, or if they take attention away from the central problem). ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.725564393939394,
+        "width": 0.6853316993464054,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7428598484848485,
+        "width": 0.7000049019607842,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7601565656565656,
+        "width": 0.5177058823529412,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "5 RESULTS 5.3 Utility of Imperfect AI",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "For large codebases, the downside of imperfectly-translated code may be less than the upside of simply having automatically-produced translations. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.5760176767676768,
+        "width": 0.6837173202614379,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.5933143939393939,
+        "width": 0.21612581699346403,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "5 RESULTS 5.3 Utility of Imperfect AI",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P3 discussed how the NMT model could fit into a workflow for translating a large codebase.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.39976633986928106,
+        "top": 0.5933143939393939,
+        "width": 0.48023366013071883,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6106098484848484,
+        "width": 0.056977124183006544,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "5 RESULTS 5.3 Utility of Imperfect AI",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P3 described how there may be individual differences in the value people derive from NMT translations.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.49092810457516334,
+        "top": 0.3745833333333334,
+        "width": 0.38907843137254905,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.3918787878787879,
+        "width": 0.2254787581699346,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "5 RESULTS 5.3 Utility of Imperfect AI",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "I think for someone to start using a tool like this, it would need to prove that its adding some value... It probably varies from person to person. Some people wont be satisfied with anything you give them, and others will be satisfied with if it can be 10% effective in doing translations perhaps. And most people fall somewhere in the middle there. (P3)",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.21988562091503266,
+        "top": 0.4174128787878788,
+        "width": 0.6202352941176472,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.21988562091503266,
+        "top": 0.4347083333333333,
+        "width": 0.6202352941176472,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.21988562091503266,
+        "top": 0.4520050505050505,
+        "width": 0.620232026143791,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.21988562091503266,
+        "top": 0.4693017676767677,
+        "width": 0.14249509803921567,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "5 RESULTS 5.3 Utility of Imperfect AI",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Participants described the lifecycle of modernizing applications as consisting of three general phases: (1) creating an understanding of the legacy application and its architecture by reviewing code and documentation; (2) performing the migration work, which may include translating and/or refactoring the code; and (3) reviewing and testing the migrated code. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.1200016339869281,
+        "top": 0.1428800505050505,
+        "width": 0.6999967320261439,
+        "height": 0.011320707070707065,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.16017676767676767,
+        "width": 0.7,
+        "height": 0.011320707070707065,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.17747222222222223,
+        "width": 0.7000032679738563,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.1947689393939394,
+        "width": 0.03042647058823529,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Throughout our interviews, participants made a number of suggestions for how generative AI models, as well as the user interfaces that incorporate them, could support these activities.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.15410457516339868,
+        "top": 0.1947689393939394,
+        "width": 0.6658872549019607,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.21206439393939394,
+        "width": 0.4301666666666667,
+        "height": 0.011320707070707037,
+        "page": 10
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Generating documentation from source is an active area of research in the machine learning community (e.g. [44, 48, 65, 91]) and our results highlight the importance of this functionality in user experiences, even when generated documentation may be imperfect.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.1362794117647059,
+        "top": 0.6726565656565657,
+        "width": 0.685330065359477,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.11966339869281045,
+        "top": 0.6899532828282828,
+        "width": 0.7003284313725489,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7072487373737373,
+        "width": 0.2015539215686275,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Participants also described how generative methods could be used to fill in missing documentation to help others understand ones own code, to create an understanding of poorly-documented code, or to re-align documentation with code when drift has occurred [30, 85]. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.1362794117647059,
+        "top": 0.4559722222222222,
+        "width": 0.6837140522875816,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.4732689393939394,
+        "width": 0.7000000000000001,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.49056439393939394,
+        "width": 0.2220196078431373,
+        "height": 0.011320707070707037,
+        "page": 10
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P6 described how his team has strict requirements for writing documentation for every function because it is used to generate Swagger API documentation 3 . ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.3455964052287582,
+        "top": 0.49056439393939394,
+        "width": 0.4746748366013071,
+        "height": 0.011320707070707037,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.5058888888888888,
+        "width": 0.44208986928104577,
+        "height": 0.013292929292929356,
+        "page": 10
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The place where I can see something like this being very helpful would be where you really have a truly dead codebase thats just a complete black box that nobody can, or wants, to understand... because for that you need understanding if the goal is to keep the darn thing limping while you transition to something else. (P4)",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.15988398692810457,
+        "top": 0.3502790404040404,
+        "width": 0.6202352941176471,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.15988398692810457,
+        "top": 0.367574494949495,
+        "width": 0.620235294117647,
+        "height": 0.011320707070706981,
+        "page": 10
+      },
+      {
+        "left": 0.15988398692810457,
+        "top": 0.3848712121212121,
+        "width": 0.6198333333333333,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P6 described how generative methods could help him form a clearer picture of system architecture: If AI could actually somehow... help me keep track of how the current function Im looking at fits into the bigger picture... I think thats really beneficial. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.564735294117647,
+        "top": 0.27388005050505054,
+        "width": 0.25525653594771247,
+        "height": 0.011320707070707037,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.29117676767676764,
+        "width": 0.6999901960784313,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.3084722222222222,
+        "width": 0.5288464052287583,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P4 described how generative methods could be used to reverse engineer the architecture programmatically and deal with dead codebases.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.6523235294117646,
+        "top": 0.3084722222222222,
+        "width": 0.16767156862745103,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.3257689393939394,
+        "width": 0.6683921568627451,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Translation could also help software engineers better understand codebases in languages with which they are less familiar: Ive got a bunch of engineers that know Python, but they dont know Java. So, it might be easier to delve in and spelunk through... auto gen[erated] Python code than it would be to go back and spelunk the original Java. (P4).",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.1362794117647059,
+        "top": 0.40408333333333335,
+        "width": 0.6837156862745097,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.4213800505050505,
+        "width": 0.6999983660130719,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.438675505050505,
+        "width": 0.6986323529411764,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P6: As long as it is giving me a head start of any sort I will take it because for me the overhead to write such comments for every function that I code is very high. As you can imagine in a practical system there is going to be hundreds of such functions... its a lot of human hours.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.15988398692810457,
+        "top": 0.6188522727272727,
+        "width": 0.620233660130719,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.15988398692810457,
+        "top": 0.6361489898989898,
+        "width": 0.6202254901960784,
+        "height": 0.011320707070707203,
+        "page": 10
+      },
+      {
+        "left": 0.15988398692810457,
+        "top": 0.6534444444444445,
+        "width": 0.3494117647058824,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "a standard formatting (P5) because reading other peoples code is much easier when you all adhere to the same standards. (P5). ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.18000163398692812,
+        "top": 0.12126010101010101,
+        "width": 0.6999918300653596,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.13855555555555557,
+        "width": 0.09240849673202614,
+        "height": 0.011320707070707065,
+        "page": 11
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Many participants described how code translation could be used to take advantage of functionality defined in third party libraries, because the same libraries in Java dont exist in Python, or similar libraries exist but theyre not... syntactically the same. (P0). ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.17314898989898989,
+        "width": 0.6837238562091503,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.19044444444444444,
+        "width": 0.7022483660130718,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.20774116161616163,
+        "width": 0.16701960784313727,
+        "height": 0.011320707070707092,
+        "page": 11
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P8 described how the code translation process wasnt just about converting from one language to another, but also about identifying opportunities to leverage language-specific features to create more optimal code: The whole point of using the latest version is to tap into the new features... in JDK 8 they have lambdas... it is much faster. If it could do something like this I would use it like hell! ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.4910179738562091,
+        "top": 0.2942222222222222,
+        "width": 0.3889754901960785,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.31151893939393943,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707037,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.32881439393939393,
+        "width": 0.7003807189542482,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.3461111111111111,
+        "width": 0.5514640522875816,
+        "height": 0.011320707070707092,
+        "page": 11
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P9 emphasized how the alternate translations provided an educational opportunity while doing code modernization work because having new options makes it much more easy for me to explore newer methods in the newer language.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.7354101307189543,
+        "top": 0.3461111111111111,
+        "width": 0.1445833333333334,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.36340656565656565,
+        "width": 0.7005441176470587,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.3807032828282828,
+        "width": 0.5465408496732026,
+        "height": 0.011320707070707092,
+        "page": 11
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Overwhelmingly, they felt that a tool that could do code translation work within the application modernization context would be useful as it would help them get their own work done more quickly and effectively (e.g. as discussed by P3). ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.7779673202614379,
+        "top": 0.7250416666666666,
+        "width": 0.10364052287581704,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7423383838383839,
+        "width": 0.7000049019607841,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7596338383838384,
+        "width": 0.5886764705882352,
+        "height": 0.011320707070707092,
+        "page": 11
+      }
+    ],
+    "section": "6 DISCUSSION 6.1 Human-AI Partnerships",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Instead of viewing the review and correction of the translated code as additional effort, they felt that the skeletal framework provided by the NMT model would be a useful starting place that they could then adjust and correct as necessary, as they usually do with code produced by their colleagues (e.g. as discussed by P4). ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.772109477124183,
+        "top": 0.7596338383838384,
+        "width": 0.10788562091503273,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7769305555555555,
+        "width": 0.7003725490196078,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7942272727272728,
+        "width": 0.6999934640522875,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.17945915032679738,
+        "top": 0.8115227272727272,
+        "width": 0.38836764705882354,
+        "height": 0.011320707070707092,
+        "page": 11
+      }
+    ],
+    "section": "6 DISCUSSION 6.1 Human-AI Partnerships",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Additional support provided by the NMT model by 12",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.5714967320261437,
+        "top": 0.8115227272727272,
+        "width": 0.3088872549019608,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.5245702614379084,
+        "top": 0.8307196969696969,
+        "width": 0.010598039215686361,
+        "height": 0.008805555555555622,
+        "page": 11
+      }
+    ],
+    "section": "",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "They recognize the human capacity to err in themselves and their colleagues, and thus have developed processes and ways of working in which these errors are expected: code reviews [9, 63], test-driven development [23, 61], and root-cause analysis [53] are all ways of finding, fixing, and learning from the mistakes that are bound to happen in any software engineering effort. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.11956209150326796,
+        "top": 0.398,
+        "width": 0.70043954248366,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.4152954545454545,
+        "width": 0.6999918300653595,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.43259217171717174,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.4498888888888889,
+        "width": 0.2140424836601308,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "6 DISCUSSION 6.2 Toward Explainable Generative AI",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Techniques that help people understand the mechanics of generative models, as well as techniques that are able to generate specific rationales for why a given artifact was generated, could help people further adopt generative models in their own work practices. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.49474183006535943,
+        "top": 0.5709621212121212,
+        "width": 0.3252581699346405,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.5882588383838384,
+        "width": 0.6999918300653595,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.605554292929293,
+        "width": 0.5245964052287583,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "6 DISCUSSION 6.2 Toward Explainable Generative AI",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Our study identified a number of areas that could be pursued for the use of generative AI in application modernization. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7093320707070708,
+        "width": 0.7022598039215686,
+        "height": 0.011320707070706981,
+        "page": 12
+      }
+    ],
+    "section": "6 DISCUSSION 6.3 Future Directions for Generative AI in Application Modernization",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "In addition, task-oriented displays of the checklist mentioned by P10 could be used to help organize and track review efforts.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.2592777777777778,
+        "top": 0.7612209595959595,
+        "width": 0.5607156862745097,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7785176767676768,
+        "width": 0.2006748366013072,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "6 DISCUSSION 6.3 Future Directions for Generative AI in Application Modernization",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Although the import of generative capabilities may seem to be about the production of an artifact itself, we found that they instead may also be a means rather than just an end . ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.734733660130719,
+        "top": 0.20774116161616163,
+        "width": 0.14526960784313725,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.2250366161616162,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707037,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.24233333333333332,
+        "width": 0.19047058823529414,
+        "height": 0.013969696969696993,
+        "page": 13
+      }
+    ],
+    "section": "6 DISCUSSION 6.3 Future Directions for Generative AI in Application Modernization",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Thus, we challenge the community to consider use cases for generative AI that involve improving the state of human understanding of a domain or artifact, rather than considering the only utility of generative models to be the output itself.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.7405228758169935,
+        "top": 0.27692550505050506,
+        "width": 0.1394836601307189,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.2942222222222222,
+        "width": 0.6999918300653596,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.31151893939393943,
+        "width": 0.6130996732026144,
+        "height": 0.011320707070707037,
+        "page": 13
+      }
+    ],
+    "section": "6 DISCUSSION 6.3 Future Directions for Generative AI in Application Modernization",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "The process of using these models to perform an initial translation, followed by manual correction, could provide a corpus of correctly-translated code that would enable supervised training, resulting in further quality improvements to the translator. ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.655609477124183,
+        "top": 0.12126010101010101,
+        "width": 0.22438398692810468,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.13855555555555557,
+        "width": 0.7000032679738561,
+        "height": 0.011320707070707065,
+        "page": 13
+      },
+      {
+        "left": 0.17945915032679738,
+        "top": 0.15585227272727273,
+        "width": 0.5682941176470588,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": "6 DISCUSSION 6.3 Future Directions for Generative AI in Application Modernization",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Although we have discovered that our design scenario did demonstrate compelling user experiences, we caution that our results may not generalize to other domains or use cases beyond the code translation task we examined (e.g. using generative models for molecular discovery). ",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.3518071895424837,
+        "top": 0.4014583333333333,
+        "width": 0.5284705882352941,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4187550505050505,
+        "width": 0.7,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4360517676767677,
+        "width": 0.435392156862745,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": "7 LIMITATIONS",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Future work should explore how different patterns of interaction and initiative, as well as capabilities beyond code translation, can enable effective human-AI partnerships with generative models that produce better outcomes than what could be accomplished by either party alone.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.5499705882352941,
+        "top": 0.7681388888888888,
+        "width": 0.33002287581699363,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7854356060606061,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070706981,
+        "page": 13
+      },
+      {
+        "left": 0.17945915032679738,
+        "top": 0.8027323232323232,
+        "width": 0.6550016339869281,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": "8 CONCLUSION",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Given the probabilistic nature of deep learning models, we posit that there will always be some amount of noise in their output; correspondingly, deep generative models that produce code as output may exhibit some amount of deviation from a programmers intentions. ",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.18000163398692812,
+        "top": 0.20774116161616163,
+        "width": 0.7002810457516339,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.2250366161616162,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707037,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.24233333333333332,
+        "width": 0.19113398692810454,
+        "height": 0.011320707070707065,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Through a thematic analysis [12, 22], we identified four themes when considering the design of user experiences that leverage generative models in software engineering: acceptance through verification, human-AI patterns of interaction, the utility of imperfect AI, and future opportunities for generative AI in application modernization. ",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.5792075163398693,
+        "top": 0.4844810606060606,
+        "width": 0.30079575163398686,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.5017765151515151,
+        "width": 0.7017254901960783,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.5190732323232323,
+        "width": 0.7000032679738561,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.5363699494949495,
+        "width": 0.28203104575163396,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Given the imperfect output of state-of-the-art NMT models, we posit that such systems will act in concert with human software engineers as a collaborative partner or teammate. ",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7396010101010101,
+        "width": 0.7,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7568964646464647,
+        "width": 0.34180555555555553,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.3 Co-Creation with Generative AI",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The use of scenarios to elicit feedback on future UX design has a long history in HCI (e.g. [17, 77]), and recently this method has been applied to the design of AI systems as well (e.g. [8, 55, 97]). ",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.43606209150326797,
+        "top": 0.7235669191919193,
+        "width": 0.4443202614379084,
+        "height": 0.011320707070706981,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7408636363636364,
+        "width": 0.6808464052287582,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 DESIGN SCENARIO",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We begin by highlighting the difficulties faced by our software engineers in modernizing legacy applications, motivating the need for AI support. ",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.6642386363636363,
+        "width": 0.6853316993464053,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6815340909090909,
+        "width": 0.20596568627450976,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "5 RESULTS",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We then discuss the four major themes we identified in our data: acceptance through verification, human-AI patterns of interaction, the utility of imperfect AI, and future opportunities for generative AI in application modernization.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.38903921568627453,
+        "top": 0.6815340909090909,
+        "width": 0.4909558823529412,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.17963562091503268,
+        "top": 0.6988308080808081,
+        "width": 0.7003643790849672,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7161275252525252,
+        "width": 0.16073529411764706,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "5 RESULTS",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "If Im going to put my production systems functionality behind this, I really want some degree of trust that this thing is robust... Every piece of code that we put into production has been reviewed by at least one other person. And so we try hard to basically build that trust through review and familiarity in humans... wed need basically the same level of trust for a system like this. (P4)",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.15988398692810457,
+        "top": 0.28397727272727274,
+        "width": 0.6202369281045752,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.15988398692810457,
+        "top": 0.3012727272727273,
+        "width": 0.6202287581699346,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.15988398692810457,
+        "top": 0.3185694444444444,
+        "width": 0.620235294117647,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.15988398692810457,
+        "top": 0.33586616161616156,
+        "width": 0.3387598039215686,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P9 offered a more nuanced view on who would need to have an understanding of how the AI model operated. ",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.1362794117647059,
+        "top": 0.7782045454545454,
+        "width": 0.6625980392156862,
+        "height": 0.013969696969697076,
+        "page": 6
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "As a user, you... accept whats going on here as a useful and correct process and you probably do not even care how its done because it will speed up your work... and at the end of the day, youll say, okay, Im done. (P1)",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.15988398692810457,
+        "top": 0.7424835858585859,
+        "width": 0.620235294117647,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.15988398692810457,
+        "top": 0.759780303030303,
+        "width": 0.6197320261437909,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P6 further imagined that Im just going to rewrite this and through my action the AI can learn. ",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.7947171717171718,
+        "width": 0.5606781045751634,
+        "height": 0.011320707070706981,
+        "page": 7
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "[81], the allocation of tasks in a human-AI collaboration need not be symmetric. ",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.1953660130718954,
+        "top": 0.1947689393939394,
+        "width": 0.4767516339869282,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "5 RESULTS 5.2 Human-AI Patterns of Interaction",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "A lot of us in the software development field, we sometimes have the feeling that for a given problem set, we have to solve the entire problem. But, thats not necessarily true... if you can help someone do part of the task... maybe it will be more effective at smaller, less complex code fragments. Then, [as] you get feedback from users, you build into it more intelligence, then maybe it becomes more effective on larger, more complex pieces of code. (P3)",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.21988562091503266,
+        "top": 0.6361439393939394,
+        "width": 0.6218349673202614,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.21988562091503266,
+        "top": 0.653439393939394,
+        "width": 0.6202271241830066,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.21988562091503266,
+        "top": 0.6707361111111111,
+        "width": 0.620235294117647,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.21988562091503266,
+        "top": 0.6880328282828283,
+        "width": 0.6202320261437908,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.21988562091503266,
+        "top": 0.7053282828282829,
+        "width": 0.1111127450980392,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "5 RESULTS 5.3 Utility of Imperfect AI",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "I think for someone to start using a tool like this, it would need to prove that its adding some value... It probably varies from person to person. Some people wont be satisfied with anything you give them, and others will be satisfied with if it can be 10% effective in doing translations perhaps. And most people fall somewhere in the middle there. (P3)",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.21988562091503266,
+        "top": 0.4174128787878788,
+        "width": 0.6202352941176472,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.21988562091503266,
+        "top": 0.4347083333333333,
+        "width": 0.6202352941176472,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.21988562091503266,
+        "top": 0.4520050505050505,
+        "width": 0.620232026143791,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.21988562091503266,
+        "top": 0.4693017676767677,
+        "width": 0.14249509803921567,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "5 RESULTS 5.3 Utility of Imperfect AI",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The place where I can see something like this being very helpful would be where you really have a truly dead codebase thats just a complete black box that nobody can, or wants, to understand... because for that you need understanding if the goal is to keep the darn thing limping while you transition to something else. (P4)",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.15988398692810457,
+        "top": 0.3502790404040404,
+        "width": 0.6202352941176471,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.15988398692810457,
+        "top": 0.367574494949495,
+        "width": 0.620235294117647,
+        "height": 0.011320707070706981,
+        "page": 10
+      },
+      {
+        "left": 0.15988398692810457,
+        "top": 0.3848712121212121,
+        "width": 0.6198333333333333,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "P6: As long as it is giving me a head start of any sort I will take it because for me the overhead to write such comments for every function that I code is very high. As you can imagine in a practical system there is going to be hundreds of such functions... its a lot of human hours.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.15988398692810457,
+        "top": 0.6188522727272727,
+        "width": 0.620233660130719,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.15988398692810457,
+        "top": 0.6361489898989898,
+        "width": 0.6202254901960784,
+        "height": 0.011320707070707203,
+        "page": 10
+      },
+      {
+        "left": 0.15988398692810457,
+        "top": 0.6534444444444445,
+        "width": 0.3494117647058824,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Indeed, the ML community has explored many methods for generating tests [31, 86, 87] as well as generating data for tests [50, 83], and our findings reinforce the need to incorporate these techniques into mainstream application modernization tools.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.7174019607843137,
+        "top": 0.6137676767676767,
+        "width": 0.16298202614379076,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.631064393939394,
+        "width": 0.6999967320261437,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6483598484848484,
+        "width": 0.6001633986928104,
+        "height": 0.011320707070707092,
+        "page": 11
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "As discussed in Section 5.1.1, testing seems to be one of the primary ways that software engineers will accept and use AI-translated code: Im very much a supporter of test-driven development, which typically means you write tests that validate behavior. (P3). ",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.3488790849673203,
+        "top": 0.46170959595959593,
+        "width": 0.5311241830065359,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.47900505050505054,
+        "width": 0.7003807189542482,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4963017676767677,
+        "width": 0.29514215686274514,
+        "height": 0.011320707070706981,
+        "page": 11
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Future work is needed to investigate different kinds of interaction patterns, including different mixed-initiative patterns [43, 82], to understand their effect on a software engineers productivity and capability. ",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.5501748366013072,
+        "top": 0.2596300505050505,
+        "width": 0.2698169934640522,
+        "height": 0.011320707070707037,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.27692550505050506,
+        "width": 0.6999901960784314,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.2942222222222222,
+        "width": 0.28084967320261434,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "6 DISCUSSION 6.1 Human-AI Partnerships",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Our results motivate the need for explainable generative AI. ",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.1362794117647059,
+        "top": 0.5709621212121212,
+        "width": 0.35481535947712417,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "6 DISCUSSION 6.2 Toward Explainable Generative AI",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Techniques that help people understand the mechanics of generative models, as well as techniques that are able to generate specific rationales for why a given artifact was generated, could help people further adopt generative models in their own work practices. ",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.49474183006535943,
+        "top": 0.5709621212121212,
+        "width": 0.3252581699346405,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.5882588383838384,
+        "width": 0.6999918300653595,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.605554292929293,
+        "width": 0.5245964052287583,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "6 DISCUSSION 6.2 Toward Explainable Generative AI",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "One such area is in further developing intelligent user interfaces tailored specifically for code translation. ",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7266287878787879,
+        "width": 0.6222647058823529,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "6 DISCUSSION 6.3 Future Directions for Generative AI in Application Modernization",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "The process of using these models to perform an initial translation, followed by manual correction, could provide a corpus of correctly-translated code that would enable supervised training, resulting in further quality improvements to the translator. ",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.655609477124183,
+        "top": 0.12126010101010101,
+        "width": 0.22438398692810468,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.13855555555555557,
+        "width": 0.7000032679738561,
+        "height": 0.011320707070707065,
+        "page": 13
+      },
+      {
+        "left": 0.17945915032679738,
+        "top": 0.15585227272727273,
+        "width": 0.5682941176470588,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": "6 DISCUSSION 6.3 Future Directions for Generative AI in Application Modernization",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "In addition, our finding that acceptance of a models output is established through verification, rather than explanation of the models operation, is not meant to diminish the importance of further research and exploration into how generative models might explain themselves, their operation, and their limitations. ",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.6190571895424837,
+        "top": 0.4360517676767677,
+        "width": 0.26094117647058823,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4533472222222222,
+        "width": 0.7000032679738561,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4706439393939394,
+        "width": 0.7016029411764706,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4879406565656566,
+        "width": 0.22450816993464054,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": "7 LIMITATIONS",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Future work should explore how different patterns of interaction and initiative, as well as capabilities beyond code translation, can enable effective human-AI partnerships with generative models that produce better outcomes than what could be accomplished by either party alone.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.5499705882352941,
+        "top": 0.7681388888888888,
+        "width": 0.33002287581699363,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7854356060606061,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070706981,
+        "page": 13
+      },
+      {
+        "left": 0.17945915032679738,
+        "top": 0.8027323232323232,
+        "width": 0.6550016339869281,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": "8 CONCLUSION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Given that the probabilistic nature of generative models implies the potential for some amount of error in their outputs, we seek to understand the extent to which they may be useful in scenarios that have an objective bar of quality.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.845047385620915,
+        "top": 0.6136679292929292,
+        "width": 0.03494771241830075,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6309646464646465,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6482613636363637,
+        "width": 0.6471192810457516,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "2 RELATEDWORK 2.3 Co-Creation with Generative AI",
+    "prob": 0.7407407164573669,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Our research focuses on understanding the extent to which generative models are still useful to human stakeholders despite their potential to produce imperfect output. ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.2942222222222222,
+        "width": 0.6837222222222222,
+        "height": 0.013969696969696965,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.31151893939393943,
+        "width": 0.3034836601307189,
+        "height": 0.011320707070707037,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": 0.6608271598815918,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "In this paper, we focus on TransCoder [79], an unsupervised neural machine translation (NMT) model that transforms source code from one programming language to another.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.36813888888888885,
+        "top": 0.35908333333333337,
+        "width": 0.4518594771241831,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.37637878787878787,
+        "width": 0.5894232026143791,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "",
+    "prob": 0.563809871673584,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We developed an exploratory design scenario in order to engage software engineers in a discussion about the role of generative AI in application modernization. ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.17929901960784314,
+        "top": 0.7062714646464646,
+        "width": 0.7007042483660132,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7235669191919193,
+        "width": 0.2531307189542483,
+        "height": 0.011320707070706981,
+        "page": 3
+      }
+    ],
+    "section": "",
+    "prob": 0.5582051873207092,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Future work is needed to investigate different kinds of interaction patterns, including different mixed-initiative patterns [43, 82], to understand their effect on a software engineers productivity and capability. ",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.5501748366013072,
+        "top": 0.2596300505050505,
+        "width": 0.2698169934640522,
+        "height": 0.011320707070707037,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.27692550505050506,
+        "width": 0.6999901960784314,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.2942222222222222,
+        "width": 0.28084967320261434,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "6 DISCUSSION 6.1 Human-AI Partnerships",
+    "prob": 0.4788743257522583,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The use of scenarios to elicit feedback on future UX design has a long history in HCI (e.g. [17, 77]), and recently this method has been applied to the design of AI systems as well (e.g. [8, 55, 97]). ",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.43606209150326797,
+        "top": 0.7235669191919193,
+        "width": 0.4443202614379084,
+        "height": 0.011320707070706981,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.7408636363636364,
+        "width": 0.6808464052287582,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 DESIGN SCENARIO",
+    "prob": 0.6352401375770569,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We followed the process described by Braun and Clarke [12, 22] in which researchers familiarize themselves with their data, generate and group codes to identify higher-level themes, and iteratively refine codes and themes through collaborative discussion.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.6783006535947712,
+        "top": 0.473979797979798,
+        "width": 0.2017009803921569,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4912752525252525,
+        "width": 0.6999918300653595,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.5085719696969697,
+        "width": 0.6115179738562091,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "5 RESULTS",
+    "prob": 0.45464158058166504,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In this way, the NMT model can work collaboratively with the human: the model proposes multiple solutions, the human chooses one, and if necessary, the model follows-through to make a series of changes that are consistent with one another. ",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.210890522875817,
+        "top": 0.6729823232323232,
+        "width": 0.6091029411764706,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6902790404040404,
+        "width": 0.6999918300653596,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.707574494949495,
+        "width": 0.17150326797385623,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "5 RESULTS 5.2 Human-AI Patterns of Interaction",
+    "prob": 0.4544358551502228,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Next, we developed more integrative codes (similar to grounded theory axial codes) using a shared online document and visual collaboration tools. ",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.2336356209150327,
+        "top": 0.5950530303030303,
+        "width": 0.646357843137255,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6123497474747475,
+        "width": 0.23816993464052286,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "5 RESULTS",
+    "prob": 0.4428095817565918,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "One author led each interview, guiding participants through each phase and asking all interview questions. ",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.5073251633986928,
+        "top": 0.6843686868686868,
+        "width": 0.31267647058823533,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7016641414141414,
+        "width": 0.33079901960784314,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "4 METHOD",
+    "prob": 0.4207308888435364,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Participants expressed similar desires to establish trust with the code translation tool.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.572968954248366,
+        "top": 0.2429570707070707,
+        "width": 0.24702450980392165,
+        "height": 0.011320707070707065,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.2602537878787879,
+        "width": 0.2681421568627452,
+        "height": 0.011320707070707037,
+        "page": 6
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": 0.698104739189148,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Participants responded positively to the confidence highlights (Figure 1B) and the alternate translations (Figure 1C) and felt that both views were helpful. ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.1200016339869281,
+        "top": 0.1428800505050505,
+        "width": 0.7008709150326797,
+        "height": 0.011320707070707065,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.16017676767676767,
+        "width": 0.22180882352941178,
+        "height": 0.011320707070707065,
+        "page": 8
+      }
+    ],
+    "section": "5 RESULTS 5.2 Human-AI Patterns of Interaction",
+    "prob": 0.6828795671463013,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Our results motivate the need for explainable generative AI. ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.1362794117647059,
+        "top": 0.5709621212121212,
+        "width": 0.35481535947712417,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": "6 DISCUSSION 6.2 Toward Explainable Generative AI",
+    "prob": 0.6428225040435791,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "These ideas were generated through our pilot testing.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.7511192810457517,
+        "top": 0.6497765151515152,
+        "width": 0.06887745098039222,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.11945915032679738,
+        "top": 0.6670719696969697,
+        "width": 0.24704411764705886,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "4 METHOD",
+    "prob": 0.5959768891334534,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "They found that, even when the system was only 50% accurate (i.e. randomly guessing), users who expected a reduction in the false positive rate had a lower perception of accuracy and lower acceptance of the system than users who expected a reduction in the false negative rate. ",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.28966176470588234,
+        "top": 0.4715088383838384,
+        "width": 0.5319411764705883,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.48880555555555555,
+        "width": 0.7000000000000001,
+        "height": 0.011320707070707037,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.50610101010101,
+        "width": 0.4482287581699347,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Imperfect AI",
+    "prob": 0.5617601275444031,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  }
+]

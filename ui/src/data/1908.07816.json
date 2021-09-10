@@ -1,5 +1,22 @@
 [
   {
+    "text": "Our contributions are threefold. ",
+    "label": "Contribution",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.5878712121212121,
+        "width": 0.20667320261437908,
+        "height": 0.012578282828282772,
+        "page": 1
+      }
+    ],
+    "section": "1 Introduction",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
     "text": "Since being able to track several turns is really important, we made this design decision from the beginning, in contrast to most related work where models are only trained and tested on single-turn dialogs. ",
     "label": "Novelty",
     "bboxes": [
