@@ -27,14 +27,6 @@ interface Props {
   
     render() {
 
-        // const boundingBoxes = this.props.entity.attributes.bounding_boxes;
-
-        // console.log(this.props.entity);
-        // update so to the side of the text
-        // boundingBoxes.map((box) => {box['left'] = box['left'] - 0.07});
-
-        // console.log(boundingBoxes);
-
         const bullets = this.props.header.attributes.points.map((d) => 
         <ul>
             <li> 
@@ -43,27 +35,6 @@ interface Props {
                     
         </ul>
             );
-        // const annotation = <Annotation
-        // pageView={this.props.pageView}
-        // id={this.props.id}
-        // className={classNames(this.props.className, {
-        //   "find-match": this.props.isFindMatch,
-        //   "find-selection": this.props.isFindSelection,
-        // })}
-        // active={this.props.active}
-        // underline={this.props.underline}
-        // selected={this.props.selected}
-        // selectedSpanIds={this.props.selectedSpanIds}
-        // boundingBoxes={this.props.entity.attributes.bounding_boxes}
-        // source={this.props.entity.attributes.source}
-        // glossStyle={this.props.glossStyle}
-        // glossContent={this.props.glossContent}
-        // tooltipPlacement={this.props.tooltipPlacement}/> 
-
-        // style={uiUtils.getPositionInPageView(
-        //     this.props.pageView,
-        //     boundingBoxes[0],
-        //   )}
 
         return (
             

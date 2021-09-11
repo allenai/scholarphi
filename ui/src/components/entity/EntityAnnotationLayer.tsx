@@ -518,7 +518,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
                 id={annotationId}
                 pageView={pageView}
                 entity={entity}
-                active={annotationInteractionEnabled}
+                active={shouldHighlight}
                 underline={shouldHighlight}
                 selected={isSelected}
                 selectedSpanIds={selectedSpanIds}
@@ -537,9 +537,15 @@ class EntityAnnotationLayer extends React.Component<Props> {
               />
             );
           } else if (isSectionHeader(entity) && this.props.showHeaders) {
+
+            // check if should flip the image and placement of tooltip
+            const shouldFlip = entity.attributes.bounding_boxes[0]['left'] >= 0.5;
+
+
+
             return (
               <div className="section-header-annotation">
-                <SectionHeaderImage entity={entity} pageView={pageView} />
+                <SectionHeaderImage entity={entity} pageView={pageView} shouldFlip={shouldFlip} />
                 <EntityAnnotation
                   key={annotationId}
                   id={annotationId}
@@ -552,7 +558,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
                     showGlosses ? <SectionHeaderGloss header={entity} /> : null
                   }
                   selected={isSelected}
-                  tooltipPlacement="upper-right"
+                  tooltipPlacement={shouldFlip? "swapped":"upper-right"}
                   active={annotationInteractionEnabled}
                   selectedSpanIds={selectedSpanIds}
                   handleSelect={handleSelectEntityAnnotation}

@@ -57,10 +57,16 @@ class FAQ extends React.PureComponent<Props, State> {
   }
 
   onMouseEnter() {
+    logger.log("debug", "mouse-enter-FAQ", {
+      id: this.props.question.id
+    });
     this.props.handleMouseOver(this.props.question.id);
   }
 
   onMouseLeave() {
+    logger.log("debug", "mouse-exit-FAQ", {
+      id: this.props.question.id
+    });
     this.props.handleMouseOut(this.props.question.id);
   }
 
@@ -70,7 +76,7 @@ class FAQ extends React.PureComponent<Props, State> {
     const firstAnswerId = question?question.relationships.definition_sentences[0].id:null;
 
     // both jump to the new entity and call the handler for updating the selected FAQ
-    logger.log("debug", "clicked-jump-to-context", {
+    logger.log("debug", "clicked-FAQ-jump-to-context", {
       id: this.props.question.id,
       entityId: firstAnswerId,
       linkText:

@@ -19,6 +19,8 @@ Use the full entity annotation here and render the gloss next to the underline
 interface Props {
     entity: SectionHeader;
     pageView: PDFPageView;
+    shouldFlip: boolean;
+    
   }
 
   export default class SectionHeaderImage extends React.PureComponent<Props, {}> {
@@ -29,12 +31,9 @@ interface Props {
 
         // console.log(this.props.entity);
         // update so to the side of the text
-        boundingBoxes.map((box) => {box['left'] = box['left']});
+        // boundingBoxes.map((box) => {box['left'] = box['left']});
 
-
-        const shouldFlip = boundingBoxes[0]['left'] >= 0.5;
-
-        const imgClass = shouldFlip ? "section-header-annotation-img-flipped": "section-header-annotation-img";
+        const imgClass = this.props.shouldFlip ? "section-header-annotation-img-flipped": "section-header-annotation-img";
         return (
             <div className={classNames("scholar-reader-annotation-span", imgClass)}
                 style={uiUtils.getPositionInPageView(

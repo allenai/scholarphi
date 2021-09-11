@@ -10,7 +10,8 @@ export type TooltipPlacement =
   | "lower-left"
   | "lower-right"
   | "upper-right"
-  | "right";
+  | "right"
+  | "swapped";
 
 interface Props {
   /**
@@ -77,7 +78,11 @@ export class Tooltip extends React.PureComponent<Props> {
       style.top =
         anchorPosition.top + anchorPosition.height + TOOLTIP_VERTICAL_MARGIN;
     } else if (placement === "upper-right") {
-      // style.transform = "";
+      style.transform = "";
+      const { height: pageHeight } = uiUtils.getPageViewDimensions(pageView);
+      style.bottom = pageHeight - anchorPosition.top + TOOLTIP_VERTICAL_MARGIN;
+    } else if (placement === "swapped") {
+      style.transform = "translate(-100%, 0)";
       const { height: pageHeight } = uiUtils.getPageViewDimensions(pageView);
       style.bottom = pageHeight - anchorPosition.top + TOOLTIP_VERTICAL_MARGIN;
     } else {
