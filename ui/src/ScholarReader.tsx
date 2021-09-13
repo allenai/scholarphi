@@ -38,6 +38,8 @@ import FindBar, { FindQuery } from "./components/search/FindBar";
 //added
 import * as EntitiesLDH from "./data/auto_PAWLS_SPUI_annotations_ldh.json";
 import * as EntitiesSLE from "./data/auto_PAWLS_SPUI_annotations.json";
+import * as EntitiesTutorial from "./data/annotations_tutorial.json";
+
 import logger from "./logging";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
@@ -772,6 +774,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         entitiesFromJson = EntitiesSLE as any as { default: Entity[] };
       } else if (paperName === "LDH_surgery.pdf") {
         entitiesFromJson = EntitiesLDH as any as { default: Entity[] };
+      } else if (paperName === "tutorial.pdf") {
+        entitiesFromJson = EntitiesTutorial as any as { default: Entity[] };
       }
       const entities = entitiesFromJson? entitiesFromJson.default : [];
 
@@ -826,7 +830,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
      * In a past version, these offsets were based roughly off those in the pdf.js "find" functionality:
      * https://github.com/mozilla/pdf.js/blob/16ae7c6960c1296370c1600312f283a68e82b137/web/pdf_find_controller.js#L28-L29
      */
-    const SCROLL_OFFSET_X = 0;
+    const SCROLL_OFFSET_X = +1000;
     const SCROLL_OFFSET_Y = +100;
 
     const { pdfViewerApplication, pdfViewer, pages, entities } = this.state;
@@ -845,10 +849,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
     // if there are multiple bouding boxes, pick the last one 
     const entity = entities.byId[id]
-    let dest = entity.attributes.bounding_boxes[0];
-    if (entity.attributes.bounding_boxes.length > 1){
-      dest = entity.attributes.bounding_boxes[entity.attributes.bounding_boxes.length - 1];
-    } 
+    let dest = entity.attributes.bounding_boxes[entity.attributes.bounding_boxes.length - 1];
+    // if (entity.attributes.bounding_boxes.length > 1){
+    //   dest = entity.attributes.bounding_boxes[entity.attributes.bounding_boxes.length - 1];
+    // } 
 
     /*
      * Use the size of the first loaded page to map from ratio-based entity
@@ -884,7 +888,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     const annotationSpanIDs = entity.attributes.bounding_boxes
       .map((box, i) => {
         const pageNumber = box.page;
-        return `${annotationID}-page-${pageNumber}-span-0`;
+        return `${annotationID}-page-${pageNumber}-span-${i}`;
       });
 
     if (entity.attributes.bounding_boxes.length > 1){

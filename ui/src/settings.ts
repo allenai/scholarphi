@@ -143,9 +143,16 @@ const PRESETS: Preset[] = [
     equationDiagramsEnabled: false,
   },
   {
-    key: "definitions",
+    key: "descriptive",
     FAQsEnabled: false,
+    SectionHeadersEnabled: true,
+    citationGlossesEnabled: true,
+  },
+  {
+    key: "prescriptive",
+    FAQsEnabled: true,
     SectionHeadersEnabled: false,
+    citationGlossesEnabled: false,
   },
   {
     key: "pdf",

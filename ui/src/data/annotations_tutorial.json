@@ -1,0 +1,196 @@
+[
+    {
+        "id": "242",
+        "type": "question",
+        "attributes": {
+            "bounding_boxes": [
+                {
+                    "page": 0,
+                    "left": 0.7,
+                    "top": 0.2,
+                    "width": 0.0756303,
+                    "height": 0.00950119
+                }
+            ],
+            "name": "Question 1",
+            "tex": "f2bb938daf8972ac309c25dab900a79070e1917c",
+            "question_text": "What did the paper do?",
+            "answer_text": "In this paper, we try to make computers better at understanding language.",
+            "definitions": [
+                "This is the first answering sentence to the question"
+            ],
+            "definition_texs": [
+                "This is the answering text that gets rendered in the sidebar"
+            ],
+            "sources": [
+                "sources"
+            ],
+            "snippets": [
+                "This is the snippet of the answering sentence",
+                "Second Snippet"
+            ],
+            "source": "tex-pipeline",
+            "tags": []
+        },
+        "relationships": {
+            "sentence": {
+                "type": "none",
+                "id": "5"
+            },
+            "definition_sentences": [
+                {
+                    "type": "answerSentence",
+                    "id": "230"
+                }
+            ],
+            "snippet_sentences": [
+                {
+                    "type": "answerSentence",
+                    "id": "230"
+                }
+            ]
+        }
+    },
+    {
+        "id": "912ceaf3-53f2-4bad-8596-b8aa86a8b8e5",
+        "type": "sectionHeader",
+        "attributes": {
+            "bounding_boxes": [
+                {
+                    "page": 1,
+                    "left": 0.0976965845909452,
+                    "top": 0.1825242838621989,
+                    "width": 0.0460683081810961,
+                    "height": 0.022464527244578328
+                }
+            ],
+            "summary": "In the last few years, a lot of work has been done to make computer programs that can read and understand what people write. The most common way to do this is to use a program called a \"word vector.\" The word vector is a list of numbers that describe the meaning of a word. In this passage, the author is saying that word vectors are used in programs that answer questions about what people write.",
+            "points": [
+                "Points"
+            ],
+            "source": "tex-pipeline",
+            "tags": []
+        },
+        "relationships": {}
+    },
+    {
+        "id": "6c9d5c46-e7a9-43d4-8fa7-5d05630de3b4",
+        "type": "experience",
+        "attributes": {
+            "bounding_boxes": [
+                {
+                    "page": 0,
+                    "left": 0.19477183692942435,
+                    "top": 0.8585325873926523,
+                    "width": 0.0546653989073976,
+                    "height": 0.01894784354250555
+                }
+            ],
+            "experience_id": "a2fe3a25-b381-4591-a3fc-46e77f3fcaa7",
+            "urls": [
+                "Wiktionary"
+            ],
+            "snippets": [
+                "Long short-term memory (LSTM) is an artificial recurrent neural network (RNN) architecture[1] used in the field of deep learning."
+            ],
+            "source": "tex-pipeline",
+            "tags": []
+        },
+        "relationships": {}
+    },
+    {
+        "id": "230",
+        "type": "answerSentence",
+        "attributes": {
+            "bounding_boxes": [
+                {
+                    "page": 0,
+                    "left": 0.23007982851652012,
+                    "top": 0.6968558837852927,
+                    "width": 0.26454619369838533,
+                    "height": 0.01894784354250555
+                },
+                {
+                    "page": 0,
+                    "left": 0.1500497248335226,
+                    "top": 0.7114064782810107,
+                    "width": 0.34457629738138285,
+                    "height": 0.09248595422204794
+                }
+            ],
+            "Name": "52d25048-734f-41f8-a113-43731ad3e339",
+            "text": "of deep contextualized word representation that language understanding problems, including tex- directly addresses both challenges, can be easily tual entailment, question answering and sentiment integrated into existing models, and signi\ufb01cantly analysis. The addition of ELMo representations improves the state of the art in every considered alone signi\ufb01cantly improves the state of the art case across a range of challenging language un- in every case, including up to 20% relative error derstanding problems.",
+            "simplified_text": "In this paper, we try to make computers better at understanding language. We do that by creating a new kind of word representation that is able to capture the meaning of a word in a sentence. We show that our new representation works better than other kinds of representations.",
+            "tex": "445b601a-4802-43d8-bc1f-a0f2a9971a3b",
+            "tex_start": 0,
+            "tex_end": 5,
+            "source": "tex-pipeline",
+            "tags": []
+        },
+        "relationships": {
+            "question": {
+                "type": "question",
+                "id": "242"
+            },
+            "more_details": {
+                "type": "answerSentence",
+                "id": "232"
+            },
+            "less_details": {},
+            "coaster": [
+                {
+                    "type": "answerSentence",
+                    "id": "230"
+                },
+                {
+                    "type": "answerSentence",
+                    "id": "232"
+                }
+            ]
+        }
+    },
+    {
+        "id": "232",
+        "type": "answerSentence",
+        "attributes": {
+            "bounding_boxes": [
+                {
+                    "page": 0,
+                    "left": 0.510608524449163,
+                    "top": 0.46156029885139394,
+                    "width": 0.34457629738138285,
+                    "height": 0.19512762950029103
+                }
+            ],
+            "Name": "cfcdbaf3-6d97-4212-805a-60a3752d5859",
+            "text": "Combining the internal states in this manner al- problems, including question answering, tex- tual entailment and sentiment analysis. We lows for very rich word representations. Using in- also present an analysis showing that exposing trinsic evaluations, we show that the higher-level the deep internals of the pre-trained network is LSTM states capture context-dependent aspects crucial, allowing downstream models to mix of word meaning (e.g., they can be used with- different types of semi-supervision signals. out modi\ufb01cation to perform well on supervised word sense disambiguation tasks) while lower- 1 Introduction level states model aspects of syntax (e.g., they can Pre-trained word representations (Mikolov et al., be used to do part-of-speech tagging). Simultane- 2013; Pennington et al., 2014) are a key compo- ously exposing all of these signals is highly bene- nent in many neural language understanding mod- \ufb01cial, allowing the learned models select the types els. However, learning high quality representa- of semi-supervision that are most useful for each tions can be challenging. They should ideally end task.",
+            "simplified_text": "A computer program was made to learn how to understand words. It uses a special kind of computer program called a neural network. The neural network is made up of many small programs, each one doing a little job. The small programs are connected together so that they can talk to each other. The neural network was shown thousands of words and asked to look at them. The neural network learned what the words mean and how they are used. It learned to understand the words.",
+            "tex": "0422d066-21c0-4681-a7b5-a6fa391f9557",
+            "tex_start": 0,
+            "tex_end": 5,
+            "source": "tex-pipeline",
+            "tags": []
+        },
+        "relationships": {
+            "question": {
+                "type": "question",
+                "id": "242"
+            },
+            "more_details": {},
+            "less_details": {
+                "type": "answerSentence",
+                "id": "230"
+            },
+            "coaster": [
+                {
+                    "type": "answerSentence",
+                    "id": "230"
+                },
+                {
+                    "type": "answerSentence",
+                    "id": "232"
+                }
+            ]
+        }
+    }
+]

@@ -61,23 +61,9 @@ interface Props {
 
       const divStyle = {
         overflow: 'scroll',
-        maxHeight: '90px',
+        maxHeight: '100px',
       };
 
-
-      // const AccordianDefinitions = UrlDefinitions.map((d) => 
-      // <Accordion>
-      //     <AccordionSummary
-      //           expandIcon={<ExpandMoreIcon />}
-      //           aria-controls={"panel-content ${ d.url }"}
-      //           id={"panel-header ${ d.url }"}>  
-      //               <MedlineLink url={ d.url }>{ d.url }</MedlineLink>                  
-      //           </AccordionSummary>
-      //           <AccordionDetails>
-      //           <div className="paper-summary" style={ divStyle }> { d.snippet } </div>
-      //           </AccordionDetails>
-      //       </Accordion>
-      //   );
       
       const Definitions = UrlDefinitions.map((d) => 
       <div className="experience-summary__section">
@@ -97,7 +83,7 @@ interface Props {
           <table>
             <tbody>
               <td>
-              <div className="experience-summary">
+              <div className="experience-summary__section">
               {Definitions}
               </div>
               <div className="experience-summary__section">
