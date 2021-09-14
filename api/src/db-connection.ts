@@ -279,7 +279,6 @@ export class Connection {
   async getEntitiesForPaper(paperSelector: PaperSelector, entityTypes: EntityType[], includeDuplicateSymbolData: boolean, slim: boolean, version?: number) {
 
     // added
-    console.log('From the DB...')
     // console.log(testEntities['default']);
     
     if (version === undefined) {
