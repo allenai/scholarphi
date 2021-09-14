@@ -155,6 +155,12 @@ const PRESETS: Preset[] = [
     citationGlossesEnabled: false,
   },
   {
+    key: "all",
+    FAQsEnabled: true,
+    SectionHeadersEnabled: true,
+    citationGlossesEnabled: true,
+  },
+  {
     key: "pdf",
     annotationInteractionEnabled: false,
     annotationHintsEnabled: false,
