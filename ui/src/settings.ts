@@ -101,6 +101,8 @@ export interface Settings {
    * disabled as it interferes with built-in text selection in pdf.js.
    */
   sentenceTexCopyOnOptionClickEnabled: boolean;
+
+  authorStatementsEnabled: boolean;
 }
 
 /**
@@ -138,6 +140,10 @@ const PRESETS: Preset[] = [
     key: "skim",
     primerPageEnabled: false,
     annotationHintsEnabled: false,
+  },
+  {
+    key: "author-underline",
+    authorStatementsEnabled: true
   }
 ];
 
@@ -168,6 +174,7 @@ export function getSettings(presets?: string[]) {
     entityEditingEnabled: false,
     sentenceTexCopyOnOptionClickEnabled: false,
     glossEvaluationEnabled: false,
+    authorStatementsEnabled: false,
   };
 
   let settings = DEFAULT_SETTINGS;

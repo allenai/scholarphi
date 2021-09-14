@@ -1306,6 +1306,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       )}
 
                     {this.props.paperId !== undefined &&
+                      this.state.authorStatementsEnabled &&
                       this.state.showSkimmingAnnotations &&
                       discourseObjs.length > 0 && (
                         <UnderlineLayer
