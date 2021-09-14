@@ -47,8 +47,8 @@ interface Props {
   glossEvaluationEnabled: boolean;
   citationAnnotationsEnabled: boolean;
   termAnnotationsEnabled: boolean;
-  showHeaders:boolean;
-  showAnswers:boolean;
+  showHeaders: boolean;
+  showAnswers: boolean;
   symbolUnderlineMethod: SymbolUnderlineMethod;
   definitionsInSymbolGloss: boolean;
   equationDiagramsEnabled: boolean;
@@ -537,15 +537,17 @@ class EntityAnnotationLayer extends React.Component<Props> {
               />
             );
           } else if (isSectionHeader(entity) && this.props.showHeaders) {
-
             // check if should flip the image and placement of tooltip
-            const shouldFlip = entity.attributes.bounding_boxes[0]['left'] >= 0.5;
-
-
+            const shouldFlip =
+              entity.attributes.bounding_boxes[0]["left"] >= 0.5;
 
             return (
               <div className="section-header-annotation">
-                <SectionHeaderImage entity={entity} pageView={pageView} shouldFlip={shouldFlip} />
+                <SectionHeaderImage
+                  entity={entity}
+                  pageView={pageView}
+                  shouldFlip={shouldFlip}
+                />
                 <EntityAnnotation
                   key={annotationId}
                   id={annotationId}
@@ -558,7 +560,7 @@ class EntityAnnotationLayer extends React.Component<Props> {
                     showGlosses ? <SectionHeaderGloss header={entity} /> : null
                   }
                   selected={isSelected}
-                  tooltipPlacement={shouldFlip? "swapped":"upper-right"}
+                  tooltipPlacement={shouldFlip ? "swapped" : "upper-right"}
                   active={annotationInteractionEnabled}
                   selectedSpanIds={selectedSpanIds}
                   handleSelect={handleSelectEntityAnnotation}

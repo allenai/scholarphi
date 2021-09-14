@@ -23,12 +23,17 @@
  */
 .paper-summary {
   color: @black;
-  font-size: @medium;
-  line-height: @medium * @line-height-ratio;
+  font-size: @large;
+  line-height: @large * @line-height-ratio;
   min-width: 320px;
+  padding-bottom: 0.4rem;
+
+  .summary-name {
+    font-weight: bolder;
+  }
 
   &__section {
-    padding-bottom: @tooltip-content-vertical-padding;
+    // padding-bottom: @tooltip-content-vertical-padding;
   }
 
   &__title {

@@ -30,16 +30,14 @@ import AppOverlay from "./components/overlay/AppOverlay";
 import PageOverlay from "./components/overlay/PageOverlay";
 import ViewerOverlay from "./components/overlay/ViewerOverlay";
 import PdfjsBrandbar from "./components/pdfjs/PdfjsBrandbar";
-import PdfjsToolbar from "./components/pdfjs/PdfjsToolbar";
 import DefinitionPreview from "./components/preview/DefinitionPreview";
 import PrimerPage from "./components/primer/PrimerPage";
 import FAQBar from "./components/questions/FAQBar";
 import FindBar, { FindQuery } from "./components/search/FindBar";
+import * as EntitiesTutorial from "./data/annotations_tutorial.json";
+import * as EntitiesSLE from "./data/auto_PAWLS_SPUI_annotations.json";
 //added
 import * as EntitiesLDH from "./data/auto_PAWLS_SPUI_annotations_ldh.json";
-import * as EntitiesSLE from "./data/auto_PAWLS_SPUI_annotations.json";
-import * as EntitiesTutorial from "./data/annotations_tutorial.json";
-
 import logger from "./logging";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
@@ -83,7 +81,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     }
     if (props.paperId) {
       loggingContext.paperId = props.paperId;
-      let paper_name = props.paperId.id.split('\/');
+      let paper_name = props.paperId.id.split("/");
     }
     logger.setContext(loggingContext);
 
@@ -193,11 +191,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
   handleFAQMouseOver = (id: string): void => {
     this.setState({ FAQHoveredID: id });
-  }
+  };
 
   handleFAQMouseOut = (id: string): void => {
     this.setState({ FAQHoveredID: null });
-  }
+  };
 
   selectEntityAnnotation = (
     entityId: string,
@@ -363,10 +361,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
            * Add the entity to memory
            */
           entities: stateUtils.add(
-              prevState.entities,
-              createdEntity.id,
-              createdEntity
-            ),
+            prevState.entities,
+            createdEntity.id,
+            createdEntity
+          ),
           /*
            * Select the new entity
            */
@@ -609,7 +607,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     }
   };
 
-
   closeDrawer = (): void => {
     logger.log("debug", "close-drawer");
     this.setState({ drawerMode: "closed" });
@@ -763,20 +760,22 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       // trick the typescript compiler, which gets the type of testEntities
       // wrong for some reason.
 
-      // make sure you take the correct entities for the paper 
+      // make sure you take the correct entities for the paper
 
-      const paperNameSplit = this.props.paperId?.id.split('\/');
-      const paperName =  paperNameSplit?paperNameSplit[paperNameSplit.length-1] : null;
+      const paperNameSplit = this.props.paperId?.id.split("/");
+      const paperName = paperNameSplit
+        ? paperNameSplit[paperNameSplit.length - 1]
+        : null;
       let entitiesFromJson = null;
 
-      if (paperName === "Lupus_Peptides.pdf"){
-        entitiesFromJson = EntitiesSLE as any as { default: Entity[] };
+      if (paperName === "Lupus_Peptides.pdf") {
+        entitiesFromJson = (EntitiesSLE as any) as { default: Entity[] };
       } else if (paperName === "LDH_surgery.pdf") {
-        entitiesFromJson = EntitiesLDH as any as { default: Entity[] };
+        entitiesFromJson = (EntitiesLDH as any) as { default: Entity[] };
       } else if (paperName === "tutorial.pdf") {
-        entitiesFromJson = EntitiesTutorial as any as { default: Entity[] };
+        entitiesFromJson = (EntitiesTutorial as any) as { default: Entity[] };
       }
-      const entities = entitiesFromJson? entitiesFromJson.default : [];
+      const entities = entitiesFromJson ? entitiesFromJson.default : [];
 
       // const entities = await api.getDedupedEntities(this.props.paperId.id, true);
       this.setState({
@@ -845,12 +844,20 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     ) {
       return false;
     }
-    // if there are multiple bouding boxes, pick the last one 
-    const entity = entities.byId[id]
-    let dest = entity.attributes.bounding_boxes[entity.attributes.bounding_boxes.length - 1];
+    // if there are multiple bouding boxes, pick the one that appears first in the paper.
+    const entity = entities.byId[id];
+    let dest = entity.attributes.bounding_boxes.sort((b1, b2) => {
+      if (b1.page !== b2.page) {
+        return b1.page - b2.page;
+      }
+      if (Math.abs(b1.left - b2.left) > 0.2) {
+        return b1.left - b2.left;
+      }
+      return b1.top - b2.top;
+    })[0];
     // if (entity.attributes.bounding_boxes.length > 1){
     //   dest = entity.attributes.bounding_boxes[entity.attributes.bounding_boxes.length - 1];
-    // } 
+    // }
 
     /*
      * Use the size of the first loaded page to map from ratio-based entity
@@ -872,19 +879,18 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     //   top + SCROLL_OFFSET_Y,
     // ]);
 
-   pdfViewer.scrollPageIntoView({
-        pageNumber: dest.page + 1, 
-        destArray: [
-          undefined,
-          { name: "XYZ" },
-          SCROLL_OFFSET_X, 
-          top + SCROLL_OFFSET_Y,
-        ],
-        allowNegativeOffset: true,
-      });
+    pdfViewer.scrollPageIntoView({
+      pageNumber: dest.page + 1,
+      destArray: [
+        undefined,
+        { name: "XYZ" },
+        SCROLL_OFFSET_X,
+        top + SCROLL_OFFSET_Y,
+      ],
+      allowNegativeOffset: true,
+    });
 
     // setTimeout(function () {pdfViewerApplication.pdfViewer.container.scrollLeft -= 300}, 50)
-
 
     /*
      * Store the position that the paper has jumped to.
@@ -893,30 +899,29 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       jumpTarget: id,
     });
 
-    
-
     /*
      * added: also select the entity
      */
-    const annotationID =  `entity-${id}-annotation`;
-    const annotationSpanIDs = entity.attributes.bounding_boxes
-      .map((box, i) => {
-        const pageNumber = box.page;
-        return `${annotationID}-page-${pageNumber}-span-${i}`;
-      });
+    const annotationID = `entity-${id}-annotation`;
+    const annotationSpanIDs = entity.attributes.bounding_boxes.map((box, i) => {
+      const pageNumber = box.page;
+      return `${annotationID}-page-${pageNumber}-span-${i}`;
+    });
 
-    if (entity.attributes.bounding_boxes.length > 1){
-      this.selectEntityAnnotation(id, annotationID, annotationSpanIDs[annotationSpanIDs.length - 1])
+    if (entity.attributes.bounding_boxes.length > 1) {
+      this.selectEntityAnnotation(
+        id,
+        annotationID,
+        annotationSpanIDs[annotationSpanIDs.length - 1]
+      );
     } else {
-      this.selectEntityAnnotation(id, annotationID, annotationSpanIDs[0])
+      this.selectEntityAnnotation(id, annotationID, annotationSpanIDs[0]);
     }
 
     return true;
   };
 
   render() {
-
-
     let findMatchEntityId: string | null = null;
     if (
       this.state.findMatchedEntities !== null &&

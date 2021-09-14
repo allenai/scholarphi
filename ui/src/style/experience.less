@@ -1,34 +1,46 @@
 /**
  * Term definition layout
  */
- .experience-summary {
-    max-width: @paper-summary-width;
-    padding: @padding;
-    color: @s2-text-default;
-  }
-  
-  /**
+.experience-summary {
+  max-width: @paper-summary-width;
+  padding: @padding;
+  color: @s2-text-default;
+}
+
+/**
    * Term definition fonts
    */
-  .experience-summary {
-    color: @black;
-    font-size: @medium;
-    line-height: @medium * @line-height-ratio;
-    min-width: 320px;
-  
-    &__section {
-      padding-bottom: @tooltip-content-vertical-padding;
-    }
-  
-    &__title {
-      font-size: @large;
-      line-height: @large * @line-height-ratio;
-      font-weight: bold;
-    }
-  
-    &__abstract__show-more-label {
-      color: deepskyblue;
-    }
-  
+.experience-summary {
+  // color: @black;
+  // font-size: @medium;
+  // line-height: @medium * @line-height-ratio;
+  // min-width: 320px;
+
+  // &__section {
+  //   padding-bottom: @tooltip-content-vertical-padding;
+  // }
+
+  &__title {
+    font-size: @large;
+    line-height: @large * @line-height-ratio;
+    font-weight: bold;
   }
-  
+
+  &__section {
+    p {
+      max-height: unset !important;
+    }
+
+    &.source {
+      text-align: right;
+      font-weight: lighter;
+      font-size: smaller;
+      color: gray;
+      font-style: italic;
+    }
+  }
+
+  &__abstract__show-more-label {
+    color: deepskyblue;
+  }
+}

@@ -114,7 +114,8 @@ export default class AnswerSentenceGloss extends React.PureComponent<
             <div className="paper-summary__section">
               {" "}
               {/* <strong> Simple answer: </strong> {definition}{" "} */}
-              <strong>The gist:</strong> {definition}
+              {/* <strong>The gist:</strong> {definition} */}
+              <span className="summary-name">The gist:</span> {definition}
             </div>
             <p>
               {" "}

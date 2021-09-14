@@ -9,9 +9,7 @@ interface Props {
  */
 class MedlineLink extends React.PureComponent<Props, {}> {
   render() {
-    return (
-      <p> Retreived from {this.props.url} </p>
-    );
+    return <p>retrieved from {this.props.url} </p>;
   }
 }
 

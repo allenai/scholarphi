@@ -58,14 +58,14 @@ class FAQ extends React.PureComponent<Props, State> {
 
   onMouseEnter() {
     logger.log("debug", "mouse-enter-FAQ", {
-      id: this.props.question.id
+      id: this.props.question.id,
     });
     this.props.handleMouseOver(this.props.question.id);
   }
 
   onMouseLeave() {
     logger.log("debug", "mouse-exit-FAQ", {
-      id: this.props.question.id
+      id: this.props.question.id,
     });
     this.props.handleMouseOut(this.props.question.id);
   }
@@ -73,7 +73,9 @@ class FAQ extends React.PureComponent<Props, State> {
   onClick() {
     const { entities, question } = this.props;
 
-    const firstAnswerId = question?question.relationships.definition_sentences[0].id:null;
+    const firstAnswerId = question
+      ? question.relationships.definition_sentences[0].id
+      : null;
 
     // both jump to the new entity and call the handler for updating the selected FAQ
     logger.log("debug", "clicked-FAQ-jump-to-context", {
@@ -139,7 +141,6 @@ class FAQ extends React.PureComponent<Props, State> {
           })
         : null;
 
-
     let details = null;
 
     const generalAnswer = definition ? (
@@ -149,7 +150,7 @@ class FAQ extends React.PureComponent<Props, State> {
         entityId={definition.contextEntity.id}
         handleJumpToEntity={this.props.handleJumpToEntity}
       >
-        {" ("}1{") "}
+        {" ["}1{"] "}
       </EntityLink>
     ) : null;
 
@@ -162,7 +163,9 @@ class FAQ extends React.PureComponent<Props, State> {
             entityId={answer.id}
             handleJumpToEntity={this.props.handleJumpToEntity}
           >
-            {" ("}{i+2}{") "}
+            {" ["}
+            {i + 2}
+            {"] "}
           </EntityLink>
         );
       });
@@ -186,7 +189,9 @@ class FAQ extends React.PureComponent<Props, State> {
       >
         <p className="faq__question">{`${this.props.question.attributes.question_text}`}</p>
         <p className="faq__answer">{`${this.props.question.attributes.answer_text}`}</p>
-        Relevant passage(s): {generalAnswer} {details}
+        Relevant passage
+        {answerCoaster !== null && answerCoaster.length > 1 ? "s" : ""}:{" "}
+        {generalAnswer} {details}
         {/* {details !== null && <span>: {details}</span>} */}
       </div>
     );
