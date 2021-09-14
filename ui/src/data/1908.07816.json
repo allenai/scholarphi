@@ -1,6 +1,2166 @@
 [
   {
-    "text": "Our contributions are threefold. ",
+    "text": "we call work",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7801568627450981,
+        "top": 0.8252070707070707,
+        "width": 0.08632516339869278,
+        "height": 0.012578282828282772,
+        "page": 0
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we describe in detail a novel emotion - tracking dialog generation model that learns the emotional interactions directly from the data",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3350114379084967,
+        "top": 0.5878712121212121,
+        "width": 0.1454607843137255,
+        "height": 0.012578282828282772,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6029671717171717,
+        "width": 0.39255882352941174,
+        "height": 0.012578282828282772,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6180618686868686,
+        "width": 0.3349428104575164,
+        "height": 0.012578282828282772,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we compare our model",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.1988545751633987,
+        "top": 0.6633459595959597,
+        "width": 0.16534640522875818,
+        "height": 0.012578282828282772,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our model outperforms both seq2seq",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4574183006535948,
+        "top": 0.6935366161616161,
+        "width": 0.023362745098039206,
+        "height": 0.012578282828282994,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7086313131313131,
+        "width": 0.2132777777777778,
+        "height": 0.012578282828282772,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our model produces emotionally more appropriate responses",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.738820707070707,
+        "width": 0.39256045751633994,
+        "height": 0.012578282828282772,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we illustrate a human - evaluation procedure",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.1512843137254902,
+        "top": 0.769010101010101,
+        "width": 0.3043071895424837,
+        "height": 0.012578282828282772,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we consider factors",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3981078431372549,
+        "top": 0.7841060606060606,
+        "width": 0.08266830065359482,
+        "height": 0.012578282828282994,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7992007575757576,
+        "width": 0.04430228758169934,
+        "height": 0.012578282828282772,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our main goal is to increase the objectivity",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8595795454545455,
+        "width": 0.27760130718954246,
+        "height": 0.012578282828282772,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our knowledge , the psychology and social science literature does not provide clear rules",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.279047385620915,
+        "top": 0.2557840909090909,
+        "width": 0.2018398692810458,
+        "height": 0.012578282828282827,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.2708787878787879,
+        "width": 0.36962418300653593,
+        "height": 0.012578282828282827,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "it seems such social and emotional intelligence is captured",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.24305555555555555,
+        "top": 0.2859734848484849,
+        "width": 0.23741013071895425,
+        "height": 0.012578282828282827,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3010681818181818,
+        "width": 0.16730065359477125,
+        "height": 0.012578282828282827,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we decided to take the automatic and data - driven approach",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.46154411764705877,
+        "top": 0.3010681818181818,
+        "width": 0.018921568627451035,
+        "height": 0.012578282828282827,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3161628787878788,
+        "width": 0.37483496732026145,
+        "height": 0.012578282828282827,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we describe an end",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.15757352941176472,
+        "top": 0.3312588383838384,
+        "width": 0.09444281045751635,
+        "height": 0.012578282828282827,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we chose the multi - turn setting",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08712418300653595,
+        "top": 0.4067323232323232,
+        "width": 0.20637091503267974,
+        "height": 0.012578282828282827,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we made this design decision",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4231127450980392,
+        "top": 0.45201767676767673,
+        "width": 0.05735294117647066,
+        "height": 0.012578282828282827,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4671123737373737,
+        "width": 0.12950653594771244,
+        "height": 0.012578282828282883,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our work , our approach in generating affect dialogs is",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4574133986928105,
+        "top": 0.6935366161616161,
+        "width": 0.023362745098039206,
+        "height": 0.012578282828282994,
+        "page": 2
+      },
+      {
+        "left": 0.08730392156862746,
+        "top": 0.7086313131313131,
+        "width": 0.3431781045751634,
+        "height": 0.012578282828282772,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we aim at modeling and generating the affect exchanges",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.2372107843137255,
+        "top": 0.753915404040404,
+        "width": 0.2432549019607843,
+        "height": 0.012578282828282772,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.769010101010101,
+        "width": 0.14906699346405228,
+        "height": 0.012578282828282772,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we opted to train our model",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.29632843137254905,
+        "top": 0.8293901515151515,
+        "width": 0.18413888888888885,
+        "height": 0.012578282828282994,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we believe the quality",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.23060294117647057,
+        "top": 0.8595795454545455,
+        "width": 0.15083333333333337,
+        "height": 0.012578282828282772,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we extract the emotion information",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.54975,
+        "top": 0.5223459595959595,
+        "width": 0.23125653594771245,
+        "height": 0.012578282828282883,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we are going to elaborate on how to obtain c t",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.890890522875817,
+        "top": 0.5827260101010101,
+        "width": 0.021202614379084994,
+        "height": 0.012578282828282772,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5977828282828282,
+        "width": 0.28308660130718954,
+        "height": 0.013717171717171683,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we describe our model one element",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5187532679738561,
+        "top": 0.1959229797979798,
+        "width": 0.23282026143790857,
+        "height": 0.012578282828282855,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we first consider the problem",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5358137254901961,
+        "top": 0.24120833333333333,
+        "width": 0.20252287581699335,
+        "height": 0.0125782828282828,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we are able to achieve this goal",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5358137254901961,
+        "top": 0.7992007575757576,
+        "width": 0.20424836601307184,
+        "height": 0.012578282828282772,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we make use",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5813202614379085,
+        "top": 0.8293901515151515,
+        "width": 0.08472875816993475,
+        "height": 0.012578282828282994,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we desire a richer distinction",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5319460784313725,
+        "top": 0.8746755050505051,
+        "width": 0.1892205882352942,
+        "height": 0.012578282828282772,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we need an encoder",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6708496732026143,
+        "top": 0.738820707070707,
+        "width": 0.1265735294117648,
+        "height": 0.012578282828282772,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we need a decoder",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6365343137254902,
+        "top": 0.769010101010101,
+        "width": 0.12019117647058819,
+        "height": 0.012578282828282772,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we trained our model using two different datasets",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5187532679738561,
+        "top": 0.38346590909090905,
+        "width": 0.3304052287581699,
+        "height": 0.012578282828282827,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we used two different dialog corpora",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5187532679738561,
+        "top": 0.45926262626262626,
+        "width": 0.2534313725490197,
+        "height": 0.012578282828282827,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we are able to map each utterance x j",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.25606699346405226,
+        "top": 0.11992929292929293,
+        "width": 0.22439542483660135,
+        "height": 0.012578282828282841,
+        "page": 4
+      },
+      {
+        "left": 0.08741666666666667,
+        "top": 0.1349861111111111,
+        "width": 0.012988562091503272,
+        "height": 0.013718434343434338,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our experiments , the models were first trained on the cornell movie dialogs corpus",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5358137254901961,
+        "top": 0.6614583333333334,
+        "width": 0.3762777777777778,
+        "height": 0.012578282828282772,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6765530303030304,
+        "width": 0.20813888888888898,
+        "height": 0.012578282828282772,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we adopted this training pattern",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6628954248366014,
+        "top": 0.6916477272727273,
+        "width": 0.22542156862745089,
+        "height": 0.012578282828282772,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we took segments",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8327598039215687,
+        "top": 0.7369330808080807,
+        "width": 0.08207843137254889,
+        "height": 0.012578282828282994,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7520277777777777,
+        "width": 0.03964379084967318,
+        "height": 0.012578282828282772,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we created m",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.715967320261438,
+        "top": 0.781185606060606,
+        "width": 0.11367647058823527,
+        "height": 0.014712121212121176,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we filtered out those pairs that have at least one utterance with length",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8364885620915032,
+        "top": 0.8124078282828283,
+        "width": 0.07559967320261429,
+        "height": 0.012578282828282772,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8275025252525252,
+        "width": 0.392563725490196,
+        "height": 0.012578282828282994,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we also reduced the frequency",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6238676470588236,
+        "top": 0.8425972222222222,
+        "width": 0.19805882352941173,
+        "height": 0.012578282828282772,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we apply a dense layer",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.17235130718954247,
+        "top": 0.28735858585858587,
+        "width": 0.15015032679738563,
+        "height": 0.012578282828282827,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we then define a new feature vector o t",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.14824346405228758,
+        "top": 0.6832664141414142,
+        "width": 0.2525849673202615,
+        "height": 0.013717171717171683,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we use the cross - entropy loss",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5187532679738561,
+        "top": 0.2950164141414141,
+        "width": 0.19777124183006545,
+        "height": 0.012578282828282827,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we model the probability distribution using an rnn language model",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08712418300653595,
+        "top": 0.5762550505050505,
+        "width": 0.39609640522875816,
+        "height": 0.012578282828282772,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5913497474747474,
+        "width": 0.08231862745098041,
+        "height": 0.012578282828282772,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we apply a softmax layer",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.15561764705882353,
+        "top": 0.7601628787878788,
+        "width": 0.17006209150326795,
+        "height": 0.012578282828282772,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we give more detailed description",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.28444771241830064,
+        "top": 0.18030934343434343,
+        "width": 0.1987614379084967,
+        "height": 0.012578282828282827,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.19540404040404039,
+        "width": 0.026715686274509792,
+        "height": 0.012578282828282855,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we want our conversational agents",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6805980392156863,
+        "top": 0.47133838383838383,
+        "width": 0.23149346405228766,
+        "height": 0.012578282828282827,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our purpose , which is to speak emotionally appropriately and as human - like as possible , we believe",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7803218954248367,
+        "top": 0.4864330808080808,
+        "width": 0.13177287581699337,
+        "height": 0.012578282828282827,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5015277777777778,
+        "width": 0.392563725490196,
+        "height": 0.012578282828282883,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5166224747474748,
+        "width": 0.12831209150326806,
+        "height": 0.012578282828282772,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we do recognize that it is not the only way",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8042189542483661,
+        "top": 0.5166224747474748,
+        "width": 0.10787581699346405,
+        "height": 0.012578282828282772,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5317171717171717,
+        "width": 0.1670130718954248,
+        "height": 0.012578282828282772,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we also conducted human evaluation experiment",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5960669934640523,
+        "top": 0.5468131313131314,
+        "width": 0.31853758169934643,
+        "height": 0.012578282828282772,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our choice of including s2s is",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.2565290404040404,
+        "width": 0.21212091503267977,
+        "height": 0.012578282828282827,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our final comparision is based on three multi - turn dialog generation models",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.28088398692810457,
+        "top": 0.4074772727272727,
+        "width": 0.19958496732026149,
+        "height": 0.012578282828282883,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4225732323232323,
+        "width": 0.3054787581699347,
+        "height": 0.012578282828282827,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we concatenate all the history utterances",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08730392156862746,
+        "top": 0.46785732323232326,
+        "width": 0.26846405228758163,
+        "height": 0.012578282828282827,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we summarize the configurations",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3871323529411765,
+        "top": 0.5584267676767677,
+        "width": 0.09332679738562094,
+        "height": 0.012578282828282772,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5735214646464646,
+        "width": 0.12157026143790851,
+        "height": 0.012578282828282772,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we still include bleu scores",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.864954248366013,
+        "top": 0.6222866161616162,
+        "width": 0.047142156862745144,
+        "height": 0.012578282828282772,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6373825757575757,
+        "width": 0.1507712418300653,
+        "height": 0.012578282828282772,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we mainly adopt human evaluation",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6793905228758169,
+        "top": 0.1350239898989899,
+        "width": 0.23449673202614385,
+        "height": 0.012578282828282827,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we have made the source",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08712418300653595,
+        "top": 0.7916982323232323,
+        "width": 0.16952777777777778,
+        "height": 0.012578282828282772,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we took several iterations",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3722450980392157,
+        "top": 0.21049873737373737,
+        "width": 0.1082271241830065,
+        "height": 0.012578282828282827,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.22559343434343432,
+        "width": 0.08020915032679736,
+        "height": 0.012578282828282855,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our test set comes from the dailydialog dataset",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4574183006535948,
+        "top": 0.24068939393939395,
+        "width": 0.023362745098039206,
+        "height": 0.0125782828282828,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.2557840909090909,
+        "width": 0.2911960784313726,
+        "height": 0.012578282828282827,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we further curated more negative emotion dialogs",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.1261486928104575,
+        "top": 0.2859734848484849,
+        "width": 0.33557516339869276,
+        "height": 0.012578282828282827,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we provide the details",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.40658660130718954,
+        "top": 0.3010681818181818,
+        "width": 0.07387908496732032,
+        "height": 0.012578282828282827,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3161628787878788,
+        "width": 0.06977124183006538,
+        "height": 0.012578282828282827,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we recruited four more phd students",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.25876307189542486,
+        "top": 0.7394621212121212,
+        "width": 0.2244575163398692,
+        "height": 0.012578282828282772,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7545568181818182,
+        "width": 0.03511274509803923,
+        "height": 0.012578282828282772,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we first selected the emotionally colored dialogs",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3673153594771242,
+        "top": 0.3542209595959596,
+        "width": 0.11314215686274509,
+        "height": 0.012578282828282827,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.36931565656565657,
+        "width": 0.2042483660130719,
+        "height": 0.012578282828282827,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our purposes we filtered out only those dialogs",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.2532516339869281,
+        "top": 0.4146010101010101,
+        "width": 0.2276290849673202,
+        "height": 0.012578282828282883,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4296957070707071,
+        "width": 0.09006209150326798,
+        "height": 0.012578282828282827,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we recruited two human workers",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.45854738562091496,
+        "top": 0.459885101010101,
+        "width": 0.021918300653594847,
+        "height": 0.012578282828282827,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.474979797979798,
+        "width": 0.20323692810457517,
+        "height": 0.012578282828282827,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "them were phd students",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.410452614379085,
+        "top": 0.49007575757575755,
+        "width": 0.07001470588235292,
+        "height": 0.012578282828282827,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5051704545454546,
+        "width": 0.09114052287581699,
+        "height": 0.012578282828282772,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we found them",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.45854738562091496,
+        "top": 0.5202651515151515,
+        "width": 0.021918300653594847,
+        "height": 0.012578282828282772,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5353598484848485,
+        "width": 0.0766781045751634,
+        "height": 0.012578282828282772,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we randomly selected 50 emotionally positive and 50 emotionally negative dialogs from the two pools",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3323545751633987,
+        "top": 0.6712146464646465,
+        "width": 0.14811111111111108,
+        "height": 0.012578282828282772,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6863093434343435,
+        "width": 0.39255555555555555,
+        "height": 0.012578282828282772,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7014040404040404,
+        "width": 0.12653431372549018,
+        "height": 0.012578282828282994,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we randomly shuffled the 100 dialogs",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5588039215686275,
+        "top": 0.1501199494949495,
+        "width": 0.2545604575163398,
+        "height": 0.012578282828282827,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we conducted t -test on the perplexity obtained",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6071176470588235,
+        "top": 0.5934949494949495,
+        "width": 0.3067712418300653,
+        "height": 0.012590909090908986,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we give the percentage",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7458137254901961,
+        "top": 0.6935366161616161,
+        "width": 0.14954575163398698,
+        "height": 0.012578282828282994,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we report fleiss",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5848790849673203,
+        "top": 0.738820707070707,
+        "width": 0.06326960784313718,
+        "height": 0.012578282828282772,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we did not use fleiss",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7057875816993464,
+        "top": 0.769010101010101,
+        "width": 0.09350163398692812,
+        "height": 0.012578282828282772,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we did not use finns r score",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6369264705882353,
+        "top": 0.8142954545454546,
+        "width": 0.10030718954248374,
+        "height": 0.012578282828282772,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we got high agreement",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7935620915032681,
+        "top": 0.8746755050505051,
+        "width": 0.1212761437908495,
+        "height": 0.012578282828282772,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.889770202020202,
+        "width": 0.03342156862745105,
+        "height": 0.012578282828282772,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we present the experimental results",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6402679738562091,
+        "top": 0.47835984848484847,
+        "width": 0.23090686274509808,
+        "height": 0.012578282828282827,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our raters were collected by 14 february",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7493986928104576,
+        "top": 0.41605555555555557,
+        "width": 0.16269117647058817,
+        "height": 0.012578282828282827,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.4311515151515151,
+        "width": 0.0997075163398693,
+        "height": 0.012578282828282883,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we are able to reduce the dimensionality",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6489035947712418,
+        "top": 0.753915404040404,
+        "width": 0.263611111111111,
+        "height": 0.012578282828282772,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we selected 100 most frequent ( emotionally ) positive words",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7076584967320261,
+        "top": 0.7841060606060606,
+        "width": 0.20443137254901955,
+        "height": 0.012578282828282994,
+        "page": 7
+      },
+      {
+        "left": 0.5190457516339869,
+        "top": 0.7992007575757576,
+        "width": 0.18542320261437906,
+        "height": 0.012578282828282772,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we just visualized the whole output layer weight vector",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8704411764705883,
+        "top": 0.8595795454545455,
+        "width": 0.04343954248366,
+        "height": 0.012578282828282772,
+        "page": 7
+      },
+      {
+        "left": 0.5189330065359476,
+        "top": 0.8746755050505051,
+        "width": 0.3949509803921569,
+        "height": 0.012578282828282772,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we first conducted friedman test",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.17087254901960783,
+        "top": 0.792300505050505,
+        "width": 0.2171192810457516,
+        "height": 0.012578282828282994,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we concatenate the language context vector",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8112238562091503,
+        "top": 0.6180618686868686,
+        "width": 0.10087254901960785,
+        "height": 0.012578282828282772,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6331565656565656,
+        "width": 0.19020261437908492,
+        "height": 0.012578282828282883,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we refer to them",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5658709150326797,
+        "top": 0.6935366161616161,
+        "width": 0.10827287581699352,
+        "height": 0.012578282828282994,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we will see clear differences",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8624297385620915,
+        "top": 0.7237260101010101,
+        "width": 0.04966503267973854,
+        "height": 0.012578282828282772,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.738820707070707,
+        "width": 0.13320915032679737,
+        "height": 0.012578282828282772,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we may wonder how hran and meed differ",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.772937908496732,
+        "top": 0.39163762626262627,
+        "width": 0.1397614379084967,
+        "height": 0.012578282828282827,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.4067323232323232,
+        "width": 0.16322058823529417,
+        "height": 0.012578282828282827,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we decided to visualize the output layer weights",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7557254901960785,
+        "top": 0.4369229797979798,
+        "width": 0.15637091503267964,
+        "height": 0.012578282828282827,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.45201767676767673,
+        "width": 0.1583986928104575,
+        "height": 0.012578282828282827,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we conclude that perplexity alone is not enough for evaluating a dialog system",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.730281045751634,
+        "top": 0.3375,
+        "width": 0.18223039215686265,
+        "height": 0.012578282828282827,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3525959595959596,
+        "width": 0.33838725490196087,
+        "height": 0.012578282828282883,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we present four sample dialogs",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.16684967320261437,
+        "top": 0.5097866161616161,
+        "width": 0.2034183006535948,
+        "height": 0.012578282828282883,
+        "page": 8
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we can see that meed is able to generate more emotional content",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3220424836601307,
+        "top": 0.555070707070707,
+        "width": 0.15842320261437914,
+        "height": 0.012578282828282772,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5701654040404041,
+        "width": 0.28982843137254904,
+        "height": 0.012578282828282772,
+        "page": 8
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we can observe from the first two plots that positive words ( green dots",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.14004248366013072,
+        "top": 0.3348888888888889,
+        "width": 0.3431781045751634,
+        "height": 0.012578282828282827,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.34998484848484845,
+        "width": 0.15789052287581695,
+        "height": 0.012578282828282827,
+        "page": 8
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we pre - trained our model",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5187532679738561,
+        "top": 0.44135101010101013,
+        "width": 0.16750816993464068,
+        "height": 0.012578282828282827,
+        "page": 8
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we adopted this particular training order",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.834532679738562,
+        "top": 0.4564457070707071,
+        "width": 0.07755718954248358,
+        "height": 0.012578282828282827,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.47154040404040404,
+        "width": 0.1850245098039216,
+        "height": 0.012578282828282883,
+        "page": 8
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our model learns how to respond properly in a data - driven way",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6390882352941176,
+        "top": 0.5168257575757575,
+        "width": 0.273436274509804,
+        "height": 0.012578282828282772,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5319204545454546,
+        "width": 0.14322875816993463,
+        "height": 0.012578282828282772,
+        "page": 8
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we plan to train our model",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7110212418300653,
+        "top": 0.5772058080808081,
+        "width": 0.17976143790849675,
+        "height": 0.012578282828282772,
+        "page": 8
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we used the liwc text analysis program",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08730392156862746,
+        "top": 0.7841060606060606,
+        "width": 0.28403431372549015,
+        "height": 0.012578282828282994,
+        "page": 8
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we believe this emotion recognition step is",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.376202614379085,
+        "top": 0.7841060606060606,
+        "width": 0.10425816993464043,
+        "height": 0.012578282828282994,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7992007575757576,
+        "width": 0.18446078431372548,
+        "height": 0.012578282828282772,
+        "page": 8
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we can consider using more fine - grained emotion categories",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08730392156862746,
+        "top": 0.8746755050505051,
+        "width": 0.39316666666666666,
+        "height": 0.012578282828282772,
+        "page": 8
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we used both perplexity measures",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.722140522875817,
+        "top": 0.8044267676767677,
+        "width": 0.19269771241830058,
+        "height": 0.012578282828282772,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8195214646464647,
+        "width": 0.03492320261437909,
+        "height": 0.012578282828282772,
+        "page": 8
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we were able to determine when to stop training our model",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5189330065359476,
+        "top": 0.8497108585858586,
+        "width": 0.39566666666666683,
+        "height": 0.012578282828282772,
+        "page": 8
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we briefly discuss how our framework can incorporate other components",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.1917156862745098,
+        "top": 0.6922310606060605,
+        "width": 0.28875000000000006,
+        "height": 0.012578282828282772,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7073257575757576,
+        "width": 0.20490196078431377,
+        "height": 0.012578282828282772,
+        "page": 8
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we have demonstrated how to do so by ( 1 ) modeling utterances",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8910212418300653,
+        "top": 0.47240025252525253,
+        "width": 0.021075163398692864,
+        "height": 0.012578282828282827,
+        "page": 9
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.4874949494949495,
+        "width": 0.39255555555555544,
+        "height": 0.012578282828282827,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we would like to investigate the diversity issue",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6622107843137255,
+        "top": 0.562969696969697,
+        "width": 0.25264052287581706,
+        "height": 0.012578282828282772,
+        "page": 9
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5780643939393939,
+        "width": 0.06088235294117639,
+        "height": 0.012578282828282772,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we would also like to adopt the transformer architecture",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5781143790849673,
+        "top": 0.6082550505050505,
+        "width": 0.33673529411764713,
+        "height": 0.012578282828282772,
+        "page": 9
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6233497474747475,
+        "width": 0.0463986928104575,
+        "height": 0.012578282828282772,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we thus highly recommend this combination",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3569232026143791,
+        "top": 0.4573055555555555,
+        "width": 0.12628594771241825,
+        "height": 0.012578282828282883,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.47240025252525253,
+        "width": 0.1752075163398693,
+        "height": 0.012578282828282827,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our model uses rnns",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5376830808080808,
+        "width": 0.1500866013071896,
+        "height": 0.012578282828282772,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we would like to adopt the transformer architecture",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3882418300653595,
+        "top": 0.7490126262626262,
+        "width": 0.09221895424836596,
+        "height": 0.012578282828282772,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7641073232323232,
+        "width": 0.2717794117647059,
+        "height": 0.012578282828282772,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we hope to increase the performance",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.20956535947712418,
+        "top": 0.7942967171717171,
+        "width": 0.25321568627450974,
+        "height": 0.012578282828282772,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we believe reproducing conversational and emotional intelligence will make social chatbots",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08712418300653595,
+        "top": 0.8595795454545455,
+        "width": 0.39609967320261436,
+        "height": 0.012578282828282772,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8746755050505051,
+        "width": 0.21318300653594774,
+        "height": 0.012578282828282772,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Our contributions are threefold.",
     "label": "Contribution",
     "bboxes": [
       {
@@ -17,7 +2177,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Since being able to track several turns is really important, we made this design decision from the beginning, in contrast to most related work where models are only trained and tested on single-turn dialogs. ",
+    "text": "Since being able to track several turns is really important, we made this design decision from the beginning, in contrast to most related work where models are only trained and tested on single-turn dialogs.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -62,7 +2222,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "To give attention to different parts of the context while generating responses, Xing et al. ",
+    "text": "To give attention to different parts of the context while generating responses, Xing et al.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -117,7 +2277,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "contrast to Affect-LM, Asghars neural affect dialog model aims at generating explicit responses given a particular utterance. ",
+    "text": "contrast to Affect-LM, Asghars neural affect dialog model aims at generating explicit responses given a particular utterance.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -142,13 +2302,13 @@
         "page": 2
       }
     ],
-    "section": "2 Related Work",
+    "section": "",
     "prob": null,
     "is_author_statement": false,
-    "is_in_expected_section": true
+    "is_in_expected_section": false
   },
   {
-    "text": "However, literature in affective science does not necessarily validate such rules. ",
+    "text": "However, literature in affective science does not necessarily validate such rules.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -172,7 +2332,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "As much as these work in the above section inspired our work, our approach in generating affect dialogs is significantly different. ",
+    "text": "As much as these work in the above section inspired our work, our approach in generating affect dialogs is significantly different.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -197,13 +2357,13 @@
         "page": 2
       }
     ],
-    "section": "2 Related Work",
+    "section": "",
     "prob": null,
     "is_author_statement": true,
-    "is_in_expected_section": true
+    "is_in_expected_section": false
   },
   {
-    "text": "The main idea is to use an internal memory module to capture the emotion dynamics during decoding, and an external memory module to model emotional expressions explicitly by assigning different probability values to emotional words as opposed to regular words. ",
+    "text": "The main idea is to use an internal memory module to capture the emotion dynamics during decoding, and an external memory module to model emotional expressions explicitly by assigning different probability values to emotional words as opposed to regular words.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -310,7 +2470,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "We adopted this training pattern because the Cornell dataset is bigger but noisier, while DailyDialog is smaller but more daily-based. ",
+    "text": "We adopted this training pattern because the Cornell dataset is bigger but noisier, while DailyDialog is smaller but more daily-based.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -341,7 +2501,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "However, for our purpose, which is to speak emotionally appropriately and as human-like as possible, we believe this is a good measure. ",
+    "text": "However, for our purpose, which is to speak emotionally appropriately and as human-like as possible, we believe this is a good measure.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -372,7 +2532,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "But such human experiments are sensitive to risk factors if the experiment is not carefully designed. ",
+    "text": "But such human experiments are sensitive to risk factors if the experiment is not carefully designed.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -403,7 +2563,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "However, recent study [22] suggests that it does not align well with human evaluation. ",
+    "text": "However, recent study [22] suggests that it does not align well with human evaluation.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -427,7 +2587,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "On the contrary, we did not use Finns r score for contextual coherence and emotional appropriateness because it is only reasonable when the observed variance is significantly less than the chance variance [40], which did not apply to these two criteria. ",
+    "text": "On the contrary, we did not use Finns r score for contextual coherence and emotional appropriateness because it is only reasonable when the observed variance is significantly less than the chance variance [40], which did not apply to these two criteria.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -472,7 +2632,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "We may wonder how HRAN and MEED differ in terms of the distributional representations of their respective vocabularies (words in the language model, and affect words). ",
+    "text": "We may wonder how HRAN and MEED differ in terms of the distributional representations of their respective vocabularies (words in the language model, and affect words).",
     "label": "Novelty",
     "bboxes": [
       {
@@ -510,7 +2670,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "However, for all of the three criteria in human evaluation, HRAN actually outperforms S2S. ",
+    "text": "However, for all of the three criteria in human evaluation, HRAN actually outperforms S2S.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -565,7 +2725,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "On the contrary, the emotion weights in MEED, in the last plot, have a clearer clustering effect, i.e., positive words are mainly grouped on the top-left, while negative words are mainly grouped at the bottom-right. ",
+    "text": "On the contrary, the emotion weights in MEED, in the last plot, have a clearer clustering effect, i.e., positive words are mainly grouped on the top-left, while negative words are mainly grouped at the bottom-right.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -603,7 +2763,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "However, the choice of emotion classifier is not strictly limited to LIWC. ",
+    "text": "However, the choice of emotion classifier is not strictly limited to LIWC.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -627,7 +2787,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "However they are still in an early stage. ",
+    "text": "However they are still in an early stage.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -737,7 +2897,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Our model uses RNNs to encode the input sequences, and GRU cells to capture long-term dependency among different positions in the sequences. ",
+    "text": "Our model uses RNNs to encode the input sequences, and GRU cells to capture long-term dependency among different positions in the sequences.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -762,7 +2922,7 @@
         "page": 9
       }
     ],
-    "section": "5 Conclusion and Future Work",
+    "section": "",
     "prob": null,
     "is_author_statement": true,
     "is_in_expected_section": false
@@ -799,7 +2959,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "In this paper, we describe an end-to-end Multi-turn Emotionally Engaging Dialog model (MEED), capable of recognizing emotions and generating emotionally appropriate and humanlike responses with the ultimate goal of reproducing social behaviors that are habitual in human-human conversations. ",
+    "text": "In this paper, we describe an end-to-end Multi-turn Emotionally Engaging Dialog model (MEED), capable of recognizing emotions and generating emotionally appropriate and humanlike responses with the ultimate goal of reproducing social behaviors that are habitual in human-human conversations.",
     "label": "Objective",
     "bboxes": [
       {
@@ -851,7 +3011,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Most of related work focused on integrating affect information into the transduction vector space using either VAD or LIWC, we aim at modeling and generating the affect exchanges in human dialogs using a dedicated embedding layer. ",
+    "text": "Most of related work focused on integrating affect information into the transduction vector space using either VAD or LIWC, we aim at modeling and generating the affect exchanges in human dialogs using a dedicated embedding layer.",
     "label": "Objective",
     "bboxes": [
       {
@@ -890,13 +3050,13 @@
         "page": 2
       }
     ],
-    "section": "2 Related Work",
+    "section": "",
     "prob": null,
     "is_author_statement": true,
     "is_in_expected_section": false
   },
   {
-    "text": "We are able to achieve this goal, i.e., capturing the emotion information carried in the context X , in the encoder, thanks to LIWC. ",
+    "text": "We are able to achieve this goal, i.e., capturing the emotion information carried in the context X , in the encoder, thanks to LIWC.",
     "label": "Objective",
     "bboxes": [
       {
@@ -927,7 +3087,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "The main objective of the emotion embedding layer is to recognize the affect information in the given utterances so that the model can respond with emotionally appropriate replies. ",
+    "text": "The main objective of the emotion embedding layer is to recognize the affect information in the given utterances so that the model can respond with emotionally appropriate replies.",
     "label": "Objective",
     "bboxes": [
       {
@@ -982,7 +3142,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "However, for our purpose, which is to speak emotionally appropriately and as human-like as possible, we believe this is a good measure. ",
+    "text": "However, for our purpose, which is to speak emotionally appropriately and as human-like as possible, we believe this is a good measure.",
     "label": "Objective",
     "bboxes": [
       {
@@ -1013,7 +3173,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "For our purposes we filtered out only those dialogs where more than a half of utterances have non-neutral emotional labels, resulting in 78 emotionally positive dialogs and 14 emotionally negative dialogs. ",
+    "text": "For our purposes we filtered out only those dialogs where more than a half of utterances have non-neutral emotional labels, resulting in 78 emotionally positive dialogs and 14 emotionally negative dialogs.",
     "label": "Objective",
     "bboxes": [
       {
@@ -1075,7 +3235,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Recently, a number of researchers begain developing automatic and data-driven evaluation methods [24, 38], with the ultimate goal of replacing human evaluation. ",
+    "text": "Recently, a number of researchers begain developing automatic and data-driven evaluation methods [24, 38], with the ultimate goal of replacing human evaluation.",
     "label": "Objective",
     "bboxes": [
       {
@@ -1113,7 +3273,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "capable of recognizing and generating emotionally appropriate responses, which is the first step toward such a goal. ",
+    "text": "capable of recognizing and generating emotionally appropriate responses, which is the first step toward such a goal.",
     "label": "Objective",
     "bboxes": [
       {
@@ -1137,7 +3297,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "For future directions, we would like to investigate the diversity issue of the responses generated, possibly by extending the mutual information objective function [17] to multi-turn settings. ",
+    "text": "For future directions, we would like to investigate the diversity issue of the responses generated, possibly by extending the mutual information objective function [17] to multi-turn settings.",
     "label": "Objective",
     "bboxes": [
       {
@@ -1175,7 +3335,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Many application areas show significant benefits of integrating affect information in natural language dialogs. ",
+    "text": "Many application areas show significant benefits of integrating affect information in natural language dialogs.",
     "label": "Result",
     "bboxes": [
       {
@@ -1193,13 +3353,13 @@
         "page": 0
       }
     ],
-    "section": "1 Introduction",
+    "section": "",
     "prob": null,
     "is_author_statement": false,
-    "is_in_expected_section": true
+    "is_in_expected_section": false
   },
   {
-    "text": "Offline experiments show that our model outperforms both seq2seq and HRAN by a significant amount. ",
+    "text": "Offline experiments show that our model outperforms both seq2seq and HRAN by a significant amount.",
     "label": "Result",
     "bboxes": [
       {
@@ -1224,13 +3384,13 @@
         "page": 1
       }
     ],
-    "section": "1 Introduction",
+    "section": "",
     "prob": null,
     "is_author_statement": true,
-    "is_in_expected_section": true
+    "is_in_expected_section": false
   },
   {
-    "text": "Further experiments with human evaluation show our model produces emotionally more appropriate responses than both baselines, while also improving the language fluency. ",
+    "text": "Further experiments with human evaluation show our model produces emotionally more appropriate responses than both baselines, while also improving the language fluency.",
     "label": "Result",
     "bboxes": [
       {
@@ -1268,7 +3428,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "See the discussion section for more details on how to do this. ",
+    "text": "See the discussion section for more details on how to do this.",
     "label": "Result",
     "bboxes": [
       {
@@ -1292,7 +3452,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "See Table 1 for the sizes of the training and validation sets. ",
+    "text": "See Table 1 for the sizes of the training and validation sets.",
     "label": "Result",
     "bboxes": [
       {
@@ -1378,7 +3538,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "For the first two examples, we can see that MEED is able to generate more emotional content (like fun and congratulations) that is appropriate according to the context. ",
+    "text": "For the first two examples, we can see that MEED is able to generate more emotional content (like fun and congratulations) that is appropriate according to the context.",
     "label": "Result",
     "bboxes": [
       {
@@ -1416,7 +3576,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "We can observe from the first two plots that positive words (green dots) and negative words (red dots) are scattered around and mixed with each other in the language model weights for HRAN and MEED respectively, which means no emotion information is captured in these weights. ",
+    "text": "We can observe from the first two plots that positive words (green dots) and negative words (red dots) are scattered around and mixed with each other in the language model weights for HRAN and MEED respectively, which means no emotion information is captured in these weights.",
     "label": "Result",
     "bboxes": [
       {
@@ -1461,7 +3621,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "[16] found users frustration caused by a computer system can be alleviated by computer-initiated emotional support, by providing feedback on emotional content along with sympathy and empathy. ",
+    "text": "[16] found users frustration caused by a computer system can be alleviated by computer-initiated emotional support, by providing feedback on emotional content along with sympathy and empathy.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1500,13 +3660,13 @@
         "page": 0
       }
     ],
-    "section": "1 Introduction",
+    "section": "",
     "prob": 0.5,
     "is_author_statement": false,
     "is_in_expected_section": false
   },
   {
-    "text": "[14] developed a customer support neural chatbot, capable of generating dialogs similar to the humans in terms of empathic and passionate tones, potentially serving as proxy customer support agents on social media platforms. ",
+    "text": "[14] developed a customer support neural chatbot, capable of generating dialogs similar to the humans in terms of empathic and passionate tones, potentially serving as proxy customer support agents on social media platforms.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1545,13 +3705,13 @@
         "page": 0
       }
     ],
-    "section": "1 Introduction",
+    "section": "",
     "prob": 0.5,
     "is_author_statement": false,
     "is_in_expected_section": false
   },
   {
-    "text": "In a qualitative study [47], participants expressed an interest in chatbots capable of serving as an attentive listener and providing motivational support, thus fulfilling users emotional needs. ",
+    "text": "In a qualitative study [47], participants expressed an interest in chatbots capable of serving as an attentive listener and providing motivational support, thus fulfilling users emotional needs.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1583,13 +3743,13 @@
         "page": 0
       }
     ],
-    "section": "1 Introduction",
+    "section": "",
     "prob": 0.5,
     "is_author_statement": false,
     "is_in_expected_section": false
   },
   {
-    "text": "(3) We illustrate a human-evaluation procedure for judging machine produced emotional dialogs. ",
+    "text": "(3) We illustrate a human-evaluation procedure for judging machine produced emotional dialogs.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1613,7 +3773,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "We chose the multi-turn setting because a model suitable for single-turn dialogs cannot effectively track earlier context in multi-turn dialogs, both semantically and emotionally. ",
+    "text": "We chose the multi-turn setting because a model suitable for single-turn dialogs cannot effectively track earlier context in multi-turn dialogs, both semantically and emotionally.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1644,7 +3804,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "The paper also proposed the affectively diverse beam search during decoding, so that the generated candidate responses are as affectively diverse as possible. ",
+    "text": "The paper also proposed the affectively diverse beam search during decoding, so that the generated candidate responses are as affectively diverse as possible.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1675,7 +3835,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "The approach is also completely data-driven, thus absent of hand-crafted rules. ",
+    "text": "The approach is also completely data-driven, thus absent of hand-crafted rules.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1693,7 +3853,7 @@
         "page": 2
       }
     ],
-    "section": "2 Related Work",
+    "section": "",
     "prob": 0.5,
     "is_author_statement": false,
     "is_in_expected_section": false
@@ -1806,7 +3966,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "We adopted this training pattern because the Cornell dataset is bigger but noisier, while DailyDialog is smaller but more daily-based. ",
+    "text": "We adopted this training pattern because the Cornell dataset is bigger but noisier, while DailyDialog is smaller but more daily-based.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1837,7 +3997,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Thus a lower perplexity score indicates that the model has better capability of predicting the target sentence, i.e., the humans response. ",
+    "text": "Thus a lower perplexity score indicates that the model has better capability of predicting the target sentence, i.e., the humans response.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1868,7 +4028,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Some researchers [19, 34, 48] argue that perplexity score is not the ideal measurement because for a given context history, one should allow many responses. ",
+    "text": "Some researchers [19, 34, 48] argue that perplexity score is not the ideal measurement because for a given context history, one should allow many responses.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1899,7 +4059,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "However, for our purpose, which is to speak emotionally appropriately and as human-like as possible, we believe this is a good measure. ",
+    "text": "However, for our purpose, which is to speak emotionally appropriately and as human-like as possible, we believe this is a good measure.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1985,7 +4145,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "by randomly sampling the dialogs from the dataset, it may include out-of-context dialogs, causing confusion and ambiguity for human evaluators. ",
+    "text": "by randomly sampling the dialogs from the dataset, it may include out-of-context dialogs, causing confusion and ambiguity for human evaluators.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2010,7 +4170,7 @@
         "page": 6
       }
     ],
-    "section": "4.3.1 Human evaluation setup",
+    "section": "",
     "prob": 0.5,
     "is_author_statement": false,
     "is_in_expected_section": false
@@ -2041,13 +4201,13 @@
         "page": 6
       }
     ],
-    "section": "4.3.1 Human evaluation setup",
+    "section": "",
     "prob": 0.5,
     "is_author_statement": false,
     "is_in_expected_section": false
   },
   {
-    "text": "Table 3, 4 and 5 summarize the human evaluation results on the responses grammatical correctness, contextual coherence, and emotional appropriateness, respectively. ",
+    "text": "Table 3, 4 and 5 summarize the human evaluation results on the responses grammatical correctness, contextual coherence, and emotional appropriateness, respectively.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2085,7 +4245,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "On the contrary, we did not use Finns r score for contextual coherence and emotional appropriateness because it is only reasonable when the observed variance is significantly less than the chance variance [40], which did not apply to these two criteria. ",
+    "text": "On the contrary, we did not use Finns r score for contextual coherence and emotional appropriateness because it is only reasonable when the observed variance is significantly less than the chance variance [40], which did not apply to these two criteria.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2130,7 +4290,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Thus the i th row of the weight matrix W i can be regarded as a vector representation of the i th word in the vocabulary. ",
+    "text": "Thus the i th row of the weight matrix W i can be regarded as a vector representation of the i th word in the vocabulary.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2161,7 +4321,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "We may wonder how HRAN and MEED differ in terms of the distributional representations of their respective vocabularies (words in the language model, and affect words). ",
+    "text": "We may wonder how HRAN and MEED differ in terms of the distributional representations of their respective vocabularies (words in the language model, and affect words).",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2223,7 +4383,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "We adopted this particular training order because we would like our chatbot to talk more like human chit-chats, and the DailyDialog dataset, compared with the bigger Cornell dataset, is more daily-based. ",
+    "text": "We adopted this particular training order because we would like our chatbot to talk more like human chit-chats, and the DailyDialog dataset, compared with the bigger Cornell dataset, is more daily-based.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2268,7 +4428,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Thus, in the future, we plan to train our model on the multi-turn conversations that we have already extracted from the much bigger OpenSubtitles corpus and the EmpatheticDialogues dataset. ",
+    "text": "Thus, in the future, we plan to train our model on the multi-turn conversations that we have already extracted from the much bigger OpenSubtitles corpus and the EmpatheticDialogues dataset.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2306,7 +4466,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "It could be replaced by other well-established affect recognizer or one that is more appropriate to the target domain. ",
+    "text": "It could be replaced by other well-established affect recognizer or one that is more appropriate to the target domain.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2337,7 +4497,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "For future directions, we would like to investigate the diversity issue of the responses generated, possibly by extending the mutual information objective function [17] to multi-turn settings. ",
+    "text": "For future directions, we would like to investigate the diversity issue of the responses generated, possibly by extending the mutual information objective function [17] to multi-turn settings.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2400,13 +4560,13 @@
         "page": 9
       }
     ],
-    "section": "5 Conclusion and Future Work",
+    "section": "",
     "prob": 0.5,
     "is_author_statement": true,
-    "is_in_expected_section": true
+    "is_in_expected_section": false
   },
   {
-    "text": "Compared with RNNs, the Transformer can capture better long-term dependency due to the self-attention mechanism, which is free of locality biases, and is more efficient to train because of better parallelization capability. ",
+    "text": "Compared with RNNs, the Transformer can capture better long-term dependency due to the self-attention mechanism, which is free of locality biases, and is more efficient to train because of better parallelization capability.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2438,13 +4598,13 @@
         "page": 9
       }
     ],
-    "section": "5 Conclusion and Future Work",
+    "section": "",
     "prob": 0.5,
     "is_author_statement": false,
-    "is_in_expected_section": true
+    "is_in_expected_section": false
   },
   {
-    "text": "Following the Transformer architecture, researchers found that pre-training language models on huge amounts of data could largely boost the performance of downstream tasks, and published many pre-trained language models such as BERT [7] and RoBERTa [23]. ",
+    "text": "Following the Transformer architecture, researchers found that pre-training language models on huge amounts of data could largely boost the performance of downstream tasks, and published many pre-trained language models such as BERT [7] and RoBERTa [23].",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2483,13 +4643,13 @@
         "page": 9
       }
     ],
-    "section": "5 Conclusion and Future Work",
+    "section": "",
     "prob": 0.5,
     "is_author_statement": false,
-    "is_in_expected_section": true
+    "is_in_expected_section": false
   },
   {
-    "text": "Further experiments with human evaluation show our model produces emotionally more appropriate responses than both baselines, while also improving the language fluency. ",
+    "text": "Further experiments with human evaluation show our model produces emotionally more appropriate responses than both baselines, while also improving the language fluency.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -2527,7 +4687,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "[34] further trained the seq2seq model with attention mechanism on a self-crawled Weibo (a popular Twitter-like social media website in China) dataset. ",
+    "text": "[34] further trained the seq2seq model with attention mechanism on a self-crawled Weibo (a popular Twitter-like social media website in China) dataset.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -2565,7 +4725,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "To achieve this, we need an encoder to distinguish the affect information in the context, in addition to its semantic meaning. ",
+    "text": "To achieve this, we need an encoder to distinguish the affect information in the context, in addition to its semantic meaning.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -2637,7 +4797,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "To compensate for the inbalance, we further curated more negative emotion dialogs so that the final set has equal emotion distributions. ",
+    "text": "To compensate for the inbalance, we further curated more negative emotion dialogs so that the final set has equal emotion distributions.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -2723,7 +4883,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Thus, in the future, we plan to train our model on the multi-turn conversations that we have already extracted from the much bigger OpenSubtitles corpus and the EmpatheticDialogues dataset. ",
+    "text": "Thus, in the future, we plan to train our model on the multi-turn conversations that we have already extracted from the much bigger OpenSubtitles corpus and the EmpatheticDialogues dataset.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -2761,7 +4921,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "For future directions, we would like to investigate the diversity issue of the responses generated, possibly by extending the mutual information objective function [17] to multi-turn settings. ",
+    "text": "For future directions, we would like to investigate the diversity issue of the responses generated, possibly by extending the mutual information objective function [17] to multi-turn settings.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -2799,7 +4959,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "As future work, we would like to adopt the Transformer architecture to replace the RNNs in our model, and initialize our encoder with pre-trained language models. ",
+    "text": "As future work, we would like to adopt the Transformer architecture to replace the RNNs in our model, and initialize our encoder with pre-trained language models.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -2831,10 +4991,10 @@
         "page": 9
       }
     ],
-    "section": "5 Conclusion and Future Work",
+    "section": "",
     "prob": null,
     "is_author_statement": true,
-    "is_in_expected_section": true
+    "is_in_expected_section": false
   },
   {
     "text": "We believe reproducing conversational and emotional intelligence will make social chatbots more believable and engaging. In this paper, we proposed a multi-turn dialog system",
@@ -2868,7 +5028,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Automatic Evaluation Results. ",
+    "text": "Automatic Evaluation Results.",
     "label": "Result",
     "bboxes": [
       {
@@ -2885,7 +5045,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Human Evaluation Results. ",
+    "text": "Human Evaluation Results.",
     "label": "Result",
     "bboxes": [
       {
@@ -2896,10 +5056,10 @@
         "page": 6
       }
     ],
-    "section": "4 Evaluation 4.4 Results",
+    "section": "",
     "prob": 0.9075150489807129,
     "is_author_statement": false,
-    "is_in_expected_section": true
+    "is_in_expected_section": false
   },
   {
     "text": "We conducted t -test on the perplexity obtained, and results show significant improvements of MEED over S2S and HRAN on the two validation sets (with p -value < 0 . 05).",
@@ -2971,7 +5131,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Figure 2 gives the results in three subplots. ",
+    "text": "Figure 2 gives the results in three subplots.",
     "label": "Result",
     "bboxes": [
       {
@@ -2995,7 +5155,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "The main objective of the emotion embedding layer is to recognize the affect information in the given utterances so that the model can respond with emotionally appropriate replies. ",
+    "text": "The main objective of the emotion embedding layer is to recognize the affect information in the given utterances so that the model can respond with emotionally appropriate replies.",
     "label": "Objective",
     "bboxes": [
       {
@@ -3033,7 +5193,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Most of related work focused on integrating affect information into the transduction vector space using either VAD or LIWC, we aim at modeling and generating the affect exchanges in human dialogs using a dedicated embedding layer. ",
+    "text": "Most of related work focused on integrating affect information into the transduction vector space using either VAD or LIWC, we aim at modeling and generating the affect exchanges in human dialogs using a dedicated embedding layer.",
     "label": "Objective",
     "bboxes": [
       {
@@ -3072,7 +5232,7 @@
         "page": 2
       }
     ],
-    "section": "2 Related Work",
+    "section": "",
     "prob": 0.895667314529419,
     "is_author_statement": true,
     "is_in_expected_section": false
@@ -3109,7 +5269,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "In this paper, we describe an end-to-end Multi-turn Emotionally Engaging Dialog model (MEED), capable of recognizing emotions and generating emotionally appropriate and humanlike responses with the ultimate goal of reproducing social behaviors that are habitual in human-human conversations. ",
+    "text": "In this paper, we describe an end-to-end Multi-turn Emotionally Engaging Dialog model (MEED), capable of recognizing emotions and generating emotionally appropriate and humanlike responses with the ultimate goal of reproducing social behaviors that are habitual in human-human conversations.",
     "label": "Objective",
     "bboxes": [
       {
@@ -3161,7 +5321,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "The main idea is to use an internal memory module to capture the emotion dynamics during decoding, and an external memory module to model emotional expressions explicitly by assigning different probability values to emotional words as opposed to regular words. ",
+    "text": "The main idea is to use an internal memory module to capture the emotion dynamics during decoding, and an external memory module to model emotional expressions explicitly by assigning different probability values to emotional words as opposed to regular words.",
     "label": "Objective",
     "bboxes": [
       {
@@ -3206,7 +5366,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Specifically, we randomly shuffled the 100 dialogs in the test set, then we used the first three utterances of each dialog as the input to the three models being compared (S2S, HRAN, and MEED), and obtain the respective responses. ",
+    "text": "Specifically, we randomly shuffled the 100 dialogs in the test set, then we used the first three utterances of each dialog as the input to the three models being compared (S2S, HRAN, and MEED), and obtain the respective responses.",
     "label": "Method",
     "bboxes": [
       {
@@ -3251,7 +5411,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Additionally, we extract the emotion information from the utterances in X by leveraging an external text analysis program, and use an RNN to encode it into an emotion context vector e , which is combined with c t to produce the distribution. ",
+    "text": "Additionally, we extract the emotion information from the utterances in X by leveraging an external text analysis program, and use an RNN to encode it into an emotion context vector e , which is combined with c t to produce the distribution.",
     "label": "Method",
     "bboxes": [
       {
@@ -3296,7 +5456,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "decoding phase, Equation (16) takes o t , the concatenation of the language context vector s t and the emotion context vector e , and generates a probability distribution over the vocabulary words by applying a softmax layer. ",
+    "text": "decoding phase, Equation (16) takes o t , the concatenation of the language context vector s t and the emotion context vector e , and generates a probability distribution over the vocabulary words by applying a softmax layer.",
     "label": "Method",
     "bboxes": [
       {
@@ -3358,7 +5518,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "To extract the affect information contained in the utterances, we used the LIWC text analysis program. ",
+    "text": "To extract the affect information contained in the utterances, we used the LIWC text analysis program.",
     "label": "Method",
     "bboxes": [
       {

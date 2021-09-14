@@ -1,6 +1,991 @@
 [
   {
-    "text": "It contributes to scholarship by combining planning and inference with model-based approaches at the level of individual learners and items. ",
+    "text": "we study is how , when given some learning materials",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5267026143790849,
+        "top": 0.31099242424242424,
+        "width": 0.3532908496732028,
+        "height": 0.011320707070707037,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we examine a model - based planning approach that holds potential for better adapting to individuals learning characteristics",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.29468954248366014,
+        "top": 0.7261035353535353,
+        "width": 0.5877826797385621,
+        "height": 0.013935606060606065,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we frame the item - selection process",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.2401683006535948,
+        "top": 0.7779911616161616,
+        "width": 0.2081486928104575,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we assess the performance",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4299705882352941,
+        "top": 0.812584595959596,
+        "width": 0.16517483660130716,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our method , these two models nonetheless assume that the best - fitting parameter values are common to the entire population",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.34441666666666665,
+        "top": 0.7120833333333334,
+        "width": 0.4758660130718954,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.11963562091503267,
+        "top": 0.7293800505050505,
+        "width": 0.2648022875816994,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we consider both artificial agents",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5230506535947713,
+        "top": 0.13855555555555557,
+        "width": 0.19777941176470581,
+        "height": 0.011320707070707065,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we use    to indicate whether the response was",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.22266830065359478,
+        "top": 0.5577146464646464,
+        "width": 0.22295915032679736,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we consider two agents interacting",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.17929901960784314,
+        "top": 0.38475252525252523,
+        "width": 0.2138578431372549,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we address the problem",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.32441339869281044,
+        "top": 0.41934469696969695,
+        "width": 0.1385980392156863,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we propose an approach that builds on the literature described",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.2598464052287582,
+        "top": 0.2162512626262626,
+        "width": 0.3660277777777778,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we evaluated the unified system",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.37558006535947713,
+        "top": 0.2681401515151515,
+        "width": 0.19729084967320248,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our proposed technique is",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.2631437908496732,
+        "top": 0.1428800505050505,
+        "width": 0.15680228758169934,
+        "height": 0.011320707070707065,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we set the state",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3899934640522876,
+        "top": 0.2639532828282828,
+        "width": 0.09613398692810454,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we cut the pomdp",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3230735294117647,
+        "top": 0.3158421717171717,
+        "width": 0.11546568627450987,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we introduce a variant",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.47033986928104576,
+        "top": 0.77535101010101,
+        "width": 0.13499673202614382,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we use the following definition",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.2702320261437909,
+        "top": 0.4937512626262626,
+        "width": 0.18590032679738566,
+        "height": 0.011320707070707037,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we define the final reward",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7274885620915033,
+        "top": 0.5110479797979798,
+        "width": 0.15250980392156854,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our online setting , we offer a variant algorithm",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8007450980392157,
+        "top": 0.7937752525252525,
+        "width": 0.07924836601307195,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.8110719696969697,
+        "width": 0.2189444444444444,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we assume that the teacher proceeds with bayesian belief",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.35095751633986927,
+        "top": 0.22046464646464647,
+        "width": 0.33919444444444435,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our approach , we intend to simulate teaching",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.24436274509803924,
+        "top": 0.7087146464646464,
+        "width": 0.30357189542483665,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we simulate conditions that assume a few minutes of practice",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7466748366013072,
+        "top": 0.7087146464646464,
+        "width": 0.07333006535947717,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.726010101010101,
+        "width": 0.2922728758169935,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we should avoid presenting a particular item",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5428153594771241,
+        "top": 0.12126010101010101,
+        "width": 0.27718464052287584,
+        "height": 0.013969696969696965,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our technique evaluates whether presenting the chosen item is",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.35591666666666666,
+        "top": 0.17314898989898989,
+        "width": 0.36601307189542487,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we consider the set",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3399771241830065,
+        "top": 0.20774116161616163,
+        "width": 0.11767810457516337,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our criterion for presenting item",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.30323856209150324,
+        "top": 0.24233333333333332,
+        "width": 0.19276470588235295,
+        "height": 0.011320707070707065,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we use the myopic sampling algorithm",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6542401960784313,
+        "top": 0.2596300505050505,
+        "width": 0.16576307189542483,
+        "height": 0.011320707070707037,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.27692550505050506,
+        "width": 0.05877941176470587,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we repeat the process",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6640539215686274,
+        "top": 0.27692550505050506,
+        "width": 0.13278267973856217,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our framework also introduces the possibility",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.39538071895424837,
+        "top": 0.3041060606060606,
+        "width": 0.2765065359477124,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we consider them",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.14997712418300654,
+        "top": 0.3386982323232324,
+        "width": 0.10602941176470584,
+        "height": 0.011320707070706981,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we chose a leitner system",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.11929738562091505,
+        "top": 0.41344318181818185,
+        "width": 0.15578431372549015,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our tests applied two variants",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5059035947712418,
+        "top": 0.7433068181818181,
+        "width": 0.18538071895424835,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we contrasted two degrees",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3995702614379085,
+        "top": 0.8124924242424243,
+        "width": 0.1614901960784314,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we chose a parameterization that is plausible for humans",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3559722222222222,
+        "top": 0.31893055555555555,
+        "width": 0.3512434640522876,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we supplied the agent",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.37177941176470586,
+        "top": 0.3362272727272727,
+        "width": 0.12999019607843143,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "what we could observe in the user study",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6343888888888889,
+        "top": 0.3708194444444445,
+        "width": 0.2459934640522876,
+        "height": 0.011320707070706981,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we chose parameters",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8240196078431373,
+        "top": 0.44000505050505045,
+        "width": 0.05597875816993447,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.45730050505050507,
+        "width": 0.06818300653594772,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we evaluated statistical significance",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3539673202614379,
+        "top": 0.7377474747474748,
+        "width": 0.21909640522875823,
+        "height": 0.011320707070706981,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our system , the parameters are evaluated with a grid",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4121470588235294,
+        "top": 0.4918939393939394,
+        "width": 0.32120588235294123,
+        "height": 0.011320707070707037,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our framework , the number of items learned does not differ between the myopic ( m",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.799702614379085,
+        "top": 0.6042045454545454,
+        "width": 0.020571895424836506,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6215012626262626,
+        "width": 0.4821323529411764,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we recruited 65 individuals",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.11945915032679738,
+        "top": 0.2303219696969697,
+        "width": 0.16441176470588237,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we used a mixed experimental design",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5527205882352941,
+        "top": 0.34370833333333334,
+        "width": 0.2339477124183006,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we present the final parameter estimates made",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6375196078431372,
+        "top": 0.7933194444444444,
+        "width": 0.24248529411764708,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.8106148989898989,
+        "width": 0.032232026143790865,
+        "height": 0.011320707070707092,
+        "page": 11
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our simulations with a learner that , by construction , has exact correspondence with the model",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.1524640522875817,
+        "top": 0.6038282828282828,
+        "width": 0.6004346405228758,
+        "height": 0.011320707070706981,
+        "page": 12
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we were surprised to find , however , that with human learners the myopic teacher , which greedily picks the best next item",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6925179738562092,
+        "top": 0.6211249999999999,
+        "width": 0.1274738562091503,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6384204545454546,
+        "width": 0.593343137254902,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our current knowledge , we attribute this finding",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.42730718954248365,
+        "top": 0.6557171717171717,
+        "width": 0.290562091503268,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our work extends research",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.1200016339869281,
+        "top": 0.4654583333333333,
+        "width": 0.16738725490196082,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our experiments , with both artificial and human learners , attest that even a simple model can offer performances at least equalling that of the industry - standard leitner method , as evaluated by two metrics",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4825686274509804,
+        "top": 0.5173472222222222,
+        "width": 0.3390343137254903,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.5346439393939394,
+        "width": 0.7016111111111112,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.551939393939394,
+        "width": 0.16974673202614377,
+        "height": 0.011320707070706981,
+        "page": 12
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we observed that our method successfully adapts to the variability",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5111862745098039,
+        "top": 0.569236111111111,
+        "width": 0.30881209150326805,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.5865315656565657,
+        "width": 0.08402287581699348,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "it does with proposing a modular framework that , in contrast",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.15084477124183004,
+        "top": 0.7594949494949494,
+        "width": 0.36755065359477124,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our framework , and attention to all the various aspects listed is necessary for enhancing the learning experience",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.18000163398692812,
+        "top": 0.20774116161616163,
+        "width": 0.6841666666666666,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we would expect this framework",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.33808986928104573,
+        "top": 0.2250366161616162,
+        "width": 0.19792647058823526,
+        "height": 0.011320707070707037,
+        "page": 13
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we thank all study participants",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.17929901960784314,
+        "top": 0.29925378787878787,
+        "width": 0.18828921568627452,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we also acknowledge the computation resources provided",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5851437908496732,
+        "top": 0.3511426767676768,
+        "width": 0.29485457516339864,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.3684381313131313,
+        "width": 0.052949346405228775,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "It contributes to scholarship by combining planning and inference with model-based approaches at the level of individual learners and items.",
     "label": "Contribution",
     "bboxes": [
       {
@@ -24,7 +1009,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "In this paper, we propose an approach that builds on the literature described above and draws its contributions together in a single system, with ",
+    "text": "In this paper, we propose an approach that builds on the literature described above and draws its contributions together in a single system, with",
     "label": "Contribution",
     "bboxes": [
       {
@@ -48,7 +1033,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "The main contribution represented by this paper has less to do with the performance of an end-to-end method than it does with proposing a modular framework that, in contrast to prior methods, clearly advances our tackling of multiple aspects of learning. ",
+    "text": "The main contribution represented by this paper has less to do with the performance of an end-to-end method than it does with proposing a modular framework that, in contrast to prior methods, clearly advances our tackling of multiple aspects of learning.",
     "label": "Contribution",
     "bboxes": [
       {
@@ -79,7 +1064,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Although this approach is easy to implement, computationally inexpensive, and applicable across different contexts [8, 12] and while there is evidence that it yields benefits in terms of learning optimization [20], its ability to adapt to the individuals characteristics is limited. ",
+    "text": "Although this approach is easy to implement, computationally inexpensive, and applicable across different contexts [8, 12] and while there is evidence that it yields benefits in terms of learning optimization [20], its ability to adapt to the individuals characteristics is limited.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -110,7 +1095,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Model-based approaches, on the other hand, utilize a predictive model of (human) memory to select interventions or schedule practice sessions [4, 11, 14, 17, 22, 23]. ",
+    "text": "Model-based approaches, on the other hand, utilize a predictive model of (human) memory to select interventions or schedule practice sessions [4, 11, 14, 17, 22, 23].",
     "label": "Novelty",
     "bboxes": [
       {
@@ -135,13 +1120,13 @@
         "page": 1
       }
     ],
-    "section": "1 INTRODUCTION",
+    "section": "",
     "prob": null,
     "is_author_statement": false,
-    "is_in_expected_section": true
+    "is_in_expected_section": false
   },
   {
-    "text": "Predicting the effects of teaching interventions on human learning is challenging, however. ",
+    "text": "Predicting the effects of teaching interventions on human learning is challenging, however.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -158,7 +1143,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "No planning is implemented in this technique, though, because the intelligent tutoring system uses a heuristic for item selection: it employs a threshold  such that it presents the user with any item for which the predicted probability of recall falls below the threshold set. ",
+    "text": "No planning is implemented in this technique, though, because the intelligent tutoring system uses a heuristic for item selection: it employs a threshold  such that it presents the user with any item for which the predicted probability of recall falls below the threshold set.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -213,7 +1198,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "[17] too based their intelligent tutoring system on ACT-R [1, 15, 16], but they provided a non-myopic planning technique in addition. ",
+    "text": "[17] too based their intelligent tutoring system on ACT-R [1, 15, 16], but they provided a non-myopic planning technique in addition.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -261,7 +1246,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "[25] offered useful extension to that work; however, the purpose of the optimization for the latter studies is quite different from ours. ",
+    "text": "[25] offered useful extension to that work; however, the purpose of the optimization for the latter studies is quite different from ours.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -285,7 +1270,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "It assumes that the probability of recall decays exponentially but that the decay increases each time a given item is reviewed. ",
+    "text": "It assumes that the probability of recall decays exponentially but that the decay increases each time a given item is reviewed.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -309,7 +1294,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "This model diverges from the EF model in that the parameters ( ,  ) are not global for a specific user but defined for each item separately. ",
+    "text": "This model diverges from the EF model in that the parameters ( ,  ) are not global for a specific user but defined for each item separately.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -333,7 +1318,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "At each iteration  , only one item can be selected, even though it may be time to review several items under the aforementioned criterion. ",
+    "text": "At each iteration  , only one item can be selected, even though it may be time to review several items under the aforementioned criterion.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -357,7 +1342,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "An item that was not selected at  even though  was equal to (or past) its time for review is added to a waiting queue. ",
+    "text": "An item that was not selected at  even though  was equal to (or past) its time for review is added to a waiting queue.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -381,7 +1366,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Our tests applied two variants of the model: a nonitem-specific one, wherein each user has a specific parameterization but all the items from any given user share the same parameterization (for proof of concept), and an item-specific one, in which, for each user, each item has a specific parameterization (offering finer granularity). ",
+    "text": "Our tests applied two variants of the model: a nonitem-specific one, wherein each user has a specific parameterization but all the items from any given user share the same parameterization (for proof of concept), and an item-specific one, in which, for each user, each item has a specific parameterization (offering finer granularity).",
     "label": "Novelty",
     "bboxes": [
       {
@@ -443,7 +1428,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "This time, no significant difference is visible for the CS teacher (  = 4551 . ",
+    "text": "This time, no significant difference is visible for the CS teacher (  = 4551 .",
     "label": "Novelty",
     "bboxes": [
       {
@@ -460,7 +1445,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "In the non-item-specific condition with an omniscient psychologist (see Figure 2), the simplest scenario under our framework, the number of items learned does not differ between the myopic (M) and Leitner (L) teachers (  = 5650 . 0,  = 0 . 110,   = 0 . 221,  = 100  2), while the conservative-sampling (CS) teacher significantly outperforms the Leitner one (  = 8539 . 0,  < 0 . 001,   < 0 . 001,  = 100  2). ",
+    "text": "In the non-item-specific condition with an omniscient psychologist (see Figure 2), the simplest scenario under our framework, the number of items learned does not differ between the myopic (M) and Leitner (L) teachers (  = 5650 . 0,  = 0 . 110,   = 0 . 221,  = 100  2), while the conservative-sampling (CS) teacher significantly outperforms the Leitner one (  = 8539 . 0,  < 0 . 001,   < 0 . 001,  = 100  2).",
     "label": "Novelty",
     "bboxes": [
       {
@@ -543,7 +1528,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "For each user, the model-based planning system used the ISEF memory model, but the planning was based either on a myopic sampling algorithm or on a conservative-sampling algorithm. ",
+    "text": "For each user, the model-based planning system used the ISEF memory model, but the planning was based either on a myopic sampling algorithm or on a conservative-sampling algorithm.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -574,7 +1559,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "In contrast against the corresponding results obtained with artificial learners, no significant difference was visible between the CS and the Leitner teacher (  = 434 . 5,  = 0 . 828,   = 1 . 655,  = 29  2). ",
+    "text": "In contrast against the corresponding results obtained with artificial learners, no significant difference was visible between the CS and the Leitner teacher (  = 434 . 5,  = 0 . 828,   = 1 . 655,  = 29  2).",
     "label": "Novelty",
     "bboxes": [
       {
@@ -643,7 +1628,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "We were surprised to find, however, that with human learners the myopic teacher, which greedily picks the best next item to show, fared better than did the longer-term planning approach. ",
+    "text": "We were surprised to find, however, that with human learners the myopic teacher, which greedily picks the best next item to show, fared better than did the longer-term planning approach.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -674,7 +1659,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Our work extends research on model-based approaches for tutoring systems by offering a modular framework to combine online inference specific to each user and each item with online planning that takes the learners time constraints into account. ",
+    "text": "Our work extends research on model-based approaches for tutoring systems by offering a modular framework to combine online inference specific to each user and each item with online planning that takes the learners time constraints into account.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -705,7 +1690,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "The main contribution represented by this paper has less to do with the performance of an end-to-end method than it does with proposing a modular framework that, in contrast to prior methods, clearly advances our tackling of multiple aspects of learning. ",
+    "text": "The main contribution represented by this paper has less to do with the performance of an end-to-end method than it does with proposing a modular framework that, in contrast to prior methods, clearly advances our tackling of multiple aspects of learning.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -784,7 +1769,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Intelligent tutoring [2] addresses the problem of designing teaching interventions  any materials, practice, and feedback delivered by a teacher  for education objectives such as learning a new language or skill. ",
+    "text": "Intelligent tutoring [2] addresses the problem of designing teaching interventions  any materials, practice, and feedback delivered by a teacher  for education objectives such as learning a new language or skill.",
     "label": "Objective",
     "bboxes": [
       {
@@ -808,7 +1793,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "One of the central challenges for research on intelligent user interfaces is to identify algorithmic principles that can pick the best interventions for reliably improving human learning toward stated objectives in light of realistically obtainable data on the user. ",
+    "text": "One of the central challenges for research on intelligent user interfaces is to identify algorithmic principles that can pick the best interventions for reliably improving human learning toward stated objectives in light of realistically obtainable data on the user.",
     "label": "Objective",
     "bboxes": [
       {
@@ -870,7 +1855,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "[25] offered useful extension to that work; however, the purpose of the optimization for the latter studies is quite different from ours. ",
+    "text": "[25] offered useful extension to that work; however, the purpose of the optimization for the latter studies is quite different from ours.",
     "label": "Objective",
     "bboxes": [
       {
@@ -894,7 +1879,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Aiming to increase the learners knowledge, the teacher sets learning objectives. ",
+    "text": "Aiming to increase the learners knowledge, the teacher sets learning objectives.",
     "label": "Objective",
     "bboxes": [
       {
@@ -935,7 +1920,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "The goal of the learner is to learn a finite set of items A = {  1 , 2 , . ",
+    "text": "The goal of the learner is to learn a finite set of items A = {  1 , 2 , .",
     "label": "Objective",
     "bboxes": [
       {
@@ -953,7 +1938,7 @@
         "page": 3
       }
     ],
-    "section": "3 INDIVIDUALIZED MODEL-BASED PLANNING 3.1 General characterization of the problem",
+    "section": "",
     "prob": null,
     "is_author_statement": false,
     "is_in_expected_section": false
@@ -983,7 +1968,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "A simple learning objective for the teacher is to maximize the number of items learned in the course of the teaching process. ",
+    "text": "A simple learning objective for the teacher is to maximize the number of items learned in the course of the teaching process.",
     "label": "Objective",
     "bboxes": [
       {
@@ -1024,7 +2009,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "There were two (roughly 10-minute) training sessions, with 100 questions each, per day for six days, then two evaluation sessions on the seventh day. ",
+    "text": "There were two (roughly 10-minute) training sessions, with 100 questions each, per day for six days, then two evaluation sessions on the seventh day.",
     "label": "Objective",
     "bboxes": [
       {
@@ -1086,7 +2071,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Also, extensions are possible for addressing the nature or type of various teaching objectives: focusing on particular classes of words, paying attention to exam dates, attention to quality over quantity, etc. ",
+    "text": "Also, extensions are possible for addressing the nature or type of various teaching objectives: focusing on particular classes of words, paying attention to exam dates, attention to quality over quantity, etc.",
     "label": "Objective",
     "bboxes": [
       {
@@ -1117,7 +2102,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Previous work on this topic has mainly explored rule-based and model-based approaches (see Related Work). ",
+    "text": "Previous work on this topic has mainly explored rule-based and model-based approaches (see Related Work).",
     "label": "Result",
     "bboxes": [
       {
@@ -1165,7 +2150,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "For the item-counting reward (see Equation 4), myopic sampling induces straightforward behavior. ",
+    "text": "For the item-counting reward (see Equation 4), myopic sampling induces straightforward behavior.",
     "label": "Result",
     "bboxes": [
       {
@@ -1182,7 +2167,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Note that the bounds for the forgetting rate were within the limits of what we could observe in the user study (even if unlikely) for the time of around one iteration (with  = 0 . 025, the probability of recall falling under 0 . 90 in four seconds) and around one week (with  = 2e  07). ",
+    "text": "Note that the bounds for the forgetting rate were within the limits of what we could observe in the user study (even if unlikely) for the time of around one iteration (with  = 0 . 025, the probability of recall falling under 0 . 90 in four seconds) and around one week (with  = 2e  07).",
     "label": "Result",
     "bboxes": [
       {
@@ -1244,7 +2229,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "In the non-item-specific condition with a non-omniscient psychologist (see Figure 2), the number of items learned is significantly greater for each model-based teacher relative to the baseline (M vs. L:  = 5976 . 5,  = 0 . 017,   = 0 . 033,  = 100  2; CS vs. L:  = 7401 . 5,  < 0 . 001,   < 0 . 001,  = 100  2). ",
+    "text": "In the non-item-specific condition with a non-omniscient psychologist (see Figure 2), the number of items learned is significantly greater for each model-based teacher relative to the baseline (M vs. L:  = 5976 . 5,  = 0 . 017,   = 0 . 033,  = 100  2; CS vs. L:  = 7401 . 5,  < 0 . 001,   < 0 . 001,  = 100  2).",
     "label": "Result",
     "bboxes": [
       {
@@ -1275,7 +2260,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "In the non-item-specific condition with an omniscient psychologist (see Figure 2), the simplest scenario under our framework, the number of items learned does not differ between the myopic (M) and Leitner (L) teachers (  = 5650 . 0,  = 0 . 110,   = 0 . 221,  = 100  2), while the conservative-sampling (CS) teacher significantly outperforms the Leitner one (  = 8539 . 0,  < 0 . 001,   < 0 . 001,  = 100  2). ",
+    "text": "In the non-item-specific condition with an omniscient psychologist (see Figure 2), the simplest scenario under our framework, the number of items learned does not differ between the myopic (M) and Leitner (L) teachers (  = 5650 . 0,  = 0 . 110,   = 0 . 221,  = 100  2), while the conservative-sampling (CS) teacher significantly outperforms the Leitner one (  = 8539 . 0,  < 0 . 001,   < 0 . 001,  = 100  2).",
     "label": "Result",
     "bboxes": [
       {
@@ -1313,7 +2298,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "In the item-specific condition with an omniscient psychologist (see Figure 3), the number of items learned is significantly greater for both model-based teachers as compared with the Leitner teacher (M vs. L:  = 10 , 000,  < 0 . 001,   < 0 . 001,  = 100  2; CS vs. L:  = 10 , 000,  < 0 . 001,   < 0 . 001,  = 100  2). ",
+    "text": "In the item-specific condition with an omniscient psychologist (see Figure 3), the number of items learned is significantly greater for both model-based teachers as compared with the Leitner teacher (M vs. L:  = 10 , 000,  < 0 . 001,   < 0 . 001,  = 100  2; CS vs. L:  = 10 , 000,  < 0 . 001,   < 0 . 001,  = 100  2).",
     "label": "Result",
     "bboxes": [
       {
@@ -1344,7 +2329,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Participants connected to a Web-based application displaying a graphical user interface similar to that of other flashcard software (see Figure 1). ",
+    "text": "Participants connected to a Web-based application displaying a graphical user interface similar to that of other flashcard software (see Figure 1).",
     "label": "Result",
     "bboxes": [
       {
@@ -1368,7 +2353,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "With human learners (see Figure 4), the number of items learned proved to be significantly greater with the myopic teacher than with the Leitner teacher (  = 174 . 5,  = 0 . 019,   = 0 . 038,  = 24  2). ",
+    "text": "With human learners (see Figure 4), the number of items learned proved to be significantly greater with the myopic teacher than with the Leitner teacher (  = 174 . 5,  = 0 . 019,   = 0 . 038,  = 24  2).",
     "label": "Result",
     "bboxes": [
       {
@@ -1392,7 +2377,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "We were surprised to find, however, that with human learners the myopic teacher, which greedily picks the best next item to show, fared better than did the longer-term planning approach. ",
+    "text": "We were surprised to find, however, that with human learners the myopic teacher, which greedily picks the best next item to show, fared better than did the longer-term planning approach.",
     "label": "Result",
     "bboxes": [
       {
@@ -1423,7 +2408,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Firstly, the state of user memory is both latent (that is, not directly observable) and non-stationary (that is, evolving over time, on account of such effects as loss of activation and interference), and an intervention that is ideal for one user may be a poor choice for another user  there are large individual-to-individual differences in forgetting and recall. ",
+    "text": "Firstly, the state of user memory is both latent (that is, not directly observable) and non-stationary (that is, evolving over time, on account of such effects as loss of activation and interference), and an intervention that is ideal for one user may be a poor choice for another user  there are large individual-to-individual differences in forgetting and recall.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1461,7 +2446,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Secondly, planning in this context is particularly difficult: the number of possible sequences is generally large, and the reward is often delayed. ",
+    "text": "Secondly, planning in this context is particularly difficult: the number of possible sequences is generally large, and the reward is often delayed.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1485,7 +2470,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "No planning is implemented in this technique, though, because the intelligent tutoring system uses a heuristic for item selection: it employs a threshold  such that it presents the user with any item for which the predicted probability of recall falls below the threshold set. ",
+    "text": "No planning is implemented in this technique, though, because the intelligent tutoring system uses a heuristic for item selection: it employs a threshold  such that it presents the user with any item for which the predicted probability of recall falls below the threshold set.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1516,7 +2501,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Still, the models parameters that support the planning are optimized offline, kept constant, and not fitted to the current users data. ",
+    "text": "Still, the models parameters that support the planning are optimized offline, kept constant, and not fitted to the current users data.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1564,7 +2549,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "The teacher must, therefore, rely on a memory model, which serves as a proxy for the learners actual memorization state. ",
+    "text": "The teacher must, therefore, rely on a memory model, which serves as a proxy for the learners actual memorization state.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1588,7 +2573,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "For solving Equation 1, our proposed technique is to model the overall teaching process for the teacher as a POMDP ( ,,,,  , ) , where  is the set of possible states and  the set of actions,  is a payoff function,  is the statetransition probability,  is the set of observations, and  :       [ 0 , 1 ] defines the probability  (  | , ) =  ( ,, ) . ",
+    "text": "For solving Equation 1, our proposed technique is to model the overall teaching process for the teacher as a POMDP ( ,,,,  , ) , where  is the set of possible states and  the set of actions,  is a payoff function,  is the statetransition probability,  is the set of observations, and  :       [ 0 , 1 ] defines the probability  (  | , ) =  ( ,, ) .",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1619,7 +2604,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Because the memory states  are not directly observable, the teachers problem at each interaction can be divided into two parts: ",
+    "text": "Because the memory states  are not directly observable, the teachers problem at each interaction can be divided into two parts:",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1643,7 +2628,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Therefore, we cut the POMDP into two complementary components, called the psychologist and planner , with the learner here being considered to be the environment. ",
+    "text": "Therefore, we cut the POMDP into two complementary components, called the psychologist and planner , with the learner here being considered to be the environment.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1667,7 +2652,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Two cases are possible in choosing an item: If at least one item has a probability of recall below  , one can increment the immediate reward by 1 by presenting one of the forgotten items to the learner. ",
+    "text": "Two cases are possible in choosing an item: If at least one item has a probability of recall below  , one can increment the immediate reward by 1 by presenting one of the forgotten items to the learner.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1698,7 +2683,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "At each iteration  , only one item can be selected, even though it may be time to review several items under the aforementioned criterion. ",
+    "text": "At each iteration  , only one item can be selected, even though it may be time to review several items under the aforementioned criterion.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1722,7 +2707,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "The selection process is performed thus: ",
+    "text": "The selection process is performed thus:",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1739,7 +2724,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "More precisely, the algorithm adapts myopic sampling thus: using a myopic planner with a restricted number of items to introduce, our technique evaluates whether presenting the chosen item is compatible with memorizing the set containing all those previously seen by the learner. ",
+    "text": "More precisely, the algorithm adapts myopic sampling thus: using a myopic planner with a restricted number of items to introduce, our technique evaluates whether presenting the chosen item is compatible with memorizing the set containing all those previously seen by the learner.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1801,7 +2786,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Note that the bounds for the forgetting rate were within the limits of what we could observe in the user study (even if unlikely) for the time of around one iteration (with  = 0 . 025, the probability of recall falling under 0 . 90 in four seconds) and around one week (with  = 2e  07). ",
+    "text": "Note that the bounds for the forgetting rate were within the limits of what we could observe in the user study (even if unlikely) for the time of around one iteration (with  = 0 . 025, the probability of recall falling under 0 . 90 in four seconds) and around one week (with  = 2e  07).",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1863,7 +2848,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "From our current knowledge, we attribute this finding to the predictive model in our framework, because the results with artificial learners were conclusive while the ones for humans were not. ",
+    "text": "From our current knowledge, we attribute this finding to the predictive model in our framework, because the results with artificial learners were conclusive while the ones for humans were not.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1894,7 +2879,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Moreover, any errors in inference are bound to be compounded in planning, and this could explain why the myopic planner maintained its performance. ",
+    "text": "Moreover, any errors in inference are bound to be compounded in planning, and this could explain why the myopic planner maintained its performance.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1918,7 +2903,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "For instance, it may be possible to include elements such as additional cognitive aspects of memorization, among them subtler ones (such as the shape of the forgetting curve [9, 21] and modeling the spacing effect separately [5, 24]). ",
+    "text": "For instance, it may be possible to include elements such as additional cognitive aspects of memorization, among them subtler ones (such as the shape of the forgetting curve [9, 21] and modeling the spacing effect separately [5, 24]).",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1960,13 +2945,13 @@
         "page": 12
       }
     ],
-    "section": "7 DISCUSSION AND CONCLUSIONS",
+    "section": "",
     "prob": 0.5,
     "is_author_statement": false,
-    "is_in_expected_section": true
+    "is_in_expected_section": false
   },
   {
-    "text": "Also, extensions are possible for addressing the nature or type of various teaching objectives: focusing on particular classes of words, paying attention to exam dates, attention to quality over quantity, etc. ",
+    "text": "Also, extensions are possible for addressing the nature or type of various teaching objectives: focusing on particular classes of words, paying attention to exam dates, attention to quality over quantity, etc.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2076,7 +3061,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "As presented above, an implementation of this framework with a simple memory model showed favorable results; hence, it warrants further research. ",
+    "text": "As presented above, an implementation of this framework with a simple memory model showed favorable results; hence, it warrants further research.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -2100,7 +3085,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "More precisely, the algorithm adapts myopic sampling thus: using a myopic planner with a restricted number of items to introduce, our technique evaluates whether presenting the chosen item is compatible with memorizing the set containing all those previously seen by the learner. ",
+    "text": "More precisely, the algorithm adapts myopic sampling thus: using a myopic planner with a restricted number of items to introduce, our technique evaluates whether presenting the chosen item is compatible with memorizing the set containing all those previously seen by the learner.",
     "label": "Method",
     "bboxes": [
       {
@@ -2131,7 +3116,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "For each user, the model-based planning system used the ISEF memory model, but the planning was based either on a myopic sampling algorithm or on a conservative-sampling algorithm. ",
+    "text": "For each user, the model-based planning system used the ISEF memory model, but the planning was based either on a myopic sampling algorithm or on a conservative-sampling algorithm.",
     "label": "Method",
     "bboxes": [
       {
@@ -2162,7 +3147,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "We used a mixed experimental design. ",
+    "text": "We used a mixed experimental design.",
     "label": "Method",
     "bboxes": [
       {
@@ -2220,7 +3205,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "A simple learning objective for the teacher is to maximize the number of items learned in the course of the teaching process. ",
+    "text": "A simple learning objective for the teacher is to maximize the number of items learned in the course of the teaching process.",
     "label": "Objective",
     "bboxes": [
       {
@@ -2268,7 +3253,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Aiming to increase the learners knowledge, the teacher sets learning objectives. ",
+    "text": "Aiming to increase the learners knowledge, the teacher sets learning objectives.",
     "label": "Objective",
     "bboxes": [
       {
@@ -2285,7 +3270,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "One of the central challenges for research on intelligent user interfaces is to identify algorithmic principles that can pick the best interventions for reliably improving human learning toward stated objectives in light of realistically obtainable data on the user. ",
+    "text": "One of the central challenges for research on intelligent user interfaces is to identify algorithmic principles that can pick the best interventions for reliably improving human learning toward stated objectives in light of realistically obtainable data on the user.",
     "label": "Objective",
     "bboxes": [
       {
@@ -2340,7 +3325,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "In the non-item-specific condition with an omniscient psychologist (see Figure 2), the simplest scenario under our framework, the number of items learned does not differ between the myopic (M) and Leitner (L) teachers (  = 5650 . 0,  = 0 . 110,   = 0 . 221,  = 100  2), while the conservative-sampling (CS) teacher significantly outperforms the Leitner one (  = 8539 . 0,  < 0 . 001,   < 0 . 001,  = 100  2). ",
+    "text": "In the non-item-specific condition with an omniscient psychologist (see Figure 2), the simplest scenario under our framework, the number of items learned does not differ between the myopic (M) and Leitner (L) teachers (  = 5650 . 0,  = 0 . 110,   = 0 . 221,  = 100  2), while the conservative-sampling (CS) teacher significantly outperforms the Leitner one (  = 8539 . 0,  < 0 . 001,   < 0 . 001,  = 100  2).",
     "label": "Result",
     "bboxes": [
       {
@@ -2409,7 +3394,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "In contrast against the corresponding results obtained with artificial learners, no significant difference was visible between the CS and the Leitner teacher (  = 434 . 5,  = 0 . 828,   = 1 . 655,  = 29  2). ",
+    "text": "In contrast against the corresponding results obtained with artificial learners, no significant difference was visible between the CS and the Leitner teacher (  = 434 . 5,  = 0 . 828,   = 1 . 655,  = 29  2).",
     "label": "Result",
     "bboxes": [
       {
@@ -2440,7 +3425,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "From our current knowledge, we attribute this finding to the predictive model in our framework, because the results with artificial learners were conclusive while the ones for humans were not. ",
+    "text": "From our current knowledge, we attribute this finding to the predictive model in our framework, because the results with artificial learners were conclusive while the ones for humans were not.",
     "label": "Result",
     "bboxes": [
       {
@@ -2471,7 +3456,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "We evaluated statistical significance via a non-parametric test (Mann-Whitney  , with significance threshold  = 0 . 05). ",
+    "text": "We evaluated statistical significance via a non-parametric test (Mann-Whitney  , with significance threshold  = 0 . 05).",
     "label": "Result",
     "bboxes": [
       {

@@ -1,5 +1,1311 @@
 [
   {
+    "text": "our research focuses on understanding the extent",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.2942222222222222,
+        "width": 0.29361111111111116,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we can leverage generative model state",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7867254901960784,
+        "top": 0.32881439393939393,
+        "width": 0.09326960784313731,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.3461111111111111,
+        "width": 0.13793300653594773,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we posit that there will always be some amount of noise",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5048513071895425,
+        "top": 0.20774116161616163,
+        "width": 0.32891176470588224,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we address these questions",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.3807032828282828,
+        "width": 0.1679852941176471,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we conducted a series",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4194460784313726,
+        "top": 0.4671843434343434,
+        "width": 0.1273267973856208,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we identified four themes",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8029558823529411,
+        "top": 0.4844810606060606,
+        "width": 0.07704738562091507,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.5017765151515151,
+        "width": 0.07084150326797381,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our work makes three important contributions",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4656960784313725,
+        "top": 0.5363699494949495,
+        "width": 0.28579575163398696,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our work examines a different aspect",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5036111111111111,
+        "top": 0.6271755050505051,
+        "width": 0.22240359477124183,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we also consider the effect that confidence and translation alternatives ( which have explanatory power",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.33019934640522874,
+        "top": 0.6617676767676768,
+        "width": 0.4898006535947712,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6790631313131313,
+        "width": 0.11549346405228757,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we focus on transcoder",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.44897712418300656,
+        "top": 0.35908333333333337,
+        "width": 0.14421405228758172,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we posit that such systems will act in concert",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4762075163398693,
+        "top": 0.7396010101010101,
+        "width": 0.2681748366013072,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we find their question",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5636078431372549,
+        "top": 0.8087853535353535,
+        "width": 0.13230555555555557,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we discuss three areas",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.11929738562091505,
+        "top": 0.1428800505050505,
+        "width": 0.14216176470588235,
+        "height": 0.011320707070707065,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we note that these outcomes are all subjective : the quality",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6008153594771242,
+        "top": 0.5790757575757576,
+        "width": 0.2809150326797387,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.5963724747474748,
+        "width": 0.06328921568627452,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "their outputs , we seek to understand the extent",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7777614379084967,
+        "top": 0.6309646464646465,
+        "width": 0.102233660130719,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6482613636363637,
+        "width": 0.19271895424836596,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we developed an exploratory design scenario",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.17929901960784314,
+        "top": 0.7062714646464646,
+        "width": 0.27345751633986926,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we created a series",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5315718954248366,
+        "top": 0.775455808080808,
+        "width": 0.11813235294117652,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our scenario used real output",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.1362794117647059,
+        "top": 0.31151893939393943,
+        "width": 0.17459313725490191,
+        "height": 0.011320707070707037,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our reconstitution of tokenized code resulting",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.20412908496732027,
+        "top": 0.3461111111111111,
+        "width": 0.29480882352941173,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our study ; several participants actually discovered these errors",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.34341666666666665,
+        "top": 0.36340656565656565,
+        "width": 0.37310620915032683,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we conducted an interview study",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.11929738562091505,
+        "top": 0.4422209595959596,
+        "width": 0.20102124183006534,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we discussed the participants background , their level",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.30733823529411763,
+        "top": 0.49410984848484846,
+        "width": 0.09872549019607846,
+        "height": 0.011320707070707037,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we delved into more detail",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.11945915032679738,
+        "top": 0.5287020202020203,
+        "width": 0.16239705882352945,
+        "height": 0.011320707070706981,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we showed each ux variant",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4036078431372549,
+        "top": 0.5459987373737374,
+        "width": 0.16568464052287574,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we asked participants",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8028774509803921,
+        "top": 0.5978876262626263,
+        "width": 0.017116013071895475,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6151830808080808,
+        "width": 0.11095915032679741,
+        "height": 0.011320707070706981,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we showed three examples",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.27559803921568626,
+        "top": 0.6324797979797979,
+        "width": 0.16450326797385623,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we conducted a thematic analysis",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.17929901960784314,
+        "top": 0.4566830808080808,
+        "width": 0.2046633986928105,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we followed the process described",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6783006535947712,
+        "top": 0.473979797979798,
+        "width": 0.2017009803921569,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we begin by highlighting the difficulties faced",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.6642386363636363,
+        "width": 0.31047712418300655,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we then discuss the four major themes we identified",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.38903921568627453,
+        "top": 0.6815340909090909,
+        "width": 0.3040147058823529,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our interviews generated a wealth",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.5258686868686868,
+        "width": 0.20641666666666666,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we developed more integrative codes",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.2699052287581699,
+        "top": 0.5950530303030303,
+        "width": 0.22687908496732023,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we followed commonly - accepted practices",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.2796339869281046,
+        "top": 0.629645202020202,
+        "width": 0.25826307189542475,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we recruited 11 full - time software engineers",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.17929901960784314,
+        "top": 0.1428800505050505,
+        "width": 0.25946241830065364,
+        "height": 0.011320707070707065,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we asked participants",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3051993464052288,
+        "top": 0.2824848484848485,
+        "width": 0.12764379084967314,
+        "height": 0.011320707070707037,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we also asked specific questions",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.17929901960784314,
+        "top": 0.29978156565656566,
+        "width": 0.18764379084967317,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we asked participants",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5542434640522876,
+        "top": 0.29978156565656566,
+        "width": 0.12629248366013068,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we asked participants",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.17945915032679738,
+        "top": 0.3516704545454546,
+        "width": 0.13166503267973856,
+        "height": 0.011320707070707037,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we asked participants",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6042156862745097,
+        "top": 0.3689671717171717,
+        "width": 0.13103267973856214,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "who were involved in an application modernization project expressed some desire",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7075915032679738,
+        "top": 0.13855555555555557,
+        "width": 0.11240849673202613,
+        "height": 0.011320707070707065,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.15585227272727273,
+        "width": 0.36967483660130723,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we recognize that trust is a complex , multi - faceted construct that has been described as being an attitude",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.1362794117647059,
+        "top": 0.35429040404040407,
+        "width": 0.6342140522875817,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we adopt the ai - focused attitudinal view espoused",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3945604575163399,
+        "top": 0.37158712121212123,
+        "width": 0.2918970588235294,
+        "height": 0.011320707070706981,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our discussions with participants around the topic of trust , our emphasis was on understanding their attitudes",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5370980392156863,
+        "top": 0.40617929292929295,
+        "width": 0.28290359477124183,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.42347601010101005,
+        "width": 0.37939542483660127,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "i m going to put my production systems functionality",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.2008251633986928,
+        "top": 0.28397727272727274,
+        "width": 0.28469771241830066,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we observed that discrepancies between our participants mental models",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3874705882352941,
+        "top": 0.27692550505050506,
+        "width": 0.2706732026143791,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we initially thought that the translation would produce only content in the form",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5411143790849673,
+        "top": 0.2564772727272727,
+        "width": 0.27888725490196087,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.2737727272727273,
+        "width": 0.20466503267973857,
+        "height": 0.013969696969696965,
+        "page": 8
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we learned that the low - confidence highlighting ( figure 1b ) could also help developers to organize their work",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.47146241830065366,
+        "top": 0.2737727272727273,
+        "width": 0.3485392156862745,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.11966339869281045,
+        "top": 0.29106944444444444,
+        "width": 0.32970915032679743,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we questioned whether we would encounter",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5526029411764706,
+        "top": 0.8125239898989899,
+        "width": 0.2676732026143792,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we selected a code sample",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7260130718954249,
+        "top": 0.12126010101010101,
+        "width": 0.15398202614379086,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "us in the software development field , we sometimes have the feeling that for a given problem set",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.25769444444444445,
+        "top": 0.6361439393939394,
+        "width": 0.5840261437908497,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.21988562091503266,
+        "top": 0.653439393939394,
+        "width": 0.04699183006535951,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our interviews , participants made a number",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.22904248366013072,
+        "top": 0.1947689393939394,
+        "width": 0.2591928104575163,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our results highlight the importance",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.21459640522875817,
+        "top": 0.6899532828282828,
+        "width": 0.2214395424836601,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our findings reinforce the need",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8090277777777778,
+        "top": 0.631064393939394,
+        "width": 0.07097058823529401,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6483598484848484,
+        "width": 0.10891503267973854,
+        "height": 0.011320707070707092,
+        "page": 11
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we note that our system only examined one kind",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.1362794117647059,
+        "top": 0.17314898989898989,
+        "width": 0.2848186274509804,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our tool falls short of the tightly - coupled human - machine interactions envisioned",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5824052287581699,
+        "top": 0.20774116161616163,
+        "width": 0.23759640522875813,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.2250366161616162,
+        "width": 0.23590196078431375,
+        "height": 0.011320707070707037,
+        "page": 12
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our system was solely driven by human initiative",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.25176960784313723,
+        "top": 0.2596300505050505,
+        "width": 0.29472875816993466,
+        "height": 0.011320707070707037,
+        "page": 12
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we believe that there is a richer design space in which ai translations can be provided",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4835441176470588,
+        "top": 0.2942222222222222,
+        "width": 0.33645424836601306,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.31151893939393943,
+        "width": 0.1969150326797386,
+        "height": 0.011320707070707037,
+        "page": 12
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our results motivate the need",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.1362794117647059,
+        "top": 0.5709621212121212,
+        "width": 0.1761911764705882,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we recognize that some work has been done in this space",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6477712418300653,
+        "top": 0.605554292929293,
+        "width": 0.17261111111111116,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6228510101010101,
+        "width": 0.16673856209150328,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we also discovered how this information possessed explanatory power",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.15865359477124183,
+        "top": 0.13855555555555557,
+        "width": 0.41775816993464054,
+        "height": 0.011320707070707065,
+        "page": 12
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our study identified a number",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7093320707070708,
+        "width": 0.17862091503267974,
+        "height": 0.011320707070706981,
+        "page": 12
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we used are typically trained in an unsupervised manner",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.37304901960784315,
+        "top": 0.8131098484848485,
+        "width": 0.3557287581699347,
+        "height": 0.011320707070707092,
+        "page": 12
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "itself , we found that they instead may also be a means",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6149035947712419,
+        "top": 0.2250366161616162,
+        "width": 0.2650915032679738,
+        "height": 0.011320707070707037,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.24233333333333332,
+        "width": 0.047542483660130724,
+        "height": 0.013969696969696993,
+        "page": 13
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we challenge the community",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7779885620915032,
+        "top": 0.27692550505050506,
+        "width": 0.10201797385620914,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.2942222222222222,
+        "width": 0.07004248366013069,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our study is a preliminary examination",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.18000163398692812,
+        "top": 0.3841628787878788,
+        "width": 0.23018627450980392,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we have discovered that our design scenario did demonstrate compelling user experiences , we caution that our results may not generalize to other domains",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4127826797385621,
+        "top": 0.4014583333333333,
+        "width": 0.46749509803921574,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.4187550505050505,
+        "width": 0.45710784313725483,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our finding that acceptance of a models output is established through verification , rather than explanation",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.23076797385620915,
+        "top": 0.4533472222222222,
+        "width": 0.4384591503267974,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we hypothesize that generative ai user interfaces that provide salient details of a models operation can help people form accurate mental models",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.35976307189542484,
+        "top": 0.5052361111111111,
+        "width": 0.47132843137254893,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we have examined how such a model would be received",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6593709150326797,
+        "top": 0.6470656565656565,
+        "width": 0.22062418300653597,
+        "height": 0.011320707070707092,
+        "page": 13
+      },
+      {
+        "left": 0.17945915032679738,
+        "top": 0.6643623737373737,
+        "width": 0.10925000000000001,
+        "height": 0.011320707070707092,
+        "page": 13
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
     "text": "Our work makes three important contributions:",
     "label": "Contribution",
     "bboxes": [
@@ -17,7 +1323,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "However, code is unique compared to other kinds of natural languages: code is much more brittle, and swapping even a few characters or tokens can completely change its meaning or effect. ",
+    "text": "However, code is unique compared to other kinds of natural languages: code is much more brittle, and swapping even a few characters or tokens can completely change its meaning or effect.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -48,7 +1354,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "[26] discovered that once people observed an automated system make errors, their distrust in the system increased unless an explanation was provided regarding why the system might make an error; however, these explanations also increased trust and reliance on the system even when unwarranted, signaling the importance and difficulty of providing explanations that help people appropriately calibrate their trust. ",
+    "text": "[26] discovered that once people observed an automated system make errors, their distrust in the system increased unless an explanation was provided regarding why the system might make an error; however, these explanations also increased trust and reliance on the system even when unwarranted, signaling the importance and difficulty of providing explanations that help people appropriately calibrate their trust.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -93,7 +1399,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Our work examines a different aspect of imperfect AI by focusing on a co-creation scenario that has a lower tolerance for error (e.g. code ought to compile and be free of errors). ",
+    "text": "Our work examines a different aspect of imperfect AI by focusing on a co-creation scenario that has a lower tolerance for error (e.g. code ought to compile and be free of errors).",
     "label": "Novelty",
     "bboxes": [
       {
@@ -155,7 +1461,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Although the translated code was syntactically correct, there was a logic error in the translation of a loop that resulted in wrong values being returned. ",
+    "text": "Although the translated code was syntactically correct, there was a logic error in the translation of a loop that resulted in wrong values being returned.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -179,7 +1485,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "However, participants ultimately felt that understanding how the NMT model worked was not a prerequisite for being able to put that model to productive use. ",
+    "text": "However, participants ultimately felt that understanding how the NMT model worked was not a prerequisite for being able to put that model to productive use.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -210,7 +1516,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "P3 expressed the same sentiment, I guess Im a little curious how it works, but maybe I dont wanna know [how it really works]. ",
+    "text": "P3 expressed the same sentiment, I guess Im a little curious how it works, but maybe I dont wanna know [how it really works].",
     "label": "Novelty",
     "bboxes": [
       {
@@ -245,13 +1551,13 @@
         "page": 6
       }
     ],
-    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "section": "",
     "prob": null,
     "is_author_statement": false,
     "is_in_expected_section": false
   },
   {
-    "text": "P7 described how one of the alternatives more explicitly demonstrated the codes functionality: The first [option] is more Pythonic because its taking advantage of the built-in functionality of an array... however this [second option] is far more explicit... this is whats happening behind the scenes. ",
+    "text": "P7 described how one of the alternatives more explicitly demonstrated the codes functionality: The first [option] is more Pythonic because its taking advantage of the built-in functionality of an array... however this [second option] is far more explicit... this is whats happening behind the scenes.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -313,7 +1619,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "P3 expected that the translator would be able to define this def function signature line with the function name correct, but expressed confusion when the translator wasnt as confident as it could be. ",
+    "text": "P3 expected that the translator would be able to define this def function signature line with the function name correct, but expressed confusion when the translator wasnt as confident as it could be.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -385,7 +1691,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Thus, although many participants expressed a willingness to accept imperfectly-translated code as a starting point, acceptance may depend on how many errors the translated code contains as well as the nature of those errors (e.g. if they are easy to spot and fix, or if they take attention away from the central problem). ",
+    "text": "Thus, although many participants expressed a willingness to accept imperfectly-translated code as a starting point, acceptance may depend on how many errors the translated code contains as well as the nature of those errors (e.g. if they are easy to spot and fix, or if they take attention away from the central problem).",
     "label": "Novelty",
     "bboxes": [
       {
@@ -416,7 +1722,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "In some cases, although not an explicit part of the study, participants actually found the errors in the translation. ",
+    "text": "In some cases, although not an explicit part of the study, participants actually found the errors in the translation.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -433,7 +1739,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "For example, P4 found a string mismatch: There is an actual functional difference here on line 21 of the Python code where theres an extra space inserted into that error string. ",
+    "text": "For example, P4 found a string mismatch: There is an actual functional difference here on line 21 of the Python code where theres an extra space inserted into that error string.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -457,7 +1763,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "As summarized by P6, If its egregiously wrong then no, Id rather do it myself. But as long as its giving me a head start of any sort, Ill take it. ",
+    "text": "As summarized by P6, If its egregiously wrong then no, Id rather do it myself. But as long as its giving me a head start of any sort, Ill take it.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -557,7 +1863,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Generating a whole slew of automated unit tests (P4) as well as more realistic test values (P3) ensures that the right hand side code not only runs and doesnt crash but produces expected output (P4). ",
+    "text": "Generating a whole slew of automated unit tests (P4) as well as more realistic test values (P3) ensures that the right hand side code not only runs and doesnt crash but produces expected output (P4).",
     "label": "Novelty",
     "bboxes": [
       {
@@ -581,7 +1887,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Many participants described how code translation could be used to take advantage of functionality defined in third party libraries, because the same libraries in Java dont exist in Python, or similar libraries exist but theyre not... syntactically the same. (P0). ",
+    "text": "Many participants described how code translation could be used to take advantage of functionality defined in third party libraries, because the same libraries in Java dont exist in Python, or similar libraries exist but theyre not... syntactically the same. (P0).",
     "label": "Novelty",
     "bboxes": [
       {
@@ -612,7 +1918,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "P10 described, If you had a library that you know was in another language and you want to use it, but they dont have it in your language, thats great. ",
+    "text": "P10 described, If you had a library that you know was in another language and you want to use it, but they dont have it in your language, thats great.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -636,7 +1942,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "P3 discussed how he had to manage libraries for the same set of APIs across multiple languages: Were up to nine different languages now total and and each one seems to have its own, like, name capitalization conventions and things like that. ",
+    "text": "P3 discussed how he had to manage libraries for the same set of APIs across multiple languages: Were up to nine different languages now total and and each one seems to have its own, like, name capitalization conventions and things like that.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -667,7 +1973,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "P8 described how the code translation process wasnt just about converting from one language to another, but also about identifying opportunities to leverage language-specific features to create more optimal code: The whole point of using the latest version is to tap into the new features... in JDK 8 they have lambdas... it is much faster. If it could do something like this I would use it like hell! ",
+    "text": "P8 described how the code translation process wasnt just about converting from one language to another, but also about identifying opportunities to leverage language-specific features to create more optimal code: The whole point of using the latest version is to tap into the new features... in JDK 8 they have lambdas... it is much faster. If it could do something like this I would use it like hell!",
     "label": "Novelty",
     "bboxes": [
       {
@@ -736,7 +2042,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "However, our system was solely driven by human initiative. ",
+    "text": "However, our system was solely driven by human initiative.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -753,7 +2059,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Future work is needed to investigate different kinds of interaction patterns, including different mixed-initiative patterns [43, 82], to understand their effect on a software engineers productivity and capability. ",
+    "text": "Future work is needed to investigate different kinds of interaction patterns, including different mixed-initiative patterns [43, 82], to understand their effect on a software engineers productivity and capability.",
     "label": "Novelty",
     "bboxes": [
       {
@@ -846,7 +2152,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Although the import of generative capabilities may seem to be about the production of an artifact itself, we found that they instead may also be a means rather than just an end . ",
+    "text": "Although the import of generative capabilities may seem to be about the production of an artifact itself, we found that they instead may also be a means rather than just an end .",
     "label": "Novelty",
     "bboxes": [
       {
@@ -877,7 +2183,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Although we have discovered that our design scenario did demonstrate compelling user experiences, we caution that our results may not generalize to other domains or use cases beyond the code translation task we examined (e.g. using generative models for molecular discovery). ",
+    "text": "Although we have discovered that our design scenario did demonstrate compelling user experiences, we caution that our results may not generalize to other domains or use cases beyond the code translation task we examined (e.g. using generative models for molecular discovery).",
     "label": "Novelty",
     "bboxes": [
       {
@@ -939,7 +2245,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Leveraging the naturalness hypothesis [2]  code is a form of human communication with similar statistical properties as natural languages ",
+    "text": "Leveraging the naturalness hypothesis [2]  code is a form of human communication with similar statistical properties as natural languages",
     "label": "Objective",
     "bboxes": [
       {
@@ -957,13 +2263,13 @@
         "page": 0
       }
     ],
-    "section": "1 INTRODUCTION",
+    "section": "",
     "prob": null,
     "is_author_statement": false,
-    "is_in_expected_section": true
+    "is_in_expected_section": false
   },
   {
-    "text": "We address these questions by considering the use of an NMT model within the context of application modernization [27, 64, 72]. ",
+    "text": "We address these questions by considering the use of an NMT model within the context of application modernization [27, 64, 72].",
     "label": "Objective",
     "bboxes": [
       {
@@ -987,7 +2293,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "The question of how to design effective interactions between human and machine teammates is of great interest to the IUI community. ",
+    "text": "The question of how to design effective interactions between human and machine teammates is of great interest to the IUI community.",
     "label": "Objective",
     "bboxes": [
       {
@@ -1011,7 +2317,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "[81] recently outlined a set of research questions spanning many aspects of human-AI collaboration, such as how tasks should be allocated across both parties and how trust could be established with a machine teammate. ",
+    "text": "[81] recently outlined a set of research questions spanning many aspects of human-AI collaboration, such as how tasks should be allocated across both parties and how trust could be established with a machine teammate.",
     "label": "Objective",
     "bboxes": [
       {
@@ -1059,7 +2365,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Less attention has been given to scenarios with objective outcomes, such as in software engineering where correct code is of prime importance. ",
+    "text": "Less attention has been given to scenarios with objective outcomes, such as in software engineering where correct code is of prime importance.",
     "label": "Objective",
     "bboxes": [
       {
@@ -1114,7 +2420,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Some of this work has examined the extent to which deep generative models provide humans with augmented capabilities, addressing the question of the extent to which the human-AI team produces outcomes better than those produced by either party alone (e.g. [29, 37, 57, 70, 92, 100]). ",
+    "text": "Some of this work has examined the extent to which deep generative models provide humans with augmented capabilities, addressing the question of the extent to which the human-AI team produces outcomes better than those produced by either party alone (e.g. [29, 37, 57, 70, 92, 100]).",
     "label": "Objective",
     "bboxes": [
       {
@@ -1145,7 +2451,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "One author led each interview, guiding participants through each phase and asking all interview questions. ",
+    "text": "One author led each interview, guiding participants through each phase and asking all interview questions.",
     "label": "Objective",
     "bboxes": [
       {
@@ -1200,7 +2506,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "We also asked specific questions for each variant. ",
+    "text": "We also asked specific questions for each variant.",
     "label": "Objective",
     "bboxes": [
       {
@@ -1217,7 +2523,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Some participants had questions about the underlying mechanics of the NMT model, as they were curious how it works (P5) and would like to know what its thinking (P10). ",
+    "text": "Some participants had questions about the underlying mechanics of the NMT model, as they were curious how it works (P5) and would like to know what its thinking (P10).",
     "label": "Objective",
     "bboxes": [
       {
@@ -1272,7 +2578,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Our study is a preliminary examination of how probabilistic generative models can be applied to a use case that requires an objective level of quality. ",
+    "text": "Our study is a preliminary examination of how probabilistic generative models can be applied to a use case that requires an objective level of quality.",
     "label": "Objective",
     "bboxes": [
       {
@@ -1296,7 +2602,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "[90] show how such scores encourage use of an autonomous system. ",
+    "text": "[90] show how such scores encourage use of an autonomous system.",
     "label": "Result",
     "bboxes": [
       {
@@ -1337,7 +2643,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Participants were identified using an internal expertise-location tool that allowed us to find people in a software engineering role with experience in both Java and Python. ",
+    "text": "Participants were identified using an internal expertise-location tool that allowed us to find people in a software engineering role with experience in both Java and Python.",
     "label": "Result",
     "bboxes": [
       {
@@ -1392,7 +2698,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "P2 said, [If its] 42% confident about this translation, maybe... [there could be] a link that you could click on to see why it is not confident. ",
+    "text": "P2 said, [If its] 42% confident about this translation, maybe... [there could be] a link that you could click on to see why it is not confident.",
     "label": "Result",
     "bboxes": [
       {
@@ -1416,7 +2722,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Similarly, P6 said, If its trying to highlight that its really not sure that its done a good job here then I should pay attention to this piece and see if it makes sense. ",
+    "text": "Similarly, P6 said, If its trying to highlight that its really not sure that its done a good job here then I should pay attention to this piece and see if it makes sense.",
     "label": "Result",
     "bboxes": [
       {
@@ -1488,7 +2794,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Overall, many participants felt that even the erroneous output was desirable and that it would be something they would find useful to have. ",
+    "text": "Overall, many participants felt that even the erroneous output was desirable and that it would be something they would find useful to have.",
     "label": "Result",
     "bboxes": [
       {
@@ -1512,7 +2818,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "One helpful improvement to the code translation user interface would be to show a stronger visual correspondence between input and output source code. ",
+    "text": "One helpful improvement to the code translation user interface would be to show a stronger visual correspondence between input and output source code.",
     "label": "Result",
     "bboxes": [
       {
@@ -1598,7 +2904,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Interface features such as confidence highlighting helped steer human attention toward potentially problematic areas, and alternate translations provided explanatory power for why a segment of translated code was rated as low confidence by the model; in addition, alternate translations provided clues toward the semantic meaning of the code and helped participants find logical errors in it. ",
+    "text": "Interface features such as confidence highlighting helped steer human attention toward potentially problematic areas, and alternate translations provided explanatory power for why a segment of translated code was rated as low confidence by the model; in addition, alternate translations provided clues toward the semantic meaning of the code and helped participants find logical errors in it.",
     "label": "Result",
     "bboxes": [
       {
@@ -1636,7 +2942,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Given the probabilistic nature of deep learning models, we posit that there will always be some amount of noise in their output; correspondingly, deep generative models that produce code as output may exhibit some amount of deviation from a programmers intentions. ",
+    "text": "Given the probabilistic nature of deep learning models, we posit that there will always be some amount of noise in their output; correspondingly, deep generative models that produce code as output may exhibit some amount of deviation from a programmers intentions.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1736,7 +3042,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "[28] found a similar result, that giving a good reason for a poor recommendation made people more likely to accept that poor recommendation. ",
+    "text": "[28] found a similar result, that giving a good reason for a poor recommendation made people more likely to accept that poor recommendation.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1760,7 +3066,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "[81] recently outlined a set of research questions spanning many aspects of human-AI collaboration, such as how tasks should be allocated across both parties and how trust could be established with a machine teammate. ",
+    "text": "[81] recently outlined a set of research questions spanning many aspects of human-AI collaboration, such as how tasks should be allocated across both parties and how trust could be established with a machine teammate.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1822,7 +3128,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "As discussed by Wolf [97, p. 252], scenario-based design [is] a method that anticipates and leverages scenarios of possible use early on in system development. (italics in original). ",
+    "text": "As discussed by Wolf [97, p. 252], scenario-based design [is] a method that anticipates and leverages scenarios of possible use early on in system development. (italics in original).",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1853,7 +3159,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Each variant appeared as a partially-functional prototype, through which participants could explore features of interest. ",
+    "text": "Each variant appeared as a partially-functional prototype, through which participants could explore features of interest.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1877,7 +3183,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Participants were informed that the translation results were produced by an AI system and that the translations may be imperfect. ",
+    "text": "Participants were informed that the translation results were produced by an AI system and that the translations may be imperfect.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1901,7 +3207,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "We begin by highlighting the difficulties faced by our software engineers in modernizing legacy applications, motivating the need for AI support. ",
+    "text": "We begin by highlighting the difficulties faced by our software engineers in modernizing legacy applications, motivating the need for AI support.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -1925,7 +3231,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "For Figure 1B, we asked participants if they understood why the highlighted tokens were highlighted, and what other information could help them better understand the AIs confidence. ",
+    "text": "For Figure 1B, we asked participants if they understood why the highlighted tokens were highlighted, and what other information could help them better understand the AIs confidence.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2025,7 +3331,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "He described a situation in which individual contributors working on a code conversion task dont have to understand how the background of the application of the AI works, [because] they have to do the conversion [task]. ",
+    "text": "He described a situation in which individual contributors working on a code conversion task dont have to understand how the background of the application of the AI works, [because] they have to do the conversion [task].",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2080,7 +3386,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "P7 described how one of the alternatives more explicitly demonstrated the codes functionality: The first [option] is more Pythonic because its taking advantage of the built-in functionality of an array... however this [second option] is far more explicit... this is whats happening behind the scenes. ",
+    "text": "P7 described how one of the alternatives more explicitly demonstrated the codes functionality: The first [option] is more Pythonic because its taking advantage of the built-in functionality of an array... however this [second option] is far more explicit... this is whats happening behind the scenes.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2111,7 +3417,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Understanding the models operation could also eliminate some of the confusion caused by the confidence highlights in Figure 1B. ",
+    "text": "Understanding the models operation could also eliminate some of the confusion caused by the confidence highlights in Figure 1B.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2135,7 +3441,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "P3 expected that the translator would be able to define this def function signature line with the function name correct, but expressed confusion when the translator wasnt as confident as it could be. ",
+    "text": "P3 expected that the translator would be able to define this def function signature line with the function name correct, but expressed confusion when the translator wasnt as confident as it could be.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2159,7 +3465,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "P2 said, [If its] 42% confident about this translation, maybe... [there could be] a link that you could click on to see why it is not confident. ",
+    "text": "P2 said, [If its] 42% confident about this translation, maybe... [there could be] a link that you could click on to see why it is not confident.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2310,7 +3616,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Participants also appreciated the feature of the alternate translation UI in which downstream edits could be made when selecting an alternate translation (e.g. because selecting an alternate may have renamed a variable or changed a loop index). ",
+    "text": "Participants also appreciated the feature of the alternate translation UI in which downstream edits could be made when selecting an alternate translation (e.g. because selecting an alternate may have renamed a variable or changed a loop index).",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2341,7 +3647,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Their comments provided insight into how these features could be used to drive human-AI workflows and how human actions could provide feedback to improve the NMT model. ",
+    "text": "Their comments provided insight into how these features could be used to drive human-AI workflows and how human actions could provide feedback to improve the NMT model.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2365,7 +3671,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "We learned that the low-confidence highlighting (Figure 1B) could also help developers to organize their work. ",
+    "text": "We learned that the low-confidence highlighting (Figure 1B) could also help developers to organize their work.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2389,7 +3695,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "P4 emphasized the utility of this approach: Having something to draw my attention to places where its more likely that theres an error would be super helpful. ",
+    "text": "P4 emphasized the utility of this approach: Having something to draw my attention to places where its more likely that theres an error would be super helpful.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2413,7 +3719,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "P5 pointed out that, If you used this [confidence highlighting] on a big code base... you could know where to look, where there might be problems. ",
+    "text": "P5 pointed out that, If you used this [confidence highlighting] on a big code base... you could know where to look, where there might be problems.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2461,7 +3767,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "s notion of how humans may steer the output of a generative model [57]. ",
+    "text": "s notion of how humans may steer the output of a generative model [57].",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2533,7 +3839,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Once they saw the alternate translations, they began to understand why the NMT model had highlighted certain tokens as low-confidence: precisely because there were alternate ways of translating those tokens. ",
+    "text": "Once they saw the alternate translations, they began to understand why the NMT model had highlighted certain tokens as low-confidence: precisely because there were alternate ways of translating those tokens.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2575,7 +3881,7 @@
         "page": 8
       }
     ],
-    "section": "5 RESULTS 5.2 Human-AI Patterns of Interaction",
+    "section": "",
     "prob": 0.5,
     "is_author_statement": false,
     "is_in_expected_section": false
@@ -2605,7 +3911,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Thus, although many participants expressed a willingness to accept imperfectly-translated code as a starting point, acceptance may depend on how many errors the translated code contains as well as the nature of those errors (e.g. if they are easy to spot and fix, or if they take attention away from the central problem). ",
+    "text": "Thus, although many participants expressed a willingness to accept imperfectly-translated code as a starting point, acceptance may depend on how many errors the translated code contains as well as the nature of those errors (e.g. if they are easy to spot and fix, or if they take attention away from the central problem).",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2636,7 +3942,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "For large codebases, the downside of imperfectly-translated code may be less than the upside of simply having automatically-produced translations. ",
+    "text": "For large codebases, the downside of imperfectly-translated code may be less than the upside of simply having automatically-produced translations.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2746,7 +4052,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Participants described the lifecycle of modernizing applications as consisting of three general phases: (1) creating an understanding of the legacy application and its architecture by reviewing code and documentation; (2) performing the migration work, which may include translating and/or refactoring the code; and (3) reviewing and testing the migrated code. ",
+    "text": "Participants described the lifecycle of modernizing applications as consisting of three general phases: (1) creating an understanding of the legacy application and its architecture by reviewing code and documentation; (2) performing the migration work, which may include translating and/or refactoring the code; and (3) reviewing and testing the migrated code.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2839,7 +4145,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Participants also described how generative methods could be used to fill in missing documentation to help others understand ones own code, to create an understanding of poorly-documented code, or to re-align documentation with code when drift has occurred [30, 85]. ",
+    "text": "Participants also described how generative methods could be used to fill in missing documentation to help others understand ones own code, to create an understanding of poorly-documented code, or to re-align documentation with code when drift has occurred [30, 85].",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2870,7 +4176,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "P6 described how his team has strict requirements for writing documentation for every function because it is used to generate Swagger API documentation 3 . ",
+    "text": "P6 described how his team has strict requirements for writing documentation for every function because it is used to generate Swagger API documentation 3 .",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -2925,7 +4231,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "P6 described how generative methods could help him form a clearer picture of system architecture: If AI could actually somehow... help me keep track of how the current function Im looking at fits into the bigger picture... I think thats really beneficial. ",
+    "text": "P6 described how generative methods could help him form a clearer picture of system architecture: If AI could actually somehow... help me keep track of how the current function Im looking at fits into the bigger picture... I think thats really beneficial.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -3042,7 +4348,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "a standard formatting (P5) because reading other peoples code is much easier when you all adhere to the same standards. (P5). ",
+    "text": "a standard formatting (P5) because reading other peoples code is much easier when you all adhere to the same standards. (P5).",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -3060,13 +4366,13 @@
         "page": 11
       }
     ],
-    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "section": "",
     "prob": 0.5,
     "is_author_statement": false,
     "is_in_expected_section": false
   },
   {
-    "text": "Many participants described how code translation could be used to take advantage of functionality defined in third party libraries, because the same libraries in Java dont exist in Python, or similar libraries exist but theyre not... syntactically the same. (P0). ",
+    "text": "Many participants described how code translation could be used to take advantage of functionality defined in third party libraries, because the same libraries in Java dont exist in Python, or similar libraries exist but theyre not... syntactically the same. (P0).",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -3097,7 +4403,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "P8 described how the code translation process wasnt just about converting from one language to another, but also about identifying opportunities to leverage language-specific features to create more optimal code: The whole point of using the latest version is to tap into the new features... in JDK 8 they have lambdas... it is much faster. If it could do something like this I would use it like hell! ",
+    "text": "P8 described how the code translation process wasnt just about converting from one language to another, but also about identifying opportunities to leverage language-specific features to create more optimal code: The whole point of using the latest version is to tap into the new features... in JDK 8 they have lambdas... it is much faster. If it could do something like this I would use it like hell!",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -3166,7 +4472,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Overwhelmingly, they felt that a tool that could do code translation work within the application modernization context would be useful as it would help them get their own work done more quickly and effectively (e.g. as discussed by P3). ",
+    "text": "Overwhelmingly, they felt that a tool that could do code translation work within the application modernization context would be useful as it would help them get their own work done more quickly and effectively (e.g. as discussed by P3).",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -3197,7 +4503,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Instead of viewing the review and correction of the translated code as additional effort, they felt that the skeletal framework provided by the NMT model would be a useful starting place that they could then adjust and correct as necessary, as they usually do with code produced by their colleagues (e.g. as discussed by P4). ",
+    "text": "Instead of viewing the review and correction of the translated code as additional effort, they felt that the skeletal framework provided by the NMT model would be a useful starting place that they could then adjust and correct as necessary, as they usually do with code produced by their colleagues (e.g. as discussed by P4).",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -3259,7 +4565,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "They recognize the human capacity to err in themselves and their colleagues, and thus have developed processes and ways of working in which these errors are expected: code reviews [9, 63], test-driven development [23, 61], and root-cause analysis [53] are all ways of finding, fixing, and learning from the mistakes that are bound to happen in any software engineering effort. ",
+    "text": "They recognize the human capacity to err in themselves and their colleagues, and thus have developed processes and ways of working in which these errors are expected: code reviews [9, 63], test-driven development [23, 61], and root-cause analysis [53] are all ways of finding, fixing, and learning from the mistakes that are bound to happen in any software engineering effort.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -3297,7 +4603,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Techniques that help people understand the mechanics of generative models, as well as techniques that are able to generate specific rationales for why a given artifact was generated, could help people further adopt generative models in their own work practices. ",
+    "text": "Techniques that help people understand the mechanics of generative models, as well as techniques that are able to generate specific rationales for why a given artifact was generated, could help people further adopt generative models in their own work practices.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -3328,7 +4634,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Our study identified a number of areas that could be pursued for the use of generative AI in application modernization. ",
+    "text": "Our study identified a number of areas that could be pursued for the use of generative AI in application modernization.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -3369,7 +4675,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Although the import of generative capabilities may seem to be about the production of an artifact itself, we found that they instead may also be a means rather than just an end . ",
+    "text": "Although the import of generative capabilities may seem to be about the production of an artifact itself, we found that they instead may also be a means rather than just an end .",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -3431,7 +4737,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "The process of using these models to perform an initial translation, followed by manual correction, could provide a corpus of correctly-translated code that would enable supervised training, resulting in further quality improvements to the translator. ",
+    "text": "The process of using these models to perform an initial translation, followed by manual correction, could provide a corpus of correctly-translated code that would enable supervised training, resulting in further quality improvements to the translator.",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -3462,7 +4768,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Although we have discovered that our design scenario did demonstrate compelling user experiences, we caution that our results may not generalize to other domains or use cases beyond the code translation task we examined (e.g. using generative models for molecular discovery). ",
+    "text": "Although we have discovered that our design scenario did demonstrate compelling user experiences, we caution that our results may not generalize to other domains or use cases beyond the code translation task we examined (e.g. using generative models for molecular discovery).",
     "label": "Conclusion",
     "bboxes": [
       {
@@ -3524,7 +4830,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Given the probabilistic nature of deep learning models, we posit that there will always be some amount of noise in their output; correspondingly, deep generative models that produce code as output may exhibit some amount of deviation from a programmers intentions. ",
+    "text": "Given the probabilistic nature of deep learning models, we posit that there will always be some amount of noise in their output; correspondingly, deep generative models that produce code as output may exhibit some amount of deviation from a programmers intentions.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -3555,7 +4861,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Through a thematic analysis [12, 22], we identified four themes when considering the design of user experiences that leverage generative models in software engineering: acceptance through verification, human-AI patterns of interaction, the utility of imperfect AI, and future opportunities for generative AI in application modernization. ",
+    "text": "Through a thematic analysis [12, 22], we identified four themes when considering the design of user experiences that leverage generative models in software engineering: acceptance through verification, human-AI patterns of interaction, the utility of imperfect AI, and future opportunities for generative AI in application modernization.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -3587,13 +4893,13 @@
         "page": 1
       }
     ],
-    "section": "1 INTRODUCTION",
+    "section": "",
     "prob": null,
     "is_author_statement": true,
-    "is_in_expected_section": true
+    "is_in_expected_section": false
   },
   {
-    "text": "Given the imperfect output of state-of-the-art NMT models, we posit that such systems will act in concert with human software engineers as a collaborative partner or teammate. ",
+    "text": "Given the imperfect output of state-of-the-art NMT models, we posit that such systems will act in concert with human software engineers as a collaborative partner or teammate.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -3617,7 +4923,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "The use of scenarios to elicit feedback on future UX design has a long history in HCI (e.g. [17, 77]), and recently this method has been applied to the design of AI systems as well (e.g. [8, 55, 97]). ",
+    "text": "The use of scenarios to elicit feedback on future UX design has a long history in HCI (e.g. [17, 77]), and recently this method has been applied to the design of AI systems as well (e.g. [8, 55, 97]).",
     "label": "Future Work",
     "bboxes": [
       {
@@ -3641,7 +4947,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "We begin by highlighting the difficulties faced by our software engineers in modernizing legacy applications, motivating the need for AI support. ",
+    "text": "We begin by highlighting the difficulties faced by our software engineers in modernizing legacy applications, motivating the need for AI support.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -3690,7 +4996,7 @@
         "page": 5
       }
     ],
-    "section": "5 RESULTS",
+    "section": "",
     "prob": null,
     "is_author_statement": true,
     "is_in_expected_section": false
@@ -3734,7 +5040,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "P9 offered a more nuanced view on who would need to have an understanding of how the AI model operated. ",
+    "text": "P9 offered a more nuanced view on who would need to have an understanding of how the AI model operated.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -3775,7 +5081,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "P6 further imagined that Im just going to rewrite this and through my action the AI can learn. ",
+    "text": "P6 further imagined that Im just going to rewrite this and through my action the AI can learn.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -3792,7 +5098,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "[81], the allocation of tasks in a human-AI collaboration need not be symmetric. ",
+    "text": "[81], the allocation of tasks in a human-AI collaboration need not be symmetric.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -3985,7 +5291,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "As discussed in Section 5.1.1, testing seems to be one of the primary ways that software engineers will accept and use AI-translated code: Im very much a supporter of test-driven development, which typically means you write tests that validate behavior. (P3). ",
+    "text": "As discussed in Section 5.1.1, testing seems to be one of the primary ways that software engineers will accept and use AI-translated code: Im very much a supporter of test-driven development, which typically means you write tests that validate behavior. (P3).",
     "label": "Future Work",
     "bboxes": [
       {
@@ -4016,7 +5322,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Future work is needed to investigate different kinds of interaction patterns, including different mixed-initiative patterns [43, 82], to understand their effect on a software engineers productivity and capability. ",
+    "text": "Future work is needed to investigate different kinds of interaction patterns, including different mixed-initiative patterns [43, 82], to understand their effect on a software engineers productivity and capability.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -4047,7 +5353,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Our results motivate the need for explainable generative AI. ",
+    "text": "Our results motivate the need for explainable generative AI.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -4064,7 +5370,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Techniques that help people understand the mechanics of generative models, as well as techniques that are able to generate specific rationales for why a given artifact was generated, could help people further adopt generative models in their own work practices. ",
+    "text": "Techniques that help people understand the mechanics of generative models, as well as techniques that are able to generate specific rationales for why a given artifact was generated, could help people further adopt generative models in their own work practices.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -4095,7 +5401,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "One such area is in further developing intelligent user interfaces tailored specifically for code translation. ",
+    "text": "One such area is in further developing intelligent user interfaces tailored specifically for code translation.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -4112,7 +5418,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "The process of using these models to perform an initial translation, followed by manual correction, could provide a corpus of correctly-translated code that would enable supervised training, resulting in further quality improvements to the translator. ",
+    "text": "The process of using these models to perform an initial translation, followed by manual correction, could provide a corpus of correctly-translated code that would enable supervised training, resulting in further quality improvements to the translator.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -4143,7 +5449,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "In addition, our finding that acceptance of a models output is established through verification, rather than explanation of the models operation, is not meant to diminish the importance of further research and exploration into how generative models might explain themselves, their operation, and their limitations. ",
+    "text": "In addition, our finding that acceptance of a models output is established through verification, rather than explanation of the models operation, is not meant to diminish the importance of further research and exploration into how generative models might explain themselves, their operation, and their limitations.",
     "label": "Future Work",
     "bboxes": [
       {
@@ -4243,7 +5549,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Our research focuses on understanding the extent to which generative models are still useful to human stakeholders despite their potential to produce imperfect output. ",
+    "text": "Our research focuses on understanding the extent to which generative models are still useful to human stakeholders despite their potential to produce imperfect output.",
     "label": "Objective",
     "bboxes": [
       {
@@ -4291,7 +5597,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "We developed an exploratory design scenario in order to engage software engineers in a discussion about the role of generative AI in application modernization. ",
+    "text": "We developed an exploratory design scenario in order to engage software engineers in a discussion about the role of generative AI in application modernization.",
     "label": "Objective",
     "bboxes": [
       {
@@ -4315,7 +5621,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Future work is needed to investigate different kinds of interaction patterns, including different mixed-initiative patterns [43, 82], to understand their effect on a software engineers productivity and capability. ",
+    "text": "Future work is needed to investigate different kinds of interaction patterns, including different mixed-initiative patterns [43, 82], to understand their effect on a software engineers productivity and capability.",
     "label": "Objective",
     "bboxes": [
       {
@@ -4346,7 +5652,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "The use of scenarios to elicit feedback on future UX design has a long history in HCI (e.g. [17, 77]), and recently this method has been applied to the design of AI systems as well (e.g. [8, 55, 97]). ",
+    "text": "The use of scenarios to elicit feedback on future UX design has a long history in HCI (e.g. [17, 77]), and recently this method has been applied to the design of AI systems as well (e.g. [8, 55, 97]).",
     "label": "Method",
     "bboxes": [
       {
@@ -4401,7 +5707,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "In this way, the NMT model can work collaboratively with the human: the model proposes multiple solutions, the human chooses one, and if necessary, the model follows-through to make a series of changes that are consistent with one another. ",
+    "text": "In this way, the NMT model can work collaboratively with the human: the model proposes multiple solutions, the human chooses one, and if necessary, the model follows-through to make a series of changes that are consistent with one another.",
     "label": "Method",
     "bboxes": [
       {
@@ -4432,7 +5738,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "Next, we developed more integrative codes (similar to grounded theory axial codes) using a shared online document and visual collaboration tools. ",
+    "text": "Next, we developed more integrative codes (similar to grounded theory axial codes) using a shared online document and visual collaboration tools.",
     "label": "Method",
     "bboxes": [
       {
@@ -4456,7 +5762,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "One author led each interview, guiding participants through each phase and asking all interview questions. ",
+    "text": "One author led each interview, guiding participants through each phase and asking all interview questions.",
     "label": "Method",
     "bboxes": [
       {
@@ -4504,7 +5810,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Participants responded positively to the confidence highlights (Figure 1B) and the alternate translations (Figure 1C) and felt that both views were helpful. ",
+    "text": "Participants responded positively to the confidence highlights (Figure 1B) and the alternate translations (Figure 1C) and felt that both views were helpful.",
     "label": "Result",
     "bboxes": [
       {
@@ -4528,7 +5834,7 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Our results motivate the need for explainable generative AI. ",
+    "text": "Our results motivate the need for explainable generative AI.",
     "label": "Result",
     "bboxes": [
       {
@@ -4569,7 +5875,7 @@
     "is_in_expected_section": false
   },
   {
-    "text": "They found that, even when the system was only 50% accurate (i.e. randomly guessing), users who expected a reduction in the false positive rate had a lower perception of accuracy and lower acceptance of the system than users who expected a reduction in the false negative rate. ",
+    "text": "They found that, even when the system was only 50% accurate (i.e. randomly guessing), users who expected a reduction in the false positive rate had a lower perception of accuracy and lower acceptance of the system than users who expected a reduction in the false negative rate.",
     "label": "Result",
     "bboxes": [
       {
