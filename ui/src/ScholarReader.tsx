@@ -84,7 +84,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     if (props.paperId) {
       loggingContext.paperId = props.paperId;
       let paper_name = props.paperId.id.split('\/');
-      console.log(paper_name[paper_name.length-1])
     }
     logger.setContext(loggingContext);
 
@@ -830,8 +829,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
      * In a past version, these offsets were based roughly off those in the pdf.js "find" functionality:
      * https://github.com/mozilla/pdf.js/blob/16ae7c6960c1296370c1600312f283a68e82b137/web/pdf_find_controller.js#L28-L29
      */
-    const SCROLL_OFFSET_X = +1000;
-    const SCROLL_OFFSET_Y = +100;
+    const SCROLL_OFFSET_X = -1000;
+    const SCROLL_OFFSET_Y = 0;
 
     const { pdfViewerApplication, pdfViewer, pages, entities } = this.state;
 
@@ -846,7 +845,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     ) {
       return false;
     }
-
     // if there are multiple bouding boxes, pick the last one 
     const entity = entities.byId[id]
     let dest = entity.attributes.bounding_boxes[entity.attributes.bounding_boxes.length - 1];
@@ -867,12 +865,26 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
      * the current location to history so that when a user clicks the 'Back' button, it takes
      * them back to where they were before.
      */
-    pdfViewerApplication.pdfLinkService.navigateTo([
-      dest.page,
-      { name: "XYZ" },
-      left + SCROLL_OFFSET_X,
-      top + SCROLL_OFFSET_Y,
-    ]);
+    // pdfViewerApplication.pdfLinkService.navigateTo([
+    //   dest.page,
+    //   { name: "XYZ" },
+    //   left + SCROLL_OFFSET_X,
+    //   top + SCROLL_OFFSET_Y,
+    // ]);
+
+   pdfViewer.scrollPageIntoView({
+        pageNumber: dest.page + 1, 
+        destArray: [
+          undefined,
+          { name: "XYZ" },
+          SCROLL_OFFSET_X, 
+          top + SCROLL_OFFSET_Y,
+        ],
+        allowNegativeOffset: true,
+      });
+
+    // setTimeout(function () {pdfViewerApplication.pdfViewer.container.scrollLeft -= 300}, 50)
+
 
     /*
      * Store the position that the paper has jumped to.
@@ -880,6 +892,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.setState({
       jumpTarget: id,
     });
+
+    
 
     /*
      * added: also select the entity
@@ -901,6 +915,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   render() {
+
+
     let findMatchEntityId: string | null = null;
     if (
       this.state.findMatchedEntities !== null &&
@@ -958,7 +974,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               </button>
             </PdfjsToolbar> */}
             {/* For the FAQs */}
-            {this.state.FAQsEnabled ? (
+            {/* {this.state.FAQsEnabled ? (
               <PdfjsToolbar>
                 <button
                   onClick={this.toggleDrawer}
@@ -969,7 +985,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                   </span>
                 </button>
               </PdfjsToolbar>
-            ) : null}
+            ) : null} */}
             <PdfjsBrandbar />
             <ViewerOverlay
               pdfViewer={this.state.pdfViewer}
