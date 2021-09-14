@@ -49,22 +49,24 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
               overflowY: "hidden",
             }}
           >
-            {discourseObjs.map((d, i) => (
-              <div
-                style={{
-                  position: "absolute",
-                  top: this.mapDiscourseToScrollBar(
-                    d.bboxes[0].page,
-                    d.bboxes[0].top
-                  ),
-                  width: ScrollbarMarkup.scrollbarWidth,
-                  height: ScrollbarMarkup.scrollbarMarkHeight,
-                  background: uiUtils.updateAlpha(d.color, 0.9),
-                  border: "1px solid grey",
-                }}
-                key={`scrollbar-mark-${i}`}
-              ></div>
-            ))}
+            {discourseObjs
+              .filter((d) => d.label !== "Author")
+              .map((d, i) => (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: this.mapDiscourseToScrollBar(
+                      d.bboxes[0].page,
+                      d.bboxes[0].top
+                    ),
+                    width: ScrollbarMarkup.scrollbarWidth,
+                    height: ScrollbarMarkup.scrollbarMarkHeight,
+                    background: uiUtils.updateAlpha(d.color, 0.9),
+                    border: "1px solid grey",
+                  }}
+                  key={`scrollbar-mark-${i}`}
+                ></div>
+              ))}
           </div>
         ) : null}
       </>

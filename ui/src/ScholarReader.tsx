@@ -22,6 +22,7 @@ import EntityCreationToolbar, {
 } from "./components/control/EntityCreationToolbar";
 import MainControlPanel from "./components/control/MainControlPanel";
 import TextSelectionMenu from "./components/control/TextSelectionMenu";
+import UnderlineLayer from "./components/discourse/UnderlineLayer";
 import { Drawer, DrawerContentType } from "./components/drawer/Drawer";
 import EntityAnnotationLayer from "./components/entity/EntityAnnotationLayer";
 import EquationDiagram from "./components/entity/equation/EquationDiagram";
@@ -878,7 +879,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       label: r.label,
       bboxes: r.bboxes,
       tagLocation: r.bboxes[0],
-      color: discourseToColorMap[r.label],
+      color: discourseToColorMap[r.label] ?? discourseToColorMap["Highlight"],
     }));
 
     // If a sentence has multiple labels, define a prioritization so that each sentence has a unqiue label
@@ -1302,6 +1303,15 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                           discourseObjs={discourseObjs}
                           opacity={this.state.skimOpacity}
                         ></DiscourseTagMask>
+                      )}
+
+                    {this.props.paperId !== undefined &&
+                      this.state.showSkimmingAnnotations &&
+                      discourseObjs.length > 0 && (
+                        <UnderlineLayer
+                          pageView={pageView}
+                          discourseObjs={discourseObjs}
+                        ></UnderlineLayer>
                       )}
                   </PageOverlay>
                 );

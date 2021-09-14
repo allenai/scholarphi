@@ -23,25 +23,25 @@ class DiscourseTagMask extends React.PureComponent<Props> {
     const { pageView, discourseObjs, opacity } = this.props;
     const pageNumber = uiUtils.getPageNumber(pageView);
 
+    const filterDiscourseObjs = discourseObjs
+      .filter((d) => d.label !== "Author")
+      .filter((d) => d.tagLocation.page === pageNumber);
+
     return (
       <>
-        {discourseObjs
-          .filter((e) => e.tagLocation.page === pageNumber)
-          .map((d) => (
-            <DiscourseTag
-              pageView={pageView}
-              anchor={d.tagLocation}
-              content={<span>{d.label}</span>}
-              color={d.color}
-              entityId={d.id}
-              key={d.id}
-            />
-          ))}
+        {filterDiscourseObjs.map((d) => (
+          <DiscourseTag
+            pageView={pageView}
+            anchor={d.tagLocation}
+            content={<span>{d.label}</span>}
+            color={d.color}
+            entityId={d.id}
+            key={d.id}
+          />
+        ))}
         <HighlightMask
           pageView={pageView}
-          discourseObjs={discourseObjs.filter(
-            (e) => e.tagLocation.page === pageNumber
-          )}
+          discourseObjs={filterDiscourseObjs}
           opacity={opacity}
         />
       </>
