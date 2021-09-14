@@ -1,0 +1,5349 @@
+[
+  {
+    "text": "our work is set to help create a benchmark",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6097598039215686,
+        "top": 0.7322260101010101,
+        "width": 0.25268627450980397,
+        "height": 0.011320707070707092,
+        "page": 0
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we found that a multi - input , multi - output ( mimo ) convolutional neural network ( cnn",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6215049019607843,
+        "top": 0.7875732323232324,
+        "width": 0.29146568627450986,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8014103535353535,
+        "width": 0.2197042483660131,
+        "height": 0.011320707070707092,
+        "page": 0
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we began to see off - screen",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.32338071895424836,
+        "top": 0.7253964646464647,
+        "width": 0.15708169934640526,
+        "height": 0.011320707070707092,
+        "page": 0
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our technical investigation and evaluation shed lights",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.1925820707070707,
+        "width": 0.34924183006535947,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we discuss an efficient data strategy",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.15238398692810456,
+        "top": 0.3586262626262626,
+        "width": 0.20836274509803926,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we collected a one - person dataset",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08736437908496732,
+        "top": 0.4416489898989899,
+        "width": 0.19733660130718955,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we develop a multi - input",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.693297385620915,
+        "top": 0.552344696969697,
+        "width": 0.15356372549019603,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our knowledge , no attempt has been made to apply multi - task learning",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7058937908496732,
+        "top": 0.7045517676767676,
+        "width": 0.20619444444444446,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.718388888888889,
+        "width": 0.2351470588235295,
+        "height": 0.011320707070706981,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we are also the first to exploit the form factor",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5358137254901961,
+        "top": 0.75989898989899,
+        "width": 0.2790196078431372,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we first describe the pipeline overview",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.24368954248366015,
+        "top": 0.4970151515151515,
+        "width": 0.23838562091503263,
+        "height": 0.011320707070706981,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we then discuss the gating component",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.42924183006535954,
+        "top": 0.5108522727272727,
+        "width": 0.05122712418300651,
+        "height": 0.011320707070706981,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.524689393939394,
+        "width": 0.17789215686274512,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we exploit convolutional layers",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5634248366013072,
+        "top": 0.8705959595959595,
+        "width": 0.19410784313725493,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we use imu signals",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8684395424836602,
+        "top": 0.5160315656565656,
+        "width": 0.04366013071895425,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5298686868686868,
+        "width": 0.07123366013071897,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we jointly learn the mappings",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8541176470588235,
+        "top": 0.5990542929292929,
+        "width": 0.05835130718954262,
+        "height": 0.011320707070706981,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6128901515151515,
+        "width": 0.11768464052287586,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our observation , as well as previous findings [ 17 ] , suggests that a peak or valley",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.26205555555555554,
+        "top": 0.4900782828282828,
+        "width": 0.21841176470588236,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.503915404040404,
+        "width": 0.27483660130718957,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we use the z - axis signal",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.32386764705882354,
+        "top": 0.5315883838383838,
+        "width": 0.14103104575163394,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we only perform cnn recognition",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.2679656862745098,
+        "top": 0.6146111111111111,
+        "width": 0.21250326797385627,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we first perform a simple , linear complexity peak detection",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.17998039215686273,
+        "top": 0.6422853535353535,
+        "width": 0.3008676470588235,
+        "height": 0.011320707070706981,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6561224747474748,
+        "width": 0.07505228758169936,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we define a tap - like signal",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.31798366013071894,
+        "top": 0.6837954545454545,
+        "width": 0.16248856209150325,
+        "height": 0.011332070707070763,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we used a single researcher training strategy",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5188316993464052,
+        "top": 0.4753042929292929,
+        "width": 0.2723415032679739,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our hypothesis is that a welldesigned data collection protocol can ensure training data diversity",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7267924836601307,
+        "top": 0.34778030303030305,
+        "width": 0.18677124183006533,
+        "height": 0.011332070707070652,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3616287878787879,
+        "width": 0.39255718954248364,
+        "height": 0.011320707070707037,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we need to improve the model",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5577565359477124,
+        "top": 0.3892916666666667,
+        "width": 0.180076797385621,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we see that the one - channel network can be more efficient as it allows",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.20641919191919192,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707037,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.22025631313131314,
+        "width": 0.07122385620915032,
+        "height": 0.011320707070707037,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we propose to concatenate the six - channel data",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3174607843137255,
+        "top": 0.30327777777777776,
+        "width": 0.1630081699346405,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.317114898989899,
+        "width": 0.12029901960784316,
+        "height": 0.011320707070707037,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we also evaluated this in an experiment",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.21123692810457514,
+        "top": 0.4139747474747475,
+        "width": 0.24237091503267974,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we also see that the first - order derivatives accelerometer and gyroscope signals have high shape similarity",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7291503267973857,
+        "top": 0.12339772727272727,
+        "width": 0.18321895424836598,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.1372348484848485,
+        "width": 0.39256209150326793,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.1510719696969697,
+        "width": 0.0585964052287582,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we mitigate the risks",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8925637254901961,
+        "top": 0.7382070707070707,
+        "width": 0.019537581699346385,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7520441919191919,
+        "width": 0.10214215686274508,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we aim to detect tap event",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.22677614379084968,
+        "top": 0.8290845959595959,
+        "width": 0.15615686274509802,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we repeated data collection",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5358137254901961,
+        "top": 0.7658813131313131,
+        "width": 0.16004738562091503,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we also collected non - tap motions",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.1556486928104575,
+        "top": 0.5333030303030303,
+        "width": 0.20404248366013072,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we collected a multi - person ( n=31 ) dataset",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.2820016339869281,
+        "top": 0.6789924242424241,
+        "width": 0.19934640522875813,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6928295454545454,
+        "width": 0.04646078431372548,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we focused on collecting the natural tapping actions",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.13868464052287582,
+        "top": 0.6928295454545454,
+        "width": 0.32521241830065356,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we recruited 31 participants",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6403071895424837,
+        "top": 0.6253143939393939,
+        "width": 0.17418790849673205,
+        "height": 0.011320707070706981,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we marked down a number",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5632009803921568,
+        "top": 0.6391515151515151,
+        "width": 0.16829084967320274,
+        "height": 0.011320707070706981,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we used a 5.5 \" phone a and a 6.3 \" phone b",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6305179738562091,
+        "top": 0.5478396464646464,
+        "width": 0.2815751633986928,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we assigned phone size",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5189918300653594,
+        "top": 0.5755138888888889,
+        "width": 0.13693137254901966,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we selected participants according",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7733251633986927,
+        "top": 0.5893510101010101,
+        "width": 0.1387696078431373,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6031868686868687,
+        "width": 0.05860457516339879,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we measured classification performance",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5358137254901961,
+        "top": 0.8367575757575757,
+        "width": 0.23839542483660126,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we studied are in a combination conditions",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3956764705882353,
+        "top": 0.7737361111111111,
+        "width": 0.08478267973856207,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7875732323232324,
+        "width": 0.16986111111111107,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we avoid continuous and extensive tapping",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.46274509803921565,
+        "top": 0.8014103535353535,
+        "width": 0.0177238562091504,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8152474747474748,
+        "width": 0.24187908496732025,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we applied relu",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.2894419191919192,
+        "width": 0.10505555555555554,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we have put some of the implementation evaluations",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.24457679738562094,
+        "top": 0.46932196969696965,
+        "width": 0.23588725490196072,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.48315909090909087,
+        "width": 0.06737908496732027,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we implemented and trained four ml algorithms",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.30689052287581703,
+        "top": 0.6215290404040403,
+        "width": 0.1735669934640523,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6353661616161616,
+        "width": 0.12327287581699352,
+        "height": 0.011320707070707203,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we have built one model",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8936617647058824,
+        "top": 0.31116414141414145,
+        "width": 0.01843137254901961,
+        "height": 0.011320707070707037,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.32500126262626267,
+        "width": 0.13994607843137252,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we see that training on a one - person data can",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.23386601307189545,
+        "top": 0.41183712121212124,
+        "width": 0.24659313725490192,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.42567424242424245,
+        "width": 0.02048856209150328,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we also learned that tap location recognition relies on very subtle imu responses",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.43644607843137256,
+        "top": 0.5086969696969696,
+        "width": 0.044026143790849626,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5225340909090909,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5363712121212121,
+        "width": 0.06058986928104575,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we evaluated model performance averaged",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6217565359477124,
+        "top": 0.43373358585858585,
+        "width": 0.2601029411764706,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we evaluated model performance",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6877091503267974,
+        "top": 0.6768775252525252,
+        "width": 0.19414869281045755,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we also evaluated training",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.582313725490196,
+        "top": 0.7737361111111111,
+        "width": 0.161874183006536,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we evaluated on tap direction classification",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4607434640522876,
+        "top": 0.8222272727272727,
+        "width": 0.019725490196078443,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8360643939393939,
+        "width": 0.26368790849673207,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we hypothesized that training on diverse but one - person data can",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4608888888888889,
+        "top": 0.24095075757575757,
+        "width": 0.019575163398692752,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.2547878787878788,
+        "width": 0.3671732026143791,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we performed evaluation",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.21188235294117647,
+        "top": 0.2824621212121212,
+        "width": 0.15011274509803924,
+        "height": 0.011320707070707037,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we first present the evaluation",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.43372058823529414,
+        "top": 0.8567588383838384,
+        "width": 0.046750000000000014,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8705959595959595,
+        "width": 0.14728431372549022,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we compared against the single - output counterpart",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3558970588235294,
+        "top": 0.8705959595959595,
+        "width": 0.12456862745098041,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8844318181818183,
+        "width": 0.17997549019607845,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we conclude that the one - channel cnn can address across - channel",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.18125163398692812,
+        "top": 0.7843055555555555,
+        "width": 0.29922058823529407,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7981426767676768,
+        "width": 0.09099346405228757,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we also discovered encouraging generalizability",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5358137254901961,
+        "top": 0.6215290404040403,
+        "width": 0.29750490196078416,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we have tested tapnet",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8621470588235295,
+        "top": 0.6353661616161616,
+        "width": 0.04995098039215673,
+        "height": 0.011320707070707203,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6492032828282828,
+        "width": 0.0812222222222223,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our approach is that an expert design could intentionally push the variations",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6827434640522876,
+        "top": 0.7737361111111111,
+        "width": 0.22934477124183006,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7875732323232324,
+        "width": 0.2253774509803923,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we performed a comparison",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4630882352941177,
+        "top": 0.4937285353535354,
+        "width": 0.017375816993463966,
+        "height": 0.011320707070707037,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5075656565656566,
+        "width": 0.16508333333333336,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we evaluated similar architectures",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5629128787878788,
+        "width": 0.2886732026143791,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we designed , developed , and evaluated a set",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08720261437908497,
+        "top": 0.8567588383838384,
+        "width": 0.25868790849673196,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we do not expect the current tapnet trained",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.2557418300653595,
+        "top": 0.5996035353535354,
+        "width": 0.22472712418300655,
+        "height": 0.011320707070706981,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6134406565656566,
+        "width": 0.041897058823529384,
+        "height": 0.011320707070706981,
+        "page": 8
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we have set up the infrastructure",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.369781045751634,
+        "top": 0.6549520202020201,
+        "width": 0.11068464052287585,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6687891414141415,
+        "width": 0.0818235294117647,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we can define inertial touch",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6927630718954249,
+        "top": 0.8705959595959595,
+        "width": 0.16853431372549021,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our goal of increasing the ui design space",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4714191919191919,
+        "width": 0.2573513071895425,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we developed a one - person dataset",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4434983660130719,
+        "top": 0.4852563131313131,
+        "width": 0.039437908496732066,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08753921568627451,
+        "top": 0.49909343434343434,
+        "width": 0.16781535947712414,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we verified the hypothesis that training on the one - person data can",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.29712908496732027,
+        "top": 0.6097891414141414,
+        "width": 0.1833366013071896,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6236262626262626,
+        "width": 0.22465359477124186,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we demonstrated that many new interaction use cases could be enabled by tapnet",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.37830882352941175,
+        "top": 0.6651363636363636,
+        "width": 0.10215686274509811,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6789734848484847,
+        "width": 0.3948218954248366,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Our contribution is four-fold.",
+    "label": "Contribution",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.4969962121212121,
+        "width": 0.17449509803921567,
+        "height": 0.011320707070707037,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "TapNet generally outperforms its SISO variant, implying that the MIMO architecture also contributes to performance improvement in addition to the computation and memory benefits.",
+    "label": "Contribution",
+    "bboxes": [
+      {
+        "left": 0.1845049019607843,
+        "top": 0.8567588383838384,
+        "width": 0.29843137254901964,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8705959595959595,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8844318181818183,
+        "width": 0.39469444444444446,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS 5.1 Performance on Tap Recognition Tasks",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Multi-task learning contributes to tap direction classification, especially with a small amount (no more than 3K) of training samples.",
+    "label": "Contribution",
+    "bboxes": [
+      {
+        "left": 0.5358137254901961,
+        "top": 0.47524368686868684,
+        "width": 0.3787630718954248,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.48908080808080806,
+        "width": 0.3948153594771242,
+        "height": 0.011320707070707037,
+        "page": 6
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS 5.2 Ablation Studies: Multi- Input and Output",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Although this resolution is much less precise compared to the touchscreen, such resolution can already enlarge the interaction design space, by for example enabling users to perform selection by tapping on the back of the phone, even when they wear gloves.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.3187843137254902,
+        "top": 0.2894419191919192,
+        "width": 0.16167973856209145,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.30327777777777776,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.317114898989899,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707037,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3309520202020202,
+        "width": 0.392562091503268,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3447891414141414,
+        "width": 0.2173186274509804,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Different from most computer vision tasks that heavily rely on multi-person data to achieve user generalizability [12, 44], a well-performing ML model for HCI (interactive) tasks may not necessarily demand multi-person training data.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.2267892156862745,
+        "top": 0.37246338383838384,
+        "width": 0.2536764705882354,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.38630050505050506,
+        "width": 0.39502941176470585,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4001376262626263,
+        "width": 0.393437908496732,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4139747474747475,
+        "width": 0.36596895424836606,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Each branch addresses one of the recognition tasks, such as different targets in tracking [22], languages in translation [13], and head poses in gaze estimation [43].",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.8375931372549019,
+        "top": 0.6076919191919191,
+        "width": 0.0745032679738562,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6215290404040403,
+        "width": 0.3925637254901959,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6353661616161616,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707203,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6492032828282828,
+        "width": 0.12436928104575162,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "2 RELATEDWORK 2.3 Multi-Task Learning and Training with",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Liao et al. showed that integrating simple but essential auxiliary information can increase prediction accuracy [18].",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.8561993464052288,
+        "top": 0.8567588383838384,
+        "width": 0.058148692810457536,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8705959595959595,
+        "width": 0.3925669934640523,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8844318181818183,
+        "width": 0.22600653594771247,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "2 RELATEDWORK 2.3 Multi-Task Learning and Training with",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Although these studies yielded promising result, their network capacity was relatively small and the reported accuracy was still far from practical level.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.7238169934640523,
+        "top": 0.4542272727272727,
+        "width": 0.18827941176470586,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.4680643939393939,
+        "width": 0.39256209150326793,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.48190151515151514,
+        "width": 0.32595424836601294,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Tap Detection from IMU Signals",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "In contrast to the detection of tap event alone, BackPat recognized tapping in three locations based on gyroscope and microphone signals [26].",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.7497924836601307,
+        "top": 0.2743459595959596,
+        "width": 0.16230392156862739,
+        "height": 0.011320707070707037,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.2881830808080808,
+        "width": 0.39255392156862745,
+        "height": 0.011320707070707037,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.302020202020202,
+        "width": 0.28698856209150325,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Tap Detection from IMU Signals",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Back-of-device(BoD)[5,6,14,16]andedge-of-deviceinteractions[10,16,37,41]haveattractedmuchattention,however,mostofthemre-liedonspecializedsensorsthatarenotreadilyavailableonphones.Forinstance,BackXPressstudiedfingerpressureforBoDinterac-tionusingasandwichedsmartphone[5].",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.08720261437908497,
+        "top": 0.718388888888889,
+        "width": 0.40365032679738566,
+        "height": 0.1773636363636364,
+        "page": 1
+      }
+    ],
+    "section": "",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Using this auxiliary information helps to accommodate the difference of device form factor and achieves the cross-device training.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.7421486928104575,
+        "top": 0.543705808080808,
+        "width": 0.17242810457516344,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5575429292929293,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5713800505050505,
+        "width": 0.20518627450980398,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.2 Design of TapNet Architecture",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Since different tap properties have a confound impact on IMU responses, we jointly learn the mappings from IMU signals onto these interrelated tap properties using a multi-layer CNN.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.8279117647058823,
+        "top": 0.5852171717171717,
+        "width": 0.0841813725490197,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5990542929292929,
+        "width": 0.39293464052287597,
+        "height": 0.011320707070706981,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6128901515151515,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6267272727272727,
+        "width": 0.21630228758169934,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.2 Design of TapNet Architecture",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In this architecture, different tap-related tasks share four convolutional layers, which extract the common shape patterns that are indicative across tap properties.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.7395098039215686,
+        "top": 0.6267272727272727,
+        "width": 0.1725866013071895,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6405643939393939,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6544015151515151,
+        "width": 0.3948202614379086,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.2 Design of TapNet Architecture",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Multi-task learning allows for good alignment between feature embeddings of different tasks.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.8492058823529413,
+        "top": 0.7650972222222222,
+        "width": 0.06327287581699337,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7789343434343435,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070706981,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7927714646464646,
+        "width": 0.08711274509803923,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.2 Design of TapNet Architecture",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Although TapNet is rather lightweight compared with vision-based convolutional networks, performing recognition per frame generates unnecessary overheads.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.0873921568627451,
+        "top": 0.4624040404040404,
+        "width": 0.393078431372549,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4762411616161616,
+        "width": 0.3950408496732026,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4900782828282828,
+        "width": 0.1704771241830066,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.4 Signal Gating for Neural Network",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Our observation, as well as previous findings [17], suggests that a peak or valley in the z-axis output is a necessary (high recall) but not sufficient (low precision) signal to a tapping event on the device.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.26205555555555554,
+        "top": 0.4900782828282828,
+        "width": 0.21841176470588236,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.503915404040404,
+        "width": 0.39255555555555555,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5177525252525252,
+        "width": 0.39256699346405227,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5315883838383838,
+        "width": 0.17848366013071898,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.4 Signal Gating for Neural Network",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "However, a large number of filters are required to depict the fine-grained signal alignment combinations of the six-channel signals, and thus increases the model training difficulty and the demand for data.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.20254411764705882,
+        "top": 0.26176767676767676,
+        "width": 0.2779232026143791,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.275604797979798,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.2894419191919192,
+        "width": 0.39294934640522877,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.30327777777777776,
+        "width": 0.15263725490196078,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.3 One-Channel Convolutional Layers",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In contrast, we propose to concatenate the six-channel data into a one-dimensional vector and apply onechannel convolutional layers in TapNet.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.24433823529411763,
+        "top": 0.30327777777777776,
+        "width": 0.23613071895424836,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.317114898989899,
+        "width": 0.3950294117647059,
+        "height": 0.011320707070707037,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3309520202020202,
+        "width": 0.24784640522875817,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.3 One-Channel Convolutional Layers",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "By doing so, each onechannel convolutional filter can be reused to detect shape features across channels, and then rely on the fully connected layers to draw decision by associating filter activations in different parts of the signals.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.340593137254902,
+        "top": 0.3309520202020202,
+        "width": 0.14234150326797385,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3447891414141414,
+        "width": 0.3925539215686275,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3586262626262626,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.37246338383838384,
+        "width": 0.39255882352941174,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.38630050505050506,
+        "width": 0.06766830065359476,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.3 One-Channel Convolutional Layers",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "This strategy allows to use the researchers intuition of the problem space to push the recognition envelope to the fullest degree, for example, by including the training data with different grip gestures and forces.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.609156862745098,
+        "top": 0.6690227272727273,
+        "width": 0.3029379084967321,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6828598484848486,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.696695707070707,
+        "width": 0.39255392156862745,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7105328282828283,
+        "width": 0.15386274509803932,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "4 DATASET DEVELOPMENT 4.1 One-Person Training Dataset",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "A simplified TapNet can also be run in real time (9ms) on the embedding DSP using Tensor Lite for microcontroller [31], but this is beyond the scope of this paper.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.2235980392156863,
+        "top": 0.4001376262626263,
+        "width": 0.2568676470588235,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4139747474747475,
+        "width": 0.3950375816993464,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.42781186868686866,
+        "width": 0.32591013071895425,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "3) data augmentation by temporally shifting the samples conduces to the performance gain but scaling the samples does not.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5246704545454546,
+        "width": 0.39256699346405227,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5385075757575758,
+        "width": 0.3446209150326798,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In contrast, TapNet is a multi-task network that gives predictions for all five tasks at a time.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3388383838383839,
+        "width": 0.39518137254901964,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.35267550505050504,
+        "width": 0.24045261437908494,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS 5.1 Performance on Tap Recognition Tasks",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "As expected, fine tuning on the n-1 participants further improved the performance, but some of the improvements are relatively moderate, for example, by 1% for tap event and 3.2% for finger part classification.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.20696078431372547,
+        "top": 0.42567424242424245,
+        "width": 0.27350490196078436,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.43951136363636367,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4533484848484849,
+        "width": 0.3930277777777778,
+        "height": 0.011320707070706981,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4671856060606061,
+        "width": 0.16689869281045755,
+        "height": 0.011320707070706981,
+        "page": 6
+      }
+    ],
+    "section": "",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The overall performance of different models increases with training samples and they flats out after 4.5K samples per device.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.8443039215686275,
+        "top": 0.8429217171717173,
+        "width": 0.06778594771241808,
+        "height": 0.011320707070706981,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8567588383838384,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8705959595959595,
+        "width": 0.2793333333333332,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS 5.2 Ablation Studies: Multi- Input and Output",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Although the performance improvement of SIMO over SISO is modest in this specific task, its advantages of reusing computation (for the shared layers) across recognition tasks and memory saving to avoid running multiple models on small processing units are essential.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.6754624183006536,
+        "top": 0.5305921717171717,
+        "width": 0.23663235294117657,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5444292929292929,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5582664141414141,
+        "width": 0.39255392156862745,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5721035353535353,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5859406565656565,
+        "width": 0.2073725490196079,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "One the other hand, both SIMO and SISO TapNets can considerably outperform TinyCNN (purple dashed) starting from 3K training samples, and outperform SVM (blue dashed) starting from 6K.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.7299787581699346,
+        "top": 0.5859406565656565,
+        "width": 0.1821160130718955,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5997765151515152,
+        "width": 0.39502941176470585,
+        "height": 0.011320707070706981,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6136136363636364,
+        "width": 0.3925637254901959,
+        "height": 0.011320707070706981,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6274507575757575,
+        "width": 0.2109901960784315,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS 5.2 Ablation Studies: Multi- Input and Output",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "However, the performance difference on simple tasks (event and finger part classification) among different methods is marginal.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.1649078282828283,
+        "width": 0.3762794117647058,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.17874494949494948,
+        "width": 0.36393137254901964,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS 5.1 Performance on Tap Recognition Tasks",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "This suggests that the minimal model capacity can be task-dependent; simple tasks may not be benefited from a model capacity increase, but the more complicated tasks can be.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.45467973856209154,
+        "top": 0.17874494949494948,
+        "width": 0.025785947712418322,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.1925820707070707,
+        "width": 0.3936029411764706,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.20641919191919192,
+        "width": 0.39416993464052286,
+        "height": 0.011320707070707037,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.22025631313131314,
+        "width": 0.23199836601307194,
+        "height": 0.011320707070707037,
+        "page": 6
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS 5.1 Performance on Tap Recognition Tasks",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We hypothesized that training on diverse but one-person data can still achieve generalizability for unseen users in some tap recognition tasks.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.4608888888888889,
+        "top": 0.24095075757575757,
+        "width": 0.019575163398692752,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.2547878787878788,
+        "width": 0.3925571895424837,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.268625,
+        "width": 0.39256699346405227,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.2824621212121212,
+        "width": 0.03347712418300654,
+        "height": 0.011320707070707037,
+        "page": 6
+      }
+    ],
+    "section": "",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The other advantage of our approach is that an expert design could intentionally push the variations of an intentional tap gesture in terms of speed, strength, angle, and hand posture, However, it is possible certain recognition tasks, such as higher resolution tap location classification, could demand more fine-grained information only available in person-specific data.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.5358137254901961,
+        "top": 0.7737361111111111,
+        "width": 0.3762745098039215,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7875732323232324,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8014103535353535,
+        "width": 0.3925669934640523,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8152474747474748,
+        "width": 0.39256209150326793,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8290845959595959,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8429217171717173,
+        "width": 0.21977777777777785,
+        "height": 0.011320707070706981,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "This architecture not only shares knowledge across tap properties and devices during training, but also shares computation and memory at run time.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.8669428104575163,
+        "top": 0.4969962121212121,
+        "width": 0.04762581699346413,
+        "height": 0.011320707070707037,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5108333333333334,
+        "width": 0.3925637254901959,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5246704545454546,
+        "width": 0.3929411764705881,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5385075757575758,
+        "width": 0.07108823529411767,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Some of the TapNet building blocks are not novel in fields such as computer vision, but to bring them into building an interaction gesture to a practical performance level required original research.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.5944035947712418,
+        "top": 0.5385075757575758,
+        "width": 0.3176944444444443,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.552344696969697,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5661818181818182,
+        "width": 0.3925637254901959,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5800189393939394,
+        "width": 0.10655065359477123,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In contrast, ExplorativeTap starts the accessibility mode by a double back tap, selects object by a single back tap, and exits by lifting the exploration finger.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.8995604575163398,
+        "top": 0.5888396464646465,
+        "width": 0.012537581699346378,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6026767676767677,
+        "width": 0.39255555555555544,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6165126262626263,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6303497474747475,
+        "width": 0.11282679738562096,
+        "height": 0.011320707070706981,
+        "page": 8
+      }
+    ],
+    "section": "7 HCI APPLICATIONS OF TAPNET 7.2 ExplorativeTap",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Although evaluation results demonstrated that TapNet benefited from cross-device training, we do not expect the current TapNet trained on these two devices would directly apply to unseen devices without further training, i.e. a cross-device model.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.5857664141414142,
+        "width": 0.3762794117647059,
+        "height": 0.011320707070706981,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5996035353535354,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070706981,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6134406565656566,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070706981,
+        "page": 8
+      },
+      {
+        "left": 0.08736437908496732,
+        "top": 0.6272777777777777,
+        "width": 0.30757679738562094,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "6 DISCUSSION",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "However, the joint training architecture has been shown effective and this is a promising step toward a device adaptive model.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.3990212418300654,
+        "top": 0.6272777777777777,
+        "width": 0.08144444444444449,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6411148989898989,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707203,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6549520202020201,
+        "width": 0.2784297385620915,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "6 DISCUSSION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Off-screen tap recognition makes it possible to interact with objects living in different interface layers, such as background targets that do not react to on-screen touch.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7158800505050504,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7297171717171718,
+        "width": 0.39256045751633994,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7435542929292929,
+        "width": 0.19419771241830064,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "7 HCI APPLICATIONS OF TAPNET 7.3 Interactive Wallpaper",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "They can back tap to change the flashcard or news feeds, or edge tap to switch a different set of them, and these can be done even on the lock screen.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.648202614379085,
+        "top": 0.7712285353535353,
+        "width": 0.26416830065359476,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7850656565656566,
+        "width": 0.39255718954248364,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7989027777777777,
+        "width": 0.22158333333333335,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "7 HCI APPLICATIONS OF TAPNET 7.3 Interactive Wallpaper",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "This paper aims to address the needs in practice, by predicting comprehensive tap properties for diverse application purposes and advancing the state of the art of off-screen interaction towards a practical level of performance.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.7505506535947712,
+        "top": 0.6492032828282828,
+        "width": 0.1615375816993464,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6630404040404041,
+        "width": 0.39256045751633994,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6768775252525252,
+        "width": 0.3925637254901959,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6907146464646465,
+        "width": 0.394812091503268,
+        "height": 0.011320707070706981,
+        "page": 0
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "To test this hypothesis, we collected a one-person dataset for training and a separate multiperson dataset for testing (and optionally model adaptation).",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.3452140522875817,
+        "top": 0.42781186868686866,
+        "width": 0.13686437908496735,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08736437908496732,
+        "top": 0.4416489898989899,
+        "width": 0.39557679738562096,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.45548484848484855,
+        "width": 0.365483660130719,
+        "height": 0.011320707070707037,
+        "page": 1
+      }
+    ],
+    "section": "",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The key objective is to achieve the five recognition tasks (i.e. the five network outputs) with one network (TapNet) as shown in Table 1.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.17005228758169935,
+        "top": 0.4555037878787879,
+        "width": 0.3104166666666667,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4693409090909091,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4831780303030303,
+        "width": 0.1007205882352941,
+        "height": 0.011320707070706981,
+        "page": 2
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Our hypothesis is that a welldesigned data collection protocol can ensure training data diversity even from one person and be sufficient for some tap recognition tasks .",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.7267924836601307,
+        "top": 0.34778030303030305,
+        "width": 0.18677124183006533,
+        "height": 0.011332070707070652,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3616287878787879,
+        "width": 0.39255718954248364,
+        "height": 0.011320707070707037,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3754545454545455,
+        "width": 0.3948169934640522,
+        "height": 0.011332070707070652,
+        "page": 3
+      }
+    ],
+    "section": "4 DATASET DEVELOPMENT",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "As we aim to detect tap event and identify tap properties in an orientation-invariant manner, we leverage the raw accelerometer and gyroscope data and compute their first-order derivative.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.20757679738562093,
+        "top": 0.8290845959595959,
+        "width": 0.27288725490196075,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8429217171717173,
+        "width": 0.39310620915032685,
+        "height": 0.011320707070706981,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8567588383838384,
+        "width": 0.3928333333333333,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8705959595959595,
+        "width": 0.06381699346405227,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.5 Sensor Signal and Temporal Alignment",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "This corroborates the hypothesis that training on the diverse data even from a single person can achieve viable user generalizability for tasks, such as event (F1:.92), finger part (F1:.93), and direction classification (F1:.85).",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.25848039215686275,
+        "top": 0.4671856060606061,
+        "width": 0.22199183006535944,
+        "height": 0.011320707070706981,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4810227272727273,
+        "width": 0.39255882352941174,
+        "height": 0.011320707070706981,
+        "page": 6
+      },
+      {
+        "left": 0.08753921568627451,
+        "top": 0.49485984848484843,
+        "width": 0.393202614379085,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5086969696969696,
+        "width": 0.2834722222222222,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In comparison to many alternatives, this neural network architecture worked the best towards our goal of increasing the UI design space of off-screen interactions.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.3106993464052287,
+        "top": 0.4437449494949495,
+        "width": 0.17224836601307197,
+        "height": 0.011320707070707037,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4575820707070707,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4714191919191919,
+        "width": 0.39481535947712426,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "8 CONCLUSION",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "We verified the hypothesis that training on the one-person data can still generalize well across users if the diversity of the training data can be ensured.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.29712908496732027,
+        "top": 0.6097891414141414,
+        "width": 0.1833366013071896,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6236262626262626,
+        "width": 0.3925637254901961,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6374633838383839,
+        "width": 0.32754738562091507,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "8 CONCLUSION",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Compared with the solution of one model for each task, a joint model (see Figure 1) can exploit the interrelation among multiple tap properties during training and also saves run-time computation and memory.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.7976454248366013,
+        "top": 0.8290845959595959,
+        "width": 0.11445588235294124,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8429217171717173,
+        "width": 0.3934460784313727,
+        "height": 0.011320707070706981,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8567588383838384,
+        "width": 0.39255392156862734,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8705959595959595,
+        "width": 0.3462712418300654,
+        "height": 0.011320707070707092,
+        "page": 0
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Beyond research explorations, we began to see off-screen occlusion-free alternatives in mainstream products, such as double pressing power button to activate the camera, squeezing the Active",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.14069117647058824,
+        "top": 0.7253964646464647,
+        "width": 0.33977124183006535,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7392335858585858,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7530694444444445,
+        "width": 0.39256045751633994,
+        "height": 0.011320707070707092,
+        "page": 0
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "The results show that the one-person model could achieve a comparable level of user generalizability as a model tuned on multi-person data.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.4570588235294118,
+        "top": 0.45548484848484855,
+        "width": 0.023408496732026107,
+        "height": 0.011320707070707037,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.46932196969696965,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.48315909090909087,
+        "width": 0.39481535947712426,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Therefore, we only perform CNN recognition when we observe a tap-like signal from the gating signal.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.20049346405228757,
+        "top": 0.6146111111111111,
+        "width": 0.2799754901960785,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08736437908496732,
+        "top": 0.6284482323232323,
+        "width": 0.34240849673202617,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.4 Signal Gating for Neural Network",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Each session aims to collect tap in a specific condition described by a set of characteristics of the phone, grip gestures, and the tapping itself (see Table 2).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5306527777777778,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5444886363636364,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5583257575757576,
+        "width": 0.16104084967320254,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "4 DATASET DEVELOPMENT 4.1 One-Person Training Dataset",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Regarding the options between one-channel vs multi-channel network, we see that the one-channel network can be more efficient as it allows for filter reuse across IMU channels.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.1925820707070707,
+        "width": 0.3762745098039215,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.20641919191919192,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707037,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.22025631313131314,
+        "width": 0.3046633986928105,
+        "height": 0.011320707070707037,
+        "page": 3
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.3 One-Channel Convolutional Layers",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In addition to orientation invariance, we also see that the first-order derivatives accelerometer and gyroscope signals have high shape similarity.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.8995522875816993,
+        "top": 0.10956060606060607,
+        "width": 0.012539215686274696,
+        "height": 0.011320707070707065,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.12339772727272727,
+        "width": 0.39283496732026146,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.1372348484848485,
+        "width": 0.39256209150326793,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.1510719696969697,
+        "width": 0.0585964052287582,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.5 Sensor Signal and Temporal Alignment",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The three parallel lines along the diagonal with a five-cell offset in the confusion matrix indicates TapNet either predicts correctly or to nearby regions (see Figure 4(c)).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.8035147058823529,
+        "top": 0.5060568181818182,
+        "width": 0.10858333333333337,
+        "height": 0.011320707070706981,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5198939393939394,
+        "width": 0.3950424836601307,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5337310606060606,
+        "width": 0.3925669934640523,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.51909477124183,
+        "top": 0.5475681818181818,
+        "width": 0.0973709150326798,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS 5.1 Performance on Tap Recognition Tasks",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The major latency (105 ms) of the whole pipeline lies in waiting to observe the complete tap signal in the feature window.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.4175669934640523,
+        "top": 0.42781186868686866,
+        "width": 0.06318300653594772,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4416489898989899,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.45548484848484855,
+        "width": 0.2774754901960785,
+        "height": 0.011320707070707037,
+        "page": 5
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS 5.1 Performance on Tap Recognition Tasks",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "By comparing the one-to-n-participant with the leave-one-out evaluation (see Table 5), we see that training on a one-person data can still be effective.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.3980012626262626,
+        "width": 0.3762875816993464,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.41183712121212124,
+        "width": 0.39255392156862745,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.42567424242424245,
+        "width": 0.11629901960784313,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "(see the supplemental video figure).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.0874656862745098,
+        "top": 0.10956060606060607,
+        "width": 0.20540522875816997,
+        "height": 0.011320707070707065,
+        "page": 6
+      }
+    ],
+    "section": "",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Training on incremental oneperson data can increase performance up to a certain level and then plateaus (see Figure 8).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.742656862745098,
+        "top": 0.8429217171717173,
+        "width": 0.17190849673202624,
+        "height": 0.011320707070706981,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8567588383838384,
+        "width": 0.39256045751633994,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8705959595959595,
+        "width": 0.13332843137254902,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "ExplorativeTap is a two-handed interaction method that exploits signals from both the front (touch) and back of the phone tap (see Figure 9b).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.5195343137254902,
+        "top": 0.4781426767676768,
+        "width": 0.3925669934640523,
+        "height": 0.011320707070707037,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.491979797979798,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707037,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5058169191919192,
+        "width": 0.06488725490196079,
+        "height": 0.011320707070706981,
+        "page": 8
+      }
+    ],
+    "section": "7 HCI APPLICATIONS OF TAPNET 7.2 ExplorativeTap",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "For instance, TapNet can enable users to interact with flashcards or news feeds shown in the wallpaper (see Figure 9c).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.717452614379085,
+        "top": 0.7435542929292929,
+        "width": 0.1946454248366012,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7573914141414142,
+        "width": 0.39504084967320263,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7712285353535353,
+        "width": 0.1250065359477125,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "7 HCI APPLICATIONS OF TAPNET 7.3 Interactive Wallpaper",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Users can perform a back double tap to invoke the AssistiveTap interface (see Figure 9a), then tilt",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.28262418300653597,
+        "top": 0.8705959595959595,
+        "width": 0.19783660130718944,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8844318181818183,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The evaluation results show that",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.154468954248366,
+        "top": 0.5129292929292929,
+        "width": 0.19032843137254904,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "8 CONCLUSION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "CHI 21, May 813, 2021, Yokohama, Japan",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8551742424242424,
+        "width": 0.19444607843137257,
+        "height": 0.008805555555555622,
+        "page": 0
+      }
+    ],
+    "section": "",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Different from most computer vision tasks that heavily rely on multi-person data to achieve user generalizability [12, 44], a well-performing ML model for HCI (interactive) tasks may not necessarily demand multi-person training data.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.2267892156862745,
+        "top": 0.37246338383838384,
+        "width": 0.2536764705882354,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.38630050505050506,
+        "width": 0.39502941176470585,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4001376262626263,
+        "width": 0.393437908496732,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4139747474747475,
+        "width": 0.36596895424836606,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The results show that the one-person model could achieve a comparable level of user generalizability as a model tuned on multi-person data.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.4570588235294118,
+        "top": 0.45548484848484855,
+        "width": 0.023408496732026107,
+        "height": 0.011320707070707037,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.46932196969696965,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.48315909090909087,
+        "width": 0.39481535947712426,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Multi-task models employ multiple loss functions thus more supervisions during training that can potentially helps learning.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.7586209150326798,
+        "top": 0.6768775252525252,
+        "width": 0.1538545751633985,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6907146464646465,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070706981,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7045517676767676,
+        "width": 0.18268300653594782,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "2 RELATEDWORK 2.3 Multi-Task Learning and Training with",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Unlike using the IMU, these detection methods require additional hardware installed on the already very compact mobile devices, increasing manufacturing and material cost and potentially reducing available space to the largest possible battery.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.6235228758169935,
+        "top": 0.10956060606060607,
+        "width": 0.28856862745098033,
+        "height": 0.011320707070707065,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.12339772727272727,
+        "width": 0.39255392156862734,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.1372348484848485,
+        "width": 0.3925637254901959,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.1510719696969697,
+        "width": 0.3948202614379086,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "2 RELATEDWORK 2.1 Off-Screen Interaction",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The network could simultaneously recognize a set of tap properties, including tap direction and location;",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.36858496732026147,
+        "top": 0.5108333333333334,
+        "width": 0.11188562091503262,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5246704545454546,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5385075757575758,
+        "width": 0.13778431372549022,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "These studies relied on simple features (e.g. mean, kurtosis, and skewness) and statistical methods typically based on shallow neural networks [8, 19, 26, 39, 40], thus only achieved limited precision of tap location detection.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.7340980392156863,
+        "top": 0.32969444444444446,
+        "width": 0.17800326797385624,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3435315656565657,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3573686868686869,
+        "width": 0.39255555555555555,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3712058080808081,
+        "width": 0.3395506535947712,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Tap Detection from IMU Signals",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We exploit convolutional layers to extract shape features from IMU signals, because the convolutional filter offers temporal",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.5634248366013072,
+        "top": 0.8705959595959595,
+        "width": 0.34867320261437906,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8844318181818183,
+        "width": 0.39256209150326793,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.3 One-Channel Convolutional Layers",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Therefore, TapNet requires less computation and memory than multiple networks each trained for a single task.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.6455392156862745,
+        "top": 0.70975,
+        "width": 0.26655555555555566,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7235871212121212,
+        "width": 0.3948104575163397,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.2 Design of TapNet Architecture",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Training over an intersection of multiple tap tasks confines the learning in a restrained feature embedding space and thus allows it to converge to a solution for all related tasks [13].",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.5358137254901961,
+        "top": 0.7374242424242424,
+        "width": 0.3762745098039215,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7512613636363636,
+        "width": 0.39255882352941185,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7650972222222222,
+        "width": 0.3249934640522876,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.2 Design of TapNet Architecture",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Gating signal alone may not be enough for accurate recognition of tap properties, it is sufficient for tap-like (high recall low precision) event detection, and thus qualified as gating for the CNN recognition.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.17535130718954248,
+        "top": 0.5730997474747475,
+        "width": 0.3051111111111111,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5869368686868687,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6007739898989899,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6146111111111111,
+        "width": 0.10829901960784315,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.4 Signal Gating for Neural Network",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Therefore, we only perform CNN recognition when we observe a tap-like signal from the gating signal.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.20049346405228757,
+        "top": 0.6146111111111111,
+        "width": 0.2799754901960785,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08736437908496732,
+        "top": 0.6284482323232323,
+        "width": 0.34240849673202617,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.4 Signal Gating for Neural Network",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "A convolutional filter in later layers, with a large receptive field, is more likely to contain shape semantics, such as a large magnitude peak or an impulse with double peaks.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.2307450980392157,
+        "top": 0.1510719696969697,
+        "width": 0.2497222222222222,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.1649078282828283,
+        "width": 0.39417810457516345,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.17874494949494948,
+        "width": 0.38882189542483664,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.3 One-Channel Convolutional Layers",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "However, a large number of filters are required to depict the fine-grained signal alignment combinations of the six-channel signals, and thus increases the model training difficulty and the demand for data.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.20254411764705882,
+        "top": 0.26176767676767676,
+        "width": 0.2779232026143791,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.275604797979798,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.2894419191919192,
+        "width": 0.39294934640522877,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.30327777777777776,
+        "width": 0.15263725490196078,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.3 One-Channel Convolutional Layers",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Therefore, these signals represent the change of force on the housing of the phone and the resulting change of rotation",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.1553872549019608,
+        "top": 0.8705959595959595,
+        "width": 0.3250751633986928,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8844318181818183,
+        "width": 0.3925571895424837,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.5 Sensor Signal and Temporal Alignment",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We marked down a number of factors that may affect tapping signal responses, including finger length, finger nail length, hand size, and handedness.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.5632009803921568,
+        "top": 0.6391515151515151,
+        "width": 0.3513774509803921,
+        "height": 0.011320707070706981,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6529886363636364,
+        "width": 0.39417810457516345,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6668257575757576,
+        "width": 0.1599673202614379,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "4 DATASET DEVELOPMENT 4.2 Multi-Person Testing Dataset",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Support Vector Machine (SVM) represents a line of studies [19, 39] that used traditional machine learning methods.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.19536111111111112,
+        "top": 0.6768775252525252,
+        "width": 0.2851045751633987,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6907146464646465,
+        "width": 0.3948153594771242,
+        "height": 0.011320707070706981,
+        "page": 5
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS 5.1 Performance on Tap Recognition Tasks",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "That said, we also learned that tap location recognition relies on very subtle IMU responses, which may relate to personal biomechanics and are hard to simulate by a single person.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.37506535947712416,
+        "top": 0.5086969696969696,
+        "width": 0.10540686274509803,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5225340909090909,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5363712121212121,
+        "width": 0.39256045751633994,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5502070707070708,
+        "width": 0.18190686274509804,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS 5.2 Ablation Studies: Multi- Input and Output",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "A+B represents TapNet jointly trained on cross-device data; B->A and A->B denote tuning the pre-trained model from one device on the other; and A and B indicate models trained on device-specific data.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.8167467320261438,
+        "top": 0.8014103535353535,
+        "width": 0.09534150326797386,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.51909477124183,
+        "top": 0.8152474747474748,
+        "width": 0.3930065359477125,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8290845959595959,
+        "width": 0.39307516339869286,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8429217171717173,
+        "width": 0.32110457516339863,
+        "height": 0.011320707070706981,
+        "page": 6
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS 5.2 Ablation Studies: Multi- Input and Output",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "It thus indicates that IMU-based tap location recognition can be viable and useful in situations which does not require very high resolution and when capacitive sensing is inadequate (e.g. wearing gloves or under water).",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.2957140522875817,
+        "top": 0.10956060606060607,
+        "width": 0.1847581699346405,
+        "height": 0.011320707070707065,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.12339772727272727,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.1372348484848485,
+        "width": 0.3925571895424837,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.1510719696969697,
+        "width": 0.30154575163398695,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS 5.1 Performance on Tap Recognition Tasks",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "To investigate cross-device model training, we evaluated model performance with incremental training samples from 1K to 15K, as previous experiments suggest that TapNet converges with around 15K training samples.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.8275294117647058,
+        "top": 0.6630404040404041,
+        "width": 0.08456699346405228,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6768775252525252,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6907146464646465,
+        "width": 0.39502941176470585,
+        "height": 0.011320707070706981,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7045517676767676,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.718388888888889,
+        "width": 0.0499232026143791,
+        "height": 0.011320707070706981,
+        "page": 6
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS 5.2 Ablation Studies: Multi- Input and Output",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "This suggests that the minimal model capacity can be task-dependent; simple tasks may not be benefited from a model capacity increase, but the more complicated tasks can be.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.45467973856209154,
+        "top": 0.17874494949494948,
+        "width": 0.025785947712418322,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.1925820707070707,
+        "width": 0.3936029411764706,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.20641919191919192,
+        "width": 0.39416993464052286,
+        "height": 0.011320707070707037,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.22025631313131314,
+        "width": 0.23199836601307194,
+        "height": 0.011320707070707037,
+        "page": 6
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS 5.1 Performance on Tap Recognition Tasks",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Taken together, we conclude that the one-channel CNN can address across-channel signal alignment more efficiently than its multichannel counterpart for tap property recognition.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.0874656862745098,
+        "top": 0.7843055555555555,
+        "width": 0.3930065359477124,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7981426767676768,
+        "width": 0.39502941176470585,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8119797979797979,
+        "width": 0.296374183006536,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "",
+    "prob": 1,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "This high generalizability is probably because the inter-class differences (e.g. finger pad vs. nail in the finger part classification task) are generally much greater than the inter-person differences, such that the personal biomechanics only imposes a neglectable effect.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.6819460784313726,
+        "top": 0.7045517676767676,
+        "width": 0.23052614379084957,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.718388888888889,
+        "width": 0.392563725490196,
+        "height": 0.011320707070706981,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7322260101010101,
+        "width": 0.39255392156862745,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7460618686868686,
+        "width": 0.39294281045751633,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.75989898989899,
+        "width": 0.16971732026143793,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "The other advantage of our approach is that an expert design could intentionally push the variations of an intentional tap gesture in terms of speed, strength, angle, and hand posture, However, it is possible certain recognition tasks, such as higher resolution tap location classification, could demand more fine-grained information only available in person-specific data.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.5358137254901961,
+        "top": 0.7737361111111111,
+        "width": 0.3762745098039215,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7875732323232324,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8014103535353535,
+        "width": 0.3925669934640523,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8152474747474748,
+        "width": 0.39256209150326793,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8290845959595959,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8429217171717173,
+        "width": 0.21977777777777785,
+        "height": 0.011320707070706981,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Further adapting the model to multi-person data may teach the model to understand the artifacts of personal",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.656452614379085,
+        "top": 0.8705959595959595,
+        "width": 0.25564215686274505,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8844318181818183,
+        "width": 0.39255555555555544,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Users can use the exploration finger on the screen to glide over the on-screen objects, hear them, and perform a back tap to confirm selection.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.5884264705882353,
+        "top": 0.5058169191919192,
+        "width": 0.32367156862745095,
+        "height": 0.011320707070706981,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5196540404040404,
+        "width": 0.39293790849673205,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5334911616161616,
+        "width": 0.15144281045751629,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "7 HCI APPLICATIONS OF TAPNET 7.2 ExplorativeTap",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "It, therefore, solves the conflicts with system navigation gestures, and thus can be helpful for users with low vision and print disability, who need quick and temporary access to the accessibility mode.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.6366650326797386,
+        "top": 0.6303497474747475,
+        "width": 0.2754330065359476,
+        "height": 0.011320707070706981,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6441868686868687,
+        "width": 0.3931013071895425,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.5191683006535948,
+        "top": 0.6580239898989899,
+        "width": 0.3929264705882354,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6718611111111111,
+        "width": 0.15055392156862746,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "7 HCI APPLICATIONS OF TAPNET 7.2 ExplorativeTap",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "biomechanics, and thus further improves the performance until its next plateau.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.36437499999999995,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.37821212121212117,
+        "width": 0.07836601307189543,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "TapNet is robust to phone case and fabric, and thus can be used for wearable interaction without specialized smart fabrics [7].",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.1428823529411765,
+        "top": 0.48890782828282825,
+        "width": 0.33758333333333335,
+        "height": 0.011320707070707037,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5027449494949495,
+        "width": 0.3948153594771242,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "6 DISCUSSION",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "For instance, it is possible to improve continuous and passive authentication [2, 35, 46] by using tap properties that contain biometric information, i.e. with a clear gap between the first two plateaus (orange area) in Figure 8.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.21631372549019606,
+        "top": 0.5304191919191918,
+        "width": 0.2666274509803922,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5442550505050505,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5580921717171717,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.571929292929293,
+        "width": 0.2798480392156863,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "6 DISCUSSION",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Off-screen tap recognition makes it possible to interact with objects living in different interface layers, such as background targets that do not react to on-screen touch.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7158800505050504,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7297171717171718,
+        "width": 0.39256045751633994,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7435542929292929,
+        "width": 0.19419771241830064,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "7 HCI APPLICATIONS OF TAPNET 7.3 Interactive Wallpaper",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "ExplorativeTap allows for the coordination between on-screen and off-screen interactions and thus saves the need for learning additional set of on-screen gestures.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.32846405228758174,
+        "top": 0.25589772727272725,
+        "width": 0.15227777777777773,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.26973358585858587,
+        "width": 0.3925637254901961,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.2835707070707071,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.2974078282828283,
+        "width": 0.051759803921568606,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "7 HCI APPLICATIONS OF TAPNET 7.5 Summary of Use Cases",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We demonstrated that many new interaction use cases could be enabled by TapNet.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.37830882352941175,
+        "top": 0.6651363636363636,
+        "width": 0.10215686274509811,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6789734848484847,
+        "width": 0.3948218954248366,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "8 CONCLUSION",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "4) established a benchmark with opensource code and datasets for off-screen tapping recognition, which will be reproducible and accessible by others.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.14708333333333334,
+        "top": 0.5800189393939394,
+        "width": 0.3333856209150327,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.593854797979798,
+        "width": 0.3950294117647059,
+        "height": 0.011320707070706981,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6076919191919191,
+        "width": 0.1941993464052288,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "If the signal passes the gating, the six-channel IMU signals within a 120-ms feature window will be concatenated into a one-dimensional feature vector.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.29994607843137255,
+        "top": 0.8429217171717173,
+        "width": 0.18213562091503266,
+        "height": 0.011320707070706981,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8567588383838384,
+        "width": 0.3925555555555555,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8705959595959595,
+        "width": 0.33903431372549014,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.1 Pipeline Overview",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "When we need to improve the model, it is relatively easy to enlarge the one-person training set, evaluate on the test set, and repeat this process in an iterative fashion.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.5188316993464052,
+        "top": 0.3892916666666667,
+        "width": 0.39326470588235296,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.4031287878787879,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.41696590909090914,
+        "width": 0.17742156862745095,
+        "height": 0.011320707070706981,
+        "page": 3
+      }
+    ],
+    "section": "4 DATASET DEVELOPMENT",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "As expected, fine tuning on the n-1 participants further improved the performance, but some of the improvements are relatively moderate, for example, by 1% for tap event and 3.2% for finger part classification.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.20696078431372547,
+        "top": 0.42567424242424245,
+        "width": 0.27350490196078436,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.43951136363636367,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4533484848484849,
+        "width": 0.3930277777777778,
+        "height": 0.011320707070706981,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4671856060606061,
+        "width": 0.16689869281045755,
+        "height": 0.011320707070706981,
+        "page": 6
+      }
+    ],
+    "section": "",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Further, comparing the solid and dashed lines, large-capacity models generally outperforms small-capacity models with similar architecture and input format.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.3458888888888889,
+        "top": 0.7427941919191919,
+        "width": 0.13457679738562095,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.756631313131313,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7704684343434344,
+        "width": 0.3948104575163399,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS 5.3 Signal Alignment in One-Channel CNN",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Further adapting the model to multi-person data may teach the model to understand the artifacts of personal",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.656452614379085,
+        "top": 0.8705959595959595,
+        "width": 0.25564215686274505,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8844318181818183,
+        "width": 0.39255555555555544,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "These accessibility modes occupy the common on-screen gestures (e.g. swipe and touch), and their users need to learn a more complicated system navigation gestures.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.6572892156862745,
+        "top": 0.561165404040404,
+        "width": 0.2572794117647058,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5750025252525253,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5888396464646465,
+        "width": 0.37625980392156866,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "7 HCI APPLICATIONS OF TAPNET 7.2 ExplorativeTap",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "It, therefore, solves the conflicts with system navigation gestures, and thus can be helpful for users with low vision and print disability, who need quick and temporary access to the accessibility mode.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.6366650326797386,
+        "top": 0.6303497474747475,
+        "width": 0.2754330065359476,
+        "height": 0.011320707070706981,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6441868686868687,
+        "width": 0.3931013071895425,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.5191683006535948,
+        "top": 0.6580239898989899,
+        "width": 0.3929264705882354,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6718611111111111,
+        "width": 0.15055392156862746,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "7 HCI APPLICATIONS OF TAPNET 7.2 ExplorativeTap",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Although evaluation results demonstrated that TapNet benefited from cross-device training, we do not expect the current TapNet trained on these two devices would directly apply to unseen devices without further training, i.e. a cross-device model.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.5857664141414142,
+        "width": 0.3762794117647059,
+        "height": 0.011320707070706981,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5996035353535354,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070706981,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6134406565656566,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070706981,
+        "page": 8
+      },
+      {
+        "left": 0.08736437908496732,
+        "top": 0.6272777777777777,
+        "width": 0.30757679738562094,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "6 DISCUSSION",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "We have set up the infrastructure and we plan to further investigate along this line by adding new devices and also opensource our implementation.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.369781045751634,
+        "top": 0.6549520202020201,
+        "width": 0.11068464052287585,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6687891414141415,
+        "width": 0.39293464052287586,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6826262626262626,
+        "width": 0.3684133986928105,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "6 DISCUSSION",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "biomechanics, and thus further improves the performance until its next plateau.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.36437499999999995,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 8
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.37821212121212117,
+        "width": 0.07836601307189543,
+        "height": 0.011320707070707092,
+        "page": 8
+      }
+    ],
+    "section": "",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "ExplorativeTap allows for the coordination between on-screen and off-screen interactions and thus saves the need for learning additional set of on-screen gestures.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.32846405228758174,
+        "top": 0.25589772727272725,
+        "width": 0.15227777777777773,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.26973358585858587,
+        "width": 0.3925637254901961,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.2835707070707071,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.2974078282828283,
+        "width": 0.051759803921568606,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "7 HCI APPLICATIONS OF TAPNET 7.5 Summary of Use Cases",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We first describe the pipeline overview, followed by the core of the method (a MIMO network).",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.24368954248366015,
+        "top": 0.4970151515151515,
+        "width": 0.23838562091503263,
+        "height": 0.011320707070706981,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5108522727272727,
+        "width": 0.33736111111111106,
+        "height": 0.011320707070706981,
+        "page": 2
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES",
+    "prob": 0.8372740745544434,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We define a tap-like signal as the one has an impulse that contains at least one peak, and an impulse as a group of peaks between each pair the interval is less than the threshold,   , which is empirically set to 80 ms. We also apply a magnitude threshold on the peak and valley to control the sensitivity of the gating component.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.31798366013071894,
+        "top": 0.6837954545454545,
+        "width": 0.16248856209150325,
+        "height": 0.011332070707070763,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6976325757575758,
+        "width": 0.39255555555555555,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.711469696969697,
+        "width": 0.3925539215686275,
+        "height": 0.011332070707070652,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7227929292929293,
+        "width": 0.3925653594771242,
+        "height": 0.013834595959596019,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7391439393939394,
+        "width": 0.3925571895424837,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7529810606060606,
+        "width": 0.21604411764705883,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.4 Signal Gating for Neural Network",
+    "prob": 0.7916783690452576,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We applied ReLU and batch normalization after each convolutional layer and used Adam optimizer with a learning rate of 1e-4 and a momentum decay (1e-6).",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.2894419191919192,
+        "width": 0.3787549019607843,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.30327777777777776,
+        "width": 0.3928937908496733,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.317114898989899,
+        "width": 0.18358169934640528,
+        "height": 0.011320707070707037,
+        "page": 5
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS 5.1 Performance on Tap Recognition Tasks",
+    "prob": 0.7172861099243164,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We used a single researcher training strategy.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.5188316993464052,
+        "top": 0.4753042929292929,
+        "width": 0.2723415032679739,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "4 DATASET DEVELOPMENT 4.1 One-Person Training Dataset",
+    "prob": 0.6759499907493591,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "To avoid unnecessary down-stream computation for recognizing tap properties, a heuristic-based gating mechanism using the z-axis signal of the accelerometer is performed to reject obvious non-tap motions.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.2640359477124183,
+        "top": 0.8014103535353535,
+        "width": 0.21643300653594777,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8152474747474748,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8290845959595959,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8429217171717173,
+        "width": 0.20840196078431378,
+        "height": 0.011320707070706981,
+        "page": 2
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.1 Pipeline Overview",
+    "prob": 0.6667558550834656,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "This paper aims to address the needs in practice, by predicting comprehensive tap properties for diverse application purposes and advancing the state of the art of off-screen interaction towards a practical level of performance.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.7505506535947712,
+        "top": 0.6492032828282828,
+        "width": 0.1615375816993464,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6630404040404041,
+        "width": 0.39256045751633994,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6768775252525252,
+        "width": 0.3925637254901959,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6907146464646465,
+        "width": 0.394812091503268,
+        "height": 0.011320707070706981,
+        "page": 0
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": 0.9073378443717957,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Moving beyond the prior work in this space, this project aims at developing IMU-based input methods that meet the requirement of practical applications, by means of deep neural network design and training.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.41399368686868687,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.42783080808080803,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.44166792929292925,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4555037878787879,
+        "width": 0.07841176470588236,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES",
+    "prob": 0.8731646537780762,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "One of us produced the entire training data following a comprehensive data collection protocol, which aims to cover the diversity in real use.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.7948382352941176,
+        "top": 0.4753042929292929,
+        "width": 0.11725163398692806,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.4891414141414141,
+        "width": 0.39256209150326793,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5029785353535353,
+        "width": 0.3354183006535948,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "4 DATASET DEVELOPMENT 4.1 One-Person Training Dataset",
+    "prob": 0.8688533306121826,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The key objective is to achieve the five recognition tasks (i.e. the five network outputs) with one network (TapNet) as shown in Table 1.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.17005228758169935,
+        "top": 0.4555037878787879,
+        "width": 0.3104166666666667,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4693409090909091,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4831780303030303,
+        "width": 0.1007205882352941,
+        "height": 0.011320707070706981,
+        "page": 2
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES",
+    "prob": 0.8477137088775635,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Each task aims to recognize one tap property , such as direction and location.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.19148366013071896,
+        "top": 0.4831780303030303,
+        "width": 0.28898856209150325,
+        "height": 0.011332070707070707,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4970151515151515,
+        "width": 0.1521225490196078,
+        "height": 0.011320707070706981,
+        "page": 2
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES",
+    "prob": 0.8286302089691162,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The evaluation results show that",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.154468954248366,
+        "top": 0.5129292929292929,
+        "width": 0.19032843137254904,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "8 CONCLUSION",
+    "prob": 0.9343817234039307,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Figure 5 shows the comparison results.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.5195343137254902,
+        "top": 0.4614065656565657,
+        "width": 0.23258496732026146,
+        "height": 0.011320707070706981,
+        "page": 6
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS 5.2 Ablation Studies: Multi- Input and Output",
+    "prob": 0.9342404007911682,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We also evaluated this in an experiment.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.21123692810457514,
+        "top": 0.4139747474747475,
+        "width": 0.24237091503267974,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 RECOGNIZING TAP PROPERTIES 3.3 One-Channel Convolutional Layers",
+    "prob": 0.8981035947799683,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Figure 6 gives the performance comparison.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.5358137254901961,
+        "top": 0.8014103535353535,
+        "width": 0.2755816993464052,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS 5.2 Ablation Studies: Multi- Input and Output",
+    "prob": 0.8599123358726501,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We evaluated on tap direction classification as a representative task.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.4607434640522876,
+        "top": 0.8222272727272727,
+        "width": 0.019725490196078443,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8360643939393939,
+        "width": 0.3839869281045752,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 MACHINE LEARNING EXPERIMENTS 5.2 Ablation Studies: Multi- Input and Output",
+    "prob": 0.8369398713111877,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  }
+]

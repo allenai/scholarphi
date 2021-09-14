@@ -1,0 +1,6420 @@
+[
+  {
+    "text": "we designed the html annotation",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6790343137254902,
+        "top": 0.7255656565656566,
+        "width": 0.20709967320261435,
+        "height": 0.011320707070707092,
+        "page": 0
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we enhanced a genetic algorithm",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7725359477124183,
+        "top": 0.7809141414141415,
+        "width": 0.13956209150326782,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7947512626262626,
+        "width": 0.05883823529411769,
+        "height": 0.011320707070707092,
+        "page": 0
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we created a webbased tool that streamlined the entire task of design exploration including task creation",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8064591503267974,
+        "top": 0.8362626262626264,
+        "width": 0.10810947712418295,
+        "height": 0.011320707070706981,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8500997474747475,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8639368686868688,
+        "width": 0.1403415032679738,
+        "height": 0.011320707070706981,
+        "page": 0
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we present spacewalker",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6168316993464051,
+        "top": 0.545685606060606,
+        "width": 0.15514379084967334,
+        "height": 0.011320707070707092,
+        "page": 0
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "they want to explore using a simple markup extension we designed",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8859983660130719,
+        "top": 0.5871957070707071,
+        "width": 0.026477124183006406,
+        "height": 0.011320707070706981,
+        "page": 0
+      },
+      {
+        "left": 0.5189918300653594,
+        "top": 0.6010328282828282,
+        "width": 0.36693137254901953,
+        "height": 0.011320707070707092,
+        "page": 0
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our tool then parses the annotated html or css specification",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8893267973856209,
+        "top": 0.6010328282828282,
+        "width": 0.023044117647058715,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6148699494949494,
+        "width": 0.3654705882352942,
+        "height": 0.011320707070707092,
+        "page": 0
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we aim to address these issues",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7621045751633987,
+        "top": 0.7258472222222222,
+        "width": 0.14999346405228753,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7396843434343435,
+        "width": 0.035299019607843096,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we evaluated spacewalker",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.46294444444444444,
+        "width": 0.15473529411764705,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we tested it",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08736437908496732,
+        "top": 0.5182916666666667,
+        "width": 0.0674248366013072,
+        "height": 0.011320707070706981,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our paper makes the following contributions",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.35312581699346407,
+        "top": 0.5598030303030302,
+        "width": 0.12733823529411759,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5736401515151515,
+        "width": 0.1445326797385621,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our work is related to three areas",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.761003787878788,
+        "width": 0.20833496732026147,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we also embed the crowd",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.18528104575163398,
+        "top": 0.275604797979798,
+        "width": 0.15903267973856208,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we focus on the design task",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.31756535947712417,
+        "top": 0.2894419191919192,
+        "width": 0.1632826797385621,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we also aim to minimize the effort",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4326192810457516,
+        "top": 0.3309520202020202,
+        "width": 0.04784967320261446,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3447891414141414,
+        "width": 0.15598366013071896,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we employ ga - based algorithms",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4627908496732026,
+        "top": 0.6492032828282828,
+        "width": 0.01767156862745095,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6630404040404041,
+        "width": 0.1723545751633987,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we also enhanced genetic programming",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.23991503267973857,
+        "top": 0.7045517676767676,
+        "width": 0.2405457516339869,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we here describe how ui designers",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08720261437908497,
+        "top": 0.8014103535353535,
+        "width": 0.20676797385620913,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we discuss the system design",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.17561764705882352,
+        "top": 0.8100050505050506,
+        "width": 0.16850490196078435,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we here discuss its syntax",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5188316993464052,
+        "top": 0.5110416666666667,
+        "width": 0.1568676470588236,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our early exploration , we found conventional ga",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5523709150326798,
+        "top": 0.75989898989899,
+        "width": 0.302452614379085,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we enhance traditional genetic algorithms",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6423431372549019,
+        "top": 0.8429217171717173,
+        "width": 0.24959967320261456,
+        "height": 0.011320707070706981,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our fitness function outputs 1 for the preferred design",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8015964052287582,
+        "top": 0.26176767676767676,
+        "width": 0.11049509803921576,
+        "height": 0.011332070707070707,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.2749368686868687,
+        "width": 0.20152614379084965,
+        "height": 0.011988636363636396,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our case of web design , and may prevent raters",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7427679738562092,
+        "top": 0.317114898989899,
+        "width": 0.16933006535947692,
+        "height": 0.011320707070707037,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3309520202020202,
+        "width": 0.11329575163398686,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we here focus on genetic algorithms",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.39460947712418304,
+        "top": 0.42397222222222225,
+        "width": 0.08585294117647058,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.43780934343434347,
+        "width": 0.1490294117647059,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we did not use these features",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.15304411764705883,
+        "top": 0.1372348484848485,
+        "width": 0.17359803921568628,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we refer an instance",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4615653594771242,
+        "top": 0.7427878787878788,
+        "width": 0.018895424836601227,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.756625,
+        "width": 0.1022467320261438,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we first encode each configuration",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3080130718954248,
+        "top": 0.8258093434343435,
+        "width": 0.172452614379085,
+        "height": 0.011320707070706981,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8396464646464646,
+        "width": 0.1125816993464052,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our initialization process is to maximally cover possible options",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.26926143790849677,
+        "top": 0.3586262626262626,
+        "width": 0.2136781045751634,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.37246338383838384,
+        "width": 0.1651601307189543,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we treat each attribute independently during initialization",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.11700816993464051,
+        "top": 0.4001376262626263,
+        "width": 0.339093137254902,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we introduce a bit mask",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.15824183006535947,
+        "top": 0.10956060606060607,
+        "width": 0.14109640522875816,
+        "height": 0.011320707070707065,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we compute a diff mask",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.1870751633986928,
+        "top": 0.17874494949494948,
+        "width": 0.13931045751633991,
+        "height": 0.011332070707070735,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we would likely gain knowledge",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4244509803921569,
+        "top": 0.20641919191919192,
+        "width": 0.05601143790849672,
+        "height": 0.011320707070707037,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.22025631313131314,
+        "width": 0.13016993464052284,
+        "height": 0.011320707070707037,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we elaborate on our algorithm",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.23217810457516339,
+        "top": 0.317114898989899,
+        "width": 0.18314869281045756,
+        "height": 0.011320707070707037,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we enhanced the single - point crossover operation",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.17576143790849674,
+        "top": 0.5108333333333334,
+        "width": 0.29027450980392155,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we introduce variations",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4002957516339869,
+        "top": 0.552344696969697,
+        "width": 0.0801748366013072,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08753921568627451,
+        "top": 0.5661818181818182,
+        "width": 0.05853758169934642,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we invited five participants",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7086290849673202,
+        "top": 0.5293876262626263,
+        "width": 0.15927287581699334,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "who want to improve their design",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7470571895424837,
+        "top": 0.6124090909090909,
+        "width": 0.16531045751633988,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6262462121212121,
+        "width": 0.038679738562091504,
+        "height": 0.011320707070706981,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we evaluate spacewalker",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5188316993464052,
+        "top": 0.3218320707070707,
+        "width": 0.15604575163398693,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we conduct a user study",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.828156862745098,
+        "top": 0.3218320707070707,
+        "width": 0.08394117647058819,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3356691919191919,
+        "width": 0.06027450980392157,
+        "height": 0.011320707070707037,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we also systematically examine how well spacewalker explores a design space",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5932630718954248,
+        "top": 0.3771805555555555,
+        "width": 0.31910457516339874,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.39101767676767674,
+        "width": 0.14468790849673208,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our front end includes a task authoring interface",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.15269117647058825,
+        "top": 0.8048611111111111,
+        "width": 0.30566339869281045,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we alter one attribute",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.1890424836601307,
+        "top": 0.6353661616161616,
+        "width": 0.12629248366013074,
+        "height": 0.011320707070707203,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we chose a .03 mutation rate",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.20760620915032682,
+        "top": 0.6492032828282828,
+        "width": 0.17596568627450979,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we evaluate the usability",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6061192810457516,
+        "top": 0.45108333333333334,
+        "width": 0.15576143790849684,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our markups to specify search criteria",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8919019607843138,
+        "top": 0.47875631313131317,
+        "width": 0.020468954248365923,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.4925934343434344,
+        "width": 0.20013235294117648,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we consider nested designs",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.15347058823529414,
+        "top": 0.6907146464646465,
+        "width": 0.16977777777777775,
+        "height": 0.011320707070706981,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we link the child choices",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.37593627450980394,
+        "top": 0.7045517676767676,
+        "width": 0.10453267973856212,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.718388888888889,
+        "width": 0.043160130718954234,
+        "height": 0.011320707070706981,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we only perform the crossover and mutation operations",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.35773366013071894,
+        "top": 0.7322260101010101,
+        "width": 0.12273202614379092,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7460618686868686,
+        "width": 0.24963725490196081,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we asked each participant",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8247287581699346,
+        "top": 0.6677575757575758,
+        "width": 0.08736274509803932,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.681594696969697,
+        "width": 0.06591830065359483,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we verbally walked them",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5188316993464052,
+        "top": 0.7231060606060606,
+        "width": 0.1543545751633988,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "their preferred code or text editors , and we recorded the time used",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7265016339869281,
+        "top": 0.7507790404040403,
+        "width": 0.18806535947712422,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7646161616161616,
+        "width": 0.21647385620915038,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we reviewed their completed html specifications",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7664983660130719,
+        "top": 0.8061275252525252,
+        "width": 0.14806535947712418,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8199646464646465,
+        "width": 0.16517483660130716,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we provided and were able to create syntactically correct specifications",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8146911764705882,
+        "top": 0.8567588383838384,
+        "width": 0.09740359477124183,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5189918300653594,
+        "top": 0.8705959595959595,
+        "width": 0.33919934640522875,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we analyzed the specifications submitted",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8631225490196078,
+        "top": 0.8705959595959595,
+        "width": 0.051452614379085104,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8844318181818183,
+        "width": 0.20191339869281044,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we conducted two experiments",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08720261437908497,
+        "top": 0.4878926767676768,
+        "width": 0.19022549019607846,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we compare spacewalker genetic algorithm",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4607434640522876,
+        "top": 0.5155669191919192,
+        "width": 0.019725490196078443,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5294040404040404,
+        "width": 0.23629084967320263,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we examine the effect",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.209531045751634,
+        "top": 0.5570782828282829,
+        "width": 0.12666666666666665,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we test these search methods",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.4006388888888889,
+        "top": 0.5709154040404041,
+        "width": 0.07983006535947723,
+        "height": 0.011320707070706981,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5847525252525253,
+        "width": 0.09335620915032682,
+        "height": 0.011320707070706981,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we selected the five designs that received most votes from raters",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.141359477124183,
+        "top": 0.8705959595959595,
+        "width": 0.33910620915032685,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8844318181818183,
+        "width": 0.033799019607843137,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we received largely positive feedback",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.34482323232323236,
+        "width": 0.2250767973856209,
+        "height": 0.011320707070707037,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we conducted both experiments following the same procedure",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3279264705882353,
+        "top": 0.6076919191919191,
+        "width": 0.1550081699346405,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6215290404040403,
+        "width": 0.22123692810457518,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we used 10 iterations",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.41568627450980394,
+        "top": 0.6215290404040403,
+        "width": 0.06477777777777771,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6353661616161616,
+        "width": 0.05625000000000001,
+        "height": 0.011320707070707203,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we used workers who had",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.13577450980392156,
+        "top": 0.6630404040404041,
+        "width": 0.20037908496732024,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we distributed the tasks",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.46179248366013076,
+        "top": 0.7045517676767676,
+        "width": 0.01867973856209143,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.718388888888889,
+        "width": 0.1809248366013072,
+        "height": 0.011320707070706981,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "it receives the same number",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.17747875816993464,
+        "top": 0.7322260101010101,
+        "width": 0.17257352941176468,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we also used 70 raters",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.380687908496732,
+        "top": 0.75989898989899,
+        "width": 0.09978104575163405,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7737361111111111,
+        "width": 0.033799019607843137,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we compensated each rater that finished the 5 comparisons 0.5 us",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.19680228758169935,
+        "top": 0.8152474747474748,
+        "width": 0.28366666666666673,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8290845959595959,
+        "width": 0.11916339869281047,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we calculate the percentage",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8711486928104576,
+        "top": 0.7958598484848485,
+        "width": 0.043421568627450946,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8096969696969697,
+        "width": 0.13249346405228757,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we also conduct one - sample z - tests",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5188316993464052,
+        "top": 0.8373712121212121,
+        "width": 0.23515196078431377,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we then deployed another task",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5799232026143791,
+        "top": 0.1372348484848485,
+        "width": 0.19231372549019599,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we refer to this round",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5686683006535947,
+        "top": 0.1925820707070707,
+        "width": 0.13337091503267984,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we also randomly shuffled the order",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8923725490196077,
+        "top": 0.22025631313131314,
+        "width": 0.019725490196078388,
+        "height": 0.011320707070707037,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.23409343434343433,
+        "width": 0.1951748366013072,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we ran 100 comparison tasks",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8927369281045752,
+        "top": 0.23409343434343433,
+        "width": 0.019362745098039258,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.24793055555555554,
+        "width": 0.15757026143790842,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we added exploration attributes",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.816795751633987,
+        "top": 0.4001376262626263,
+        "width": 0.09777777777777785,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.4139747474747475,
+        "width": 0.09533006535947719,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we used the following templates",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8923725490196077,
+        "top": 0.45548484848484855,
+        "width": 0.019725490196078388,
+        "height": 0.011320707070707037,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.46932196969696965,
+        "width": 0.1845,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we varied the search space size",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5570392156862746,
+        "top": 0.30327777777777776,
+        "width": 0.18557843137254892,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we based our study",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.8923725490196077,
+        "top": 0.317114898989899,
+        "width": 0.019725490196078388,
+        "height": 0.011320707070707037,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3309520202020202,
+        "width": 0.09285294117647058,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our participants did not encounter much difficulty",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.675921568627451,
+        "top": 0.42046464646464643,
+        "width": 0.23617320261437913,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.43430176767676765,
+        "width": 0.05711601307189551,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we believe the above extensions can provide a good starting point",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5944493464052287,
+        "top": 0.44813888888888886,
+        "width": 0.3176486928104574,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.4619760101010101,
+        "width": 0.0849411764705883,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we believe automatic tooling",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5615947712418301,
+        "top": 0.6003459595959596,
+        "width": 0.17380555555555544,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our enhanced genetic algorithm may",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5195343137254902,
+        "top": 0.669530303030303,
+        "width": 0.22440359477124183,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we note that spacewalker performed well on rather large search spaces",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.6881748366013072,
+        "top": 0.7110416666666667,
+        "width": 0.22391503267973856,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5189918300653594,
+        "top": 0.7248787878787879,
+        "width": 0.19628758169934635,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we observe a trend",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.46343790849673205,
+        "top": 0.36511742424242427,
+        "width": 0.017027777777777753,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3789532828282828,
+        "width": 0.09483496732026143,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our quantitative experiments for examining the performance",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5358137254901961,
+        "top": 0.8355744949494949,
+        "width": 0.3608970588235295,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we find that crowd raters , from the crossmethod evaluation",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.23884967320261435,
+        "top": 0.44813888888888886,
+        "width": 0.24408660130718962,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4619760101010101,
+        "width": 0.11387581699346404,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our participants gave us several useful suggestions",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.3268300653594771,
+        "top": 0.8152474747474748,
+        "width": 0.15363888888888894,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8290845959595959,
+        "width": 0.16061764705882353,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we discuss the strengths",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.1771683006535948,
+        "top": 0.6492032828282828,
+        "width": 0.14260294117647054,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our experiments show that the concept of spacewalker is",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.26665196078431375,
+        "top": 0.6630404040404041,
+        "width": 0.21628594771241827,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6768775252525252,
+        "width": 0.1269967320261438,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we plan to infer these hyperparamters",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.2549166666666666,
+        "top": 0.4416489898989899,
+        "width": 0.22554901960784324,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.0874656862745098,
+        "top": 0.45548484848484855,
+        "width": 0.023637254901960794,
+        "height": 0.011320707070707037,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we can train a model",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.21833823529411764,
+        "top": 0.4969962121212121,
+        "width": 0.12514052287581703,
+        "height": 0.011320707070707037,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our ga - based algorithm",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.24184803921568626,
+        "top": 0.17874494949494948,
+        "width": 0.1499183006535948,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our search algorithm searches efficiently given a budget that dictates the number of comparisons",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.19439869281045752,
+        "top": 0.26176767676767676,
+        "width": 0.2860669934640523,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.275604797979798,
+        "width": 0.28641176470588237,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we want to emphasize that spacewalker is able to identify an optimal design",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.15127941176470588,
+        "top": 0.5385075757575758,
+        "width": 0.33165686274509804,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.552344696969697,
+        "width": 0.12996078431372549,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "it allows designers",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.29425816993464055,
+        "top": 0.6630404040404041,
+        "width": 0.11326960784313728,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our understanding , we intend to compare the automatic process enabled",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.34970751633986924,
+        "top": 0.7322260101010101,
+        "width": 0.13075816993464057,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7460618686868686,
+        "width": 0.2951013071895425,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our system can quickly explore the search space",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.773609477124183,
+        "top": 0.10956060606060607,
+        "width": 0.13886764705882348,
+        "height": 0.011320707070707065,
+        "page": 9
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.12339772727272727,
+        "width": 0.15323529411764714,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our experiments indicate that spacewalker is well received by designers",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5195343137254902,
+        "top": 0.1510719696969697,
+        "width": 0.39293790849673205,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.1649078282828283,
+        "width": 0.058651960784313784,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "our html markup for creating exploration specification provides a lightweight and familiar language",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8567588383838384,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8705959595959595,
+        "width": 0.21992973856209158,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we would like to thank anonymous reviewers",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.5188316993464052,
+        "top": 0.24478535353535355,
+        "width": 0.277718954248366,
+        "height": 0.011320707070707065,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "we would also like to thank the participants",
+    "label": "Author",
+    "bboxes": [
+      {
+        "left": 0.7239754901960784,
+        "top": 0.25862247474747474,
+        "width": 0.1881225490196078,
+        "height": 0.011320707070707037,
+        "page": 9
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.27245959595959596,
+        "width": 0.07117483660130719,
+        "height": 0.011320707070707037,
+        "page": 9
+      }
+    ],
+    "section": null,
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Our paper makes the following contributions:",
+    "label": "Contribution",
+    "bboxes": [
+      {
+        "left": 0.35312581699346407,
+        "top": 0.5598030303030302,
+        "width": 0.12733823529411759,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5736401515151515,
+        "width": 0.1445326797385621,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Based on the result of each pairwise comparison, Spacewalker learns which design was preferred by a human rater to which the option contributes, and sets the corresponding mask value as 1 , and the rest as 0 .",
+    "label": "Contribution",
+    "bboxes": [
+      {
+        "left": 0.35172712418300656,
+        "top": 0.45548484848484855,
+        "width": 0.1287418300653595,
+        "height": 0.011320707070707037,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.46932196969696965,
+        "width": 0.39255555555555555,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.48315909090909087,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4963282828282828,
+        "width": 0.34125,
+        "height": 0.01198863636363634,
+        "page": 5
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "However, these existing tools often require a designer to learn a new language that is tailored for working with the underlying algorithm to define a search space.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.6127401960784314,
+        "top": 0.4488257575757576,
+        "width": 0.3018235294117645,
+        "height": 0.011320707070706981,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.46266287878787876,
+        "width": 0.3925637254901959,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.4765,
+        "width": 0.29832679738562096,
+        "height": 0.011320707070707092,
+        "page": 0
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "To address challenge 1), We designed the HTML annotation as a simple extension of the existing HTML and CSS grammar, where instead of specifying a single value for an attribute, a designer can provide multiple candidate values for it, which are to be explored by Spacewalker.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.5358137254901961,
+        "top": 0.7255656565656566,
+        "width": 0.3762794117647059,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7394027777777777,
+        "width": 0.39255392156862745,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7532398989898991,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7670770202020202,
+        "width": 0.39255392156862734,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7809141414141415,
+        "width": 0.09825653594771244,
+        "height": 0.011320707070707092,
+        "page": 0
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "In a typical HTML page or a CSS specification, designers first annotate each attribute they want to explore using a simple markup extension we designed.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.7644967320261438,
+        "top": 0.5733598484848484,
+        "width": 0.14760130718954245,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5871957070707071,
+        "width": 0.3929411764705881,
+        "height": 0.011320707070706981,
+        "page": 0
+      },
+      {
+        "left": 0.5189918300653594,
+        "top": 0.6010328282828282,
+        "width": 0.36693137254901953,
+        "height": 0.011320707070707092,
+        "page": 0
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Although these classical approaches are widely used, they require substantial engineering",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.3324281045751634,
+        "top": 0.7399747474747475,
+        "width": 0.14803431372549014,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7538118686868687,
+        "width": 0.392562091503268,
+        "height": 0.011320707070707092,
+        "page": 0
+      }
+    ],
+    "section": "",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Although existing methods are widely adopted, they often require substantial engineering effort to build and instrument a test.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.5358137254901961,
+        "top": 0.5736401515151515,
+        "width": 0.3787549019607843,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5874772727272727,
+        "width": 0.3948153594771242,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "To study how users react to design alternatives at scale, A/B testing is widely used where variants of a design are tested with different user populations and user behaviors are logged and statistically analyzed by user experience researchers [6, 7].",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.7624820261437909,
+        "top": 0.47678156565656565,
+        "width": 0.14961274509803912,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.49061742424242427,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5191683006535948,
+        "top": 0.5044545454545455,
+        "width": 0.39292647058823527,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5182916666666667,
+        "width": 0.3950424836601307,
+        "height": 0.011320707070706981,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5321287878787879,
+        "width": 0.13736928104575163,
+        "height": 0.011320707070706981,
+        "page": 1
+      }
+    ],
+    "section": "2 RELATEDWORK 2.1 Traditional UI Evaluation Methods",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "This instructs Spacewalker to explore three different alternatives for the page background: image \" bg1.jpg \", image \" bg2.jpg \", and a solid background with a dark gray color \" #333 \".",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.51909477124183,
+        "top": 0.23409343434343433,
+        "width": 0.3930049019607845,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.24726262626262627,
+        "width": 0.39255392156862745,
+        "height": 0.011988636363636368,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.26109974747474746,
+        "width": 0.28547549019607843,
+        "height": 0.011988636363636396,
+        "page": 2
+      }
+    ],
+    "section": "3 USING SPACEWALKER",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Behind the scene, Spacewalker creates three page designs with each using a different background choice.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.8086650326797385,
+        "top": 0.26176767676767676,
+        "width": 0.10503758169934652,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.275604797979798,
+        "width": 0.3925669934640523,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.2894419191919192,
+        "width": 0.11716339869281045,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "3 USING SPACEWALKER",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "However, we focus on the design task where an interaction designer has a basic HTML design and wants to obtain an optimal configuration for the design by exploring a large range of options such as colors, fonts and layouts.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.25794771241830067,
+        "top": 0.2894419191919192,
+        "width": 0.22290032679738558,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08736437908496732,
+        "top": 0.30327777777777776,
+        "width": 0.3931062091503268,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.317114898989899,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707037,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3309520202020202,
+        "width": 0.34070751633986923,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Crowd-Powered UI Design & Evaluation",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Although we employ GA-based algorithms and crowd in our work, Spacewalker is designed to address a general web UI design scenario.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.40123856209150327,
+        "top": 0.6492032828282828,
+        "width": 0.07922385620915029,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6630404040404041,
+        "width": 0.3928349673202615,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6768775252525252,
+        "width": 0.3373758169934641,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.3 Interactive UI Design Optimization",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "It allows designers to specify the design space for exploration using a simple extension of HTML tags.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.4289395424836602,
+        "top": 0.6768775252525252,
+        "width": 0.051532679738562015,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6907146464646465,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070706981,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7045517676767676,
+        "width": 0.14835784313725492,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.3 Interactive UI Design Optimization",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Although she has written an HTML prototype of the page, she is uncertain about a few of design aspects of the page, such as color schemes, font sizes, and background choices.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.15116339869281045,
+        "top": 0.8429217171717173,
+        "width": 0.32930555555555563,
+        "height": 0.011320707070706981,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8567588383838384,
+        "width": 0.39417810457516345,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8705959595959595,
+        "width": 0.3503267973856209,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "3 USING SPACEWALKER",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "However, these approaches only take the input from a few users, causing fatigue [21] and increasing potential bias.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.4264705882352941,
+        "top": 0.48315909090909087,
+        "width": 0.055607843137254864,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4969962121212121,
+        "width": 0.3950326797385621,
+        "height": 0.011320707070707037,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5108333333333334,
+        "width": 0.2365833333333333,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.3 Interactive UI Design Optimization",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "However, when these shared options are less desirable, conventional GA performs poorly as those options that are not compared also receive positive responses.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.7414885620915033,
+        "top": 0.8014103535353535,
+        "width": 0.17059967320261438,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8152474747474748,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8290845959595959,
+        "width": 0.3948153594771241,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Spacewalker instead presents each rater a pair of different candidate designs at a time, and asks the rater to select the preferred design, i.e., a twoalternative forced-choice (2AFC) method.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.8387401960784313,
+        "top": 0.22025631313131314,
+        "width": 0.07362745098039225,
+        "height": 0.011320707070707037,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.23409343434343433,
+        "width": 0.39255882352941174,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.24793055555555554,
+        "width": 0.39502941176470585,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.26176767676767676,
+        "width": 0.24217647058823533,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Although presenting more than two examples in a gallery design can be another appealing alternative [1, 13], the viewing area for each example would be too small in our case of web design, and may prevent raters from noticing design details that matter.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.5190212418300654,
+        "top": 0.2894419191919192,
+        "width": 0.39307352941176465,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.30327777777777776,
+        "width": 0.39283823529411754,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.317114898989899,
+        "width": 0.3925637254901959,
+        "height": 0.011320707070707037,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3309520202020202,
+        "width": 0.35701470588235296,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "However, pairwise comparison raises challenges for genetic programming.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.80340522875817,
+        "top": 0.6768775252525252,
+        "width": 0.10868954248366014,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6907146464646465,
+        "width": 0.3308251633986927,
+        "height": 0.011320707070706981,
+        "page": 4
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "On the other hand, with a limited number of worker feedback, which is often the case in reality, a search very likely ends up with a sub-optimal design, as shown in our experiments later.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.4618790849673203,
+        "top": 0.36862500000000004,
+        "width": 0.01858986928104578,
+        "height": 0.011320707070707037,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.38246212121212125,
+        "width": 0.3925653594771242,
+        "height": 0.011320707070707037,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.39629924242424247,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707037,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4101363636363636,
+        "width": 0.32421895424836605,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The goal of our initialization process is to maximally cover possible options for each attribute, but meanwhile limit the total number of designs to be compared by human raters.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.19848039215686275,
+        "top": 0.3586262626262626,
+        "width": 0.2844591503267974,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.37246338383838384,
+        "width": 0.39256045751633994,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.38630050505050506,
+        "width": 0.35276143790849673,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The diff mask represents where we would likely gain knowledge by comparing these two designs: in the part where they differ.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.241890522875817,
+        "top": 0.20641919191919192,
+        "width": 0.23857189542483662,
+        "height": 0.011320707070707037,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.22025631313131314,
+        "width": 0.3925571895424837,
+        "height": 0.011320707070707037,
+        "page": 5
+      },
+      {
+        "left": 0.08736437908496732,
+        "top": 0.23409343434343433,
+        "width": 0.10527941176470589,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We conduct a user study to investigate whether Spacewalker markup extension to HTML is easy to understand and use by designers and developers, and how they react to the overall support of Spacewalker for design exploration.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.828156862745098,
+        "top": 0.3218320707070707,
+        "width": 0.08394117647058819,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3356691919191919,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707037,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.34950631313131314,
+        "width": 0.39416993464052286,
+        "height": 0.011320707070707037,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3633434343434343,
+        "width": 0.39256045751633994,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3771805555555555,
+        "width": 0.07033986928104574,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "5 EXPERIMENTS",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The back-end server is responsible for scheduling workers for different web UI pairs without conflicts and supporting multiple workers submitting results at the same time, using database read/write lock.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.8893807189542484,
+        "top": 0.1649078282828283,
+        "width": 0.02271405228758161,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.17874494949494948,
+        "width": 0.39255718954248375,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5189918300653594,
+        "top": 0.1925820707070707,
+        "width": 0.3931013071895425,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.20641919191919192,
+        "width": 0.3948153594771242,
+        "height": 0.011320707070707037,
+        "page": 5
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.3 Architectures",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In the first experiment, we examine the effect of different search space sizes on the techniques.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.46800980392156866,
+        "top": 0.5432411616161616,
+        "width": 0.012450980392156752,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5570782828282829,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5709154040404041,
+        "width": 0.14541993464052283,
+        "height": 0.011320707070706981,
+        "page": 6
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In the second experiment, we test these search methods on different types of web pages.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.23743464052287583,
+        "top": 0.5709154040404041,
+        "width": 0.24303431372549028,
+        "height": 0.011320707070706981,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5847525252525253,
+        "width": 0.2873496732026144,
+        "height": 0.011320707070706981,
+        "page": 6
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "On average, participants were able to understand and create a search specification in 28 minutes (SD = 13.8), exploring different options for five to eight attributes.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.23340522875816994,
+        "top": 0.2756376262626263,
+        "width": 0.24953921568627452,
+        "height": 0.011320707070707037,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.2894747474747475,
+        "width": 0.39416830065359476,
+        "height": 0.011320707070707037,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3033118686868687,
+        "width": 0.323078431372549,
+        "height": 0.011320707070707037,
+        "page": 6
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.1 User Study",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In sum, the only difference between the two conditions is the method used for searching the design space, while the rest aspects including the feedback mechanism is the same.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.3238921568627451,
+        "top": 0.7737361111111111,
+        "width": 0.15657352941176472,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7875732323232324,
+        "width": 0.3925571895424837,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8014103535353535,
+        "width": 0.39503594771241834,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8152474747474748,
+        "width": 0.10501143790849672,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In this experiment, we varied the search space size by using a different number of attributes and options in the design search specification.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.8265310457516339,
+        "top": 0.2894419191919192,
+        "width": 0.08803431372549031,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.30327777777777776,
+        "width": 0.39283986928104575,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.317114898989899,
+        "width": 0.3679967320261438,
+        "height": 0.011320707070707037,
+        "page": 6
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Although our participants did not encounter much difficulty, this can be challenging as the design space becomes convoluted.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.6168954248366013,
+        "top": 0.42046464646464643,
+        "width": 0.2951993464052288,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.43430176767676765,
+        "width": 0.3925637254901959,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.44813888888888886,
+        "width": 0.07110294117647065,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "First, in complex design spaces, designers may want to maintain dependencies between several sets of elements, while style options for different elements can also be dependent, where only certain options or elements can be combined together.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.791687908496732,
+        "top": 0.5311603535353535,
+        "width": 0.12287745098039238,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5449974747474747,
+        "width": 0.39256045751633994,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.558834595959596,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5726717171717172,
+        "width": 0.3925637254901959,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5865088383838384,
+        "width": 0.13454738562091495,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "However, we note that Spacewalker performed well on rather large search spaces in our experiment, and that other approaches, such as uniform sampling, would suffer more in these cases as the probability of encountering one \"good\" example would be minuscule.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.6266960784313725,
+        "top": 0.7110416666666667,
+        "width": 0.2853937908496732,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5189918300653594,
+        "top": 0.7248787878787879,
+        "width": 0.3933790849673203,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7387159090909091,
+        "width": 0.39255392156862745,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7525530303030303,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7663901515151516,
+        "width": 0.08202124183006543,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "However, we observed",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.778423202614379,
+        "top": 0.8770858585858586,
+        "width": 0.13367810457516338,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "For the experiment where Spacewalker is used to search for different web page types, we find that crowd raters, from the crossmethod evaluation, preferred the results produced by Spacewalker genetic method in all cases we tested when they are compared with those from the uniform sampling method (see Table 3).",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.43430176767676765,
+        "width": 0.3765588235294117,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.44813888888888886,
+        "width": 0.39503104575163406,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4619760101010101,
+        "width": 0.3928333333333333,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4758131313131313,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4896502525252525,
+        "width": 0.3386454248366013,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Note that depending on the search options specified in a design, the difference between the outcome designs from the two methods can be subtle sometime, e.g., the Dashboard case in Figure 7.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.35779901960784316,
+        "top": 0.517324494949495,
+        "width": 0.12266666666666665,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5311603535353535,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5449974747474747,
+        "width": 0.39502941176470585,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.558834595959596,
+        "width": 0.25667810457516343,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "This indicates that the benefit of Spacewalker is well demonstrated across different web page types.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.1891062091503268,
+        "top": 0.5865088383838384,
+        "width": 0.2913627450980393,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08736437908496732,
+        "top": 0.6003459595959596,
+        "width": 0.3052973856209151,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The Spacewalker markup extension is easy to understand and use for specifying design exploration.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.8014103535353535,
+        "width": 0.3762794117647058,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8152474747474748,
+        "width": 0.23391830065359476,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "\"This tool provides (a) useful way to compare my designs. I used to use the Inspect tool in Chrome to try out different values of the styles of my attributes, but the limitation is that I can only modify one item at a time. With this tool I could manage my HTML/CSS code and potential designs of the whole page efficiently. It improves my productivity and experience significantly.\"",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.7184002525252525,
+        "width": 0.3762745098039215,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7322373737373737,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7460732323232323,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7599103535353536,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7737474747474747,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7875845959595961,
+        "width": 0.2415947712418301,
+        "height": 0.011320707070706981,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "However, it might not be always clear to the designer what the reasonable values are for these parameters.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.4264656862745098,
+        "top": 0.37246338383838384,
+        "width": 0.055607843137254864,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.38630050505050506,
+        "width": 0.395031045751634,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4001376262626263,
+        "width": 0.1688496732026144,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Although searching over the entire space would be ideal, it is impractical to do so.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.0873921568627451,
+        "top": 0.24793055555555554,
+        "width": 0.3955490196078431,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.26176767676767676,
+        "width": 0.10300326797385621,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "However, it tremendously enhances A/B testing by allowing designers to explore a much larger design space with minimal effort.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.3009313725490196,
+        "top": 0.6353661616161616,
+        "width": 0.1820032679738562,
+        "height": 0.011320707070707203,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6492032828282828,
+        "width": 0.39284150326797385,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6630404040404041,
+        "width": 0.20268137254901963,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "It allows designers to easily instrument a design exploration using our simple markup extension, seamlessly distribute design critique tasks to crowd workers, and quickly receive exploration results with genetic algorithms.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.29425816993464055,
+        "top": 0.6630404040404041,
+        "width": 0.18867810457516343,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6768775252525252,
+        "width": 0.3941732026143791,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6907146464646465,
+        "width": 0.392562091503268,
+        "height": 0.011320707070706981,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7045517676767676,
+        "width": 0.3647826797385621,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Our experiments indicate that Spacewalker is well received by designers, and Spacewalkers genetic search algorithm significantly outperformed a uniform sampling baseline under different search space sizes and web design types.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.5195343137254902,
+        "top": 0.1510719696969697,
+        "width": 0.39293790849673205,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.1649078282828283,
+        "width": 0.39293464052287597,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.17874494949494948,
+        "width": 0.39255392156862745,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.1925820707070707,
+        "width": 0.20023529411764707,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "7 CONCLUSION",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Their optimization objectives (or fitness functions [12]) are designed based on user click behaviors of specific interaction tasks.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.821516339869281,
+        "top": 0.4765,
+        "width": 0.09305228758169937,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.4903371212121212,
+        "width": 0.39255882352941185,
+        "height": 0.011320707070707037,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5041742424242424,
+        "width": 0.2844509803921569,
+        "height": 0.011320707070707092,
+        "page": 0
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "There lacks a tool for general-purpose design space exploration that is seamlessly integrated into current design practice.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.8076535947712418,
+        "top": 0.5041742424242424,
+        "width": 0.10443790849673218,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5180113636363636,
+        "width": 0.39293790849673205,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5318484848484848,
+        "width": 0.23321405228758174,
+        "height": 0.011320707070707092,
+        "page": 0
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "In Spacewalker, we aim to address these issues by providing an integrated support for designers to explore a large design space and improve their design.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.6606797385620915,
+        "top": 0.7258472222222222,
+        "width": 0.2514183006535947,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7396843434343435,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7535214646464646,
+        "width": 0.2761127450980392,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We also aim to minimize the effort and cost of the designer to perform the task.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.4326192810457516,
+        "top": 0.3309520202020202,
+        "width": 0.04784967320261446,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3447891414141414,
+        "width": 0.392562091503268,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3586262626262626,
+        "width": 0.027763071895424832,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Crowd-Powered UI Design & Evaluation",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "During initialization , the first generation is randomly generated, with the goal of covering as many configurations as possible.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.33396732026143794,
+        "top": 0.514195707070707,
+        "width": 0.14650163398692811,
+        "height": 0.011332070707070763,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5280328282828283,
+        "width": 0.39256045751633994,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5418699494949495,
+        "width": 0.18922385620915033,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The goal of our initialization process is to maximally cover possible options for each attribute, but meanwhile limit the total number of designs to be compared by human raters.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.19848039215686275,
+        "top": 0.3586262626262626,
+        "width": 0.2844591503267974,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.37246338383838384,
+        "width": 0.39256045751633994,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.38630050505050506,
+        "width": 0.35276143790849673,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The goal is to test whether web designers are able to learn and use our markups to specify search criteria and launch a design exploration task, and to gather feedback of the Spacewalker system.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.8885424836601308,
+        "top": 0.46491919191919195,
+        "width": 0.02354901960784317,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.47875631313131317,
+        "width": 0.39283660130718956,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.4925934343434344,
+        "width": 0.3925669934640523,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5064305555555556,
+        "width": 0.33367647058823524,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.1 User Study",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In this paper, we present Spacewalker, a tool that allows designers to rapidly search a design space of a web UI for an optimal design within that space (see Figure 1).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.5358137254901961,
+        "top": 0.545685606060606,
+        "width": 0.3787565359477124,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5595227272727272,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5733598484848484,
+        "width": 0.24064379084967324,
+        "height": 0.011320707070707092,
+        "page": 0
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "recruit user participants, moderate a study session, and observe and analyze findings from the study [4].",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.5195343137254902,
+        "top": 0.46294444444444444,
+        "width": 0.3925637254901959,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.47678156565656565,
+        "width": 0.2392875816993465,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "2 RELATEDWORK 2.1 Traditional UI Evaluation Methods",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "See Section 3 for an example.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.8913856209150327,
+        "top": 0.8014103535353535,
+        "width": 0.020712418300653512,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8152474747474748,
+        "width": 0.1600653594771243,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.1 Spacewalker Markup Syntax & Parsing",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Lastly, instead of exploring a design space based on elements, a designer can explore style options with CSS selectors using the same format as a regular CSS file, and by again prefixing the \" explore\" tag, and by using a line of dashes to indicate alternative styles (see examples in Section 3).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.6850098039215686,
+        "top": 0.8152474747474748,
+        "width": 0.2270882352941176,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8290845959595959,
+        "width": 0.3925637254901959,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8429217171717173,
+        "width": 0.39294281045751644,
+        "height": 0.011320707070706981,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8560909090909091,
+        "width": 0.39255718954248375,
+        "height": 0.01198863636363634,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8705959595959595,
+        "width": 0.3399885620915033,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.1 Spacewalker Markup Syntax & Parsing",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Alex can monitor the progress of the task in the Progress Viewer (see Figure 4), which allows her to see the sample designs of the current generation (iteration).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.6829886363636364,
+        "width": 0.3765669934640523,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.0874656862745098,
+        "top": 0.6968257575757575,
+        "width": 0.3929967320261438,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7106628787878788,
+        "width": 0.17824509803921568,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "3 USING SPACEWALKER",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "human raters 5 and 10 iterations (see Figure 2).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.1070909090909091,
+        "width": 0.273812091503268,
+        "height": 0.013790404040404033,
+        "page": 3
+      }
+    ],
+    "section": "3 USING SPACEWALKER",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The interface for the rater is straightforward (see Figure 3).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.2192516339869281,
+        "top": 0.1925820707070707,
+        "width": 0.2612140522875817,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.0874656862745098,
+        "top": 0.20641919191919192,
+        "width": 0.07995915032679739,
+        "height": 0.011320707070707037,
+        "page": 3
+      }
+    ],
+    "section": "3 USING SPACEWALKER",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Raters see a pair of designs side by side, and are asked to select the one that they prefer.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.17038235294117648,
+        "top": 0.20641919191919192,
+        "width": 0.3100898692810457,
+        "height": 0.011320707070707037,
+        "page": 3
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.22025631313131314,
+        "width": 0.19733333333333336,
+        "height": 0.011320707070707037,
+        "page": 3
+      }
+    ],
+    "section": "3 USING SPACEWALKER",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Our front end includes a task authoring interface for a designer to create and launch a task (see Figure 2), a monitor interface for the designer to monitor the task progress and export results (see Figure 4), and a worker interface for the worker to compare a pair of designs (see Figure 3).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.15269117647058825,
+        "top": 0.8048611111111111,
+        "width": 0.32805065359477126,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8186982323232324,
+        "width": 0.39283333333333337,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8325353535353536,
+        "width": 0.39255555555555555,
+        "height": 0.011320707070706981,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8463724747474748,
+        "width": 0.395031045751634,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8602095959595959,
+        "width": 0.21625000000000005,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.3 Architectures",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "To the workers, the scheduling process is transparent and they always see a consistent labeling interface for comparing two web UIs.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.8005915032679738,
+        "top": 0.24793055555555554,
+        "width": 0.11150326797385623,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.26176767676767676,
+        "width": 0.3925669934640523,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.275604797979798,
+        "width": 0.2741633986928105,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.3 Architectures",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The number of options being explored ranged from 3 to 8 in this example, which corresponds a search space size ranging from 50 to 11,000 (see Table 2 for all the search space sizes).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.5809248366013072,
+        "top": 0.3586262626262626,
+        "width": 0.3311666666666667,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.37246338383838384,
+        "width": 0.39255718954248375,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.38630050505050506,
+        "width": 0.3558872549019608,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Crowd raters, from the cross-method evaluation, showed significant preference for the designs generated by Spacewalker for all the search space sizes in Experiment 1 (see Table 2).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.33744318181818184,
+        "width": 0.3787630718954249,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.35128030303030305,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.36511742424242427,
+        "width": 0.30173202614379085,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In addition, we observe a trend of increased preference for Spacewalker genetic method as the size of the search space increases (see Figure 6).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.3930261437908497,
+        "top": 0.36511742424242427,
+        "width": 0.0874395424836601,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3789532828282828,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.392790404040404,
+        "width": 0.363328431372549,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Designers also want to immediately see the effect of a design when adding an option value, instead of examining them on a separate screen in the Preview (see Figure 2).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.5951683006535947,
+        "top": 0.33744318181818184,
+        "width": 0.31692320261437923,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.35128030303030305,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.36511742424242427,
+        "width": 0.2982205882352942,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "For the experiment where Spacewalker is used to search for different web page types, we find that crowd raters, from the crossmethod evaluation, preferred the results produced by Spacewalker genetic method in all cases we tested when they are compared with those from the uniform sampling method (see Table 3).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.43430176767676765,
+        "width": 0.3765588235294117,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.44813888888888886,
+        "width": 0.39503104575163406,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4619760101010101,
+        "width": 0.3928333333333333,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4758131313131313,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4896502525252525,
+        "width": 0.3386454248366013,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Our experiments show that the concept of Spacewalker is well received by the designers and developers.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.26665196078431375,
+        "top": 0.6630404040404041,
+        "width": 0.21628594771241827,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6768775252525252,
+        "width": 0.3948153594771242,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In Spacewalker, a designer currently needs to specify the number of iterations and workers needed for searching a design space (see Figure 2).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.11830065359477125,
+        "top": 0.3309520202020202,
+        "width": 0.3646356209150327,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3447891414141414,
+        "width": 0.39256535947712423,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.0874656862745098,
+        "top": 0.3586262626262626,
+        "width": 0.08051960784313726,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Currently, a designer can revise these parameters by examining the resulted designs shown in the Monitor view (see Figure 4) and schedule more iterations and workers to the task to improve the designs.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.2603872549019608,
+        "top": 0.4001376262626263,
+        "width": 0.22007843137254907,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4139747474747475,
+        "width": 0.39283333333333337,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08753921568627451,
+        "top": 0.42781186868686866,
+        "width": 0.3929199346405229,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4416489898989899,
+        "width": 0.16358006535947717,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Various commercial tools also exist to support A/B testing of UI designs.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.5190506535947712,
+        "top": 0.33813005050505046,
+        "width": 0.3930424836601307,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3519671717171717,
+        "width": 0.04832843137254905,
+        "height": 0.011320707070707092,
+        "page": 0
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "3) creating a tool that can provide integrated support for design exploration.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.7549330065359477,
+        "top": 0.6978926767676767,
+        "width": 0.15716503267973847,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7117297979797981,
+        "width": 0.29933496732026155,
+        "height": 0.011320707070706981,
+        "page": 0
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "For example, a designer may consider multiple color schemes or layout choices for a UI.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.1620718954248366,
+        "top": 0.6984633838383838,
+        "width": 0.31866666666666665,
+        "height": 0.011320707070707092,
+        "page": 0
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7123005050505051,
+        "width": 0.20808496732026144,
+        "height": 0.011320707070706981,
+        "page": 0
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "CHI 21, May 813, 2021, Yokohama, Japan ACM ISBN 978-1-4503-8096-6/21/05.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8551742424242424,
+        "width": 0.19444607843137257,
+        "height": 0.008805555555555622,
+        "page": 0
+      },
+      {
+        "left": 0.08750653594771242,
+        "top": 0.8762979797979799,
+        "width": 0.16908006535947712,
+        "height": 0.008805555555555511,
+        "page": 0
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Nevertheless, A/B testing still struggles to support a large design space when there are hundreds or thousands of design alternatives.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.6520833333333333,
+        "top": 0.6981729797979798,
+        "width": 0.2600114379084967,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7120101010101011,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7258472222222222,
+        "width": 0.13622875816993463,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In Spacewalker, we aim to address these issues by providing an integrated support for designers to explore a large design space and improve their design.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.6606797385620915,
+        "top": 0.7258472222222222,
+        "width": 0.2514183006535947,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7396843434343435,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7535214646464646,
+        "width": 0.2761127450980392,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Various tools or platforms are available to support A/B testing of UI designs, such as GoodUI 2 , Optimizely 3 and VWO 4 .",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.6605555555555556,
+        "top": 0.5321287878787879,
+        "width": 0.2515343137254902,
+        "height": 0.011320707070706981,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5434962121212121,
+        "width": 0.39174673202614374,
+        "height": 0.013790404040403992,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5573333333333333,
+        "width": 0.06890032679738567,
+        "height": 0.013790404040403992,
+        "page": 1
+      }
+    ],
+    "section": "2 RELATEDWORK 2.1 Traditional UI Evaluation Methods",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The experiments indicate that UI designs obtained by Spacewalker were significantly more preferred by human evaluators 1 than those from a baseline method.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.17180065359477123,
+        "top": 0.5321287878787879,
+        "width": 0.30866830065359485,
+        "height": 0.011320707070706981,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.545965909090909,
+        "width": 0.3950326797385621,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5573333333333333,
+        "width": 0.26154738562091506,
+        "height": 0.013790404040403992,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Our work is related to three areas of the literature, including UI evaluation methods, crowdsourcing-based design support, and interactive UI design optimization.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.761003787878788,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7748409090909091,
+        "width": 0.39502941176470585,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7886780303030303,
+        "width": 0.19503431372549018,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "2 RELATEDWORK",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "To do so, she adds an explore-child-id attribute to the parent div node of the navigation bar, which instructs Spacewalker to only use one out of multiple candidates when generating and evaluating a design.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.606437908496732,
+        "top": 0.37179545454545454,
+        "width": 0.3056568627450982,
+        "height": 0.011988636363636396,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.38563257575757576,
+        "width": 0.39503594771241834,
+        "height": 0.011988636363636396,
+        "page": 2
+      },
+      {
+        "left": 0.5189918300653594,
+        "top": 0.4001376262626263,
+        "width": 0.3931062091503267,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.4139747474747475,
+        "width": 0.14450326797385626,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "3 USING SPACEWALKER",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Lastly, instead of exploring a design space based on elements, a designer can explore style options with CSS selectors using the same format as a regular CSS file, and by again prefixing the \" explore\" tag, and by using a line of dashes to indicate alternative styles (see examples in Section 3).",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.6850098039215686,
+        "top": 0.8152474747474748,
+        "width": 0.2270882352941176,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8290845959595959,
+        "width": 0.3925637254901959,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8429217171717173,
+        "width": 0.39294281045751644,
+        "height": 0.011320707070706981,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8560909090909091,
+        "width": 0.39255718954248375,
+        "height": 0.01198863636363634,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8705959595959595,
+        "width": 0.3399885620915033,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.1 Spacewalker Markup Syntax & Parsing",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Because of this, powerful CSS features, such as CSS variables (which can",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.863187908496732,
+        "top": 0.8705959595959595,
+        "width": 0.04890196078431375,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8844318181818183,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.1 Spacewalker Markup Syntax & Parsing",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "As a raters judgement can be dominated by the early examples and may drift over time [1], it is generally difficult for a user to rate the goodness of a design with an absolute scale.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.5782892156862746,
+        "top": 0.1925820707070707,
+        "width": 0.3362761437908497,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.20641919191919192,
+        "width": 0.39283823529411765,
+        "height": 0.011320707070707037,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.22025631313131314,
+        "width": 0.3161764705882353,
+        "height": 0.011320707070707037,
+        "page": 4
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Thus, our fitness function outputs 1 for the preferred design and 0 for the less preferred one.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.765313725490196,
+        "top": 0.26176767676767676,
+        "width": 0.1467777777777779,
+        "height": 0.011332070707070707,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.2749368686868687,
+        "width": 0.394812091503268,
+        "height": 0.011988636363636396,
+        "page": 4
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Although presenting more than two examples in a gallery design can be another appealing alternative [1, 13], the viewing area for each example would be too small in our case of web design, and may prevent raters from noticing design details that matter.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.5190212418300654,
+        "top": 0.2894419191919192,
+        "width": 0.39307352941176465,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.30327777777777776,
+        "width": 0.39283823529411754,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.317114898989899,
+        "width": 0.3925637254901959,
+        "height": 0.011320707070707037,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3309520202020202,
+        "width": 0.35701470588235296,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "To search for an optimal design in the space, it is prohibitively expensive to examine every possible design configuration with worker evaluation.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.3831830065359477,
+        "top": 0.3409507575757576,
+        "width": 0.09728431372549018,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3547878787878788,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.36862500000000004,
+        "width": 0.3697745098039216,
+        "height": 0.011320707070707037,
+        "page": 4
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "On the other hand, with a limited number of worker feedback, which is often the case in reality, a search very likely ends up with a sub-optimal design, as shown in our experiments later.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.4618790849673203,
+        "top": 0.36862500000000004,
+        "width": 0.01858986928104578,
+        "height": 0.011320707070707037,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.38246212121212125,
+        "width": 0.3925653594771242,
+        "height": 0.011320707070707037,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.39629924242424247,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707037,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4101363636363636,
+        "width": 0.32421895424836605,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "be used to store values in custom properties) 6 , can be adopted to streamline the specification of possible values for properties.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.1070909090909091,
+        "width": 0.3925653594771242,
+        "height": 0.013790404040404033,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.12339772727272727,
+        "width": 0.36884477124183007,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.1 Spacewalker Markup Syntax & Parsing",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We refer an instance of a UI design, which is acquired by selecting a specific option for each attribute to be explored, as a configuration of the design.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.4615653594771242,
+        "top": 0.7427878787878788,
+        "width": 0.018895424836601227,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.756625,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7704621212121212,
+        "width": 0.39256045751633994,
+        "height": 0.011332070707070763,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7842992424242424,
+        "width": 0.06349019607843136,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Note that attributes that are not marked for exploration do not appear in a configuration for genetic programming because they are already determined by the designer.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.15491339869281046,
+        "top": 0.7842992424242424,
+        "width": 0.3255522875816994,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7981363636363636,
+        "width": 0.39256699346405227,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8119734848484849,
+        "width": 0.26708006535947715,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "During initialization , the first generation is randomly generated, with the goal of covering as many configurations as possible.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.33396732026143794,
+        "top": 0.514195707070707,
+        "width": 0.14650163398692811,
+        "height": 0.011332070707070763,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5280328282828283,
+        "width": 0.39256045751633994,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5418699494949495,
+        "width": 0.18922385620915033,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The goal of our initialization process is to maximally cover possible options for each attribute, but meanwhile limit the total number of designs to be compared by human raters.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.19848039215686275,
+        "top": 0.3586262626262626,
+        "width": 0.2844591503267974,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.37246338383838384,
+        "width": 0.39256045751633994,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.38630050505050506,
+        "width": 0.35276143790849673,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Therefore, we treat each attribute independently during initialization, and generate design variations by sampling the options of one attribute at a time while affixing the rest exploratory attributes at a random value.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.44373856209150325,
+        "top": 0.38630050505050506,
+        "width": 0.03919771241830072,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4001376262626263,
+        "width": 0.39256045751633994,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4139747474747475,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.42781186868686866,
+        "width": 0.39255882352941174,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08753921568627451,
+        "top": 0.4416489898989899,
+        "width": 0.034862745098039216,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The diff mask represents where we would likely gain knowledge by comparing these two designs: in the part where they differ.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.241890522875817,
+        "top": 0.20641919191919192,
+        "width": 0.23857189542483662,
+        "height": 0.011320707070707037,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.22025631313131314,
+        "width": 0.3925571895424837,
+        "height": 0.011320707070707037,
+        "page": 5
+      },
+      {
+        "left": 0.08736437908496732,
+        "top": 0.23409343434343433,
+        "width": 0.10527941176470589,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We conduct a user study to investigate whether Spacewalker markup extension to HTML is easy to understand and use by designers and developers, and how they react to the overall support of Spacewalker for design exploration.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.828156862745098,
+        "top": 0.3218320707070707,
+        "width": 0.08394117647058819,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3356691919191919,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707037,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.34950631313131314,
+        "width": 0.39416993464052286,
+        "height": 0.011320707070707037,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3633434343434343,
+        "width": 0.39256045751633994,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3771805555555555,
+        "width": 0.07033986928104574,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "5 EXPERIMENTS",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Therefore, each design search task needed 50 raters.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.1688513071895425,
+        "top": 0.6907146464646465,
+        "width": 0.3138709150326797,
+        "height": 0.011320707070706981,
+        "page": 6
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "To account for raters that may not be responsive after accepting the tasks, we distributed the tasks to 70 raters.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.0874656862745098,
+        "top": 0.7045517676767676,
+        "width": 0.3930065359477124,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.718388888888889,
+        "width": 0.25572549019607843,
+        "height": 0.011320707070706981,
+        "page": 6
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "For uniform sampling, to ensure that it receives the same number of rater responses as the genetic method, we randomly deployed 500 samples, which amounts to 250 pairs thus 250 rater responses.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.3472794117647059,
+        "top": 0.718388888888889,
+        "width": 0.13480392156862753,
+        "height": 0.011320707070706981,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7322260101010101,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7460618686868686,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.75989898989899,
+        "width": 0.2881356209150327,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "First, in complex design spaces, designers may want to maintain dependencies between several sets of elements, while style options for different elements can also be dependent, where only certain options or elements can be combined together.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.791687908496732,
+        "top": 0.5311603535353535,
+        "width": 0.12287745098039238,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5449974747474747,
+        "width": 0.39256045751633994,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.558834595959596,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5726717171717172,
+        "width": 0.3925637254901959,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5865088383838384,
+        "width": 0.13454738562091495,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "In order to support more advanced dependency, we believe automatic tooling for identifying option dependencies and detecting potential inconsistency would be necessary, which provides opportunity for future work.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.6577320261437908,
+        "top": 0.5865088383838384,
+        "width": 0.25683169934640526,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6003459595959596,
+        "width": 0.39503431372549025,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6141830808080808,
+        "width": 0.39417156862745095,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5189918300653594,
+        "top": 0.628020202020202,
+        "width": 0.27204084967320274,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Therefore, even our enhanced genetic algorithm may not converge to an optimal solution with a small number of comparisons.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.8170081699346405,
+        "top": 0.6556944444444444,
+        "width": 0.09508333333333341,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.669530303030303,
+        "width": 0.3925669934640523,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6833674242424242,
+        "width": 0.279437908496732,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Our quantitative experiments for examining the performance of Spacewalker algorithms for searching a design space indicate that it improves designs over time by producing better design candidates, particularly when the search space is large.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.5358137254901961,
+        "top": 0.8355744949494949,
+        "width": 0.3762794117647058,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8494116161616162,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8632487373737373,
+        "width": 0.39417320261437905,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8770858585858586,
+        "width": 0.25522549019607843,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "P1 suggested that Spacewalker should provide suggestions for possible options to explore for a specific property, and warns designers when an option value is out of a reasonable range for a good design.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.37136274509803924,
+        "top": 0.8290845959595959,
+        "width": 0.10910620915032682,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8429217171717173,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070706981,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8567588383838384,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08753921568627451,
+        "top": 0.8705959595959595,
+        "width": 0.2949264705882353,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "\"This tool provides (a) useful way to compare my designs. I used to use the Inspect tool in Chrome to try out different values of the styles of my attributes, but the limitation is that I can only modify one item at a time. With this tool I could manage my HTML/CSS code and potential designs of the whole page efficiently. It improves my productivity and experience significantly.\"",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.7184002525252525,
+        "width": 0.3762745098039215,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7322373737373737,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7460732323232323,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7599103535353536,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7737474747474747,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7875845959595961,
+        "width": 0.2415947712418301,
+        "height": 0.011320707070706981,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "there is a research opportunity to better support designers by providing more guidance when creating a design search task.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.1755326797385621,
+        "top": 0.30327777777777776,
+        "width": 0.3074084967320262,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.317114898989899,
+        "width": 0.39255882352941174,
+        "height": 0.011320707070707037,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3309520202020202,
+        "width": 0.027209150326797382,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "The streamlined end-to-end support of Spacewalker is useful for both novice and experienced designers.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.456828431372549,
+        "top": 0.7045517676767676,
+        "width": 0.023640522875817027,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.718388888888889,
+        "width": 0.39255882352941174,
+        "height": 0.011320707070706981,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7322260101010101,
+        "width": 0.19746568627450983,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "that the quality of these designs could further improved with more iterations and workers.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.10956060606060607,
+        "width": 0.39255882352941174,
+        "height": 0.011320707070707065,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.12339772727272727,
+        "width": 0.13865522875816993,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "These improvements can be easily achievable, particularly because these were achieved by only using 50 workers and a small monetary budget (around 35 US Dollars), which gives a lot of room to scale up.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.2302156862745098,
+        "top": 0.12339772727272727,
+        "width": 0.2527205882352942,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.1372348484848485,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08736437908496732,
+        "top": 0.1510719696969697,
+        "width": 0.3931062091503268,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.1649078282828283,
+        "width": 0.1822140522875817,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Our experiments indicate that Spacewalker is well received by designers, and Spacewalkers genetic search algorithm significantly outperformed a uniform sampling baseline under different search space sizes and web design types.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.5195343137254902,
+        "top": 0.1510719696969697,
+        "width": 0.39293790849673205,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.1649078282828283,
+        "width": 0.39293464052287597,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.17874494949494948,
+        "width": 0.39255392156862745,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.1925820707070707,
+        "width": 0.20023529411764707,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "7 CONCLUSION",
+    "prob": 0.5,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Spacewalker provides integrated support to enable designers to rapidly explore a large design space to improve their web UI design.",
+    "label": "Conclusion",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8290845959595959,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8429217171717173,
+        "width": 0.3948153594771242,
+        "height": 0.011320707070706981,
+        "page": 9
+      }
+    ],
+    "section": "",
+    "prob": 0.5,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Note that the CSS attributes of elements for each node can be further explored, which enables recursive exploration.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.8023202614379085,
+        "top": 0.5385075757575758,
+        "width": 0.10977777777777775,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.552344696969697,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5661818181818182,
+        "width": 0.17852287581699355,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "3 USING SPACEWALKER",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "If multiple properties need to be explored jointly (e.g., height and width), Spacewalker allows a designer to combine multiple properties for exploration by joining their names using \" -and\" and optional values using a semicolon ( ; ):",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.6537908496732027,
+        "top": 0.6400492424242424,
+        "width": 0.25830718954248344,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6538863636363637,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6677234848484849,
+        "width": 0.39256045751633983,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6808926767676768,
+        "width": 0.3375130718954249,
+        "height": 0.01198863636363623,
+        "page": 3
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.1 Spacewalker Markup Syntax & Parsing",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "To address the issue, we enhance traditional genetic algorithms, for each iteration, by directing rater feedback to genes that participate in a comparison while allowing the rest genes in a sequence to remain stochastic in the downstream evolution.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.51909477124183,
+        "top": 0.8429217171717173,
+        "width": 0.39327941176470604,
+        "height": 0.011320707070706981,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8567588383838384,
+        "width": 0.3925669934640523,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8705959595959595,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8844318181818183,
+        "width": 0.2844787581699346,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The search spaces specified ranged from 480 to 3888, which indicated the need of designers to explore large design spaces.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.4146356209150327,
+        "top": 0.3033118686868687,
+        "width": 0.06582843137254896,
+        "height": 0.011320707070707037,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3171489898989899,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.33098611111111115,
+        "width": 0.25747712418300656,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.1 User Study",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In order to support more advanced dependency, we believe automatic tooling for identifying option dependencies and detecting potential inconsistency would be necessary, which provides opportunity for future work.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.6577320261437908,
+        "top": 0.5865088383838384,
+        "width": 0.25683169934640526,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6003459595959596,
+        "width": 0.39503431372549025,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6141830808080808,
+        "width": 0.39417156862745095,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5189918300653594,
+        "top": 0.628020202020202,
+        "width": 0.27204084967320274,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "With a large enough search space, the effectiveness of any algorithm will be impacted.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.6052303921568628,
+        "top": 0.7663901515151516,
+        "width": 0.3068643790849672,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7802272727272728,
+        "width": 0.20738888888888896,
+        "height": 0.011320707070706981,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "This will require Spacewalker to encode certain design knowledge to make proper",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.38509313725490196,
+        "top": 0.8705959595959595,
+        "width": 0.0953660130718954,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8844318181818183,
+        "width": 0.3928333333333333,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "In this section, we discuss the strengths and limitation of our work, and our plan for future work.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6492032828282828,
+        "width": 0.3941683006535948,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6630404040404041,
+        "width": 0.17506535947712415,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "To further our understanding, we intend to compare the automatic process enabled by Spacewalker with the existing manual process for design search in realistic design projects in the future.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.28804084967320265,
+        "top": 0.7322260101010101,
+        "width": 0.19242483660130716,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7460618686868686,
+        "width": 0.39283496732026146,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08736437908496732,
+        "top": 0.75989898989899,
+        "width": 0.3955816993464052,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7737361111111111,
+        "width": 0.15783496732026142,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "that the quality of these designs could further improved with more iterations and workers.",
+    "label": "Future Work",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.10956060606060607,
+        "width": 0.39255882352941174,
+        "height": 0.011320707070707065,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.12339772727272727,
+        "width": 0.13865522875816993,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "We evaluate Spacewalker in multiple dimensions.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.5188316993464052,
+        "top": 0.3218320707070707,
+        "width": 0.3049624183006536,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "5 EXPERIMENTS",
+    "prob": 0.8866589665412903,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "summarizes the results.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.2756376262626263,
+        "width": 0.14185620915032682,
+        "height": 0.011320707070707037,
+        "page": 6
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.1 User Study",
+    "prob": 0.8607693314552307,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "For the experiment where Spacewalker is used to search for different web page types, we find that crowd raters, from the crossmethod evaluation, preferred the results produced by Spacewalker genetic method in all cases we tested when they are compared with those from the uniform sampling method (see Table 3).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.43430176767676765,
+        "width": 0.3765588235294117,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.44813888888888886,
+        "width": 0.39503104575163406,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4619760101010101,
+        "width": 0.3928333333333333,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4758131313131313,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.4896502525252525,
+        "width": 0.3386454248366013,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+    "prob": 0.8551549315452576,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Crowd raters, from the cross-method evaluation, showed significant preference for the designs generated by Spacewalker for all the search space sizes in Experiment 1 (see Table 2).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.33744318181818184,
+        "width": 0.3787630718954249,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.35128030303030305,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.36511742424242427,
+        "width": 0.30173202614379085,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+    "prob": 0.8194810748100281,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The experiments indicate that UI designs obtained by Spacewalker were significantly more preferred by human evaluators 1 than those from a baseline method.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.17180065359477123,
+        "top": 0.5321287878787879,
+        "width": 0.30866830065359485,
+        "height": 0.011320707070706981,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.545965909090909,
+        "width": 0.3950326797385621,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5573333333333333,
+        "width": 0.26154738562091506,
+        "height": 0.013790404040403992,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": 0.806332528591156,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "In sum, the only difference between the two conditions is the method used for searching the design space, while the rest aspects including the feedback mechanism is the same.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.3238921568627451,
+        "top": 0.7737361111111111,
+        "width": 0.15657352941176472,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7875732323232324,
+        "width": 0.3925571895424837,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8014103535353535,
+        "width": 0.39503594771241834,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8152474747474748,
+        "width": 0.10501143790849672,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+    "prob": 0.7183955907821655,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We compare Spacewalker genetic algorithm against a baseline method that uniformly samples the design space for crowd evaluation.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.4607434640522876,
+        "top": 0.5155669191919192,
+        "width": 0.019725490196078443,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5294040404040404,
+        "width": 0.39256699346405227,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.5432411616161616,
+        "width": 0.376467320261438,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+    "prob": 0.677236020565033,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "For each search specification, we calculate the percentage of votes received by Spacewalker genetic method (the rest of the votes are received by uniform sampling).",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.689547385620915,
+        "top": 0.7958598484848485,
+        "width": 0.22502287581699354,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8096969696969697,
+        "width": 0.3925637254901959,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.8235340909090909,
+        "width": 0.3948202614379086,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+    "prob": 0.660494327545166,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "For uniform sampling, to ensure that it receives the same number of rater responses as the genetic method, we randomly deployed 500 samples, which amounts to 250 pairs thus 250 rater responses.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.3472794117647059,
+        "top": 0.718388888888889,
+        "width": 0.13480392156862753,
+        "height": 0.011320707070706981,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7322260101010101,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7460618686868686,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.75989898989899,
+        "width": 0.2881356209150327,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+    "prob": 0.6508616805076599,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Spacewalker instead presents each rater a pair of different candidate designs at a time, and asks the rater to select the preferred design, i.e., a twoalternative forced-choice (2AFC) method.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.8387401960784313,
+        "top": 0.22025631313131314,
+        "width": 0.07362745098039225,
+        "height": 0.011320707070707037,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.23409343434343433,
+        "width": 0.39255882352941174,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.24793055555555554,
+        "width": 0.39502941176470585,
+        "height": 0.011320707070707092,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.26176767676767676,
+        "width": 0.24217647058823533,
+        "height": 0.011320707070707092,
+        "page": 4
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": 0.6437844634056091,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The goal is to test whether web designers are able to learn and use our markups to specify search criteria and launch a design exploration task, and to gather feedback of the Spacewalker system.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.8885424836601308,
+        "top": 0.46491919191919195,
+        "width": 0.02354901960784317,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.47875631313131317,
+        "width": 0.39283660130718956,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.4925934343434344,
+        "width": 0.3925669934640523,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.5064305555555556,
+        "width": 0.33367647058823524,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "5 EXPERIMENTS 5.1 User Study",
+    "prob": 0.9146967530250549,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "In Spacewalker, we aim to address these issues by providing an integrated support for designers to explore a large design space and improve their design.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.6606797385620915,
+        "top": 0.7258472222222222,
+        "width": 0.2514183006535947,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7396843434343435,
+        "width": 0.392563725490196,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.7535214646464646,
+        "width": 0.2761127450980392,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "",
+    "prob": 0.9029521346092224,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The goal of our initialization process is to maximally cover possible options for each attribute, but meanwhile limit the total number of designs to be compared by human raters.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.19848039215686275,
+        "top": 0.3586262626262626,
+        "width": 0.2844591503267974,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.37246338383838384,
+        "width": 0.39256045751633994,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.38630050505050506,
+        "width": 0.35276143790849673,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+    "prob": 0.8924456238746643,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We also aim to minimize the effort and cost of the designer to perform the task.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.4326192810457516,
+        "top": 0.3309520202020202,
+        "width": 0.04784967320261446,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3447891414141414,
+        "width": 0.392562091503268,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.3586262626262626,
+        "width": 0.027763071895424832,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Crowd-Powered UI Design & Evaluation",
+    "prob": 0.8920279741287231,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "To further our understanding, we intend to compare the automatic process enabled by Spacewalker with the existing manual process for design search in realistic design projects in the future.",
+    "label": "Objective",
+    "bboxes": [
+      {
+        "left": 0.28804084967320265,
+        "top": 0.7322260101010101,
+        "width": 0.19242483660130716,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7460618686868686,
+        "width": 0.39283496732026146,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08736437908496732,
+        "top": 0.75989898989899,
+        "width": 0.3955816993464052,
+        "height": 0.011320707070707092,
+        "page": 9
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7737361111111111,
+        "width": 0.15783496732026142,
+        "height": 0.011320707070707092,
+        "page": 9
+      }
+    ],
+    "section": "6 DISCUSSION & FUTUREWORK",
+    "prob": 0.8145083785057068,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  }
+]
