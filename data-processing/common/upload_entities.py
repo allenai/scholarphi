@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from peewee import fn
 
+from common.commands.database import OutputDetails, OutputForm
 from common.models import BoundingBox as BoundingBoxModel
 from common.models import Entity
 from common.models import EntityData as EntityDataModel
@@ -309,3 +310,53 @@ def make_relationship_models(
                     )
 
     return models
+
+
+def write_to_file(entity_infos: List[EntityUploadInfo], output_file_name: str) -> None:
+    # an attempt to make life easier if we change how we want to format this
+    FORMAT_VERSION = "v0"
+
+    logging.info(
+        "About to write %d entity infos to %s (version: %s).",
+        len(entity_infos),
+        output_file_name,
+        FORMAT_VERSION,
+    )
+    to_write = {
+        "version": FORMAT_VERSION,
+        "data": [dataclasses.asdict(entity_info) for entity_info in entity_infos],
+    }
+    already_exists_msg = (
+        f"File {output_file_name} already exists. "
+        + "Not overwriting. Entity infos will not be written."
+    )
+    assert not os.path.exists(output_file_name), already_exists_msg
+
+    with open(output_file_name, "w") as output_file:
+        json.dump(to_write, output_file)
+
+
+def save_entities(
+    s2_id: S2Id,
+    arxiv_id: ArxivId,
+    entity_infos: List[EntityUploadInfo],
+    data_version: Optional[int],
+    output_details: OutputDetails,
+    filename: str,
+) -> None:
+
+    if output_details.save_to_file():
+        logger.info("Saving to file...")
+        # should always be true, but let's just make sure
+        assert output_details.output_dir is not None, "Expected a defined output dir!"
+        output_file_name = os.path.join(output_details.output_dir, filename)
+        write_to_file(entity_infos=entity_infos, output_file_name=output_file_name)
+
+    if output_details.save_to_db():
+        logger.info("Saving to db...")
+        upload_entities(
+            s2_id=s2_id,
+            arxiv_id=arxiv_id,
+            entities=entity_infos,
+            data_version=data_version,
+        )
