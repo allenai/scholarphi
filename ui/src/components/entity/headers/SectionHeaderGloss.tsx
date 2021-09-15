@@ -27,6 +27,7 @@ export default class SectionHeaderGloss extends React.PureComponent<Props, {}> {
             <div className="paper-summary__section">
               <span className="summary-name">Section summary</span>:{" "}
               {this.props.header.attributes.summary}
+              <div className="experience-summary__section source"><p> Generated automatically </p></div>
               {/* <div className="paper-summary__section"> {bullets} </div>  */}
             </div>
           </div>

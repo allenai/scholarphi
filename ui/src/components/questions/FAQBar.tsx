@@ -125,24 +125,27 @@ class FAQBar extends React.PureComponent<Props> {
     } = this.props;
 
 
-    const FAQBarContainer = document.getElementById("FAQBar");
+    const FAQBarContainer = document.getElementById("FAQPlaceholder");
 
     const FAQs = this.getFAQs();
 
     const BarContent = (
-      <div className="faq__content">
-        {/* <p className="faq__content__header">FAQs</p> */}
-        {/* <p className="faq__content__header"> There is a lot of information in this paper, and some of it might not be useful to you.</p> */}
+      <div id="FAQBar"> 
+        <div className="faq__content">
+          {/* <p className="faq__content__header">FAQs</p> */}
+          {/* <p className="faq__content__header"> There is a lot of information in this paper, and some of it might not be useful to you.</p> */}
 
-        <p className="faq__content__header"> To help out with reading this paper we have included common questions that provide useful information. </p>
+          <p className="faq__content__header"> To help out with reading this paper we have included common questions that provide useful information. </p>
 
-        <p className="faq__content__header"> Each question has a short answer here. Click on the numbers after "Relevant Passages" sections relevant to the question in the paper.</p>
+          <p className="faq__content__header"> Each question has a short answer here. Click on the numbers after "Relevant Passages" sections relevant to the question in the paper.</p>
 
-        {/* <p className="faq__content__header"> Questions: </p> */}
-        
-        {' '}
-        {FAQs}
+          {/* <p className="faq__content__header"> Questions: </p> */}
+          
+          {' '}
+          {FAQs}
+        </div>
       </div>
+      
     );
 
     return FAQBarContainer
