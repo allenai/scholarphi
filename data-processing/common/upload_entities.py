@@ -346,14 +346,14 @@ def save_entities(
 ) -> None:
 
     if output_details.save_to_file():
-        logger.info("Saving to file...")
+        logging.info("Saving to file...")
         # should always be true, but let's just make sure
         assert output_details.output_dir is not None, "Expected a defined output dir!"
         output_file_name = os.path.join(output_details.output_dir, filename)
         write_to_file(entity_infos=entity_infos, output_file_name=output_file_name)
 
     if output_details.save_to_db():
-        logger.info("Saving to db...")
+        logging.info("Saving to db...")
         upload_entities(
             s2_id=s2_id,
             arxiv_id=arxiv_id,
