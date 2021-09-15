@@ -30,9 +30,14 @@ class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
 
         if args.output_form in [OutputForm.FILE.value, OutputForm.BOTH.value]:
             logging.info("We will be writing output to files.")
-            msg = "We expect to write output to a file, but no output dir has been specified."
-            assert args.output_dir is not None, msg
 
+            file_not_supported_msg = \
+                f"{self.__class__.__name__} does not know how to write to a file."
+            assert self.can_write_to_file(), file_not_supported_msg
+
+            bad_args_msg = \
+                "We expect to write output to a file, but no output dir has been specified."
+            assert args.output_dir is not None, bad_args_msg
 
     @staticmethod
     def init_parser(parser: ArgumentParser) -> None:
@@ -51,6 +56,14 @@ class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
             default="public",
             help=("Name of schema to which data will be output. Defaults to 'public'."),
         )
+
+    def can_write_to_file(self) -> bool:
+        """
+        Returns true if the upload command can write to a file, false otherwise.
+        A way to make sure we are only expecting to write to a file when the rleevant
+        command is capable of doing so.
+        """
+        return False
 
 
 class DatabaseReadCommand(ArxivBatchCommand[I, R], ABC):
