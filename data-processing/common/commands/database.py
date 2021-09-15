@@ -2,7 +2,7 @@ from abc import ABC
 from argparse import ArgumentParser
 from enum import Enum
 import logging
-from typing import Any
+from typing import Any, Optional
 
 from common.commands.base import ArxivBatchCommand, I, R
 from common.models import setup_database_connections
@@ -12,6 +12,20 @@ class OutputForm(Enum):
     DB = "db"
     FILE = "file"
     BOTH = "both"
+
+
+class OutputDetails:
+    def __init__(self, output_form: str, output_dir: Optional[str]):
+        OutputDetails.validate(output_form=output_form, output_dir=output_dir)
+        self.output_form = OutputForm(output_form)
+        self.output_dir = output_dir
+
+    @staticmethod
+    def validate(output_form: str, output_dir: Optional[str]):
+        msg = "If the output form is 'file' or 'both', an output dir must also be specified."
+        cond = (output_form in [OutputForm.FILE.value, OutputForm.BOTH.value]) == \
+            (output_dir is not None)
+        assert cond, msg
 
 
 class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
@@ -30,14 +44,13 @@ class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
 
         if args.output_form in [OutputForm.FILE.value, OutputForm.BOTH.value]:
             logging.info("We will be writing output to files.")
+            msg = f"{self.__class__.__name__} does not know how to write to a file."
+            assert self.can_write_to_file(), msg
 
-            file_not_supported_msg = \
-                f"{self.__class__.__name__} does not know how to write to a file."
-            assert self.can_write_to_file(), file_not_supported_msg
-
-            bad_args_msg = \
-                "We expect to write output to a file, but no output dir has been specified."
-            assert args.output_dir is not None, bad_args_msg
+        self.output_details = OutputDetails(
+            output_form=args.output_form,
+            output_dir=args.output_dir
+        )
 
     @staticmethod
     def init_parser(parser: ArgumentParser) -> None:

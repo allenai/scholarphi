@@ -14,7 +14,7 @@ from common.commands.base import (
     load_arxiv_ids_using_args,
     read_arxiv_ids_from_file,
 )
-from common.commands.database import DatabaseUploadCommand, OutputForm
+from common.commands.database import DatabaseUploadCommand, OutputDetails, OutputForm
 from common.commands.fetch_arxiv_sources import (
     DEFAULT_S3_ARXIV_SOURCES_BUCKET,
     FetchArxivSources,
@@ -359,10 +359,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # check that output arguments make sense
-    if args.output_form in [OutputForm.FILE.value, OutputForm.BOTH.value]:
-        missing_output_dir_msg = \
-            "Please provide a value for output-dir if you want output to be written to a file."
-        assert args.output_dir is not None, missing_output_dir_msg
+    OutputDetails.validate(output_form=args.output_form, output_dir=args.output_dir)
 
     # Set up logging
     console_log_handler = logging.StreamHandler(sys.stdout)
