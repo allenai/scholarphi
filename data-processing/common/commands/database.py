@@ -1,6 +1,7 @@
 from abc import ABC
 from argparse import ArgumentParser
 from enum import Enum
+import logging
 from typing import Any
 
 from common.commands.base import ArxivBatchCommand, I, R
@@ -22,13 +23,13 @@ class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
     def __init__(self, args: Any) -> None:
         super().__init__(args)
         if args.output_form in [OutputForm.DB.value, OutputForm.BOTH.value]:
-            print("Setting up db connection as we expect to upload output to the db.")
+            logging.info("Setting up db connection as we expect to upload output to the db.")
             setup_database_connections(
                 schema_name=args.schema, create_tables=args.create_tables
             )
 
         if args.output_form in [OutputForm.FILE.value, OutputForm.BOTH.value]:
-            print("We will be writing output to files.")
+            logging.info("We will be writing output to files.")
             msg = "We expect to write output to a file, but no output dir has been specified."
             assert args.output_dir is not None, msg
 
