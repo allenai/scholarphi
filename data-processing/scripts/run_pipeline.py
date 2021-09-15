@@ -14,7 +14,7 @@ from common.commands.base import (
     load_arxiv_ids_using_args,
     read_arxiv_ids_from_file,
 )
-from common.commands.database import DatabaseUploadCommand
+from common.commands.database import DatabaseUploadCommand, OutputForm
 from common.commands.fetch_arxiv_sources import (
     DEFAULT_S3_ARXIV_SOURCES_BUCKET,
     FetchArxivSources,
@@ -67,6 +67,9 @@ def run_commands_for_arxiv_ids(
         command_args.schema = pipeline_args.database_schema
         command_args.create_tables = pipeline_args.database_create_tables
         command_args.data_version = pipeline_args.data_version
+        if issubclass(CommandCls, DatabaseUploadCommand):
+           command_args.output_form = pipeline_args.output_form
+           command_args.output_dir = pipeline_args.output_dir
         if CommandCls == FetchArxivSources:
             command_args.s3_bucket = pipeline_args.s3_arxiv_sources_bucket
         if CommandCls in [StorePipelineLog, StoreResults]:
@@ -299,7 +302,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Do not save extracted entities to the database.",
+        help="Do not save extracted entities to the database or write them to a file.",
     )
     parser.add_argument(
         "--database-schema",
@@ -335,7 +338,30 @@ if __name__ == "__main__":
         type=str,
         help="Base url for definition model paths."
     )
+
+    parser.add_argument(
+        "--output-form",
+        type=str,
+        choices=[c.value for c in OutputForm],
+        help=(
+            f"How we want the output to be stored. "
+            + "If you specify file or both, you must also provide a value for output-dir."
+        )
+    )
+
+    parser.add_argument(
+        "--output-dir",
+        type=str,
+        help="The directory in which to write the outputs."
+    )
+
     args = parser.parse_args()
+
+    # check that output arguments make sense
+    if args.output_form in [OutputForm.FILE.value, OutputForm.BOTH.value]:
+        missing_output_dir_msg = \
+            "Please provide a value for output-dir if you want output to be written to a file."
+        assert args.output_dir is not None, missing_output_dir_msg
 
     # Set up logging
     console_log_handler = logging.StreamHandler(sys.stdout)
