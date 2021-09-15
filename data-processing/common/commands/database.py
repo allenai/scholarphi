@@ -31,7 +31,7 @@ class OutputDetails:
         return self.output_form in [OutputForm.DB, OutputForm.BOTH]
 
     def save_to_file(self) -> bool:
-        return self.output_form in [OutputFrom.FILE, OutputForm.BOTH]
+        return self.output_form in [OutputForm.FILE, OutputForm.BOTH]
 
 
 class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
