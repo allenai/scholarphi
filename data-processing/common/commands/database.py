@@ -28,6 +28,7 @@ class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
             )
 
         if args.output_form in [OutputForm.FILE.value, OutputForm.BOTH.value]:
+            print("We will be writing output to files.")
             msg = "We expect to write output to a file, but no output dir has been specified."
             assert args.output_dir is not None, msg
 
