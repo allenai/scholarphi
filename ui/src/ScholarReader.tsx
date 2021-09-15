@@ -854,7 +854,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         return b1.left - b2.left;
       }
       return b1.top - b2.top;
-    })[0];
+    })[entity.attributes.bounding_boxes.length - 1];
     // if (entity.attributes.bounding_boxes.length > 1){
     //   dest = entity.attributes.bounding_boxes[entity.attributes.bounding_boxes.length - 1];
     // }
@@ -903,20 +903,45 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
      * added: also select the entity
      */
     const annotationID = `entity-${id}-annotation`;
-    const annotationSpanIDs = entity.attributes.bounding_boxes.map((box, i) => {
-      const pageNumber = box.page;
-      return `${annotationID}-page-${pageNumber}-span-${i}`;
-    });
 
-    if (entity.attributes.bounding_boxes.length > 1) {
-      this.selectEntityAnnotation(
-        id,
-        annotationID,
-        annotationSpanIDs[annotationSpanIDs.length - 1]
-      );
-    } else {
-      this.selectEntityAnnotation(id, annotationID, annotationSpanIDs[0]);
-    }
+    let annotationSpanIDs = new Array(entity.attributes.bounding_boxes.length);
+    let counter = 0;
+    for (let i = 0; i < annotationSpanIDs.length; i++) {
+      
+      let pageNumber = entity.attributes.bounding_boxes[i].page;
+      if (i > 0 && pageNumber != entity.attributes.bounding_boxes[i-1].page) {
+        // reset the counter
+        counter = 0
+      }
+      annotationSpanIDs[i] = `${annotationID}-page-${pageNumber}-span-${counter}`
+      counter += 1;
+    }  
+
+    // const annotationSpanIDs = entity.attributes.bounding_boxes.map((box, i, boxes) => {
+
+    //   const pageNumber = box.page;
+    //   if (pageNumber != boxes[i-1].page) {
+    //     return `${annotationID}-page-${pageNumber}-span-${0}`;
+    //   }
+    //   return `${annotationID}-page-${pageNumber}-span-${i}`;
+    // });
+
+    this.selectEntityAnnotation(
+      id,
+      annotationID,
+      annotationSpanIDs[annotationSpanIDs.length-1]
+    );
+
+
+    // if (entity.attributes.bounding_boxes.length > 1) {
+    //   this.selectEntityAnnotation(
+    //     id,
+    //     annotationID,
+    //     annotationSpanIDs[annotationSpanIDs.length - 1]
+    //   );
+    // } else {
+    //   this.selectEntityAnnotation(id, annotationID, annotationSpanIDs[0]);
+    // }
 
     return true;
   };
