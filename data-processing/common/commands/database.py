@@ -27,6 +27,12 @@ class OutputDetails:
             (output_dir is not None)
         assert cond, msg
 
+    def save_to_db(self) -> bool:
+        return self.output_form in [OutputForm.DB, OutputForm.BOTH]
+
+    def save_to_file(self) -> bool:
+        return self.output_form in [OutputFrom.FILE, OutputForm.BOTH]
+
 
 class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
     """
@@ -36,21 +42,22 @@ class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
 
     def __init__(self, args: Any) -> None:
         super().__init__(args)
-        if args.output_form in [OutputForm.DB.value, OutputForm.BOTH.value]:
-            logging.info("Setting up db connection as we expect to upload output to the db.")
-            setup_database_connections(
-                schema_name=args.schema, create_tables=args.create_tables
-            )
-
-        if args.output_form in [OutputForm.FILE.value, OutputForm.BOTH.value]:
-            logging.info("We will be writing output to files.")
-            msg = f"{self.__class__.__name__} does not know how to write to a file."
-            assert self.can_write_to_file(), msg
 
         self.output_details = OutputDetails(
             output_form=args.output_form,
             output_dir=args.output_dir
         )
+
+        if self.output_details.save_to_db():
+            logging.info("Setting up db connection as we expect to upload output to the db.")
+            setup_database_connections(
+                schema_name=args.schema, create_tables=args.create_tables
+            )
+
+        if self.output_details.save_to_file():
+            logging.info("We will be writing output to files.")
+            msg = f"{self.__class__.__name__} does not know how to write to a file."
+            assert self.can_write_to_file(), msg
 
     @staticmethod
     def init_parser(parser: ArgumentParser) -> None:
