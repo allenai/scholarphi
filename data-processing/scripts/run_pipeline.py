@@ -343,7 +343,7 @@ if __name__ == "__main__":
         "--output-form",
         type=str,
         choices=[c.value for c in OutputForm],
-        default=OutputFor.DB.value,
+        default=OutputForm.DB.value,
         help=(
             f"How we want the output to be stored. "
             + "If you specify file or both, you must also provide a value for output-dir."
