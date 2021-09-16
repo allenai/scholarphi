@@ -60,7 +60,7 @@ export class DiscourseTag extends React.PureComponent<Props> {
       side === "left"
         ? pageView.div.clientWidth - anchorPosition.left - LEFT_RULE_INDENT
         : undefined;
-    const ruleLeft = side === "right" ? anchorPosition.left : undefined;
+    const ruleLeft = side === "right" ? anchorRight : undefined;
     const ruleWidth =
       side === "left"
         ? anchorPosition.left +
@@ -69,7 +69,6 @@ export class DiscourseTag extends React.PureComponent<Props> {
           0.1 * pageView.div.clientWidth
         : 0.9 * pageView.div.clientWidth -
           anchorRight +
-          anchorPosition.width +
           SIDENOTE_MARGIN;
 
     return (
