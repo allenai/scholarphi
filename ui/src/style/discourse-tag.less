@@ -1,0 +1,59 @@
+.scholar-reader-discourse-tag {
+  position: absolute;
+  padding: 4px;
+  font-weight: bold;
+  width: fit-content;
+
+  &.side-left {
+    right: 91%;
+    margin-right: @sidenote-margin;
+  }
+
+  &.side-right {
+    left: 91%;
+    margin-left: @sidenote-margin;
+  }
+
+  &:hover {
+    z-index: 1000;
+  }
+}
+
+.discourse-tag-rule {
+  position: absolute;
+  border: none;
+  border-top: 1px dotted grey;
+}
+
+/**
+ * Discourse palette allowing users to toggle which discourse classes to show.
+ */
+.discourse-chip-palette-wrapper {
+  top: 0;
+  position: fixed !important;
+  width: 100vw;
+  height: fit-content;
+  margin-top: 100px;
+
+  .discourse-chip-palette {
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    .discourse-chip {
+      margin: 2px 2px;
+      // border: 1px solid grey;
+      border-radius: 2px !important;
+
+      &.deselected {
+        opacity: 0.6;
+      }
+    }
+
+    .discourse-chip-label {
+      font-weight: bold;
+      font-size: 14px;
+    }
+  }
+}

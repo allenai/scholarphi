@@ -12,19 +12,20 @@ import {
   isTerm,
   Paper,
   RhetoricUnit,
-  Symbol
+  Symbol,
 } from "./api/types";
 import Control from "./components/control/Control";
 import EntityCreationCanvas from "./components/control/EntityCreationCanvas";
 import EntityCreationToolbar, {
   AreaSelectionMethod,
-  createCreateEntityDataWithBoxes
+  createCreateEntityDataWithBoxes,
 } from "./components/control/EntityCreationToolbar";
 import MainControlPanel from "./components/control/MainControlPanel";
 import TextSelectionMenu from "./components/control/TextSelectionMenu";
+import DiscoursePalette from "./components/discourse/DiscoursePalette";
+import DiscourseTagLayer from "./components/discourse/DiscourseTagLayer";
 import HighlightLayer from "./components/discourse/HighlightLayer";
 import UnderlineLayer from "./components/discourse/UnderlineLayer";
-import DiscourseTagLayer from "./components/discourse/DiscourseTagLayer";
 import { Drawer, DrawerContentType } from "./components/drawer/Drawer";
 import EntityAnnotationLayer from "./components/entity/EntityAnnotationLayer";
 import EquationDiagram from "./components/entity/equation/EquationDiagram";
@@ -47,7 +48,7 @@ import {
   ConfigurableSetting,
   CONFIGURABLE_SETTINGS,
   getSettings,
-  GlossStyle
+  GlossStyle,
 } from "./settings";
 import {
   Entities,
@@ -55,13 +56,13 @@ import {
   Pages,
   PaperId,
   State,
-  SymbolFilters
+  SymbolFilters,
 } from "./state";
 import "./style/index.less";
 import {
   DocumentLoadedEvent,
   PageRenderedEvent,
-  PDFViewerApplication
+  PDFViewerApplication,
 } from "./types/pdfjs-viewer";
 import * as stateUtils from "./utils/state";
 import * as uiUtils from "./utils/ui";
@@ -127,6 +128,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
       skimOpacity: 0.5,
       showSkimmingAnnotations: true,
+
+      deselectedDiscourses: [],
 
       ...settings,
     };
@@ -837,7 +840,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   getDiscourseToColorMap = () => {
     return {
       Highlight: "#F1E7407D",
-      Objective: "#9AC2C57D",
+      Objective: "#95F0387D",
       Novelty: "#D0B5C97D",
       Contribution: "#62DECF4D",
       Method: "#75BCE57D",
@@ -908,6 +911,19 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       })
       .map((x: DiscourseObj[]) => x[0]);
     return discourseObjs;
+  };
+
+  handleDiscourseSelected = (discourse: string) => {
+    if (this.state.deselectedDiscourses.includes(discourse)) {
+      const deselectedDiscourses = this.state.deselectedDiscourses.filter(
+        (x) => x !== discourse
+      );
+      this.setState({ deselectedDiscourses });
+    } else {
+      this.setState((prevState) => ({
+        deselectedDiscourses: [...prevState.deselectedDiscourses, discourse],
+      }));
+    }
   };
 
   render() {
@@ -1099,8 +1115,22 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     numPages={
                       this.state.pdfViewerApplication?.pdfDocument?.numPages
                     }
-                    discourseObjs={discourseObjs}
+                    discourseObjs={discourseObjs.filter(
+                      (x: DiscourseObj) =>
+                        !this.state.deselectedDiscourses.includes(x.label)
+                    )}
                   ></ScrollbarMarkup>
+                )}
+              {this.props.paperId !== undefined &&
+                this.state.showSkimmingAnnotations &&
+                discourseObjs.length > 0 &&
+                this.state.facetHighlights && (
+                  <DiscoursePalette
+                    discourseToColorMap={this.getDiscourseToColorMap()}
+                    discourseObjs={discourseObjs}
+                    deselectedDiscourses={this.state.deselectedDiscourses}
+                    handleDiscourseSelected={this.handleDiscourseSelected}
+                  ></DiscoursePalette>
                 )}
             </ViewerOverlay>
           </>
@@ -1306,9 +1336,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       this.state.facetTextEnabled && (
                         <DiscourseTagLayer
                           pageView={pageView}
-                          discourseObjs={discourseObjs.filter(
-                            (x: DiscourseObj) => x.label !== "Author"
-                          )}
+                          discourseObjs={discourseObjs
+                            .filter((x: DiscourseObj) => x.label !== "Author")
+                            .filter(
+                              (x: DiscourseObj) =>
+                                !this.state.deselectedDiscourses.includes(
+                                  x.label
+                                )
+                            )}
                         ></DiscourseTagLayer>
                       )}
 
@@ -1319,9 +1354,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       this.state.cueingStyle === "highlight" && (
                         <HighlightLayer
                           pageView={pageView}
-                          discourseObjs={discourseObjs.filter(
-                            (x: DiscourseObj) => x.label !== "Author"
-                          )}
+                          discourseObjs={discourseObjs
+                            .filter((x: DiscourseObj) => x.label !== "Author")
+                            .filter(
+                              (x: DiscourseObj) =>
+                                !this.state.deselectedDiscourses.includes(
+                                  x.label
+                                )
+                            )}
                           opacity={this.state.skimOpacity}
                         ></HighlightLayer>
                       )}
@@ -1333,9 +1373,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       this.state.cueingStyle === "underline" && (
                         <UnderlineLayer
                           pageView={pageView}
-                          discourseObjs={discourseObjs.filter(
-                            (x: DiscourseObj) => x.label !== "Author"
-                          )}
+                          discourseObjs={discourseObjs
+                            .filter((x: DiscourseObj) => x.label !== "Author")
+                            .filter(
+                              (x: DiscourseObj) =>
+                                !this.state.deselectedDiscourses.includes(
+                                  x.label
+                                )
+                            )}
                         ></UnderlineLayer>
                       )}
 
