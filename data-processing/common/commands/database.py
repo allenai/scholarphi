@@ -80,7 +80,7 @@ class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
     def can_write_to_file(self) -> bool:
         """
         Returns true if the upload command can write to a file, false otherwise.
-        A way to make sure we are only expecting to write to a file when the rleevant
+        A way to make sure we are only expecting to write to a file when the relevant
         command is capable of doing so.
         """
         return False
