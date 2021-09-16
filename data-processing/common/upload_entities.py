@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from peewee import fn
 
-from common.commands.database import OutputDetails, OutputForm
+from common.commands.database import OutputDetails
 from common.models import BoundingBox as BoundingBoxModel
 from common.models import Entity
 from common.models import EntityData as EntityDataModel

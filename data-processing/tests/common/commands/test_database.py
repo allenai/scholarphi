@@ -11,16 +11,16 @@ def test_output_details_validation_db_no_dir():
 
 def test_output_details_validation_db_with_dir():
     with pytest.raises(AssertionError):
-       OutputDetails.validate("db", "hi")
+        OutputDetails.validate("db", "hi")
     with pytest.raises(AssertionError):
-       OutputDetails("db", "hi")
+        OutputDetails("db", "hi")
 
 
 def test_output_details_validation_file_no_dir():
     with pytest.raises(AssertionError):
-       OutputDetails.validate("file", None)
+        OutputDetails.validate("file", None)
     with pytest.raises(AssertionError):
-       OutputDetails("file", None)
+        OutputDetails("file", None)
 
 
 def test_output_details_validation_file_with_dir():
@@ -31,9 +31,9 @@ def test_output_details_validation_file_with_dir():
 
 def test_output_details_validation_both_no_dir():
     with pytest.raises(AssertionError):
-       OutputDetails.validate("both", None)
+        OutputDetails.validate("both", None)
     with pytest.raises(AssertionError):
-       OutputDetails("both", None)
+        OutputDetails("both", None)
 
 
 def test_output_details_validation_both_with_dir():

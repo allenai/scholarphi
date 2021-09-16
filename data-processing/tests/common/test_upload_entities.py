@@ -1,4 +1,4 @@
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 from common.commands.database import OutputDetails
 from common.upload_entities import save_entities

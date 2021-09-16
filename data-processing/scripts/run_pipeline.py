@@ -68,8 +68,8 @@ def run_commands_for_arxiv_ids(
         command_args.create_tables = pipeline_args.database_create_tables
         command_args.data_version = pipeline_args.data_version
         if issubclass(CommandCls, DatabaseUploadCommand):
-           command_args.output_form = pipeline_args.output_form
-           command_args.output_dir = pipeline_args.output_dir
+            command_args.output_form = pipeline_args.output_form
+            command_args.output_dir = pipeline_args.output_dir
         if CommandCls == FetchArxivSources:
             command_args.s3_bucket = pipeline_args.s3_arxiv_sources_bucket
         if CommandCls in [StorePipelineLog, StoreResults]:

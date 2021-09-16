@@ -21,7 +21,7 @@ class OutputDetails:
         self.output_dir = output_dir
 
     @staticmethod
-    def validate(output_form: str, output_dir: Optional[str]):
+    def validate(output_form: str, output_dir: Optional[str]) -> None:
         msg = "If the output form is 'file' or 'both', an output dir must also be specified."
         cond = (output_form in [OutputForm.FILE.value, OutputForm.BOTH.value]) == \
             (output_dir is not None)
