@@ -107,7 +107,7 @@ if __name__ == "__main__":
                     "id_": sid_str,
                     "mathml": symbol.mathml,
                     "tex": symbol.tex,
-                    "location": {"left": l, "top": t, "width": r - l, "height": b - t,},
+                    "location": {"left": l, "top": t, "width": r - l, "height": b - t, "page": locations[0].page},
                     "parent": parent_id,
                     "type_": symbol.type_,
                 }
