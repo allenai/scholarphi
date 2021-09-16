@@ -19,7 +19,7 @@ def test_save_entities_with_file():
             )
 
             assert not mock_upload_entities.called
-            assert mock_upload_entities.mock_write_to_file
+            assert mock_upload_entities.mock_write_to_file.called
 
 
 def test_save_entities_with_db():
@@ -37,7 +37,7 @@ def test_save_entities_with_db():
             )
 
             assert mock_upload_entities.called
-            assert not mock_upload_entities.mock_write_to_file
+            assert not mock_upload_entities.mock_write_to_file.called
 
 
 def test_save_entities_with_both():
@@ -55,4 +55,4 @@ def test_save_entities_with_both():
             )
 
             assert mock_upload_entities.called
-            assert mock_upload_entities.mock_write_to_file
+            assert mock_upload_entities.mock_write_to_file.called
