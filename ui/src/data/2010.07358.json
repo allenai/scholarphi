@@ -6283,6 +6283,71 @@
     "is_in_expected_section": true
   },
   {
+    "text": "We performed post hoc Tukey honest significant difference tests, where effects were found.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.8002761437908497,
+        "top": 0.4231224747474747,
+        "width": 0.019725490196078388,
+        "height": 0.011320707070707092,
+        "page": 18
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.44041919191919193,
+        "width": 0.514937908496732,
+        "height": 0.011320707070707092,
+        "page": 18
+      }
+    ],
+    "section": "E Statistical analysis",
+    "prob": 0.7256729006767273,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The study illustrated several salient trends.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.672594696969697,
+        "width": 0.25044117647058817,
+        "height": 0.011320707070706981,
+        "page": 13
+      }
+    ],
+    "section": "7 Conclusions",
+    "prob": 0.7021979093551636,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "These results are especially interesting given that no significant difference was found in total task completion time between assistance-fidelity levels.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.5950408496732027,
+        "top": 0.6253169191919191,
+        "width": 0.22495751633986927,
+        "height": 0.011320707070707092,
+        "page": 12
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.6426123737373738,
+        "width": 0.6509705882352941,
+        "height": 0.011320707070706981,
+        "page": 12
+      }
+    ],
+    "section": "6 User study 6.1 Effects of varying assistance fidelity",
+    "prob": 0.6919987201690674,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
     "text": "Instead, our proposed approach for AR assistance applicable to complex object-rearrangement tasks described in Sec. 3 leverages only the sensor measurements of the AR device, and executes a policy whose state is informed only by these sensor measurements, thus enabling up-to-date assistance toward optimal task completion.",
     "label": "Method",
     "bboxes": [
@@ -6438,6 +6503,99 @@
     "is_in_expected_section": false
   },
   {
+    "text": "The objective function in problem (1) corresponds to the transportation costs (i.e., total distance traveled); the first set of constraints corresponds to the capacity constraints; the second set of constraints ensures that each objects pickup location is visited before its dropoff location; the third set of constraints enforces that the solution is computed from the current state of the task at step  .",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.1362794117647059,
+        "top": 0.393020202020202,
+        "width": 0.6837124183006535,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.4103169191919192,
+        "width": 0.7000032679738563,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.4276123737373737,
+        "width": 0.6999934640522876,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.44239520202020205,
+        "width": 0.20304575163398697,
+        "height": 0.013834595959595963,
+        "page": 6
+      }
+    ],
+    "section": "3 AR-AssistanceModel 3.2 Object-rearrangement planner: capacitated vehicle routing problem",
+    "prob": 0.5119975209236145,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "This position was calculated by first finding the centroid of all of objects placed in the scene.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.6707140522875816,
+        "top": 0.17924494949494948,
+        "width": 0.20928594771241826,
+        "height": 0.011320707070707092,
+        "page": 17
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.19654166666666667,
+        "width": 0.33358006535947704,
+        "height": 0.011320707070707092,
+        "page": 17
+      }
+    ],
+    "section": "C Disorganized house generation",
+    "prob": 0.5016959309577942,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Given the solution (   ( 0 ) ,...,  ( 2  )) to problem (1), at step  (  ) of the task, the AR device provides assistance by displaying to the user the shortest path between locations   (  )( =   (  )) and   (  + 1 ) in the form of world-locked digital breadcrumbs in the heads-up display.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.32617156862745095,
+        "top": 0.4403825757575758,
+        "width": 0.4938235294117647,
+        "height": 0.015847222222222235,
+        "page": 6
+      },
+      {
+        "left": 0.11948856209150326,
+        "top": 0.457679292929293,
+        "width": 0.6997777777777778,
+        "height": 0.01584722222222218,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.47950126262626264,
+        "width": 0.4182189542483661,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "3 AR-AssistanceModel 3.2 Object-rearrangement planner: capacitated vehicle routing problem",
+    "prob": 0.484748512506485,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
     "text": "The goal of our AR assistance model is to formalize the problem of computing and displaying AR assistance for objectrearrangement tasks.",
     "label": "Objective",
     "bboxes": [
@@ -6506,54 +6664,6 @@
     ],
     "section": "5 Study setup",
     "prob": 0.7742143869400024,
-    "is_author_statement": true,
-    "is_in_expected_section": false
-  },
-  {
-    "text": "To address the second challenge, we propose a novel AR simulator that can enable large-scale web-based evaluation of AR assistance and associated data collection.",
-    "label": "Objective",
-    "bboxes": [
-      {
-        "left": 0.1362794117647059,
-        "top": 0.2795631313131313,
-        "width": 0.6837156862745097,
-        "height": 0.011320707070707092,
-        "page": 2
-      },
-      {
-        "left": 0.1200016339869281,
-        "top": 0.2968598484848485,
-        "width": 0.28593790849673206,
-        "height": 0.011320707070707092,
-        "page": 2
-      }
-    ],
-    "section": "1 Introduction",
-    "prob": 0.6715630292892456,
-    "is_author_statement": true,
-    "is_in_expected_section": true
-  },
-  {
-    "text": "We collect user data across a range of task difficulties and types of AR assistance in order to evaluate how the proposed form of AR assistance affects users task performance, effort, and sense of agency.",
-    "label": "Objective",
-    "bboxes": [
-      {
-        "left": 0.19319281045751632,
-        "top": 0.435229797979798,
-        "width": 0.6273447712418301,
-        "height": 0.011320707070707092,
-        "page": 2
-      },
-      {
-        "left": 0.1200016339869281,
-        "top": 0.45252651515151515,
-        "width": 0.5493496732026143,
-        "height": 0.011320707070707092,
-        "page": 2
-      }
-    ],
-    "section": "",
-    "prob": 0.5177943706512451,
     "is_author_statement": true,
     "is_in_expected_section": false
   }

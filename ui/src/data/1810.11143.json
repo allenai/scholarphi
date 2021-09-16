@@ -7590,6 +7590,99 @@
     "is_in_expected_section": false
   },
   {
+    "text": "The user group study showed highly skewed user contributions.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.5358137254901961,
+        "top": 0.7875845959595961,
+        "width": 0.3785359477124183,
+        "height": 0.011320707070706981,
+        "page": 4
+      }
+    ],
+    "section": "5 EVALUATION 5.1 System Usage Study",
+    "prob": 0.8077145218849182,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Further investigation of the enthusiast group revealed a moderate positive association (Pearson correlation coefficient r=.50, n=375, p<.001) between the number of submitted reports and the number of user interaction events.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.21266176470588236,
+        "top": 0.5990378787878787,
+        "width": 0.2678071895424837,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.612875,
+        "width": 0.39503104575163406,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6267121212121212,
+        "width": 0.39256372549019614,
+        "height": 0.011320707070707092,
+        "page": 5
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.6405492424242424,
+        "width": 0.3006960784313726,
+        "height": 0.011320707070706981,
+        "page": 5
+      }
+    ],
+    "section": "5 EVALUATION 5.1 System Usage Study",
+    "prob": 0.7551681995391846,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The findings in the survey study suggested that the system lowered the barrier for communities to contribute and communicate data-driven evidence.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.40375,
+        "top": 0.7737474747474747,
+        "width": 0.07672222222222219,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7875845959595961,
+        "width": 0.3928333333333333,
+        "height": 0.011320707070706981,
+        "page": 10
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8014217171717172,
+        "width": 0.39502941176470585,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8152588383838383,
+        "width": 0.0426045751633987,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "6 DISCUSSION",
+    "prob": 0.7180154919624329,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
     "text": "Inspired by several previous works related to extracting knowledge from data [25, 51, 115], we utilized a white box model, Decision Tree, to explain a representative subset of predictors and samples, which were selected by applying feature selection [55] and cluster analysis.",
     "label": "Method",
     "bboxes": [
@@ -7759,6 +7852,106 @@
     "is_in_expected_section": false
   },
   {
+    "text": "[Correction for the last paragraph in section 5.2] Finally, we used recursive feature elimination [56] to remove 50 features that had the smallest weights iteratively, which resulted in 30 most important features.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.673584595959596,
+        "width": 0.37788888888888883,
+        "height": 0.011354797979797993,
+        "page": 14
+      },
+      {
+        "left": 0.08736437908496732,
+        "top": 0.6874558080808081,
+        "width": 0.3930947712418301,
+        "height": 0.011320707070707092,
+        "page": 14
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7012916666666666,
+        "width": 0.3925604575163399,
+        "height": 0.011320707070707092,
+        "page": 14
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7151287878787879,
+        "width": 0.11663235294117648,
+        "height": 0.011320707070707092,
+        "page": 14
+      }
+    ],
+    "section": "",
+    "prob": 0.6393831372261047,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Finally, we used recursive feature elimination [56] to remove 50 features that had the smallest weights iteratively, which resulted in 30 most important features.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.10418464052287582,
+        "top": 0.7800164141414142,
+        "width": 0.3762761437908496,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7938535353535353,
+        "width": 0.39256699346405227,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8076906565656566,
+        "width": 0.1827156862745098,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "",
+    "prob": 0.6160943508148193,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We first merged consecutive positive samples to compute the starting and ending time of smell events.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.3855571895424837,
+        "top": 0.7737474747474747,
+        "width": 0.09490522875816992,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7875845959595961,
+        "width": 0.3925571895424837,
+        "height": 0.011320707070706981,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.8014217171717172,
+        "width": 0.12666503267973855,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 EVALUATION 5.2 Smell Dataset Study",
+    "prob": 0.5999093651771545,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
     "text": "Our goal is to evaluate the impact of deploying interactive systems on communities rather than the usability (e.g., the time of completing tasks).",
     "label": "Objective",
     "bboxes": [
@@ -7877,68 +8070,6 @@
     "section": "4 SYSTEM 4.2 Sending Push Notifications",
     "prob": 0.884064257144928,
     "is_author_statement": false,
-    "is_in_expected_section": false
-  },
-  {
-    "text": "We seek to generate scientific knowledge from community data to support citizen-driven exploration, understanding, and dissemination of local air quality concerns.",
-    "label": "Objective",
-    "bboxes": [
-      {
-        "left": 0.2365359477124183,
-        "top": 0.16491919191919194,
-        "width": 0.2439362745098039,
-        "height": 0.011320707070707037,
-        "page": 2
-      },
-      {
-        "left": 0.08790522875816993,
-        "top": 0.17875631313131313,
-        "width": 0.39503104575163406,
-        "height": 0.011320707070707092,
-        "page": 2
-      },
-      {
-        "left": 0.08790522875816993,
-        "top": 0.19259343434343434,
-        "width": 0.34083986928104576,
-        "height": 0.011320707070707092,
-        "page": 2
-      }
-    ],
-    "section": "2 RELATEDWORK",
-    "prob": 0.7915108799934387,
-    "is_author_statement": true,
-    "is_in_expected_section": false
-  },
-  {
-    "text": "This paper explores the design and impact of a mobile smell reporting system, Smell Pittsburgh, to empower communities in advocating for better air quality.",
-    "label": "Objective",
-    "bboxes": [
-      {
-        "left": 0.0874656862745098,
-        "top": 0.29238762626262627,
-        "width": 0.39547549019607847,
-        "height": 0.011320707070707092,
-        "page": 11
-      },
-      {
-        "left": 0.08790522875816993,
-        "top": 0.3062247474747475,
-        "width": 0.3950408496732026,
-        "height": 0.011320707070707092,
-        "page": 11
-      },
-      {
-        "left": 0.08790522875816993,
-        "top": 0.3200618686868687,
-        "width": 0.1432924836601307,
-        "height": 0.011320707070707037,
-        "page": 11
-      }
-    ],
-    "section": "",
-    "prob": 0.7460030317306519,
-    "is_author_statement": true,
     "is_in_expected_section": false
   }
 ]

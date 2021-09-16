@@ -2160,23 +2160,6 @@
     "is_in_expected_section": true
   },
   {
-    "text": "Our contributions are threefold.",
-    "label": "Contribution",
-    "bboxes": [
-      {
-        "left": 0.10418464052287582,
-        "top": 0.5878712121212121,
-        "width": 0.20667320261437908,
-        "height": 0.012578282828282772,
-        "page": 1
-      }
-    ],
-    "section": "1 Introduction",
-    "prob": null,
-    "is_author_statement": true,
-    "is_in_expected_section": true
-  },
-  {
     "text": "Since being able to track several turns is really important, we made this design decision from the beginning, in contrast to most related work where models are only trained and tested on single-turn dialogs.",
     "label": "Novelty",
     "bboxes": [
@@ -5155,6 +5138,113 @@
     "is_in_expected_section": false
   },
   {
+    "text": "Offline experiments show that our model outperforms both seq2seq and HRAN by a significant amount.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.2412794117647059,
+        "top": 0.6935366161616161,
+        "width": 0.2395016339869281,
+        "height": 0.012578282828282994,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7086313131313131,
+        "width": 0.3925604575163399,
+        "height": 0.012578282828282772,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.7237260101010101,
+        "width": 0.0547516339869281,
+        "height": 0.012578282828282772,
+        "page": 1
+      }
+    ],
+    "section": "",
+    "prob": 0.7517513632774353,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Further experiments with human evaluation show our model produces emotionally more appropriate responses than both baselines, while also improving the language fluency.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.1467140522875817,
+        "top": 0.7237260101010101,
+        "width": 0.3343578431372549,
+        "height": 0.012578282828282772,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.738820707070707,
+        "width": 0.39256045751633994,
+        "height": 0.012578282828282772,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.753915404040404,
+        "width": 0.3953104575163399,
+        "height": 0.012578282828282772,
+        "page": 1
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.769010101010101,
+        "width": 0.03476960784313725,
+        "height": 0.012578282828282772,
+        "page": 1
+      }
+    ],
+    "section": "1 Introduction",
+    "prob": 0.7045581936836243,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Table 3, 4 and 5 summarize the human evaluation results on the responses grammatical correctness, contextual coherence, and emotional appropriateness, respectively.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.7027826797385621,
+        "top": 0.6482512626262625,
+        "width": 0.209313725490196,
+        "height": 0.012578282828282772,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6633459595959597,
+        "width": 0.39256045751633994,
+        "height": 0.012578282828282772,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6784406565656567,
+        "width": 0.3953071895424837,
+        "height": 0.012578282828282772,
+        "page": 6
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.6935366161616161,
+        "width": 0.13584150326797384,
+        "height": 0.012578282828282994,
+        "page": 6
+      }
+    ],
+    "section": "4 Evaluation 4.4 Results",
+    "prob": 0.6712532043457031,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
     "text": "The main objective of the emotion embedding layer is to recognize the affect information in the given utterances so that the model can respond with emotionally appropriate replies.",
     "label": "Objective",
     "bboxes": [
@@ -5267,103 +5357,6 @@
     "prob": 0.829452633857727,
     "is_author_statement": true,
     "is_in_expected_section": true
-  },
-  {
-    "text": "In this paper, we describe an end-to-end Multi-turn Emotionally Engaging Dialog model (MEED), capable of recognizing emotions and generating emotionally appropriate and humanlike responses with the ultimate goal of reproducing social behaviors that are habitual in human-human conversations.",
-    "label": "Objective",
-    "bboxes": [
-      {
-        "left": 0.46679738562091505,
-        "top": 0.3161628787878788,
-        "width": 0.013671568627451003,
-        "height": 0.012578282828282827,
-        "page": 1
-      },
-      {
-        "left": 0.08790522875816993,
-        "top": 0.3312588383838384,
-        "width": 0.3929901960784314,
-        "height": 0.012578282828282827,
-        "page": 1
-      },
-      {
-        "left": 0.08790522875816993,
-        "top": 0.34635353535353536,
-        "width": 0.3953039215686275,
-        "height": 0.012578282828282827,
-        "page": 1
-      },
-      {
-        "left": 0.08790522875816993,
-        "top": 0.3614482323232323,
-        "width": 0.3953153594771242,
-        "height": 0.012578282828282827,
-        "page": 1
-      },
-      {
-        "left": 0.08790522875816993,
-        "top": 0.37654292929292926,
-        "width": 0.39255882352941174,
-        "height": 0.012578282828282883,
-        "page": 1
-      },
-      {
-        "left": 0.08790522875816993,
-        "top": 0.39163762626262627,
-        "width": 0.39506862745098037,
-        "height": 0.012578282828282827,
-        "page": 1
-      }
-    ],
-    "section": "",
-    "prob": 0.76461261510849,
-    "is_author_statement": true,
-    "is_in_expected_section": false
-  },
-  {
-    "text": "The main idea is to use an internal memory module to capture the emotion dynamics during decoding, and an external memory module to model emotional expressions explicitly by assigning different probability values to emotional words as opposed to regular words.",
-    "label": "Objective",
-    "bboxes": [
-      {
-        "left": 0.08741666666666667,
-        "top": 0.3614482323232323,
-        "width": 0.39580228758169933,
-        "height": 0.012578282828282827,
-        "page": 2
-      },
-      {
-        "left": 0.08790522875816993,
-        "top": 0.37654292929292926,
-        "width": 0.3925604575163399,
-        "height": 0.012578282828282883,
-        "page": 2
-      },
-      {
-        "left": 0.08790522875816993,
-        "top": 0.39163762626262627,
-        "width": 0.3929901960784314,
-        "height": 0.012578282828282827,
-        "page": 2
-      },
-      {
-        "left": 0.08790522875816993,
-        "top": 0.4067323232323232,
-        "width": 0.3925604575163399,
-        "height": 0.012578282828282827,
-        "page": 2
-      },
-      {
-        "left": 0.08790522875816993,
-        "top": 0.42182828282828283,
-        "width": 0.1886274509803922,
-        "height": 0.012578282828282827,
-        "page": 2
-      }
-    ],
-    "section": "2 Related Work",
-    "prob": 0.6889792680740356,
-    "is_author_statement": false,
-    "is_in_expected_section": false
   },
   {
     "text": "Specifically, we randomly shuffled the 100 dialogs in the test set, then we used the first three utterances of each dialog as the input to the three models being compared (S2S, HRAN, and MEED), and obtain the respective responses.",
@@ -5538,6 +5531,99 @@
     ],
     "section": "",
     "prob": 0.5109821557998657,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "It is a popular method used in language modeling.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.7648725490196078,
+        "top": 0.20627272727272727,
+        "width": 0.14722549019607845,
+        "height": 0.012578282828282855,
+        "page": 5
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.22136868686868688,
+        "width": 0.1781176470588235,
+        "height": 0.012578282828282827,
+        "page": 5
+      }
+    ],
+    "section": "",
+    "prob": 0.506617546081543,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We trained our model using two different datasets and compared its performance with HRAN as well as the basic seq2seq model by performing both offline and online testings.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.5187532679738561,
+        "top": 0.38346590909090905,
+        "width": 0.3960947712418301,
+        "height": 0.012578282828282827,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.3985606060606061,
+        "width": 0.39345261437908496,
+        "height": 0.012578282828282827,
+        "page": 4
+      },
+      {
+        "left": 0.5195343137254902,
+        "top": 0.41365530303030307,
+        "width": 0.35515359477124175,
+        "height": 0.012578282828282827,
+        "page": 4
+      }
+    ],
+    "section": "4 Evaluation",
+    "prob": 0.4849558472633362,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "sample.Totake into account the above issues, we took several iterations to prepare the instructions and the test set before conducting the human evaluation experiment.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.08790522875816993,
+        "top": 0.19540404040404039,
+        "width": 0.06751960784313725,
+        "height": 0.027672979797979808,
+        "page": 6
+      },
+      {
+        "left": 0.1606388888888889,
+        "top": 0.21049873737373737,
+        "width": 0.3198333333333333,
+        "height": 0.012578282828282827,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.22559343434343432,
+        "width": 0.3925539215686275,
+        "height": 0.012578282828282855,
+        "page": 6
+      },
+      {
+        "left": 0.08790522875816993,
+        "top": 0.24068939393939395,
+        "width": 0.3145686274509804,
+        "height": 0.0125782828282828,
+        "page": 6
+      }
+    ],
+    "section": "",
+    "prob": 0.4835360646247864,
     "is_author_statement": true,
     "is_in_expected_section": false
   }

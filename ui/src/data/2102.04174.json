@@ -1222,6 +1222,30 @@
     "is_in_expected_section": true
   },
   {
+    "text": "Unlike our method, these two models nonetheless assume that the best-fitting parameter values are common to the entire population, and the optimization is done offline.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.30230392156862745,
+        "top": 0.7120833333333334,
+        "width": 0.5179787581699347,
+        "height": 0.011320707070707092,
+        "page": 2
+      },
+      {
+        "left": 0.11963562091503267,
+        "top": 0.7293800505050505,
+        "width": 0.48368790849673204,
+        "height": 0.011320707070707092,
+        "page": 2
+      }
+    ],
+    "section": "2 RELATEDWORK 2.2 Model-free and model-based learning",
+    "prob": null,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
     "text": "Model-based approaches, in contrast, rely on a predictive model of human memory for scheduling the reviews.",
     "label": "Novelty",
     "bboxes": [
@@ -1356,6 +1380,30 @@
         "left": 0.1200016339869281,
         "top": 0.6037020202020202,
         "width": 0.17019771241830067,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.1 The baseline: The Leitner system",
+    "prob": null,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "This system is unlike model-based ones in that it is competitive in terms of adaptation to the learner.",
+    "label": "Novelty",
+    "bboxes": [
+      {
+        "left": 0.7497418300653594,
+        "top": 0.41344318181818185,
+        "width": 0.07025326797385623,
+        "height": 0.011320707070707092,
+        "page": 6
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.43073863636363635,
+        "width": 0.5387614379084968,
         "height": 0.011320707070707092,
         "page": 6
       }
@@ -3205,6 +3253,85 @@
     "is_in_expected_section": false
   },
   {
+    "text": "One popular rule-based method is the Leitner system.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.8554950980392156,
+        "top": 0.48395580808080807,
+        "width": 0.024503267973856158,
+        "height": 0.011320707070707092,
+        "page": 1
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.5012512626262626,
+        "width": 0.2987303921568627,
+        "height": 0.011320707070707092,
+        "page": 1
+      }
+    ],
+    "section": "1 INTRODUCTION",
+    "prob": 0.44791263341903687,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "(ii) the ratio between the number of items learned and that of all items seen, across conditions: a teacher using a Leitner algorithm (a Leitner teacher), myopic sampling (a myopic teacher), or a conservative-sampling algorithm (a conservative-sampling teacher), in both conditions of knowledge on the part of the psychologist (omniscient and not omniscient).",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.623516339869281,
+        "top": 0.6512664141414142,
+        "width": 0.2564836601307189,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6685618686868686,
+        "width": 0.6999967320261437,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.685858585858586,
+        "width": 0.6999918300653595,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.703155303030303,
+        "width": 0.5273169934640523,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.2 Methods",
+    "prob": 0.4368313252925873,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "The artificial learners use the exponential forgetting model.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.1362794117647059,
+        "top": 0.7433068181818181,
+        "width": 0.36554575163398695,
+        "height": 0.011320707070707092,
+        "page": 6
+      }
+    ],
+    "section": "",
+    "prob": 0.4357387125492096,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
     "text": "A simple learning objective for the teacher is to maximize the number of items learned in the course of the teaching process.",
     "label": "Objective",
     "bboxes": [
@@ -3267,61 +3394,6 @@
     "section": "3 INDIVIDUALIZED MODEL-BASED PLANNING 3.1 General characterization of the problem",
     "prob": 0.8251826763153076,
     "is_author_statement": false,
-    "is_in_expected_section": false
-  },
-  {
-    "text": "One of the central challenges for research on intelligent user interfaces is to identify algorithmic principles that can pick the best interventions for reliably improving human learning toward stated objectives in light of realistically obtainable data on the user.",
-    "label": "Objective",
-    "bboxes": [
-      {
-        "left": 0.18000163398692812,
-        "top": 0.2764002525252525,
-        "width": 0.7000049019607841,
-        "height": 0.011320707070707092,
-        "page": 1
-      },
-      {
-        "left": 0.18000163398692812,
-        "top": 0.2936969696969697,
-        "width": 0.7003807189542484,
-        "height": 0.011320707070707092,
-        "page": 1
-      },
-      {
-        "left": 0.18000163398692812,
-        "top": 0.31099242424242424,
-        "width": 0.16862745098039209,
-        "height": 0.011320707070707037,
-        "page": 1
-      }
-    ],
-    "section": "1 INTRODUCTION",
-    "prob": 0.7996655702590942,
-    "is_author_statement": false,
-    "is_in_expected_section": true
-  },
-  {
-    "text": "In this paper, we address the problem of the teacher, which is to pick item   A that will help the learner to progress.",
-    "label": "Objective",
-    "bboxes": [
-      {
-        "left": 0.24456862745098037,
-        "top": 0.41934469696969695,
-        "width": 0.6354297385620915,
-        "height": 0.013041666666666674,
-        "page": 3
-      },
-      {
-        "left": 0.18000163398692812,
-        "top": 0.4366414141414141,
-        "width": 0.05417973856209149,
-        "height": 0.011320707070707092,
-        "page": 3
-      }
-    ],
-    "section": "3 INDIVIDUALIZED MODEL-BASED PLANNING 3.1 General characterization of the problem",
-    "prob": 0.7790708541870117,
-    "is_author_statement": true,
     "is_in_expected_section": false
   },
   {
@@ -3478,5 +3550,84 @@
     "prob": 0.7338531613349915,
     "is_author_statement": true,
     "is_in_expected_section": false
+  },
+  {
+    "text": "We evaluated the unified system in a controlled experiment, comparing it against a popular rule-based approach (involving the Leitner system).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.37558006535947713,
+        "top": 0.2681401515151515,
+        "width": 0.5044264705882353,
+        "height": 0.011320707070707092,
+        "page": 3
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.2854368686868687,
+        "width": 0.35864215686274503,
+        "height": 0.011320707070707092,
+        "page": 3
+      }
+    ],
+    "section": "2 RELATEDWORK 2.3 Our technique",
+    "prob": 0.7240779995918274,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "With human learners (see Figure 4), the number of items learned proved to be significantly greater with the myopic teacher than with the Leitner teacher (  = 174 . 5,  = 0 . 019,   = 0 . 038,  = 24  2).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.196281045751634,
+        "top": 0.6722449494949495,
+        "width": 0.6837205882352942,
+        "height": 0.011320707070707092,
+        "page": 11
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.6895416666666666,
+        "width": 0.5543316993464051,
+        "height": 0.013324494949494947,
+        "page": 11
+      }
+    ],
+    "section": "6 THE USER STUDY 6.2 Results",
+    "prob": 0.6955206394195557,
+    "is_author_statement": false,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "As with an omniscient psychologist, the ratio of items learned to items seen is significantly lower than the baseline level for the myopic teacher (  = 2065 . 0,  < 0 . 001,   < 0 . 001,  = 100  2).",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.5448937908496733,
+        "top": 0.7771666666666667,
+        "width": 0.2751029411764705,
+        "height": 0.013935606060606065,
+        "page": 8
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7944633838383839,
+        "width": 0.7016078431372549,
+        "height": 0.013324494949494947,
+        "page": 8
+      },
+      {
+        "left": 0.11970751633986927,
+        "top": 0.811760101010101,
+        "width": 0.16814542483660133,
+        "height": 0.013324494949494947,
+        "page": 8
+      }
+    ],
+    "section": "5 THE SIMULATION STUDIES 5.3 Results",
+    "prob": 0.6834313273429871,
+    "is_author_statement": false,
+    "is_in_expected_section": true
   }
 ]

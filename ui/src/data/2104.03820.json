@@ -5597,61 +5597,6 @@
     "is_in_expected_section": false
   },
   {
-    "text": "We developed an exploratory design scenario in order to engage software engineers in a discussion about the role of generative AI in application modernization.",
-    "label": "Objective",
-    "bboxes": [
-      {
-        "left": 0.17929901960784314,
-        "top": 0.7062714646464646,
-        "width": 0.7007042483660132,
-        "height": 0.011320707070707092,
-        "page": 3
-      },
-      {
-        "left": 0.18000163398692812,
-        "top": 0.7235669191919193,
-        "width": 0.2531307189542483,
-        "height": 0.011320707070706981,
-        "page": 3
-      }
-    ],
-    "section": "",
-    "prob": 0.5582051873207092,
-    "is_author_statement": true,
-    "is_in_expected_section": false
-  },
-  {
-    "text": "Future work is needed to investigate different kinds of interaction patterns, including different mixed-initiative patterns [43, 82], to understand their effect on a software engineers productivity and capability.",
-    "label": "Objective",
-    "bboxes": [
-      {
-        "left": 0.5501748366013072,
-        "top": 0.2596300505050505,
-        "width": 0.2698169934640522,
-        "height": 0.011320707070707037,
-        "page": 12
-      },
-      {
-        "left": 0.1200016339869281,
-        "top": 0.27692550505050506,
-        "width": 0.6999901960784314,
-        "height": 0.011320707070707092,
-        "page": 12
-      },
-      {
-        "left": 0.1200016339869281,
-        "top": 0.2942222222222222,
-        "width": 0.28084967320261434,
-        "height": 0.011320707070707092,
-        "page": 12
-      }
-    ],
-    "section": "6 DISCUSSION 6.1 Human-AI Partnerships",
-    "prob": 0.4788743257522583,
-    "is_author_statement": false,
-    "is_in_expected_section": false
-  },
-  {
     "text": "The use of scenarios to elicit feedback on future UX design has a long history in HCI (e.g. [17, 77]), and recently this method has been applied to the design of AI systems as well (e.g. [8, 55, 97]).",
     "label": "Method",
     "bboxes": [
@@ -5786,6 +5731,40 @@
     "is_in_expected_section": false
   },
   {
+    "text": "We also asked specific questions for each variant.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.17929901960784314,
+        "top": 0.29978156565656566,
+        "width": 0.2858235294117647,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "4 METHOD 4.2 Variant-Specific Questions",
+    "prob": 0.40689319372177124,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "We conducted a thematic analysis of our data to identify important ideas and themes from our interviews.",
+    "label": "Method",
+    "bboxes": [
+      {
+        "left": 0.17929901960784314,
+        "top": 0.4566830808080808,
+        "width": 0.6401535947712419,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "5 RESULTS",
+    "prob": 0.34150630235671997,
+    "is_author_statement": true,
+    "is_in_expected_section": false
+  },
+  {
     "text": "Participants expressed similar desires to establish trust with the code translation tool.",
     "label": "Result",
     "bboxes": [
@@ -5902,6 +5881,78 @@
     ],
     "section": "2 RELATEDWORK 2.2 Imperfect AI",
     "prob": 0.5617601275444031,
+    "is_author_statement": false,
+    "is_in_expected_section": false
+  },
+  {
+    "text": "Generating documentation from source is an active area of research in the machine learning community (e.g. [44, 48, 65, 91]) and our results highlight the importance of this functionality in user experiences, even when generated documentation may be imperfect.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.1362794117647059,
+        "top": 0.6726565656565657,
+        "width": 0.685330065359477,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.11966339869281045,
+        "top": 0.6899532828282828,
+        "width": 0.7003284313725489,
+        "height": 0.011320707070707092,
+        "page": 10
+      },
+      {
+        "left": 0.1200016339869281,
+        "top": 0.7072487373737373,
+        "width": 0.2015539215686275,
+        "height": 0.011320707070707092,
+        "page": 10
+      }
+    ],
+    "section": "5 RESULTS 5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
+    "prob": 0.557977020740509,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "We observed that discrepancies between our participants mental models and the actual operation of the NMT model was a source of confusion.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.3874705882352941,
+        "top": 0.27692550505050506,
+        "width": 0.49253594771241826,
+        "height": 0.011320707070707092,
+        "page": 7
+      },
+      {
+        "left": 0.18000163398692812,
+        "top": 0.2942222222222222,
+        "width": 0.3674183006535948,
+        "height": 0.011320707070707092,
+        "page": 7
+      }
+    ],
+    "section": "5 RESULTS 5.1 Acceptance Through Verification, Not Understanding",
+    "prob": 0.5577945709228516,
+    "is_author_statement": true,
+    "is_in_expected_section": true
+  },
+  {
+    "text": "Three participants presented as women; the other eight presented as men.",
+    "label": "Result",
+    "bboxes": [
+      {
+        "left": 0.44777777777777783,
+        "top": 0.2293611111111111,
+        "width": 0.43447222222222226,
+        "height": 0.011320707070707092,
+        "page": 5
+      }
+    ],
+    "section": "4 METHOD 4.1 Participants",
+    "prob": 0.5509616732597351,
     "is_author_statement": false,
     "is_in_expected_section": false
   }

@@ -897,6 +897,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
             return -1;
           } else if (firstEl.label === "Result") {
             return -1;
+          } else if (firstEl.label === "Novelty") {
+            return - 1;
           } else {
             return 0;
           }
