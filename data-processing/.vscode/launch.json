@@ -61,6 +61,18 @@
       "env": {
         "PYTHONPATH": "."
       }
+    },
+    {
+      "name": "Collect Symbols",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/collect_symbols.py",
+      "console": "integratedTerminal",
+      "args": ["--arxiv-ids-file", "arxiv_ids.txt"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "."
+      }
     }
   ]
 }

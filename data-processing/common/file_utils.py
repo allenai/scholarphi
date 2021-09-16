@@ -415,6 +415,7 @@ def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
             relative_start=s.relative_start,
             relative_end=s.relative_end,
             contains_affix=s.contains_affix,
+            type_=s.type_,
         )
 
     for st in loaded_symbol_tokens:

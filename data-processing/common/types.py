@@ -334,6 +334,7 @@ class Symbol:
     equation: Optional[str] = None
     relative_start: Optional[int] = None
     relative_end: Optional[int] = None
+    type_: Optional[str] = None
 
 
 class SymbolWithId(NamedTuple):

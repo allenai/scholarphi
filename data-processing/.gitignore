@@ -1,3 +1,7 @@
+# Data files from symbol extraction
+symbols
+symbols-from-old-symbol-extractor-*.zip
+
 # Config files with sensitive credentials
 config.ini
 
