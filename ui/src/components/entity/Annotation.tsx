@@ -32,6 +32,10 @@ interface Props {
    */
   className?: string;
   /**
+   * Color to apply to annotation bounding box.
+   */
+  color?: string;
+  /**
    * When active, an annotation can be interacted with. Visual effects will show to indicate that
    * the annotation can be interacted with (e.g., underlines, and highlights that appear on hover).
    * If not active, an annotation can still be highlighted or underlined.
@@ -158,6 +162,7 @@ export class Annotation extends React.PureComponent<Props> {
                   "source-tex-pipeline": this.props.source === "tex-pipeline",
                   "source-other": this.props.source === "other",
                 })}
+                color={this.props.color}
                 active={this.props.active}
                 location={box}
                 selected={isSelected}

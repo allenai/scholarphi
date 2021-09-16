@@ -30,6 +30,7 @@ interface Props {
   glossStyle: GlossStyle | null;
   tooltipPlacement?: TooltipPlacement;
   underline: boolean;
+  color?: string;
   /**
    * Correction factor to apply to bounding box coordinates before rendering the annotation.
    * While this was needed in past versions of the interface, at the time of this writing, the
@@ -77,6 +78,12 @@ export class AnnotationSpan extends React.PureComponent<Props> {
   }
 
   render() {
+    const { left, top, width, height } = uiUtils.getPositionInPageView(
+      this.props.pageView,
+      this.props.location,
+      this.props.scaleCorrection
+    );
+
     let span = (
       <div
         ref={this.focusIfSelected}
@@ -90,11 +97,14 @@ export class AnnotationSpan extends React.PureComponent<Props> {
             underline: this.props.underline,
           }
         )}
-        style={uiUtils.getPositionInPageView(
-          this.props.pageView,
-          this.props.location,
-          this.props.scaleCorrection
-        )}
+        style={{
+          left: left,
+          top: top,
+          width: width,
+          height: height,
+          borderColor:
+            this.props.color && uiUtils.updateAlpha(this.props.color, 1),
+        }}
         /*
          * Span should only be able to capture focus and key events if it is active.
          */

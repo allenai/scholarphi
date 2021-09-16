@@ -102,7 +102,13 @@ export interface Settings {
    */
   sentenceTexCopyOnOptionClickEnabled: boolean;
 
+  facetHighlights: boolean;
+
+  facetTextEnabled: boolean;
+
   authorStatementsEnabled: boolean;
+
+  cueingStyle: string;
 }
 
 /**
@@ -138,13 +144,40 @@ const PRESETS: Preset[] = [
   },
   {
     key: "skim",
-    primerPageEnabled: false,
     annotationHintsEnabled: false,
+    primerPageEnabled: false,
+    facetHighlights: true,
+    facetTextEnabled: true,
   },
   {
-    key: "author-underline",
-    authorStatementsEnabled: true
-  }
+    key: "skim-v2",
+    annotationHintsEnabled: false,
+    primerPageEnabled: false,
+    facetHighlights: true,
+    facetTextEnabled: false,
+  },
+  {
+    key: "skim-v3",
+    annotationHintsEnabled: false,
+    primerPageEnabled: false,
+    facetHighlights: true,
+    facetTextEnabled: true,
+    cueingStyle: "underline",
+  },
+  {
+    key: "skim-v4",
+    annotationHintsEnabled: false,
+    primerPageEnabled: false,
+    facetHighlights: true,
+    facetTextEnabled: false,
+    cueingStyle: "underline",
+  },
+  {
+    key: "skim-v5",
+    annotationHintsEnabled: false,
+    primerPageEnabled: false,
+    authorStatementsEnabled: true,
+  },
 ];
 
 /**
@@ -174,7 +207,10 @@ export function getSettings(presets?: string[]) {
     entityEditingEnabled: false,
     sentenceTexCopyOnOptionClickEnabled: false,
     glossEvaluationEnabled: false,
+    facetHighlights: false,
+    facetTextEnabled: false,
     authorStatementsEnabled: false,
+    cueingStyle: "highlight",
   };
 
   let settings = DEFAULT_SETTINGS;

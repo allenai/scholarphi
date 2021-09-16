@@ -12,21 +12,22 @@ import {
   isTerm,
   Paper,
   RhetoricUnit,
-  Symbol,
+  Symbol
 } from "./api/types";
 import Control from "./components/control/Control";
 import EntityCreationCanvas from "./components/control/EntityCreationCanvas";
 import EntityCreationToolbar, {
   AreaSelectionMethod,
-  createCreateEntityDataWithBoxes,
+  createCreateEntityDataWithBoxes
 } from "./components/control/EntityCreationToolbar";
 import MainControlPanel from "./components/control/MainControlPanel";
 import TextSelectionMenu from "./components/control/TextSelectionMenu";
+import HighlightLayer from "./components/discourse/HighlightLayer";
 import UnderlineLayer from "./components/discourse/UnderlineLayer";
+import DiscourseTagLayer from "./components/discourse/DiscourseTagLayer";
 import { Drawer, DrawerContentType } from "./components/drawer/Drawer";
 import EntityAnnotationLayer from "./components/entity/EntityAnnotationLayer";
 import EquationDiagram from "./components/entity/equation/EquationDiagram";
-import DiscourseTagMask from "./components/mask/DiscourseTagMask";
 import EntityPageMask from "./components/mask/EntityPageMask";
 import SearchPageMask from "./components/mask/SearchPageMask";
 import AppOverlay from "./components/overlay/AppOverlay";
@@ -46,7 +47,7 @@ import {
   ConfigurableSetting,
   CONFIGURABLE_SETTINGS,
   getSettings,
-  GlossStyle,
+  GlossStyle
 } from "./settings";
 import {
   Entities,
@@ -54,13 +55,13 @@ import {
   Pages,
   PaperId,
   State,
-  SymbolFilters,
+  SymbolFilters
 } from "./state";
 import "./style/index.less";
 import {
   DocumentLoadedEvent,
   PageRenderedEvent,
-  PDFViewerApplication,
+  PDFViewerApplication
 } from "./types/pdfjs-viewer";
 import * as stateUtils from "./utils/state";
 import * as uiUtils from "./utils/ui";
@@ -898,7 +899,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
           } else if (firstEl.label === "Result") {
             return -1;
           } else if (firstEl.label === "Novelty") {
-            return - 1;
+            return -1;
           } else {
             return 0;
           }
@@ -1092,6 +1093,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               {this.state.pdfViewerApplication &&
                 this.state.pages !== null &&
                 this.state.showSkimmingAnnotations &&
+                this.state.facetHighlights &&
                 discourseObjs.length > 0 && (
                   <ScrollbarMarkup
                     numPages={
@@ -1299,21 +1301,53 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
                     {this.props.paperId !== undefined &&
                       this.state.showSkimmingAnnotations &&
-                      discourseObjs.length > 0 && (
-                        <DiscourseTagMask
+                      discourseObjs.length > 0 &&
+                      this.state.facetHighlights &&
+                      this.state.facetTextEnabled && (
+                        <DiscourseTagLayer
                           pageView={pageView}
-                          discourseObjs={discourseObjs}
-                          opacity={this.state.skimOpacity}
-                        ></DiscourseTagMask>
+                          discourseObjs={discourseObjs.filter(
+                            (x: DiscourseObj) => x.label !== "Author"
+                          )}
+                        ></DiscourseTagLayer>
                       )}
 
                     {this.props.paperId !== undefined &&
-                      this.state.authorStatementsEnabled &&
                       this.state.showSkimmingAnnotations &&
+                      discourseObjs.length > 0 &&
+                      this.state.facetHighlights &&
+                      this.state.cueingStyle === "highlight" && (
+                        <HighlightLayer
+                          pageView={pageView}
+                          discourseObjs={discourseObjs.filter(
+                            (x: DiscourseObj) => x.label !== "Author"
+                          )}
+                          opacity={this.state.skimOpacity}
+                        ></HighlightLayer>
+                      )}
+
+                    {this.props.paperId !== undefined &&
+                      this.state.showSkimmingAnnotations &&
+                      discourseObjs.length > 0 &&
+                      this.state.facetHighlights &&
+                      this.state.cueingStyle === "underline" && (
+                        <UnderlineLayer
+                          pageView={pageView}
+                          discourseObjs={discourseObjs.filter(
+                            (x: DiscourseObj) => x.label !== "Author"
+                          )}
+                        ></UnderlineLayer>
+                      )}
+
+                    {this.props.paperId !== undefined &&
+                      this.state.showSkimmingAnnotations &&
+                      this.state.authorStatementsEnabled &&
                       discourseObjs.length > 0 && (
                         <UnderlineLayer
                           pageView={pageView}
-                          discourseObjs={discourseObjs}
+                          discourseObjs={discourseObjs.filter(
+                            (x: DiscourseObj) => x.label === "Author"
+                          )}
                         ></UnderlineLayer>
                       )}
                   </PageOverlay>

@@ -16,24 +16,22 @@ class UnderlineLayer extends React.Component<Props> {
   render() {
     const { pageView, discourseObjs } = this.props;
 
-    console.log(
-      discourseObjs.filter((x: DiscourseObj) => x.label === "Author")
-    );
-
     return (
       <div className={"underline-layer"}>
-        {discourseObjs
-          .filter((x: DiscourseObj) => x.label === "Author")
-          .map((x: DiscourseObj) => (
-            <Annotation
-              pageView={pageView}
-              id={x.id}
-              underline={true}
-              selected={false}
-              boundingBoxes={x.bboxes}
-              handleSelect={() => {}}
-            />
-          ))}
+        {discourseObjs.map((x: DiscourseObj) => (
+          <Annotation
+            pageView={pageView}
+            key={x.id}
+            id={x.id}
+            className={"discourse-underline"}
+            underline={true}
+            active={false}
+            selected={false}
+            color={x.color}
+            boundingBoxes={x.bboxes}
+            handleSelect={() => {}}
+          />
+        ))}
       </div>
     );
   }
