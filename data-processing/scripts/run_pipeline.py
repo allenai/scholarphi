@@ -69,7 +69,7 @@ def run_commands_for_arxiv_ids(
         command_args.create_tables = pipeline_args.database_create_tables
         command_args.data_version = pipeline_args.data_version
         if issubclass(CommandCls, DatabaseUploadCommand):
-            command_args.output_form = pipeline_args.output_form
+            command_args.output_forms = pipeline_args.output_forms
             command_args.output_dir = pipeline_args.output_dir
         if CommandCls == FetchArxivSources:
             command_args.s3_bucket = pipeline_args.s3_arxiv_sources_bucket
@@ -341,13 +341,14 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--output-form",
+        "--output-forms",
         type=str,
+        nargs='+',
         choices=[c.value for c in OutputForm],
-        default=OutputForm.DB.value,
+        default=[OutputForm.DB.value],
         help=(
             f"How we want the output to be stored. "
-            + "If you specify file or both, you must also provide a value for output-dir."
+            + "If you include file, you must also provide a value for output-dir."
         )
     )
 
@@ -360,7 +361,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # check that output arguments make sense
-    OutputDetails.validate(output_form=args.output_form, output_dir=args.output_dir)
+    OutputDetails.validate(output_forms=args.output_forms, output_dir=args.output_dir)
 
     # Set up logging
     console_log_handler = logging.StreamHandler(sys.stdout)

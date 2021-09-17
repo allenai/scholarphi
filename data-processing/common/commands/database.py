@@ -18,7 +18,7 @@ class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
         super().__init__(args)
 
         self.output_details = OutputDetails(
-            output_form=args.output_form,
+            output_forms=args.output_forms,
             output_dir=args.output_dir
         )
 

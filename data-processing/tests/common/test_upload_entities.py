@@ -6,7 +6,7 @@ from common.upload_entities import OutputDetails, save_entities
 
 
 def test_save_entities_with_file():
-    output_details = OutputDetails("file", "hi")
+    output_details = OutputDetails(["file"], "hi")
 
     with patch("common.upload_entities.upload_entities") as mock_upload_entities:
         with patch("common.upload_entities.write_to_file") as mock_write_to_file:
@@ -24,7 +24,7 @@ def test_save_entities_with_file():
 
 
 def test_save_entities_with_db():
-    output_details = OutputDetails("db", None)
+    output_details = OutputDetails(["db"], None)
 
     with patch("common.upload_entities.upload_entities") as mock_upload_entities:
         with patch("common.upload_entities.write_to_file") as mock_write_to_file:
@@ -42,7 +42,7 @@ def test_save_entities_with_db():
 
 
 def test_save_entities_with_both():
-    output_details = OutputDetails("both", "bye")
+    output_details = OutputDetails(["file", "db"], "bye")
 
     with patch("common.upload_entities.upload_entities") as mock_upload_entities:
         with patch("common.upload_entities.write_to_file") as mock_write_to_file:
@@ -61,55 +61,55 @@ def test_save_entities_with_both():
 
 def test_output_details_validation_db_no_dir():
     # just check this doesn't throw an error
-    OutputDetails.validate("db", None)
-    OutputDetails("db", None)
+    OutputDetails.validate(["db"], None)
+    OutputDetails(["db"], None)
 
 
 def test_output_details_validation_db_with_dir():
     with pytest.raises(AssertionError):
-        OutputDetails.validate("db", "hi")
+        OutputDetails.validate(["db"], "hi")
     with pytest.raises(AssertionError):
-        OutputDetails("db", "hi")
+        OutputDetails(["db"], "hi")
 
 
 def test_output_details_validation_file_no_dir():
     with pytest.raises(AssertionError):
-        OutputDetails.validate("file", None)
+        OutputDetails.validate(["file"], None)
     with pytest.raises(AssertionError):
-        OutputDetails("file", None)
+        OutputDetails(["file"], None)
 
 
 def test_output_details_validation_file_with_dir():
     # just check this doesn't throw an error
-    OutputDetails.validate("file", "there")
-    OutputDetails("file", "there")
+    OutputDetails.validate(["file"], "there")
+    OutputDetails(["file"], "there")
 
 
 def test_output_details_validation_both_no_dir():
     with pytest.raises(AssertionError):
-        OutputDetails.validate("both", None)
+        OutputDetails.validate(["file", "db"], None)
     with pytest.raises(AssertionError):
-        OutputDetails("both", None)
+        OutputDetails(["file", "db"], None)
 
 
 def test_output_details_validation_both_with_dir():
     # just check this doesn't throw an error
-    OutputDetails.validate("both", "bye")
-    OutputDetails("both", "bye")
+    OutputDetails.validate(["db", "file"], "bye")
+    OutputDetails(["db", "file"], "bye")
 
 
 def test_output_details_construction_not_a_form():
     with pytest.raises(ValueError):
-        OutputDetails("not a form", None)
+        OutputDetails(["not a form"], None)
 
 
 def test_output_details_save_to_db():
-    assert OutputDetails("db", None).save_to_db()
-    assert not OutputDetails("file", "hi").save_to_db()
-    assert OutputDetails("both", "bye").save_to_db()
+    assert OutputDetails(["db"], None).save_to_db()
+    assert not OutputDetails(["file"], "hi").save_to_db()
+    assert OutputDetails(["file", "db"], "bye").save_to_db()
 
 
 def test_output_details_save_to_file():
-    assert not OutputDetails("db", None).save_to_file()
-    assert OutputDetails("file", "hi").save_to_file()
-    assert OutputDetails("both", "bye").save_to_file()
+    assert not OutputDetails(["db"], None).save_to_file()
+    assert OutputDetails(["file"], "hi").save_to_file()
+    assert OutputDetails(["file", "db"], "bye").save_to_file()

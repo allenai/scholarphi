@@ -4,6 +4,7 @@ import json
 import logging
 import os
 from typing import Any, Dict, List, Optional, Tuple
+# from typing_extensions import Literal
 
 from peewee import fn
 
@@ -20,31 +21,30 @@ from common.types import (
     S2Id,
 )
 
+# OutputForm = Literal["db", "file"]
 
 class OutputForm(Enum):
     DB = "db"
     FILE = "file"
-    BOTH = "both"
 
 
 class OutputDetails:
-    def __init__(self, output_form: str, output_dir: Optional[str]):
-        OutputDetails.validate(output_form=output_form, output_dir=output_dir)
-        self.output_form = OutputForm(output_form)
-        self.output_dir = output_dir
+    def __init__(self, output_forms: List[str], output_dir: Optional[str]):
+        OutputDetails.validate(output_forms=output_forms, output_dir=output_dir)
+        self.output_forms: List[OutputForm] = [OutputForm(output_form) for output_form in output_forms]
+        self.output_dir: Optional[str] = output_dir
 
     @staticmethod
-    def validate(output_form: str, output_dir: Optional[str]) -> None:
-        msg = "If the output form is 'file' or 'both', an output dir must also be specified."
-        cond = (output_form in [OutputForm.FILE.value, OutputForm.BOTH.value]) == \
-            (output_dir is not None)
+    def validate(output_forms: List[str], output_dir: Optional[str]) -> None:
+        msg = "If the output form is 'file', an output dir must also be specified."
+        cond = (OutputForm.FILE.value in output_forms) == (output_dir is not None)
         assert cond, msg
 
     def save_to_db(self) -> bool:
-        return self.output_form in [OutputForm.DB, OutputForm.BOTH]
+        return OutputForm.DB in self.output_forms
 
     def save_to_file(self) -> bool:
-        return self.output_form in [OutputForm.FILE, OutputForm.BOTH]
+        return OutputForm.FILE in self.output_forms
 
 
 def get_or_create_data_version(paper_id: str) -> int:
