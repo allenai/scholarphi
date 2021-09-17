@@ -158,39 +158,24 @@ const PRESETS: Preset[] = [
     annotationHintsEnabled: false,
     primerPageEnabled: false,
     facetHighlights: true,
-    facetTextEnabled: false,
+    facetTextEnabled: true,
+    cueingStyle: "underline",
   },
   {
     key: "skim-v3",
     annotationHintsEnabled: false,
     primerPageEnabled: false,
-    facetHighlights: true,
-    facetTextEnabled: true,
-    cueingStyle: "underline",
+    authorStatementsEnabled: true,
   },
   {
     key: "skim-v4",
     annotationHintsEnabled: false,
     primerPageEnabled: false,
     facetHighlights: true,
-    facetTextEnabled: false,
-    cueingStyle: "underline",
-  },
-  {
-    key: "skim-v5",
-    annotationHintsEnabled: false,
-    primerPageEnabled: false,
-    authorStatementsEnabled: true,
-  },
-  {
-    key: "skim-v6",
-    annotationHintsEnabled: false,
-    primerPageEnabled: false,
-    facetHighlights: true,
     facetTextEnabled: true,
     facetPaletteEnabled: true,
     mediaScrollbarMarkupEnabled: true,
-    cueingStyle: "highlight",
+    cueingStyle: "underline",
   },
 ];
 
@@ -267,75 +252,106 @@ export type GlossStyle = typeof GLOSS_STYLES[number];
  * Any setting that should be editable from the settings editor should have a spec in this list.
  */
 export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
+  // {
+  //   key: "primerPageEnabled",
+  //   type: "flag",
+  //   label: "Primer page",
+  // },
+  // {
+  //   key: "annotationHintsEnabled",
+  //   type: "flag",
+  //   label: "Underline annotations",
+  // },
+  // {
+  //   key: "glossStyle",
+  //   type: "choice",
+  //   label: "Gloss style",
+  //   choices: [...GLOSS_STYLES],
+  // },
+  // {
+  //   key: "glossEvaluationEnabled",
+  //   type: "flag",
+  //   label: "Evaluate glosses",
+  // },
+  // {
+  //   key: "textSelectionMenuEnabled",
+  //   type: "flag",
+  //   label: "Show text selection menu",
+  // },
+  // {
+  //   key: "citationGlossesEnabled",
+  //   type: "flag",
+  //   label: "Citation glosses",
+  // },
+  // {
+  //   key: "symbolSearchEnabled",
+  //   type: "flag",
+  //   label: "Symbol search",
+  // },
+  // {
+  //   key: "declutterEnabled",
+  //   type: "flag",
+  //   label: "Declutter interaction",
+  // },
+  // {
+  //   key: "definitionPreviewEnabled",
+  //   type: "flag",
+  //   label: "Definition preview",
+  // },
+  // {
+  //   key: "equationDiagramsEnabled",
+  //   type: "flag",
+  //   label: "Equation diagrams",
+  // },
+  // {
+  //   key: "useDefinitionsForDiagramLabels",
+  //   type: "flag",
+  //   label: "Use definitions for diagram labels",
+  // },
+  // {
+  //   key: "entityCreationEnabled",
+  //   type: "flag",
+  //   label: "Create entities",
+  // },
+  // {
+  //   key: "entityEditingEnabled",
+  //   type: "flag",
+  //   label: "Edit entity properties",
+  // },
+  // {
+  //   key: "sentenceTexCopyOnOptionClickEnabled",
+  //   type: "flag",
+  //   label: "<Opt> + <Click> to copy sentence TeX",
+  // },
   {
-    key: "primerPageEnabled",
+    key: "facetHighlights",
     type: "flag",
-    label: "Primer page",
+    label: "Facet cueing",
   },
   {
-    key: "annotationHintsEnabled",
+    key: "facetTextEnabled",
     type: "flag",
-    label: "Underline annotations",
+    label: "Facet text",
   },
   {
-    key: "glossStyle",
+    key: "facetPaletteEnabled",
+    type: "flag",
+    label: "Facet palette.",
+  },
+  {
+    key: "mediaScrollbarMarkupEnabled",
+    type: "flag",
+    label: "Fig/tab scrollbar markers",
+  },
+  {
+    key: "authorStatementsEnabled",
+    type: "flag",
+    label: "Author statements",
+  },
+  {
+    key: "cueingStyle",
     type: "choice",
-    label: "Gloss style",
-    choices: [...GLOSS_STYLES],
-  },
-  {
-    key: "glossEvaluationEnabled",
-    type: "flag",
-    label: "Evaluate glosses",
-  },
-  {
-    key: "textSelectionMenuEnabled",
-    type: "flag",
-    label: "Show text selection menu",
-  },
-  {
-    key: "citationGlossesEnabled",
-    type: "flag",
-    label: "Citation glosses",
-  },
-  {
-    key: "symbolSearchEnabled",
-    type: "flag",
-    label: "Symbol search",
-  },
-  {
-    key: "declutterEnabled",
-    type: "flag",
-    label: "Declutter interaction",
-  },
-  {
-    key: "definitionPreviewEnabled",
-    type: "flag",
-    label: "Definition preview",
-  },
-  {
-    key: "equationDiagramsEnabled",
-    type: "flag",
-    label: "Equation diagrams",
-  },
-  {
-    key: "useDefinitionsForDiagramLabels",
-    type: "flag",
-    label: "Use definitions for diagram labels",
-  },
-  {
-    key: "entityCreationEnabled",
-    type: "flag",
-    label: "Create entities",
-  },
-  {
-    key: "entityEditingEnabled",
-    type: "flag",
-    label: "Edit entity properties",
-  },
-  {
-    key: "sentenceTexCopyOnOptionClickEnabled",
-    type: "flag",
-    label: "<Opt> + <Click> to copy sentence TeX",
+    label: "Cueing style",
+    choices: ["highlight", "underline"],
   },
 ];
