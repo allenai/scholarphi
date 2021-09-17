@@ -28,7 +28,11 @@ class DiscoursePalette extends React.PureComponent<Props> {
     const hidden = ["Highlight", "Author"];
     const filteredDiscourseToColorMap = Object.keys(discourseToColorMap)
       .filter((key) => !hidden.includes(key))
-      .filter((key) => availableDiscourseClasses.includes(key))
+      .filter(
+        (key) =>
+          availableDiscourseClasses.includes(key) ||
+          deselectedDiscourses.includes(key)
+      )
       .reduce((obj: { [label: string]: string }, key) => {
         obj[key] = discourseToColorMap[key];
         return obj;
