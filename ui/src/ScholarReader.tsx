@@ -12,6 +12,7 @@ import {
   isTerm,
   Paper,
   RhetoricUnit,
+  CaptionUnit,
   Symbol,
 } from "./api/types";
 import Control from "./components/control/Control";
@@ -40,7 +41,8 @@ import DefinitionPreview from "./components/preview/DefinitionPreview";
 import PrimerPage from "./components/primer/PrimerPage";
 import ScrollbarMarkup from "./components/scrollbar/ScrollbarMarkup";
 import FindBar, { FindQuery } from "./components/search/FindBar";
-import data from "./data/skimmingData.json";
+import facetData from "./data/facets/skimmingData.json";
+import captionData from "./data/captions/skimmingData.json";
 import logger from "./logging";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
@@ -953,11 +955,13 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       this._jumpedToInitialFocus = true;
     }
 
-    let paperData: RhetoricUnit[] = [];
+    let facetDataForPaper: RhetoricUnit[] = [];
+    let captionDataForPaper: CaptionUnit[] = [];
     let discourseObjs: DiscourseObj[] = [];
     if (this.props.paperId !== undefined) {
-      paperData = Object(data)[this.props.paperId!.id];
-      discourseObjs = this.makeDiscourseObjects(paperData);
+      facetDataForPaper = Object(facetData)[this.props.paperId!.id];
+      captionDataForPaper = Object(captionData)[this.props.paperId!.id];
+      discourseObjs = this.makeDiscourseObjects(facetDataForPaper);
     }
 
     return (
@@ -1119,11 +1123,17 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       (x: DiscourseObj) =>
                         !this.state.deselectedDiscourses.includes(x.label)
                     )}
+                    captionUnits={
+                      this.state.mediaScrollbarMarkupEnabled
+                        ? captionDataForPaper
+                        : []
+                    }
                   ></ScrollbarMarkup>
                 )}
               {this.props.paperId !== undefined &&
                 this.state.showSkimmingAnnotations &&
                 discourseObjs.length > 0 &&
+                this.state.facetPaletteEnabled &&
                 this.state.facetHighlights && (
                   <DiscoursePalette
                     discourseToColorMap={this.getDiscourseToColorMap()}

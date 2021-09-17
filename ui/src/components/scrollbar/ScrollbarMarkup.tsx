@@ -1,10 +1,12 @@
 import React from "react";
-import { DiscourseObj } from "../../api/types";
+import { CaptionUnit, DiscourseObj } from "../../api/types";
 import * as uiUtils from "../../utils/ui";
+import { MediaTag } from "./MediaTag";
 
 interface Props {
   numPages: number;
   discourseObjs: DiscourseObj[];
+  captionUnits: CaptionUnit[];
 }
 
 class ScrollbarMarkup extends React.PureComponent<Props> {
@@ -24,7 +26,7 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
       ScrollbarMarkup.scrollbarHeight === undefined ||
       ScrollbarMarkup.scrollbarOffsetTop === undefined
     ) {
-      return;
+      return 0;
     }
     const pageHeightInScrollbar =
       ScrollbarMarkup.scrollbarHeight / this.props.numPages;
@@ -32,7 +34,7 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
   };
 
   render() {
-    const { discourseObjs } = this.props;
+    const { discourseObjs, captionUnits } = this.props;
 
     return (
       <>
@@ -49,9 +51,19 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
               overflowY: "hidden",
             }}
           >
+            {captionUnits.map((c: CaptionUnit, i: number) => (
+              <MediaTag
+                key={`media-tag-${i}`}
+                type={c.type}
+                yOffset={this.mapDiscourseToScrollBar(
+                  c.bbox.page + 1,
+                  c.bbox.top
+                )}
+              />
+            ))}
             {discourseObjs
-              .filter((d) => d.label !== "Author")
-              .map((d, i) => (
+              .filter((d: DiscourseObj) => d.label !== "Author")
+              .map((d: DiscourseObj, i: number) => (
                 <div
                   style={{
                     position: "absolute",

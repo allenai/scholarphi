@@ -407,6 +407,12 @@ export interface RhetoricUnit {
   is_in_expected_section: boolean;
 }
 
+export interface CaptionUnit {
+  text: string;
+  type: string;
+  bbox: BoundingBox;
+}
+
 export interface DiscourseObj {
   id: string;
   entity: RhetoricUnit;

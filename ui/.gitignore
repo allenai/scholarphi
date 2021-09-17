@@ -6,3 +6,10 @@ build/
 
 # Node modules
 node_modules
+
+# Local data for skimming
+src/data/facets/*
+!src/data/facets/skimmingData.json
+
+src/data/captions/*
+!src/data/captions/skimmingData.json

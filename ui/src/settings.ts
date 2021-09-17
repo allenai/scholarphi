@@ -106,6 +106,10 @@ export interface Settings {
 
   facetTextEnabled: boolean;
 
+  facetPaletteEnabled: boolean;
+
+  mediaScrollbarMarkupEnabled: boolean;
+
   authorStatementsEnabled: boolean;
 
   cueingStyle: string;
@@ -178,6 +182,16 @@ const PRESETS: Preset[] = [
     primerPageEnabled: false,
     authorStatementsEnabled: true,
   },
+  {
+    key: "skim-v6",
+    annotationHintsEnabled: false,
+    primerPageEnabled: false,
+    facetHighlights: true,
+    facetTextEnabled: true,
+    facetPaletteEnabled: true,
+    mediaScrollbarMarkupEnabled: true,
+    cueingStyle: "highlight",
+  },
 ];
 
 /**
@@ -209,6 +223,8 @@ export function getSettings(presets?: string[]) {
     glossEvaluationEnabled: false,
     facetHighlights: false,
     facetTextEnabled: false,
+    facetPaletteEnabled: false,
+    mediaScrollbarMarkupEnabled: false,
     authorStatementsEnabled: false,
     cueingStyle: "highlight",
   };
