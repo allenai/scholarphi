@@ -40,10 +40,10 @@ class OutputDetails:
         cond = (OutputForm.FILE.value in output_forms) == (output_dir is not None)
         assert cond, msg
 
-    def save_to_db(self) -> bool:
+    def can_save_to_db(self) -> bool:
         return OutputForm.DB in self.output_forms
 
-    def save_to_file(self) -> bool:
+    def can_save_to_file(self) -> bool:
         return OutputForm.FILE in self.output_forms
 
 
@@ -374,14 +374,14 @@ def save_entities(
     filename: str,
 ) -> None:
 
-    if output_details.save_to_file():
+    if output_details.can_save_to_file():
         logging.info("Saving to file...")
         # should always be true, but let's just make sure
         assert output_details.output_dir is not None, "Expected a defined output dir!"
         output_file_name = os.path.join(output_details.output_dir, filename)
         write_to_file(entity_infos=entity_infos, output_file_name=output_file_name)
 
-    if output_details.save_to_db():
+    if output_details.can_save_to_db():
         logging.info("Saving to db...")
         upload_entities(
             s2_id=s2_id,

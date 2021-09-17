@@ -103,13 +103,13 @@ def test_output_details_construction_not_a_form():
         OutputDetails(["not a form"], None)
 
 
-def test_output_details_save_to_db():
-    assert OutputDetails(["db"], None).save_to_db()
-    assert not OutputDetails(["file"], "hi").save_to_db()
-    assert OutputDetails(["file", "db"], "bye").save_to_db()
+def test_output_details_can_save_to_db():
+    assert OutputDetails(["db"], None).can_save_to_db()
+    assert not OutputDetails(["file"], "hi").can_save_to_db()
+    assert OutputDetails(["file", "db"], "bye").can_save_to_db()
 
 
-def test_output_details_save_to_file():
-    assert not OutputDetails(["db"], None).save_to_file()
-    assert OutputDetails(["file"], "hi").save_to_file()
-    assert OutputDetails(["file", "db"], "bye").save_to_file()
+def test_output_details_can_save_to_file():
+    assert not OutputDetails(["db"], None).can_save_to_file()
+    assert OutputDetails(["file"], "hi").can_save_to_file()
+    assert OutputDetails(["file", "db"], "bye").can_save_to_file()

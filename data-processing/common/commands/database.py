@@ -22,13 +22,13 @@ class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
             output_dir=args.output_dir
         )
 
-        if self.output_details.save_to_db():
+        if self.output_details.can_save_to_db():
             logging.info("Setting up db connection as we expect to upload output to the db.")
             setup_database_connections(
                 schema_name=args.schema, create_tables=args.create_tables
             )
 
-        if self.output_details.save_to_file():
+        if self.output_details.can_save_to_file():
             logging.info("We will be writing output to files.")
             msg = f"{self.get_name()} does not know how to write to a file."
             assert self.can_write_to_file(), msg
