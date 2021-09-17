@@ -6,7 +6,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from peewee import fn
 
-from common.commands.database import OutputDetails
 from common.models import BoundingBox as BoundingBoxModel
 from common.models import Entity
 from common.models import EntityData as EntityDataModel
@@ -19,6 +18,32 @@ from common.types import (
     EntityUploadInfo,
     S2Id,
 )
+
+
+class OutputForm(Enum):
+    DB = "db"
+    FILE = "file"
+    BOTH = "both"
+
+
+class OutputDetails:
+    def __init__(self, output_form: str, output_dir: Optional[str]):
+        OutputDetails.validate(output_form=output_form, output_dir=output_dir)
+        self.output_form = OutputForm(output_form)
+        self.output_dir = output_dir
+
+    @staticmethod
+    def validate(output_form: str, output_dir: Optional[str]) -> None:
+        msg = "If the output form is 'file' or 'both', an output dir must also be specified."
+        cond = (output_form in [OutputForm.FILE.value, OutputForm.BOTH.value]) == \
+            (output_dir is not None)
+        assert cond, msg
+
+    def save_to_db(self) -> bool:
+        return self.output_form in [OutputForm.DB, OutputForm.BOTH]
+
+    def save_to_file(self) -> bool:
+        return self.output_form in [OutputForm.FILE, OutputForm.BOTH]
 
 
 def get_or_create_data_version(paper_id: str) -> int:

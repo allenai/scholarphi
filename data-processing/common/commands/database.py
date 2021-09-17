@@ -6,32 +6,7 @@ from typing import Any, Optional
 
 from common.commands.base import ArxivBatchCommand, I, R
 from common.models import setup_database_connections
-
-
-class OutputForm(Enum):
-    DB = "db"
-    FILE = "file"
-    BOTH = "both"
-
-
-class OutputDetails:
-    def __init__(self, output_form: str, output_dir: Optional[str]):
-        OutputDetails.validate(output_form=output_form, output_dir=output_dir)
-        self.output_form = OutputForm(output_form)
-        self.output_dir = output_dir
-
-    @staticmethod
-    def validate(output_form: str, output_dir: Optional[str]) -> None:
-        msg = "If the output form is 'file' or 'both', an output dir must also be specified."
-        cond = (output_form in [OutputForm.FILE.value, OutputForm.BOTH.value]) == \
-            (output_dir is not None)
-        assert cond, msg
-
-    def save_to_db(self) -> bool:
-        return self.output_form in [OutputForm.DB, OutputForm.BOTH]
-
-    def save_to_file(self) -> bool:
-        return self.output_form in [OutputForm.FILE, OutputForm.BOTH]
+from common.upload_entities import OutputDetails
 
 
 class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
@@ -56,7 +31,7 @@ class DatabaseUploadCommand(ArxivBatchCommand[I, R], ABC):
 
         if self.output_details.save_to_file():
             logging.info("We will be writing output to files.")
-            msg = f"{self.__class__.__name__} does not know how to write to a file."
+            msg = f"{self.get_name()} does not know how to write to a file."
             assert self.can_write_to_file(), msg
 
     @staticmethod
