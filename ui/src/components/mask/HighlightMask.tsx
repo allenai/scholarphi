@@ -1,11 +1,12 @@
 import React from "react";
-import { DiscourseObj } from "../../api/types";
+import { DiscourseObj, SentenceUnit } from "../../api/types";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
 
 interface Props {
   pageView: PDFPageView;
   discourseObjs?: DiscourseObj[];
+  leadSentences?: SentenceUnit[];
   opacity: number;
 }
 
@@ -14,7 +15,7 @@ interface Props {
  */
 class HighlightMask extends React.PureComponent<Props> {
   render() {
-    const { pageView, discourseObjs, opacity } = this.props;
+    const { pageView, discourseObjs, leadSentences, opacity } = this.props;
     const { width, height } = uiUtils.getPageViewDimensions(pageView);
 
     return (
@@ -30,6 +31,21 @@ class HighlightMask extends React.PureComponent<Props> {
                   width={b.width * width}
                   height={b.height * height}
                   style={{ fill: d.color, opacity: opacity }}
+                />
+              </React.Fragment>
+            ))
+          )}
+        {leadSentences &&
+          leadSentences.map((s, i) =>
+            s.bboxes.map((b, j) => (
+              <React.Fragment key={`highlight-${i}-${j}`}>
+                <rect
+                  className={`highlight-mask__highlight highlight-${i}`}
+                  x={b.left * width}
+                  y={b.top * height}
+                  width={b.width * width}
+                  height={b.height * height}
+                  style={{ fill: "#F1E740", opacity: 0.25 }}
                 />
               </React.Fragment>
             ))

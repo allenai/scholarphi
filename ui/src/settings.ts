@@ -112,6 +112,8 @@ export interface Settings {
 
   authorStatementsEnabled: boolean;
 
+  leadSentencesEnabled: boolean;
+
   cueingStyle: string;
 }
 
@@ -211,6 +213,7 @@ export function getSettings(presets?: string[]) {
     facetPaletteEnabled: false,
     mediaScrollbarMarkupEnabled: false,
     authorStatementsEnabled: false,
+    leadSentencesEnabled: false,
     cueingStyle: "highlight",
   };
 
@@ -336,7 +339,7 @@ export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
   {
     key: "facetPaletteEnabled",
     type: "flag",
-    label: "Facet palette.",
+    label: "Facet palette",
   },
   {
     key: "mediaScrollbarMarkupEnabled",
@@ -347,6 +350,11 @@ export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
     key: "authorStatementsEnabled",
     type: "flag",
     label: "Author statements",
+  },
+  {
+    key: "leadSentencesEnabled",
+    type: "flag",
+    label: "Lead sentences",
   },
   {
     key: "cueingStyle",

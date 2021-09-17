@@ -13,3 +13,6 @@ src/data/facets/*
 
 src/data/captions/*
 !src/data/captions/skimmingData.json
+
+src/data/sentences/*
+!src/data/sentences/skimmingData.json

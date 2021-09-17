@@ -13,6 +13,7 @@ import {
   Paper,
   RhetoricUnit,
   CaptionUnit,
+  SentenceUnit,
   Symbol,
 } from "./api/types";
 import Control from "./components/control/Control";
@@ -42,6 +43,7 @@ import PrimerPage from "./components/primer/PrimerPage";
 import ScrollbarMarkup from "./components/scrollbar/ScrollbarMarkup";
 import FindBar, { FindQuery } from "./components/search/FindBar";
 import facetData from "./data/facets/skimmingData.json";
+import sentenceData from "./data/sentences/skimmingData.json";
 import captionData from "./data/captions/skimmingData.json";
 import logger from "./logging";
 import * as selectors from "./selectors";
@@ -853,7 +855,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     };
   };
 
-  makeDiscourseObjects = (data: RhetoricUnit[]) => {
+  makeDiscourseObjectsForFacets = (data: RhetoricUnit[]): DiscourseObj[] => {
     const discourseToColorMap: {
       [label: string]: string;
     } = this.getDiscourseToColorMap();
@@ -879,7 +881,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         }
       });
 
-    let discourseObjs = data.map((r: RhetoricUnit, index) => ({
+    let discourseObjs = data.map((r: RhetoricUnit, index: number) => ({
       id: index.toString(),
       entity: r,
       label: r.label,
@@ -955,13 +957,36 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       this._jumpedToInitialFocus = true;
     }
 
-    let facetDataForPaper: RhetoricUnit[] = [];
-    let captionDataForPaper: CaptionUnit[] = [];
     let discourseObjs: DiscourseObj[] = [];
+    let leadSentences: SentenceUnit[] = [];
     if (this.props.paperId !== undefined) {
-      facetDataForPaper = Object(facetData)[this.props.paperId!.id];
-      captionDataForPaper = Object(captionData)[this.props.paperId!.id];
-      discourseObjs = this.makeDiscourseObjects(facetDataForPaper);
+      discourseObjs = this.makeDiscourseObjectsForFacets(
+        Object(facetData)[this.props.paperId!.id]
+      );
+
+      // Add processed facet highlights
+      if (!this.state.facetHighlights) {
+        discourseObjs = discourseObjs.filter(
+          (x: DiscourseObj) => x.label === "Author"
+        );
+      }
+
+      // Remove "Author" statements if not enabled
+      if (!this.state.authorStatementsEnabled) {
+        discourseObjs = discourseObjs.filter(
+          (x: DiscourseObj) => x.label !== "Author"
+        );
+      }
+
+      // Filter out deselected facets
+      discourseObjs = discourseObjs.filter(
+        (x: DiscourseObj) => !this.state.deselectedDiscourses.includes(x.label)
+      );
+
+      // Get lead sentences
+      if (this.state.leadSentencesEnabled) {
+        leadSentences = Object(sentenceData)[this.props.paperId!.id];
+      }
     }
 
     return (
@@ -1119,13 +1144,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     numPages={
                       this.state.pdfViewerApplication?.pdfDocument?.numPages
                     }
-                    discourseObjs={discourseObjs.filter(
-                      (x: DiscourseObj) =>
-                        !this.state.deselectedDiscourses.includes(x.label)
-                    )}
+                    discourseObjs={discourseObjs}
                     captionUnits={
                       this.state.mediaScrollbarMarkupEnabled
-                        ? captionDataForPaper
+                        ? Object(captionData)[this.props.paperId!.id]
                         : []
                     }
                   ></ScrollbarMarkup>
@@ -1341,68 +1363,36 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
                     {this.props.paperId !== undefined &&
                       this.state.showSkimmingAnnotations &&
-                      discourseObjs.length > 0 &&
-                      this.state.facetHighlights &&
-                      this.state.facetTextEnabled && (
+                      this.state.facetTextEnabled &&
+                      discourseObjs.length > 0 && (
                         <DiscourseTagLayer
                           pageView={pageView}
-                          discourseObjs={discourseObjs
-                            .filter((x: DiscourseObj) => x.label !== "Author")
-                            .filter(
-                              (x: DiscourseObj) =>
-                                !this.state.deselectedDiscourses.includes(
-                                  x.label
-                                )
-                            )}
+                          discourseObjs={discourseObjs.filter(
+                            (x) => x.label !== "Author"
+                          )}
                         ></DiscourseTagLayer>
                       )}
 
                     {this.props.paperId !== undefined &&
                       this.state.showSkimmingAnnotations &&
-                      discourseObjs.length > 0 &&
-                      this.state.facetHighlights &&
+                      (discourseObjs.length > 0 || leadSentences.length > 0) &&
                       this.state.cueingStyle === "highlight" && (
                         <HighlightLayer
                           pageView={pageView}
-                          discourseObjs={discourseObjs
-                            .filter((x: DiscourseObj) => x.label !== "Author")
-                            .filter(
-                              (x: DiscourseObj) =>
-                                !this.state.deselectedDiscourses.includes(
-                                  x.label
-                                )
-                            )}
+                          discourseObjs={discourseObjs}
+                          leadSentences={leadSentences}
                           opacity={this.state.skimOpacity}
                         ></HighlightLayer>
                       )}
 
                     {this.props.paperId !== undefined &&
                       this.state.showSkimmingAnnotations &&
-                      discourseObjs.length > 0 &&
-                      this.state.facetHighlights &&
+                      (discourseObjs.length > 0 || leadSentences.length > 0) &&
                       this.state.cueingStyle === "underline" && (
                         <UnderlineLayer
                           pageView={pageView}
-                          discourseObjs={discourseObjs
-                            .filter((x: DiscourseObj) => x.label !== "Author")
-                            .filter(
-                              (x: DiscourseObj) =>
-                                !this.state.deselectedDiscourses.includes(
-                                  x.label
-                                )
-                            )}
-                        ></UnderlineLayer>
-                      )}
-
-                    {this.props.paperId !== undefined &&
-                      this.state.showSkimmingAnnotations &&
-                      this.state.authorStatementsEnabled &&
-                      discourseObjs.length > 0 && (
-                        <UnderlineLayer
-                          pageView={pageView}
-                          discourseObjs={discourseObjs.filter(
-                            (x: DiscourseObj) => x.label === "Author"
-                          )}
+                          discourseObjs={discourseObjs}
+                          leadSentences={leadSentences}
                         ></UnderlineLayer>
                       )}
                   </PageOverlay>

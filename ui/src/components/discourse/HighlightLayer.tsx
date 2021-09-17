@@ -1,5 +1,5 @@
 import React from "react";
-import { DiscourseObj } from "../../api/types";
+import { BoundingBox, DiscourseObj, SentenceUnit } from "../../api/types";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
 import HighlightMask from "../mask/HighlightMask";
@@ -7,30 +7,33 @@ import HighlightMask from "../mask/HighlightMask";
 interface Props {
   pageView: PDFPageView;
   discourseObjs: DiscourseObj[];
+  leadSentences: SentenceUnit[];
   opacity: number;
 }
 
-/**
- * Declutter relevant sentences and add discourse tag in margin for each sentence.
- */
 class HighlightLayer extends React.PureComponent<Props> {
   constructor(props: Props) {
     super(props);
   }
 
   render() {
-    const { pageView, discourseObjs, opacity } = this.props;
+    const { pageView, discourseObjs, leadSentences, opacity } = this.props;
     const pageNumber = uiUtils.getPageNumber(pageView);
 
-    const filterDiscourseObjs = discourseObjs.filter(
+    const filteredDiscourseObjs = discourseObjs.filter(
       (d) => d.tagLocation.page === pageNumber
+    );
+
+    const filteredLeadSentences = leadSentences.filter((s) =>
+      s.bboxes.every((b: BoundingBox) => b.page === pageNumber)
     );
 
     return (
       <>
         <HighlightMask
           pageView={pageView}
-          discourseObjs={filterDiscourseObjs}
+          discourseObjs={filteredDiscourseObjs}
+          leadSentences={filteredLeadSentences}
           opacity={opacity}
         />
       </>
