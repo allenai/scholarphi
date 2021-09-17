@@ -150,12 +150,14 @@ class FAQ extends React.PureComponent<Props, State> {
         entityId={definition.contextEntity.id}
         handleJumpToEntity={this.props.handleJumpToEntity}
       >
-        {" ["}1{"] "}
+        {" [p."}{definition.contextEntity.attributes.bounding_boxes[0].page}{"] "}
       </EntityLink>
     ) : null;
 
     if (answerCoaster !== null && answerCoaster.length > 0) {
       details = answerCoaster.slice(1).map((answer, i) => {
+        let answerEntity = answer.id?this.props.entities.byId[answer.id]: null;
+
         return (
           <EntityLink
             id={answer.id ? `${answer.id}-clickable-link` : undefined}
@@ -163,8 +165,8 @@ class FAQ extends React.PureComponent<Props, State> {
             entityId={answer.id}
             handleJumpToEntity={this.props.handleJumpToEntity}
           >
-            {" ["}
-            {i + 2}
+            {" [p."}
+            {answerEntity?.attributes.bounding_boxes[0].page}
             {"] "}
           </EntityLink>
         );
@@ -189,8 +191,8 @@ class FAQ extends React.PureComponent<Props, State> {
       >
         <p className="faq__question">{`${this.props.question.attributes.question_text}`}</p>
         <p className="faq__answer">{`${this.props.question.attributes.answer_text}`}</p>
-        Relevant passage
-        {answerCoaster !== null && answerCoaster.length > 1 ? "s" : ""}:{" "}
+        See paragraph in:{" "}
+        {/* {answerCoaster !== null && answerCoaster.length > 1 ? "s" : ""} */}
         {generalAnswer} {details}
         {/* {details !== null && <span>: {details}</span>} */}
       </div>

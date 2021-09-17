@@ -132,6 +132,7 @@ class FAQBar extends React.PureComponent<Props> {
     const BarContent = (
       <div id="FAQBar"> 
         <div className="faq__content">
+          
           {/* <p className="faq__content__header">FAQs</p> */}
           {/* <p className="faq__content__header"> There is a lot of information in this paper, and some of it might not be useful to you.</p> */}
 
