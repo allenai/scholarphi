@@ -36,7 +36,7 @@ class OutputDetails:
 
     @staticmethod
     def validate(output_forms: List[str], output_dir: Optional[str]) -> None:
-        msg = "If the output form is 'file', an output dir must also be specified."
+        msg = "Please include either both 'file' as an output form and an output dir, or neither."
         cond = (OutputForm.FILE.value in output_forms) == (output_dir is not None)
         assert cond, msg
 
