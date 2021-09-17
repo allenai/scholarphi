@@ -1,8 +1,7 @@
 from abc import ABC
 from argparse import ArgumentParser
-from enum import Enum
 import logging
-from typing import Any, Optional
+from typing import Any
 
 from common.commands.base import ArxivBatchCommand, I, R
 from common.models import setup_database_connections

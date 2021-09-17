@@ -1,5 +1,7 @@
 from unittest.mock import patch
 
+import pytest
+
 from common.upload_entities import OutputDetails, save_entities
 
 
