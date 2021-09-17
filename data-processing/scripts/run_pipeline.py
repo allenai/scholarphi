@@ -14,7 +14,7 @@ from common.commands.base import (
     load_arxiv_ids_using_args,
     read_arxiv_ids_from_file,
 )
-from common.commands.database import DatabaseUploadCommand, OutputDetails, OutputForm
+from common.commands.database import DatabaseUploadCommand
 from common.commands.fetch_arxiv_sources import (
     DEFAULT_S3_ARXIV_SOURCES_BUCKET,
     FetchArxivSources,
@@ -27,6 +27,7 @@ from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
 from common.fetch_arxiv import FetchFromArxivException
 from common.make_digest import make_paper_digest
+from common.upload_entities import OutputDetails, OutputForm
 from common.types import PipelineDigest
 from entities.definitions.commands.detect_definitions import DetectDefinitions
 
