@@ -361,7 +361,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # check that output arguments make sense
-    OutputDetails.validate(output_forms=args.output_forms, output_dir=args.output_dir)
+    try:
+        OutputDetails.validate(output_forms=args.output_forms, output_dir=args.output_dir)
+    except AssertionError as assertion_error:
+        parser.error(str(assertion_error))
 
     # Set up logging
     console_log_handler = logging.StreamHandler(sys.stdout)
