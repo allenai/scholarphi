@@ -150,14 +150,14 @@ class FAQ extends React.PureComponent<Props, State> {
         entityId={definition.contextEntity.id}
         handleJumpToEntity={this.props.handleJumpToEntity}
       >
-        {" [p."}{definition.contextEntity.attributes.bounding_boxes[0].page}{"] "}
+        {" [p."}{definition.contextEntity.attributes.bounding_boxes[0].page + 1}{"] "}
       </EntityLink>
     ) : null;
 
     if (answerCoaster !== null && answerCoaster.length > 0) {
       details = answerCoaster.slice(1).map((answer, i) => {
         let answerEntity = answer.id?this.props.entities.byId[answer.id]: null;
-
+        let page = answerEntity?.attributes.bounding_boxes[0].page;
         return (
           <EntityLink
             id={answer.id ? `${answer.id}-clickable-link` : undefined}
@@ -166,7 +166,7 @@ class FAQ extends React.PureComponent<Props, State> {
             handleJumpToEntity={this.props.handleJumpToEntity}
           >
             {" [p."}
-            {answerEntity?.attributes.bounding_boxes[0].page}
+            {page? page + 1: page}
             {"] "}
           </EntityLink>
         );
@@ -174,9 +174,6 @@ class FAQ extends React.PureComponent<Props, State> {
     }
 
     const FAQClass = this.props.isSelected ? "faq-selected" : "faq";
-
-    console.log(FAQClass);
-
     // const FAQClassHovered = this.props.isHovered ? "faq-hovered" : "faq";
 
     // render the FAQs in the sidebar with a portal

@@ -125,12 +125,11 @@ class FAQBar extends React.PureComponent<Props> {
     } = this.props;
 
 
-    const FAQBarContainer = document.getElementById("FAQPlaceholder");
+    const FAQBarContainer = document.getElementById("attachmentsView");
 
     const FAQs = this.getFAQs();
 
     const BarContent = (
-      <div id="FAQBar"> 
         <div className="faq__content">
           
           {/* <p className="faq__content__header">FAQs</p> */}
@@ -145,7 +144,6 @@ class FAQBar extends React.PureComponent<Props> {
           {' '}
           {FAQs}
         </div>
-      </div>
       
     );
 

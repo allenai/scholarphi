@@ -100,31 +100,30 @@ See https://github.com/adobe-type-tools/cmap-resources
       <div id="sidebarContainer">
         <div id="toolbarSidebar">
           <div class="splitToolbarButton">
+            <!-- <button id="viewFAQs" class="toolbarButton" title="Show FAQs" tabindex="1" data-l10n-id="FAQs">
+              <span data-l10n-id="FAQs_label">FAQs</span>
+            </button> -->
             <button id="viewThumbnail" class="toolbarButton" title="Show Thumbnails" tabindex="2" data-l10n-id="thumbs">
                <span data-l10n-id="thumbs_label">Thumbnails</span>
             </button>
             <button id="viewOutline" class="toolbarButton" title="Show Document Outline (double-click to expand/collapse all items)" tabindex="3" data-l10n-id="document_outline">
                <span data-l10n-id="document_outline_label">Document Outline</span>
             </button>
-            <button id="viewAttachments" class="toolbarButton" title="Show Attachments" tabindex="4" data-l10n-id="attachments">
-               <span data-l10n-id="attachments_label">Attachments</span>
+           </button>
+            <button id="viewAttachments" class="toolbarButton" title="Show FAQs" tabindex="4" data-l10n-id="attachments">
+               <span data-l10n-id="attachments_label">FAQs</span>
             </button>
             <!-- Semantic Reader specific -->
-            <!-- <button id="viewFAQs" class="toolbarButton" title="Show FAQs" tabindex="5" data-l10n-id="FAQs">
-              <span data-l10n-id="FAQs_label">FAQs</span>
-           </button> -->
           </div>
         </div>
         <div id="sidebarContent">
           <!-- Semantic Reader specific -->
-          <!-- <div id="FAQsView">
-            <div class="faqTitle"> FAQs </div>
-          </div>  -->
           <div id="thumbnailView" class="hidden">
           </div>
           <div id="outlineView">
           </div>
-          <div id="attachmentsView" class="hidden">
+          <!-- Changing to FAQs for Reader specific -->
+          <div id="attachmentsView">
           </div>
         </div>
         <div id="sidebarResizer" class="hidden"></div>
@@ -346,7 +345,7 @@ See https://github.com/adobe-type-tools/cmap-resources
         </menu>
 
         <div> 
-          <div id="FAQPlaceholder"></div>
+          <!-- <div id="FAQPlaceholder"></div> -->
           <div id="viewerContainer" tabindex="0">
             <div id="viewer" class="pdfViewer"></div>
           </div>

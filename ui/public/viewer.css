@@ -410,7 +410,7 @@
 }
 
 :root {
-  --sidebar-width: 200px;
+  --sidebar-width: 300px;
 }
 
 * {
@@ -553,7 +553,7 @@ select {
   position: absolute;
   top: 80px;
   bottom: 0;
-  width: 200px; /* Here, and elsewhere below, keep the constant value for compatibility
+  width: 400px; /* Here, and elsewhere below, keep the constant value for compatibility
                    with older browsers that lack support for CSS variables. */
   width: var(--sidebar-width);
   visibility: hidden;
@@ -636,7 +636,7 @@ html[dir="rtl"] #sidebarContent {
   outline: none;
 
   left: 0;
-  padding-left: calc(25% + 2%);
+  /* padding-left: calc(25% + 2%); */
 }
 #viewerContainer:not(.pdfPresentationMode) {
   transition-duration: 200ms;
@@ -1707,6 +1707,7 @@ a:focus > .thumbnail > .thumbnailSelectionRing,
 }
 
 #outlineView,
+#FAQView,
 #attachmentsView {
   position: absolute;
   width: calc(100% - 8px);
@@ -1720,6 +1721,8 @@ a:focus > .thumbnail > .thumbnailSelectionRing,
   user-select: none;
 }
 
+
+#FAQView,
 #outlineView {
   padding: 4px 4px 0;
 }

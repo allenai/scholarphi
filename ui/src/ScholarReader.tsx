@@ -33,6 +33,7 @@ import PdfjsBrandbar from "./components/pdfjs/PdfjsBrandbar";
 import DefinitionPreview from "./components/preview/DefinitionPreview";
 import PrimerPage from "./components/primer/PrimerPage";
 import FAQBar from "./components/questions/FAQBar";
+
 import FindBar, { FindQuery } from "./components/search/FindBar";
 import * as EntitiesTutorial from "./data/annotations_tutorial.json";
 import * as EntitiesSLE from "./data/auto_PAWLS_SPUI_annotations.json";
