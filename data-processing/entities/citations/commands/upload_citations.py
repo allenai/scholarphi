@@ -129,8 +129,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
             entity_infos=entity_infos,
             data_version=self.args.data_version,
             output_details=self.output_details,
-            filename="citations.jsonl"
-
+            filename="citations.jsonl",
         )
 
     def can_write_to_file(self) -> bool:
