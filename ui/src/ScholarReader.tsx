@@ -860,34 +860,109 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       [label: string]: string;
     } = this.getDiscourseToColorMap();
 
-    // 1. Remove classifications for "Future Work" and "Contribution" (for now)
-    // 2. Remove classifications that are not in the expected section, except for "Method", which does not have an expected section (yet).
-    // 3. Remove certain classifications that are not an "author statement" to improve highlight precision.
-    data = data
-      .filter((r: RhetoricUnit) => !(["Future Work", "Contribution"].includes(r.label)))
-      .filter(
-        (r: RhetoricUnit) => r.label === "Method" || r.is_in_expected_section
-      )
-      .filter((r: RhetoricUnit) => {
-        if (["Objective", "Contribution", "Conclusion"].includes(r.label)) {
-          return r.is_author_statement;
-        }
-        else if (r.label === "Result") {
-          const has_citation = new RegExp(/\[.*\d.*\]/).test(r.text);
-          return !has_citation;
-        }
-        // else if (r.label === "Result") {
-        //   return (
-        //     r.is_author_statement ||
-        //     r.text.toLowerCase().includes("participant")
-        //   );
-        // }
-        else {
-          return true;
-        }
-      });
+    const unitsToShow: RhetoricUnit[] = [];
 
-    let discourseObjs = data.map((r: RhetoricUnit, index: number) => ({
+    // Remove sentence fragments that were detected (i.e., start with a lowercase letter)
+    data = data.filter(
+      (r: RhetoricUnit) => r.text[0] !== r.text[0].toLowerCase()
+    );
+
+    // ---- NOVELTY ---- //
+    // We want to keep Novelty tags that are also author statements.
+    // If there are none, we keep up to a max number of other Novelty tags.
+    const MAX_NUM_NOVELTY = 3;
+    const authorNovelty = data.filter(
+      (r: RhetoricUnit) =>
+        r.label === "Novelty" &&
+        r.is_in_expected_section &&
+        r.is_author_statement
+    );
+    const notAuthorNovelty = data.filter(
+      (r: RhetoricUnit) =>
+        r.label === "Novelty" &&
+        r.is_in_expected_section &&
+        !r.is_author_statement
+    );
+    const notAuthorNoveltyNotIntro = notAuthorNovelty.filter(
+      (r: RhetoricUnit) => !r.section.toLowerCase().includes("introduction")
+    );
+
+    unitsToShow.push(...authorNovelty);
+    const numLeft = MAX_NUM_NOVELTY - authorNovelty.length;
+    console.log(unitsToShow, numLeft)
+    if (numLeft > 0) {
+      unitsToShow.push(...notAuthorNoveltyNotIntro.slice(0, numLeft));
+    }
+
+    // ---- OBJECTIVE ---- //
+    const MAX_NUM_OBJECTIVE = 3;
+    const objective = data.filter(
+      (r: RhetoricUnit) =>
+        r.label === "Objective" &&
+        r.is_author_statement &&
+        r.is_in_expected_section
+    );
+    unitsToShow.push(...objective);
+
+    // ---- METHOD ---- //
+    const method = data.filter((r: RhetoricUnit) => r.label === "Method");
+    unitsToShow.push(...method);
+
+    // ---- RESULT ---- //
+    const result = data.filter((r: RhetoricUnit) => {
+      const hasCitation = new RegExp(/\[.*\d.*\]/).test(r.text);
+      return r.label === "Result" && r.is_in_expected_section && !hasCitation;
+    });
+    unitsToShow.push(...result);
+
+    // ---- CONCLUSION ---- //
+    const conclusion = data.filter(
+      (r: RhetoricUnit) =>
+        r.label === "Conclusion" &&
+        r.is_author_statement &&
+        r.is_in_expected_section
+    );
+    unitsToShow.push(...conclusion);
+
+    // ---- Author statements ---- //
+    const authorStatements = data.filter(
+      (r: RhetoricUnit) => r.label === "Author"
+    );
+    unitsToShow.push(...authorStatements);
+
+    // // 1. Remove classifications for "Future Work" and "Contribution" (for now)
+    // // 2. Remove classifications that are not in the expected section, except for "Method", which does not have an expected section (yet).
+    // // 3. Remove certain classifications that are not an "author statement" to improve highlight precision.
+    // data = data
+    //   .filter(
+    //     (r: RhetoricUnit) => !["Future Work", "Contribution"].includes(r.label)
+    //   )
+    //   .filter(
+    //     (r: RhetoricUnit) => r.label === "Method" || r.is_in_expected_section
+    //   )
+    //   .filter((r: RhetoricUnit) => {
+    //     if (
+    //       ["Objective", "Novelty", "Contribution", "Conclusion"].includes(
+    //         r.label
+    //       )
+    //     ) {
+    //       return r.is_author_statement;
+    //     } else if (r.label === "Result") {
+    //       const has_citation = new RegExp(/\[.*\d.*\]/).test(r.text);
+    //       return !has_citation;
+    //     }
+    //     // else if (r.label === "Result") {
+    //     //   return (
+    //     //     r.is_author_statement ||
+    //     //     r.text.toLowerCase().includes("participant")
+    //     //   );
+    //     // }
+    //     else {
+    //       return true;
+    //     }
+    //   });
+
+    let discourseObjs = unitsToShow.map((r: RhetoricUnit, index: number) => ({
       id: index.toString(),
       entity: r,
       label: r.label,
