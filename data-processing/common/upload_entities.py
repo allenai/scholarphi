@@ -355,12 +355,9 @@ def write_to_file(entity_infos: List[EntityUploadInfo], output_file_name: str) -
         "version": FORMAT_VERSION,
         "data": [dataclasses.asdict(entity_info) for entity_info in entity_infos],
     }
-    already_exists_msg = (
-        f"File {output_file_name} already exists. "
-        + "Not overwriting. Entity infos will not be written."
-    )
+
     if os.path.exists(output_file_name):
-        logging.warn(already_exists_msg)
+        logging.warn(f"File {output_file_name} already exists. It will be overwritten.")
 
     with open(output_file_name, "w") as output_file:
         json.dump(to_write, output_file)
