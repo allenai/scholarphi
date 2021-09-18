@@ -3457,7 +3457,7 @@
       "section": "4 Evaluation 4.1 Datasets",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "We conducted t -test on the perplexity obtained, and results show significant improvements of MEED over S2S and HRAN on the two validation sets (with p -value < 0 . 05).",
@@ -3557,7 +3557,7 @@
       "section": "4.4.1 Case Study",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "We can observe from the first two plots that positive words (green dots) and negative words (red dots) are scattered around and mixed with each other in the language model weights for HRAN and MEED respectively, which means no emotion information is captured in these weights.",
@@ -10495,7 +10495,7 @@
       "section": "5 EVALUATION 5.1 System Usage Study",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "In this study, we show that human-reported smell data, despite noisy, can still enable prediction and contribute scientific knowledge of interpretable air pollution patterns.",
@@ -10526,7 +10526,7 @@
       "section": "5 EVALUATION 5.2 Smell Dataset Study",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "In this study, we show that the system can motivate active community members to contribute data and increase their self-efficacy, beliefs about how well an individual can achieve desired effects through actions [7].",
@@ -10564,7 +10564,7 @@
       "section": "5 EVALUATION 5.3 Survey Study",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "I also believe that the air quality activism community will find more willing participants if there is a very easy way for nonactivists to help support clean air , and the app onramp for potential new activists .",
@@ -10609,7 +10609,7 @@
       "section": "5 EVALUATION 5.3 Survey Study",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "The app also acts as a way for non-activists to see that they are not",
@@ -10633,7 +10633,7 @@
       "section": "5 EVALUATION 5.3 Survey Study",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "dont see the point in continuing to report .",
@@ -10803,7 +10803,7 @@
       "section": "5 EVALUATION 5.3 Survey Study",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "In this research, we demonstrate how citizen science can be used for communities to pool resources and efforts to gather evidence for advocacy.",
@@ -13101,7 +13101,7 @@
       "section": "6 DISCUSSION",
       "prob": 0.9226599931716919,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "The result showed that our users had a wide variety of system usage frequency.",
@@ -13125,7 +13125,7 @@
       "section": "5 EVALUATION 5.3 Survey Study",
       "prob": 0.9069530963897705,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "The result showed that the model was capable of explaining the underlying pattern of about 50% of the smell events, which was a joint effect of wind information and hydrogen sulfide readings (Figure 6).",
@@ -13180,7 +13180,7 @@
       "section": "5 EVALUATION 5.3 Survey Study",
       "prob": 0.8191131353378296,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "The result showed that the model explains the underlying pattern of about 30% of the smell events, which was a joint effect of wind information and hydrogen sulfide readings.",
@@ -13235,7 +13235,7 @@
       "section": "5 EVALUATION 5.1 System Usage Study",
       "prob": 0.8077145218849182,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Further investigation of the enthusiast group revealed a moderate positive association (Pearson correlation coefficient r=.50, n=375, p<.001) between the number of submitted reports and the number of user interaction events.",
@@ -13273,7 +13273,7 @@
       "section": "5 EVALUATION 5.1 System Usage Study",
       "prob": 0.7551681995391846,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "The findings in the survey study suggested that the system lowered the barrier for communities to contribute and communicate data-driven evidence.",
@@ -13311,7 +13311,7 @@
       "section": "6 DISCUSSION",
       "prob": 0.7180154919624329,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Inspired by several previous works related to extracting knowledge from data [25, 51, 115], we utilized a white box model, Decision Tree, to explain a representative subset of predictors and samples, which were selected by applying feature selection [55] and cluster analysis.",
@@ -17473,7 +17473,7 @@
       "section": "5 Study setup 5.2 Study conditions: assistance fidelity and task difficulty",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "level and end at the floor level (see Fig. 2).",
@@ -17490,7 +17490,7 @@
       "section": "5 Study setup 5.2 Study conditions: assistance fidelity and task difficulty",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "5. We then show the interaction effects between assistance and task difficulty.",
@@ -17545,7 +17545,7 @@
       "section": "6 User study 6.1 Effects of varying assistance fidelity",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Further,in thecaseofoptimalassistance,participantsfollowtheshortest-pathtrajectorybetweenpointsmorecloselythantheydoin either the no assistance or object-highlighting assistance conditions (see IPL in Fig. 5).",
@@ -17576,7 +17576,7 @@
       "section": "6 User study 6.1 Effects of varying assistance fidelity",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "We observe that participants presented with object-highlighting and optimal assistance generated significantly shorter total paths than those generated in the no-assistance case, but the average path length traveled with these two forms of assistance was not substantially different (Fig. 6).",
@@ -17607,7 +17607,7 @@
       "section": "6 User study 6.1 Effects of varying assistance fidelity",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "For an in-depth reporting of the statistical analyses, see Sec.",
@@ -17624,7 +17624,7 @@
       "section": "6 User study 6.2 Interactions between assistance and task difficulty",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Participants provided with no assistance and object-highlighting assistance were neutral about their feelings of needing to follow the assistance; participantsprovidedwithoptimalassistanceratedthattheydidfeeltheneedtofollowtheassistance.Finally,participants provided with no assistance and object-highlighting assistance disagreed that they would prefer to have the system show them what to do next and where to go next.",
@@ -17669,7 +17669,7 @@
       "section": "6 User study 6.1 Effects of varying assistance fidelity",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "For an in-depth reporting of the statistical analyses, see Sec.",
@@ -17686,7 +17686,7 @@
       "section": "6 User study 6.2 Interactions between assistance and task difficulty",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "We still observe this trend, however,",
@@ -19890,7 +19890,7 @@
       "section": "6 User study 6.1 Effects of varying assistance fidelity",
       "prob": 0.8400449156761169,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Taken together, these two findings support our hypothesis H1 that participants will follow optimal assistance when presented with it.",
@@ -19914,7 +19914,7 @@
       "section": "6 User study 6.1 Effects of varying assistance fidelity",
       "prob": 0.8118849396705627,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "We found that participants generally felt that they were faster with assistance than without assistance.",
@@ -19938,7 +19938,7 @@
       "section": "6 User study 6.1 Effects of varying assistance fidelity",
       "prob": 0.807593584060669,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "6.1.2 Results summary We now present results for the varying-assistance-fidelity study in terms of both objective and subjective metrics.",
@@ -19962,7 +19962,7 @@
       "section": "6 User study 6.1 Effects of varying assistance fidelity",
       "prob": 0.7976154685020447,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Additionally, we find that users are not consistent in their willingness to follow assistance.",
@@ -20051,7 +20051,7 @@
       "section": "6 User study 6.1 Effects of varying assistance fidelity",
       "prob": 0.6919987201690674,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Instead, our proposed approach for AR assistance applicable to complex object-rearrangement tasks described in Sec. 3 leverages only the sensor measurements of the AR device, and executes a policy whose state is informed only by these sensor measurements, thus enabling up-to-date assistance toward optimal task completion.",
@@ -23030,6 +23030,30 @@
       "section": "2 PREVIOUS WORK: MACHINE LEARNING METHODS FOR ADAPTIVE INTERFACES 2.4 Reinforcement learning",
       "prob": null,
       "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Unlike bandits, reinforcement learning permits learning policies for sequences of actions where rewards are not immediately achievable.",
+      "label": "Novelty",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8126325757575757,
+          "width": 0.3928333333333333,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.826469696969697,
+          "width": 0.39481372549019605,
+          "height": 0.013958333333333406,
+          "page": 2
+        }
+      ],
+      "section": "2 PREVIOUS WORK: MACHINE LEARNING METHODS FOR ADAPTIVE INTERFACES 2.4 Reinforcement learning",
+      "prob": null,
+      "is_author_statement": false,
       "is_in_expected_section": false
     },
     {
@@ -26913,7 +26937,7 @@
       "section": "6 EVALUATION 6.3 Summary",
       "prob": 0.9326319098472595,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Further, results from our user study highlight benefits over a static and an adaptive baseline.",
@@ -26937,7 +26961,7 @@
       "section": "6 EVALUATION 6.3 Summary",
       "prob": 0.9164294004440308,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Post-hoc test using Tukey HSD revealed that MCTS (2162 ms) was significantly faster (lower selection time) than both Freqency (2298 ms) and Static (2283 ms); the difference between Static and Freqency was not statistically significant.",
@@ -27031,6 +27055,99 @@
       "prob": 0.8579383492469788,
       "is_author_statement": false,
       "is_in_expected_section": false
+    },
+    {
+      "text": "Second, as search depth increases, our results indicate that value network is more efficient for estimating reward predictions.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.6473774509803921,
+          "top": 0.454760101010101,
+          "width": 0.2647173202614379,
+          "height": 0.011320707070707092,
+          "page": 10
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.4685972222222222,
+          "width": 0.3925669934640523,
+          "height": 0.011320707070707092,
+          "page": 10
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.4824330808080808,
+          "width": 0.06947385620915036,
+          "height": 0.011320707070707092,
+          "page": 10
+        }
+      ],
+      "section": "6 EVALUATION 6.3 Summary",
+      "prob": 0.8569210171699524,
+      "is_author_statement": true,
+      "is_in_expected_section": true
+    },
+    {
+      "text": "These results support our approach towards planning menu adaptations that can improve user performance.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.8065016339869281,
+          "top": 0.7909709595959595,
+          "width": 0.10806372549019616,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8048080808080809,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.818645202020202,
+          "width": 0.16148366013071902,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ],
+      "section": "6.1.1 Tasks.",
+      "prob": 0.8059682846069336,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Finally, we present results from an empirical evaluation where the approach compared favourably against a non-adaptive baseline design and a frequency-based adaptation policy.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.5822908496732027,
+          "top": 0.36984848484848487,
+          "width": 0.3298006535947713,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.5189918300653594,
+          "top": 0.3836856060606061,
+          "width": 0.3930947712418301,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.3975227272727273,
+          "width": 0.33953594771241824,
+          "height": 0.011320707070706981,
+          "page": 1
+        }
+      ],
+      "section": "1 INTRODUCTION",
+      "prob": 0.8031420707702637,
+      "is_author_statement": true,
+      "is_in_expected_section": true
     },
     {
       "text": "The method uses a surrogate model for approximating the model fit across the parameter space and quantify uncertainty.",
@@ -27174,6 +27291,99 @@
       "is_in_expected_section": false
     },
     {
+      "text": "In a constrained setting, the MCTS algorithm was allowed 400 iterations, and a shallow roll-out horizon of 4 steps, to build the search tree and find suitable adaptations.",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.7116862745098039,
+          "top": 0.6171022727272727,
+          "width": 0.2004084967320261,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6309393939393939,
+          "width": 0.39256045751633994,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6447765151515151,
+          "width": 0.38003104575163404,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ],
+      "section": "6.1.1 Tasks.",
+      "prob": 0.564136266708374,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Reward Estimation: We compare two methods of estimating rewards: model-based simulations and value neural network predictions .",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.7631704545454546,
+          "width": 0.3787549019607843,
+          "height": 0.013958333333333295,
+          "page": 8
+        },
+        {
+          "left": 0.08736437908496732,
+          "top": 0.7770075757575757,
+          "width": 0.3953562091503268,
+          "height": 0.013958333333333406,
+          "page": 8
+        }
+      ],
+      "section": "6.1.1 Tasks.",
+      "prob": 0.5539441704750061,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "For each menu within a condition, a Zipfian distribution, known to accurately capture real-world command selections [13, 37], with shape  = 1.5 was used to control the frequency distribution of target items.",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.826469696969697,
+          "width": 0.3762794117647058,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8403068181818182,
+          "width": 0.3925522875816994,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8541439393939394,
+          "width": 0.39256699346405227,
+          "height": 0.011422979797979793,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8679810606060606,
+          "width": 0.07266503267973858,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ],
+      "section": "6 EVALUATION 6.2 Empirical Evaluation",
+      "prob": 0.5484960675239563,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
       "text": "Given this setting, the goal of the system is to find a suitable policy  that can be used to select adaptations that maximise the estimated cumulative reward.",
       "label": "Objective",
       "bboxes": [
@@ -27271,82 +27481,6 @@
       "section": "5 APPLICATION: ADAPTIVE MENUS 5.3 Neural Network for Rewards Estimation",
       "prob": 0.8204621076583862,
       "is_author_statement": false,
-      "is_in_expected_section": false
-    },
-    {
-      "text": "The primary goal of this evaluation is to test whether our planning approach (henceforth MCTS) applied to linear menus improves performance in comparison with static menus (Static), and with the well-known frequency-based adaptive approach (Freqency) as a baseline (e.g. as in [34]).",
-      "label": "Objective",
-      "bboxes": [
-        {
-          "left": 0.0874656862745098,
-          "top": 0.5840997474747475,
-          "width": 0.3930065359477124,
-          "height": 0.011320707070706981,
-          "page": 9
-        },
-        {
-          "left": 0.08790522875816993,
-          "top": 0.5979368686868687,
-          "width": 0.39255882352941174,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.08790522875816993,
-          "top": 0.6117739898989899,
-          "width": 0.39255718954248364,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.08790522875816993,
-          "top": 0.6256111111111111,
-          "width": 0.39343790849673205,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.08790522875816993,
-          "top": 0.6394482323232323,
-          "width": 0.1686552287581699,
-          "height": 0.011320707070707092,
-          "page": 9
-        }
-      ],
-      "section": "6 EVALUATION 6.2 Empirical Evaluation",
-      "prob": 0.7175770998001099,
-      "is_author_statement": true,
-      "is_in_expected_section": false
-    },
-    {
-      "text": "In this paper, we approach the fundamental problem of selecting user interface adaptations by applying model-based RL, and exploiting predictive HCI models, to simulate and plan adaptations.",
-      "label": "Objective",
-      "bboxes": [
-        {
-          "left": 0.5358137254901961,
-          "top": 0.3836856060606061,
-          "width": 0.3787549019607843,
-          "height": 0.011320707070707092,
-          "page": 2
-        },
-        {
-          "left": 0.5195343137254902,
-          "top": 0.3975227272727273,
-          "width": 0.3925637254901959,
-          "height": 0.011320707070706981,
-          "page": 2
-        },
-        {
-          "left": 0.5195343137254902,
-          "top": 0.4113598484848485,
-          "width": 0.3948153594771242,
-          "height": 0.011320707070706981,
-          "page": 2
-        }
-      ],
-      "section": "2 PREVIOUS WORK: MACHINE LEARNING METHODS FOR ADAPTIVE INTERFACES 2.4 Reinforcement learning",
-      "prob": 0.6972891092300415,
-      "is_author_statement": true,
       "is_in_expected_section": false
     }
   ],
@@ -30253,7 +30387,7 @@
       "section": "6 DISCUSSION 6.1 Human-AI Partnerships",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Interface features such as confidence highlighting helped steer human attention toward potentially problematic areas, and alternate translations provided explanatory power for why a segment of translated code was rated as low confidence by the model; in addition, alternate translations provided clues toward the semantic meaning of the code and helped participants find logical errors in it.",
@@ -33179,7 +33313,7 @@
       "section": "6 DISCUSSION 6.2 Toward Explainable Generative AI",
       "prob": 0.6428225040435791,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "These ideas were generated through our pilot testing.",
@@ -37124,7 +37258,7 @@
       "section": "2 RELATEDWORK 2.1 Traditional UI Evaluation Methods",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "See Section 3 for an example.",
@@ -37396,7 +37530,7 @@
       "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Crowd raters, from the cross-method evaluation, showed significant preference for the designs generated by Spacewalker for all the search space sizes in Experiment 1 (see Table 2).",
@@ -37427,7 +37561,7 @@
       "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "In addition, we observe a trend of increased preference for Spacewalker genetic method as the size of the search space increases (see Figure 6).",
@@ -37458,7 +37592,7 @@
       "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Designers also want to immediately see the effect of a design when adding an option value, instead of examining them on a separate screen in the Preview (see Figure 2).",
@@ -37489,7 +37623,7 @@
       "section": "6 DISCUSSION & FUTUREWORK",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "For the experiment where Spacewalker is used to search for different web page types, we find that crowd raters, from the crossmethod evaluation, preferred the results produced by Spacewalker genetic method in all cases we tested when they are compared with those from the uniform sampling method (see Table 3).",
@@ -37534,7 +37668,7 @@
       "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Our experiments show that the concept of Spacewalker is well received by the designers and developers.",
@@ -37558,7 +37692,7 @@
       "section": "6 DISCUSSION & FUTUREWORK",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "In Spacewalker, a designer currently needs to specify the number of iterations and workers needed for searching a design space (see Figure 2).",
@@ -37589,7 +37723,7 @@
       "section": "6 DISCUSSION & FUTUREWORK",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Currently, a designer can revise these parameters by examining the resulted designs shown in the Monitor view (see Figure 4) and schedule more iterations and workers to the task to improve the designs.",
@@ -37627,7 +37761,7 @@
       "section": "6 DISCUSSION & FUTUREWORK",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Various commercial tools also exist to support A/B testing of UI designs.",
@@ -39257,7 +39391,7 @@
       "section": "5 EXPERIMENTS",
       "prob": 0.8866589665412903,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "summarizes the results.",
@@ -39274,7 +39408,7 @@
       "section": "5 EXPERIMENTS 5.1 User Study",
       "prob": 0.8607693314552307,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "For the experiment where Spacewalker is used to search for different web page types, we find that crowd raters, from the crossmethod evaluation, preferred the results produced by Spacewalker genetic method in all cases we tested when they are compared with those from the uniform sampling method (see Table 3).",
@@ -39319,7 +39453,7 @@
       "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
       "prob": 0.8551549315452576,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Crowd raters, from the cross-method evaluation, showed significant preference for the designs generated by Spacewalker for all the search space sizes in Experiment 1 (see Table 2).",
@@ -39350,7 +39484,7 @@
       "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
       "prob": 0.8194810748100281,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "The experiments indicate that UI designs obtained by Spacewalker were significantly more preferred by human evaluators 1 than those from a baseline method.",
@@ -39381,6 +39515,106 @@
       "section": "1 INTRODUCTION",
       "prob": 0.806332528591156,
       "is_author_statement": false,
+      "is_in_expected_section": true
+    },
+    {
+      "text": "In this study, we evaluate the usability of our proposed HTML extensions by gather informal feedback from web designers.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.5195343137254902,
+          "top": 0.45108333333333334,
+          "width": 0.39293790849673205,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.46491919191919195,
+          "width": 0.36536274509803923,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ],
+      "section": "5 EXPERIMENTS 5.1 User Study",
+      "prob": 0.735389232635498,
+      "is_author_statement": true,
+      "is_in_expected_section": true
+    },
+    {
+      "text": "\"This tool provides (a) useful way to compare my designs. I used to use the Inspect tool in Chrome to try out different values of the styles of my attributes, but the limitation is that I can only modify one item at a time. With this tool I could manage my HTML/CSS code and potential designs of the whole page efficiently. It improves my productivity and experience significantly.\"",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.7184002525252525,
+          "width": 0.3762745098039215,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7322373737373737,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7460732323232323,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7599103535353536,
+          "width": 0.3925604575163399,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7737474747474747,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7875845959595961,
+          "width": 0.2415947712418301,
+          "height": 0.011320707070706981,
+          "page": 7
+        }
+      ],
+      "section": "6 DISCUSSION & FUTUREWORK",
+      "prob": 0.7127982974052429,
+      "is_author_statement": false,
+      "is_in_expected_section": true
+    },
+    {
+      "text": "Our experiments show that the concept of Spacewalker is well received by the designers and developers.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.26665196078431375,
+          "top": 0.6630404040404041,
+          "width": 0.21628594771241827,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6768775252525252,
+          "width": 0.3948153594771242,
+          "height": 0.011320707070707092,
+          "page": 7
+        }
+      ],
+      "section": "6 DISCUSSION & FUTUREWORK",
+      "prob": 0.6636466383934021,
+      "is_author_statement": true,
       "is_in_expected_section": true
     },
     {
@@ -39560,6 +39794,106 @@
       "is_in_expected_section": false
     },
     {
+      "text": "One method is single-point crossover, where a crossover point is randomly selected from both parents, and all the genetic representation to the right of the crossover point are swapped, forming two children (Figure 5).",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6525656565656566,
+          "width": 0.39255555555555555,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6664027777777779,
+          "width": 0.3950326797385621,
+          "height": 0.011320707070706981,
+          "page": 4
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.680239898989899,
+          "width": 0.39256045751633994,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6940770202020201,
+          "width": 0.11091503267973855,
+          "height": 0.011320707070707092,
+          "page": 4
+        }
+      ],
+      "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+      "prob": 0.5987594723701477,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "For each pair of designs shown to a crowd worker, we compute a diff mask to capture the differences between their genetic sequences where the corresponding bits for the differences are set to 1 .",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.2854297385620915,
+          "top": 0.1649078282828283,
+          "width": 0.19503758169934643,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.17874494949494948,
+          "width": 0.392562091503268,
+          "height": 0.011332070707070735,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.1925820707070707,
+          "width": 0.3928398692810458,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.20575126262626264,
+          "width": 0.15151470588235294,
+          "height": 0.011988636363636312,
+          "page": 5
+        }
+      ],
+      "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
+      "prob": 0.5915824770927429,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "We also randomly shuffled the order of designs for both methods.",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.8923725490196077,
+          "top": 0.22025631313131314,
+          "width": 0.019725490196078388,
+          "height": 0.011320707070707037,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.23409343434343433,
+          "width": 0.3695326797385622,
+          "height": 0.011320707070707092,
+          "page": 6
+        }
+      ],
+      "section": "5 EXPERIMENTS 5.2 Exploration Performance Evaluation",
+      "prob": 0.5700871348381042,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
       "text": "The goal is to test whether web designers are able to learn and use our markups to specify search criteria and launch a design exploration task, and to gather feedback of the Spacewalker system.",
       "label": "Objective",
       "bboxes": [
@@ -39656,75 +39990,6 @@
       ],
       "section": "4 THE SPACEWALKER SYSTEM 4.2 Spacewalker Genetic Algorithms",
       "prob": 0.8924456238746643,
-      "is_author_statement": true,
-      "is_in_expected_section": false
-    },
-    {
-      "text": "We also aim to minimize the effort and cost of the designer to perform the task.",
-      "label": "Objective",
-      "bboxes": [
-        {
-          "left": 0.4326192810457516,
-          "top": 0.3309520202020202,
-          "width": 0.04784967320261446,
-          "height": 0.011320707070707092,
-          "page": 2
-        },
-        {
-          "left": 0.08790522875816993,
-          "top": 0.3447891414141414,
-          "width": 0.392562091503268,
-          "height": 0.011320707070707092,
-          "page": 2
-        },
-        {
-          "left": 0.08790522875816993,
-          "top": 0.3586262626262626,
-          "width": 0.027763071895424832,
-          "height": 0.011320707070707092,
-          "page": 2
-        }
-      ],
-      "section": "2 RELATEDWORK 2.2 Crowd-Powered UI Design & Evaluation",
-      "prob": 0.8920279741287231,
-      "is_author_statement": true,
-      "is_in_expected_section": false
-    },
-    {
-      "text": "To further our understanding, we intend to compare the automatic process enabled by Spacewalker with the existing manual process for design search in realistic design projects in the future.",
-      "label": "Objective",
-      "bboxes": [
-        {
-          "left": 0.28804084967320265,
-          "top": 0.7322260101010101,
-          "width": 0.19242483660130716,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.08790522875816993,
-          "top": 0.7460618686868686,
-          "width": 0.39283496732026146,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.08736437908496732,
-          "top": 0.75989898989899,
-          "width": 0.3955816993464052,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.08790522875816993,
-          "top": 0.7737361111111111,
-          "width": 0.15783496732026142,
-          "height": 0.011320707070707092,
-          "page": 9
-        }
-      ],
-      "section": "6 DISCUSSION & FUTUREWORK",
-      "prob": 0.8145083785057068,
       "is_author_statement": true,
       "is_in_expected_section": false
     }
@@ -45792,7 +46057,7 @@
       "section": "5 OVERALL DISCUSSION 5.1 Rethinking What \u2018Relevance\u2019 Means for Recommendations",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "For example, a decision not to show recommendations might be informed by the time of day (e.g., 2am is too late), screentime preferences (e.g., when the user has already exceeded their goal of 30-minutes per day on entertainment apps), or explicit user preferences (e.g., only show three recommendations unless I clickto-show-more).",
@@ -45844,7 +46109,7 @@
       "section": "5 OVERALL DISCUSSION 5.1 Rethinking What \u2018Relevance\u2019 Means for Recommendations",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "(a) explicitly state preferences for topics they would like to see or not see;",
@@ -45868,7 +46133,7 @@
       "section": "5 OVERALL DISCUSSION 5.1 Rethinking What \u2018Relevance\u2019 Means for Recommendations",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "(b) explicitly rate recommendations (e.g., show me more like this one);",
@@ -45892,7 +46157,7 @@
       "section": "5 OVERALL DISCUSSION 5.1 Rethinking What \u2018Relevance\u2019 Means for Recommendations",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "in its recommendations to the user [76], but this should be preceded by a more fundamental question of whether or not to show recommendations in the first place.",
@@ -45923,7 +46188,7 @@
       "section": "5 OVERALL DISCUSSION 5.1 Rethinking What \u2018Relevance\u2019 Means for Recommendations",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "This includes considering when to show recommendations in the first place.",
@@ -45947,7 +46212,7 @@
       "section": "5 OVERALL DISCUSSION 5.1 Rethinking What \u2018Relevance\u2019 Means for Recommendations",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "We find that participants generally prefer mechanisms like autoplay and recommendations to be redesigned for a greater sense of agency than the YouTube mobile app currently provides.",
@@ -49359,6 +49624,113 @@
       "is_in_expected_section": false
     },
     {
+      "text": "We recruited YouTube users in Seattle via email lists and social media channels to  Help us understand how people spend their time in the YouTube mobile app.  We did not initially set inclusion criteria for participation (beyond adult YouTube users) as we viewed our co-design activities as exploratory.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.6377483660130719,
+          "top": 0.6102083333333334,
+          "width": 0.2743513071895425,
+          "height": 0.011320707070706981,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6240454545454546,
+          "width": 0.39255392156862734,
+          "height": 0.011332070707070652,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6378825757575757,
+          "width": 0.39255882352941185,
+          "height": 0.011332070707070763,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.651719696969697,
+          "width": 0.3934460784313726,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6655568181818181,
+          "width": 0.3146944444444444,
+          "height": 0.011320707070707092,
+          "page": 7
+        }
+      ],
+      "section": "4.2 Participants",
+      "prob": 0.5940836668014526,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "To focus on RQ2, our results and analysis here address only the four mockups (see Table 5 ) that directly change one of the existing internal mechanisms in YouTube that we identified in Study 1.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.8453366013071896,
+          "top": 0.2894419191919192,
+          "width": 0.06676307189542485,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.30327777777777776,
+          "width": 0.39256535947712423,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.51909477124183,
+          "top": 0.31709217171717174,
+          "width": 0.3954803921568628,
+          "height": 0.011343434343434267,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.3309520202020202,
+          "width": 0.2940081699346404,
+          "height": 0.011320707070707092,
+          "page": 7
+        }
+      ],
+      "section": "4.1 Preparatory Design Work",
+      "prob": 0.5846940875053406,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "mockups for the seven sketches with the highest average scores.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.6091437908496732,
+          "top": 0.1649078282828283,
+          "width": 0.30294444444444446,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.17874494949494948,
+          "width": 0.08890686274509807,
+          "height": 0.011320707070707092,
+          "page": 7
+        }
+      ],
+      "section": "4.1 Preparatory Design Work",
+      "prob": 0.5793025493621826,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
       "text": "In Study 2, we sought to understand how changes to these design mechanisms might influence sense of agency ( RQ2 ).",
       "label": "Objective",
       "bboxes": [
@@ -49631,6 +50003,99 @@
       ],
       "section": "4.3 Procedures",
       "prob": 0.4428141713142395,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "For each theme, we extracted vivid exhibits [7], which we used to write analytical memos.",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.8920277777777779,
+          "top": 0.6488017676767677,
+          "width": 0.020339869281045697,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6626388888888888,
+          "width": 0.39256045751633983,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6764760101010101,
+          "width": 0.10786111111111107,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ],
+      "section": "4.4 Codebook Thematic Analysis",
+      "prob": 0.4290080964565277,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "After reviewing this first pass of coding together, we refined and consolidated codes and generated initial themes.",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.1716372549019608,
+          "top": 0.8523560606060606,
+          "width": 0.31044607843137256,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08736437908496732,
+          "top": 0.8661931818181818,
+          "width": 0.39535784313725486,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ],
+      "section": "4.4 Codebook Thematic Analysis",
+      "prob": 0.4014149010181427,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "After each co-design session, the researcher leading the session completed a debriefing form with their top three takeaways and shared participant sketches with the rest of the research team.",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.2824313725490196,
+          "top": 0.7278232323232323,
+          "width": 0.19803594771241828,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7416590909090909,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7554962121212121,
+          "width": 0.3925588235294118,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7693333333333333,
+          "width": 0.1463643790849673,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ],
+      "section": "4.4 Codebook Thematic Analysis",
+      "prob": 0.3603094518184662,
       "is_author_statement": false,
       "is_in_expected_section": false
     }
@@ -53923,7 +54388,7 @@
       "section": "5 DISCUSSION 5.2 Humans Are More Responsible for Their Tasks Than AI Programs",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "For instance, to be responsible for a specific task because one has the authority and necessary skills prescribes that one should see to it that the task is completed, i.e., an obligation is prescribed, through consequentialist, deontological, or virtue-based routes [102].",
@@ -53968,7 +54433,7 @@
       "section": "5 DISCUSSION 5.2 Humans Are More Responsible for Their Tasks Than AI Programs",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Therefore, it is not deemed the AI programs responsibility to complete the assigned task or see it to be fulfilled.",
@@ -53992,7 +54457,7 @@
       "section": "5 DISCUSSION 5.2 Humans Are More Responsible for Their Tasks Than AI Programs",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Our results from both studies show that AI and human agents are blamed to a similar degree.",
@@ -54016,7 +54481,7 @@
       "section": "5 DISCUSSION 5.4 AI and Human Agents Are Similarly Responsible for Consequences",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "The results from our initial exploratory analysis in Section 4.1 show that trends found between causality and blame attributions across different phrasing styles do not directly transfer to liability judgments.",
@@ -54054,7 +54519,7 @@
       "section": "5 DISCUSSION 5.4 AI and Human Agents Are Similarly Responsible for Consequences",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Our study employed a within-subjects design where all participants were exposed to a diverse set of vignettes addressing distinct possible outcomes from bail decisions.",
@@ -55706,7 +56171,7 @@
       "section": "7 CONCLUDING REMARKS",
       "prob": 0.5,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Therefore, our results might not be generalizable to all possible environments.",
@@ -55730,7 +56195,7 @@
       "section": "7 CONCLUDING REMARKS",
       "prob": 0.5,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "As our results demonstrate, people may hold AI to a similar level of moral scrutiny as humans for their actions and harms.",
@@ -55754,7 +56219,7 @@
       "section": "7 CONCLUDING REMARKS",
       "prob": 0.5,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Our respondents indicate that they expect decision-makers and advisors to justify their bailing decisions regardless of their nature.",
@@ -55785,7 +56250,7 @@
       "section": "7 CONCLUDING REMARKS",
       "prob": 0.5,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "However, there is a growing need for practical and proactive guidelines; as Mittelstadt puts it, principles alone cannot guarantee ethical AI [69].",
@@ -56140,7 +56605,7 @@
       "section": "7 CONCLUDING REMARKS",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "In our case study, human-AI collaborations are such that there exists an AI-in-theloop; future work should address other collaboration variations, such as human-in-the-loop, i.e., humans assisting machines.",
@@ -56178,7 +56643,7 @@
       "section": "7 CONCLUDING REMARKS",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "We recognize that other meanings of responsibility could be further considered, such as virtue-based notions where one might call an entity responsible in that it prescribes an evaluation of ones traits and dispositions [87, 94].",
@@ -56216,7 +56681,7 @@
       "section": "7 CONCLUDING REMARKS",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Nevertheless, our research has found key clusters of responsibility notions concerning AI and human agents, opening further research directions.",
@@ -56247,7 +56712,7 @@
       "section": "7 CONCLUDING REMARKS",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "The phrasing column indicates how statements were phrased depending on which function of the bail decision they stressed: preventing further offenses (Further Offense) or protecting the defendants rights (Rights).",
@@ -56333,7 +56798,7 @@
       "section": "5 DISCUSSION 5.3 The Need for Explanations",
       "prob": 0.8804556131362915,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Our results from both studies show that AI and human agents are blamed to a similar degree.",
@@ -56357,7 +56822,7 @@
       "section": "5 DISCUSSION 5.4 AI and Human Agents Are Similarly Responsible for Consequences",
       "prob": 0.8702875971794128,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "A similar effect was found depending on defendant recidivism.",
@@ -56405,7 +56870,86 @@
       "section": "7 CONCLUDING REMARKS",
       "prob": 0.7093559503555298,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
+    },
+    {
+      "text": "These trends corroborate the responsibility clusters discussed above.Finally,",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.5566062091503268,
+          "top": 0.6578510101010101,
+          "width": 0.35548856209150337,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6716881313131313,
+          "width": 0.05941503267973858,
+          "height": 0.02515782828282842,
+          "page": 5
+        }
+      ],
+      "section": "4 RESULTS 4.1 Responsibility in Bail Decisions",
+      "prob": 0.7032065391540527,
+      "is_author_statement": false,
+      "is_in_expected_section": true
+    },
+    {
+      "text": "These findings agree with the Path Model of Blame, which proposes causality as the initial step for blame mitigation.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.7051160130718954,
+          "top": 0.4169621212121212,
+          "width": 0.20697549019607853,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.4307992424242424,
+          "width": 0.39283333333333337,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.4446363636363636,
+          "width": 0.10296568627450986,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ],
+      "section": "5 DISCUSSION 5.4 AI and Human Agents Are Similarly Responsible for Consequences",
+      "prob": 0.6500331163406372,
+      "is_author_statement": false,
+      "is_in_expected_section": true
+    },
+    {
+      "text": "This finding demonstrates the significance of these systems interpretability.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.17466013071895425,
+          "top": 0.6630404040404041,
+          "width": 0.30580718954248365,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6768775252525252,
+          "width": 0.14997222222222223,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ],
+      "section": "5 DISCUSSION 5.3 The Need for Explanations",
+      "prob": 0.6322861909866333,
+      "is_author_statement": false,
+      "is_in_expected_section": true
     },
     {
       "text": "Our primary goal was to examine how people attribute responsibility to human and AI agents in high-stakes scenarios.",
@@ -56491,44 +57035,6 @@
       "section": "2 BACKGROUND 2.3 Responsibility, Fairness, Trust in HCI Literature",
       "prob": 0.5309919714927673,
       "is_author_statement": false,
-      "is_in_expected_section": false
-    },
-    {
-      "text": "This paper discussed the responsibility gap posed by the deployment of autonomous AI systems [68] and conducted a survey study to understand how differently people attribute responsibility to AI and humans.",
-      "label": "Objective",
-      "bboxes": [
-        {
-          "left": 0.51909477124183,
-          "top": 0.7352411616161617,
-          "width": 0.3954787581699347,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5195343137254902,
-          "top": 0.7490770202020202,
-          "width": 0.39294281045751633,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5195343137254902,
-          "top": 0.7629141414141414,
-          "width": 0.39255882352941185,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5195343137254902,
-          "top": 0.7767512626262626,
-          "width": 0.0777009803921569,
-          "height": 0.011320707070707092,
-          "page": 9
-        }
-      ],
-      "section": "7 CONCLUDING REMARKS",
-      "prob": 0.5195613503456116,
-      "is_author_statement": true,
       "is_in_expected_section": false
     },
     {
@@ -60268,7 +60774,7 @@
       "section": "6 EXPERIMENTS 6.3 Global Observations",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "We defined a consensus measure on this variability (Section 4.2): Comparing this variability between all referents, our results largely agree with Vatavu [59]: In particular, applaud, fly like a bird and hands up show high consensus while climb ladder, crouch, turn around have low consensus.",
@@ -60313,7 +60819,7 @@
       "section": "6 EXPERIMENTS 6.3 Global Observations",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "The gesture paths visit roughly similar main parts of the gesture space, yet the children do not find consensus.",
@@ -60344,7 +60850,7 @@
       "section": "6 EXPERIMENTS 6.6 Comparison Between Datasets",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "In contrast, it did not separately find left hand and kicking, presumably since those were proposed only a few times.",
@@ -60368,7 +60874,7 @@
       "section": "6 EXPERIMENTS 6.5 Interactive Clustering",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Some people noted that they struggled to find a specific pose on the map.",
@@ -60392,7 +60898,7 @@
       "section": "7 USER STUDY 7.2 Findings",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Another researcher felt that the map should show more detail so it would be easier to judge differences and transitions of poses.",
@@ -60423,7 +60929,7 @@
       "section": "7 USER STUDY 7.2 Findings",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "This live embedding provides a monitoring tool, for example, for participants to see their currently performed gesture (e.g. shown as a cursor/point on the map), possibly to nudge them towards exploring new regions of the behavior space (cf. [65]).",
@@ -60461,7 +60967,7 @@
       "section": "8 DISCUSSION 8.3 Opportunities for Research & Applications",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Instead, GestureMap could be used to show gestures to users, allowing them to reenact and explore them with live monitoring via the map.",
@@ -60492,7 +60998,7 @@
       "section": "8 DISCUSSION 8.3 Opportunities for Research & Applications",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "CHI 21, May 813, 2021, Yokohama, Japan",
@@ -63723,6 +64229,92 @@
       "is_in_expected_section": false
     },
     {
+      "text": "For preprocessing, we followed the original authors [59] but left out the resampling step.",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.7274705882352941,
+          "top": 0.5329722222222222,
+          "width": 0.18463071895424843,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5468093434343434,
+          "width": 0.34044444444444444,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ],
+      "section": "6 EXPERIMENTS 6.1 Datasets",
+      "prob": 0.6368563175201416,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "In another experiment, we applied clustering to look for patterns within a referent: As mentioned, referents such as throw ball and crouch contained distinct patterns, revealed on the map.",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.4225227272727272,
+          "width": 0.3762794117647059,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.08736437908496732,
+          "top": 0.43635984848484843,
+          "width": 0.3931013071895425,
+          "height": 0.011332070707070763,
+          "page": 7
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.45019696969696965,
+          "width": 0.3451813725490196,
+          "height": 0.011332070707070763,
+          "page": 7
+        }
+      ],
+      "section": "6 EXPERIMENTS 6.5 Interactive Clustering",
+      "prob": 0.5998620986938477,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "We implemented GestureMap as an analysis tool that integrates the described concepts of both the interactive gesture map (Section 3) and the DBA-based computations (Section 4).",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.08720261437908497,
+          "top": 0.4997550505050505,
+          "width": 0.39326470588235296,
+          "height": 0.011332070707070707,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5135921717171718,
+          "width": 0.39343790849673205,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.527429292929293,
+          "width": 0.26556535947712423,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ],
+      "section": "5 IMPLEMENTATION OF GESTUREMAP",
+      "prob": 0.5697280168533325,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
       "text": "We defined a consensus measure on this variability (Section 4.2): Comparing this variability between all referents, our results largely agree with Vatavu [59]: In particular, applaud, fly like a bird and hands up show high consensus while climb ladder, crouch, turn around have low consensus.",
       "label": "Result",
       "bboxes": [
@@ -63765,7 +64357,7 @@
       "section": "6 EXPERIMENTS 6.3 Global Observations",
       "prob": 0.7923374176025391,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Throughout the interview we noticed that all participants preferred the scatter plot over the density plot.",
@@ -63796,7 +64388,7 @@
       "section": "7 USER STUDY 7.2 Findings",
       "prob": 0.7654393315315247,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "As a second example, we compared behavior diversity across datasets.",
@@ -63820,7 +64412,7 @@
       "section": "6 EXPERIMENTS 6.6 Comparison Between Datasets",
       "prob": 0.5776397585868835,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Finally, we report the variance of these DTW distances as a measure of consensus.",
@@ -63882,6 +64474,92 @@
       "section": "7 USER STUDY 7.2 Findings",
       "prob": 0.5193062424659729,
       "is_author_statement": true,
+      "is_in_expected_section": true
+    },
+    {
+      "text": "Overall, the researchers felt comfortable with grouping the proposals based on the path shapes.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.7729673202614379,
+          "top": 0.1649078282828283,
+          "width": 0.13912581699346416,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.17874494949494948,
+          "width": 0.3925637254901959,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.1925820707070707,
+          "width": 0.0443545751633988,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ],
+      "section": "7 USER STUDY 7.2 Findings",
+      "prob": 0.5087741613388062,
+      "is_author_statement": false,
+      "is_in_expected_section": true
+    },
+    {
+      "text": "Here demonstrate the use of GestureMap in a walkthrough of an explorative analysis: Examining the gesture map, the center (Figure 2C) reveals start/end poses (standing upright, arms at rest).",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8429217171717173,
+          "width": 0.39256045751633994,
+          "height": 0.01133207070707054,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8567588383838384,
+          "width": 0.39503104575163406,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8705959595959595,
+          "width": 0.369954248366013,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ],
+      "section": "6 EXPERIMENTS 6.3 Global Observations",
+      "prob": 0.5036492347717285,
+      "is_author_statement": false,
+      "is_in_expected_section": true
+    },
+    {
+      "text": "Table 1 shows an overview of the relation to related work.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.814906862745098,
+          "top": 0.647344696969697,
+          "width": 0.09718790849673198,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6611818181818181,
+          "width": 0.2373235294117647,
+          "height": 0.011320707070707092,
+          "page": 2
+        }
+      ],
+      "section": "3 GESTUREMAP CONCEPT 3.1 Feature Requirements and Overview",
+      "prob": 0.47420555353164673,
+      "is_author_statement": false,
       "is_in_expected_section": false
     },
     {
@@ -63983,61 +64661,6 @@
       "prob": 0.5904760956764221,
       "is_author_statement": false,
       "is_in_expected_section": false
-    },
-    {
-      "text": "Our work builds on this idea, extends its data-driven perspective with a visual analytics tool, and introduces a new measure fitting this visualization.",
-      "label": "Objective",
-      "bboxes": [
-        {
-          "left": 0.7942140522875818,
-          "top": 0.6861022727272728,
-          "width": 0.11787908496732014,
-          "height": 0.011320707070707092,
-          "page": 1
-        },
-        {
-          "left": 0.5195343137254902,
-          "top": 0.6999393939393939,
-          "width": 0.39256045751633994,
-          "height": 0.011320707070707092,
-          "page": 1
-        },
-        {
-          "left": 0.5195343137254902,
-          "top": 0.7137765151515152,
-          "width": 0.361483660130719,
-          "height": 0.011320707070707092,
-          "page": 1
-        }
-      ],
-      "section": "2 RELATEDWORK 2.1 Gesture Elicitation Studies",
-      "prob": 0.5869761109352112,
-      "is_author_statement": true,
-      "is_in_expected_section": false
-    },
-    {
-      "text": "These challenges motivate our work on new quantitative methods and tools for analyzing elicitation data.",
-      "label": "Objective",
-      "bboxes": [
-        {
-          "left": 0.10418464052287582,
-          "top": 0.7506742424242424,
-          "width": 0.3787598039215686,
-          "height": 0.011320707070707092,
-          "page": 1
-        },
-        {
-          "left": 0.08790522875816993,
-          "top": 0.7645113636363637,
-          "width": 0.25261437908496737,
-          "height": 0.011320707070706981,
-          "page": 1
-        }
-      ],
-      "section": "1 INTRODUCTION",
-      "prob": 0.5370967388153076,
-      "is_author_statement": true,
-      "is_in_expected_section": true
     }
   ],
   "2102.09087": [
@@ -65674,6 +66297,44 @@
       "is_in_expected_section": true
     },
     {
+      "text": "Unlike using the IMU, these detection methods require additional hardware installed on the already very compact mobile devices, increasing manufacturing and material cost and potentially reducing available space to the largest possible battery.",
+      "label": "Novelty",
+      "bboxes": [
+        {
+          "left": 0.6235228758169935,
+          "top": 0.10956060606060607,
+          "width": 0.28856862745098033,
+          "height": 0.011320707070707065,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.12339772727272727,
+          "width": 0.39255392156862734,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.1372348484848485,
+          "width": 0.3925637254901959,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.1510719696969697,
+          "width": 0.3948202614379086,
+          "height": 0.011320707070707092,
+          "page": 1
+        }
+      ],
+      "section": "2 RELATEDWORK 2.1 Off-Screen Interaction",
+      "prob": null,
+      "is_author_statement": false,
+      "is_in_expected_section": true
+    },
+    {
       "text": "Although these studies yielded promising result, their network capacity was relatively small and the reported accuracy was still far from practical level.",
       "label": "Novelty",
       "bboxes": [
@@ -67261,7 +67922,7 @@
       "section": "5 MACHINE LEARNING EXPERIMENTS 5.1 Performance on Tap Recognition Tasks",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "The major latency (105 ms) of the whole pipeline lies in waiting to observe the complete tap signal in the feature window.",
@@ -67292,7 +67953,7 @@
       "section": "5 MACHINE LEARNING EXPERIMENTS 5.1 Performance on Tap Recognition Tasks",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "By comparing the one-to-n-participant with the leave-one-out evaluation (see Table 5), we see that training on a one-person data can still be effective.",
@@ -67371,7 +68032,7 @@
       "section": "6 DISCUSSION",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "ExplorativeTap is a two-handed interaction method that exploits signals from both the front (touch) and back of the phone tap (see Figure 9b).",
@@ -69135,6 +69796,85 @@
       "is_in_expected_section": false
     },
     {
+      "text": "Specifically, we first perform a simple, linear complexity peak detection on the gating signal at the per-frame level (Figure 2 the pink region).",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.6422853535353535,
+          "width": 0.3766633986928104,
+          "height": 0.011320707070706981,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6561224747474748,
+          "width": 0.39255882352941174,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6699583333333333,
+          "width": 0.07692483660130721,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ],
+      "section": "3 RECOGNIZING TAP PROPERTIES 3.4 Signal Gating for Neural Network",
+      "prob": 0.6386069059371948,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "We implemented and trained four ML algorithms, including TapNet, to compare their relative performance.",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.30689052287581703,
+          "top": 0.6215290404040403,
+          "width": 0.1735669934640523,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6353661616161616,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707203,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6492032828282828,
+          "width": 0.07934640522875817,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ],
+      "section": "5 MACHINE LEARNING EXPERIMENTS 5.1 Performance on Tap Recognition Tasks",
+      "prob": 0.6098924875259399,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "TapNet is the proposed MIMO method.",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.5734640522875817,
+          "top": 0.31116414141414145,
+          "width": 0.25321405228758176,
+          "height": 0.011320707070707037,
+          "page": 5
+        }
+      ],
+      "section": "5 MACHINE LEARNING EXPERIMENTS 5.1 Performance on Tap Recognition Tasks",
+      "prob": 0.57633376121521,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
       "text": "This paper aims to address the needs in practice, by predicting comprehensive tap properties for diverse application purposes and advancing the state of the art of off-screen interaction towards a practical level of performance.",
       "label": "Objective",
       "bboxes": [
@@ -69242,61 +69982,6 @@
       "is_in_expected_section": false
     },
     {
-      "text": "The key objective is to achieve the five recognition tasks (i.e. the five network outputs) with one network (TapNet) as shown in Table 1.",
-      "label": "Objective",
-      "bboxes": [
-        {
-          "left": 0.17005228758169935,
-          "top": 0.4555037878787879,
-          "width": 0.3104166666666667,
-          "height": 0.011320707070707092,
-          "page": 2
-        },
-        {
-          "left": 0.08790522875816993,
-          "top": 0.4693409090909091,
-          "width": 0.39256372549019614,
-          "height": 0.011320707070707092,
-          "page": 2
-        },
-        {
-          "left": 0.08790522875816993,
-          "top": 0.4831780303030303,
-          "width": 0.1007205882352941,
-          "height": 0.011320707070706981,
-          "page": 2
-        }
-      ],
-      "section": "3 RECOGNIZING TAP PROPERTIES",
-      "prob": 0.8477137088775635,
-      "is_author_statement": false,
-      "is_in_expected_section": false
-    },
-    {
-      "text": "Each task aims to recognize one tap property , such as direction and location.",
-      "label": "Objective",
-      "bboxes": [
-        {
-          "left": 0.19148366013071896,
-          "top": 0.4831780303030303,
-          "width": 0.28898856209150325,
-          "height": 0.011332070707070707,
-          "page": 2
-        },
-        {
-          "left": 0.08790522875816993,
-          "top": 0.4970151515151515,
-          "width": 0.1521225490196078,
-          "height": 0.011320707070706981,
-          "page": 2
-        }
-      ],
-      "section": "3 RECOGNIZING TAP PROPERTIES",
-      "prob": 0.8286302089691162,
-      "is_author_statement": false,
-      "is_in_expected_section": false
-    },
-    {
       "text": "The evaluation results show that",
       "label": "Result",
       "bboxes": [
@@ -69328,7 +70013,7 @@
       "section": "5 MACHINE LEARNING EXPERIMENTS 5.2 Ablation Studies: Multi- Input and Output",
       "prob": 0.9342404007911682,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "We also evaluated this in an experiment.",
@@ -69362,7 +70047,7 @@
       "section": "5 MACHINE LEARNING EXPERIMENTS 5.2 Ablation Studies: Multi- Input and Output",
       "prob": 0.8599123358726501,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "We evaluated on tap direction classification as a representative task.",
@@ -69386,7 +70071,121 @@
       "section": "5 MACHINE LEARNING EXPERIMENTS 5.2 Ablation Studies: Multi- Input and Output",
       "prob": 0.8369398713111877,
       "is_author_statement": true,
+      "is_in_expected_section": true
+    },
+    {
+      "text": "Overall, the multi-person dataset contains 38,545 taps, including 20,615 taps from front, 10,505 back, 1,705 left, 1,705 right, 1,975 top, and 2,040 bottom, among which 58.3% was collected on phones with rubber cases, and the rest without.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.7083371212121212,
+          "width": 0.3762794117647059,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7221742424242424,
+          "width": 0.39416830065359476,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7360113636363637,
+          "width": 0.392563725490196,
+          "height": 0.011320707070706981,
+          "page": 4
+        },
+        {
+          "left": 0.5189918300653594,
+          "top": 0.7498484848484849,
+          "width": 0.23716993464052294,
+          "height": 0.011320707070707092,
+          "page": 4
+        }
+      ],
+      "section": "",
+      "prob": 0.7968500852584839,
+      "is_author_statement": false,
       "is_in_expected_section": false
+    },
+    {
+      "text": "The results show that the one-person model could achieve a comparable level of user generalizability as a model tuned on multi-person data.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.4570588235294118,
+          "top": 0.45548484848484855,
+          "width": 0.023408496732026107,
+          "height": 0.011320707070707037,
+          "page": 1
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.46932196969696965,
+          "width": 0.3925604575163399,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.48315909090909087,
+          "width": 0.39481535947712426,
+          "height": 0.011320707070707092,
+          "page": 1
+        }
+      ],
+      "section": "1 INTRODUCTION",
+      "prob": 0.7950889468193054,
+      "is_author_statement": false,
+      "is_in_expected_section": true
+    },
+    {
+      "text": "To investigate cross-device model training, we evaluated model performance with incremental training samples from 1K to 15K, as previous experiments suggest that TapNet converges with around 15K training samples.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.8275294117647058,
+          "top": 0.6630404040404041,
+          "width": 0.08456699346405228,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6768775252525252,
+          "width": 0.39256045751633983,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6907146464646465,
+          "width": 0.39502941176470585,
+          "height": 0.011320707070706981,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7045517676767676,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.718388888888889,
+          "width": 0.0499232026143791,
+          "height": 0.011320707070706981,
+          "page": 6
+        }
+      ],
+      "section": "5 MACHINE LEARNING EXPERIMENTS 5.2 Ablation Studies: Multi- Input and Output",
+      "prob": 0.7518852949142456,
+      "is_author_statement": true,
+      "is_in_expected_section": true
     }
   ],
   "2102.04174": [
@@ -71789,7 +72588,7 @@
       "section": "6 THE USER STUDY 6.1 Methods",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "With human learners (see Figure 4), the number of items learned proved to be significantly greater with the myopic teacher than with the Leitner teacher (  = 174 . 5,  = 0 . 019,   = 0 . 038,  = 24  2).",
@@ -75680,6 +76479,44 @@
       "is_in_expected_section": false
     },
     {
+      "text": "Unlike the dropout scores, some clinicians did not believe that patient-level stability scores guided them towards any particular interventions or next steps, and some clinicians saw stability scores as potentially harmful for seemingly stable patients:",
+      "label": "Novelty",
+      "bboxes": [
+        {
+          "left": 0.1832140522875817,
+          "top": 0.840284090909091,
+          "width": 0.29725490196078436,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8541212121212122,
+          "width": 0.3929411764705883,
+          "height": 0.011320707070706981,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8679583333333334,
+          "width": 0.3950359477124183,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8817941919191918,
+          "width": 0.39416503267973857,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ],
+      "section": "3.2 Findings: Clinical Expectations for ML Decision Support",
+      "prob": null,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
       "text": "Clinicians were interested in knowing when they should follow up sooner for patients who may be at risk of discontinuing treatment, but pointed out that stability scores risk inappropriately indicating that current follow up times could be lengthened, leading to potentially negative consequences for the patient.Clinicians",
       "label": "Novelty",
       "bboxes": [
@@ -76516,7 +77353,7 @@
       "section": "3.2 Findings: Clinical Expectations for ML Decision Support",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "As shown in the above examples, we found that clinicians expected DSTs to integrate with their existing processes and use the DST predictions to show a path forward .",
@@ -76547,7 +77384,7 @@
       "section": "3.2 Findings: Clinical Expectations for ML Decision Support",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Based on this feedback, we see that data validation procedures should be findable, but not forced upon providers who are already focused on understanding many complicated facets of a patients history, health status, and treatment needs.",
@@ -76585,7 +77422,7 @@
       "section": "3.2 Findings: Clinical Expectations for ML Decision Support",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Here, we see that when faced with unexpected model output that contrasted with participants expectations or mental model, participants found it challenging to identify appropriate next steps.",
@@ -76616,7 +77453,7 @@
       "section": "5.2 Findings",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "If you could show that patients have a better response to treatment by use of the algorithm, that would be amazing. If you can show that patients actually are more likely to adhere to treatment, that would be important as well, or that patients are less likely to develop adverse side effects that leads to stopping medications. It would be nice to do a trial with outcomes like that. P9",
@@ -76682,7 +77519,7 @@
       "section": "5.2 Findings",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Interacting with this part of the prototype led to conversations about the types of validations that clinicians would expect to see:",
@@ -76713,7 +77550,7 @@
       "section": "5.2 Findings",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "To me, when I think of someone whos a high risk of dropout, its like a person with substance abuse or with bipolar disorder. Like, okay, obviously, theyre not going to show up. Theres a high chance they wont adhere to it. But for this person who seems like a relatively bread and butter, middle-aged, healthy person, the fact that shes on the higher end of dropout is kind of eye opening to me, and it almost makes me wonder then, who is on the lower end of dropout?  P7",
@@ -76786,7 +77623,7 @@
       "section": "5.2 Findings",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "I guess if I were using this in practice, I would probably click to see if prescribing information or something like that came up as a next step. P2",
@@ -76817,7 +77654,7 @@
       "section": "5.2 Findings",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "conditions to see how the inclusion or exclusion of various conditions changed treatment recommendations, allowing them incorporate patient concerns: You can sort of click this and it helps to think about if I add poor concentration, if maybe thats another side effect shes having and it kind of modifies the medication regimen based off of that and bupropion is still appropriate for that.",
@@ -76883,7 +77720,7 @@
       "section": "5.2 Findings",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "We see a clear need for DSTs to explicitly draw the connections between the model output and actionable next steps.",
@@ -76907,7 +77744,7 @@
       "section": "6 DISCUSSION 6.2 Connecting DSTs to Existing Healthcare System Processes",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "However, we see this as a small step towards a larger problem.",
@@ -76931,7 +77768,7 @@
       "section": "6 DISCUSSION 6.1 Creating multi-user systems for collaborative decision-making",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "We see this as an important opportunity for future work to develop best practices for cases in which DST recommendations diverge from domain knowledge, and show why divergence is happening in a way that is both understandable to the user and presents actionable next steps.",
@@ -76976,7 +77813,7 @@
       "section": "6 DISCUSSION 6.4 Adapting decision support for contrasting information",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "While we see this as an important first step, next-step studies should engage with other stakeholders, such as patients, nurses, pharmacists, and therapists.",
@@ -77045,7 +77882,7 @@
       "section": "6 DISCUSSION 6.4 Adapting decision support for contrasting information",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "In medicine, the integration of AI tools could lead to a substantial paradigm shift in which human-AI collaboration becomes integrated in medical decision-making.",
@@ -81907,54 +82744,6 @@
       "is_in_expected_section": false
     },
     {
-      "text": "aimed to design the prototype to work within the time-constraints of the medical system.",
-      "label": "Objective",
-      "bboxes": [
-        {
-          "left": 0.6062450980392157,
-          "top": 0.3698257575757576,
-          "width": 0.305843137254902,
-          "height": 0.011320707070707092,
-          "page": 6
-        },
-        {
-          "left": 0.5195343137254902,
-          "top": 0.3836628787878788,
-          "width": 0.22598039215686272,
-          "height": 0.011320707070707092,
-          "page": 6
-        }
-      ],
-      "section": "",
-      "prob": 0.8660646677017212,
-      "is_author_statement": false,
-      "is_in_expected_section": false
-    },
-    {
-      "text": "Our second goal was to connect the DST predictions with appropriate clinical processes.",
-      "label": "Objective",
-      "bboxes": [
-        {
-          "left": 0.10418464052287582,
-          "top": 0.8126098484848485,
-          "width": 0.37875490196078443,
-          "height": 0.011320707070707092,
-          "page": 6
-        },
-        {
-          "left": 0.08790522875816993,
-          "top": 0.8264469696969697,
-          "width": 0.1623316993464053,
-          "height": 0.011320707070706981,
-          "page": 6
-        }
-      ],
-      "section": "4 PROTOTYPE REDESIGN",
-      "prob": 0.8659705519676208,
-      "is_author_statement": true,
-      "is_in_expected_section": false
-    },
-    {
       "text": "Overall, clinicians responded positively to the treatment recommendation feature.",
       "label": "Result",
       "bboxes": [
@@ -81976,7 +82765,7 @@
       "section": "3.2 Findings: Clinical Expectations for ML Decision Support",
       "prob": 0.8146299719810486,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "We also found that treatment recommendations at times contrasted with participants expectations.",
@@ -82000,7 +82789,7 @@
       "section": "5.2 Findings",
       "prob": 0.7809531688690186,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Our findings reveal a need",
@@ -82017,7 +82806,7 @@
       "section": "5.2 Findings",
       "prob": 0.6301970481872559,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "We also found that clinicians were thoughtful in considering the possible adverse effects of DST predictions.",
@@ -82041,7 +82830,7 @@
       "section": "6 DISCUSSION 6.2 Connecting DSTs to Existing Healthcare System Processes",
       "prob": 0.6190003752708435,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "We also found that clinicians busy schedules influenced how they thought about trust as it relates to black-box ML models.",
@@ -82065,6 +82854,99 @@
       "section": "1 INTRODUCTION",
       "prob": 0.6135735511779785,
       "is_author_statement": true,
+      "is_in_expected_section": true
+    },
+    {
+      "text": "During this process, we found many similar themes to study 1.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.17337581699346405,
+          "top": 0.7508446969696969,
+          "width": 0.30709150326797385,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7646818181818182,
+          "width": 0.06275816993464055,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ],
+      "section": "5.1 Methods",
+      "prob": 0.5996436476707458,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "All interviews were audio recorded and transcribed.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.21648529411764705,
+          "top": 0.3187929292929293,
+          "width": 0.2664493464052287,
+          "height": 0.011320707070707037,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3326300505050505,
+          "width": 0.0451421568627451,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ],
+      "section": "",
+      "prob": 0.5846490859985352,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Participants commented that the recommended steps associated with dropout risk predictions were actionable and aligned with what they typically do for patients when they are concerned about their response to treatment:",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.8420277777777778,
+          "top": 0.657864898989899,
+          "width": 0.07006699346405221,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6717020202020203,
+          "width": 0.39255392156862745,
+          "height": 0.011320707070706981,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6855391414141414,
+          "width": 0.3950424836601307,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6993762626262625,
+          "width": 0.39256045751633983,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7132121212121213,
+          "width": 0.07766503267973857,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ],
+      "section": "5.2 Findings",
+      "prob": 0.5778511166572571,
+      "is_author_statement": false,
       "is_in_expected_section": true
     },
     {
@@ -82212,6 +83094,113 @@
       ],
       "section": "7 LIMITATIONS",
       "prob": 0.5053956508636475,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "To recruit participants we worked with the same academic medical center and used the same recruitment method as with the first user study.",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.8967712418300653,
+          "top": 0.6492133838383839,
+          "width": 0.015328431372549134,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.663050505050505,
+          "width": 0.3925637254901959,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6768863636363637,
+          "width": 0.392563725490196,
+          "height": 0.011320707070706981,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6907234848484849,
+          "width": 0.06427287581699348,
+          "height": 0.011320707070707092,
+          "page": 6
+        }
+      ],
+      "section": "5.1 Methods",
+      "prob": 0.4596085548400879,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "The first author then re-coded the data using the established themes and met with the research team to validate the final set of themes.",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.15729575163398693,
+          "top": 0.7231704545454545,
+          "width": 0.325640522875817,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7370075757575758,
+          "width": 0.392562091503268,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7508446969696969,
+          "width": 0.08181535947712419,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ],
+      "section": "5.1 Methods",
+      "prob": 0.4380025267601013,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Therefore we also ran a deductive coding process [17], using the codes from the first user study in a subsequent analysis to identify thematic overlap, allowing us to assess specific feedback related to the study 1 guidelines.",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.15430392156862743,
+          "top": 0.7646818181818182,
+          "width": 0.32777450980392153,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7785176767676768,
+          "width": 0.392562091503268,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7923547979797979,
+          "width": 0.39293464052287586,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8061919191919192,
+          "width": 0.19472549019607843,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ],
+      "section": "5.1 Methods",
+      "prob": 0.4338744282722473,
       "is_author_statement": true,
       "is_in_expected_section": false
     }
@@ -84918,6 +85907,44 @@
       "section": "2 RELATED WORK 2.2 Chatbot Platforms",
       "prob": null,
       "is_author_statement": false,
+      "is_in_expected_section": true
+    },
+    {
+      "text": "Unlike these works that evaluate conversational AI systems in general, our work presented here focuses on evaluating the performance of interview chatbots, typically designed by non-IT professionals.",
+      "label": "Novelty",
+      "bboxes": [
+        {
+          "left": 0.8733774509803921,
+          "top": 0.4900896464646465,
+          "width": 0.03872385620915042,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5039267676767677,
+          "width": 0.39417810457516333,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5177638888888889,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5316010101010101,
+          "width": 0.3948120915032681,
+          "height": 0.011320707070707092,
+          "page": 2
+        }
+      ],
+      "section": "2 RELATED WORK 2.3 Evaluating Conversational AI Systems",
+      "prob": null,
+      "is_author_statement": true,
       "is_in_expected_section": true
     },
     {
@@ -88683,7 +89710,7 @@
       "section": "3 STUDY PLATFORM - JUJI 3.1 Supporting Interview Chatbots",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "In this study, we intentionally did not set any specific design requirements because we wished to observe what the participants would do and the challenges they would face.",
@@ -88714,7 +89741,7 @@
       "section": "4 FORMATIVE STUDY AND DERIVED",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "To better help designers improve their chatbots question by question (see Section 6), we compute the completion rate for each interview question ( Q ) by counting the number of users who completed the question (   ) and the number of users who responded to the question (   ):",
@@ -88928,7 +89955,7 @@
       "section": "8 DISCUSSIONS 8.1 Limitations",
       "prob": null,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Based on the transcripts collected from the live chats between 10 chatbots and 1394 users, our results show that iChatProfile helped produce interview chatbots with significantly better performance across almost all dimensions, including response quality, user engagement, and user experience.",
@@ -89004,7 +90031,7 @@
       "section": "8 DISCUSSIONS 8.2 Future Work and Design Implications",
       "prob": null,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "The definitive Version of Record was published in CHI Conference on Human Factors in Computing Systems (CHI 21), May 813, 2021, Yokohama, Japan , https://doi.org/10.1145/3411764.3445569.",
@@ -91062,75 +92089,6 @@
       "is_in_expected_section": false
     },
     {
-      "text": "While we learn from these efforts, our work reported here has a very different focus: we want to build a tool that can automatically evaluate the performance of an interview chatbot and provide design suggestions for improving the chatbot.",
-      "label": "Objective",
-      "bboxes": [
-        {
-          "left": 0.42290359477124184,
-          "top": 0.5419785353535354,
-          "width": 0.057555555555555526,
-          "height": 0.011320707070707092,
-          "page": 2
-        },
-        {
-          "left": 0.08790522875816993,
-          "top": 0.5558156565656566,
-          "width": 0.3925604575163399,
-          "height": 0.011320707070707092,
-          "page": 2
-        },
-        {
-          "left": 0.08790522875816993,
-          "top": 0.5696527777777778,
-          "width": 0.392562091503268,
-          "height": 0.011320707070706981,
-          "page": 2
-        },
-        {
-          "left": 0.08790522875816993,
-          "top": 0.583489898989899,
-          "width": 0.39502941176470585,
-          "height": 0.011320707070706981,
-          "page": 2
-        },
-        {
-          "left": 0.08790522875816993,
-          "top": 0.5973270202020202,
-          "width": 0.191093137254902,
-          "height": 0.011320707070706981,
-          "page": 2
-        }
-      ],
-      "section": "2 RELATED WORK 2.1 Chatbots for Information Elicitation",
-      "prob": 0.782016932964325,
-      "is_author_statement": true,
-      "is_in_expected_section": false
-    },
-    {
-      "text": "This is to facilitate real-time, automatic assessment of chatbot performance and design suggestion generation.",
-      "label": "Objective",
-      "bboxes": [
-        {
-          "left": 0.0874656862745098,
-          "top": 0.4587878787878788,
-          "width": 0.3954705882352942,
-          "height": 0.011320707070707092,
-          "page": 5
-        },
-        {
-          "left": 0.08790522875816993,
-          "top": 0.472625,
-          "width": 0.26896241830065354,
-          "height": 0.011320707070707092,
-          "page": 5
-        }
-      ],
-      "section": "5 COMPUTATIONAL FRAMEWORK FOR",
-      "prob": 0.7745117545127869,
-      "is_author_statement": false,
-      "is_in_expected_section": false
-    },
-    {
       "text": "Based on the transcripts collected from the live chats between 10 chatbots and 1394 users, our results show that iChatProfile helped produce interview chatbots with significantly better performance across almost all dimensions, including response quality, user engagement, and user experience.",
       "label": "Result",
       "bboxes": [
@@ -91197,7 +92155,7 @@
       "section": "8 DISCUSSIONS",
       "prob": 0.8793521523475647,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": true
     },
     {
       "text": "Table 6 and Table 7 summarize the analysis results.",
@@ -91275,6 +92233,113 @@
       ],
       "section": "7 EVALUATION 7.3 Study Results",
       "prob": 0.8466429114341736,
+      "is_author_statement": true,
+      "is_in_expected_section": true
+    },
+    {
+      "text": "The results show that the chatbots designed with the help of iChatProfile performed significantly better along many dimensions, including improved user response quality and user experience.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.8118235294117647,
+          "top": 0.2894419191919192,
+          "width": 0.10082026143790856,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.30327777777777776,
+          "width": 0.39255718954248364,
+          "height": 0.011332070707070707,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.317114898989899,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707037,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.3309520202020202,
+          "width": 0.25378431372549015,
+          "height": 0.011320707070707092,
+          "page": 1
+        }
+      ],
+      "section": "1 INTRODUCTION",
+      "prob": 0.8310225009918213,
+      "is_author_statement": false,
+      "is_in_expected_section": true
+    },
+    {
+      "text": "At the interview level, for example, the chatbots in Group B achieved a higher completion rate (78% vs. 74% vs. 74%) and more positive user sentiment (66% vs. 45% vs 46%), than those in Group w/o iChatProfile and the baseline.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.5190212418300654,
+          "top": 0.3065808080808081,
+          "width": 0.39307843137254905,
+          "height": 0.011320707070707037,
+          "page": 10
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.3204179292929293,
+          "width": 0.39256045751633983,
+          "height": 0.011332070707070707,
+          "page": 10
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.33425505050505055,
+          "width": 0.392563725490196,
+          "height": 0.011332070707070652,
+          "page": 10
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.3480921717171717,
+          "width": 0.10002287581699343,
+          "height": 0.011320707070707037,
+          "page": 10
+        }
+      ],
+      "section": "7 EVALUATION 7.3 Study Results",
+      "prob": 0.778629720211029,
+      "is_author_statement": false,
+      "is_in_expected_section": true
+    },
+    {
+      "text": "Our analysis also revealed two main types of design assistance that the participants wanted.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.35405718954248366,
+          "top": 0.6109949494949495,
+          "width": 0.12887745098039216,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.08753921568627451,
+          "top": 0.6248320707070707,
+          "width": 0.3929232026143791,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.08736437908496732,
+          "top": 0.6386691919191919,
+          "width": 0.04844771241830066,
+          "height": 0.011320707070707092,
+          "page": 4
+        }
+      ],
+      "section": "4 FORMATIVE STUDY AND DERIVED 4.1 Two Types of Design Assistance Wanted",
+      "prob": 0.775691568851471,
       "is_author_statement": true,
       "is_in_expected_section": true
     },
@@ -91444,6 +92509,113 @@
       ],
       "section": "6 ICHATPROFILE 6.3 Generating Design Suggestions",
       "prob": 0.5361660718917847,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "After asking all the interview questions, the chatbot also included questions to elicit user satisfaction rating and trust rating, as well as their rationale behind each rating.",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.8374428104575163,
+          "top": 0.7493648989898989,
+          "width": 0.07465359477124178,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7632020202020202,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7770391414141413,
+          "width": 0.39283333333333337,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7908762626262626,
+          "width": 0.17464379084967319,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ],
+      "section": "7 EVALUATION 7.1 Study Method",
+      "prob": 0.50273197889328,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Currently, we use the Vader model [16] to perform sentimental analysis on the collected users responses, and compute the percentages of positive, neutral and negative responses.",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.17743790849673202,
+          "top": 0.580760101010101,
+          "width": 0.3030261437908497,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5945972222222222,
+          "width": 0.3925604575163399,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6084343434343434,
+          "width": 0.3556666666666667,
+          "height": 0.011320707070707092,
+          "page": 6
+        }
+      ],
+      "section": "5 COMPUTATIONAL FRAMEWORK FOR 5.2 User Experience",
+      "prob": 0.4804512560367584,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "It states that if the computed repetition rate for an interview question ( Q ) is above a certain threshold, it then uses a template to generate a set of design suggestions that could reduce repetitions and improve user experience.",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.6876339869281045,
+          "top": 0.6058535353535354,
+          "width": 0.2244624183006536,
+          "height": 0.011332070707070652,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6196906565656566,
+          "width": 0.3925669934640522,
+          "height": 0.011332070707070652,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6335277777777778,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6473648989898989,
+          "width": 0.32377124183006534,
+          "height": 0.011320707070707092,
+          "page": 7
+        }
+      ],
+      "section": "6 ICHATPROFILE 6.3 Generating Design Suggestions",
+      "prob": 0.4788016080856323,
       "is_author_statement": false,
       "is_in_expected_section": false
     }

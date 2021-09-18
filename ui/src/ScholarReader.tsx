@@ -871,12 +871,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       .filter((r: RhetoricUnit) => {
         if (["Objective", "Contribution", "Conclusion"].includes(r.label)) {
           return r.is_author_statement;
-        } else if (r.label === "Result") {
-          return (
-            r.is_author_statement ||
-            r.text.toLowerCase().includes("participant")
-          );
-        } else {
+        }
+        // else if (r.label === "Result") {
+        //   return (
+        //     r.is_author_statement ||
+        //     r.text.toLowerCase().includes("participant")
+        //   );
+        // }
+        else {
           return true;
         }
       });

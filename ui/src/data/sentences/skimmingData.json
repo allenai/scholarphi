@@ -122,25 +122,6 @@
       ]
     },
     {
-      "text": "Human-centered computing  Human computer interaction (HCI) ; Natural language interfaces .",
-      "bboxes": [
-        {
-          "left": 0.08790522875816993,
-          "top": 0.5857840909090909,
-          "width": 0.39547549019607847,
-          "height": 0.012616161616161525,
-          "page": 0
-        },
-        {
-          "left": 0.08790522875816993,
-          "top": 0.6008800505050504,
-          "width": 0.3269607843137255,
-          "height": 0.012616161616161636,
-          "page": 0
-        }
-      ]
-    },
-    {
       "text": "ACM ISBN 978-x-xxxx-xxxx-x/YY/MM.",
       "bboxes": [
         {
@@ -1476,6 +1457,96 @@
       ]
     },
     {
+      "text": "Human-reported data includes observations contributed by users.",
+      "bboxes": [
+        {
+          "left": 0.2658039215686274,
+          "top": 0.4401919191919192,
+          "width": 0.21713562091503275,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.08753921568627451,
+          "top": 0.4540290404040404,
+          "width": 0.1722222222222222,
+          "height": 0.011320707070707092,
+          "page": 2
+        }
+      ]
+    },
+    {
+      "text": "Sensing data involves environmental measurements quantified with sensing devices or systems, which enable citizens to monitor their surroundings with minimal to no assistance from experts.",
+      "bboxes": [
+        {
+          "left": 0.21101307189542481,
+          "top": 0.7875845959595961,
+          "width": 0.2719248366013072,
+          "height": 0.011320707070706981,
+          "page": 2
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8014217171717172,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8152588383838383,
+          "width": 0.3950294117647059,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8290959595959596,
+          "width": 0.11225,
+          "height": 0.011320707070707092,
+          "page": 2
+        }
+      ]
+    },
+    {
+      "text": "Prediction techniques aim to forecast the future accurately based on previous observations.",
+      "bboxes": [
+        {
+          "left": 0.6276421568627452,
+          "top": 0.43096717171717175,
+          "width": 0.28445751633986927,
+          "height": 0.011320707070707037,
+          "page": 2
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.44480429292929297,
+          "width": 0.25488235294117645,
+          "height": 0.011320707070707037,
+          "page": 2
+        }
+      ]
+    },
+    {
+      "text": "Interpretationtechniquesaimtoextractknowledge from the collected data.",
+      "bboxes": [
+        {
+          "left": 0.647235294117647,
+          "top": 0.6768888888888889,
+          "width": 0.2733316993464051,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6907260101010101,
+          "width": 0.18394607843137245,
+          "height": 0.011320707070707092,
+          "page": 2
+        }
+      ]
+    },
+    {
       "text": "In summary, when developing Smell Pittsburgh, we considered the system as an ongoing infrastructure to sustain communities over time (as mentioned in [34]), rather than a software product which solves a single well-defined problem.",
       "bboxes": [
         {
@@ -2172,156 +2243,6 @@
       ]
     },
     {
-      "text": "I believe in science and data and think this can help",
-      "bboxes": [
-        {
-          "left": 0.5594183006535948,
-          "top": 0.8705732323232324,
-          "width": 0.3127859477124182,
-          "height": 0.011354797979797882,
-          "page": 8
-        }
-      ]
-    },
-    {
-      "text": "I used to try to use the phone to call in complaints, but that was highly unsatisfactory. I never knew if my complaints were even registered. With Smell Pittsburgh, I feel that Im contributing to taking data , as well as to complaining when its awful . [...] Its seems to be the most effective way to report wood burning that can fill my neighborhood with the smoke and emissions from wood burning. TheSmellapp quantifiesobservationsinrealtime. Researchers can use this qualitative information along quantitative data in real time. Added benefit is to have [the health department] receive this information in real time without having to make a phone call or send separate email . I have confidence that the recording of Smell app data is quantified more accurately than [the health department]s. It is an evidence based way for a citizen to register what is going on with the air where I live and work. build a case .",
-      "bboxes": [
-        {
-          "left": 0.5594183006535948,
-          "top": 0.6075252525252526,
-          "width": 0.3144019607843137,
-          "height": 0.011320707070706981,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.6213623737373738,
-          "width": 0.3127924836601307,
-          "height": 0.011320707070706981,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.6351994949494949,
-          "width": 0.3152728758169935,
-          "height": 0.011320707070707092,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.6490025252525252,
-          "width": 0.3144035947712419,
-          "height": 0.011354797979798104,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.6628396464646465,
-          "width": 0.2984983660130718,
-          "height": 0.011354797979797882,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.6801805555555556,
-          "width": 0.3127924836601307,
-          "height": 0.011354797979797993,
-          "page": 8
-        },
-        {
-          "left": 0.5588464052287582,
-          "top": 0.6940176767676768,
-          "width": 0.3133660130718954,
-          "height": 0.011353535353535338,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.7078876262626264,
-          "width": 0.2787352941176472,
-          "height": 0.011320707070707092,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.7251944444444445,
-          "width": 0.3227892156862744,
-          "height": 0.011354797979797882,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.7390656565656566,
-          "width": 0.3127875816993464,
-          "height": 0.011320707070707092,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.7529027777777777,
-          "width": 0.3127875816993464,
-          "height": 0.011320707070707092,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.766739898989899,
-          "width": 0.3127924836601307,
-          "height": 0.011320707070707092,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.7805429292929293,
-          "width": 0.3127957516339869,
-          "height": 0.011354797979797882,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.7943800505050506,
-          "width": 0.3127859477124183,
-          "height": 0.011354797979797993,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.8082171717171717,
-          "width": 0.3154101307189543,
-          "height": 0.011354797979797993,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.8220542929292929,
-          "width": 0.2506617647058824,
-          "height": 0.011354797979797993,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.8393952020202021,
-          "width": 0.3130669934640523,
-          "height": 0.011354797979797882,
-          "page": 8
-        },
-        {
-          "left": 0.558875816993464,
-          "top": 0.8532664141414141,
-          "width": 0.314874183006536,
-          "height": 0.011320707070707092,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.8844090909090909,
-          "width": 0.07987745098039223,
-          "height": 0.011354797979797993,
-          "page": 8
-        }
-      ]
-    },
-    {
       "text": "For System Usage Information, we reported the counts for system usage frequency questions (Table 5).",
       "bboxes": [
         {
@@ -2379,25 +2300,6 @@
       ]
     },
     {
-      "text": "I believe in the power of crowd-sourced data to influence policy decisions .",
-      "bboxes": [
-        {
-          "left": 0.1277892156862745,
-          "top": 0.7875505050505051,
-          "width": 0.3154150326797386,
-          "height": 0.011354797979797993,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.8013876262626262,
-          "width": 0.16154411764705884,
-          "height": 0.011354797979798104,
-          "page": 9
-        }
-      ]
-    },
-    {
       "text": "In the open-ended question to freely provide comments and concerns, two participants (8%) were frustrated about the lack of responses from regulators and unclear values of using the data to take action.",
       "bboxes": [
         {
@@ -2426,152 +2328,6 @@
           "top": 0.7086944444444444,
           "width": 0.06915196078431374,
           "height": 0.011320707070707092,
-          "page": 9
-        }
-      ]
-    },
-    {
-      "text": "It wasnt clear when using the app that my submission was counted [...]. I want to be able to see directly that my smell reports are going somewhere and being used for something. [...]",
-      "bboxes": [
-        {
-          "left": 0.5594183006535948,
-          "top": 0.811989898989899,
-          "width": 0.3154133986928105,
-          "height": 0.011354797979797993,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.8258270202020201,
-          "width": 0.3127973856209151,
-          "height": 0.011354797979798104,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.8396982323232324,
-          "width": 0.3127859477124183,
-          "height": 0.011320707070706981,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.8535353535353535,
-          "width": 0.21024183006535946,
-          "height": 0.011320707070707092,
-          "page": 9
-        }
-      ]
-    },
-    {
-      "text": "I used to (and sometimes still do) call reports in to [the health department]. I love how the map displays after I post a smell report. Wow! Im not alone!  It validates my pollution experiences because others are reporting similar experiences. I like using it for a similar reason that I like checking the weather. It helps me understand my environment and confirms my sense of what Im seeing .",
-      "bboxes": [
-        {
-          "left": 0.1277892156862745,
-          "top": 0.36822727272727274,
-          "width": 0.31279248366013074,
-          "height": 0.011320707070706981,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.38206439393939395,
-          "width": 0.31279575163398693,
-          "height": 0.011320707070706981,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.3958674242424242,
-          "width": 0.296812091503268,
-          "height": 0.011354797979797993,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.4142638888888889,
-          "width": 0.3127990196078432,
-          "height": 0.011354797979797993,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.42813510101010105,
-          "width": 0.2474117647058824,
-          "height": 0.011320707070707037,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.44653282828282825,
-          "width": 0.3127875816993464,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.46036994949494947,
-          "width": 0.31279411764705883,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.47417297979797984,
-          "width": 0.2839787581699347,
-          "height": 0.011354797979797937,
-          "page": 9
-        }
-      ]
-    },
-    {
-      "text": "Because climate change is one of our largest challenges, [...] Also, the ACHD isnt as active as they should be, and needs a nudge .",
-      "bboxes": [
-        {
-          "left": 0.1277892156862745,
-          "top": 0.566314393939394,
-          "width": 0.31527614379084967,
-          "height": 0.011354797979797993,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.5801856060606061,
-          "width": 0.3131813725490196,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.5939886363636364,
-          "width": 0.19236601307189544,
-          "height": 0.011354797979797993,
-          "page": 9
-        }
-      ]
-    },
-    {
-      "text": "After using this app for over a year, and making many dozens of reports, I havent once heard from the [health department] .",
-      "bboxes": [
-        {
-          "left": 0.5594183006535948,
-          "top": 0.7257664141414142,
-          "width": 0.3131764705882353,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.7395694444444445,
-          "width": 0.3127973856209152,
-          "height": 0.011354797979797882,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.7534065656565656,
-          "width": 0.14120915032679737,
-          "height": 0.011354797979798104,
           "page": 9
         }
       ]
@@ -2642,116 +2398,6 @@
           "left": 0.08790522875816993,
           "top": 0.4001489898989899,
           "width": 0.2963921568627451,
-          "height": 0.011320707070707092,
-          "page": 10
-        }
-      ]
-    },
-    {
-      "text": "I get around mostly by bike , so it is difficult to report smells the same moment I smell them. I wish I could report smells in a different location than where I am so that I could report the smell once I reach my destination . It would be nice to be able to add a retroactive report . We often get the strong sulfur smells in Forest Hills in the middle of the night [...] but I strongly prefer to not have to log in to my phone at 3 am to log the report as it makes it harder to get back to sleep. This app should let me see/download all of my data : how many times I reported smells, what my symptoms and comments were and how many times the [health department] didnt respond [...]",
-      "bboxes": [
-        {
-          "left": 0.1277892156862745,
-          "top": 0.14063762626262627,
-          "width": 0.31279084967320264,
-          "height": 0.011354797979797965,
-          "page": 10
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.1545088383838384,
-          "width": 0.31279575163398693,
-          "height": 0.011320707070707065,
-          "page": 10
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.1683459595959596,
-          "width": 0.3127875816993464,
-          "height": 0.011320707070707037,
-          "page": 10
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.1821489898989899,
-          "width": 0.31279411764705883,
-          "height": 0.011354797979797993,
-          "page": 10
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.1959861111111111,
-          "width": 0.1089150326797386,
-          "height": 0.011354797979797993,
-          "page": 10
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.21324873737373737,
-          "width": 0.31278921568627455,
-          "height": 0.011354797979797993,
-          "page": 10
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.22708585858585859,
-          "width": 0.3127990196078431,
-          "height": 0.011354797979797993,
-          "page": 10
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.2409570707070707,
-          "width": 0.3131813725490196,
-          "height": 0.011320707070707065,
-          "page": 10
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.2547588383838384,
-          "width": 0.3127990196078431,
-          "height": 0.011320707070707092,
-          "page": 10
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.2685959595959596,
-          "width": 0.3127924836601308,
-          "height": 0.011354797979797993,
-          "page": 10
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.28246717171717173,
-          "width": 0.0389575163398693,
-          "height": 0.011320707070707092,
-          "page": 10
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.2996957070707071,
-          "width": 0.31319934640522873,
-          "height": 0.011354797979797993,
-          "page": 10
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.3135328282828283,
-          "width": 0.31316830065359474,
-          "height": 0.011354797979797937,
-          "page": 10
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.32740404040404036,
-          "width": 0.31279084967320264,
-          "height": 0.011320707070707092,
-          "page": 10
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.3412411616161616,
-          "width": 0.26345424836601306,
           "height": 0.011320707070707092,
           "page": 10
         }
@@ -2910,18 +2556,6 @@
     }
   ],
   "2010.07358": [
-    {
-      "text": "WorkdoneatFacebookRealityLabsResearch",
-      "bboxes": [
-        {
-          "left": 0.1200016339869281,
-          "top": 0.7134772727272727,
-          "width": 0.21423039215686274,
-          "height": 0.010691919191919252,
-          "page": 0
-        }
-      ]
-    },
     {
       "text": "Permissiontomakedigitalorhardcopiesofallorpartofthisworkforpersonalorclassroomuseisgrantedwithoutfeeprovidedthatcopiesarenotmadeordistributedforprofitorcommercialadvantageandthatcopiesbearthisnoticeandthefullcitationonthefirstpage.CopyrightsforcomponentsofthisworkownedbyothersthanACMmustbehonored.Abstractingwithcreditispermitted.Tocopyotherwise,orrepublish,topostonserversortoredistributetolists,requirespriorspecificpermissionand/orafee.Requestpermissionsfrompermissions@acm.org.",
       "bboxes": [
@@ -3656,6 +3290,25 @@
       ]
     },
     {
+      "text": "Each assistance level is characterized by both a world-locked digital-object component and a text-information component; see Fig. 2.",
+      "bboxes": [
+        {
+          "left": 0.3209705882352941,
+          "top": 0.43482954545454544,
+          "width": 0.49902450980392155,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.45212626262626265,
+          "width": 0.2601944444444445,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
       "text": "Object-highlighting assistance .",
       "bboxes": [
         {
@@ -3716,6 +3369,25 @@
           "width": 0.03352941176470588,
           "height": 0.011320707070707092,
           "page": 8
+        }
+      ]
+    },
+    {
+      "text": "To control for certain objects being easier to reorganize (due to visual salience or bin location), the number of each object type remained fixed for each difficulty setting.",
+      "bboxes": [
+        {
+          "left": 0.42928921568627454,
+          "top": 0.45818560606060604,
+          "width": 0.45071078431372535,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.18000163398692812,
+          "top": 0.4754823232323232,
+          "width": 0.5343235294117645,
+          "height": 0.011320707070707092,
+          "page": 9
         }
       ]
     },
@@ -3789,6 +3461,18 @@
       ]
     },
     {
+      "text": "With regards to varying the assistance fidelity, we had the following hypotheses:",
+      "bboxes": [
+        {
+          "left": 0.23665032679738565,
+          "top": 0.7168131313131313,
+          "width": 0.4755114379084968,
+          "height": 0.011320707070707092,
+          "page": 10
+        }
+      ]
+    },
+    {
       "text": "Objective metrics .",
       "bboxes": [
         {
@@ -3815,6 +3499,18 @@
           "top": 0.6067209595959596,
           "width": 0.12392320261437909,
           "height": 0.011320707070706981,
+          "page": 11
+        }
+      ]
+    },
+    {
+      "text": "For an in-depth reporting of the statistical analyses, see Sec.",
+      "bboxes": [
+        {
+          "left": 0.2931797385620915,
+          "top": 0.4337575757575758,
+          "width": 0.3520637254901961,
+          "height": 0.011320707070707092,
           "page": 11
         }
       ]
@@ -3851,6 +3547,30 @@
           "top": 0.737294191919192,
           "width": 0.5475424836601307,
           "height": 0.011343434343434322,
+          "page": 12
+        }
+      ]
+    },
+    {
+      "text": "For an in-depth reporting of the statistical analyses, see Sec.",
+      "bboxes": [
+        {
+          "left": 0.26713888888888887,
+          "top": 0.7636590909090909,
+          "width": 0.3520637254901961,
+          "height": 0.011320707070707092,
+          "page": 12
+        }
+      ]
+    },
+    {
+      "text": "We had the following hypothesis:",
+      "bboxes": [
+        {
+          "left": 0.2343202614379085,
+          "top": 0.7165151515151515,
+          "width": 0.19764215686274508,
+          "height": 0.011320707070707092,
           "page": 12
         }
       ]
@@ -4743,6 +4463,25 @@
       ]
     },
     {
+      "text": "At this point,   + 1 ,  + 1 = 0.",
+      "bboxes": [
+        {
+          "left": 0.8334477124183006,
+          "top": 0.6594709595959597,
+          "width": 0.08025816993464052,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.5189493464052287,
+          "top": 0.6733080808080808,
+          "width": 0.08520261437908494,
+          "height": 0.014391414141414205,
+          "page": 3
+        }
+      ]
+    },
+    {
       "text": "As illustrated in Figure 3, we propose an  -headed  -tailed architecture that is trained end-to-end with backpropagation.",
       "bboxes": [
         {
@@ -5169,6 +4908,32 @@
       ]
     },
     {
+      "text": "Here, semantic structure (grouping) is exploited to avoid wasting time inspecting groups that most likely do not contain the target item [4].",
+      "bboxes": [
+        {
+          "left": 0.6774183006535948,
+          "top": 0.44004797979797977,
+          "width": 0.23468137254901966,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.453885101010101,
+          "width": 0.3929411764705881,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.4677222222222222,
+          "width": 0.2053692810457517,
+          "height": 0.01395833333333335,
+          "page": 6
+        }
+      ]
+    },
+    {
       "text": "Several predictive models explain how users search within linear menus [5, 10, 12, 24, 40].",
       "bboxes": [
         {
@@ -5208,6 +4973,32 @@
           "left": 0.08790522875816993,
           "top": 0.5179330808080808,
           "width": 0.04126470588235294,
+          "height": 0.011320707070707092,
+          "page": 6
+        }
+      ]
+    },
+    {
+      "text": "When searching for a menu item   at an expected position  , serial search [5, 13, 40] consists of a top-tobottom inspection of the menu, until the item is reached.",
+      "bboxes": [
+        {
+          "left": 0.223812091503268,
+          "top": 0.8541439393939394,
+          "width": 0.25665032679738564,
+          "height": 0.013097222222222205,
+          "page": 6
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8679810606060606,
+          "width": 0.39504084967320263,
+          "height": 0.011422979797979904,
+          "page": 6
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8818169191919192,
+          "width": 0.32819444444444446,
           "height": 0.011320707070707092,
           "page": 6
         }
@@ -5355,6 +5146,18 @@
       ]
     },
     {
+      "text": "serial (   ) =  serial (   ) +   + (    )   +  pointing",
+      "bboxes": [
+        {
+          "left": 0.5678186274509804,
+          "top": 0.38312752525252525,
+          "width": 0.2940049019607843,
+          "height": 0.01353030303030306,
+          "page": 6
+        }
+      ]
+    },
+    {
       "text": "The above search models enable us to predict selection times for varying user strategies.",
       "bboxes": [
         {
@@ -5394,6 +5197,32 @@
           "left": 0.5195343137254902,
           "top": 0.64125,
           "width": 0.29527124183006537,
+          "height": 0.011320707070707092,
+          "page": 7
+        }
+      ]
+    },
+    {
+      "text": "Recall (direct) search [5] relies on users memory, given by activations  , to directly glance at items without inspecting the entire menu.",
+      "bboxes": [
+        {
+          "left": 0.22759640522875815,
+          "top": 0.3748876262626263,
+          "width": 0.2528692810457517,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3887247474747475,
+          "width": 0.39255882352941174,
+          "height": 0.011422979797979738,
+          "page": 7
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4025618686868687,
+          "width": 0.1720947712418301,
           "height": 0.011320707070707092,
           "page": 7
         }
@@ -5498,6 +5327,32 @@
           "width": 0.10349509803921568,
           "height": 0.011320707070707092,
           "page": 7
+        }
+      ]
+    },
+    {
+      "text": "With the above setup, we first evaluated whether our approach, and implementation, could successfully identify promising adaptations.",
+      "bboxes": [
+        {
+          "left": 0.6803676470588235,
+          "top": 0.6664381313131312,
+          "width": 0.23172385620915048,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5189918300653594,
+          "top": 0.6802752525252526,
+          "width": 0.395576797385621,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6941123737373737,
+          "width": 0.16489215686274517,
+          "height": 0.011320707070707092,
+          "page": 8
         }
       ]
     },
@@ -5656,6 +5511,51 @@
       ]
     },
     {
+      "text": "To assess the scalability of our solution, we compared computation time for model-based simulations vs. value network predictions.",
+      "bboxes": [
+        {
+          "left": 0.6736715686274509,
+          "top": 0.8403068181818182,
+          "width": 0.24003104575163414,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5189918300653594,
+          "top": 0.8541439393939394,
+          "width": 0.39535784313725497,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5191683006535948,
+          "top": 0.8679810606060606,
+          "width": 0.1647271241830065,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "Our MCTS-based planning algorithm, and the predictive menu models, are implemented in Python 3.7.",
+      "bboxes": [
+        {
+          "left": 0.22906209150326798,
+          "top": 0.8541439393939394,
+          "width": 0.25140849673202614,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8679810606060606,
+          "width": 0.36533496732026144,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
       "text": "Condition had a statistically significant effect on selection time ( 2 , 17 ) = 5.47,  < 0.05, with grand means Static = 2283 ms, Freqency = 2298 ms, and MCTS = 2162 ms (Figure 9a).",
       "bboxes": [
         {
@@ -5793,6 +5693,44 @@
       ]
     },
     {
+      "text": "The experiment began with an introductory briefing and participant consent.",
+      "bboxes": [
+        {
+          "left": 0.6928856209150327,
+          "top": 0.43073106060606065,
+          "width": 0.22168464052287573,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.44456818181818186,
+          "width": 0.24000816993464058,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "For the experiment, linear menus with 15 item labels were randomly generated.",
+      "bboxes": [
+        {
+          "left": 0.19409150326797386,
+          "top": 0.7296111111111111,
+          "width": 0.28637254901960785,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7434469696969697,
+          "width": 0.19815686274509803,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
       "text": "Participants took mandatory breaks (1 minute) between two consecutive blocks, and longer breaks (5 minutes) between conditions where they answered open-ended interview questions.",
       "bboxes": [
         {
@@ -5813,6 +5751,44 @@
           "left": 0.5189918300653594,
           "top": 0.6659608585858586,
           "width": 0.3186454248366013,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "The target item name was displayed at the top of the browser window.",
+      "bboxes": [
+        {
+          "left": 0.6771454248366013,
+          "top": 0.3394065656565657,
+          "width": 0.2349444444444443,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.3532436868686869,
+          "width": 0.17941666666666667,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "The experiment was conducted on a Macbook Pro, with a 15 Retina display.",
+      "bboxes": [
+        {
+          "left": 0.6305179738562091,
+          "top": 0.24808333333333332,
+          "width": 0.2819640522875817,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.26192045454545454,
+          "width": 0.17554084967320271,
           "height": 0.011320707070707092,
           "page": 9
         }
@@ -5898,6 +5874,25 @@
           "left": 0.08790522875816993,
           "top": 0.42362626262626263,
           "width": 0.14662581699346405,
+          "height": 0.011320707070707092,
+          "page": 10
+        }
+      ]
+    },
+    {
+      "text": "During the study, participants were not informed about adaptations (if any) in advance.",
+      "bboxes": [
+        {
+          "left": 0.24574019607843137,
+          "top": 0.6604255050505051,
+          "width": 0.23472712418300654,
+          "height": 0.011320707070707092,
+          "page": 10
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6742626262626262,
+          "width": 0.2873480392156863,
           "height": 0.011320707070707092,
           "page": 10
         }
@@ -6452,6 +6447,65 @@
       ]
     },
     {
+      "text": "P4 described application modernization as a rats nest [of] very impossible, undocumented, uncommitted, lots of dead unit tests that hadnt been run [in] year[s] kind of situation, and complained that there was an architecture at some point... then you had other folks come along and write additional pieces that... kind of go their own way.",
+      "bboxes": [
+        {
+          "left": 0.5011683006535947,
+          "top": 0.7433068181818181,
+          "width": 0.3792091503267975,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.18000163398692812,
+          "top": 0.7606035353535354,
+          "width": 0.6999934640522876,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.18000163398692812,
+          "top": 0.7778989898989899,
+          "width": 0.6999967320261437,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.18000163398692812,
+          "top": 0.795195707070707,
+          "width": 0.2411062091503268,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ]
+    },
+    {
+      "text": "In discussing whether they would accept code produced by the NMT model, participants felt that they would treat it in the same fashion that they would treat the output of their fellow software developers: by reviewing and testing it.",
+      "bboxes": [
+        {
+          "left": 0.3613709150326797,
+          "top": 0.48463636363636364,
+          "width": 0.460233660130719,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.5019330808080809,
+          "width": 0.7000000000000001,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.519229797979798,
+          "width": 0.23117483660130722,
+          "height": 0.011320707070707092,
+          "page": 6
+        }
+      ]
+    },
+    {
       "text": "We recognize that trust is a complex, multi-faceted construct that has been described as being an attitude [78], an intention [62], and a behavior [1].",
       "bboxes": [
         {
@@ -6471,33 +6525,19 @@
       ]
     },
     {
-      "text": "If Im going to put my production systems functionality behind this, I really want some degree of trust that this thing is robust... Every piece of code that we put into production has been reviewed by at least one other person. And so we try hard to basically build that trust through review and familiarity in humans... wed need basically the same level of trust for a system like this. (P4)",
+      "text": "Some participants had questions about the underlying mechanics of the NMT model, as they were curious how it works (P5) and would like to know what its thinking (P10).",
       "bboxes": [
         {
-          "left": 0.15988398692810457,
-          "top": 0.28397727272727274,
-          "width": 0.6202369281045752,
+          "left": 0.33141666666666664,
+          "top": 0.5976868686868687,
+          "width": 0.49019444444444443,
           "height": 0.011320707070707092,
           "page": 6
         },
         {
-          "left": 0.15988398692810457,
-          "top": 0.3012727272727273,
-          "width": 0.6202287581699346,
-          "height": 0.011320707070707092,
-          "page": 6
-        },
-        {
-          "left": 0.15988398692810457,
-          "top": 0.3185694444444444,
-          "width": 0.620235294117647,
-          "height": 0.011320707070707092,
-          "page": 6
-        },
-        {
-          "left": 0.15988398692810457,
-          "top": 0.33586616161616156,
-          "width": 0.3387598039215686,
+          "left": 0.1200016339869281,
+          "top": 0.6149835858585858,
+          "width": 0.561625816993464,
           "height": 0.011320707070707092,
           "page": 6
         }
@@ -6511,25 +6551,6 @@
           "top": 0.7782045454545454,
           "width": 0.6625980392156862,
           "height": 0.013969696969697076,
-          "page": 6
-        }
-      ]
-    },
-    {
-      "text": "As a user, you... accept whats going on here as a useful and correct process and you probably do not even care how its done because it will speed up your work... and at the end of the day, youll say, okay, Im done. (P1)",
-      "bboxes": [
-        {
-          "left": 0.15988398692810457,
-          "top": 0.7424835858585859,
-          "width": 0.620235294117647,
-          "height": 0.011320707070707092,
-          "page": 6
-        },
-        {
-          "left": 0.15988398692810457,
-          "top": 0.759780303030303,
-          "width": 0.6197320261437909,
-          "height": 0.011320707070707092,
           "page": 6
         }
       ]
@@ -6623,45 +6644,19 @@
       ]
     },
     {
-      "text": "With humans, you can teach through review...if somebody is continuously making these kind of mistakes, and were catching them in review, that person is going to get annoyed by a million comments... you could probably have some sort of reinforcement or sort of iterative learning in your model that would teach it. (P4)",
+      "text": "Participants identified the importance of being able to give feedback (P4), such as by unflag[ing] (P7) low-confidence tokens identified by the NMT model.",
       "bboxes": [
         {
-          "left": 0.21988562091503266,
-          "top": 0.7398131313131313,
-          "width": 0.6218267973856211,
+          "left": 0.35497712418300653,
+          "top": 0.679611111111111,
+          "width": 0.5254019607843138,
           "height": 0.011320707070707092,
           "page": 7
         },
         {
-          "left": 0.21988562091503266,
-          "top": 0.7571098484848484,
-          "width": 0.6202287581699346,
-          "height": 0.011320707070707092,
-          "page": 7
-        },
-        {
-          "left": 0.21988562091503266,
-          "top": 0.7744065656565657,
-          "width": 0.619748366013072,
-          "height": 0.011320707070707092,
-          "page": 7
-        }
-      ]
-    },
-    {
-      "text": "That just confuses me because this line of code is syntactically correct. I would write that line of code with 100% confidence. Im confused about why the translator would be confused about that assignment. (P0)",
-      "bboxes": [
-        {
-          "left": 0.21988562091503266,
-          "top": 0.40631313131313135,
-          "width": 0.6202369281045752,
-          "height": 0.011320707070707092,
-          "page": 7
-        },
-        {
-          "left": 0.21988562091503266,
-          "top": 0.42360858585858585,
-          "width": 0.5968660130718955,
+          "left": 0.17834640522875816,
+          "top": 0.6969078282828283,
+          "width": 0.4203398692810458,
           "height": 0.011320707070707092,
           "page": 7
         }
@@ -6725,6 +6720,25 @@
       ]
     },
     {
+      "text": "We initially thought that the translation would produce only content in the form of the translated code.",
+      "bboxes": [
+        {
+          "left": 0.5411143790849673,
+          "top": 0.2564772727272727,
+          "width": 0.27888725490196087,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.2737727272727273,
+          "width": 0.34687254901960785,
+          "height": 0.013969696969696965,
+          "page": 8
+        }
+      ]
+    },
+    {
       "text": "Software developers typically work with deterministic tools and a great deal of work goes into ensuring that these tools are highly reliable [19].",
       "bboxes": [
         {
@@ -6744,6 +6758,25 @@
       ]
     },
     {
+      "text": "Many participants were initially skeptical of the accuracy and value of the confidence highlights (P1, P2, P3, P5, P7, P9).",
+      "bboxes": [
+        {
+          "left": 0.48274999999999996,
+          "top": 0.45655555555555555,
+          "width": 0.3376274509803922,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.4738510101010101,
+          "width": 0.374781045751634,
+          "height": 0.011320707070707037,
+          "page": 8
+        }
+      ]
+    },
+    {
       "text": "In addition, the alternate translations had additional explanatory power in helping participants understand the nature of the underlying code.",
       "bboxes": [
         {
@@ -6757,25 +6790,6 @@
           "left": 0.1200016339869281,
           "top": 0.5430366161616161,
           "width": 0.18079738562091507,
-          "height": 0.011320707070707092,
-          "page": 8
-        }
-      ]
-    },
-    {
-      "text": "It would be different if the i as an index... lets see... is it used? Oh actually it is used... Now theres a mistake the code.. The statement d [ i ] = i, is wrong [but] the other [alternate translation] is correct. (P1)",
-      "bboxes": [
-        {
-          "left": 0.15988398692810457,
-          "top": 0.5847146464646464,
-          "width": 0.620233660130719,
-          "height": 0.011320707070707092,
-          "page": 8
-        },
-        {
-          "left": 0.17517973856209149,
-          "top": 0.602010101010101,
-          "width": 0.5580114379084968,
           "height": 0.011320707070707092,
           "page": 8
         }
@@ -6889,105 +6903,6 @@
       ]
     },
     {
-      "text": "A lot of us in the software development field, we sometimes have the feeling that for a given problem set, we have to solve the entire problem. But, thats not necessarily true... if you can help someone do part of the task... maybe it will be more effective at smaller, less complex code fragments. Then, [as] you get feedback from users, you build into it more intelligence, then maybe it becomes more effective on larger, more complex pieces of code. (P3)",
-      "bboxes": [
-        {
-          "left": 0.21988562091503266,
-          "top": 0.6361439393939394,
-          "width": 0.6218349673202614,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.21988562091503266,
-          "top": 0.653439393939394,
-          "width": 0.6202271241830066,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.21988562091503266,
-          "top": 0.6707361111111111,
-          "width": 0.620235294117647,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.21988562091503266,
-          "top": 0.6880328282828283,
-          "width": 0.6202320261437908,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.21988562091503266,
-          "top": 0.7053282828282829,
-          "width": 0.1111127450980392,
-          "height": 0.011320707070707092,
-          "page": 9
-        }
-      ]
-    },
-    {
-      "text": "I think for someone to start using a tool like this, it would need to prove that its adding some value... It probably varies from person to person. Some people wont be satisfied with anything you give them, and others will be satisfied with if it can be 10% effective in doing translations perhaps. And most people fall somewhere in the middle there. (P3)",
-      "bboxes": [
-        {
-          "left": 0.21988562091503266,
-          "top": 0.4174128787878788,
-          "width": 0.6202352941176472,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.21988562091503266,
-          "top": 0.4347083333333333,
-          "width": 0.6202352941176472,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.21988562091503266,
-          "top": 0.4520050505050505,
-          "width": 0.620232026143791,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.21988562091503266,
-          "top": 0.4693017676767677,
-          "width": 0.14249509803921567,
-          "height": 0.011320707070707092,
-          "page": 9
-        }
-      ]
-    },
-    {
-      "text": "Yeah I would [like it]. It makes it much more easier than to just rewrite the code or to hand type the code. Even if it had... little distortions, like extra spaces, which can be easy to fix... I would rather do that instead of rewriting everything from scratch. (P2)",
-      "bboxes": [
-        {
-          "left": 0.21988562091503266,
-          "top": 0.28516287878787877,
-          "width": 0.6218349673202614,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.21988562091503266,
-          "top": 0.302459595959596,
-          "width": 0.6202254901960784,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.21988562091503266,
-          "top": 0.31975505050505054,
-          "width": 0.22855555555555562,
-          "height": 0.011320707070707037,
-          "page": 9
-        }
-      ]
-    },
-    {
       "text": "Participants described the lifecycle of modernizing applications as consisting of three general phases: (1) creating an understanding of the legacy application and its architecture by reviewing code and documentation; (2) performing the migration work, which may include translating and/or refactoring the code; and (3) reviewing and testing the migrated code.",
       "bboxes": [
         {
@@ -7047,6 +6962,25 @@
       ]
     },
     {
+      "text": "One helpful improvement to the code translation user interface would be to show a stronger visual correspondence between input and output source code.",
+      "bboxes": [
+        {
+          "left": 0.3282320261437908,
+          "top": 0.7344722222222222,
+          "width": 0.49176633986928114,
+          "height": 0.011320707070707092,
+          "page": 10
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.7517676767676768,
+          "width": 0.4176830065359477,
+          "height": 0.011320707070707092,
+          "page": 10
+        }
+      ]
+    },
+    {
       "text": "Participants also described how generative methods could be used to fill in missing documentation to help others understand ones own code, to create an understanding of poorly-documented code, or to re-align documentation with code when drift has occurred [30, 85].",
       "bboxes": [
         {
@@ -7073,27 +7007,27 @@
       ]
     },
     {
-      "text": "The place where I can see something like this being very helpful would be where you really have a truly dead codebase thats just a complete black box that nobody can, or wants, to understand... because for that you need understanding if the goal is to keep the darn thing limping while you transition to something else. (P4)",
+      "text": "As described in Section 5.0.1, one of the main challenges in migrating legacy applications is due to the fact that code and code architectures are undocumented, (P4) with specifications sometimes living in the gray matter storage (P7) of engineers that dont work here anymore (P4).",
       "bboxes": [
         {
-          "left": 0.15988398692810457,
-          "top": 0.3502790404040404,
-          "width": 0.6202352941176471,
+          "left": 0.3043169934640523,
+          "top": 0.23928787878787877,
+          "width": 0.5156797385620916,
           "height": 0.011320707070707092,
           "page": 10
         },
         {
-          "left": 0.15988398692810457,
-          "top": 0.367574494949495,
-          "width": 0.620235294117647,
-          "height": 0.011320707070706981,
+          "left": 0.1200016339869281,
+          "top": 0.25658333333333333,
+          "width": 0.6999901960784314,
+          "height": 0.011320707070707092,
           "page": 10
         },
         {
-          "left": 0.15988398692810457,
-          "top": 0.3848712121212121,
-          "width": 0.6198333333333333,
-          "height": 0.011320707070707092,
+          "left": 0.11834640522875817,
+          "top": 0.27388005050505054,
+          "width": 0.4432303921568628,
+          "height": 0.011320707070707037,
           "page": 10
         }
       ]
@@ -7227,27 +7161,27 @@
       ]
     },
     {
-      "text": "One thing that would be really interesting... especially if you are going from a strongly-typed language like Java to something like Python, would be to generate automated unit tests with coverage. That would certainly help probe at places where the AI got it wrong and build trust where it got it right. (P4)",
+      "text": "As discussed in Section 5.1.1, testing seems to be one of the primary ways that software engineers will accept and use AI-translated code: Im very much a supporter of test-driven development, which typically means you write tests that validate behavior. (P3).",
       "bboxes": [
         {
-          "left": 0.21988562091503266,
-          "top": 0.5403876262626263,
-          "width": 0.6202287581699346,
+          "left": 0.3488790849673203,
+          "top": 0.46170959595959593,
+          "width": 0.5311241830065359,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.18000163398692812,
+          "top": 0.47900505050505054,
+          "width": 0.7003807189542482,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.18000163398692812,
+          "top": 0.4963017676767677,
+          "width": 0.29514215686274514,
           "height": 0.011320707070706981,
-          "page": 11
-        },
-        {
-          "left": 0.21988562091503266,
-          "top": 0.5576830808080808,
-          "width": 0.620235294117647,
-          "height": 0.011320707070707092,
-          "page": 11
-        },
-        {
-          "left": 0.21988562091503266,
-          "top": 0.574979797979798,
-          "width": 0.5046388888888889,
-          "height": 0.011320707070707092,
           "page": 11
         }
       ]
@@ -8065,6 +7999,39 @@
       ]
     },
     {
+      "text": "To explore a property of an individual element, a designer follows a simple syntax by prefixing \" explore\" to the property, and specifying the alternative values for the property delimited by spaces:",
+      "bboxes": [
+        {
+          "left": 0.6100898692810458,
+          "top": 0.5340366161616161,
+          "width": 0.30200326797385624,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5472058080808081,
+          "width": 0.3925669934640523,
+          "height": 0.01198863636363634,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5617108585858586,
+          "width": 0.39293790849673205,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5755479797979798,
+          "width": 0.1201372549019607,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
       "text": "In our early exploration, we found conventional GA sensitive to the random initialization of design options.",
       "bboxes": [
         {
@@ -8110,6 +8077,32 @@
       ]
     },
     {
+      "text": "The pairwise comparison of designs eases the rater task and yields more reliable feedback than rating a design individually on an absolute scale.",
+      "bboxes": [
+        {
+          "left": 0.7451078431372549,
+          "top": 0.6492032828282828,
+          "width": 0.16697875816993468,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6630404040404041,
+          "width": 0.3925669934640523,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6768775252525252,
+          "width": 0.28088398692810457,
+          "height": 0.011320707070707092,
+          "page": 4
+        }
+      ]
+    },
+    {
       "text": "As the number of attributes and nodes to be explored increases, the search space for a design grows combinatorially.",
       "bboxes": [
         {
@@ -8123,6 +8116,91 @@
           "left": 0.08790522875816993,
           "top": 0.3409507575757576,
           "width": 0.29160294117647056,
+          "height": 0.011320707070707092,
+          "page": 4
+        }
+      ]
+    },
+    {
+      "text": "The Spacewalker parser analyzes a design specification file by parsing its HTML structure, which derives an internal representation for the design search space.",
+      "bboxes": [
+        {
+          "left": 0.17905228758169933,
+          "top": 0.15827146464646463,
+          "width": 0.3038856209150327,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.17210858585858585,
+          "width": 0.39256045751633994,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.18594570707070707,
+          "width": 0.2536960784313726,
+          "height": 0.011320707070707092,
+          "page": 4
+        }
+      ]
+    },
+    {
+      "text": "We refer an instance of a UI design, which is acquired by selecting a specific option for each attribute to be explored, as a configuration of the design.",
+      "bboxes": [
+        {
+          "left": 0.4615653594771242,
+          "top": 0.7427878787878788,
+          "width": 0.018895424836601227,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.756625,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7704621212121212,
+          "width": 0.39256045751633994,
+          "height": 0.011332070707070763,
+          "page": 4
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7842992424242424,
+          "width": 0.06349019607843136,
+          "height": 0.011320707070707092,
+          "page": 4
+        }
+      ]
+    },
+    {
+      "text": "A typical genetic algorithm (GA) follows an iterative process, where potential solutions evolve from a multi-generation process.",
+      "bboxes": [
+        {
+          "left": 0.3167761437908497,
+          "top": 0.4726843434343434,
+          "width": 0.16369281045751638,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.0874656862745098,
+          "top": 0.4865214646464646,
+          "width": 0.3930016339869281,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5003585858585858,
+          "width": 0.19708169934640524,
           "height": 0.011320707070707092,
           "page": 4
         }
@@ -8161,6 +8239,25 @@
           "left": 0.08790522875816993,
           "top": 0.1372348484848485,
           "width": 0.22974673202614382,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ]
+    },
+    {
+      "text": "We invited five participants for this remote user study.",
+      "bboxes": [
+        {
+          "left": 0.7086290849673202,
+          "top": 0.5293876262626263,
+          "width": 0.20346732026143788,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5432247474747475,
+          "width": 0.10915196078431366,
           "height": 0.011320707070707092,
           "page": 5
         }
@@ -8236,6 +8333,32 @@
       ]
     },
     {
+      "text": "All participants were able to learn the Spacewalker markup syntax using the description we provided and were able to create syntactically correct specifications.",
+      "bboxes": [
+        {
+          "left": 0.6833088235294118,
+          "top": 0.8429217171717173,
+          "width": 0.22878104575163383,
+          "height": 0.011320707070706981,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8567588383838384,
+          "width": 0.39256045751633983,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.5189918300653594,
+          "top": 0.8705959595959595,
+          "width": 0.33919934640522875,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ]
+    },
+    {
       "text": "We conducted two experiments to evaluate whether Spacewalker was able to efficiently search a design space and generate better designs by utilizing the responses from the crowd workers.",
       "bboxes": [
         {
@@ -8281,6 +8404,51 @@
           "top": 0.34482323232323236,
           "width": 0.3582385620915032,
           "height": 0.011320707070707037,
+          "page": 6
+        }
+      ]
+    },
+    {
+      "text": "We conducted both experiments following the same procedure.",
+      "bboxes": [
+        {
+          "left": 0.3279264705882353,
+          "top": 0.6076919191919191,
+          "width": 0.1550081699346405,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6215290404040403,
+          "width": 0.22123692810457518,
+          "height": 0.011320707070707092,
+          "page": 6
+        }
+      ]
+    },
+    {
+      "text": "For each search specification, we calculate the percentage of votes received by Spacewalker genetic method (the rest of the votes are received by uniform sampling).",
+      "bboxes": [
+        {
+          "left": 0.689547385620915,
+          "top": 0.7958598484848485,
+          "width": 0.22502287581699354,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8096969696969697,
+          "width": 0.3925637254901959,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8235340909090909,
+          "width": 0.3948202614379086,
+          "height": 0.011320707070707092,
           "page": 6
         }
       ]
@@ -8721,18 +8889,6 @@
       ]
     },
     {
-      "text": "Human-centered computing  Empirical studies in HCI .",
-      "bboxes": [
-        {
-          "left": 0.08790522875816993,
-          "top": 0.5713131313131313,
-          "width": 0.3868137254901961,
-          "height": 0.012238636363636313,
-          "page": 0
-        }
-      ]
-    },
-    {
       "text": "Himanshu Zade University of Washington himanz@uw.edu",
       "bboxes": [
         {
@@ -8849,32 +9005,6 @@
           "top": 0.23344318181818183,
           "width": 0.11774346405228753,
           "height": 0.012578282828282827,
-          "page": 0
-        }
-      ]
-    },
-    {
-      "text": "At Netflix, we are competing for our customers time, so our competitors include Snapchat, YouTube, sleep, etc.  Reed Hastings, Netflix CEO [118, p.50]",
-      "bboxes": [
-        {
-          "left": 0.5178790849673203,
-          "top": 0.33448611111111115,
-          "width": 0.3956764705882353,
-          "height": 0.011332070707070652,
-          "page": 0
-        },
-        {
-          "left": 0.5195343137254902,
-          "top": 0.34832323232323237,
-          "width": 0.24669117647058825,
-          "height": 0.011332070707070652,
-          "page": 0
-        },
-        {
-          "left": 0.5170588235294118,
-          "top": 0.36216035353535353,
-          "width": 0.2389428104575163,
-          "height": 0.011320707070707092,
           "page": 0
         }
       ]
@@ -9193,6 +9323,32 @@
       ]
     },
     {
+      "text": "To obtain a general sample of users of the YouTube mobile app, we recruited from Amazon Mechanical Turk workers in the United States.",
+      "bboxes": [
+        {
+          "left": 0.6417385620915033,
+          "top": 0.6127234848484848,
+          "width": 0.27035130718954237,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.519109477124183,
+          "top": 0.626560606060606,
+          "width": 0.39336601307189534,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.5189918300653594,
+          "top": 0.6403977272727273,
+          "width": 0.17248366013071892,
+          "height": 0.011320707070706981,
+          "page": 2
+        }
+      ]
+    },
+    {
       "text": "Participants answered questions in an online survey.",
       "bboxes": [
         {
@@ -9259,6 +9415,58 @@
           "top": 0.8386704545454545,
           "width": 0.028736928104575177,
           "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "Participants spent a median of 101 minutes per day (interquartile range: 57-156) on YouTube across all devices in the week prior to the survey.",
+      "bboxes": [
+        {
+          "left": 0.20840032679738563,
+          "top": 0.6967916666666667,
+          "width": 0.27234150326797385,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7106287878787878,
+          "width": 0.3925588235294118,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7244659090909091,
+          "width": 0.1751209150326798,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "A total of 120 participants met the inclusion criteria and completed the survey (see demographics in Table 1 ).",
+      "bboxes": [
+        {
+          "left": 0.22288888888888886,
+          "top": 0.5514810606060606,
+          "width": 0.26005065359477136,
+          "height": 0.011343434343434322,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5653181818181818,
+          "width": 0.39256045751633994,
+          "height": 0.011343434343434322,
+          "page": 3
+        },
+        {
+          "left": 0.08752450980392157,
+          "top": 0.579155303030303,
+          "width": 0.015256535947712424,
+          "height": 0.011343434343434322,
           "page": 3
         }
       ]
@@ -9334,6 +9542,32 @@
           "left": 0.5358137254901961,
           "top": 0.7626742424242424,
           "width": 0.37853104575163377,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ]
+    },
+    {
+      "text": "Participants sense of agency depended on whether it felt like they had agreed to the actions of the app.",
+      "bboxes": [
+        {
+          "left": 0.2826960784313725,
+          "top": 0.7834305555555555,
+          "width": 0.20025000000000004,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7972664141414141,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8111035353535354,
+          "width": 0.04627614379084967,
           "height": 0.011320707070707092,
           "page": 5
         }
@@ -9417,6 +9651,86 @@
           "left": 0.08790522875816993,
           "top": 0.8776843434343434,
           "width": 0.09282189542483661,
+          "height": 0.011320707070707092,
+          "page": 6
+        }
+      ]
+    },
+    {
+      "text": "Irrelevant recommendations, i.e., those that were repetitive or unrelated to personal interests, universally undermined sense of agency:  Seeing recommended videos that have nothing to do with my viewing history leads to unwanted scrolling and possibly unwanted content.  Similarly, irrelevant search results undermined control because they forced participants to keep scrolling for what they wanted, e.g.,  I use specific search terms, but I still have to scan past a lot of vaguely or even unrelated stuff to find what I want.",
+      "bboxes": [
+        {
+          "left": 0.5493235294117647,
+          "top": 0.35170833333333335,
+          "width": 0.3627663398692811,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.36554545454545456,
+          "width": 0.3925637254901959,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.3793813131313132,
+          "width": 0.392563725490196,
+          "height": 0.011332070707070652,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.39322979797979796,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.4070555555555555,
+          "width": 0.39255555555555555,
+          "height": 0.011332070707070763,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.4208926767676767,
+          "width": 0.3925669934640523,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.43472979797979794,
+          "width": 0.39255882352941174,
+          "height": 0.011332070707070763,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.44856691919191916,
+          "width": 0.3743447712418301,
+          "height": 0.011332070707070763,
+          "page": 6
+        }
+      ]
+    },
+    {
+      "text": "Participants felt more in control when they planned their consumption in advance.",
+      "bboxes": [
+        {
+          "left": 0.22577287581699346,
+          "top": 0.5871073232323232,
+          "width": 0.2550702614379085,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6009444444444444,
+          "width": 0.2257794117647059,
           "height": 0.011320707070707092,
           "page": 6
         }
@@ -9520,6 +9834,46 @@
       ]
     },
     {
+      "text": "We recruited YouTube users in Seattle via email lists and social media channels to  Help us understand how people spend their time in the YouTube mobile app.  We did not initially set inclusion criteria for participation (beyond adult YouTube users) as we viewed our co-design activities as exploratory.",
+      "bboxes": [
+        {
+          "left": 0.6377483660130719,
+          "top": 0.6102083333333334,
+          "width": 0.2743513071895425,
+          "height": 0.011320707070706981,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6240454545454546,
+          "width": 0.39255392156862734,
+          "height": 0.011332070707070652,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6378825757575757,
+          "width": 0.39255882352941185,
+          "height": 0.011332070707070763,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.651719696969697,
+          "width": 0.3934460784313726,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6655568181818181,
+          "width": 0.3146944444444444,
+          "height": 0.011320707070707092,
+          "page": 7
+        }
+      ]
+    },
+    {
       "text": "We used codebook thematic analysis to analyze the data [13, 15], wherein we generated themes that are more interpretive than just a summary of all of the data, but less interpretive than in reflexive thematic analysis where the researchers subject position plays a central role in the analysis [14].",
       "bboxes": [
         {
@@ -9555,6 +9909,32 @@
           "top": 0.7278232323232323,
           "width": 0.19085620915032686,
           "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "Toelicitparticipant-generated ideas, we asked participants to sketch over paper mockups of three key screens: home, search, and video player (see Figure 3 ).",
+      "bboxes": [
+        {
+          "left": 0.309656862745098,
+          "top": 0.2790631313131313,
+          "width": 0.175468954248366,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.29290025252525254,
+          "width": 0.39256045751633994,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.30671464646464647,
+          "width": 0.35923856209150323,
+          "height": 0.011343434343434322,
           "page": 9
         }
       ]
@@ -9607,6 +9987,105 @@
           "top": 0.7481767676767678,
           "width": 0.043777777777777804,
           "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "To receive feedback on our changes from YouTube users, we asked participants to evaluate our mockups of the redesigned mechanisms in the YouTube mobile app (see Table 5 ).",
+      "bboxes": [
+        {
+          "left": 0.321062091503268,
+          "top": 0.49353661616161615,
+          "width": 0.15967810457516346,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5073737373737374,
+          "width": 0.3928333333333333,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5212108585858586,
+          "width": 0.39256045751633994,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.0874656862745098,
+          "top": 0.5350252525252526,
+          "width": 0.08199999999999998,
+          "height": 0.011343434343434322,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "When individual participants reviewed the different versions of their own sketches and our mockups, they were often conflicted about how much control they preferred.",
+      "bboxes": [
+        {
+          "left": 0.7896225490196079,
+          "top": 0.8242803030303031,
+          "width": 0.12494281045751632,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8381174242424242,
+          "width": 0.39255718954248375,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8519545454545455,
+          "width": 0.39255555555555544,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8657916666666666,
+          "width": 0.09051633986928109,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "In a modified version of a think-aloud-protocol [53], the participant opened YouTube on their smartphone and talked us through a typical engagement cycle (how they start and stop use) [115].",
+      "bboxes": [
+        {
+          "left": 0.42024673202614377,
+          "top": 0.1891237373737374,
+          "width": 0.06268790849673206,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.20295959595959595,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08748039215686274,
+          "top": 0.21679671717171717,
+          "width": 0.39545424836601306,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.23063383838383839,
+          "width": 0.32369444444444445,
+          "height": 0.011320707070707037,
           "page": 9
         }
       ]
@@ -9748,6 +10227,32 @@
           "left": 0.08790522875816993,
           "top": 0.17874494949494948,
           "width": 0.16326307189542488,
+          "height": 0.011320707070707092,
+          "page": 10
+        }
+      ]
+    },
+    {
+      "text": "The Study 1 theme Spectrum of consent addressed whether the user had agreed to an action taken by the app (e.g., autoplaying the next video).",
+      "bboxes": [
+        {
+          "left": 0.29384313725490196,
+          "top": 0.7253068181818182,
+          "width": 0.1866225490196079,
+          "height": 0.011320707070707092,
+          "page": 10
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7391439393939394,
+          "width": 0.3925571895424837,
+          "height": 0.011320707070707092,
+          "page": 10
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7529810606060606,
+          "width": 0.27265359477124185,
           "height": 0.011320707070707092,
           "page": 10
         }
@@ -10401,25 +10906,6 @@
           "top": 0.3176199494949495,
           "width": 0.10039052287581696,
           "height": 0.011320707070707092,
-          "page": 0
-        }
-      ]
-    },
-    {
-      "text": "Human-centered computing  Empirical studies in HCI ;  Applied computing  Psychology ; Law .",
-      "bboxes": [
-        {
-          "left": 0.08790522875816993,
-          "top": 0.5603497474747475,
-          "width": 0.3951830065359477,
-          "height": 0.012249999999999983,
-          "page": 0
-        },
-        {
-          "left": 0.08790522875816993,
-          "top": 0.5741868686868686,
-          "width": 0.24297875816993464,
-          "height": 0.012250000000000094,
           "page": 0
         }
       ]
@@ -11611,6 +12097,39 @@
       ]
     },
     {
+      "text": "A model that can explain our blameworthiness results is the Path Model of Blame, which proposes that blame is attributed through nested and sequential judgments of various aspects of the action and its agent [66].",
+      "bboxes": [
+        {
+          "left": 0.8125604575163399,
+          "top": 0.19556944444444443,
+          "width": 0.09952941176470587,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.20940656565656565,
+          "width": 0.39417810457516345,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5189918300653594,
+          "top": 0.22324368686868687,
+          "width": 0.395576797385621,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.2370808080808081,
+          "width": 0.3948169934640522,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
       "text": "Moreover, our results suggest that an AI without a human-inthe-loop, i.e., AI judges in Study 2, could be held at the same level of scrutiny as human decision-makers for their decisions.",
       "bboxes": [
         {
@@ -11758,6 +12277,32 @@
       ]
     },
     {
+      "text": "The extent to which praise was assigned to human and AI agents varied depending on whether one was an advisor or a decision-maker.",
+      "bboxes": [
+        {
+          "left": 0.78465522875817,
+          "top": 0.5800189393939394,
+          "width": 0.12744281045751626,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.593854797979798,
+          "width": 0.39255555555555555,
+          "height": 0.011320707070706981,
+          "page": 8
+        },
+        {
+          "left": 0.5189918300653594,
+          "top": 0.6076919191919191,
+          "width": 0.2805833333333333,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
       "text": "The four rightmost bars in Figure 3 suggest that AI and human agents are ascribed similar levels of backward-notions of responsibility, namely blame, liability, praise, and causal responsibility.",
       "bboxes": [
         {
@@ -11811,6 +12356,46 @@
           "left": 0.08790522875816993,
           "top": 0.4784419191919192,
           "width": 0.06481209150326796,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "Our findings indicating that AI and human agents should be held liable to a similar level goes against previous work, which has found that people attribute punishment to AI systems to a lesser degree than their human counterparts [62].",
+      "bboxes": [
+        {
+          "left": 0.292624183006536,
+          "top": 0.28472474747474746,
+          "width": 0.18783823529411764,
+          "height": 0.011320707070707037,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.2985606060606061,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707037,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3123977272727273,
+          "width": 0.3950326797385621,
+          "height": 0.011320707070707037,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.32623484848484846,
+          "width": 0.395031045751634,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3400719696969697,
+          "width": 0.060323529411764706,
           "height": 0.011320707070707092,
           "page": 9
         }
@@ -12129,25 +12714,6 @@
           "top": 0.8844318181818183,
           "width": 0.39255392156862745,
           "height": 0.011320707070707092,
-          "page": 0
-        }
-      ]
-    },
-    {
-      "text": "Human-centered computing  Visualization systems and tools ; HCI design and evaluation methods .",
-      "bboxes": [
-        {
-          "left": 0.5195343137254902,
-          "top": 0.6670732323232323,
-          "width": 0.39256535947712423,
-          "height": 0.012238636363636313,
-          "page": 0
-        },
-        {
-          "left": 0.5195343137254902,
-          "top": 0.6818055555555556,
-          "width": 0.2804787581699346,
-          "height": 0.011343434343434433,
           "page": 0
         }
       ]
@@ -12787,6 +13353,51 @@
       ]
     },
     {
+      "text": "GestureMap is fundamentally motivated by providing researchers with a visual overview of the elicited gesture space.",
+      "bboxes": [
+        {
+          "left": 0.7355196078431372,
+          "top": 0.7460618686868686,
+          "width": 0.17695915032679743,
+          "height": 0.011332070707070763,
+          "page": 2
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.75989898989899,
+          "width": 0.39255392156862745,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7737361111111111,
+          "width": 0.1304379084967321,
+          "height": 0.011320707070707092,
+          "page": 2
+        }
+      ]
+    },
+    {
+      "text": "Related tools [24, 41] show a 3D skeleton view with animation.",
+      "bboxes": [
+        {
+          "left": 0.7532826797385621,
+          "top": 0.6967032828282829,
+          "width": 0.15935620915032667,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7105404040404041,
+          "width": 0.21068137254901964,
+          "height": 0.011320707070707092,
+          "page": 2
+        }
+      ]
+    },
+    {
       "text": "Exploratory analysis seeks to uncover structural patterns in the dataset, identify anomalies, and single-out outliers [53].",
       "bboxes": [
         {
@@ -12806,6 +13417,77 @@
       ]
     },
     {
+      "text": "Following a cartographic approach [47], and in line with 2D projections in visual analytics (e.g. [27, 64]), we use a map metaphor to visually guide analysts through the elicited gesture space.",
+      "bboxes": [
+        {
+          "left": 0.3033202614379085,
+          "top": 0.5275631313131313,
+          "width": 0.17962745098039218,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5414002525252525,
+          "width": 0.3925604575163399,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.0874656862745098,
+          "top": 0.5552373737373737,
+          "width": 0.3929934640522876,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5690744949494949,
+          "width": 0.2095751633986928,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "The two dimensions of the map do not have a direct predefined meaning yet emerge from elicited data.",
+      "bboxes": [
+        {
+          "left": 0.2753316993464052,
+          "top": 0.70122601010101,
+          "width": 0.20514052287581697,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7150618686868686,
+          "width": 0.39481535947712426,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "Scatter or density plots can be projected onto the map (e.g. Figure 1b 1  and Figure 1c).",
+      "bboxes": [
+        {
+          "left": 0.6683480392156863,
+          "top": 0.3911401515151515,
+          "width": 0.24375163398692812,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.4045353535353535,
+          "width": 0.2848218954248367,
+          "height": 0.011762626262626308,
+          "page": 3
+        }
+      ]
+    },
+    {
       "text": "Here we describe how users can interact with the map.",
       "bboxes": [
         {
@@ -12818,12 +13500,246 @@
       ]
     },
     {
+      "text": "A fundamentally new capability of GestureMap is that unseen poses or gestures (i.e. not proposed by participants) can be simulated by decoding arbitrary 2D points in the learned space.",
+      "bboxes": [
+        {
+          "left": 0.7086470588235294,
+          "top": 0.5569659090909092,
+          "width": 0.20345261437908502,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5708030303030304,
+          "width": 0.39293627450980395,
+          "height": 0.011332070707070652,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5846401515151516,
+          "width": 0.39255555555555555,
+          "height": 0.011320707070706981,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5984772727272728,
+          "width": 0.10775163398692811,
+          "height": 0.011320707070706981,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "The first of many analysis steps often involves developing an overview of the data to understand its underlying properties: Researchers here often use statistical plots to summarize the data and to identify broad patterns.",
+      "bboxes": [
+        {
+          "left": 0.6874803921568627,
+          "top": 0.8429217171717173,
+          "width": 0.2246078431372549,
+          "height": 0.011320707070706981,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8567588383838384,
+          "width": 0.39503104575163406,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8705959595959595,
+          "width": 0.39255555555555544,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8844318181818183,
+          "width": 0.30276307189542484,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "Prior work has extensively used scatter plots to analyze machine learned representations [35, 48].",
+      "bboxes": [
+        {
+          "left": 0.3893316993464052,
+          "top": 0.10956060606060607,
+          "width": 0.0911290849673202,
+          "height": 0.011320707070707065,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.12339772727272727,
+          "width": 0.395031045751634,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.1372348484848485,
+          "width": 0.09372549019607844,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "Villarreal-Narvaez et al.",
+      "bboxes": [
+        {
+          "left": 0.2772614379084967,
+          "top": 0.23096969696969696,
+          "width": 0.1387745098039216,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "The map supports pan and zoom and accordingly recomputes the grid of landmarks (small skeletons).",
+      "bboxes": [
+        {
+          "left": 0.6586748366013072,
+          "top": 0.3151464646464647,
+          "width": 0.2559003267973856,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.3289835858585859,
+          "width": 0.36306699346405236,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
       "text": "Here, we describe the map concept in more detail.",
       "bboxes": [
         {
           "left": 0.08790522875816993,
           "top": 0.5061073232323232,
           "width": 0.2988513071895425,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "For further inspection, one or more gestures can be selected (e.g. Figure 4) from a referents list of gesture proposals (Figure 1 3  ).",
+      "bboxes": [
+        {
+          "left": 0.6888692810457516,
+          "top": 0.49480808080808075,
+          "width": 0.2232189542483659,
+          "height": 0.011320707070707037,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.508645202020202,
+          "width": 0.3925637254901959,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5220404040404041,
+          "width": 0.1940718954248366,
+          "height": 0.011762626262626252,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "Complementary to the feature for postures, GestureMap accounts for the temporal nature of gesture data [24, 41] by offering linked animations of gesture paths (point moving on the path) and 3D skeletons (skeleton moving).",
+      "bboxes": [
+        {
+          "left": 0.31870751633986927,
+          "top": 0.3216111111111111,
+          "width": 0.16423039215686275,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.33544823232323234,
+          "width": 0.39255882352941174,
+          "height": 0.011332070707070707,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3492840909090909,
+          "width": 0.39255555555555555,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.0874656862745098,
+          "top": 0.3631212121212121,
+          "width": 0.382171568627451,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "Motivatedbysuchinterestsinrelated work[24, 36, 41], we include an export functionality to easily share analyses with other researchers.",
+      "bboxes": [
+        {
+          "left": 0.22350653594771241,
+          "top": 0.4337070707070707,
+          "width": 0.27282189542483654,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4475441919191919,
+          "width": 0.3925604575163399,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.08736437908496732,
+          "top": 0.46138005050505054,
+          "width": 0.13791013071895425,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "As larger data sets are expected in the future [1, 24, 41], we also provide an interactive clustering method to reduce manual workload for identifying similar gesture (sub)groups.",
+      "bboxes": [
+        {
+          "left": 0.24276470588235294,
+          "top": 0.38457702020202017,
+          "width": 0.24017973856209152,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3984141414141414,
+          "width": 0.3925571895424837,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4122512626262626,
+          "width": 0.39481535947712426,
           "height": 0.011320707070707092,
           "page": 3
         }
@@ -13046,6 +13962,25 @@
       ]
     },
     {
+      "text": "The key local observation in elicitation data is to examine individual gesture proposals .",
+      "bboxes": [
+        {
+          "left": 0.24758660130718954,
+          "top": 0.5198901515151515,
+          "width": 0.23287908496732027,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5337272727272727,
+          "width": 0.28734150326797386,
+          "height": 0.011332070707070763,
+          "page": 4
+        }
+      ]
+    },
+    {
       "text": "We introduce the concept of an average gesture sequence as a new computational capability in the context of gesture elicitation.",
       "bboxes": [
         {
@@ -13243,6 +14178,32 @@
       ]
     },
     {
+      "text": "This dialog is unfolded with a button in Figure 1b 3  and lets users interactively cluster gesture proposals for a referent.",
+      "bboxes": [
+        {
+          "left": 0.7261830065359477,
+          "top": 0.10956060606060607,
+          "width": 0.18591830065359483,
+          "height": 0.011320707070707065,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.12295580808080808,
+          "width": 0.39256209150326793,
+          "height": 0.01176262626262628,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.1372348484848485,
+          "width": 0.14528104575163403,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ]
+    },
+    {
       "text": "We used a Variational Autoencoder (VAE) [13] to embed the data as a 2D gesture map.",
       "bboxes": [
         {
@@ -13320,6 +14281,117 @@
           "left": 0.08790522875816993,
           "top": 0.6008421717171717,
           "width": 0.07420261437908494,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ]
+    },
+    {
+      "text": "This view shows different metrics, namely variances around the average gesture sequence per selected referent (Section 4.2), the distributions of DTW distances of proposals to their average gesture sequence, and nearest neighbor distances for a selected gesture.",
+      "bboxes": [
+        {
+          "left": 0.29735947712418304,
+          "top": 0.8290845959595959,
+          "width": 0.18558823529411766,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8429217171717173,
+          "width": 0.3928333333333333,
+          "height": 0.011320707070706981,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8567588383838384,
+          "width": 0.3925604575163399,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8705959595959595,
+          "width": 0.3928398692810458,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8844318181818183,
+          "width": 0.18832352941176472,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ]
+    },
+    {
+      "text": "This view either shows the raw skeleton recording or a reconstructed skeleton.",
+      "bboxes": [
+        {
+          "left": 0.3861862745098039,
+          "top": 0.7512689393939394,
+          "width": 0.094562091503268,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7651060606060607,
+          "width": 0.3796977124183007,
+          "height": 0.011320707070706981,
+          "page": 5
+        }
+      ]
+    },
+    {
+      "text": "This view lists all referents and gesture proposals in a compact way as numbers for quick reference and selection.",
+      "bboxes": [
+        {
+          "left": 0.31597875816993465,
+          "top": 0.6872891414141413,
+          "width": 0.16448856209150325,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7011262626262627,
+          "width": 0.39293790849673205,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7149633838383838,
+          "width": 0.13823856209150331,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ]
+    },
+    {
+      "text": "Researchers can zoom, pan, and hover over the gesture map, and overlay a scatter plot or a density plot (e.g. Figure 1c) to explore individual or multiple gesture poses.",
+      "bboxes": [
+        {
+          "left": 0.2893218954248366,
+          "top": 0.6371477272727273,
+          "width": 0.19115032679738558,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6509848484848485,
+          "width": 0.3929411764705883,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6648219696969697,
+          "width": 0.3947140522875817,
           "height": 0.011320707070707092,
           "page": 5
         }
@@ -13740,6 +14812,32 @@
       ]
     },
     {
+      "text": "When study participants paused their exploration for a longer period, we inquired why that was the case.",
+      "bboxes": [
+        {
+          "left": 0.32972549019607844,
+          "top": 0.45095707070707075,
+          "width": 0.15074019607843142,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.46479419191919197,
+          "width": 0.39255718954248364,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08736437908496732,
+          "top": 0.4786313131313132,
+          "width": 0.07427450980392157,
+          "height": 0.011320707070707037,
+          "page": 8
+        }
+      ]
+    },
+    {
       "text": "GestureMap builds on and extends functionalities of previous tools for gesture elicitation: It combines",
       "bboxes": [
         {
@@ -13823,6 +14921,65 @@
       ]
     },
     {
+      "text": "Upon first use, most people immediately animated a few gestures, saying that this was the most natural and familiar way to view the data Since the map visualization was unfamiliar to them, some had initial difficulties to understand the distinction of single poses (points) and entire gestures (paths).",
+      "bboxes": [
+        {
+          "left": 0.20004901960784316,
+          "top": 0.16968813131313132,
+          "width": 0.282890522875817,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.18352525252525254,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.19736237373737375,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707037,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.21119949494949497,
+          "width": 0.39255555555555555,
+          "height": 0.011320707070707037,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.2250366161616162,
+          "width": 0.3552303921568628,
+          "height": 0.011320707070707037,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "We asked the researchers to analyze the proposals for crouch and throw ball .",
+      "bboxes": [
+        {
+          "left": 0.2714346405228758,
+          "top": 0.34491540404040405,
+          "width": 0.2090375816993464,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.35875252525252527,
+          "width": 0.23421732026143793,
+          "height": 0.011332070707070763,
+          "page": 8
+        }
+      ]
+    },
+    {
       "text": "Next, they were asked to initialize the clustering algorithm using their knowledge from the previous task.",
       "bboxes": [
         {
@@ -13861,6 +15018,25 @@
       ]
     },
     {
+      "text": "Regardless of their initial analysis strategy, when asked which feature they would use to group the",
+      "bboxes": [
+        {
+          "left": 0.2937924836601307,
+          "top": 0.8705959595959595,
+          "width": 0.1891437908496732,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8844318181818183,
+          "width": 0.39256045751633994,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
       "text": "Looking ahead, new cloud elicitation tools [2, 36] yield large datasets.",
       "bboxes": [
         {
@@ -13880,6 +15056,129 @@
       ]
     },
     {
+      "text": "We asked people to use the interactive clustering tool based on their observations in the first task.",
+      "bboxes": [
+        {
+          "left": 0.6898872549019608,
+          "top": 0.2471439393939394,
+          "width": 0.22220424836601316,
+          "height": 0.011320707070707065,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.26098106060606063,
+          "width": 0.3522238562091503,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "When we asked the participants what the main aspect was that they used to determine interesting behavioral patterns, we observed diverse analysis strategies, but we broadly highlight two main ones:",
+      "bboxes": [
+        {
+          "left": 0.2615457516339869,
+          "top": 0.6261830808080808,
+          "width": 0.2189150326797385,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.640020202020202,
+          "width": 0.39502941176470585,
+          "height": 0.011320707070706981,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6538573232323233,
+          "width": 0.3925555555555555,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6676944444444444,
+          "width": 0.19891666666666669,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "They stopped to examine gestures in more detail that differed largely from the shapes seen so far.",
+      "bboxes": [
+        {
+          "left": 0.11983660130718955,
+          "top": 0.7092058080808081,
+          "width": 0.3606290849673203,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7230429292929292,
+          "width": 0.21556699346405228,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "Using expectations about possible behavior for a gesture proposal (e.g. left vs right hand throwing), they examined scatter points in those map regions that based on the landmark skeletons encoded related poses.",
+      "bboxes": [
+        {
+          "left": 0.36933496732026144,
+          "top": 0.806064393939394,
+          "width": 0.11113071895424836,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8199015151515151,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8337386363636364,
+          "width": 0.3925604575163399,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8475757575757575,
+          "width": 0.3613660130718954,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "A difficulty with k-means is setting the number of clusters.",
+      "bboxes": [
+        {
+          "left": 0.2490816993464052,
+          "top": 0.2978270202020202,
+          "width": 0.231390522875817,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3116641414141414,
+          "width": 0.1132140522875817,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
       "text": "Expert users especially liked the visual expressiveness of GestureMap , as it quickly summarizes the underlying dataset.",
       "bboxes": [
         {
@@ -13894,6 +15193,32 @@
           "top": 0.6240454545454546,
           "width": 0.3635163398692811,
           "height": 0.011332070707070652,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "Hand-engineered features [4, 24, 58] may help with the interpretation, however, they may be specific to a sensor and interaction setup.",
+      "bboxes": [
+        {
+          "left": 0.26763888888888887,
+          "top": 0.5147638888888889,
+          "width": 0.21282679738562094,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5286010101010101,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5424381313131313,
+          "width": 0.17657352941176468,
+          "height": 0.011320707070707092,
           "page": 9
         }
       ]
@@ -13958,6 +15283,58 @@
       ]
     },
     {
+      "text": "A smooth latent space facilitates suitable visualization by reducing jumps in gesture paths.",
+      "bboxes": [
+        {
+          "left": 0.3182745098039216,
+          "top": 0.15007575757575758,
+          "width": 0.1646601307189542,
+          "height": 0.011320707070707065,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.16391287878787877,
+          "width": 0.3948169934640523,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "GestureMap could be extended to more than post-hoc analysis: For example, we could embed live sensor data and continuously update the underlying mode.",
+      "bboxes": [
+        {
+          "left": 0.840735294117647,
+          "top": 0.28945328282828287,
+          "width": 0.07135784313725502,
+          "height": 0.011320707070707037,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.30327777777777776,
+          "width": 0.39256045751633983,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.317114898989899,
+          "width": 0.39503921568627465,
+          "height": 0.011320707070707037,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.3309520202020202,
+          "width": 0.07204575163398697,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
       "text": "This project is funded by the Bavarian State Ministry of Science and the Arts and coordinated by the Bavarian Research Institute for Digital Transformation (bidt).",
       "bboxes": [
         {
@@ -13984,12 +15361,83 @@
       ]
     },
     {
+      "text": "GestureMap empowers researchers to compare data across studies (cf. Section 6).",
+      "bboxes": [
+        {
+          "left": 0.4091062091503268,
+          "top": 0.667506313131313,
+          "width": 0.0713578431372549,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6813320707070707,
+          "width": 0.3948153594771242,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "GestureMap could be extended to define new gestures: For example, users could draw a gesture as a path on the map.",
+      "bboxes": [
+        {
+          "left": 0.37192320261437906,
+          "top": 0.7875732323232324,
+          "width": 0.1085424836601308,
+          "height": 0.011332070707070652,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8014103535353535,
+          "width": 0.3925604575163399,
+          "height": 0.011332070707070763,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8152474747474748,
+          "width": 0.1908169934640523,
+          "height": 0.01133207070707054,
+          "page": 9
+        }
+      ]
+    },
+    {
       "text": "Here, we highlight model and clustering aspects to consider.",
       "bboxes": [
         {
           "left": 0.08790522875816993,
           "top": 0.1268560606060606,
           "width": 0.3605016339869282,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "So far, elicitation has focused on observed gestures, yet it might also be relevant to examine why behavior was not observed.",
+      "bboxes": [
+        {
+          "left": 0.7876356209150327,
+          "top": 0.15798989898989899,
+          "width": 0.12445915032679744,
+          "height": 0.011320707070707065,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.17182702020202018,
+          "width": 0.39502941176470585,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.1856641414141414,
+          "width": 0.2395228758169935,
           "height": 0.011320707070707092,
           "page": 9
         }
@@ -14754,6 +16202,44 @@
       ]
     },
     {
+      "text": "We recruited 31 participants (13 female, age: 18-54).",
+      "bboxes": [
+        {
+          "left": 0.6403071895424837,
+          "top": 0.6253143939393939,
+          "width": 0.2735196078431371,
+          "height": 0.011320707070706981,
+          "page": 4
+        },
+        {
+          "left": 0.5191977124183007,
+          "top": 0.6391515151515151,
+          "width": 0.04034967320261429,
+          "height": 0.011320707070706981,
+          "page": 4
+        }
+      ]
+    },
+    {
+      "text": "We used a 5.5\" Phone A and a 6.3\" Phone B throughout the collection.",
+      "bboxes": [
+        {
+          "left": 0.6305179738562091,
+          "top": 0.5478396464646464,
+          "width": 0.2815751633986928,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5616767676767677,
+          "width": 0.16214215686274502,
+          "height": 0.011320707070707092,
+          "page": 4
+        }
+      ]
+    },
+    {
       "text": "We measured classification performance by F1 score and regression by mean absolute error (MAE) and r 2 score.",
       "bboxes": [
         {
@@ -14768,6 +16254,32 @@
           "top": 0.848125,
           "width": 0.3028300653594771,
           "height": 0.013790404040403992,
+          "page": 4
+        }
+      ]
+    },
+    {
+      "text": "The four grip gestures we studied are in a combination conditions of phone, grip gestures, and tapping actions as shown in Table 3.",
+      "bboxes": [
+        {
+          "left": 0.2621470588235294,
+          "top": 0.7737361111111111,
+          "width": 0.21831209150326797,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7875732323232324,
+          "width": 0.3925571895424837,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8014103535353535,
+          "width": 0.1729019607843138,
+          "height": 0.011320707070707092,
           "page": 4
         }
       ]
@@ -14951,6 +16463,32 @@
       ]
     },
     {
+      "text": "We implemented and trained four ML algorithms, including TapNet, to compare their relative performance.",
+      "bboxes": [
+        {
+          "left": 0.30689052287581703,
+          "top": 0.6215290404040403,
+          "width": 0.1735669934640523,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6353661616161616,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707203,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6492032828282828,
+          "width": 0.07934640522875817,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ]
+    },
+    {
       "text": "Table 4: Weighted average F1 score of four classification tasks (no color shading) as well as MAE and r 2 score of the tap location regression task (purple shading).",
       "bboxes": [
         {
@@ -15034,6 +16572,46 @@
       ]
     },
     {
+      "text": "To investigate cross-device model training, we evaluated model performance with incremental training samples from 1K to 15K, as previous experiments suggest that TapNet converges with around 15K training samples.",
+      "bboxes": [
+        {
+          "left": 0.8275294117647058,
+          "top": 0.6630404040404041,
+          "width": 0.08456699346405228,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6768775252525252,
+          "width": 0.39256045751633983,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6907146464646465,
+          "width": 0.39502941176470585,
+          "height": 0.011320707070706981,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7045517676767676,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.718388888888889,
+          "width": 0.0499232026143791,
+          "height": 0.011320707070706981,
+          "page": 6
+        }
+      ]
+    },
+    {
       "text": "However, the performance difference on simple tasks (event and finger part classification) among different methods is marginal.",
       "bboxes": [
         {
@@ -15073,6 +16651,58 @@
           "left": 0.08790522875816993,
           "top": 0.8222272727272727,
           "width": 0.3684738562091503,
+          "height": 0.011320707070707092,
+          "page": 6
+        }
+      ]
+    },
+    {
+      "text": "We hypothesized that training on diverse but one-person data can still achieve generalizability for unseen users in some tap recognition tasks.",
+      "bboxes": [
+        {
+          "left": 0.4608888888888889,
+          "top": 0.24095075757575757,
+          "width": 0.019575163398692752,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.2547878787878788,
+          "width": 0.3925571895424837,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.268625,
+          "width": 0.39256699346405227,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.2824621212121212,
+          "width": 0.03347712418300654,
+          "height": 0.011320707070707037,
+          "page": 6
+        }
+      ]
+    },
+    {
+      "text": "We first present the evaluation on multi-task learning.",
+      "bboxes": [
+        {
+          "left": 0.43372058823529414,
+          "top": 0.8567588383838384,
+          "width": 0.046750000000000014,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8705959595959595,
+          "width": 0.26507679738562095,
           "height": 0.011320707070707092,
           "page": 6
         }
@@ -15452,18 +17082,6 @@
           "top": 0.7500416666666667,
           "width": 0.5711470588235295,
           "height": 0.008805555555555511,
-          "page": 0
-        }
-      ]
-    },
-    {
-      "text": "Corresponding author.",
-      "bboxes": [
-        {
-          "left": 0.1200016339869281,
-          "top": 0.7008712121212122,
-          "width": 0.10919117647058822,
-          "height": 0.01025252525252529,
           "page": 0
         }
       ]
@@ -16908,6 +18526,25 @@
       ]
     },
     {
+      "text": "This study was approved by the Harvard Institutional Review Board.",
+      "bboxes": [
+        {
+          "left": 0.6469101307189542,
+          "top": 0.34577020202020203,
+          "width": 0.26765522875817016,
+          "height": 0.011320707070706981,
+          "page": 2
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.35960732323232325,
+          "width": 0.14971241830065363,
+          "height": 0.011320707070706981,
+          "page": 2
+        }
+      ]
+    },
+    {
       "text": "We also wished to include clinicians in co-design activities to discuss their expectations for future DSTs.",
       "bboxes": [
         {
@@ -17019,6 +18656,25 @@
       ]
     },
     {
+      "text": "We worked with primary care physicians who currently prescribe antidepressant treatments.",
+      "bboxes": [
+        {
+          "left": 0.7348316993464052,
+          "top": 0.24096969696969697,
+          "width": 0.17726633986928098,
+          "height": 0.011320707070707065,
+          "page": 2
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.25480681818181816,
+          "width": 0.3697581699346405,
+          "height": 0.011320707070707092,
+          "page": 2
+        }
+      ]
+    },
+    {
       "text": "Patient-level prognostic predictions:",
       "bboxes": [
         {
@@ -17100,6 +18756,25 @@
       ]
     },
     {
+      "text": "All interviews were audio recorded and transcribed.",
+      "bboxes": [
+        {
+          "left": 0.21648529411764705,
+          "top": 0.3187929292929293,
+          "width": 0.2664493464052287,
+          "height": 0.011320707070707037,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3326300505050505,
+          "width": 0.0451421568627451,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
       "text": "Engaging patients also means providing ways to integrate patient treatment preferences into the interactive system design.",
       "bboxes": [
         {
@@ -17132,58 +18807,6 @@
           "left": 0.5195343137254902,
           "top": 0.8817941919191918,
           "width": 0.134187908496732,
-          "height": 0.011320707070707092,
-          "page": 3
-        }
-      ]
-    },
-    {
-      "text": "If I was trying to decide between two meds and Im talking to a patient... its even something that you could potentially show a patient or say, \"These are two choices. I think theyre both maybe equally effective. This one may have more of the side effect or something.\"  P8",
-      "bboxes": [
-        {
-          "left": 0.5634967320261438,
-          "top": 0.6538497474747476,
-          "width": 0.30871241830065366,
-          "height": 0.011320707070707092,
-          "page": 3
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.6676868686868687,
-          "width": 0.3127875816993463,
-          "height": 0.011320707070707092,
-          "page": 3
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.68152398989899,
-          "width": 0.3143970588235294,
-          "height": 0.011320707070706981,
-          "page": 3
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.6953611111111111,
-          "width": 0.3127924836601308,
-          "height": 0.011320707070707092,
-          "page": 3
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.7065492424242424,
-          "width": 0.3021078431372549,
-          "height": 0.013969696969696854,
-          "page": 3
-        }
-      ]
-    },
-    {
-      "text": "Having an option like, patients also worried about",
-      "bboxes": [
-        {
-          "left": 0.5594183006535948,
-          "top": 0.8260290404040405,
-          "width": 0.2888398692810459,
           "height": 0.011320707070707092,
           "page": 3
         }
@@ -17327,6 +18950,65 @@
       ]
     },
     {
+      "text": "In the interviews, we were surprised that discussions of trust in the technology were rarely initiated by participants.",
+      "bboxes": [
+        {
+          "left": 0.8748218954248366,
+          "top": 0.6288750000000001,
+          "width": 0.037269607843137376,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6427121212121213,
+          "width": 0.39503594771241834,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6565492424242424,
+          "width": 0.2759705882352941,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ]
+    },
+    {
+      "text": "Participants frequently commented that DST predictions should be paired with recommendations for appropriate next steps in the clinical workflow, often involving other healthcare providers.",
+      "bboxes": [
+        {
+          "left": 0.38540196078431377,
+          "top": 0.17305808080808083,
+          "width": 0.09753758169934645,
+          "height": 0.011320707070707037,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.18689520202020202,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.2007323232323232,
+          "width": 0.3950408496732026,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.2145681818181818,
+          "width": 0.298625816993464,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ]
+    },
+    {
       "text": "As shown in the above examples, we found that clinicians expected DSTs to integrate with their existing processes and use the DST predictions to show a path forward .",
       "bboxes": [
         {
@@ -17353,58 +19035,6 @@
       ]
     },
     {
-      "text": "I think the biggest thing is just getting behind how you validated your data, how you validated your model ...",
-      "bboxes": [
-        {
-          "left": 0.5594183006535948,
-          "top": 0.8706073232323231,
-          "width": 0.3127875816993463,
-          "height": 0.011320707070707092,
-          "page": 5
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.8844431818181818,
-          "width": 0.3143937908496732,
-          "height": 0.011320707070707092,
-          "page": 5
-        }
-      ]
-    },
-    {
-      "text": "Rather than make me feel like theres no good option it might point me to consider something else. It may or may not be appropriate, but certainly, I would think about it I guess. P2",
-      "bboxes": [
-        {
-          "left": 0.5594183006535948,
-          "top": 0.4255467171717172,
-          "width": 0.3127875816993464,
-          "height": 0.011320707070707092,
-          "page": 5
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.43938383838383843,
-          "width": 0.3127924836601308,
-          "height": 0.011320707070707092,
-          "page": 5
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.45322095959595965,
-          "width": 0.31280065359477127,
-          "height": 0.011320707070706981,
-          "page": 5
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.4644078282828283,
-          "width": 0.12280228758169942,
-          "height": 0.013969696969696965,
-          "page": 5
-        }
-      ]
-    },
-    {
       "text": "Our second goal was to connect the DST predictions with appropriate clinical processes.",
       "bboxes": [
         {
@@ -17424,6 +19054,25 @@
       ]
     },
     {
+      "text": "This study was approved by the Harvard Institutional Review Board.",
+      "bboxes": [
+        {
+          "left": 0.6469101307189542,
+          "top": 0.7471464646464646,
+          "width": 0.26765522875817016,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7609835858585858,
+          "width": 0.14790196078431372,
+          "height": 0.011320707070707092,
+          "page": 6
+        }
+      ]
+    },
+    {
       "text": "We redesigned the DST prototype to operationalize the guidelines established in study 1.",
       "bboxes": [
         {
@@ -17437,6 +19086,25 @@
           "left": 0.08790522875816993,
           "top": 0.4805214646464646,
           "width": 0.13401633986928108,
+          "height": 0.011320707070707092,
+          "page": 6
+        }
+      ]
+    },
+    {
+      "text": "For this study we again worked with PCPs who currently prescribe antidepressant treatments.",
+      "bboxes": [
+        {
+          "left": 0.7295294117647059,
+          "top": 0.6353762626262627,
+          "width": 0.18256209150326808,
+          "height": 0.011320707070706981,
+          "page": 6
+        },
+        {
+          "left": 0.5189918300653594,
+          "top": 0.6492133838383839,
+          "width": 0.37412091503267986,
           "height": 0.011320707070707092,
           "page": 6
         }
@@ -17510,6 +19178,25 @@
           "width": 0.31279248366013074,
           "height": 0.011320707070707065,
           "page": 6
+        }
+      ]
+    },
+    {
+      "text": "Similar to study 1, all sessions were audio recorded and transcribed.",
+      "bboxes": [
+        {
+          "left": 0.22087418300653597,
+          "top": 0.6263106060606061,
+          "width": 0.25959150326797387,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6401477272727273,
+          "width": 0.15764379084967323,
+          "height": 0.011320707070706981,
+          "page": 8
         }
       ]
     },
@@ -17592,90 +19279,20 @@
       ]
     },
     {
-      "text": "One of the things that is the hardest about depression and anxiety is that patients who have really bad symptoms tend to not follow up or tend to not follow through with therapies just due to the nature of their disease. And so going into a room and already knowing, is there a high chance that this patient may fail on this therapy or may not adhere to this therapy, and going into the room knowing that this is someone who I need to talk to a little bit more or I need to follow up with a little bit more or who I need to schedule really close appointments for. I think thats probably the biggest help that you can offer. P11",
+      "text": "Much of the prototype feedback re-emphasized the lessons we learned in the first user study.",
       "bboxes": [
         {
-          "left": 0.5594183006535948,
-          "top": 0.7322373737373737,
-          "width": 0.3127990196078432,
+          "left": 0.7491797385620915,
+          "top": 0.5748421717171717,
+          "width": 0.16538888888888892,
           "height": 0.011320707070707092,
           "page": 8
         },
         {
-          "left": 0.5594183006535948,
-          "top": 0.7460732323232323,
-          "width": 0.3142614379084967,
+          "left": 0.5195343137254902,
+          "top": 0.5886792929292929,
+          "width": 0.394812091503268,
           "height": 0.011320707070707092,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.7599103535353536,
-          "width": 0.3127875816993464,
-          "height": 0.011320707070707092,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.7737474747474747,
-          "width": 0.31439215686274524,
-          "height": 0.011320707070707092,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.7875845959595961,
-          "width": 0.3127875816993463,
-          "height": 0.011320707070706981,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.8014217171717172,
-          "width": 0.3127875816993464,
-          "height": 0.011320707070707092,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.8152588383838383,
-          "width": 0.3127924836601307,
-          "height": 0.011320707070707092,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.8290959595959596,
-          "width": 0.3127875816993464,
-          "height": 0.011320707070707092,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.8429330808080807,
-          "width": 0.3127924836601307,
-          "height": 0.011320707070707092,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.856770202020202,
-          "width": 0.3142565359477123,
-          "height": 0.011320707070707092,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.8706073232323231,
-          "width": 0.3127957516339869,
-          "height": 0.011320707070707092,
-          "page": 8
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.8817941919191918,
-          "width": 0.1164738562091504,
-          "height": 0.013969696969697076,
           "page": 8
         }
       ]
@@ -17778,6 +19395,46 @@
       ]
     },
     {
+      "text": "While participants responded positively to the overall prototype design, we found that when the recommendations diverged from clinical knowledge or guidelines participants became confused and would often abandon the recommendation.",
+      "bboxes": [
+        {
+          "left": 0.7776127450980392,
+          "top": 0.17010858585858585,
+          "width": 0.1369624183006536,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.18394570707070707,
+          "width": 0.39256209150326793,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.5189918300653594,
+          "top": 0.19778282828282828,
+          "width": 0.39337581699346413,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.2116199494949495,
+          "width": 0.39502941176470574,
+          "height": 0.011320707070707037,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.2254558080808081,
+          "width": 0.15555392156862746,
+          "height": 0.011320707070707037,
+          "page": 9
+        }
+      ]
+    },
+    {
       "text": "In addition to the positive feedback, some participants mentioned opportunities to continue to integrate the DST with existing clinical processes.",
       "bboxes": [
         {
@@ -17799,142 +19456,6 @@
           "top": 0.13459722222222223,
           "width": 0.06135947712418298,
           "height": 0.011320707070707065,
-          "page": 9
-        }
-      ]
-    },
-    {
-      "text": "If you could show that patients have a better response to treatment by use of the algorithm, that would be amazing. If you can show that patients actually are more likely to adhere to treatment, that would be important as well, or that patients are less likely to develop adverse side effects that leads to stopping medications. It would be nice to do a trial with outcomes like that. P9",
-      "bboxes": [
-        {
-          "left": 0.1277892156862745,
-          "top": 0.7287777777777777,
-          "width": 0.31279084967320264,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.742614898989899,
-          "width": 0.31279248366013074,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.7564520202020202,
-          "width": 0.3127924836601308,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.7702891414141414,
-          "width": 0.31425816993464056,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.7841250000000001,
-          "width": 0.3127875816993464,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.7979621212121212,
-          "width": 0.31438235294117645,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.8091502525252525,
-          "width": 0.3152679738562092,
-          "height": 0.013969696969696965,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.8229873737373737,
-          "width": 0.014738562091503288,
-          "height": 0.011320707070707092,
-          "page": 9
-        }
-      ]
-    },
-    {
-      "text": "So truthfully, I would take a step back because its not that common that nortriptyline is a medication I think about as a first or even a second or third line agent, unless they have other conditions that I know [tricyclic antidepressants] can treat. So I would really take a step back and think about the patients pain. Do they have really bad migraines, that I think will get significant benefit from the TCAs. It would definitely give me pause if that was the most favorable medication to come up as a suggestion on this.  P11",
-      "bboxes": [
-        {
-          "left": 0.5594183006535948,
-          "top": 0.6735820707070707,
-          "width": 0.3127941176470588,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.687419191919192,
-          "width": 0.3127957516339869,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.7012563131313131,
-          "width": 0.31439215686274513,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.7150934343434344,
-          "width": 0.3127924836601307,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.7289305555555555,
-          "width": 0.3127941176470588,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.7427676767676769,
-          "width": 0.3127875816993464,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.756604797979798,
-          "width": 0.3127924836601307,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.7704419191919193,
-          "width": 0.3127875816993463,
-          "height": 0.011320707070706981,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.7842790404040404,
-          "width": 0.3127924836601307,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.7954671717171717,
-          "width": 0.17529738562091512,
-          "height": 0.013969696969696854,
           "page": 9
         }
       ]
@@ -17980,166 +19501,6 @@
           "top": 0.42578661616161617,
           "width": 0.29693954248366006,
           "height": 0.011320707070707092,
-          "page": 9
-        }
-      ]
-    },
-    {
-      "text": "To me, when I think of someone whos a high risk of dropout, its like a person with substance abuse or with bipolar disorder. Like, okay, obviously, theyre not going to show up. Theres a high chance they wont adhere to it. But for this person who seems like a relatively bread and butter, middle-aged, healthy person, the fact that shes on the higher end of dropout is kind of eye opening to me, and it almost makes me wonder then, who is on the lower end of dropout?  P7",
-      "bboxes": [
-        {
-          "left": 0.5594183006535948,
-          "top": 0.28675883838383837,
-          "width": 0.3127924836601308,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.3005959595959596,
-          "width": 0.3127973856209151,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.3144330808080808,
-          "width": 0.3127875816993464,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.328270202020202,
-          "width": 0.3127957516339869,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.34210732323232323,
-          "width": 0.3127957516339869,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.35594444444444445,
-          "width": 0.3127973856209151,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.36978156565656567,
-          "width": 0.3127875816993463,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.3836186868686869,
-          "width": 0.3127941176470588,
-          "height": 0.011320707070707037,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.3948068181818182,
-          "width": 0.18356045751633987,
-          "height": 0.013969696969696965,
-          "page": 9
-        }
-      ]
-    },
-    {
-      "text": "It would be nice if, after you make a selection, like say I click, okay, were going to go with bupropion, if there was a patient-friendly educational handout that would just say, were starting you on bupropion.",
-      "bboxes": [
-        {
-          "left": 0.1277892156862745,
-          "top": 0.4866300505050505,
-          "width": 0.3127924836601308,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.5004671717171717,
-          "width": 0.31279248366013074,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.5143042929292929,
-          "width": 0.3127892156862746,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.5281414141414141,
-          "width": 0.2829199346405229,
-          "height": 0.011320707070707092,
-          "page": 9
-        }
-      ]
-    },
-    {
-      "text": "I guess if I were using this in practice, I would probably click to see if prescribing information or something like that came up as a next step. P2",
-      "bboxes": [
-        {
-          "left": 0.1277892156862745,
-          "top": 0.1822159090909091,
-          "width": 0.3127875816993464,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.1960530303030303,
-          "width": 0.31279084967320264,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.1277892156862745,
-          "top": 0.2072411616161616,
-          "width": 0.19283496732026145,
-          "height": 0.01396969696969702,
-          "page": 9
-        }
-      ]
-    },
-    {
-      "text": "And I have to like, look more into this, but the dropout probability, is it because of the side effects that youre dropping out? Or is it because the medication is not effective. P3",
-      "bboxes": [
-        {
-          "left": 0.5594183006535948,
-          "top": 0.4732525252525252,
-          "width": 0.3127941176470588,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.4870896464646464,
-          "width": 0.3127875816993464,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.5009267676767677,
-          "width": 0.3127924836601308,
-          "height": 0.011320707070707092,
-          "page": 9
-        },
-        {
-          "left": 0.5594183006535948,
-          "top": 0.512114898989899,
-          "width": 0.08232189542483659,
-          "height": 0.013969696969696965,
           "page": 9
         }
       ]
@@ -18501,25 +19862,6 @@
     }
   ],
   "2104.04842": [
-    {
-      "text": "Human-centered computing  Human computer interaction ;  Computing Methodologies  Intelligent agents .",
-      "bboxes": [
-        {
-          "left": 0.5195343137254902,
-          "top": 0.8696780303030303,
-          "width": 0.3951862745098039,
-          "height": 0.012238636363636313,
-          "page": 0
-        },
-        {
-          "left": 0.5195343137254902,
-          "top": 0.8835138888888889,
-          "width": 0.36200980392156856,
-          "height": 0.012238636363636424,
-          "page": 0
-        }
-      ]
-    },
     {
       "text": "Xu Han University of Colorado Boulder Boulder, CO, USA xuha2442@colorado.edu",
       "bboxes": [
@@ -19479,12 +20821,57 @@
       ]
     },
     {
+      "text": "In the context of interviews, the level of user engagement measures a users behavior during an interview [15].",
+      "bboxes": [
+        {
+          "left": 0.7195114379084967,
+          "top": 0.20370328282828282,
+          "width": 0.19257843137254904,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.21754040404040403,
+          "width": 0.39256535947712423,
+          "height": 0.011332070707070707,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.23137752525252525,
+          "width": 0.09103758169934639,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ]
+    },
+    {
       "text": "For the first interview question (when n = 1), we directly use the",
       "bboxes": [
         {
           "left": 0.5195343137254902,
           "top": 0.6319646464646465,
           "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ]
+    },
+    {
+      "text": "We developed a metric to evaluate the quality of user interview responses.",
+      "bboxes": [
+        {
+          "left": 0.24150326797385624,
+          "top": 0.6819065656565657,
+          "width": 0.23896895424836595,
+          "height": 0.011320707070706981,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6957436868686868,
+          "width": 0.21315686274509804,
           "height": 0.011320707070707092,
           "page": 5
         }
@@ -20010,6 +21397,58 @@
       ]
     },
     {
+      "text": "To act on design suggestions, chatbot designers may need more information to understand the conversation situations.",
+      "bboxes": [
+        {
+          "left": 0.33418137254901964,
+          "top": 0.5556464646464646,
+          "width": 0.14875653594771238,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5694835858585858,
+          "width": 0.39256045751633994,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.583320707070707,
+          "width": 0.16019117647058828,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "For each metric, we have defined a template that contains one or more design guidelines for improving a chatbot (Table 3).",
+      "bboxes": [
+        {
+          "left": 0.40138562091503266,
+          "top": 0.14745580808080808,
+          "width": 0.08154901960784311,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.1612929292929293,
+          "width": 0.3925571895424837,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.1751300505050505,
+          "width": 0.26971732026143797,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
       "text": "Using the above example on the interview question of Where are you located , two clusters are formed, one with the coverage of 75.0% and the other 25.0%.",
       "bboxes": [
         {
@@ -20106,6 +21545,46 @@
           "left": 0.5195343137254902,
           "top": 0.8462234848484848,
           "width": 0.04788071895424839,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "Specifically, we performed a series of ANCOVA analyses, which blend analysis of variance (ANOVA) and regression [30], to examine the effect of with or without using iChatProfile (independent variable) on various chatbot performance metrics (dependent variables).",
+      "bboxes": [
+        {
+          "left": 0.6933235294117648,
+          "top": 0.6801805555555556,
+          "width": 0.21877287581699334,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.5190212418300654,
+          "top": 0.694016414141414,
+          "width": 0.39307843137254905,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7078535353535353,
+          "width": 0.3925669934640523,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7216906565656565,
+          "width": 0.39256209150326793,
+          "height": 0.011332070707070763,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7355277777777778,
+          "width": 0.17656045751633986,
           "height": 0.011320707070707092,
           "page": 9
         }
@@ -20405,6 +21884,39 @@
       ]
     },
     {
+      "text": "During the post-task interviews, all participants from Group w/ iChatProfile confirmed the helpfulness of iChatProfile and benefited from the displayed chatbot profile, design suggestions, and evidential conversation examples.",
+      "bboxes": [
+        {
+          "left": 0.2008529411764706,
+          "top": 0.40864141414141414,
+          "width": 0.27960620915032675,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.42247853535353536,
+          "width": 0.3940261437908497,
+          "height": 0.011332070707070707,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4363156565656566,
+          "width": 0.39256372549019614,
+          "height": 0.011332070707070707,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4501527777777778,
+          "width": 0.30732026143790847,
+          "height": 0.011320707070707092,
+          "page": 11
+        }
+      ]
+    },
+    {
       "text": "Inspiring Designers to Make Creative Chatbot Improvements",
       "bboxes": [
         {
@@ -20443,6 +21955,58 @@
       ]
     },
     {
+      "text": "While our results should be widely applicable for building a class of interview chatbots, the scope and the participants of our study present its limitations.",
+      "bboxes": [
+        {
+          "left": 0.3112009803921569,
+          "top": 0.5877941919191919,
+          "width": 0.1692712418300653,
+          "height": 0.011320707070707092,
+          "page": 12
+        },
+        {
+          "left": 0.08736437908496732,
+          "top": 0.6016313131313131,
+          "width": 0.39310130718954256,
+          "height": 0.011320707070707092,
+          "page": 12
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6154684343434343,
+          "width": 0.3659852941176471,
+          "height": 0.011320707070706981,
+          "page": 12
+        }
+      ]
+    },
+    {
+      "text": "Although our ultimate goal is to help designers build effective interview chatbots, we have not yet evaluated the usability of iChatProfile for two reasons.",
+      "bboxes": [
+        {
+          "left": 0.7540898692810457,
+          "top": 0.5257070707070707,
+          "width": 0.15800980392156883,
+          "height": 0.011320707070707092,
+          "page": 12
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5395441919191919,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 12
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5533813131313131,
+          "width": 0.3589950980392157,
+          "height": 0.011332070707070763,
+          "page": 12
+        }
+      ]
+    },
+    {
       "text": "One possible direction of future work is to construct a multi-layer framework for evaluating the performance of interview chatbots.",
       "bboxes": [
         {
@@ -20456,6 +22020,32 @@
           "left": 0.5195343137254902,
           "top": 0.8738977272727272,
           "width": 0.3948153594771241,
+          "height": 0.011320707070707092,
+          "page": 12
+        }
+      ]
+    },
+    {
+      "text": "As mentioned in Section 6.3.1, iChatProfile provides explanations on why certain design suggestions are given.",
+      "bboxes": [
+        {
+          "left": 0.6934313725490197,
+          "top": 0.7355277777777778,
+          "width": 0.2201274509803921,
+          "height": 0.011332070707070763,
+          "page": 12
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7493648989898989,
+          "width": 0.3925669934640523,
+          "height": 0.011332070707070763,
+          "page": 12
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7632020202020202,
+          "width": 0.035955882352941115,
           "height": 0.011320707070707092,
           "page": 12
         }
@@ -20507,6 +22097,32 @@
       ]
     },
     {
+      "text": "Currently, iChatProfile often offers multiple design suggestions per performance metric.",
+      "bboxes": [
+        {
+          "left": 0.38161764705882356,
+          "top": 0.7770391414141413,
+          "width": 0.10031372549019607,
+          "height": 0.011332070707070763,
+          "page": 12
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7908762626262626,
+          "width": 0.39255555555555555,
+          "height": 0.011332070707070763,
+          "page": 12
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8047133838383838,
+          "width": 0.04083333333333332,
+          "height": 0.011320707070707092,
+          "page": 12
+        }
+      ]
+    },
+    {
       "text": "There are several directions that we can extend iChatProfile to refine its functions and expand its uses.",
       "bboxes": [
         {
@@ -20547,6 +22163,91 @@
           "top": 0.15783333333333335,
           "width": 0.3397516339869282,
           "height": 0.011320707070707065,
+          "page": 13
+        }
+      ]
+    },
+    {
+      "text": "As our studies show, it is difficult for designers to evaluate chatbot performance without any guidance.",
+      "bboxes": [
+        {
+          "left": 0.39495098039215687,
+          "top": 0.2862638888888889,
+          "width": 0.08551470588235294,
+          "height": 0.011320707070707092,
+          "page": 13
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3001010101010101,
+          "width": 0.3925539215686275,
+          "height": 0.011320707070707037,
+          "page": 13
+        },
+        {
+          "left": 0.08736437908496732,
+          "top": 0.3139381313131313,
+          "width": 0.1302418300653595,
+          "height": 0.011320707070707092,
+          "page": 13
+        }
+      ]
+    },
+    {
+      "text": "Our work demonstrates the effectiveness of iChatProfile for helping designers to evaluate and improve an interview chatbot iteratively.",
+      "bboxes": [
+        {
+          "left": 0.45753431372549025,
+          "top": 0.7493648989898989,
+          "width": 0.023209150326797323,
+          "height": 0.011320707070707092,
+          "page": 13
+        },
+        {
+          "left": 0.08736437908496732,
+          "top": 0.7632020202020202,
+          "width": 0.39557679738562096,
+          "height": 0.011332070707070763,
+          "page": 13
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7770391414141413,
+          "width": 0.3948202614379085,
+          "height": 0.011320707070707092,
+          "page": 13
+        }
+      ]
+    },
+    {
+      "text": "Although we showed how iChatProfile was able to help improve chatbot performance significantly within just one iteration of design, building an effective interview chatbot often takes multiple iterations.",
+      "bboxes": [
+        {
+          "left": 0.40095588235294116,
+          "top": 0.5011767676767677,
+          "width": 0.07950163398692817,
+          "height": 0.011320707070707092,
+          "page": 13
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5150138888888889,
+          "width": 0.395031045751634,
+          "height": 0.011332070707070652,
+          "page": 13
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5288510101010101,
+          "width": 0.39502941176470585,
+          "height": 0.011320707070706981,
+          "page": 13
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5426881313131313,
+          "width": 0.39482189542483653,
+          "height": 0.011320707070706981,
           "page": 13
         }
       ]
