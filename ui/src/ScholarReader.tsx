@@ -130,7 +130,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       entityCreationType: "term",
       propagateEntityEdits: true,
 
-      skimOpacity: 0.5,
+      skimOpacity: 0.3,
       showSkimmingAnnotations: true,
 
       deselectedDiscourses: [],
@@ -845,7 +845,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     return {
       Highlight: "#F1E7407D",
       Objective: "#95F0387D",
-      Novelty: "#D0B5C97D",
+      Novelty: "#F578425D",
       Contribution: "#62DECF4D",
       Method: "#75BCE57D",
       StudySetup: "#ECCE8E7D",
