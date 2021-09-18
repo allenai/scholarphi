@@ -21,6 +21,13 @@ if __name__ == "__main__":
         ),
         default="tmp",
     )
+    parser.add_argument(
+        "--alternate-url-prefix",
+        help=(
+            "An alternative location to retrieve pdfs from. "
+            + "The pdf should be at <prefix>/<arxiv id>.pdf."
+        )
+    )
 
     args = parser.parse_args()
     arxiv_id = args.arxiv_id
@@ -34,5 +41,5 @@ if __name__ == "__main__":
 
     print(f"Downloading pdf from arXiv for paper {arxiv_id}...")
 
-    fetch_pdf_from_arxiv(arxiv_id, dest=pdf_path)
+    fetch_pdf_from_arxiv(arxiv_id, dest=pdf_path, alternate_url_prefix=args.alternate_url_prefix)
     print("done.")
