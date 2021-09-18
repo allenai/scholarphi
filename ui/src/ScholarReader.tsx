@@ -862,9 +862,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
     const unitsToShow: RhetoricUnit[] = [];
 
-    // Remove sentence fragments that were detected (i.e., start with a lowercase letter)
+    // Remove sentence fragments that were detected (i.e., start with a lowercase letter).
+    // Exception: author statements
     data = data.filter(
-      (r: RhetoricUnit) => r.text[0] !== r.text[0].toLowerCase()
+      (r: RhetoricUnit) =>
+        r.label === "Author" || r.text[0] !== r.text[0].toLowerCase()
     );
 
     // ---- NOVELTY ---- //
