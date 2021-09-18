@@ -4,7 +4,6 @@ import json
 import logging
 import os
 from typing import Any, Dict, List, Optional, Tuple
-# from typing_extensions import Literal
 
 from peewee import fn
 
@@ -21,7 +20,6 @@ from common.types import (
     S2Id,
 )
 
-# OutputForm = Literal["db", "file"]
 
 class OutputForm(Enum):
     DB = "db"
