@@ -860,11 +860,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       [label: string]: string;
     } = this.getDiscourseToColorMap();
 
-    // 1. Remove classifications for "Future Work" (for now)
+    // 1. Remove classifications for "Future Work" and "Contribution" (for now)
     // 2. Remove classifications that are not in the expected section, except for "Method", which does not have an expected section (yet).
     // 3. Remove certain classifications that are not an "author statement" to improve highlight precision.
     data = data
-      .filter((r: RhetoricUnit) => !(r.label === "Future Work"))
+      .filter((r: RhetoricUnit) => !(["Future Work", "Contribution"].includes(r.label)))
       .filter(
         (r: RhetoricUnit) => r.label === "Method" || r.is_in_expected_section
       )
