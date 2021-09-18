@@ -872,6 +872,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         if (["Objective", "Contribution", "Conclusion"].includes(r.label)) {
           return r.is_author_statement;
         }
+        else if (r.label === "Result") {
+          const has_citation = new RegExp(/\[.*\d.*\]/).test(r.text);
+          return !has_citation;
+        }
         // else if (r.label === "Result") {
         //   return (
         //     r.is_author_statement ||
