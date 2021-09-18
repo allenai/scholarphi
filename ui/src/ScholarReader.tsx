@@ -889,7 +889,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
     unitsToShow.push(...authorNovelty);
     const numLeft = MAX_NUM_NOVELTY - authorNovelty.length;
-    console.log(unitsToShow, numLeft)
     if (numLeft > 0) {
       unitsToShow.push(...notAuthorNoveltyNotIntro.slice(0, numLeft));
     }
