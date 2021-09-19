@@ -108,6 +108,8 @@ export interface Settings {
 
   facetPaletteEnabled: boolean;
 
+  facetDrawerEnabled: boolean;
+
   mediaScrollbarMarkupEnabled: boolean;
 
   authorStatementsEnabled: boolean;
@@ -154,6 +156,7 @@ const PRESETS: Preset[] = [
     primerPageEnabled: false,
     facetHighlights: true,
     facetTextEnabled: true,
+    facetDrawerEnabled: true,
   },
   {
     key: "skim-v2",
@@ -211,6 +214,7 @@ export function getSettings(presets?: string[]) {
     facetHighlights: false,
     facetTextEnabled: false,
     facetPaletteEnabled: false,
+    facetDrawerEnabled: false,
     mediaScrollbarMarkupEnabled: false,
     authorStatementsEnabled: false,
     leadSentencesEnabled: false,
@@ -340,6 +344,11 @@ export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
     key: "facetPaletteEnabled",
     type: "flag",
     label: "Facet palette",
+  },
+  {
+    key: "facetDrawerEnabled",
+    type: "flag",
+    label: "Facet drawer",
   },
   {
     key: "mediaScrollbarMarkupEnabled",

@@ -12,7 +12,6 @@ import {
   isTerm,
   Paper,
   RhetoricUnit,
-  CaptionUnit,
   SentenceUnit,
   Symbol,
 } from "./api/types";
@@ -42,9 +41,9 @@ import DefinitionPreview from "./components/preview/DefinitionPreview";
 import PrimerPage from "./components/primer/PrimerPage";
 import ScrollbarMarkup from "./components/scrollbar/ScrollbarMarkup";
 import FindBar, { FindQuery } from "./components/search/FindBar";
+import captionData from "./data/captions/skimmingData.json";
 import facetData from "./data/facets/skimmingData.json";
 import sentenceData from "./data/sentences/skimmingData.json";
-import captionData from "./data/captions/skimmingData.json";
 import logger from "./logging";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
@@ -133,6 +132,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       skimOpacity: 0.3,
       showSkimmingAnnotations: true,
 
+      discourseObjs: [],
+      discourseObjsById: {},
       deselectedDiscourses: [],
 
       ...settings,
@@ -594,6 +595,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.setState({ drawerMode: "closed" });
   };
 
+  toggleDrawer = (drawerContentType: DrawerContentType): void => {
+    if (this.state.drawerMode === "closed") {
+      this.openDrawer(drawerContentType);
+    } else {
+      this.closeDrawer();
+    }
+  };
+
   setMultiselectEnabled = (enabled: boolean): void => {
     this.setState({ multiselectEnabled: enabled });
   };
@@ -699,6 +708,24 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       this.subscribeToPDFViewerStateChanges(application);
     });
     this.loadDataFromApi();
+
+    if (this.props.paperId !== undefined) {
+      const discourseObjs = this.makeDiscourseObjectsForFacets(
+        Object(facetData)[this.props.paperId!.id]
+      );
+
+      const discourseObjsById = discourseObjs.reduce(
+        (acc: { [id: string]: DiscourseObj }, d: DiscourseObj) => {
+          acc[d.id] = d;
+          return acc;
+        },
+        {}
+      );
+      this.setState({
+        discourseObjs: discourseObjs,
+        discourseObjsById: discourseObjsById,
+      });
+    }
   }
 
   subscribeToPDFViewerStateChanges = (
@@ -816,6 +843,52 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
      * dimensions and absolute positions on the page. Note that this mapping will not work
      * if pages in a PDF have different dimensions.
      */
+    const page = Object.values(pages)[0];
+    const { left, top } = uiUtils.convertBoxToPdfCoordinates(page.view, dest);
+
+    /*
+     * Scroll to the destination. Use the 'navigateTo', which will save
+     * the current location to history so that when a user clicks the 'Back' button, it takes
+     * them back to where they were before.
+     */
+    pdfViewerApplication.pdfLinkService.navigateTo([
+      dest.page,
+      { name: "XYZ" },
+      left + SCROLL_OFFSET_X,
+      top + SCROLL_OFFSET_Y,
+    ]);
+
+    /*
+     * Store the position that the paper has jumped to.
+     */
+    this.setState({
+      jumpTarget: id,
+    });
+
+    return true;
+  };
+
+  jumpToDiscourseObj = (id: string) => {
+    const SCROLL_OFFSET_X = -200;
+    const SCROLL_OFFSET_Y = +100;
+
+    const {
+      pdfViewerApplication,
+      pdfViewer,
+      pages,
+      discourseObjsById,
+    } = this.state;
+
+    if (
+      pdfViewerApplication === null ||
+      pdfViewer === null ||
+      pages === null ||
+      Object.values(pages).length === 0
+    ) {
+      return false;
+    }
+
+    const dest = discourseObjsById[id].bboxes[0];
     const page = Object.values(pages)[0];
     const { left, top } = uiUtils.convertBoxToPdfCoordinates(page.view, dest);
 
@@ -1042,9 +1115,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     let discourseObjs: DiscourseObj[] = [];
     let leadSentences: SentenceUnit[] = [];
     if (this.props.paperId !== undefined) {
-      discourseObjs = this.makeDiscourseObjectsForFacets(
-        Object(facetData)[this.props.paperId!.id]
-      );
+      discourseObjs = Object.values(this.state.discourseObjsById);
 
       // Add processed facet highlights
       if (!this.state.facetHighlights) {
@@ -1100,6 +1171,18 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     : "Activate skimming"}
                 </span>
               </button>
+              {this.state.facetDrawerEnabled ? (
+                <button
+                  onClick={() => this.toggleDrawer("facets")}
+                  className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
+                >
+                  <span>
+                    {this.state.drawerMode === "closed"
+                      ? "Open drawer"
+                      : "Close drawer"}
+                  </span>
+                </button>
+              ) : null}
             </PdfjsToolbar>
             <PdfjsBrandbar />
             <ViewerOverlay
@@ -1198,6 +1281,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 }
                 entities={this.state.entities}
                 selectedEntityIds={this.state.selectedEntityIds}
+                discourseObjs={discourseObjs}
+                handleJumpToDiscourseObj={this.jumpToDiscourseObj}
                 propagateEntityEdits={this.state.propagateEntityEdits}
                 handleJumpToEntity={this.jumpToEntityWithBackMessage}
                 handleClose={this.closeDrawer}

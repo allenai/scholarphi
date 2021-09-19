@@ -3,14 +3,14 @@ import { DrawerContentType, DrawerMode } from "./components/drawer/Drawer";
 import { AreaSelectionMethod } from "./components/control/EntityCreationToolbar";
 import { FindMode, FindQuery, SymbolFilter } from "./components/search/FindBar";
 import { Settings } from "./settings";
-import { Entity, Paper } from "./api/types";
+import { Entity, Paper, DiscourseObj } from "./api/types";
 import {
   PDFPageView,
   PDFViewer,
   PDFViewerApplication,
 } from "./types/pdfjs-viewer";
 
-import { PDFDocumentProxy } from 'pdfjs-dist/types/display/api'
+import { PDFDocumentProxy } from "pdfjs-dist/types/display/api";
 
 /**
  * An object containing all the shared global state. It is designed to be used as follows:
@@ -152,6 +152,8 @@ export interface State extends Settings {
    */
   skimOpacity: number;
   showSkimmingAnnotations: boolean;
+  discourseObjs: DiscourseObj[];
+  discourseObjsById: { [id: string]: DiscourseObj };
   deselectedDiscourses: string[];
 }
 

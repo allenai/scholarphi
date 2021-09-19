@@ -1,17 +1,15 @@
-import { DefiningFormulas } from "./DefiningFormulas";
-import Definitions from "./Definitions";
-import EntityPropertyEditor from "../control/EntityPropertyEditor";
+import MuiDrawer from "@material-ui/core/Drawer";
+import React from "react";
+import { DiscourseObj, Entity, EntityUpdateData } from "../../api/types";
 import { getRemoteLogger } from "../../logging";
 import { Entities } from "../../state";
-import { Entity, EntityUpdateData } from "../../api/types";
 import { PDFViewer } from "../../types/pdfjs-viewer";
-import Usages from "./Usages";
 import * as uiUtils from "../../utils/ui";
-
-import MuiDrawer from "@material-ui/core/Drawer";
-import IconButton from "@material-ui/core/IconButton";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import React from "react";
+import EntityPropertyEditor from "../control/EntityPropertyEditor";
+import { DefiningFormulas } from "./DefiningFormulas";
+import Definitions from "./Definitions";
+import Facets from "./Facets";
+import Usages from "./Usages";
 
 const logger = getRemoteLogger();
 
@@ -20,6 +18,7 @@ export type DrawerContentType =
   | "definitions"
   | "defining-formulas"
   | "usages"
+  | "facets"
   | "entity-property-editor"
   | null;
 
@@ -29,9 +28,11 @@ interface Props {
   contentType: DrawerContentType;
   entities: Entities | null;
   selectedEntityIds: string[];
+  discourseObjs: DiscourseObj[];
   propagateEntityEdits: boolean;
   handleClose: () => void;
   handleJumpToEntity: (entityId: string) => void;
+  handleJumpToDiscourseObj: (id: string) => void;
   handleSetPropagateEntityEdits: (propagate: boolean) => void;
   handleUpdateEntity: (
     entity: Entity,
@@ -100,6 +101,7 @@ export class Drawer extends React.PureComponent<Props> {
       contentType,
       entities,
       selectedEntityIds,
+      discourseObjs,
     } = this.props;
 
     let firstSelectedEntity: Entity | null = null;
@@ -128,13 +130,6 @@ export class Drawer extends React.PureComponent<Props> {
         open={mode === "open" && contentType !== null}
         onScroll={this.onScroll}
       >
-        <div className="drawer__header">
-          <div className="drawer__close_icon">
-            <IconButton size="small" onClick={this.closeDrawer}>
-              <ChevronRightIcon />
-            </IconButton>
-          </div>
-        </div>
         <div className="drawer__content">
           {contentType === "entity-property-editor" && (
             <EntityPropertyEditor
@@ -174,6 +169,12 @@ export class Drawer extends React.PureComponent<Props> {
               selectedEntityIds={selectedEntityIds}
               entities={entities}
               handleJumpToEntity={this.props.handleJumpToEntity}
+            />
+          )}
+          {contentType === "facets" && entities !== null && (
+            <Facets
+              discourseObjs={discourseObjs}
+              handleJumpToDiscourseObj={this.props.handleJumpToDiscourseObj}
             />
           )}
         </div>
