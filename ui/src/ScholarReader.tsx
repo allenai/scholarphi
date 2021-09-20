@@ -23,7 +23,6 @@ import EntityCreationToolbar, {
 } from "./components/control/EntityCreationToolbar";
 import MainControlPanel from "./components/control/MainControlPanel";
 import TextSelectionMenu from "./components/control/TextSelectionMenu";
-import DiscoursePalette from "./components/discourse/DiscoursePalette";
 import DiscourseTagLayer from "./components/discourse/DiscourseTagLayer";
 import HighlightLayer from "./components/discourse/HighlightLayer";
 import UnderlineLayer from "./components/discourse/UnderlineLayer";
@@ -914,24 +913,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     return true;
   };
 
-  getDiscourseToColorMap = () => {
-    return {
-      Highlight: "#F1E7407D",
-      Objective: "#95F0387D",
-      Novelty: "#F578425D",
-      Contribution: "#62DECF4D",
-      Method: "#75BCE57D",
-      StudySetup: "#ECCE8E7D",
-      Result: "#F285A07D",
-      Conclusion: "#8616284D",
-      "Future Work": "#EDD96D2D",
-    };
-  };
-
   makeDiscourseObjectsForFacets = (data: RhetoricUnit[]): DiscourseObj[] => {
     const discourseToColorMap: {
       [label: string]: string;
-    } = this.getDiscourseToColorMap();
+    } = uiUtils.getDiscourseToColorMap();
 
     const unitsToShow: RhetoricUnit[] = [];
 
@@ -1306,6 +1291,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 entities={this.state.entities}
                 selectedEntityIds={this.state.selectedEntityIds}
                 discourseObjs={discourseObjs}
+                deselectedDiscourses={this.state.deselectedDiscourses}
+                handleDiscourseSelected={this.handleDiscourseSelected}
                 handleJumpToDiscourseObj={this.jumpToDiscourseObj}
                 propagateEntityEdits={this.state.propagateEntityEdits}
                 handleJumpToEntity={this.jumpToEntityWithBackMessage}
@@ -1342,17 +1329,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                         : []
                     }
                   ></ScrollbarMarkup>
-                )}
-              {this.props.paperId !== undefined &&
-                this.state.showSkimmingAnnotations &&
-                this.state.facetPaletteEnabled &&
-                this.state.facetHighlights && (
-                  <DiscoursePalette
-                    discourseToColorMap={this.getDiscourseToColorMap()}
-                    discourseObjs={discourseObjs}
-                    deselectedDiscourses={this.state.deselectedDiscourses}
-                    handleDiscourseSelected={this.handleDiscourseSelected}
-                  ></DiscoursePalette>
                 )}
             </ViewerOverlay>
           </>

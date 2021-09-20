@@ -29,11 +29,9 @@
  * Discourse palette allowing users to toggle which discourse classes to show.
  */
 .discourse-chip-palette-wrapper {
-  top: 0;
-  position: fixed !important;
-  width: 100vw;
-  height: fit-content;
-  margin-top: 100px;
+  position: relative;
+  width: @document-snippets-container-width;
+  margin-top: 10px;
 
   .discourse-chip-palette {
     height: fit-content;
@@ -43,8 +41,7 @@
 
     .discourse-chip {
       margin: 2px 2px;
-      // border: 1px solid grey;
-      border-radius: 2px !important;
+      border-radius: 6px !important;
 
       &.deselected {
         opacity: 0.6;

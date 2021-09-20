@@ -106,8 +106,6 @@ export interface Settings {
 
   facetTextEnabled: boolean;
 
-  facetPaletteEnabled: boolean;
-
   facetDrawerEnabled: boolean;
 
   mediaScrollbarMarkupEnabled: boolean;
@@ -130,26 +128,26 @@ interface Preset extends Partial<Settings> {
  * Define new presets for settings here.
  */
 const PRESETS: Preset[] = [
-  {
-    key: "demo",
-    primerInstructionsEnabled: false,
-    useDefinitionsForDiagramLabels: true,
-    termGlossesEnabled: true,
-    declutterEnabled: true,
-    equationDiagramsEnabled: true,
-  },
-  {
-    key: "sab",
-    termGlossesEnabled: false,
-    citationGlossesEnabled: true,
-    symbolUnderlineMethod: "defined-symbols",
-    primerInstructionsEnabled: true,
-  },
-  {
-    key: "sab-lite",
-    symbolUnderlineMethod: "top-level-symbols",
-    equationDiagramsEnabled: false,
-  },
+  // {
+  //   key: "demo",
+  //   primerInstructionsEnabled: false,
+  //   useDefinitionsForDiagramLabels: true,
+  //   termGlossesEnabled: true,
+  //   declutterEnabled: true,
+  //   equationDiagramsEnabled: true,
+  // },
+  // {
+  //   key: "sab",
+  //   termGlossesEnabled: false,
+  //   citationGlossesEnabled: true,
+  //   symbolUnderlineMethod: "defined-symbols",
+  //   primerInstructionsEnabled: true,
+  // },
+  // {
+  //   key: "sab-lite",
+  //   symbolUnderlineMethod: "top-level-symbols",
+  //   equationDiagramsEnabled: false,
+  // },
   {
     key: "skim",
     annotationHintsEnabled: false,
@@ -157,30 +155,6 @@ const PRESETS: Preset[] = [
     facetHighlights: true,
     facetTextEnabled: true,
     facetDrawerEnabled: true,
-  },
-  {
-    key: "skim-v2",
-    annotationHintsEnabled: false,
-    primerPageEnabled: false,
-    facetHighlights: true,
-    facetTextEnabled: true,
-    cueingStyle: "underline",
-  },
-  {
-    key: "skim-v3",
-    annotationHintsEnabled: false,
-    primerPageEnabled: false,
-    authorStatementsEnabled: true,
-  },
-  {
-    key: "skim-v4",
-    annotationHintsEnabled: false,
-    primerPageEnabled: false,
-    facetHighlights: true,
-    facetTextEnabled: true,
-    facetPaletteEnabled: true,
-    mediaScrollbarMarkupEnabled: true,
-    cueingStyle: "underline",
   },
   {
     key: "skim-base",
@@ -232,7 +206,6 @@ export function getSettings(presets?: string[]) {
     glossEvaluationEnabled: false,
     facetHighlights: false,
     facetTextEnabled: false,
-    facetPaletteEnabled: false,
     facetDrawerEnabled: false,
     mediaScrollbarMarkupEnabled: false,
     authorStatementsEnabled: false,
@@ -358,11 +331,6 @@ export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
     key: "facetTextEnabled",
     type: "flag",
     label: "Facet text",
-  },
-  {
-    key: "facetPaletteEnabled",
-    type: "flag",
-    label: "Facet palette",
   },
   {
     key: "facetDrawerEnabled",

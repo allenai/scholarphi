@@ -406,3 +406,17 @@ export function updateAlpha(color: string, opacity: number): string {
   const _opacity = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);
   return color + _opacity.toString(16).toUpperCase();
 }
+
+export function getDiscourseToColorMap(): { [label: string]: string } {
+  return {
+    Highlight: "#F1E7407D",
+    Objective: "#95F0387D",
+    Novelty: "#F578425D",
+    Contribution: "#62DECF4D",
+    Method: "#75BCE57D",
+    StudySetup: "#ECCE8E7D",
+    Result: "#F285A07D",
+    Conclusion: "#8616284D",
+    "Future Work": "#EDD96D2D",
+  };
+};
