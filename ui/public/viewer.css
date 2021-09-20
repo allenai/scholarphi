@@ -551,7 +551,7 @@ select {
 
 #sidebarContainer {
   position: absolute;
-  top: 80px;
+  top: 32px;
   bottom: 0;
   width: 400px; /* Here, and elsewhere below, keep the constant value for compatibility
                    with older browsers that lack support for CSS variables. */
@@ -630,7 +630,7 @@ html[dir="rtl"] #sidebarContent {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   position: absolute;
-  top: 80px;
+  top: 32px;
   right: 0;
   bottom: 0;
   outline: none;
@@ -1720,7 +1720,6 @@ a:focus > .thumbnail > .thumbnailSelectionRing,
   -ms-user-select: none;
   user-select: none;
 }
-
 
 #FAQView,
 #outlineView {

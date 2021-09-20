@@ -29,11 +29,9 @@ import SearchPageMask from "./components/mask/SearchPageMask";
 import AppOverlay from "./components/overlay/AppOverlay";
 import PageOverlay from "./components/overlay/PageOverlay";
 import ViewerOverlay from "./components/overlay/ViewerOverlay";
-import PdfjsBrandbar from "./components/pdfjs/PdfjsBrandbar";
 import DefinitionPreview from "./components/preview/DefinitionPreview";
 import PrimerPage from "./components/primer/PrimerPage";
 import FAQBar from "./components/questions/FAQBar";
-
 import FindBar, { FindQuery } from "./components/search/FindBar";
 import * as EntitiesTutorial from "./data/annotations_tutorial.json";
 import * as EntitiesSLE from "./data/auto_PAWLS_SPUI_annotations.json";
@@ -908,15 +906,16 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     let annotationSpanIDs = new Array(entity.attributes.bounding_boxes.length);
     let counter = 0;
     for (let i = 0; i < annotationSpanIDs.length; i++) {
-      
       let pageNumber = entity.attributes.bounding_boxes[i].page;
-      if (i > 0 && pageNumber != entity.attributes.bounding_boxes[i-1].page) {
+      if (i > 0 && pageNumber != entity.attributes.bounding_boxes[i - 1].page) {
         // reset the counter
-        counter = 0
+        counter = 0;
       }
-      annotationSpanIDs[i] = `${annotationID}-page-${pageNumber}-span-${counter}`
+      annotationSpanIDs[
+        i
+      ] = `${annotationID}-page-${pageNumber}-span-${counter}`;
       counter += 1;
-    }  
+    }
 
     // const annotationSpanIDs = entity.attributes.bounding_boxes.map((box, i, boxes) => {
 
@@ -930,9 +929,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.selectEntityAnnotation(
       id,
       annotationID,
-      annotationSpanIDs[annotationSpanIDs.length-1]
+      annotationSpanIDs[annotationSpanIDs.length - 1]
     );
-
 
     // if (entity.attributes.bounding_boxes.length > 1) {
     //   this.selectEntityAnnotation(
@@ -1017,7 +1015,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 </button>
               </PdfjsToolbar>
             ) : null} */}
-            <PdfjsBrandbar />
+            {/* <PdfjsBrandbar /> */}
             <ViewerOverlay
               pdfViewer={this.state.pdfViewer}
               handleSetTextSelection={this.setTextSelection}
