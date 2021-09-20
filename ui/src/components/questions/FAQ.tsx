@@ -144,33 +144,43 @@ class FAQ extends React.PureComponent<Props, State> {
     let details = null;
 
     const generalAnswer = definition ? (
-      <EntityLink
-        id={`term-${question.id}-definition-link`}
-        className="subtle"
-        entityId={definition.contextEntity.id}
-        handleJumpToEntity={this.props.handleJumpToEntity}
-      >
-        {" [p."}{definition.contextEntity.attributes.bounding_boxes[0].page + 1}{"] "}
-      </EntityLink>
+      <>
+        <EntityLink
+          id={`term-${question.id}-definition-link`}
+          className="subtle"
+          entityId={definition.contextEntity.id}
+          handleJumpToEntity={this.props.handleJumpToEntity}
+        >
+          {" page "}
+          {definition.contextEntity.attributes.bounding_boxes[0].page + 1}
+        </EntityLink>
+        {answerCoaster !== null && answerCoaster.length > 1 ? ", " : " "}
+      </>
     ) : null;
 
-    if (answerCoaster !== null && answerCoaster.length > 0) {
+    if (answerCoaster !== null) {
       details = answerCoaster.slice(1).map((answer, i) => {
-        let answerEntity = answer.id?this.props.entities.byId[answer.id]: null;
+        let answerEntity = answer.id
+          ? this.props.entities.byId[answer.id]
+          : null;
         let page = answerEntity?.attributes.bounding_boxes[0].page;
         return (
-          <EntityLink
-            id={answer.id ? `${answer.id}-clickable-link` : undefined}
-            className="subtle"
-            entityId={answer.id}
-            handleJumpToEntity={this.props.handleJumpToEntity}
-          >
-            {" [p."}
-            {page? page + 1: page}
-            {"] "}
-          </EntityLink>
+          <>
+            <EntityLink
+              id={answer.id ? `${answer.id}-clickable-link` : undefined}
+              className="subtle"
+              entityId={answer.id}
+              handleJumpToEntity={this.props.handleJumpToEntity}
+            >
+              {" page "}
+              {page ? page + 1 : page}
+            </EntityLink>
+            {i < answerCoaster.length - 2 ? ", " : " "}
+          </>
         );
       });
+
+      details.push(<span>.</span>);
     }
 
     const FAQClass = this.props.isSelected ? "faq-selected" : "faq";
@@ -188,10 +198,12 @@ class FAQ extends React.PureComponent<Props, State> {
       >
         <p className="faq__question">{`${this.props.question.attributes.question_text}`}</p>
         <p className="faq__answer">{`${this.props.question.attributes.answer_text}`}</p>
-        See paragraph in:{" "}
-        {/* {answerCoaster !== null && answerCoaster.length > 1 ? "s" : ""} */}
-        {generalAnswer} {details}
-        {/* {details !== null && <span>: {details}</span>} */}
+        <p className="faq__links">
+          <span className="faq__links__lead">see paragraph on </span>
+          {/* {answerCoaster !== null && answerCoaster.length > 1 ? "s" : ""} */}
+          {generalAnswer} {details}
+          {/* {details !== null && <span>: {details}</span>} */}
+        </p>
       </div>
     );
   }

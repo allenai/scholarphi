@@ -2,7 +2,7 @@
  * Default gloss dimensions
  */
 .gloss {
-  max-width: 420px;
+  max-width: 350px;
   &:not(.simple-gloss) {
     min-width: 200px;
   }
@@ -30,22 +30,24 @@
       max-width: 350px;
     }
     &.faq-gloss .simple-gloss__definition-container {
-    background-color: #eee;
-    padding: @padding;
+      background-color: #eee;
+      padding: @padding;
 
       .gloss__header {
         padding: 0;
       }
       .gloss__section {
         padding: @padding / 2;
-        font-size: @medium;
+        // font-size: @medium;
+        font-size: 12px;
       }
     }
 
     p {
       padding: @padding / 4;
       margin-top: 0;
-      font-size: @large;
+      // font-size: @large;
+      font-size: 12px;
       padding-left: @padding;
       padding-right: @padding;
       line-height: @line-height-ratio;
@@ -108,9 +110,10 @@
 .gloss {
   color: @s2-text-default;
   font-family: @s2-font-family;
-  font-size: @medium;
+  // font-size: @medium;
+  font-size: 12px;
   line-height: @medium * @line-height-ratio;
-  font-weight: lighter;
+  font-weight: 400;
 
   /*
    * List element styling

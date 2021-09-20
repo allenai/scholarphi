@@ -17,17 +17,16 @@
 
   position: absolute;
   left: 0;
-  font-family: @s2-font-family;
-  font-weight: lighter;
-  font-size: 14px;
+  // font-family: @s2-font-family;
   z-index: @tooltip-z-index - 1;
 }
 
 .faq__content {
   padding: @padding;
-  background-color: @s2-primary-color;
+  // background-color: @s2-primary-color;
   border-radius: @border-radius;
   color: white;
+  font-size: 12px;
 
   &__header {
     font-weight: bolder;
@@ -55,6 +54,14 @@
   }
 
   &__question {
-    font-weight: bold;
+    font-weight: 400;
+  }
+
+  &__answer {
+    font-weight: 300;
+  }
+
+  &__links {
+    font-weight: 100;
   }
 }

@@ -41,8 +41,7 @@ class FAQBar extends React.PureComponent<Props> {
     // this.closeDrawer = this.closeDrawer.bind(this);
   }
 
-  componentWillUnmount() {
-  }
+  componentWillUnmount() {}
 
   onScroll(event: React.UIEvent<HTMLDivElement>) {
     if (event.target instanceof HTMLDivElement) {
@@ -124,27 +123,26 @@ class FAQBar extends React.PureComponent<Props> {
       selectedEntityIds,
     } = this.props;
 
-
     const FAQBarContainer = document.getElementById("attachmentsView");
 
     const FAQs = this.getFAQs();
 
     const BarContent = (
-        <div className="faq__content">
-          
-          {/* <p className="faq__content__header">FAQs</p> */}
-          {/* <p className="faq__content__header"> There is a lot of information in this paper, and some of it might not be useful to you.</p> */}
-
-          <p className="faq__content__header"> To help out with reading this paper we have included common questions that provide useful information. </p>
-
-          <p className="faq__content__header"> Each question has a short answer here. Click on the numbers after "Relevant Passages" sections relevant to the question in the paper.</p>
-
-          {/* <p className="faq__content__header"> Questions: </p> */}
-          
-          {' '}
-          {FAQs}
-        </div>
-      
+      <div className="faq__content">
+        {/* <p className="faq__content__header">FAQs</p> */}
+        {/* <p className="faq__content__header"> There is a lot of information in this paper, and some of it might not be useful to you.</p> */}
+        <p className="faq__content__header">
+          {" "}
+          To help you read this paper, below is a list of key questions that are
+          answered in this paper.{" "}
+        </p>
+        {/* <p className="faq__content__header">
+          {" "}
+          Each question is listed with a brief answer. Click the page number
+          "Relevant Passages" sections relevant to the question in the paper.
+        </p> */}
+        {/* <p className="faq__content__header"> Questions: </p> */} {FAQs}
+      </div>
     );
 
     return FAQBarContainer

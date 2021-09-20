@@ -94,8 +94,20 @@
 }
 
 #sidebarContent {
+  /*
+   * Unset 'message-box' font set by default by pdf.js.
+   */
+  font: unset;
+  font-family: @s2-font-family !important;
+
   #thumbnailView {
     padding-left: calc(50% - 60px);
     padding-right: calc(50% - 60px);
   }
+}
+
+#toolbarContainer {
+  font-family: @s2-font-family !important;
+  // background-image: none !important;
+  // background-color: @s2-primary-color !important;
 }
