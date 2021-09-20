@@ -154,7 +154,7 @@ class FAQ extends React.PureComponent<Props, State> {
           {" page "}
           {definition.contextEntity.attributes.bounding_boxes[0].page + 1}
         </EntityLink>
-        {answerCoaster !== null && answerCoaster.length > 1 ? ", " : " "}
+        {answerCoaster !== null && answerCoaster.length > 1 ? "," : ""}
       </>
     ) : null;
 
@@ -180,7 +180,7 @@ class FAQ extends React.PureComponent<Props, State> {
         );
       });
 
-      details.push(<span>.</span>);
+      // details.push(<span>.</span>);
     }
 
     const FAQClass = this.props.isSelected ? "faq-selected" : "faq";

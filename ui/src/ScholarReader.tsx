@@ -849,10 +849,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       if (b1.page !== b2.page) {
         return b1.page - b2.page;
       }
-      if (Math.abs(b1.left - b2.left) > 0.2) {
-        return b1.left - b2.left;
-      }
-      return b1.top - b2.top;
+      return b2.top - b1.top;
     })[entity.attributes.bounding_boxes.length - 1];
     // if (entity.attributes.bounding_boxes.length > 1){
     //   dest = entity.attributes.bounding_boxes[entity.attributes.bounding_boxes.length - 1];
@@ -864,7 +861,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
      * if pages in a PDF have different dimensions.
      */
     const page = Object.values(pages)[0];
-    const { left, top } = uiUtils.convertBoxToPdfCoordinates(page.view, dest);
+    let destCopy = { ...dest };
+    let { left, top } = uiUtils.convertBoxToPdfCoordinates(page.view, dest);
+    top = top + 80;
 
     /*
      * Scroll to the destination. Use the 'navigateTo', which will save
