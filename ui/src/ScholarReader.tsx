@@ -731,6 +731,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     }
     eventBus.on("documentloaded", (eventData: DocumentLoadedEvent) => {
       this.setState({ pdfDocument: eventData.source });
+      setTimeout(() => {
+        (window.PDFViewerApplication as any).pdfSidebar.switchView(3);
+      }, 1);
     });
 
     /*
