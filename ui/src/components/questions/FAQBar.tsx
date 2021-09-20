@@ -41,6 +41,10 @@ class FAQBar extends React.PureComponent<Props> {
     // this.closeDrawer = this.closeDrawer.bind(this);
   }
 
+  componentDidMount() {
+    document.getElementById("#viewAttachment")?.click();
+  }
+
   componentWillUnmount() {}
 
   onScroll(event: React.UIEvent<HTMLDivElement>) {
