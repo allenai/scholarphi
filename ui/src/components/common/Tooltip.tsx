@@ -51,7 +51,22 @@ export class Tooltip extends React.PureComponent<Props> {
      * Align the horizontal center of the tooltip with the center of the anchor.
      */
     const anchorPosition = uiUtils.getPositionInPageView(pageView, anchor);
-    const tooltipCenterX = anchorPosition.left + anchorPosition.width + 2;
+    let tooltipCenterX = anchorPosition.left + anchorPosition.width + 2;
+
+    /*
+     * XXX (andrewhead): do not allow an automatically-centered tooltip to appear
+     * off-screen. This hardcodes the maximum width of a tooltip as set in
+     * the '.gloss' class---make sure to change it together with the max-width
+     * property of that class. I do not know whether this will work on glosses
+     * that do not take up the full maximum width of the gloss container.
+     */
+    const MAX_TOOLTIP_WIDTH = 420;
+    if (
+      (placement == "below" || placement == "above") &&
+      tooltipCenterX < MAX_TOOLTIP_WIDTH / 2
+    ) {
+      tooltipCenterX += MAX_TOOLTIP_WIDTH / 2 - tooltipCenterX;
+    }
     let style: React.CSSProperties = {
       left: tooltipCenterX,
       transform: "translate(-50%, 0)",
