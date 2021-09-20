@@ -1409,7 +1409,8 @@ html[dir="rtl"] #viewOutline.toolbarButton::before {
 }
 
 #viewAttachments.toolbarButton::before {
-  content: url(images/toolbarButton-viewAttachments.png);
+  /* content: url(images/toolbarButton-viewAttachments.png); */
+  content: url(images/secondaryToolbarButton-documentProperties.png);
 }
 
 #viewFind.toolbarButton::before {

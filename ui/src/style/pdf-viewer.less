@@ -75,3 +75,27 @@
     white-space: nowrap;
   }
 }
+
+#toolbarSidebar {
+  /*
+   * For some reason there is inconsistent margins applied to the tab buttons
+   * in the sidebar. Make it consistent.
+   */
+  .splitToolbarButton > .toolbarButton {
+    margin: 0;
+  }
+
+  /*
+   * Do not show green dot for notification for the table of contents button.
+   */
+  .toolbarButton.pdfSidebarNotification::after {
+    display: none;
+  }
+}
+
+#sidebarContent {
+  #thumbnailView {
+    padding-left: calc(50% - 60px);
+    padding-right: calc(50% - 60px);
+  }
+}
