@@ -182,6 +182,25 @@ const PRESETS: Preset[] = [
     mediaScrollbarMarkupEnabled: true,
     cueingStyle: "underline",
   },
+  {
+    key: "skim-base",
+    annotationHintsEnabled: false,
+    primerPageEnabled: false,
+  },
+  {
+    key: "skim-lead",
+    annotationHintsEnabled: false,
+    primerPageEnabled: false,
+    leadSentencesEnabled: true,
+  },
+  {
+    key: "skim-facet",
+    annotationHintsEnabled: false,
+    primerPageEnabled: false,
+    facetHighlights: true,
+    facetTextEnabled: true,
+    facetDrawerEnabled: true,
+  },
 ];
 
 /**
