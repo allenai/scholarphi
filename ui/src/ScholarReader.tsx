@@ -963,13 +963,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     );
 
     unitsToShow.push(...authorNovelty);
-    const numLeft = MAX_NUM_NOVELTY - authorNovelty.length;
-    if (numLeft > 0) {
-      unitsToShow.push(...notAuthorNoveltyNotIntro.slice(0, numLeft));
+    const numNoveltyLeft = MAX_NUM_NOVELTY - authorNovelty.length;
+    if (numNoveltyLeft > 0) {
+      unitsToShow.push(...notAuthorNoveltyNotIntro.slice(0, numNoveltyLeft));
     }
 
     // ---- OBJECTIVE ---- //
-    const MAX_NUM_OBJECTIVE = 3;
     const objective = data.filter(
       (r: RhetoricUnit) =>
         r.label === "Objective" &&
@@ -979,15 +978,40 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     unitsToShow.push(...objective);
 
     // ---- METHOD ---- //
-    const method = data.filter((r: RhetoricUnit) => r.label === "Method");
-    unitsToShow.push(...method);
+    const MIN_NUM_METHODS = 10;
+    const method = data.filter(
+      (r: RhetoricUnit) => r.label === "Method" && r.is_in_expected_section
+    );
+    const method_heuristic = method.filter(
+      (r: RhetoricUnit) => r.prob === null
+    );
+    const method_classifier = method
+      .filter((r: RhetoricUnit) => r.prob !== null)
+      .sort((r1, r2) => (r1.prob! > r2.prob! ? -1 : 1));
+    unitsToShow.push(...method_classifier);
+    if (method_classifier.length < MIN_NUM_METHODS) {
+      const numMethodsToAdd = MIN_NUM_METHODS - method_classifier.length;
+      unitsToShow.push(...method_heuristic.slice(0, numMethodsToAdd));
+    }
 
     // ---- RESULT ---- //
+    const MAX_NUM_RESULTS = 15;
     const result = data.filter((r: RhetoricUnit) => {
       const hasCitation = new RegExp(/\[.*\d.*\]/).test(r.text);
       return r.label === "Result" && r.is_in_expected_section && !hasCitation;
     });
-    unitsToShow.push(...result);
+    const result_heuristic = result.filter(
+      (r: RhetoricUnit) => r.prob === null
+    );
+    const result_classifier = result
+      .filter((r: RhetoricUnit) => r.prob !== null)
+      .sort((r1, r2) => (r1.prob! > r2.prob! ? -1 : 1));
+
+    unitsToShow.push(...result_heuristic);
+    const numResultsLeft = MAX_NUM_RESULTS - result_heuristic.length;
+    if (numResultsLeft > 0) {
+      unitsToShow.push(...result_classifier.slice(0, numResultsLeft));
+    }
 
     // ---- CONCLUSION ---- //
     const conclusion = data.filter(
