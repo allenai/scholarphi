@@ -153,7 +153,7 @@ const PRESETS: Preset[] = [
     annotationHintsEnabled: false,
     primerPageEnabled: false,
     facetHighlights: true,
-    facetTextEnabled: true,
+    facetTextEnabled: false,
     facetDrawerEnabled: true,
   },
   {
@@ -172,7 +172,7 @@ const PRESETS: Preset[] = [
     annotationHintsEnabled: false,
     primerPageEnabled: false,
     facetHighlights: true,
-    facetTextEnabled: true,
+    facetTextEnabled: false,
     facetDrawerEnabled: true,
   },
 ];

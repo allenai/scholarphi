@@ -9,6 +9,8 @@ interface Props {
   deselectedDiscourses: string[];
   handleDiscourseSelected: (discourse: string) => void;
   handleJumpToDiscourseObj: (id: string) => void;
+  handleIncreaseNumHighlights: (discourse: string) => void;
+  handleDecreaseNumHighlights: (discourse: string) => void;
 }
 
 export class Facets extends React.PureComponent<Props> {
@@ -35,6 +37,8 @@ export class Facets extends React.PureComponent<Props> {
             discourseObjs={discourseObjs}
             deselectedDiscourses={deselectedDiscourses}
             handleDiscourseSelected={this.props.handleDiscourseSelected}
+            handleIncreaseNumHighlights={this.props.handleIncreaseNumHighlights}
+            handleDecreaseNumHighlights={this.props.handleDecreaseNumHighlights}
           ></DiscoursePalette>
         </div>
         <div className="document-snippets discourse-objs">

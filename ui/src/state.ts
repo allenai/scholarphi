@@ -155,6 +155,7 @@ export interface State extends Settings {
   discourseObjs: DiscourseObj[];
   discourseObjsById: { [id: string]: DiscourseObj };
   deselectedDiscourses: string[];
+  numHighlightMultiplier: { [discourse: string]: number };
 }
 
 export type Entities = RelationalStore<Entity>;

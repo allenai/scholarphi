@@ -49,6 +49,7 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
               pointerEvents: "none",
               right: 0,
               overflowY: "hidden",
+              zIndex: 1001,
             }}
           >
             {captionUnits.map((c: CaptionUnit, i: number) => (

@@ -134,6 +134,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       discourseObjs: [],
       discourseObjsById: {},
       deselectedDiscourses: [],
+      numHighlightMultiplier: {
+        Method: 0.7,
+        Result: 0.7,
+      },
 
       ...settings,
     };
@@ -709,22 +713,26 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.loadDataFromApi();
 
     if (this.props.paperId !== undefined) {
-      const discourseObjs = this.makeDiscourseObjectsForFacets(
-        Object(facetData)[this.props.paperId!.id]
-      );
-
-      const discourseObjsById = discourseObjs.reduce(
-        (acc: { [id: string]: DiscourseObj }, d: DiscourseObj) => {
-          acc[d.id] = d;
-          return acc;
-        },
-        {}
-      );
-      this.setState({
-        discourseObjs: discourseObjs,
-        discourseObjsById: discourseObjsById,
-      });
+      this.initDiscourseObjs();
     }
+  }
+
+  initDiscourseObjs() {
+    const discourseObjs = this.makeDiscourseObjectsForFacets(
+      Object(facetData)[this.props.paperId!.id]
+    );
+
+    const discourseObjsById = discourseObjs.reduce(
+      (acc: { [id: string]: DiscourseObj }, d: DiscourseObj) => {
+        acc[d.id] = d;
+        return acc;
+      },
+      {}
+    );
+    this.setState({
+      discourseObjs: discourseObjs,
+      discourseObjsById: discourseObjsById,
+    });
   }
 
   subscribeToPDFViewerStateChanges = (
@@ -963,7 +971,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     unitsToShow.push(...objective);
 
     // ---- METHOD ---- //
-    const MIN_NUM_METHODS = 10;
     const method = data.filter(
       (r: RhetoricUnit) => r.label === "Method" && r.is_in_expected_section
     );
@@ -973,14 +980,17 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     const method_classifier = method
       .filter((r: RhetoricUnit) => r.prob !== null)
       .sort((r1, r2) => (r1.prob! > r2.prob! ? -1 : 1));
-    unitsToShow.push(...method_classifier);
-    if (method_classifier.length < MIN_NUM_METHODS) {
-      const numMethodsToAdd = MIN_NUM_METHODS - method_classifier.length;
-      unitsToShow.push(...method_heuristic.slice(0, numMethodsToAdd));
-    }
+    const method_sorted = method_classifier.concat(method_heuristic);
+    unitsToShow.push(
+      ...method_sorted.slice(
+        0,
+        Math.round(
+          this.state.numHighlightMultiplier["Method"] * method_sorted.length
+        )
+      )
+    );
 
     // ---- RESULT ---- //
-    const MAX_NUM_RESULTS = 15;
     const result = data.filter((r: RhetoricUnit) => {
       const hasCitation = new RegExp(/\[.*\d.*\]/).test(r.text);
       return r.label === "Result" && r.is_in_expected_section && !hasCitation;
@@ -991,12 +1001,15 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     const result_classifier = result
       .filter((r: RhetoricUnit) => r.prob !== null)
       .sort((r1, r2) => (r1.prob! > r2.prob! ? -1 : 1));
-
-    unitsToShow.push(...result_heuristic);
-    const numResultsLeft = MAX_NUM_RESULTS - result_heuristic.length;
-    if (numResultsLeft > 0) {
-      unitsToShow.push(...result_classifier.slice(0, numResultsLeft));
-    }
+    const result_sorted = result_heuristic.concat(result_classifier);
+    unitsToShow.push(
+      ...result_sorted.slice(
+        0,
+        Math.round(
+          this.state.numHighlightMultiplier["Result"] * result_sorted.length
+        )
+      )
+    );
 
     // ---- CONCLUSION ---- //
     const conclusion = data.filter(
@@ -1083,6 +1096,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
   handleDiscourseSelected = (discourse: string) => {
     if (this.state.deselectedDiscourses.includes(discourse)) {
+      if (this.state.numHighlightMultiplier[discourse] === 0) {
+        return;
+      }
       const deselectedDiscourses = this.state.deselectedDiscourses.filter(
         (x) => x !== discourse
       );
@@ -1092,6 +1108,66 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         deselectedDiscourses: [...prevState.deselectedDiscourses, discourse],
       }));
     }
+  };
+
+  handleIncreaseNumHighlights = (discourse: string) => {
+    if (this.state.numHighlightMultiplier[discourse] >= 1) {
+      return;
+    }
+    this.setState(
+      (prevState) => {
+        const prevMultiplier = prevState.numHighlightMultiplier[discourse];
+        const increment = 0.1;
+        const highlightMult = Math.min(
+          1,
+          Math.round((prevMultiplier + increment) * 10) / 10
+        );
+        const newMultiplier = {
+          ...prevState.numHighlightMultiplier,
+          [discourse]: highlightMult,
+        };
+        return {
+          numHighlightMultiplier: newMultiplier,
+          deselectedDiscourses:
+            prevMultiplier === 0
+              ? prevState.deselectedDiscourses.filter((d) => d !== discourse)
+              : prevState.deselectedDiscourses,
+        };
+      },
+      () => {
+        this.initDiscourseObjs();
+      }
+    );
+  };
+
+  handleDecreaseNumHighlights = (discourse: string) => {
+    if (this.state.numHighlightMultiplier[discourse] <= 0) {
+      return;
+    }
+    this.setState(
+      (prevState) => {
+        const prevMultiplier = prevState.numHighlightMultiplier[discourse];
+        const decrement = 0.1;
+        const highlightMult = Math.max(
+          0,
+          Math.round((prevMultiplier - decrement) * 10) / 10
+        );
+        const newMultiplier = {
+          ...prevState.numHighlightMultiplier,
+          [discourse]: highlightMult,
+        };
+        return {
+          numHighlightMultiplier: newMultiplier,
+          deselectedDiscourses:
+            highlightMult === 0
+              ? [...prevState.deselectedDiscourses, discourse]
+              : prevState.deselectedDiscourses,
+        };
+      },
+      () => {
+        this.initDiscourseObjs();
+      }
+    );
   };
 
   render() {
@@ -1293,6 +1369,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 discourseObjs={discourseObjs}
                 deselectedDiscourses={this.state.deselectedDiscourses}
                 handleDiscourseSelected={this.handleDiscourseSelected}
+                handleIncreaseNumHighlights={this.handleIncreaseNumHighlights}
+                handleDecreaseNumHighlights={this.handleDecreaseNumHighlights}
                 handleJumpToDiscourseObj={this.jumpToDiscourseObj}
                 propagateEntityEdits={this.state.propagateEntityEdits}
                 handleJumpToEntity={this.jumpToEntityWithBackMessage}
