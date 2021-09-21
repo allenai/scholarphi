@@ -1256,6 +1256,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     : "Activate skimming"}
                 </span>
               </button>
+              <button
+                onClick={this.toggleControlPanelShowing}
+                className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
+              >
+                <span>Customize UI</span>
+              </button>
               {this.state.facetDrawerEnabled ? (
                 <button
                   onClick={() => this.toggleDrawer("facets")}
