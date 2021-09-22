@@ -350,7 +350,7 @@ def write_to_file(entity_infos: List[EntityUploadInfo], output_file_name: str) -
         FORMAT_VERSION,
     )
     to_write = {
-        "version": FORMAT_VERSION,
+        "format_version": FORMAT_VERSION,
         "data": [dataclasses.asdict(entity_info) for entity_info in entity_infos],
     }
 
