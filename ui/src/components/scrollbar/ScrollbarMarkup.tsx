@@ -7,6 +7,7 @@ interface Props {
   numPages: number;
   discourseObjs: DiscourseObj[];
   captionUnits: CaptionUnit[];
+  handleMarkClicked: (id: string) => void;
 }
 
 class ScrollbarMarkup extends React.PureComponent<Props> {
@@ -42,14 +43,9 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
           <div
             className={"scrollbar-markup"}
             style={{
-              position: "absolute",
-              height: ScrollbarMarkup.scrollbarHeight,
               width: ScrollbarMarkup.scrollbarWidth,
+              height: ScrollbarMarkup.scrollbarHeight,
               top: ScrollbarMarkup.scrollbarOffsetTop,
-              pointerEvents: "none",
-              right: 0,
-              overflowY: "hidden",
-              zIndex: 1001,
             }}
           >
             {captionUnits.map((c: CaptionUnit, i: number) => (
@@ -66,16 +62,16 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
               .filter((d: DiscourseObj) => d.label !== "Author")
               .map((d: DiscourseObj, i: number) => (
                 <div
+                  className={"scrollbar-mark"}
+                  onClick={() => this.props.handleMarkClicked(d.id)}
                   style={{
-                    position: "absolute",
+                    width: ScrollbarMarkup.scrollbarWidth,
+                    height: ScrollbarMarkup.scrollbarMarkHeight,
                     top: this.mapDiscourseToScrollBar(
                       d.bboxes[0].page,
                       d.bboxes[0].top
                     ),
-                    width: ScrollbarMarkup.scrollbarWidth,
-                    height: ScrollbarMarkup.scrollbarMarkHeight,
                     background: uiUtils.updateAlpha(d.color, 0.9),
-                    border: "1px solid grey",
                   }}
                   key={`scrollbar-mark-${i}`}
                 ></div>

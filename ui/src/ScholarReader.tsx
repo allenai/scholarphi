@@ -1202,6 +1202,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     );
   };
 
+  handleScrollbarMarkClicked = (id: string) => {
+    this.jumpToDiscourseObj(id);
+  };
+
   render() {
     let findMatchEntityId: string | null = null;
     if (
@@ -1441,6 +1445,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                         ? Object(captionData)[this.props.paperId!.id]
                         : []
                     }
+                    handleMarkClicked={this.handleScrollbarMarkClicked}
                   ></ScrollbarMarkup>
                 )}
             </ViewerOverlay>

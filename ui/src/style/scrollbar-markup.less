@@ -1,13 +1,27 @@
 .scrollbar-media-tag {
-    position: fixed;
-    right: 22px;
-    margin-top: 15px;
-    padding-left: 3px;
-    padding-right: 3px;
-    border-radius: 5px;
-    background-color: wheat;
-    &__text {
-        font-size: 11px;
-        font-weight: bold;
-    }
+  position: fixed;
+  right: 22px;
+  margin-top: 15px;
+  padding-left: 3px;
+  padding-right: 3px;
+  border-radius: 5px;
+  background-color: wheat;
+  &__text {
+    font-size: 11px;
+    font-weight: bold;
+  }
+}
+
+.scrollbar-markup {
+  position: absolute;
+  right: 0;
+  z-index: 1001;
+  overflow-y: hidden;
+  pointer-events: none;
+}
+
+.scrollbar-mark {
+  position: absolute;
+  pointer-events: auto;
+  border: 1px solid grey;
 }
