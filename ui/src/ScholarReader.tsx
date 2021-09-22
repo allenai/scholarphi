@@ -945,21 +945,21 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         r.is_in_expected_section &&
         r.is_author_statement
     );
-    const notAuthorNovelty = data.filter(
-      (r: RhetoricUnit) =>
-        r.label === "Novelty" &&
-        r.is_in_expected_section &&
-        !r.is_author_statement
-    );
-    const notAuthorNoveltyNotIntro = notAuthorNovelty.filter(
-      (r: RhetoricUnit) => !r.section.toLowerCase().includes("introduction")
-    );
+    // const notAuthorNovelty = data.filter(
+    //   (r: RhetoricUnit) =>
+    //     r.label === "Novelty" &&
+    //     r.is_in_expected_section &&
+    //     !r.is_author_statement
+    // );
+    // const notAuthorNoveltyNotIntro = notAuthorNovelty.filter(
+    //   (r: RhetoricUnit) => !r.section.toLowerCase().includes("introduction")
+    // );
 
     unitsToShow.push(...authorNovelty);
-    const numNoveltyLeft = MAX_NUM_NOVELTY - authorNovelty.length;
-    if (numNoveltyLeft > 0) {
-      unitsToShow.push(...notAuthorNoveltyNotIntro.slice(0, numNoveltyLeft));
-    }
+    // const numNoveltyLeft = MAX_NUM_NOVELTY - authorNovelty.length;
+    // if (numNoveltyLeft > 0) {
+    //   unitsToShow.push(...notAuthorNoveltyNotIntro.slice(0, numNoveltyLeft));
+    // }
 
     // ---- OBJECTIVE ---- //
     const objective = data.filter(
