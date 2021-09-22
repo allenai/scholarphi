@@ -504,6 +504,96 @@
       }
     }
   ],
+  "2102.08235": [
+    {
+      "type": "figure",
+      "text": "Figure 1: A hypothetical coupleusing Significant Otter: Alice (left) sends her state otter to Bob (right) on her Apple Watch.",
+      "bbox": {
+        "left": 0.5206669327480341,
+        "top": 0.8359186962397411,
+        "width": 0.39369625515407985,
+        "height": 0.026750275582978218,
+        "page": 0
+      }
+    },
+    {
+      "type": "figure",
+      "text": "Figure 2: Heart rate sensing based on people\u2019s historical data from Apple HealthKit, with thresholds determined through empirical testing. The thresholds are relative to being sta- tionary, according to prior work in emotion detection using physiological data [11].",
+      "bbox": {
+        "left": 0.5199746524586397,
+        "top": 0.8147072840218592,
+        "width": 0.3966081407335069,
+        "height": 0.06802321925307765,
+        "page": 3
+      }
+    },
+    {
+      "type": "table",
+      "text": "Table 1: List of state otters.",
+      "bbox": {
+        "left": 0.6266814088509753,
+        "top": 0.10431679812344638,
+        "width": 0.17723377701503779,
+        "height": 0.015075596896084871,
+        "page": 3
+      }
+    },
+    {
+      "type": "figure",
+      "text": "Figure 3: Examples of state otters.",
+      "bbox": {
+        "left": 0.3878554799198325,
+        "top": 0.2886812422010634,
+        "width": 0.22436792710248163,
+        "height": 0.014233329079367897,
+        "page": 4
+      }
+    },
+    {
+      "type": "table",
+      "text": "Table 2: List of react otters.",
+      "bbox": {
+        "left": 0.625654532239328,
+        "top": 0.31878082198326035,
+        "width": 0.17931410845588236,
+        "height": 0.015837293682676373,
+        "page": 4
+      }
+    },
+    {
+      "type": "figure",
+      "text": "Figure 4: Examples of react otters.",
+      "bbox": {
+        "left": 0.3867095997130949,
+        "top": 0.30719947814941406,
+        "width": 0.22584900201535693,
+        "height": 0.014515924935389047,
+        "page": 5
+      }
+    },
+    {
+      "type": "figure",
+      "text": "Figure 6: Significant Otter notifications.",
+      "bbox": {
+        "left": 0.3691776500028722,
+        "top": 0.5983707158252446,
+        "width": 0.263748642665888,
+        "height": 0.013796180185645518,
+        "page": 6
+      }
+    },
+    {
+      "type": "figure",
+      "text": "Figure 5: Bob reacting to Alice\u2019s otter on the Apple Watch.",
+      "bbox": {
+        "left": 0.30982255624010674,
+        "top": 0.2842146170259726,
+        "width": 0.38207317177766287,
+        "height": 0.013769246111012469,
+        "page": 6
+      }
+    }
+  ],
   "2102.09039": [
     {
       "type": "figure",
@@ -1063,6 +1153,52 @@
         "width": 0.6959858439327066,
         "height": 0.023486397483132103,
         "page": 12
+      }
+    }
+  ],
+  "2108.11259": [
+    {
+      "type": "figure",
+      "text": "Figure 1: Sigma\u2019s Notebook, showing list of rocks taught so far (top) and page of notes on Shale rock, with an explana- tion provided by a participant (bottom).",
+      "bbox": {
+        "left": 0.520519231659135,
+        "top": 0.4886810996315696,
+        "width": 0.3952833686778748,
+        "height": 0.04131629250266335,
+        "page": 2
+      }
+    },
+    {
+      "type": "figure",
+      "text": "Figure 2: Teaching interface, with articles on the left-hand side, chat window on the right, and example interaction (affiliative condition).",
+      "bbox": {
+        "left": 0.08591335271698197,
+        "top": 0.4858719026199495,
+        "width": 0.8291183297151055,
+        "height": 0.025773481889204544,
+        "page": 4
+      }
+    },
+    {
+      "type": "figure",
+      "text": "Figure 3: Results of the Pick-a-Mood pictorial self-report scale for (a) agent\u2019s mood and personality, and (b) self, across conditions, post-interaction. The number indicates the num- ber of participants that selected each emotion pictogram.",
+      "bbox": {
+        "left": 0.08936719956740834,
+        "top": 0.837404732752328,
+        "width": 0.3943607978571474,
+        "height": 0.05516329678622159,
+        "page": 6
+      }
+    },
+    {
+      "type": "figure",
+      "text": "Figure 4: Results of answers to questions on the agent and experience teaching.",
+      "bbox": {
+        "left": 0.23791703367544934,
+        "top": 0.46578879308218907,
+        "width": 0.5266377567465789,
+        "height": 0.013548879912405304,
+        "page": 7
       }
     }
   ],

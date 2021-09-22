@@ -3864,6 +3864,42 @@
           "page": 18
         }
       ]
+    },
+    {
+      "text": "AR system equipped with no assistance or object-highlighting assistance.",
+      "bboxes": [
+        {
+          "left": 0.15937091503267972,
+          "top": 0.812979797979798,
+          "width": 0.43261437908496736,
+          "height": 0.011320707070707092,
+          "page": 10
+        }
+      ]
+    },
+    {
+      "text": "H1 Participants will follow optimal assistance when presented with it.",
+      "bboxes": [
+        {
+          "left": 0.13387254901960785,
+          "top": 0.7437727272727273,
+          "width": 0.4180571895424836,
+          "height": 0.011343434343434433,
+          "page": 10
+        }
+      ]
+    },
+    {
+      "text": "H2 Participants will have higher task performance when presented with optimal assistance.",
+      "bboxes": [
+        {
+          "left": 0.13387254901960785,
+          "top": 0.7610681818181818,
+          "width": 0.5452859477124182,
+          "height": 0.011343434343434322,
+          "page": 10
+        }
+      ]
     }
   ],
   "2103.06807": [
@@ -6058,6 +6094,25 @@
           "page": 11
         }
       ]
+    },
+    {
+      "text": "A state     is selected via Upper Confidence Trees (UCT), a widely used estimator in model-based planning [31].",
+      "bboxes": [
+        {
+          "left": 0.5400457516339869,
+          "top": 0.4460138888888889,
+          "width": 0.3720555555555556,
+          "height": 0.013097222222222205,
+          "page": 3
+        },
+        {
+          "left": 0.5189918300653594,
+          "top": 0.4598510101010101,
+          "width": 0.3096470588235295,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
     }
   ],
   "2104.03820": [
@@ -7307,6 +7362,2096 @@
           "width": 0.4724248366013072,
           "height": 0.011320707070707092,
           "page": 13
+        }
+      ]
+    }
+  ],
+  "2102.08235": [
+    {
+      "text": "Tsung-Yu Tsai Snap Inc.",
+      "bboxes": [
+        {
+          "left": 0.745782679738562,
+          "top": 0.15932070707070708,
+          "width": 0.11296895424836617,
+          "height": 0.01509469696969698,
+          "page": 0
+        },
+        {
+          "left": 0.7733709150326797,
+          "top": 0.17693055555555554,
+          "width": 0.06088235294117639,
+          "height": 0.012579545454545482,
+          "page": 0
+        }
+      ]
+    },
+    {
+      "text": "Permission to make digital or hard copies of part or all of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page.",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.801790404040404,
+          "width": 0.3927761437908497,
+          "height": 0.008805555555555511,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.811854797979798,
+          "width": 0.3925588235294118,
+          "height": 0.008805555555555511,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8219179292929292,
+          "width": 0.39256045751633994,
+          "height": 0.008805555555555622,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8319810606060606,
+          "width": 0.07573529411764705,
+          "height": 0.008805555555555622,
+          "page": 0
+        }
+      ]
+    },
+    {
+      "text": "Chunjong Park University of Washington Seattle, WA, USA cjparkuw@cs.washington.edu",
+      "bboxes": [
+        {
+          "left": 0.3398611111111111,
+          "top": 0.15932070707070708,
+          "width": 0.12125163398692812,
+          "height": 0.01509469696969698,
+          "page": 0
+        },
+        {
+          "left": 0.31445098039215685,
+          "top": 0.17693055555555554,
+          "width": 0.171562091503268,
+          "height": 0.012579545454545482,
+          "page": 0
+        },
+        {
+          "left": 0.34315849673202614,
+          "top": 0.19202525252525252,
+          "width": 0.11471568627450979,
+          "height": 0.012579545454545454,
+          "page": 0
+        },
+        {
+          "left": 0.30941830065359477,
+          "top": 0.20711994949494947,
+          "width": 0.19604901960784316,
+          "height": 0.012579545454545482,
+          "page": 0
+        }
+      ]
+    },
+    {
+      "text": "ACM Reference Format:",
+      "bboxes": [
+        {
+          "left": 0.08742320261437908,
+          "top": 0.6860782828282829,
+          "width": 0.14214705882352943,
+          "height": 0.010063131313131302,
+          "page": 0
+        }
+      ]
+    },
+    {
+      "text": "Carnegie Mellon University Pittsburgh, PA, USA dabbish@cs.cmu.edu Geoff Kaufman Carnegie Mellon Pittsburgh, PA, gfk@cs.cmu.edu",
+      "bboxes": [
+        {
+          "left": 0.20802124183006535,
+          "top": 0.2506489898989899,
+          "width": 0.18204738562091508,
+          "height": 0.012579545454545427,
+          "page": 0
+        },
+        {
+          "left": 0.2321666666666667,
+          "top": 0.2657436868686869,
+          "width": 0.13390849673202615,
+          "height": 0.012579545454545427,
+          "page": 0
+        },
+        {
+          "left": 0.22931862745098036,
+          "top": 0.28083838383838383,
+          "width": 0.13903758169934638,
+          "height": 0.012579545454545427,
+          "page": 0
+        },
+        {
+          "left": 0.4395996732026144,
+          "top": 0.23303914141414142,
+          "width": 0.12080228758169942,
+          "height": 0.015094696969696952,
+          "page": 0
+        },
+        {
+          "left": 0.40918627450980394,
+          "top": 0.2506489898989899,
+          "width": 0.10927124183006531,
+          "height": 0.012579545454545427,
+          "page": 0
+        },
+        {
+          "left": 0.4333300653594771,
+          "top": 0.2657436868686869,
+          "width": 0.09987091503267981,
+          "height": 0.012579545454545427,
+          "page": 0
+        },
+        {
+          "left": 0.44501797385620917,
+          "top": 0.28083838383838383,
+          "width": 0.10996241830065362,
+          "height": 0.012579545454545427,
+          "page": 0
+        }
+      ]
+    },
+    {
+      "text": "For the purposes of this study, we focus on communication between romantic couples.",
+      "bboxes": [
+        {
+          "left": 0.5195343137254902,
+          "top": 0.16038383838383838,
+          "width": 0.39502941176470585,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.1742209595959596,
+          "width": 0.1425751633986928,
+          "height": 0.011320707070707092,
+          "page": 1
+        }
+      ]
+    },
+    {
+      "text": "In the present work, we expand on expressive biosignals literature by demonstrating the effects of shifting from communication without biosignals to communication with biosignals.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.4839810606060606,
+          "width": 0.3787516339869281,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4978181818181818,
+          "width": 0.39256045751633994,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.511655303030303,
+          "width": 0.31280718954248365,
+          "height": 0.013969696969696965,
+          "page": 1
+        }
+      ]
+    },
+    {
+      "text": "Today, we rely heavily on digital technology to connect with others.",
+      "bboxes": [
+        {
+          "left": 0.0874656862745098,
+          "top": 0.12421843434343434,
+          "width": 0.3954771241830065,
+          "height": 0.01132070707070705,
+          "page": 1
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.13805555555555557,
+          "width": 0.020517973856209154,
+          "height": 0.011320707070707065,
+          "page": 1
+        }
+      ]
+    },
+    {
+      "text": "The core contributions of this work are: (1) Significant Otter 2 , a novel smartwatch and phone app that promotes communication and connection between romantic partners through animated avatars recommended based on heart rate; (2) an empirical study with 20 couples who used Significant Otter with sensing OFF and ON that demonstrates the value of biosignals as a lightweight and authentic social cue; (3) design implications and future directions for expressive biosignals research, including suggestions for integration into social platforms as a form of AI-mediated communication.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.7172386363636364,
+          "width": 0.3762826797385621,
+          "height": 0.013291666666666702,
+          "page": 1
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7330467171717171,
+          "width": 0.39256045751633994,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7468838383838384,
+          "width": 0.3925686274509804,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7607209595959595,
+          "width": 0.39256699346405227,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7745580808080809,
+          "width": 0.392562091503268,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.788395202020202,
+          "width": 0.3925604575163399,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8022323232323233,
+          "width": 0.3950359477124183,
+          "height": 0.011320707070706981,
+          "page": 1
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8160694444444444,
+          "width": 0.39255882352941174,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8299065656565656,
+          "width": 0.34817973856209156,
+          "height": 0.011320707070707092,
+          "page": 1
+        }
+      ]
+    },
+    {
+      "text": "With the integration of biosignals, Significant Otter similarly incorporates physicalness, expressivity, and awareness to support intimate communication.",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.5063093434343434,
+          "width": 0.3766633986928104,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5201464646464646,
+          "width": 0.39255882352941174,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5339823232323232,
+          "width": 0.15212418300653596,
+          "height": 0.011320707070707092,
+          "page": 1
+        }
+      ]
+    },
+    {
+      "text": "An emerging area of research in HCI has explored a novel social cue for improving the way we interact over technology: our biosignals.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.22107828282828282,
+          "width": 0.3787549019607843,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.23491540404040404,
+          "width": 0.3928333333333333,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.24875252525252525,
+          "width": 0.06189379084967321,
+          "height": 0.011320707070707065,
+          "page": 1
+        }
+      ]
+    },
+    {
+      "text": "Hancock and colleagues define AI-mediated communication as mediated communication between people in which a computational agent operates on behalf of a communicator by modifying, augmenting, or generating messages to accomplish communication or interpersonal goals.",
+      "bboxes": [
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7157512626262627,
+          "width": 0.39503104575163406,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7295883838383838,
+          "width": 0.39255392156862745,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7434242424242424,
+          "width": 0.39502941176470585,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7572613636363636,
+          "width": 0.39284150326797385,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7710984848484849,
+          "width": 0.12368954248366015,
+          "height": 0.011320707070707092,
+          "page": 1
+        }
+      ]
+    },
+    {
+      "text": "A breadth of HCI research has explored technologies that can support significant others, including those that integrate biosignals.",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.3125909090909091,
+          "width": 0.3762745098039215,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.3264280303030303,
+          "width": 0.3948153594771241,
+          "height": 0.011320707070707092,
+          "page": 1
+        }
+      ]
+    },
+    {
+      "text": "Expressive biosignal systems recommend a users current state as part of interpersonal communication.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.10692297979797981,
+          "width": 0.3762761437908496,
+          "height": 0.011320707070707065,
+          "page": 2
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.120760101010101,
+          "width": 0.23759803921568629,
+          "height": 0.011320707070707078,
+          "page": 2
+        }
+      ]
+    },
+    {
+      "text": "Existing literature on expressive biosignals have primarily explored their potential for supporting how we communicate and connect with each other.",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4805214646464646,
+          "width": 0.3925604575163399,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.49435858585858583,
+          "width": 0.3925571895424837,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.08736437908496732,
+          "top": 0.508195707070707,
+          "width": 0.0988545751633987,
+          "height": 0.011320707070707092,
+          "page": 2
+        }
+      ]
+    },
+    {
+      "text": "Expressive biosignals may also impact social connection, or a persons subjective sense of having close and positively experienced relationships with others in the social world [56].",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.7710984848484849,
+          "width": 0.3762745098039215,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7849356060606061,
+          "width": 0.39502941176470585,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7987727272727273,
+          "width": 0.3287745098039216,
+          "height": 0.011320707070707092,
+          "page": 2
+        }
+      ]
+    },
+    {
+      "text": "We designed Significant Otter based on prior expressive biosignals systems tested in everyday contexts [41, 42].",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.6983547979797979,
+          "width": 0.3787565359477123,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7121919191919193,
+          "width": 0.28832516339869285,
+          "height": 0.011320707070707092,
+          "page": 2
+        }
+      ]
+    },
+    {
+      "text": "Although these prior works suggest the potential for biosignals to support communication and connection, they have not illustrated the value of expressive biosignals.",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.24529292929292928,
+          "width": 0.3762794117647058,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.2591300505050505,
+          "width": 0.39256045751633983,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.2729671717171717,
+          "width": 0.20405718954248364,
+          "height": 0.013969696969696965,
+          "page": 2
+        }
+      ]
+    },
+    {
+      "text": "Significant Otter is an Apple Watch and iPhone app that enables two people to send animated otter characters to each other based on their biosignals.",
+      "bboxes": [
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8541212121212122,
+          "width": 0.392563725490196,
+          "height": 0.011320707070706981,
+          "page": 2
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8679583333333334,
+          "width": 0.39255392156862734,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8817941919191918,
+          "width": 0.11220588235294127,
+          "height": 0.011320707070707092,
+          "page": 2
+        }
+      ]
+    },
+    {
+      "text": "To our knowledge, only a few studies have compared the presence and absence of biosignals in social contexts [9, 26, 43, 46].",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.49435858585858583,
+          "width": 0.3787499999999999,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.508195707070707,
+          "width": 0.3948169934640523,
+          "height": 0.011320707070707092,
+          "page": 2
+        }
+      ]
+    },
+    {
+      "text": "ON affect social connection between couples?",
+      "bboxes": [
+        {
+          "left": 0.5594183006535948,
+          "top": 0.6810909090909091,
+          "width": 0.2740604575163399,
+          "height": 0.011320707070707092,
+          "page": 2
+        }
+      ]
+    },
+    {
+      "text": "RQ1: How does shifting from sensing OFF to sensing ON affect the stages of communication (sending, understanding, responding) between couples?",
+      "bboxes": [
+        {
+          "left": 0.5594183006535948,
+          "top": 0.6223181818181818,
+          "width": 0.3152630718954247,
+          "height": 0.013935606060606176,
+          "page": 2
+        },
+        {
+          "left": 0.5594183006535948,
+          "top": 0.6361540404040404,
+          "width": 0.3143986928104574,
+          "height": 0.011320707070706981,
+          "page": 2
+        },
+        {
+          "left": 0.5594183006535948,
+          "top": 0.6499911616161617,
+          "width": 0.2746764705882353,
+          "height": 0.011320707070707092,
+          "page": 2
+        }
+      ]
+    },
+    {
+      "text": "There are four types of state animations: emotions, activities, greetings, and affection.",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.5107323232323232,
+          "width": 0.37788888888888883,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5245694444444444,
+          "width": 0.14888725490196075,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "We ran two pilot studies as initial tests for Significant Otter.",
+      "bboxes": [
+        {
+          "left": 0.08720261437908497,
+          "top": 0.4216300505050505,
+          "width": 0.36582843137254906,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "To investigate our research questions, we created two study versions 3 of the Significant Otter app: sensing ON and sensing OFF, where biosignals are either sensed or not sensed, respectively.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.162270202020202,
+          "width": 0.3787614379084967,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.17413636363636364,
+          "width": 0.3941748366013072,
+          "height": 0.013291666666666674,
+          "page": 3
+        },
+        {
+          "left": 0.08736437908496732,
+          "top": 0.18994444444444444,
+          "width": 0.3600539215686275,
+          "height": 0.011320707070707037,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "Significant Otter presents an interpreted representation for biosignals: animated avatars that correspond to different emotional and physical states.",
+      "bboxes": [
+        {
+          "left": 0.6690049019607843,
+          "top": 0.38619949494949496,
+          "width": 0.2430898692810457,
+          "height": 0.01396969696969702,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.4000366161616162,
+          "width": 0.39256209150326793,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.4138737373737374,
+          "width": 0.23754575163398695,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "People can send two types of animations to their partner: states and reacts .",
+      "bboxes": [
+        {
+          "left": 0.5195343137254902,
+          "top": 0.2939229797979798,
+          "width": 0.39256045751633994,
+          "height": 0.013935606060606065,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.30776010101010104,
+          "width": 0.06784313725490199,
+          "height": 0.01393560606060601,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "We included 14 different reacts to cover a variety of responses people could have to their partners state.",
+      "bboxes": [
+        {
+          "left": 0.6713856209150326,
+          "top": 0.46359469696969696,
+          "width": 0.2409918300653595,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.4774305555555556,
+          "width": 0.3948202614379086,
+          "height": 0.011320707070707092,
+          "page": 4
+        }
+      ]
+    },
+    {
+      "text": "Based on feedback from the first pilot study, we reduced the number of reacts to increase usability.",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.5881275252525253,
+          "width": 0.3762745098039215,
+          "height": 0.011320707070706981,
+          "page": 4
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6019646464646464,
+          "width": 0.22049509803921574,
+          "height": 0.011320707070707092,
+          "page": 4
+        }
+      ]
+    },
+    {
+      "text": "People can share their otter state through the main screen of Significant Otter on their watch or phone.",
+      "bboxes": [
+        {
+          "left": 0.5195343137254902,
+          "top": 0.840284090909091,
+          "width": 0.39504084967320263,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8541212121212122,
+          "width": 0.23286111111111119,
+          "height": 0.011320707070706981,
+          "page": 4
+        }
+      ]
+    },
+    {
+      "text": "We show multiple shareable states due to limitations in detecting emotions from signals available on the watch (e.g., low granularity of heart rate, determining valence), as well as recommendations from prior work [42] to explore systems that collaborate with the user to determine their state.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.48080555555555554,
+          "width": 0.3762794117647058,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.49464267676767676,
+          "width": 0.3929379084967321,
+          "height": 0.011320707070707037,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.508479797979798,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5223169191919192,
+          "width": 0.392562091503268,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5361540404040405,
+          "width": 0.1771911764705883,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ]
+    },
+    {
+      "text": "When people receive their partners otter, they have the option to react within the app.",
+      "bboxes": [
+        {
+          "left": 0.08720261437908497,
+          "top": 0.7199734848484849,
+          "width": 0.39326143790849666,
+          "height": 0.011320707070706981,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7338106060606061,
+          "width": 0.11888398692810458,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ]
+    },
+    {
+      "text": "People are notified when their partner sends them their state otter.",
+      "bboxes": [
+        {
+          "left": 0.7061797385620915,
+          "top": 0.5285113636363636,
+          "width": 0.20839215686274504,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5423484848484849,
+          "width": 0.18973039215686271,
+          "height": 0.011320707070706981,
+          "page": 5
+        }
+      ]
+    },
+    {
+      "text": "People are notified periodically during the day (at least 45 minutes apart, to minimize invasiveness) with a Message from your otter notification (see Figure 6(b)).",
+      "bboxes": [
+        {
+          "left": 0.6888055555555556,
+          "top": 0.7157512626262627,
+          "width": 0.22329575163398696,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7295883838383838,
+          "width": 0.39256045751633983,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.5178790849673203,
+          "top": 0.7434242424242424,
+          "width": 0.33809477124183007,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ]
+    },
+    {
+      "text": "People are notified when their partner reacts to a state that they sent.",
+      "bboxes": [
+        {
+          "left": 0.6832271241830066,
+          "top": 0.6359684343434343,
+          "width": 0.229140522875817,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6498055555555555,
+          "width": 0.18733823529411764,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ]
+    },
+    {
+      "text": "Participants took a screening survey to ensure that they met the study requirements.",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.7117260101010101,
+          "width": 0.3762745098039215,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7255618686868687,
+          "width": 0.14710947712418299,
+          "height": 0.011320707070707092,
+          "page": 6
+        }
+      ]
+    },
+    {
+      "text": "To test Significant Otter, we deployed the sensing OFF and ON versions of the app in a one-month field study.",
+      "bboxes": [
+        {
+          "left": 0.0874656862745098,
+          "top": 0.7621679292929292,
+          "width": 0.3929967320261438,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.08753921568627451,
+          "top": 0.7760050505050505,
+          "width": 0.2783986928104576,
+          "height": 0.011320707070707092,
+          "page": 6
+        }
+      ]
+    },
+    {
+      "text": "Recruitment took place from late March to early April 2020, during the COVID-19 stay-at-home orders for many US states.",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8264469696969697,
+          "width": 0.39256045751633994,
+          "height": 0.011320707070706981,
+          "page": 6
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.840284090909091,
+          "width": 0.31560294117647064,
+          "height": 0.011320707070707092,
+          "page": 6
+        }
+      ]
+    },
+    {
+      "text": "We conducted a one-month study deploying Significant Otter in the wild with couples who were Apple Watch users.",
+      "bboxes": [
+        {
+          "left": 0.08720261437908497,
+          "top": 0.7434242424242424,
+          "width": 0.39326633986928106,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7572613636363636,
+          "width": 0.3234183006535948,
+          "height": 0.011320707070707092,
+          "page": 7
+        }
+      ]
+    },
+    {
+      "text": "The couples we recruited were diverse in several dimensions, including their backgrounds, careers, demographics, and length of relationship.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.47307449494949494,
+          "width": 0.37788888888888894,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.48691161616161616,
+          "width": 0.39255718954248364,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5007487373737374,
+          "width": 0.07610947712418299,
+          "height": 0.011320707070707092,
+          "page": 7
+        }
+      ]
+    },
+    {
+      "text": "Two weeks after their onboarding session, each participant individually completed a 30-60 minute midstudy session over video call.",
+      "bboxes": [
+        {
+          "left": 0.6797826797385621,
+          "top": 0.7227285353535353,
+          "width": 0.23478594771241823,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7365656565656565,
+          "width": 0.39503594771241823,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7504027777777778,
+          "width": 0.1726323529411764,
+          "height": 0.011320707070707092,
+          "page": 7
+        }
+      ]
+    },
+    {
+      "text": "Each couple completed a 30 minute onboarding session with one of the researchers over a video call.",
+      "bboxes": [
+        {
+          "left": 0.6888921568627451,
+          "top": 0.4315643939393939,
+          "width": 0.22320424836601305,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.4454002525252525,
+          "width": 0.3948202614379085,
+          "height": 0.011320707070707092,
+          "page": 7
+        }
+      ]
+    },
+    {
+      "text": "Participants could freely use Significant Otter as little or as much as they wanted during the study.",
+      "bboxes": [
+        {
+          "left": 0.7473022875816994,
+          "top": 0.5771464646464647,
+          "width": 0.16478594771241828,
+          "height": 0.011320707070706981,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5909835858585859,
+          "width": 0.392563725490196,
+          "height": 0.011320707070706981,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.604820707070707,
+          "width": 0.03540522875816998,
+          "height": 0.011320707070707092,
+          "page": 7
+        }
+      ]
+    },
+    {
+      "text": "Table 3: Participant couples.",
+      "bboxes": [
+        {
+          "left": 0.40655718954248365,
+          "top": 0.1066439393939394,
+          "width": 0.1864052287581699,
+          "height": 0.011320707070707065,
+          "page": 7
+        }
+      ]
+    },
+    {
+      "text": "During the study, we made updates to the app and some study materials to address issues that emerged as participants used the app.",
+      "bboxes": [
+        {
+          "left": 0.37683496732026145,
+          "top": 0.4559911616161616,
+          "width": 0.10523692810457519,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08736437908496732,
+          "top": 0.4698282828282828,
+          "width": 0.3931078431372549,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.48366540404040403,
+          "width": 0.29744607843137255,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "We analyzed transcripts of the mid-study and exit interviews using a grounded theory approach [58], focused on how participants perceptions and behaviors shifted between the two versions of the app.",
+      "bboxes": [
+        {
+          "left": 0.08720261437908497,
+          "top": 0.6814696969696971,
+          "width": 0.39326470588235296,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6953068181818182,
+          "width": 0.3941274509803922,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7091439393939395,
+          "width": 0.39256699346405227,
+          "height": 0.011320707070706981,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7229810606060606,
+          "width": 0.024905228758169945,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "Our results suggest that sharing sensed states can promote efficient and personal communication between couples, and help them feel connected with each other.",
+      "bboxes": [
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5858762626262627,
+          "width": 0.39256045751633994,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5997133838383839,
+          "width": 0.39256045751633983,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6135505050505051,
+          "width": 0.15766503267973864,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "Easier sharing.",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.7555176767676768,
+          "width": 0.08717973856209149,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "Two weeks after their mid-study session, each participant individually completed a 30-60 minute exit session over video call.",
+      "bboxes": [
+        {
+          "left": 0.2057042483660131,
+          "top": 0.2537828282828283,
+          "width": 0.2747614379084968,
+          "height": 0.011320707070707037,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.2676199494949495,
+          "width": 0.3928333333333333,
+          "height": 0.011320707070707037,
+          "page": 8
+        },
+        {
+          "left": 0.08753921568627451,
+          "top": 0.2814570707070707,
+          "width": 0.061673202614379086,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "In this section, we describe how participants used Significant Otter during the study and provide detailed insights around the reasons behind their usage for both versions of the app.",
+      "bboxes": [
+        {
+          "left": 0.5195343137254902,
+          "top": 0.2759570707070707,
+          "width": 0.3928333333333335,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.2897941919191919,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.30363131313131314,
+          "width": 0.2710212418300654,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "Our results suggest that biosignals helped reduce this ambiguity, where participants no longer assigned different meanings to the animations.",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.13864520202020203,
+          "width": 0.37788725490196073,
+          "height": 0.011320707070707065,
+          "page": 9
+        },
+        {
+          "left": 0.5189918300653594,
+          "top": 0.15248232323232325,
+          "width": 0.3931013071895426,
+          "height": 0.011320707070707065,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.16631944444444444,
+          "width": 0.07113398692810458,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "Seeing their own sensed state also encouraged them to reflect on how they were feeling, and be more honest with both themselves and their partner by sharing it with them.",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.7987727272727273,
+          "width": 0.3762794117647058,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8126098484848485,
+          "width": 0.39255555555555544,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8264469696969697,
+          "width": 0.2580081699346406,
+          "height": 0.011320707070706981,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "Less ambiguity.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.574239898989899,
+          "width": 0.08973039215686274,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "The smartwatch prompted participants with notifications that became personalized suggestions about how they were feeling with sensing ON, rather than dismissable nudges to use the app with sensing OFF.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.39524242424242423,
+          "width": 0.3762745098039215,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.40907954545454545,
+          "width": 0.3925604575163399,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.42291666666666666,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4367525252525253,
+          "width": 0.07684150326797386,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "This was reinforced by the smartwatch, which participants were more compelled to use in the latter half of the study in order for the sensing feature to work.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.26491919191919194,
+          "width": 0.3762794117647059,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.27875631313131316,
+          "width": 0.39256045751633994,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.2925934343434344,
+          "width": 0.14787091503267974,
+          "height": 0.011320707070707037,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "Subjective understandings of sensing and emotions.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.8706073232323231,
+          "width": 0.2898725490196078,
+          "height": 0.011320707070707092,
+          "page": 10
+        }
+      ]
+    },
+    {
+      "text": "Conversely, participants who perceived the app as inaccurate tended to expect exactly one accurate state, giving less flexibility for the app to suggest other states that may not match their feelings.",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.40964646464646465,
+          "width": 0.3762745098039215,
+          "height": 0.011320707070707092,
+          "page": 10
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.42348358585858586,
+          "width": 0.39294444444444443,
+          "height": 0.011320707070707092,
+          "page": 10
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.4373194444444445,
+          "width": 0.3948153594771242,
+          "height": 0.011320707070706981,
+          "page": 10
+        }
+      ]
+    },
+    {
+      "text": "As a system that recommends a users current state, Significant Otter with sensing ON experienced challenges in how participants perceived and trusted the sensed states.",
+      "bboxes": [
+        {
+          "left": 0.0873921568627451,
+          "top": 0.6267184343434343,
+          "width": 0.39307189542483656,
+          "height": 0.011320707070707092,
+          "page": 10
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6405555555555555,
+          "width": 0.39255718954248364,
+          "height": 0.011320707070706981,
+          "page": 10
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6543926767676768,
+          "width": 0.23503267973856212,
+          "height": 0.011320707070707092,
+          "page": 10
+        }
+      ]
+    },
+    {
+      "text": "This motivated a few participants to be more thoughtful and responsive in their reactions to their partner, such as reacting more quickly or deliberately.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.28014141414141414,
+          "width": 0.3762745098039215,
+          "height": 0.011320707070707037,
+          "page": 10
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.29397853535353535,
+          "width": 0.3925604575163399,
+          "height": 0.011320707070707092,
+          "page": 10
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.30781565656565657,
+          "width": 0.132452614379085,
+          "height": 0.011320707070707092,
+          "page": 10
+        }
+      ]
+    },
+    {
+      "text": "Agency and effort in communicating feelings.",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.7420252525252525,
+          "width": 0.2708741830065359,
+          "height": 0.011320707070707092,
+          "page": 10
+        }
+      ]
+    },
+    {
+      "text": "P36, who frequently used the quick reacts with sensing OFF, used them less with sensing ON.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.425685606060606,
+          "width": 0.3762794117647058,
+          "height": 0.011320707070707092,
+          "page": 10
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.43952272727272723,
+          "width": 0.16750653594771248,
+          "height": 0.011320707070707092,
+          "page": 10
+        }
+      ]
+    },
+    {
+      "text": "While having a separate platform like Significant Otter dedicated to sharing states can create an intimate experience for couples, the sensed otter animations could easily integrate with existing platforms as enhanced emojis.",
+      "bboxes": [
+        {
+          "left": 0.8200604575163399,
+          "top": 0.42989141414141413,
+          "width": 0.09203758169934617,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.44372853535353535,
+          "width": 0.39255882352941174,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.45756439393939397,
+          "width": 0.39503267973856215,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.4714015151515152,
+          "width": 0.39256045751633994,
+          "height": 0.011320707070706981,
+          "page": 11
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.4852386363636364,
+          "width": 0.04515522875816991,
+          "height": 0.011320707070706981,
+          "page": 11
+        }
+      ]
+    },
+    {
+      "text": "Overall, participants viewed both versions of Significant Otter as a lightweight communication channel that enabled them to easily to keep in touch with their partner and let each other know how they are doing.",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7295883838383838,
+          "width": 0.3925571895424837,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7434242424242424,
+          "width": 0.3929362745098039,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7572613636363636,
+          "width": 0.3931045751633987,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7710984848484849,
+          "width": 0.09395261437908496,
+          "height": 0.011320707070707092,
+          "page": 11
+        }
+      ]
+    },
+    {
+      "text": "For most participants, Significant Otter with sensing ON mitigated some of the issues with sensing OFF and enhanced participants ability to connect with each other.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.8541212121212122,
+          "width": 0.3787549019607843,
+          "height": 0.011320707070706981,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8679583333333334,
+          "width": 0.3950294117647059,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8817941919191918,
+          "width": 0.25528758169934646,
+          "height": 0.011320707070707092,
+          "page": 11
+        }
+      ]
+    },
+    {
+      "text": "As part of existing platforms, biosignals would primarily function as a means to augment communication as opposed to acting as standalone messages like in Significant Otter.",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.6097714646464647,
+          "width": 0.3787565359477123,
+          "height": 0.011320707070706981,
+          "page": 11
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6236085858585859,
+          "width": 0.39256045751633983,
+          "height": 0.011320707070706981,
+          "page": 11
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6374457070707071,
+          "width": 0.27168627450980387,
+          "height": 0.011320707070706981,
+          "page": 11
+        }
+      ]
+    },
+    {
+      "text": "Though the reduced effort made keeping in touch easier, effort is an important quality of communication that contributes to meaningful connection and close relationships [30, 31].",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.512324494949495,
+          "width": 0.3762777777777778,
+          "height": 0.011320707070706981,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5261616161616162,
+          "width": 0.395031045751634,
+          "height": 0.011320707070706981,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5399987373737374,
+          "width": 0.294812091503268,
+          "height": 0.011320707070707092,
+          "page": 11
+        }
+      ]
+    },
+    {
+      "text": "We found that varying perceptions of accuracy and agency over the animations affected participants ability to use the sensing ON version of the app.",
+      "bboxes": [
+        {
+          "left": 0.7965277777777778,
+          "top": 0.840284090909091,
+          "width": 0.11803758169934642,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8541212121212122,
+          "width": 0.39502941176470585,
+          "height": 0.011320707070706981,
+          "page": 11
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8679583333333334,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8817941919191918,
+          "width": 0.025478758169934723,
+          "height": 0.011320707070707092,
+          "page": 11
+        }
+      ]
+    },
+    {
+      "text": "Another participant noticed that by simply accepting and sharing the systems recommendation, he put less thought into curating a message to send to his partner.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.33909469696969696,
+          "width": 0.3762794117647058,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3529318181818182,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3667676767676768,
+          "width": 0.2033578431372549,
+          "height": 0.011320707070707092,
+          "page": 11
+        }
+      ]
+    },
+    {
+      "text": "Oneparticipantwarnedagainstthis power ofsuggestion,where the system could influence them into thinking they felt a certain way.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.15202651515151516,
+          "width": 0.3764656862745098,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.16586363636363638,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.08736437908496732,
+          "top": 0.1797007575757576,
+          "width": 0.028109477124183005,
+          "height": 0.011320707070707037,
+          "page": 11
+        }
+      ]
+    },
+    {
+      "text": "Future directions in this area should investigate new ways for expressive biosignals systems to collaborate with peoples subjective understanding of their own state.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.3006401515151515,
+          "width": 0.3787630718954249,
+          "height": 0.011320707070707092,
+          "page": 12
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3144772727272727,
+          "width": 0.39255392156862745,
+          "height": 0.011320707070707037,
+          "page": 12
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.32831439393939393,
+          "width": 0.20183496732026146,
+          "height": 0.011320707070707092,
+          "page": 12
+        }
+      ]
+    },
+    {
+      "text": "Finally, researchers should consider how peoples understanding of their state and expectations for the system may be affected by different types of expressive biosignals.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.6050542929292929,
+          "width": 0.3762794117647059,
+          "height": 0.011320707070707092,
+          "page": 12
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6188914141414141,
+          "width": 0.39293790849673205,
+          "height": 0.011320707070707092,
+          "page": 12
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6327285353535353,
+          "width": 0.2395964052287582,
+          "height": 0.011320707070707092,
+          "page": 12
+        }
+      ]
+    },
+    {
+      "text": "Finally, while we recruited a diverse sample of participants from different backgrounds, participants were self-selected and may have shown a greater interest in wearable and couple-specific technologies.",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.5773813131313131,
+          "width": 0.3762794117647058,
+          "height": 0.011320707070707092,
+          "page": 12
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5912171717171718,
+          "width": 0.39256045751633994,
+          "height": 0.011320707070706981,
+          "page": 12
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6050542929292929,
+          "width": 0.39503267973856215,
+          "height": 0.011320707070707092,
+          "page": 12
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6188914141414141,
+          "width": 0.027102941176470607,
+          "height": 0.011320707070707092,
+          "page": 12
+        }
+      ]
+    },
+    {
+      "text": "Though our findings elucidate the value of expressive biosignals in communication, there are several limitations to this work.",
+      "bboxes": [
+        {
+          "left": 0.0874656862745098,
+          "top": 0.7987727272727273,
+          "width": 0.3930049019607843,
+          "height": 0.011320707070707092,
+          "page": 12
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8126098484848485,
+          "width": 0.33903431372549014,
+          "height": 0.011320707070707092,
+          "page": 12
+        }
+      ]
+    },
+    {
+      "text": "We ran a month-long within-subjects field study on Significant Otter, an Apple Watch and iPhone app that enables biosignals sharing through animated otter messages, to explore the role of biosignals in communication.",
+      "bboxes": [
+        {
+          "left": 0.5188316993464052,
+          "top": 0.8264469696969697,
+          "width": 0.39574019607843147,
+          "height": 0.011320707070706981,
+          "page": 12
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.840284090909091,
+          "width": 0.39256045751633994,
+          "height": 0.011320707070707092,
+          "page": 12
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8541212121212122,
+          "width": 0.39256209150326793,
+          "height": 0.011320707070706981,
+          "page": 12
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8679583333333334,
+          "width": 0.1107532679738561,
+          "height": 0.011320707070707092,
+          "page": 12
+        }
+      ]
+    },
+    {
+      "text": "We would like to thank John Tang and Mayank Goel for their early suggestions that helped shape our study design, as well as their feedback on our results.",
+      "bboxes": [
+        {
+          "left": 0.08720261437908497,
+          "top": 0.2673055555555555,
+          "width": 0.3936372549019608,
+          "height": 0.011320707070707092,
+          "page": 13
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.28114267676767674,
+          "width": 0.39283333333333337,
+          "height": 0.011320707070707092,
+          "page": 13
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.29497979797979795,
+          "width": 0.1450751633986928,
+          "height": 0.011320707070707092,
+          "page": 13
+        }
+      ]
+    },
+    {
+      "text": "STATE otters are the otters you see on your main app screen that you can send to your partner to initiate an interaction.",
+      "bboxes": [
+        {
+          "left": 0.13659477124183006,
+          "top": 0.23848863636363637,
+          "width": 0.7202205882352941,
+          "height": 0.013194444444444453,
+          "page": 15
+        },
+        {
+          "left": 0.13659477124183006,
+          "top": 0.2564886363636364,
+          "width": 0.19167647058823528,
+          "height": 0.013194444444444453,
+          "page": 15
+        }
+      ]
+    },
+    {
+      "text": "Our records indicate that you received the following state otter animation from your partner today around (time).",
+      "bboxes": [
+        {
+          "left": 0.13659477124183006,
+          "top": 0.8325176767676769,
+          "width": 0.683186274509804,
+          "height": 0.013194444444444398,
+          "page": 15
+        },
+        {
+          "left": 0.13659477124183006,
+          "top": 0.8505176767676768,
+          "width": 0.15276633986928106,
+          "height": 0.013195707070707052,
+          "page": 15
+        }
+      ]
+    },
+    {
+      "text": "Our records indicate that your partner reacted to the state otter above with this react otter.",
+      "bboxes": [
+        {
+          "left": 0.13659477124183006,
+          "top": 0.5985063131313131,
+          "width": 0.6775,
+          "height": 0.013194444444444398,
+          "page": 15
+        }
+      ]
+    },
+    {
+      "text": "Receiving your Partners State Otter",
+      "bboxes": [
+        {
+          "left": 0.13659477124183006,
+          "top": 0.8145164141414141,
+          "width": 0.2931519607843137,
+          "height": 0.013194444444444509,
+          "page": 15
+        }
+      ]
+    },
+    {
+      "text": "Our records indicate that you sent the following state otter animation today, around (time).",
+      "bboxes": [
+        {
+          "left": 0.13659477124183006,
+          "top": 0.3104911616161616,
+          "width": 0.6775098039215687,
+          "height": 0.013195707070707108,
+          "page": 15
+        }
+      ]
+    },
+    {
+      "text": "CHI 21, May 813, 2021, Yokohama, Japan",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.07831565656565657,
+          "width": 0.200702614379085,
+          "height": 0.008805555555555553,
+          "page": 15
+        }
+      ]
+    },
+    {
+      "text": "Our records indicate that you reacted with the following animation: <GIF of the react animation sent>",
+      "bboxes": [
+        {
+          "left": 0.13659477124183006,
+          "top": 0.22138762626262626,
+          "width": 0.49912091503267964,
+          "height": 0.013194444444444425,
+          "page": 16
+        },
+        {
+          "left": 0.13659477124183006,
+          "top": 0.23938762626262627,
+          "width": 0.25431045751633985,
+          "height": 0.013195707070707052,
+          "page": 16
+        }
+      ]
+    },
+    {
+      "text": "Now were going to talk about the state otters you sent to your partner, that they may or may not have reacted to.",
+      "bboxes": [
+        {
+          "left": 0.13659477124183006,
+          "top": 0.49230050505050504,
+          "width": 0.7240049019607844,
+          "height": 0.013194444444444398,
+          "page": 17
+        },
+        {
+          "left": 0.13659477124183006,
+          "top": 0.5103017676767677,
+          "width": 0.12242483660130721,
+          "height": 0.013194444444444398,
+          "page": 17
+        }
+      ]
+    },
+    {
+      "text": "Now were going to talk about the otters you received from your partner, and may or may not have reacted to.",
+      "bboxes": [
+        {
+          "left": 0.13659477124183006,
+          "top": 0.7983156565656565,
+          "width": 0.6974150326797385,
+          "height": 0.013194444444444509,
+          "page": 17
+        },
+        {
+          "left": 0.13659477124183006,
+          "top": 0.8163169191919192,
+          "width": 0.12242483660130721,
+          "height": 0.013194444444444398,
+          "page": 17
+        }
+      ]
+    },
+    {
+      "text": "Communication Behavio r",
+      "bboxes": [
+        {
+          "left": 0.13659477124183006,
+          "top": 0.40139646464646467,
+          "width": 0.2058218954248366,
+          "height": 0.013194444444444453,
+          "page": 18
+        }
+      ]
+    },
+    {
+      "text": "Sharing Behavior",
+      "bboxes": [
+        {
+          "left": 0.13659477124183006,
+          "top": 0.40139646464646467,
+          "width": 0.1413464052287582,
+          "height": 0.013194444444444453,
+          "page": 19
+        }
+      ]
+    },
+    {
+      "text": "If yes, please explain.",
+      "bboxes": [
+        {
+          "left": 0.42212908496732027,
+          "top": 0.41939646464646463,
+          "width": 0.16416830065359478,
+          "height": 0.013195707070707108,
+          "page": 16
+        }
+      ]
+    },
+    {
+      "text": "They reacted with (describe any react otters).",
+      "bboxes": [
+        {
+          "left": 0.7153218954248366,
+          "top": 0.5283017676767677,
+          "width": 0.13473692810457516,
+          "height": 0.013195707070707052,
+          "page": 17
+        },
+        {
+          "left": 0.1925032679738562,
+          "top": 0.5463030303030303,
+          "width": 0.20303758169934638,
+          "height": 0.013194444444444398,
+          "page": 17
+        }
+      ]
+    },
+    {
+      "text": "How did this compare to the times you reacted to your partner in the second half of the study?",
+      "bboxes": [
+        {
+          "left": 0.4515196078431372,
+          "top": 0.13138257575757575,
+          "width": 0.40800653594771236,
+          "height": 0.013194444444444425,
+          "page": 20
+        },
+        {
+          "left": 0.1925032679738562,
+          "top": 0.14938383838383837,
+          "width": 0.2951454248366013,
+          "height": 0.013194444444444453,
+          "page": 20
+        }
+      ]
+    },
+    {
+      "text": "How did you talk about it?",
+      "bboxes": [
+        {
+          "left": 0.7191895424836602,
+          "top": 0.20338636363636362,
+          "width": 0.12524999999999997,
+          "height": 0.013194444444444453,
+          "page": 20
+        },
+        {
+          "left": 0.1925032679738562,
+          "top": 0.22138762626262626,
+          "width": 0.06549509803921572,
+          "height": 0.013194444444444425,
+          "page": 20
         }
       ]
     }
@@ -12696,6 +14841,70 @@
           "page": 13
         }
       ]
+    },
+    {
+      "text": "We validated our survey instruments through a series of cognitive interviews.",
+      "bboxes": [
+        {
+          "left": 0.5188316993464052,
+          "top": 0.6539545454545455,
+          "width": 0.39325816993464047,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6677916666666667,
+          "width": 0.06766666666666676,
+          "height": 0.011320707070707092,
+          "page": 4
+        }
+      ]
+    },
+    {
+      "text": "Unlike Study 1, where a human decision-maker is advised by either a human or an AI advisor, Study 2 explores a setting that has yet to be implemented in the real-world.",
+      "bboxes": [
+        {
+          "left": 0.5195343137254902,
+          "top": 0.4325631313131313,
+          "width": 0.39283333333333337,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.4464002525252525,
+          "width": 0.39256045751633983,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.4602373737373737,
+          "width": 0.205359477124183,
+          "height": 0.011320707070707092,
+          "page": 4
+        }
+      ]
+    },
+    {
+      "text": "Scale) [92], whose subscale addressed artificial intelligence programs rather than robots to accommodate the COMPAS tool.",
+      "bboxes": [
+        {
+          "left": 0.5195343137254902,
+          "top": 0.3772146464646465,
+          "width": 0.39503921568627465,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.3910517676767677,
+          "width": 0.3807647058823529,
+          "height": 0.011320707070707037,
+          "page": 4
+        }
+      ]
     }
   ],
   "2103.00912": [
@@ -15454,6 +17663,18 @@
           "page": 9
         }
       ]
+    },
+    {
+      "text": "In this paper we use a Variational Autoencoder (VAE).",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.22290909090909092,
+          "width": 0.3129754901960783,
+          "height": 0.011320707070707037,
+          "page": 3
+        }
+      ]
     }
   ],
   "2102.09087": [
@@ -17938,6 +20159,1833 @@
           "width": 0.6705751633986929,
           "height": 0.011320707070707092,
           "page": 13
+        }
+      ]
+    }
+  ],
+  "2108.11259": [
+    {
+      "text": "The key contributions of this work are:",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.641179292929293,
+          "width": 0.23425490196078425,
+          "height": 0.011320707070706981,
+          "page": 0
+        }
+      ]
+    },
+    {
+      "text": "Conversational agentsentities with some degree of intelligence and the capability of natural language discourseare becoming a prevalent tool for students within computer-mediated learning environments.",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7058838383838383,
+          "width": 0.394124183006536,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.719719696969697,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7335568181818182,
+          "width": 0.39255555555555555,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7473939393939394,
+          "width": 0.08775163398692808,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ]
+    },
+    {
+      "text": "Teachable agents have the ability to be taught and are of particular interest in education, as learning-by-teaching can be a more enriching experience than learning by oneself [14].",
+      "bboxes": [
+        {
+          "left": 0.51909477124183,
+          "top": 0.7875732323232324,
+          "width": 0.39327614379084963,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8014103535353535,
+          "width": 0.39502941176470585,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8152474747474748,
+          "width": 0.28613235294117645,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ]
+    },
+    {
+      "text": "Previous studies have highlighted the usefulness of pedagogical agents that have socially-oriented conversations with students, e.g., reassuring them [27], initiating small-talk [26], and engaging in mutual self-disclosure [53], leading to more positive experiences and promoting learning gains.",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.36443939393939395,
+          "width": 0.3762777777777778,
+          "height": 0.011320707070706981,
+          "page": 0
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.3782752525252525,
+          "width": 0.39416830065359487,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.39211237373737373,
+          "width": 0.39255228758169936,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.40594949494949495,
+          "width": 0.39255392156862734,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.41978661616161617,
+          "width": 0.18160947712418307,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ]
+    },
+    {
+      "text": "ACM Reference Format:",
+      "bboxes": [
+        {
+          "left": 0.08742320261437908,
+          "top": 0.5997323232323233,
+          "width": 0.14214705882352943,
+          "height": 0.010063131313131302,
+          "page": 0
+        }
+      ]
+    },
+    {
+      "text": "CHI 21, May 813, 2021, Yokohama, Japan",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8249848484848485,
+          "width": 0.19444607843137257,
+          "height": 0.008805555555555511,
+          "page": 0
+        }
+      ]
+    },
+    {
+      "text": "Humour is an integral part of human communication and can be expressed verbally (produced by means of language or text, e.g., jokes, comics) and/or non-verbally (e.g., facial expression, gesture), intended to elicit responses such as laughter and mirth [36].",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.30327777777777776,
+          "width": 0.395031045751634,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.317114898989899,
+          "width": 0.3941683006535948,
+          "height": 0.011320707070707037,
+          "page": 1
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3309520202020202,
+          "width": 0.39502941176470585,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3447891414141414,
+          "width": 0.339624183006536,
+          "height": 0.011320707070707092,
+          "page": 1
+        }
+      ]
+    },
+    {
+      "text": "In the field of personality research, humour as a part of an individuals character and the role it plays on the way they engage with others, has generated growing interest.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.46932196969696965,
+          "width": 0.37875490196078443,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.48315909090909087,
+          "width": 0.3925571895424837,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.08736437908496732,
+          "top": 0.4969962121212121,
+          "width": 0.2705915032679739,
+          "height": 0.011320707070707037,
+          "page": 1
+        }
+      ]
+    },
+    {
+      "text": "Little published research exists on using humour with social agents in learning contexts.",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.6388257575757575,
+          "width": 0.3762745098039215,
+          "height": 0.011320707070707203,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6526628787878788,
+          "width": 0.16136928104575166,
+          "height": 0.011320707070707092,
+          "page": 1
+        }
+      ]
+    },
+    {
+      "text": "Research on humour in agents has also found the style and form to impact perception and interaction in various ways.",
+      "bboxes": [
+        {
+          "left": 0.5195343137254902,
+          "top": 0.1268560606060606,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.14069318181818183,
+          "width": 0.33100980392156865,
+          "height": 0.011320707070707065,
+          "page": 1
+        }
+      ]
+    },
+    {
+      "text": "The style of humour used can impact the way in which a teacher is perceived.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.6768775252525252,
+          "width": 0.3765669934640523,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6907146464646465,
+          "width": 0.07563235294117647,
+          "height": 0.011320707070706981,
+          "page": 1
+        }
+      ]
+    },
+    {
+      "text": "Morkes, Kernal, and Nass [40] found that when participants communicated with a chatbot while working together on a task, but thought they were interacting with another human, the use of humour in on-task conversation lead participants to rate their conversation partner as more likable and reported greater cooperation with, and similarity to, their partner.",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.30673737373737375,
+          "width": 0.3762875816993464,
+          "height": 0.011320707070707037,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.32057449494949497,
+          "width": 0.39417810457516345,
+          "height": 0.011320707070707037,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.33441161616161613,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.34824873737373735,
+          "width": 0.39283660130718956,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.36208585858585857,
+          "width": 0.39503431372549025,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.3759229797979798,
+          "width": 0.2579477124183006,
+          "height": 0.011320707070707092,
+          "page": 1
+        }
+      ]
+    },
+    {
+      "text": "Although prior work indicates the value of humour expression by pedagogical agents, to the best of",
+      "bboxes": [
+        {
+          "left": 0.7332369281045752,
+          "top": 0.8705959595959595,
+          "width": 0.17885294117647044,
+          "height": 0.011320707070707092,
+          "page": 1
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8844318181818183,
+          "width": 0.39256045751633983,
+          "height": 0.011320707070707092,
+          "page": 1
+        }
+      ]
+    },
+    {
+      "text": "Using the Curiosity Notebook [33], participants taught a virtual agent, Sigma, how to classify rocks.",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.40784217171717174,
+          "width": 0.3925571895424837,
+          "height": 0.011332070707070707,
+          "page": 2
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.42167929292929296,
+          "width": 0.2066977124183007,
+          "height": 0.011320707070706981,
+          "page": 2
+        }
+      ]
+    },
+    {
+      "text": "The text in the articles is adapted from https://geology.com.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.6430707070707071,
+          "width": 0.3499330065359477,
+          "height": 0.011320707070707092,
+          "page": 2
+        }
+      ]
+    },
+    {
+      "text": "Describe involves the agent asking for the name of a rock, what rock type it belongs to, and selecting a sentence from the articles with information on what feature(s) or characteristic(s) help classify it.",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.6076919191919191,
+          "width": 0.3762794117647059,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6215290404040403,
+          "width": 0.39255555555555544,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.5189918300653594,
+          "top": 0.6353661616161616,
+          "width": 0.3934803921568628,
+          "height": 0.011320707070707203,
+          "page": 2
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6492032828282828,
+          "width": 0.011586601307189581,
+          "height": 0.011320707070707092,
+          "page": 2
+        }
+      ]
+    },
+    {
+      "text": "When the participant is ready to teach, they select one of seven buttons split into Teach (Describe, Explain, or Compare), Check (Correct or Quiz) and Entertain (Fun Fact or Tell Joke) groupings, which initiates the agent to begin a conversation.",
+      "bboxes": [
+        {
+          "left": 0.19997222222222222,
+          "top": 0.8014103535353535,
+          "width": 0.2829754901960785,
+          "height": 0.011320707070707092,
+          "page": 2
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8152474747474748,
+          "width": 0.3928349673202615,
+          "height": 0.01133207070707054,
+          "page": 2
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8290845959595959,
+          "width": 0.392562091503268,
+          "height": 0.011332070707070763,
+          "page": 2
+        },
+        {
+          "left": 0.08767156862745099,
+          "top": 0.8429217171717173,
+          "width": 0.3950441176470588,
+          "height": 0.011320707070706981,
+          "page": 2
+        }
+      ]
+    },
+    {
+      "text": "The baseline personality of the agent in all conditions was enthusiastic and curious, saying things like: I can always use more information about rocks, Yes please tell me more about rocks!, I want to understand how rocks are formed, and Good idea, lets compare some rocks.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.5830138888888889,
+          "width": 0.3787549019607843,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5968510101010102,
+          "width": 0.39256699346405227,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6106881313131314,
+          "width": 0.3925604575163399,
+          "height": 0.011320707070706981,
+          "page": 3
+        },
+        {
+          "left": 0.08736437908496732,
+          "top": 0.6245252525252526,
+          "width": 0.3931062091503268,
+          "height": 0.011320707070706981,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6383611111111112,
+          "width": 0.13451143790849673,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "To measure participants attitudes towards the agent we used the Likeability and Perceived Intelligence subscales of the Godspeed questionnaire [1], as well as questions on sense of humour, social",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.8567588383838384,
+          "width": 0.3762794117647058,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8705959595959595,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8844318181818183,
+          "width": 0.39255392156862745,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "We used a between-subjects experimental design, with three conditions: (1) Affiliative, (2) Self-defeating, and (3) Neutral (no verbal humour).",
+      "bboxes": [
+        {
+          "left": 0.08720261437908497,
+          "top": 0.1268560606060606,
+          "width": 0.395733660130719,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.14069318181818183,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707065,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.15453030303030305,
+          "width": 0.05441830065359478,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "The protocol was conducted entirely online.",
+      "bboxes": [
+        {
+          "left": 0.6258186274509804,
+          "top": 0.46126893939393937,
+          "width": 0.26040522875817007,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "We collected data through pre-study and poststudy questionnaires, as well as by logging all user interactions on the Curiosity Notebook including, all button and article clicks, conversations between participant and agent, articles discussed, and notes recorded in the notebook.",
+      "bboxes": [
+        {
+          "left": 0.6256339869281046,
+          "top": 0.7875732323232324,
+          "width": 0.28894281045751635,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8014103535353535,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8152474747474748,
+          "width": 0.39416993464052286,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8290845959595959,
+          "width": 0.39417810457516345,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8429217171717173,
+          "width": 0.2154722222222223,
+          "height": 0.011320707070706981,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "Based on prior literature from areas of Education, Psychology, Humour, and Conversational Agents, our investigation explores the following research questions:",
+      "bboxes": [
+        {
+          "left": 0.2505392156862745,
+          "top": 0.7485934343434343,
+          "width": 0.22993137254901963,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7624305555555556,
+          "width": 0.39283660130718956,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7762676767676767,
+          "width": 0.3332957516339869,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "To generate the humorous statements, six creative writers were recruited through Upwork.",
+      "bboxes": [
+        {
+          "left": 0.6930490196078432,
+          "top": 0.21798611111111113,
+          "width": 0.2206535947712418,
+          "height": 0.011320707070707037,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.23182323232323235,
+          "width": 0.3211617647058823,
+          "height": 0.011320707070707037,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "Affiliative humour is considered relatively benign and selfaccepting.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.3062512626262626,
+          "width": 0.3787532679738562,
+          "height": 0.011343434343434378,
+          "page": 3
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3201111111111111,
+          "width": 0.06168954248366014,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "According to the Similarity Attraction Hypothesis, people tend to like people they perceive as similar to themselves, and the Media Equation Hypothesis claims that this holds for artificial agents as well [48].",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.10956060606060607,
+          "width": 0.3762859477124183,
+          "height": 0.011320707070707065,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.12339772727272727,
+          "width": 0.39256045751633983,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.1372348484848485,
+          "width": 0.39255882352941185,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.5189918300653594,
+          "top": 0.1510719696969697,
+          "width": 0.05605392156862743,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "Q2 : Is there an interaction between participant characteristics (i.e., humour style) and the use of humour by a teachable agent, on the above measures?",
+      "bboxes": [
+        {
+          "left": 0.5312222222222223,
+          "top": 0.1683989898989899,
+          "width": 0.38087418300653586,
+          "height": 0.01134343434343435,
+          "page": 3
+        },
+        {
+          "left": 0.5589787581699347,
+          "top": 0.18225883838383838,
+          "width": 0.35311111111111093,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.5594183006535948,
+          "top": 0.19609595959595957,
+          "width": 0.1827418300653595,
+          "height": 0.011320707070707092,
+          "page": 3
+        }
+      ]
+    },
+    {
+      "text": "Data from 5 participants was removed prior to analysis due to non-compliance with study instructions; therefore results are from N =53 ( n =17 neutral; n =18 self-defeating; n =18 affiliative).",
+      "bboxes": [
+        {
+          "left": 0.6729575163398693,
+          "top": 0.7737361111111111,
+          "width": 0.2391339869281046,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7875732323232324,
+          "width": 0.3935947712418302,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8014103535353535,
+          "width": 0.39360457516339875,
+          "height": 0.011332070707070763,
+          "page": 4
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8152474747474748,
+          "width": 0.09386601307189546,
+          "height": 0.01133207070707054,
+          "page": 4
+        }
+      ]
+    },
+    {
+      "text": "Eight students took part in a pilot study and received a $15 Amazon Gift card upon completion.",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8152474747474748,
+          "width": 0.3925604575163399,
+          "height": 0.011320707070707092,
+          "page": 4
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8290845959595959,
+          "width": 0.15538235294117647,
+          "height": 0.011320707070707092,
+          "page": 4
+        }
+      ]
+    },
+    {
+      "text": "Participants in the affiliative condition, on the other hand, reflected more positively on the teaching experience in general, with sixparticipantsreferringtoitasbeingfun(a01,a06,a07,a13,a17,a18)andacoolexperience(a14).",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.80197601010101,
+          "width": 0.3787549019607843,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8158131313131314,
+          "width": 0.39255718954248364,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8296502525252525,
+          "width": 0.3970114379084968,
+          "height": 0.03899494949494953,
+          "page": 5
+        }
+      ]
+    },
+    {
+      "text": "Participants were also asked a number of questions relating to experience of the task.",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.2761704545454545,
+          "width": 0.3762745098039215,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.29000757575757574,
+          "width": 0.14093627450980406,
+          "height": 0.011320707070707037,
+          "page": 5
+        }
+      ]
+    },
+    {
+      "text": "There werenostatisticallysignificantdifferencesbetweenconditionmeansfortheLikeabilitysubscaleoftheGodspeedquestionnaire( F (2,15) = 0.25, p = 0.78).",
+      "bboxes": [
+        {
+          "left": 0.44610947712418303,
+          "top": 0.6353661616161616,
+          "width": 0.03435784313725487,
+          "height": 0.011320707070707203,
+          "page": 5
+        },
+        {
+          "left": 0.08736437908496732,
+          "top": 0.6492032828282828,
+          "width": 0.3955179738562092,
+          "height": 0.02515782828282842,
+          "page": 5
+        },
+        {
+          "left": 0.4411307189542483,
+          "top": 0.6630404040404041,
+          "width": 0.04021405228758179,
+          "height": 0.011332070707070652,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6768775252525252,
+          "width": 0.09415359477124181,
+          "height": 0.011332070707070763,
+          "page": 5
+        }
+      ]
+    },
+    {
+      "text": "Teaching Experience Participants in the self-defeating condition explained: Sigma was a bit self-deprecating which wasnt a niceexperiencebeingon theteachingside(s10),theself-deprecation made me feel like I wasnt doing a good job (s15), and the agent kept making jokes about her own incompetence (s05).",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.5113762626262626,
+          "width": 0.3787565359477123,
+          "height": 0.011343434343434433,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5252361111111111,
+          "width": 0.392563725490196,
+          "height": 0.011320707070706981,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5390732323232323,
+          "width": 0.397485294117647,
+          "height": 0.011320707070706981,
+          "page": 5
+        },
+        {
+          "left": 0.5178790849673203,
+          "top": 0.5529103535353534,
+          "width": 0.39422058823529416,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5667474747474747,
+          "width": 0.32347058823529407,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ]
+    },
+    {
+      "text": "IndependentKruskalWallis tests were conducted to examine the differences in the responses to the questions on sense of humour, social ability, and whether the agent was funny or not.",
+      "bboxes": [
+        {
+          "left": 0.36834477124183007,
+          "top": 0.3873699494949495,
+          "width": 0.1261928104575163,
+          "height": 0.011320707070706981,
+          "page": 5
+        },
+        {
+          "left": 0.08648529411764706,
+          "top": 0.4012070707070707,
+          "width": 0.3964493464052288,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4150441919191919,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 5
+        },
+        {
+          "left": 0.08736437908496732,
+          "top": 0.4288800505050505,
+          "width": 0.2179656862745098,
+          "height": 0.011320707070707092,
+          "page": 5
+        }
+      ]
+    },
+    {
+      "text": "Comparing Humour When asked about the agents personality traits, five participants in the self-defeating condition listed positive adjectives such as, optimistic and positive (s08), light hearted (s06), friendly (s06,s16,s11), and super adorable (s13).",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.1095378787878788,
+          "width": 0.3787581699346404,
+          "height": 0.011343434343434336,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.12339772727272727,
+          "width": 0.3925637254901959,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.1372348484848485,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.1510719696969697,
+          "width": 0.3948218954248366,
+          "height": 0.011320707070707092,
+          "page": 6
+        }
+      ]
+    },
+    {
+      "text": "As noted earlier, participants had an 80% probability of being told a joke by the agent for each button clicked.",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.22025631313131314,
+          "width": 0.3762745098039215,
+          "height": 0.011320707070707037,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.23409343434343433,
+          "width": 0.29066013071895425,
+          "height": 0.011320707070707092,
+          "page": 6
+        }
+      ]
+    },
+    {
+      "text": "If so, is it intrinsic motivation (IM; actions motivated by the pleasure and satisfaction from the process of engaging in an activity), extrinsic motivation (EM; actions motivated by attaining a goal separate from the process of engaging), or amotivation (AM; the absence of motivation which can co-occur with feelings of low competence)?",
+      "bboxes": [
+        {
+          "left": 0.8524771241830066,
+          "top": 0.6907146464646465,
+          "width": 0.05961111111111106,
+          "height": 0.011320707070706981,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7045517676767676,
+          "width": 0.3925637254901959,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.718388888888889,
+          "width": 0.39255392156862734,
+          "height": 0.011320707070706981,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7322260101010101,
+          "width": 0.3925637254901959,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7460618686868686,
+          "width": 0.39255882352941185,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.75989898989899,
+          "width": 0.3931911764705882,
+          "height": 0.011320707070707092,
+          "page": 6
+        }
+      ]
+    },
+    {
+      "text": "Average scores on the Pressure/Tension, Interest/Enjoyment, and Effort subscales of the IMI questionnaire across conditions had no statistically significant differences between condition means as determined by one-way ANOVA (pressure: F (2,50) = 0.83, p = 0.44; interest: F (2,50) = 0.99, p = 0.38; effort: F (2,50) = 0.33, p = 0.72).",
+      "bboxes": [
+        {
+          "left": 0.6792663398692811,
+          "top": 0.515550505050505,
+          "width": 0.23443627450980398,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5293876262626263,
+          "width": 0.39255555555555555,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5432247474747475,
+          "width": 0.39502941176470585,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5570618686868687,
+          "width": 0.39504084967320263,
+          "height": 0.011320707070707092,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5708989898989899,
+          "width": 0.3942826797385621,
+          "height": 0.011332070707070763,
+          "page": 6
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5847361111111111,
+          "width": 0.1383888888888889,
+          "height": 0.011332070707070763,
+          "page": 6
+        }
+      ]
+    },
+    {
+      "text": "One-way ANOVA showed no significant differences between conditions in the high-level categories of IM (  ( 2 , 50 ) = 0 .",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.5952083333333333,
+          "width": 0.37627450980392163,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6065315656565656,
+          "width": 0.352421568627451,
+          "height": 0.013834595959596019,
+          "page": 7
+        }
+      ]
+    },
+    {
+      "text": "Prior work on question-asking has defined numerous schemas for classifying questions based on the effort it would require to find the answers.",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.5398611111111111,
+          "width": 0.3762859477124183,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5536982323232323,
+          "width": 0.39256045751633983,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5675353535353536,
+          "width": 0.07715522875816982,
+          "height": 0.011320707070707092,
+          "page": 7
+        }
+      ]
+    },
+    {
+      "text": "As described previously, the Curiosity Notebook allowed participants to interact with the agent in various ways.",
+      "bboxes": [
+        {
+          "left": 0.4448627450980392,
+          "top": 0.8014103535353535,
+          "width": 0.03808169934640526,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8152474747474748,
+          "width": 0.3925637254901962,
+          "height": 0.011320707070707092,
+          "page": 7
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8290845959595959,
+          "width": 0.25742810457516335,
+          "height": 0.011320707070707092,
+          "page": 7
+        }
+      ]
+    },
+    {
+      "text": "Participantsintheaffiliativeconditionwithahigher self-reported affiliative humour style themselves, were more likely to check the agents notebook (  = 0 .",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.1649078282828283,
+          "width": 0.3772271241830064,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.17874494949494948,
+          "width": 0.3925637254901959,
+          "height": 0.011332070707070735,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.1900681818181818,
+          "width": 0.1420555555555555,
+          "height": 0.013834595959595991,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "There was no significant difference between conditions in the average number of words in explanations written by participants ( F (2,40) = 0.06, p = 0.95), however, there was a significant difference between conditions in whether participants chose to write an explanation in their own words or select a sentence from the articles ( F (2,50) = 3.56, p = 0.04).",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.3309520202020202,
+          "width": 0.3762745098039215,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.3447891414141414,
+          "width": 0.39256209150326793,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.51909477124183,
+          "top": 0.3586262626262626,
+          "width": 0.39547385620915043,
+          "height": 0.011332070707070707,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.37246338383838384,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.38630050505050506,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.4001376262626263,
+          "width": 0.1831160130718954,
+          "height": 0.011332070707070707,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "Check Participants in the self-defeating condition were significantly less likely to use the Check buttons (Correct & Quiz) as frequently as participants in the neutral condition (  =  0 .",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.4416262626262626,
+          "width": 0.3787499999999999,
+          "height": 0.011343434343434378,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.45548484848484855,
+          "width": 0.3950375816993464,
+          "height": 0.011332070707070652,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4668080808080808,
+          "width": 0.3301960784313725,
+          "height": 0.013834595959595963,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "The humorous agents in our study were not rated more likeable, social, or funny than the non-humorous agent, but they were rated as having more of a sense of humour.",
+      "bboxes": [
+        {
+          "left": 0.6188055555555556,
+          "top": 0.6811224747474747,
+          "width": 0.2932957516339869,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.694959595959596,
+          "width": 0.39256209150326793,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7087967171717171,
+          "width": 0.3241732026143792,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "Teach There was no significant difference between conditions found in the rate of use of all Teach buttons together (  ( 2 , 50 ) = 1 .",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.3032550505050505,
+          "width": 0.3762826797385621,
+          "height": 0.011343434343434322,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3146010101010101,
+          "width": 0.39256045751633994,
+          "height": 0.013834595959595908,
+          "page": 8
+        },
+        {
+          "left": 0.08756862745098039,
+          "top": 0.3284381313131313,
+          "width": 0.010406862745098042,
+          "height": 0.013834595959595963,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "Entertain Across conditions, participants with a higher selfreported affiliative humour style were more likely to use the buttons (  = 0 .",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.7322032828282828,
+          "width": 0.3787598039215686,
+          "height": 0.011343434343434322,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7460618686868686,
+          "width": 0.395031045751634,
+          "height": 0.011332070707070763,
+          "page": 8
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.757385101010101,
+          "width": 0.08033006535947713,
+          "height": 0.013834595959596019,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "Although quiz scores increased post-interaction in all conditions, one-way ANOVA showed no significant difference in change in quiz scores from pre to post interaction (  ( 2 , 50 ) = 1 .",
+      "bboxes": [
+        {
+          "left": 0.5190212418300654,
+          "top": 0.502185606060606,
+          "width": 0.3946846405228758,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5160227272727272,
+          "width": 0.3925637254901959,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5273459595959596,
+          "width": 0.31819771241830064,
+          "height": 0.013834595959595908,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "Prior work found humour to improve participants enjoyment of a task [41], however, in this scenario with a teachable agent, humour did not enhance enjoyment beyond what",
+      "bboxes": [
+        {
+          "left": 0.6335375816993465,
+          "top": 0.8567588383838384,
+          "width": 0.28103758169934634,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8705959595959595,
+          "width": 0.39255882352941174,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8844318181818183,
+          "width": 0.39255882352941185,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "We begin with a discussion of the effects of the humorous agents across all participants, and then take a closer look at how a learners humour style can interact with that of the agent.",
+      "bboxes": [
+        {
+          "left": 0.5188316993464052,
+          "top": 0.5903964646464647,
+          "width": 0.39326797385620926,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6042335858585859,
+          "width": 0.39256045751633983,
+          "height": 0.011320707070707092,
+          "page": 8
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6180707070707071,
+          "width": 0.2911143790849674,
+          "height": 0.011320707070707092,
+          "page": 8
+        }
+      ]
+    },
+    {
+      "text": "Participants in both humorous conditions noted the overuse of humour.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.4001376262626263,
+          "width": 0.3762745098039215,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4139747474747475,
+          "width": 0.0687124183006536,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "Although the affiliative jokes were sometimes perceived negatively, participants in this condition spent significantly more time teaching their agents indicating that the negative perception did not impact their willingness to spend time on the task.",
+      "bboxes": [
+        {
+          "left": 0.20249019607843138,
+          "top": 0.8152474747474748,
+          "width": 0.27797875816993467,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8290845959595959,
+          "width": 0.39502941176470585,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8429217171717173,
+          "width": 0.3925604575163399,
+          "height": 0.011320707070706981,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8567588383838384,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8705959595959595,
+          "width": 0.027209150326797382,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "As the Similarity Attraction Hypothesis suggests that humans like personalities similar to their own, we expected participants own humour styles to influence the results.",
+      "bboxes": [
+        {
+          "left": 0.5190212418300654,
+          "top": 0.48315909090909087,
+          "width": 0.39307679738562085,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.4969962121212121,
+          "width": 0.39255392156862745,
+          "height": 0.011320707070707037,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5108333333333334,
+          "width": 0.22243300653594766,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "Self-Enhancing Humour Style Research has linked people with a self-enhancing humour style to high self-esteem [49] and being more capable of perspective taking empathy [29].",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.5384848484848485,
+          "width": 0.3762761437908495,
+          "height": 0.011343434343434433,
+          "page": 9
+        },
+        {
+          "left": 0.5189918300653594,
+          "top": 0.552344696969697,
+          "width": 0.393107843137255,
+          "height": 0.011320707070707092,
+          "page": 9
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5661818181818182,
+          "width": 0.3264591503267975,
+          "height": 0.011320707070707092,
+          "page": 9
+        }
+      ]
+    },
+    {
+      "text": "Affiliative Humour Style Similar to self-enhancing humour, affiliative humour is an adaptive form of humour and linked to increased empathy, however affiliative humour has been found to be more relevant to facilitating relationships and relational functioning [29].",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.1095378787878788,
+          "width": 0.3778970588235294,
+          "height": 0.011343434343434336,
+          "page": 10
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.12339772727272727,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 10
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.1372348484848485,
+          "width": 0.3925604575163399,
+          "height": 0.011320707070707092,
+          "page": 10
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.1510719696969697,
+          "width": 0.39256045751633994,
+          "height": 0.011320707070707092,
+          "page": 10
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.1649078282828283,
+          "width": 0.027006535947712407,
+          "height": 0.011320707070707092,
+          "page": 10
+        }
+      ]
+    },
+    {
+      "text": "Aggressive Humour Style As a maladaptive form of humour, the aggressive humour style has been linked to decreased perspective taking empathy and empathetic concern [29].",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.4277891414141414,
+          "width": 0.3778905228758169,
+          "height": 0.011343434343434322,
+          "page": 10
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4416489898989899,
+          "width": 0.39503594771241834,
+          "height": 0.011320707070707092,
+          "page": 10
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.45548484848484855,
+          "width": 0.3051846405228758,
+          "height": 0.011320707070707037,
+          "page": 10
+        }
+      ]
+    },
+    {
+      "text": "Although humour has been found to reduce anxiety in students [37], increase interest [64], and create a learning atmosphere in which they can pay more attention [2], little is known about how it can be used by pedagogical conversational agents.",
+      "bboxes": [
+        {
+          "left": 0.5190212418300654,
+          "top": 0.6768775252525252,
+          "width": 0.3946846405228758,
+          "height": 0.011320707070707092,
+          "page": 10
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6907146464646465,
+          "width": 0.39255882352941185,
+          "height": 0.011320707070706981,
+          "page": 10
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7045517676767676,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 10
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.718388888888889,
+          "width": 0.27242320261437913,
+          "height": 0.011320707070706981,
+          "page": 10
+        }
+      ]
+    },
+    {
+      "text": "Self-Defeating Humour Style Participants with more of a selfdefeating humour style themselves were more likely to rate themselves as being better at teaching when interacting with a selfdefeating agent.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.8152247474747475,
+          "width": 0.3787549019607843,
+          "height": 0.011343434343434433,
+          "page": 10
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8290845959595959,
+          "width": 0.3950343137254903,
+          "height": 0.011320707070707092,
+          "page": 10
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8429217171717173,
+          "width": 0.3950294117647059,
+          "height": 0.011320707070706981,
+          "page": 10
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8567588383838384,
+          "width": 0.09825653594771243,
+          "height": 0.011320707070707092,
+          "page": 10
+        }
+      ]
+    },
+    {
+      "text": "Participants in this study were adults between 18-35 years.",
+      "bboxes": [
+        {
+          "left": 0.5195343137254902,
+          "top": 0.33787121212121213,
+          "width": 0.37038725490196067,
+          "height": 0.011320707070707092,
+          "page": 10
+        }
+      ]
+    },
+    {
+      "text": "We find that humour accentuates the human-likeness of an agent by giving it a personalitye.g., affiliative humour helped demonstrate happiness and intelligence, and self-defeating humour facilitated self-disclosure as the agent displays vulnerability as a",
+      "bboxes": [
+        {
+          "left": 0.5358137254901961,
+          "top": 0.8429217171717173,
+          "width": 0.3762794117647058,
+          "height": 0.011320707070706981,
+          "page": 10
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8567588383838384,
+          "width": 0.39503104575163417,
+          "height": 0.011320707070707092,
+          "page": 10
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8705959595959595,
+          "width": 0.39502941176470585,
+          "height": 0.011320707070707092,
+          "page": 10
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.8844318181818183,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 10
+        }
+      ]
+    },
+    {
+      "text": "Some researchers have stated that humour should not be used by agents in on-topic conversation as it can distract users and suggest that it only be used in off-topic dialogue [17, 18], while others have found evidence of the positive influence on learning experiences and outcomes of agents engaging in off-task conversation during learning tasks (e.g., [26]).",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.26176767676767676,
+          "width": 0.3766666666666667,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.275604797979798,
+          "width": 0.3925588235294118,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.2894419191919192,
+          "width": 0.3925604575163399,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.30327777777777776,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.317114898989899,
+          "width": 0.39256699346405227,
+          "height": 0.011320707070707037,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3309520202020202,
+          "width": 0.14966666666666667,
+          "height": 0.011320707070707092,
+          "page": 11
+        }
+      ]
+    },
+    {
+      "text": "Similar to prior work (e.g., [44]), our results illuminate the importance of the users personality characteristics and how they interact with the agentsindicating that care must be taken in the design of teachable agents, with a one-size-fits-all not always being the most successful when it comes to humour, but can lead to enhanced learning experience and outcomes when matched appropriately.",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.4139747474747475,
+          "width": 0.3787549019607843,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.42781186868686866,
+          "width": 0.3925604575163399,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.08736437908496732,
+          "top": 0.4416489898989899,
+          "width": 0.3931078431372549,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.45548484848484855,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707037,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.46932196969696965,
+          "width": 0.3925604575163399,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.48315909090909087,
+          "width": 0.3948202614379085,
+          "height": 0.011320707070707092,
+          "page": 11
+        }
+      ]
+    },
+    {
+      "text": "We thank all participants for their contributions, and acknowledge the funding from NSERC Discovery Grant RGPIN-2015-0454 and University of Waterloo Interdisciplinary Trailblazer Fund for making this work possible.",
+      "bboxes": [
+        {
+          "left": 0.08720261437908497,
+          "top": 0.8429217171717173,
+          "width": 0.39326470588235296,
+          "height": 0.011320707070706981,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8567588383838384,
+          "width": 0.39255718954248364,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8705959595959595,
+          "width": 0.3950326797385621,
+          "height": 0.011320707070707092,
+          "page": 11
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.8844318181818183,
+          "width": 0.1347892156862745,
+          "height": 0.011320707070707092,
+          "page": 11
+        }
+      ]
+    },
+    {
+      "text": "Q1 : Does a teachable agents use of affiliative or self-defeating humour affect participants:  perception of the agent, i.e., perceived intelligence, likability, funniness, etc.,  attitudes toward the teaching task, i.e., enjoyment, pressure, motivation, effort etc., and  ability to recall material from the teaching task",
+      "bboxes": [
+        {
+          "left": 0.09959313725490196,
+          "top": 0.7987159090909091,
+          "width": 0.3808692810457517,
+          "height": 0.011343434343434433,
+          "page": 3
+        },
+        {
+          "left": 0.1277892156862745,
+          "top": 0.8125757575757575,
+          "width": 0.16650816993464052,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.12729084967320262,
+          "top": 0.8263901515151515,
+          "width": 0.3556519607843137,
+          "height": 0.011343434343434433,
+          "page": 3
+        },
+        {
+          "left": 0.14162581699346405,
+          "top": 0.8402499999999999,
+          "width": 0.1110392156862745,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.12729084967320262,
+          "top": 0.8540643939393939,
+          "width": 0.3556503267973856,
+          "height": 0.011343434343434433,
+          "page": 3
+        },
+        {
+          "left": 0.14162581699346405,
+          "top": 0.8679229797979797,
+          "width": 0.19027287581699348,
+          "height": 0.011320707070707092,
+          "page": 3
+        },
+        {
+          "left": 0.12729084967320262,
+          "top": 0.8817373737373737,
+          "width": 0.29570751633986925,
+          "height": 0.011343434343434433,
+          "page": 3
         }
       ]
     }
