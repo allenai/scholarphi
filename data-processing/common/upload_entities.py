@@ -1,4 +1,8 @@
+import dataclasses
+from enum import Enum
+import json
 import logging
+import os
 from typing import Any, Dict, List, Optional, Tuple
 
 from peewee import fn
@@ -15,6 +19,30 @@ from common.types import (
     EntityUploadInfo,
     S2Id,
 )
+
+
+class OutputForm(Enum):
+    DB = "db"
+    FILE = "file"
+
+
+class OutputDetails:
+    def __init__(self, output_forms: List[str], output_dir: Optional[str]):
+        OutputDetails.validate(output_forms=output_forms, output_dir=output_dir)
+        self.output_forms: List[OutputForm] = [OutputForm(output_form) for output_form in output_forms]
+        self.output_dir: Optional[str] = output_dir
+
+    @staticmethod
+    def validate(output_forms: List[str], output_dir: Optional[str]) -> None:
+        msg = "Please include either both 'file' as an output form and an output dir, or neither."
+        cond = (OutputForm.FILE.value in output_forms) == (output_dir is not None)
+        assert cond, msg
+
+    def can_save_to_db(self) -> bool:
+        return OutputForm.DB in self.output_forms
+
+    def can_save_to_file(self) -> bool:
+        return OutputForm.FILE in self.output_forms
 
 
 def get_or_create_data_version(paper_id: str) -> int:
@@ -309,3 +337,51 @@ def make_relationship_models(
                     )
 
     return models
+
+
+def write_to_file(entity_infos: List[EntityUploadInfo], output_file_name: str) -> None:
+    # an attempt to make life easier if we change how we want to format this
+    FORMAT_VERSION = "v0"
+
+    logging.info(
+        "About to write %d entity infos to %s (version: %s).",
+        len(entity_infos),
+        output_file_name,
+        FORMAT_VERSION,
+    )
+    to_write = {
+        "format_version": FORMAT_VERSION,
+        "data": [dataclasses.asdict(entity_info) for entity_info in entity_infos],
+    }
+
+    if os.path.exists(output_file_name):
+        logging.warning("File %s already exists. It will be overwritten.", output_file_name)
+
+    with open(output_file_name, "w") as output_file:
+        json.dump(to_write, output_file)
+
+
+def save_entities(
+    s2_id: S2Id,
+    arxiv_id: ArxivId,
+    entity_infos: List[EntityUploadInfo],
+    data_version: Optional[int],
+    output_details: OutputDetails,
+    filename: str,
+) -> None:
+
+    if output_details.can_save_to_file():
+        logging.info("Saving to file...")
+        # should always be true, but let's just make sure
+        assert output_details.output_dir is not None, "Expected a defined output dir!"
+        output_file_name = os.path.join(output_details.output_dir, filename)
+        write_to_file(entity_infos=entity_infos, output_file_name=output_file_name)
+
+    if output_details.can_save_to_db():
+        logging.info("Saving to db...")
+        upload_entities(
+            s2_id=s2_id,
+            arxiv_id=arxiv_id,
+            entities=entity_infos,
+            data_version=data_version,
+        )

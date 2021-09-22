@@ -27,6 +27,7 @@ from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
 from common.fetch_arxiv import FetchFromArxivException
 from common.make_digest import make_paper_digest
+from common.upload_entities import OutputDetails, OutputForm
 from common.types import PipelineDigest
 from entities.definitions.commands.detect_definitions import DetectDefinitions
 
@@ -67,6 +68,9 @@ def run_commands_for_arxiv_ids(
         command_args.schema = pipeline_args.database_schema
         command_args.create_tables = pipeline_args.database_create_tables
         command_args.data_version = pipeline_args.data_version
+        if issubclass(CommandCls, DatabaseUploadCommand):
+            command_args.output_forms = pipeline_args.output_forms
+            command_args.output_dir = pipeline_args.output_dir
         if CommandCls == FetchArxivSources:
             command_args.s3_bucket = pipeline_args.s3_arxiv_sources_bucket
         if CommandCls in [StorePipelineLog, StoreResults]:
@@ -299,7 +303,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Do not save extracted entities to the database.",
+        help="Do not save extracted entities to the database or write them to a file.",
     )
     parser.add_argument(
         "--database-schema",
@@ -335,7 +339,32 @@ if __name__ == "__main__":
         type=str,
         help="Base url for definition model paths."
     )
+
+    parser.add_argument(
+        "--output-forms",
+        type=str,
+        nargs='+',
+        choices=[c.value for c in OutputForm],
+        default=[OutputForm.DB.value],
+        help=(
+            f"How we want the output to be stored. "
+            + "If you include file, you must also provide a value for output-dir."
+        )
+    )
+
+    parser.add_argument(
+        "--output-dir",
+        type=str,
+        help="The directory in which to write the outputs."
+    )
+
     args = parser.parse_args()
+
+    # check that output arguments make sense
+    try:
+        OutputDetails.validate(output_forms=args.output_forms, output_dir=args.output_dir)
+    except AssertionError as assertion_error:
+        parser.error(str(assertion_error))
 
     # Set up logging
     console_log_handler = logging.StreamHandler(sys.stdout)

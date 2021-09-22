@@ -12,7 +12,7 @@ from common.types import (
     EntityUploadInfo,
     SerializableReference,
 )
-from common.upload_entities import upload_entities
+from common.upload_entities import save_entities
 
 from ..types import BibitemMatch
 from ..utils import load_located_citations
@@ -123,4 +123,14 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                 entity_infos.append(entity_info)
                 citation_index += 1
 
-        upload_entities(item.s2_id, item.arxiv_id, entity_infos, self.args.data_version)
+        save_entities(
+            s2_id=item.s2_id,
+            arxiv_id=item.arxiv_id,
+            entity_infos=entity_infos,
+            data_version=self.args.data_version,
+            output_details=self.output_details,
+            filename="citations.jsonl",
+        )
+
+    def can_write_to_file(self) -> bool:
+        return True
