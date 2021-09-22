@@ -19,7 +19,7 @@ export class Facets extends React.PureComponent<Props> {
 
     const byPage = discourseObjs.reduce(
       (acc: { [page: number]: DiscourseObj[] }, d: DiscourseObj) => {
-        const page = d.bboxes[0].page;
+        const page = d.bboxes[0].page + 1;
         if (!acc[page]) {
           acc[page] = [];
         }
