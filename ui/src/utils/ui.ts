@@ -1,7 +1,7 @@
 import { PDFPageProxy } from "pdfjs-dist/types/display/api";
 import React from "react";
 import { PageModel, Pages } from "../state";
-import { BoundingBox } from "../api/types";
+import { BoundingBox, DiscourseObj } from "../api/types";
 import { PDFPageView } from "../types/pdfjs-viewer";
 import { Dimensions, Rectangle } from "../types/ui";
 
@@ -395,7 +395,7 @@ export function getElementCoordinates(element: HTMLElement) {
  * TODO(andrewhead): Handle the case of arXiv publications that have multiple versions. How do we
  * make sure we're querying for the same version of paper data as the paper that was opened?
  */
- export function extractArxivId(url: string): string | undefined {
+export function extractArxivId(url: string): string | undefined {
   const matches = url.match(/arxiv\.org\/pdf\/(.*)(?:\.pdf)/) || [];
   return matches[1];
 }
@@ -419,4 +419,40 @@ export function getDiscourseToColorMap(): { [label: string]: string } {
     Conclusion: "#8616284D",
     "Future Work": "#EDD96D2D",
   };
-};
+}
+
+export function sortDiscourseObjs(discourseObjs: DiscourseObj[]) {
+  const sorted = discourseObjs.sort((d1: DiscourseObj, d2: DiscourseObj) => {
+    const d1MinPage = d1.bboxes.reduce((b1, b2) => {
+      return b1.page < b2.page ? b1 : b2;
+    }).page;
+    const d2MinPage = d2.bboxes.reduce((b1, b2) => {
+      return b1.page < b2.page ? b1 : b2;
+    }).page;
+
+    if (d1MinPage === d2MinPage) {
+      const d1MinLeft = d1.bboxes.reduce((b1, b2) => {
+        return b1.left < b2.left ? b1 : b2;
+      }).left;
+      const d2MinLeft = d2.bboxes.reduce((b1, b2) => {
+        return b1.left < b2.left ? b1 : b2;
+      }).left;
+      const allowedDelta = 0.02;
+
+      if (Math.abs(d1MinLeft - d2MinLeft) < allowedDelta) {
+        const d1MinTop = d1.bboxes.reduce((b1, b2) => {
+          return b1.top < b2.top ? b1 : b2;
+        }).top;
+        const d2MinTop = d2.bboxes.reduce((b1, b2) => {
+          return b1.top < b2.top ? b1 : b2;
+        }).top;
+        return d1MinTop < d2MinTop ? -1 : 1;
+      } else {
+        return d1MinLeft < d2MinLeft ? -1 : 1;
+      }
+    } else {
+      return d1MinPage < d2MinPage ? -1 : 1;
+    }
+  });
+  return sorted;
+}

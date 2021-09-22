@@ -45,7 +45,7 @@ export class Facets extends React.PureComponent<Props> {
           {Object.entries(byPage).map(([page, ds], pageIdx: number) => (
             <React.Fragment key={pageIdx}>
               <p className="discourse-page-header">Page {page}</p>
-              {ds.map((d: DiscourseObj) => (
+              {uiUtils.sortDiscourseObjs(ds).map((d: DiscourseObj) => (
                 <FacetSnippet
                   key={d.id}
                   id={d.id}
