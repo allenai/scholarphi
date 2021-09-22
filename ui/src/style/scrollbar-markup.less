@@ -15,6 +15,9 @@
 .scrollbar-markup {
   position: absolute;
   right: 0;
+  top: @pdfjs-toolbarViewer-height;
+  width: @scrollbarWidth;
+  height: calc(100% - @pdfjs-toolbarViewer-height);
   z-index: 1001;
   overflow-y: hidden;
   pointer-events: none;
@@ -24,4 +27,6 @@
   position: absolute;
   pointer-events: auto;
   border: 1px solid grey;
+  width: @scrollbarWidth;
+  height: @scrollbarMarkHeight;
 }

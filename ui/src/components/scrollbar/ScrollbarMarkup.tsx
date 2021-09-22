@@ -13,20 +13,13 @@ interface Props {
 class ScrollbarMarkup extends React.PureComponent<Props> {
   static scrollbarHeight = document.getElementById("viewerContainer")
     ?.clientHeight;
-  static scrollbarOffsetTop = document.getElementById("viewerContainer")
-    ?.offsetTop;
-  static scrollbarWidth = 15; // pixels
-  static scrollbarMarkHeight = 5; // pixels
 
   constructor(props: Props) {
     super(props);
   }
 
   mapDiscourseToScrollBar = (page: number, top: number) => {
-    if (
-      ScrollbarMarkup.scrollbarHeight === undefined ||
-      ScrollbarMarkup.scrollbarOffsetTop === undefined
-    ) {
+    if (ScrollbarMarkup.scrollbarHeight === undefined) {
       return 0;
     }
     const pageHeightInScrollbar =
@@ -40,14 +33,7 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
     return (
       <>
         {ScrollbarMarkup.scrollbarHeight !== undefined ? (
-          <div
-            className={"scrollbar-markup"}
-            style={{
-              width: ScrollbarMarkup.scrollbarWidth,
-              height: ScrollbarMarkup.scrollbarHeight,
-              top: ScrollbarMarkup.scrollbarOffsetTop,
-            }}
-          >
+          <div className={"scrollbar-markup"}>
             {captionUnits.map((c: CaptionUnit, i: number) => (
               <MediaTag
                 key={`media-tag-${i}`}
@@ -65,8 +51,6 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
                   className={"scrollbar-mark"}
                   onClick={() => this.props.handleMarkClicked(d.id)}
                   style={{
-                    width: ScrollbarMarkup.scrollbarWidth,
-                    height: ScrollbarMarkup.scrollbarMarkHeight,
                     top: this.mapDiscourseToScrollBar(
                       d.bboxes[0].page,
                       d.bboxes[0].top

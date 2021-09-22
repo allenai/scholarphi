@@ -3,7 +3,7 @@
  * TODO(andrewhead): Find a way to animate drawer even when left sidebar is open.
  */
 #viewerContainer {
-  transition-property: left, right;
+  transition-property: left, right, padding-right;
 
   &.drawer-entity-property-editor {
     right: @entity-property-editor-width;
@@ -13,6 +13,11 @@
   &.drawer-defining-formulas,
   &.drawer-definitions {
     right: @document-snippets-container-width;
+  }
+
+  &.drawer-facets {
+    padding-right: @document-snippets-container-width + @scrollbarWidth;
+    transition-duration: 0.25s;
   }
 }
 
