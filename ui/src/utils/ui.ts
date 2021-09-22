@@ -32,6 +32,14 @@ export function isKeypressEscape(event: React.KeyboardEvent | KeyboardEvent) {
   return false;
 }
 
+export function isKeypressTab(event: React.KeyboardEvent | KeyboardEvent) {
+  return event.keyCode === 9;
+}
+
+export function isKeypressShiftTab(event: React.KeyboardEvent | KeyboardEvent) {
+  return event.shiftKey && isKeypressTab(event);
+}
+
 const PATTERN_NON_WORD_CHAR = /\W/;
 const PATTERN_WORD_CHAR = /\w/;
 const ELLIPSIS = "…";

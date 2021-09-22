@@ -131,6 +131,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       skimOpacity: 0.3,
       showSkimmingAnnotations: true,
 
+      currentDiscourseObjId: null,
       discourseObjs: [],
       discourseObjsById: {},
       deselectedDiscourses: [],
@@ -715,11 +716,73 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     if (this.props.paperId !== undefined) {
       this.initDiscourseObjs();
     }
+
+    document.addEventListener("keydown", (event) => {
+      if (uiUtils.isKeypressShiftTab(event)) {
+        event.preventDefault();
+        if (this.state.discourseObjs.length > 0) {
+          this.moveToPreviousDiscourseObj();
+        }
+      } else if (uiUtils.isKeypressTab(event)) {
+        event.preventDefault();
+        if (this.state.discourseObjs.length > 0) {
+          this.moveToNextDiscourseObj();
+        }
+      }
+    });
   }
 
+  moveToNextDiscourseObj = () => {
+    const discourseIds = this.state.discourseObjs.map((x) => x.id);
+    const numDiscourseObjs = this.state.discourseObjs.length;
+    let nextId = "";
+    if (this.state.currentDiscourseObjId !== null) {
+      const currIdx = discourseIds.indexOf(this.state.currentDiscourseObjId);
+      const nextIdx = (currIdx + 1) % numDiscourseObjs;
+      nextId = discourseIds[nextIdx];
+    } else {
+      nextId = discourseIds[0];
+    }
+    this.setState(
+      {
+        currentDiscourseObjId: nextId,
+      },
+      () => {
+        if (this.state.currentDiscourseObjId !== null) {
+          this.jumpToDiscourseObj(this.state.currentDiscourseObjId);
+        }
+      }
+    );
+  };
+
+  moveToPreviousDiscourseObj = () => {
+    const discourseIds = this.state.discourseObjs.map((x) => x.id);
+    const numDiscourseObjs = this.state.discourseObjs.length;
+    let nextId = "";
+    if (this.state.currentDiscourseObjId !== null) {
+      const currIdx = discourseIds.indexOf(this.state.currentDiscourseObjId);
+      const nextIdx = (numDiscourseObjs + currIdx - 1) % numDiscourseObjs;
+      nextId = discourseIds[nextIdx];
+    } else {
+      nextId = discourseIds[numDiscourseObjs - 1];
+    }
+    this.setState(
+      {
+        currentDiscourseObjId: nextId,
+      },
+      () => {
+        if (this.state.currentDiscourseObjId !== null) {
+          this.jumpToDiscourseObj(this.state.currentDiscourseObjId);
+        }
+      }
+    );
+  };
+
   initDiscourseObjs() {
-    const discourseObjs = this.makeDiscourseObjectsForFacets(
-      Object(facetData)[this.props.paperId!.id]
+    const discourseObjs = uiUtils.sortDiscourseObjs(
+      this.makeDiscourseObjectsForFacets(
+        Object(facetData)[this.props.paperId!.id]
+      )
     );
 
     const discourseObjsById = discourseObjs.reduce(
