@@ -1143,11 +1143,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       const deselectedDiscourses = this.state.deselectedDiscourses.filter(
         (x) => x !== discourse
       );
-      this.setState({ deselectedDiscourses });
+      this.setState({ deselectedDiscourses }, this.initDiscourseObjs);
     } else {
       this.setState((prevState) => ({
         deselectedDiscourses: [...prevState.deselectedDiscourses, discourse],
-      }));
+      }), this.initDiscourseObjs);
     }
   };
 
