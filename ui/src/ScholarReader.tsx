@@ -135,6 +135,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       discourseObjs: [],
       discourseObjsById: {},
       deselectedDiscourses: [],
+      hiddenDiscourseObjs: [],
       numHighlightMultiplier: {
         Method: 0.8,
         Result: 0.7,
@@ -786,6 +787,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       (x: DiscourseObj) => !this.state.deselectedDiscourses.includes(x.label)
     );
 
+    // Filter out individual discourse objects that a user has selected to hide
+    discourseObjs = discourseObjs.filter((x: DiscourseObj) => {
+      const hiddenIds = this.state.hiddenDiscourseObjs.map((d) => d.id);
+      return !hiddenIds.includes(x.id);
+    });
+
     const discourseObjsById = discourseObjs.reduce(
       (acc: { [id: string]: DiscourseObj }, d: DiscourseObj) => {
         acc[d.id] = d;
@@ -980,7 +987,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
      */
     this.setState({
       jumpTarget: id,
-      currentDiscourseObjId: id
+      currentDiscourseObjId: id,
     });
 
     return true;
@@ -1208,6 +1215,15 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.jumpToDiscourseObj(id);
   };
 
+  handleHideDiscourseObj = (d: DiscourseObj) => {
+    this.setState(
+      (prevState) => ({
+        hiddenDiscourseObjs: [...prevState.hiddenDiscourseObjs, d],
+      }),
+      this.initDiscourseObjs
+    );
+  };
+
   render() {
     let findMatchEntityId: string | null = null;
     if (
@@ -1235,7 +1251,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       this._jumpedToInitialFocus = true;
     }
 
-    let discourseObjs: DiscourseObj[] = this.state.discourseObjs;
     let leadSentences: SentenceUnit[] = [];
     if (this.props.paperId !== undefined) {
       if (this.state.leadSentencesEnabled) {
@@ -1388,7 +1403,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 }
                 entities={this.state.entities}
                 selectedEntityIds={this.state.selectedEntityIds}
-                discourseObjs={discourseObjs}
+                discourseObjs={this.state.discourseObjs}
                 deselectedDiscourses={this.state.deselectedDiscourses}
                 handleDiscourseSelected={this.handleDiscourseSelected}
                 handleIncreaseNumHighlights={this.handleIncreaseNumHighlights}
@@ -1417,12 +1432,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 this.state.pages !== null &&
                 this.state.showSkimmingAnnotations &&
                 this.state.facetHighlights &&
-                discourseObjs.length > 0 && (
+                this.state.discourseObjs.length > 0 && (
                   <ScrollbarMarkup
                     numPages={
                       this.state.pdfViewerApplication?.pdfDocument?.numPages
                     }
-                    discourseObjs={discourseObjs}
+                    discourseObjs={this.state.discourseObjs}
                     captionUnits={
                       this.state.mediaScrollbarMarkupEnabled
                         ? Object(captionData)[this.props.paperId!.id]
@@ -1631,10 +1646,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     {this.props.paperId !== undefined &&
                       this.state.showSkimmingAnnotations &&
                       this.state.facetTextEnabled &&
-                      discourseObjs.length > 0 && (
+                      this.state.discourseObjs.length > 0 && (
                         <DiscourseTagLayer
                           pageView={pageView}
-                          discourseObjs={discourseObjs.filter(
+                          discourseObjs={this.state.discourseObjs.filter(
                             (x) => x.label !== "Author"
                           )}
                         ></DiscourseTagLayer>
@@ -1642,23 +1657,29 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
                     {this.props.paperId !== undefined &&
                       this.state.showSkimmingAnnotations &&
-                      (discourseObjs.length > 0 || leadSentences.length > 0) &&
+                      (this.state.discourseObjs.length > 0 ||
+                        leadSentences.length > 0) &&
                       this.state.cueingStyle === "highlight" && (
                         <HighlightLayer
                           pageView={pageView}
-                          discourseObjs={discourseObjs}
+                          discourseObjs={this.state.discourseObjs}
                           leadSentences={leadSentences}
                           opacity={this.state.skimOpacity}
+                          handleHideDiscourseObj={(d) =>
+                            this.handleHideDiscourseObj(d)
+                          }
+                          handleOpenDrawer={() => this.openDrawer("facets")}
                         ></HighlightLayer>
                       )}
 
                     {this.props.paperId !== undefined &&
                       this.state.showSkimmingAnnotations &&
-                      (discourseObjs.length > 0 || leadSentences.length > 0) &&
+                      (this.state.discourseObjs.length > 0 ||
+                        leadSentences.length > 0) &&
                       this.state.cueingStyle === "underline" && (
                         <UnderlineLayer
                           pageView={pageView}
-                          discourseObjs={discourseObjs}
+                          discourseObjs={this.state.discourseObjs}
                           leadSentences={leadSentences}
                         ></UnderlineLayer>
                       )}

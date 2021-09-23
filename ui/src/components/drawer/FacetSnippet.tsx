@@ -23,16 +23,26 @@ class FacetSnippet extends React.PureComponent<Props> {
       contextEntity: this.props.id,
     });
     if (this.props.handleJumpToDiscourseObj) {
+      const facetSnippet = document.getElementById(
+        `facet-snippet-${this.props.id}`
+      );
+      if (facetSnippet !== null) {
+        facetSnippet.classList.add("scrolled-to");
+      }
       this.props.handleJumpToDiscourseObj(this.props.id);
     }
   }
 
   render() {
-    const { children, color } = this.props;
+    const { id, children, color } = this.props;
 
     return (
       <>
-        <div className={classNames("snippet")} onClick={() => this.onClick()}>
+        <div
+          id={`facet-snippet-${id}`}
+          className={classNames("snippet")}
+          onClick={() => this.onClick()}
+        >
           <div
             className={"snippet-vert-bar"}
             style={{

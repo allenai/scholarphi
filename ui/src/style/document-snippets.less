@@ -79,6 +79,15 @@
     top: 0;
     position: absolute;
   }
+
+  &.scrolled-to {
+    animation: fadeOut 3s;
+  }
+
+  @keyframes fadeOut {
+    from {background-color: @border-color; }
+    to {background-color: white; }
+  }
 }
 
 /*
