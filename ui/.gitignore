@@ -11,6 +11,9 @@ node_modules
 src/data/facets/*
 !src/data/facets/skimmingData.json
 
+src/data/sections/*
+!src/data/sections/skimmingData.json
+
 src/data/captions/*
 !src/data/captions/skimmingData.json
 

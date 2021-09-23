@@ -1,7 +1,12 @@
 import os
 import json
 
-input_dirs = ["src/data/captions", "src/data/facets", "src/data/sentences"]
+input_dirs = [
+    "src/data/sections",
+    "src/data/captions",
+    "src/data/facets",
+    "src/data/sentences",
+]
 
 for input_dir in input_dirs:
     merged = {}
