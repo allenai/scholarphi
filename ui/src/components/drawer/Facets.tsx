@@ -29,6 +29,21 @@ export class Facets extends React.PureComponent<Props> {
       {}
     );
 
+    const bySection = discourseObjs.reduce(
+      (acc: { [section: string]: DiscourseObj[] }, d: DiscourseObj) => {
+        // The section attribute contains (when they exist) section, subsection, and
+        // subsubsection header data, delimited by "@@".
+        const long_section = d.entity.section;
+        const section = long_section.split("@@").pop() || "";
+        if (!acc[section]) {
+          acc[section] = [];
+        }
+        acc[section].push(d);
+        return acc;
+      },
+      {}
+    );
+
     return (
       <>
         <div>
@@ -42,21 +57,29 @@ export class Facets extends React.PureComponent<Props> {
           ></DiscoursePalette>
         </div>
         <div className="document-snippets discourse-objs">
-          {Object.entries(byPage).map(([page, ds], pageIdx: number) => (
-            <React.Fragment key={pageIdx}>
-              <p className="discourse-page-header">Page {page}</p>
-              {uiUtils.sortDiscourseObjs(ds).map((d: DiscourseObj) => (
-                <FacetSnippet
-                  key={d.id}
-                  id={d.id}
-                  color={d.color}
-                  handleJumpToDiscourseObj={this.props.handleJumpToDiscourseObj}
-                >
-                  {d.entity.text}
-                </FacetSnippet>
-              ))}
-            </React.Fragment>
-          ))}
+          {Object.entries(bySection).map(
+            ([section, ds], sectionIdx: number) => {
+              return (
+                <React.Fragment key={sectionIdx}>
+                  <p className="discourse-page-header">{section}</p>
+                  {uiUtils.sortDiscourseObjs(ds).map((d: DiscourseObj) => {
+                    return (
+                      <FacetSnippet
+                        key={d.id}
+                        id={d.id}
+                        color={d.color}
+                        handleJumpToDiscourseObj={
+                          this.props.handleJumpToDiscourseObj
+                        }
+                      >
+                        {d.entity.text}
+                      </FacetSnippet>
+                    );
+                  })}
+                </React.Fragment>
+              );
+            }
+          )}
         </div>
       </>
     );
