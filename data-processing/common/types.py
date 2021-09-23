@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from typing import Callable, Dict, List, NamedTuple, Optional, Set, Union
 
-from typing_extensions import Literal
-
 """
 FILE PROCESSING
 """
@@ -186,60 +184,6 @@ class HueIteration:
     hue: float
     iteration: str
 
-
-@dataclass(frozen=True)
-class Equation(SerializableEntity):
-    i: int
-    " Index of this equation in the TeX document. "
-
-    content_start: int
-    " Index of character where the contents (i.e. 'content_tex') of the equation starts. "
-
-    content_end: int
-    " Index of character where the contents of the equation ends. "
-
-    content_tex: str
-    " TeX for the equation contents, inside the environment (e.g., 'x + y'). "
-
-    katex_compatible_tex: str
-    " A santized version of the equation content meant for KaTeX parsing. "
-
-    depth: int
-    """
-    Depth within a tree of equations. Most equations will not be nested in others, so will have a
-    depth of 0 if not nested in another equation. As an example, if this equation is nested in
-    another equation, which is nested in another equation, it will have a depth of 2.
-    """
-
-
-@dataclass(frozen=True)
-class LengthAssignment(Entity):
-    pass
-
-
-@dataclass(frozen=True)
-class Phrase(SerializableEntity):
-    text: str
-
-
-@dataclass(frozen=True)
-class Term(SerializableEntity):
-    text: str
-
-    type_: Optional[str]
-    " Type of term (e.g., symbol, protologism, abbreviation). "
-
-    definitions: List[str]
-    " List of definitions that describe this term. "
-
-    sources: List[str]
-    """
-    List of sources that describe where each definition came from. One per definition.
-    To find the source for a definition, look for the source with the same index as
-    the definition.
-    """
-
-
 @dataclass(frozen=True)
 class BeginDocument(Entity):
     pass
@@ -263,153 +207,6 @@ class MacroDefinition:
 class Macro(Entity):
     tex: str
 
-
-"""
-EQUATION PARSING
-"""
-
-EquationIndex = int
-TokenIndex = int
-SymbolIndex = int
-
-
-@dataclass(frozen=True)
-class SymbolId:
-    tex_path: str
-    equation_index: EquationIndex
-    symbol_index: SymbolIndex
-
-
-@dataclass(frozen=True)
-class TokenId:
-    tex_path: str
-    equation_index: EquationIndex
-    start: int
-    end: int
-
-
-@dataclass(frozen=True)
-class Token:
-    text: str
-    " Unicode (not TeX) representation of this token, computed by parsing the equation with KaTeX. "
-
-    type_: Literal["atom", "affix"]
-    """
-    Indicates whether the token is an affix to other tokens in the TeX (e.g., a macro like '\\bar'
-    or '\\arrow'). Affixes can't be located using the typical colorizing method, because TeX fails
-    if affixes are surrounded in a coloring macro. Affixes therefore need to be detected either
-    as parts of colorized symbols containing the affix, or by colorizing both the affix with a
-    salient color and its argument with a neutral color (see for instance
-    https://tex.stackexchange.com/a/46704/198728).
-    """
-
-    start: int
-    " 'start' and 'end' are measured relative to the start of the equation."
-
-    end: int
-
-
-MathML = str
-
-
-@dataclass
-class Symbol:
-    tex_path: str
-    equation_index: int
-    symbol_index: int
-    tokens: List[Token]
-    tex: str
-    start: int
-    end: int
-    mathml: MathML
-    children: List["Symbol"]
-    """
-    List of child symbols. Should be of type 'Symbol'. 'children' is a bit of misnomer. These is
-    actually a list of all other symbols for which this is the closest ancestor.
-    """
-
-    parent: Optional["Symbol"]
-    contains_affix: bool
-    is_definition: bool = False
-    equation: Optional[str] = None
-    relative_start: Optional[int] = None
-    relative_end: Optional[int] = None
-
-
-class SymbolWithId(NamedTuple):
-    symbol_id: SymbolId
-    symbol: Symbol
-
-
-@dataclass(frozen=True)
-class EquationId:
-    tex_path: str
-    equation_index: int
-
-
-" Serializable data classes for symbols, for storing results to file"
-
-
-@dataclass(frozen=True)
-class SerializableToken(SerializableEntity, Token):
-    tex_path: str
-    equation: str
-
-    equation_index: int
-
-    equation_depth: int
-    " 'depth' attribute for the equation this token belongs to. "
-
-    relative_start: int
-    """
-    While the 'start' and 'end' attributes are the absolute character offsets of the token in the
-    TeX file, 'relative_start' and 'relative_end' are relative to the equation it was found in.
-    They are the count of characters after the 'content_start' of the containing equation where
-    this token starts and finishes.
-    """
-
-    relative_end: int
-    " See 'relative_start'. "
-
-
-# Type of symbol. If a new symbol type is added, then several other places in the larger
-# project need to be changed: (1) the symbol attributes type in the API and UI and (2) the UI code
-# that renders symbol annotations, which needs to be told which symbol types should be rendered,
-# and which types should not.
-NodeType = Literal[
-    "identifier", "function", "definition-operator", "operator",
-]
-
-
-@dataclass(frozen=True)
-class SerializableSymbol(SerializableEntity, SymbolId):
-    equation: str
-    mathml: str
-    type_: NodeType
-    is_definition: bool
-    """
-    Whether this appearance of the symbol is a definition of the symbol.
-    """
-
-    relative_start: int
-    relative_end: int
-
-    contains_affix: bool
-    """
-    Whether the symbol contains an affix token (e.g., an arrow or bar) and therefore whether
-    the symbol's position needs to be determined by coloring it in its entirety.
-    """
-
-
-@dataclass(frozen=True)
-class SerializableChild(SymbolId):
-    equation: str
-    child_index: int
-
-
-@dataclass(frozen=True)
-class SerializableSymbolToken(SymbolId, TokenId):
-    pass
 
 
 """
@@ -464,43 +261,12 @@ class ColorizeOptions:
 
 
 @dataclass(frozen=True)
-class ColorizedTokenWithOrigin:
-    tex_path: str
-    equation_index: int
-    token_index: int
-    start: int
-    end: int
-    text: str
-    hue: Hue
-
-
-@dataclass(frozen=True)
 class ColorizationRecord:
     tex_path: str
     iteration: str
     hue: float
     entity_id: str
     " Should match the ID on a 'SerializableEntity'"
-
-
-"""
-SEARCH
-"""
-
-
-@dataclass(frozen=True)
-class Match:
-    """
-    A MathML equation that matches a queried MathML equation. Rank is relative to the set of
-    MathML equations it was chosen from. Rank starts at 1.
-    """
-
-    queried_mathml: MathML
-    matching_mathml: MathML
-    rank: int
-
-
-Matches = Dict[MathML, List[Match]]
 
 
 """
@@ -569,10 +335,6 @@ class EntityLocationInfo(BoundingBox):
 class HueLocationInfo(EntityLocationInfo):
     iteration: str
     hue: float
-
-
-TokenLocations = Dict[TokenId, List[BoundingBox]]
-
 
 @dataclass(frozen=True)
 class CitationData:

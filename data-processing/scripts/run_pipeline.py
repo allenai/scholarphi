@@ -22,14 +22,13 @@ from common.commands.fetch_arxiv_sources import (
 from common.commands.fetch_new_arxiv_ids import FetchNewArxivIds
 from common.commands.fetch_s2_data import S2ApiException
 from common.commands.locate_entities import LocateEntitiesCommand
-from common.commands.upload_entities import UploadEntitiesCommand
 from common.commands.store_pipeline_log import StorePipelineLog
 from common.commands.store_results import DEFAULT_S3_LOGS_BUCKET, StoreResults
+from common.commands.upload_entities import UploadEntitiesCommand
 from common.fetch_arxiv import FetchFromArxivException
 from common.make_digest import make_paper_digest
 from common.upload_entities import OutputDetails, OutputForm
 from common.types import PipelineDigest
-from entities.definitions.commands.detect_definitions import DetectDefinitions
 
 from scripts.commands import (
     ENTITY_COMMANDS,
@@ -75,8 +74,6 @@ def run_commands_for_arxiv_ids(
             command_args.s3_bucket = pipeline_args.s3_arxiv_sources_bucket
         if CommandCls in [StorePipelineLog, StoreResults]:
             command_args.s3_bucket = pipeline_args.s3_output_bucket
-        if CommandCls == DetectDefinitions:
-            command_args.definitions_base_url = pipeline_args.definitions_base_url
 
         if CommandCls == StorePipelineLog:
             logging.debug("Flushing file log before storing pipeline logs.")
@@ -95,7 +92,9 @@ def run_commands_for_arxiv_ids(
         # and subprocess calls in the commands, it is simply unlikely that we can predict and
         # write exceptions for every possible exception that could be thrown.
         except Exception as exc:  # pylint: disable=broad-except
-            logging.exception("Unexpected exception processing papers: {}".format(arxiv_id_list))
+            logging.exception(
+                "Unexpected exception processing papers: {}".format(arxiv_id_list)
+            )
             raise exc
 
         logging.info("Finished running command %s", CommandCls.get_name())
@@ -335,9 +334,7 @@ if __name__ == "__main__":
         ),
     )
     parser.add_argument(
-        "--definitions-base-url",
-        type=str,
-        help="Base url for definition model paths."
+        "--definitions-base-url", type=str, help="Base url for definition model paths."
     )
 
     parser.add_argument(
@@ -494,26 +491,32 @@ if __name__ == "__main__":
     filtered_commands_without_upload = []
     for command in filtered_commands:
         if issubclass(command, UploadEntitiesCommand):
-            if 'citation' in command.get_name():
+            if "citation" in command.get_name():
                 sort_order = 0
-            elif 'sentence' in command.get_name():
+            elif "sentence" in command.get_name():
                 sort_order = 1
-            elif 'equation' in command.get_name():
+            elif "equation" in command.get_name():
                 sort_order = 2
-            elif 'symbol' in command.get_name():
+            elif "symbol" in command.get_name():
                 sort_order = 3
-            elif 'definition' in command.get_name():
+            elif "definition" in command.get_name():
                 sort_order = 4
-            elif 'glossary' in command.get_name():
+            elif "glossary" in command.get_name():
                 sort_order = 5
             else:
-                raise ValueError(f'Unknown entity type for uploading: {command.get_name()}')
+                raise ValueError(
+                    f"Unknown entity type for uploading: {command.get_name()}"
+                )
             upload_command_to_sort_order[command] = sort_order
         else:
             filtered_commands_without_upload.append(command)
-    sorted_upload_commands = [cmd for cmd, sort_order in sorted(upload_command_to_sort_order.items(), key=lambda tup: tup[1])]
+    sorted_upload_commands = [
+        cmd
+        for cmd, sort_order in sorted(
+            upload_command_to_sort_order.items(), key=lambda tup: tup[1]
+        )
+    ]
     filtered_commands = filtered_commands_without_upload + sorted_upload_commands
-
 
     if args.max_papers is not None:
         logging.debug(

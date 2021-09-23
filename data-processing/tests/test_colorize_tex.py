@@ -1,19 +1,13 @@
 import re
 
-from common.colorize_tex import (
-    COLOR_MACROS,
-    COLOR_MACROS_BASE_MACROS,
-    COLOR_MACROS_LATEX_IMPORTS,
-    COLOR_MACROS_TEX_IMPORTS,
-    add_color_macros,
-    colorize_entities,
-)
-from common.types import ColorizeOptions, SerializableEntity, SerializableToken
 from entities.citations.colorize import colorize_citations
 from entities.citations.types import Bibitem
-from entities.symbols.colorize import (
-    adjust_color_positions as adjust_token_color_positions,
-)
+
+from common.colorize_tex import (COLOR_MACROS, COLOR_MACROS_BASE_MACROS,
+                                 COLOR_MACROS_LATEX_IMPORTS,
+                                 COLOR_MACROS_TEX_IMPORTS, add_color_macros,
+                                 colorize_entities)
+from common.types import ColorizeOptions, SerializableEntity
 
 COLOR_PATTERN = (
     r"\\scholarsetcolor\[rgb\]{[0-9.]+,[0-9.]+,[0-9.]+}"
@@ -169,48 +163,3 @@ def test_skip_overlapping_entities():
     assert len(matches) == 1
     assert len(result.skipped) == 1
     assert result.skipped[0] in [outer, inner]
-
-
-def token(
-    equation_start: int,
-    relative_start: int,
-    relative_end: int,
-    tex: str,
-    equation_tex: str,
-    id_: str = "1",
-    equation_index: int = 0,
-    text: str = "symbol text",
-    equation_depth: int = 0,
-) -> SerializableToken:
-    return SerializableToken(
-        start=equation_start + relative_start,
-        end=equation_start + relative_end,
-        tex_path="main.tex",
-        id_=id_,
-        tex=tex,
-        context_tex="context",
-        equation=equation_tex,
-        equation_index=equation_index,
-        text=text,
-        equation_depth=equation_depth,
-        relative_start=relative_start,
-        relative_end=relative_end,
-        type_="atom",
-    )
-
-
-def test_adjust_token_color_locations_to_within_equation_bounds():
-    equation_tex = "x"
-    t = token(
-        equation_start=1,
-        relative_start=0,
-        # For reasons I don't yet know, KaTeX sometimes returns character indexes that are
-        # outside the equation. This will result in coloring bleeding over the edges of
-        # equations into the surrounding text, and sometimes TeX compilation errors.
-        relative_end=9,
-        tex="x",
-        equation_tex=equation_tex,
-    )
-    color_positions = adjust_token_color_positions(t)
-    assert color_positions.start == 1
-    assert color_positions.end == 2

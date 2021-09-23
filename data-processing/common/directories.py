@@ -4,7 +4,6 @@ from typing import Dict, Iterator, List, Optional
 from common.types import RelativePath
 
 # Directories for utilities
-NODE_DIRECTORY = "node"
 LOGS_DIR = "logs"
 
 # Main directories for output from processing papers
@@ -48,7 +47,7 @@ def register(dirkey: str, suffix: Optional[str] = None) -> RelativePath:
 
 # Register directories in an order that roughly corresponds to the order they will be run in.
 register("arxiv-ids")
-register('arxiv-pdfs')
+register("arxiv-pdfs")
 register("sources-archives")
 register("s2-metadata")
 register("sources")

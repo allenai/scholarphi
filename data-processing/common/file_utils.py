@@ -22,20 +22,8 @@ from common.types import (
     BoundingBox,
     CompilationResult,
     EntityLocationInfo,
-    Equation,
-    EquationId,
     FileContents,
-    HueLocationInfo,
     Path,
-    SerializableChild,
-    SerializableSymbol,
-    SerializableSymbolToken,
-    SerializableToken,
-    Symbol,
-    SymbolId,
-    SymbolWithId,
-    Token,
-    TokenId,
 )
 
 Contents = str
@@ -327,125 +315,6 @@ def find_files(
                 yield path
 
 
-def load_equations(arxiv_id: ArxivId) -> Optional[Dict[EquationId, Equation]]:
-    equations_path = os.path.join(
-        directories.arxiv_subdir("detected-equations", arxiv_id), "entities.csv"
-    )
-    if not os.path.exists(equations_path):
-        logging.warning("No equation data found for paper %s. Skipping.", arxiv_id)
-        return None
-
-    equations: Dict[EquationId, Equation] = {}
-    for e in load_from_csv(equations_path, Equation):
-        equation_id = EquationId(tex_path=e.tex_path, equation_index=int(e.i))
-        equations[equation_id] = e
-    return equations
-
-
-def load_tokens(arxiv_id: ArxivId) -> Optional[List[SerializableToken]]:
-    tokens_path = os.path.join(
-        directories.arxiv_subdir("detected-equation-tokens", arxiv_id), "entities.csv"
-    )
-    if not os.path.exists(tokens_path):
-        logging.warning(
-            "No equation token data found for paper %s. Skipping.", arxiv_id
-        )
-        return None
-
-    return list(load_from_csv(tokens_path, SerializableToken))
-
-
-def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
-
-    tokens_dir = directories.arxiv_subdir("detected-equation-tokens", arxiv_id)
-    tokens_path = os.path.join(tokens_dir, "entities.csv")
-
-    symbols_dir = directories.arxiv_subdir("detected-symbols", arxiv_id)
-    symbols_path = os.path.join(symbols_dir, "entities.csv")
-    symbol_tokens_path = os.path.join(symbols_dir, "symbol_tokens.csv")
-    symbol_children_path = os.path.join(symbols_dir, "symbol_children.csv")
-
-    file_not_found = False
-    if not os.path.exists(tokens_path):
-        logging.info("Tokens data missing for paper %s. Skipping.", arxiv_id)
-        file_not_found = True
-    if not os.path.exists(symbols_path):
-        logging.info("Symbols data missing for paper %s. Skipping.", arxiv_id)
-        file_not_found = True
-    if not os.path.exists(symbol_tokens_path):
-        logging.info("Symbol tokens data missing for paper %s. Skipping.", arxiv_id)
-        file_not_found = True
-    if not os.path.exists(symbol_children_path):
-        logging.info("No symbol children data found for paper %s.", arxiv_id)
-        file_not_found = True
-
-    if file_not_found:
-        return None
-
-    loaded_tokens = load_from_csv(tokens_path, SerializableToken)
-    loaded_symbols = load_from_csv(symbols_path, SerializableSymbol)
-    loaded_symbol_tokens = load_from_csv(symbol_tokens_path, SerializableSymbolToken)
-    loaded_symbol_children = load_from_csv(symbol_children_path, SerializableChild)
-
-    tokens_by_id: Dict[TokenId, Token] = {}
-    for t in loaded_tokens:
-        token_id = TokenId(
-            t.tex_path, t.equation_index, t.relative_start, t.relative_end
-        )
-        tokens_by_id[token_id] = Token(
-            start=t.relative_start, end=t.relative_end, text=t.text, type_=t.type_
-        )
-
-    symbols_by_id: Dict[SymbolId, Symbol] = {}
-    for s in loaded_symbols:
-        symbol_id = SymbolId(s.tex_path, s.equation_index, s.symbol_index)
-        symbols_by_id[symbol_id] = Symbol(
-            tex_path=s.tex_path,
-            equation_index=s.equation_index,
-            symbol_index=s.symbol_index,
-            tokens=[],
-            start=s.start,
-            end=s.end,
-            tex=s.tex,
-            mathml=s.mathml,
-            children=[],
-            parent=None,
-            is_definition=s.is_definition,
-            equation=s.equation,
-            relative_start=s.relative_start,
-            relative_end=s.relative_end,
-            contains_affix=s.contains_affix,
-        )
-
-    for st in loaded_symbol_tokens:
-        symbol_id = SymbolId(st.tex_path, st.equation_index, st.symbol_index)
-        token_id = TokenId(st.tex_path, st.equation_index, st.start, st.end)
-        if token_id in tokens_by_id and symbol_id in symbols_by_id:
-            symbols_by_id[symbol_id].tokens.append(tokens_by_id[token_id])
-
-    for c in loaded_symbol_children:
-        parent_id = SymbolId(c.tex_path, c.equation_index, c.symbol_index)
-        child_id = SymbolId(c.tex_path, c.equation_index, c.child_index)
-        try:
-            child_symbol = symbols_by_id[child_id]
-            parent_symbol = symbols_by_id[parent_id]
-            parent_symbol.children.append(child_symbol)
-            child_symbol.parent = parent_symbol
-        except KeyError:
-            logging.warning(  # pylint: disable=logging-not-lazy
-                "Could not load child symbol %s or parent symbol %s for paper %s when associating "
-                + "the two as parent and child. There may have been an error in the equation "
-                + "parser, like a failure to find tokens for the child symbol.",
-                child_id,
-                parent_id,
-                arxiv_id,
-            )
-
-    return [
-        SymbolWithId(symbol_id, symbol) for symbol_id, symbol in symbols_by_id.items()
-    ]
-
-
 def save_compilation_results(path: Path, result: CompilationResult) -> None:
     results_dir = os.path.join(path, "compilation_results")
     if not os.path.exists(results_dir):
@@ -528,35 +397,3 @@ def load_citation_fragment_locations(
     arxiv_id: ArxivId,
 ) -> Optional[Dict[EntityId, List[BoundingBox]]]:
     return load_locations(arxiv_id, "citation-fragments")
-
-
-def load_equation_token_locations(
-    arxiv_id: ArxivId,
-) -> Optional[Dict[TokenId, List[BoundingBox]]]:
-
-    token_locations: Dict[TokenId, List[BoundingBox]] = {}
-    token_locations_path = os.path.join(
-        directories.arxiv_subdir("equation-tokens-locations", arxiv_id),
-        "entity_locations.csv",
-    )
-    if not os.path.exists(token_locations_path):
-        logging.warning(
-            "Could not find bounding boxes information for %s. Skipping", arxiv_id,
-        )
-        return None
-
-    for record in load_from_csv(token_locations_path, HueLocationInfo):
-        equation_index, start, end = [int(t) for t in record.entity_id.split("-")]
-        token_id = TokenId(record.tex_path, equation_index, start, end)
-        box = BoundingBox(
-            page=int(record.page),
-            left=record.left,
-            top=record.top,
-            width=record.width,
-            height=record.height,
-        )
-        if token_id not in token_locations:
-            token_locations[token_id] = []
-        token_locations[token_id].append(box)
-
-    return token_locations
