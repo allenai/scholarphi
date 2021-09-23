@@ -1145,9 +1145,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       );
       this.setState({ deselectedDiscourses }, this.initDiscourseObjs);
     } else {
-      this.setState((prevState) => ({
-        deselectedDiscourses: [...prevState.deselectedDiscourses, discourse],
-      }), this.initDiscourseObjs);
+      this.setState(
+        (prevState) => ({
+          deselectedDiscourses: [...prevState.deselectedDiscourses, discourse],
+        }),
+        this.initDiscourseObjs
+      );
     }
   };
 
@@ -1669,6 +1672,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                             this.handleHideDiscourseObj(d)
                           }
                           handleOpenDrawer={() => this.openDrawer("facets")}
+                          drawerOpen={
+                            this.state.drawerMode === "open" &&
+                            this.state.drawerContentType === "facets"
+                          }
                         ></HighlightLayer>
                       )}
 

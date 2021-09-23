@@ -9,6 +9,7 @@ interface Props {
   discourseObjs: DiscourseObj[];
   leadSentences: SentenceUnit[];
   opacity: number;
+  drawerOpen: boolean;
   handleHideDiscourseObj: (d: DiscourseObj) => void;
   handleOpenDrawer: () => void;
 }
@@ -46,8 +47,36 @@ class HighlightLayer extends React.PureComponent<Props, State> {
     }));
   };
 
+  scrollToSnippetInDrawer = (focusedDiscourseObj: DiscourseObj) => {
+    const prevScrolledTo = document.querySelectorAll(".scrolled-to");
+    prevScrolledTo.forEach((x) => x.classList.remove("scrolled-to"));
+
+    let retries = 0;
+    const interval = setInterval(() => {
+      const facetSnippet = document.getElementById(
+        `facet-snippet-${focusedDiscourseObj.id}`
+      );
+      if (facetSnippet !== null) {
+        facetSnippet.classList.add("scrolled-to");
+        facetSnippet.scrollIntoView({
+          block: "center",
+        });
+      }
+      if (retries >= 5) {
+        clearInterval(interval);
+      }
+      retries += 1;
+    }, 200);
+  };
+
   render() {
-    const { pageView, discourseObjs, leadSentences, opacity } = this.props;
+    const {
+      pageView,
+      discourseObjs,
+      leadSentences,
+      opacity,
+      drawerOpen,
+    } = this.props;
     const { showControlToolbar, focusedDiscourseObj } = this.state;
 
     const pageNumber = uiUtils.getPageNumber(pageView);
@@ -69,7 +98,12 @@ class HighlightLayer extends React.PureComponent<Props, State> {
               <React.Fragment key={`highlight-${i}-${j}`}>
                 <div
                   className={`highlight-mask__highlight discourse-highlight highlight-${d.id}`}
-                  onMouseDown={() => this.toggleControlToolbar(d)}
+                  onMouseDown={() => {
+                    if (drawerOpen) {
+                      this.scrollToSnippetInDrawer(d);
+                    }
+                    this.toggleControlToolbar(d);
+                  }}
                   style={{
                     position: "absolute",
                     left: b.left * width,
@@ -111,27 +145,8 @@ class HighlightLayer extends React.PureComponent<Props, State> {
               this.props.handleHideDiscourseObj(focusedDiscourseObj)
             }
             handleOpenDrawer={() => {
-              const prevScrolledTo = document.querySelectorAll(".scrolled-to");
-              prevScrolledTo.forEach((x) => x.classList.remove("scrolled-to"));
-
               this.props.handleOpenDrawer();
-
-              let retries = 0;
-              const interval = setInterval(() => {
-                const facetSnippet = document.getElementById(
-                  `facet-snippet-${focusedDiscourseObj.id}`
-                );
-                if (facetSnippet !== null) {
-                  facetSnippet.classList.add("scrolled-to");
-                  facetSnippet.scrollIntoView({
-                    block: "center",
-                  });
-                }
-                if (retries >= 5) {
-                  clearInterval(interval);
-                }
-                retries += 1;
-              }, 200);
+              this.scrollToSnippetInDrawer(focusedDiscourseObj);
             }}
           />
         )}
