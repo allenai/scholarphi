@@ -713,10 +713,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     });
     this.loadDataFromApi();
 
-    if (this.props.paperId !== undefined) {
-      this.initDiscourseObjs();
-    }
-
     document.addEventListener("keydown", (event) => {
       if (uiUtils.isKeypressShiftTab(event)) {
         event.preventDefault();
@@ -730,6 +726,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         }
       }
     });
+
+    if (this.props.paperId !== undefined) {
+      this.initDiscourseObjs();
+    }
   }
 
   moveToNextDiscourseObj = () => {
@@ -743,16 +743,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     } else {
       nextId = discourseIds[0];
     }
-    this.setState(
-      {
-        currentDiscourseObjId: nextId,
-      },
-      () => {
-        if (this.state.currentDiscourseObjId !== null) {
-          this.jumpToDiscourseObj(this.state.currentDiscourseObjId);
-        }
-      }
-    );
+    this.jumpToDiscourseObj(nextId);
   };
 
   moveToPreviousDiscourseObj = () => {
@@ -766,23 +757,33 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     } else {
       nextId = discourseIds[numDiscourseObjs - 1];
     }
-    this.setState(
-      {
-        currentDiscourseObjId: nextId,
-      },
-      () => {
-        if (this.state.currentDiscourseObjId !== null) {
-          this.jumpToDiscourseObj(this.state.currentDiscourseObjId);
-        }
-      }
-    );
+    this.jumpToDiscourseObj(nextId);
   };
 
   initDiscourseObjs() {
-    const discourseObjs = uiUtils.sortDiscourseObjs(
+    let discourseObjs = uiUtils.sortDiscourseObjs(
       this.makeDiscourseObjectsForFacets(
         Object(facetData)[this.props.paperId!.id]
       )
+    );
+
+    // Add processed facet highlights
+    if (!this.state.facetHighlights) {
+      discourseObjs = discourseObjs.filter(
+        (x: DiscourseObj) => x.label === "Author"
+      );
+    }
+
+    // Remove "Author" statements if not enabled
+    if (!this.state.authorStatementsEnabled) {
+      discourseObjs = discourseObjs.filter(
+        (x: DiscourseObj) => x.label !== "Author"
+      );
+    }
+
+    // Filter out deselected facets
+    discourseObjs = discourseObjs.filter(
+      (x: DiscourseObj) => !this.state.deselectedDiscourses.includes(x.label)
     );
 
     const discourseObjsById = discourseObjs.reduce(
@@ -979,6 +980,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
      */
     this.setState({
       jumpTarget: id,
+      currentDiscourseObjId: id
     });
 
     return true;
@@ -1236,25 +1238,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     let discourseObjs: DiscourseObj[] = this.state.discourseObjs;
     let leadSentences: SentenceUnit[] = [];
     if (this.props.paperId !== undefined) {
-      // Add processed facet highlights
-      if (!this.state.facetHighlights) {
-        discourseObjs = discourseObjs.filter(
-          (x: DiscourseObj) => x.label === "Author"
-        );
-      }
-
-      // Remove "Author" statements if not enabled
-      if (!this.state.authorStatementsEnabled) {
-        discourseObjs = discourseObjs.filter(
-          (x: DiscourseObj) => x.label !== "Author"
-        );
-      }
-
-      // Filter out deselected facets
-      discourseObjs = discourseObjs.filter(
-        (x: DiscourseObj) => !this.state.deselectedDiscourses.includes(x.label)
-      );
-
       if (this.state.leadSentencesEnabled) {
         leadSentences = Object(sentenceData)[this.props.paperId!.id];
       }
