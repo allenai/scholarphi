@@ -136,7 +136,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       discourseObjsById: {},
       deselectedDiscourses: [],
       numHighlightMultiplier: {
-        Method: 0.7,
+        Method: 0.8,
         Result: 0.7,
       },
 
