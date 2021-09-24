@@ -16,7 +16,7 @@ def test_save_entities_with_file():
                 entity_infos=[],
                 data_version=None,
                 output_details=output_details,
-                filename="something.jsonl"
+                filename="something.json"
             )
 
             assert not mock_upload_entities.called
@@ -34,7 +34,7 @@ def test_save_entities_with_db():
                 entity_infos=[],
                 data_version=None,
                 output_details=output_details,
-                filename="something.jsonl"
+                filename="something.json"
             )
 
             assert mock_upload_entities.called
@@ -52,7 +52,7 @@ def test_save_entities_with_both():
                 entity_infos=[],
                 data_version=None,
                 output_details=output_details,
-                filename="something.jsonl"
+                filename="something.json"
             )
 
             assert mock_upload_entities.called
