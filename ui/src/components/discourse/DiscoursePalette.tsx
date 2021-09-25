@@ -48,35 +48,36 @@ class DiscoursePalette extends React.PureComponent<Props> {
         <div className={"discourse-chip-palette"}>
           {Object.entries(filteredDiscourseToColorMap).map(([d, color]) => {
             let label = null;
-            if (["Method", "Result"].includes(d)) {
-              label = (
-                <>
-                  <IconButton
-                    aria-label="decrease"
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      this.props.handleDecreaseNumHighlights(d);
-                    }}
-                  >
-                    <RemoveIcon fontSize="inherit" />
-                  </IconButton>
-                  <span className={"discourse-chip-label"}>{d}</span>
-                  <IconButton
-                    aria-label="increase"
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      this.props.handleIncreaseNumHighlights(d);
-                    }}
-                  >
-                    <AddIcon fontSize="inherit" />
-                  </IconButton>
-                </>
-              );
-            } else {
-              label = <span className={"discourse-chip-label"}>{d}</span>;
-            }
+            // if (["Method", "Result"].includes(d)) {
+            //   label = (
+            //     <>
+            //       <IconButton
+            //         aria-label="decrease"
+            //         size="small"
+            //         onClick={(e) => {
+            //           e.stopPropagation();
+            //           this.props.handleDecreaseNumHighlights(d);
+            //         }}
+            //       >
+            //         <RemoveIcon fontSize="inherit" />
+            //       </IconButton>
+            //       <span className={"discourse-chip-label"}>{d}</span>
+            //       <IconButton
+            //         aria-label="increase"
+            //         size="small"
+            //         onClick={(e) => {
+            //           e.stopPropagation();
+            //           this.props.handleIncreaseNumHighlights(d);
+            //         }}
+            //       >
+            //         <AddIcon fontSize="inherit" />
+            //       </IconButton>
+            //     </>
+            //   );
+            // } else {
+            //   label = <span className={"discourse-chip-label"}>{d}</span>;
+            // }
+            label = <span className={"discourse-chip-label"}>{d}</span>;
             return (
               <Chip
                 className={classNames("discourse-chip", {

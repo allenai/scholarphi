@@ -1280,6 +1280,28 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               handleCloseDrawer={this.closeDrawer}
             />
             <PdfjsToolbar>
+              {this.state.showSkimmingAnnotations && (
+                <>
+                  <button
+                    onClick={() => {
+                      this.handleIncreaseNumHighlights("Method");
+                      this.handleIncreaseNumHighlights("Result");
+                    }}
+                    className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
+                  >
+                    <span>More highlights</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      this.handleDecreaseNumHighlights("Method");
+                      this.handleDecreaseNumHighlights("Result");
+                    }}
+                    className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
+                  >
+                    <span>Less highlights</span>
+                  </button>
+                </>
+              )}
               <button
                 onClick={this.toggleSkimmingAnnotations}
                 className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
@@ -1290,12 +1312,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     : "Activate skimming"}
                 </span>
               </button>
-              <button
+              {/* <button
                 onClick={this.toggleControlPanelShowing}
                 className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
               >
                 <span>Customize UI</span>
-              </button>
+              </button> */}
               {this.state.facetDrawerEnabled ? (
                 <button
                   onClick={() => this.toggleDrawer("facets")}
