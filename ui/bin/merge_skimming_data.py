@@ -6,6 +6,7 @@ input_dirs = [
     "src/data/captions",
     "src/data/facets",
     "src/data/sentences",
+    "src/data/abstract",
 ]
 
 for input_dir in input_dirs:

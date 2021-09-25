@@ -19,3 +19,6 @@ src/data/captions/*
 
 src/data/sentences/*
 !src/data/sentences/skimmingData.json
+
+src/data/abstract/*
+!src/data/abstract/skimmingData.json

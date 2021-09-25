@@ -40,6 +40,7 @@ import DefinitionPreview from "./components/preview/DefinitionPreview";
 import PrimerPage from "./components/primer/PrimerPage";
 import ScrollbarMarkup from "./components/scrollbar/ScrollbarMarkup";
 import FindBar, { FindQuery } from "./components/search/FindBar";
+import abstractData from "./data/abstract/skimmingData.json";
 import captionData from "./data/captions/skimmingData.json";
 import facetData from "./data/facets/skimmingData.json";
 import sentenceData from "./data/sentences/skimmingData.json";
@@ -763,9 +764,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
   initDiscourseObjs() {
     let discourseObjs = uiUtils.sortDiscourseObjs(
-      this.makeDiscourseObjectsForFacets(
-        Object(facetData)[this.props.paperId!.id]
-      )
+      this.makeDiscourseObjectsForFacets([
+        ...Object(facetData)[this.props.paperId!.id],
+        ...Object(abstractData)[this.props.paperId!.id],
+      ])
     );
 
     // Add processed facet highlights
@@ -805,6 +807,28 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       discourseObjsById: discourseObjsById,
     });
   }
+
+  selectAbstractHighlights = () => {
+    let abstractHighlights = Object(abstractData)[this.props.paperId!.id];
+
+    const topObjective = abstractHighlights
+      .filter((r: RhetoricUnit) => r.label === "Objective" && r.prob !== null)
+      .sort((r1: RhetoricUnit, r2: RhetoricUnit) =>
+        r1.prob! > r2.prob! ? -1 : 1
+      );
+    const topMethod = abstractHighlights
+      .filter((r: RhetoricUnit) => r.label === "Method" && r.prob !== null)
+      .sort((r1: RhetoricUnit, r2: RhetoricUnit) =>
+        r1.prob! > r2.prob! ? -1 : 1
+      );
+    const topResult = abstractHighlights
+      .filter((r: RhetoricUnit) => r.label === "Result" && r.prob !== null)
+      .sort((r1: RhetoricUnit, r2: RhetoricUnit) =>
+        r1.prob! > r2.prob! ? -1 : 1
+      );
+
+    return [...topObjective, ...topMethod, ...topResult];
+  };
 
   subscribeToPDFViewerStateChanges = (
     pdfViewerApplication: PDFViewerApplication
@@ -999,6 +1023,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     } = uiUtils.getDiscourseToColorMap();
 
     const unitsToShow: RhetoricUnit[] = [];
+
+    // Add abstract highlights first, selecting the most probable from each facet.
+    unitsToShow.push(...this.selectAbstractHighlights());
 
     // Remove sentence fragments that were detected (i.e., start with a lowercase letter).
     // Exception: author statements
