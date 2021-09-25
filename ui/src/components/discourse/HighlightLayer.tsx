@@ -36,15 +36,19 @@ class HighlightLayer extends React.PureComponent<Props, State> {
     });
   };
 
+  showControlToolbar = (d: DiscourseObj) => {
+    this.setState({
+      showControlToolbar: true,
+      focusedDiscourseObj: d,
+    })
+  }
+
   toggleControlToolbar = (d: DiscourseObj) => {
-    this.setState((prevState) => ({
-      showControlToolbar: prevState.focusedDiscourseObj != d,
-      focusedDiscourseObj:
-        prevState.focusedDiscourseObj === null ||
-        prevState.focusedDiscourseObj != d
-          ? d
-          : null,
-    }));
+    if (this.state.focusedDiscourseObj !== d) {
+      this.showControlToolbar(d);
+    } else {
+      this.closeControlToolbar();
+    }
   };
 
   scrollToSnippetInDrawer = (focusedDiscourseObj: DiscourseObj) => {
@@ -109,7 +113,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
                     left: b.left * width,
                     top: b.top * height,
                     width: b.width * width,
-                    height: b.height * height,
+                    height: b.height * height * 1.2,
                     backgroundColor: d.color,
                     opacity: opacity,
                   }}

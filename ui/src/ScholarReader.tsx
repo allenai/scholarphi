@@ -1084,13 +1084,13 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     );
 
     // ---- CONCLUSION ---- //
-    const conclusion = data.filter(
-      (r: RhetoricUnit) =>
-        r.label === "Conclusion" &&
-        r.is_author_statement &&
-        r.is_in_expected_section
-    );
-    unitsToShow.push(...conclusion);
+    // const conclusion = data.filter(
+    //   (r: RhetoricUnit) =>
+    //     r.label === "Conclusion" &&
+    //     r.is_author_statement &&
+    //     r.is_in_expected_section
+    // );
+    // unitsToShow.push(...conclusion);
 
     // ---- Author statements ---- //
     const authorStatements = data.filter(
