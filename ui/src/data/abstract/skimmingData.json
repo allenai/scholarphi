@@ -33,7 +33,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.5824331045150757,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -92,7 +92,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.6561979651451111,
       "is_author_statement": false,
       "is_in_expected_section": false
@@ -130,7 +130,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.7647748589515686,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -161,7 +161,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.7503337264060974,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -187,7 +187,7 @@
           "page": 0
         }
       ],
-      "section": "8 CORRECTIONS @@ abstract",
+      "section": "Abstract",
       "prob": 0.5223193168640137,
       "is_author_statement": false,
       "is_in_expected_section": false
@@ -225,7 +225,7 @@
           "page": 0
         }
       ],
-      "section": "8 CORRECTIONS @@ abstract",
+      "section": "Abstract",
       "prob": 0.7549203634262085,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -258,7 +258,7 @@
           "page": 0
         }
       ],
-      "section": " @@ abstract",
+      "section": "Abstract",
       "prob": 0.4064534902572632,
       "is_author_statement": false,
       "is_in_expected_section": true
@@ -282,7 +282,7 @@
           "page": 0
         }
       ],
-      "section": " @@ abstract",
+      "section": "Abstract",
       "prob": 0.29601770639419556,
       "is_author_statement": true,
       "is_in_expected_section": true
@@ -313,7 +313,7 @@
           "page": 0
         }
       ],
-      "section": " @@ abstract",
+      "section": "Abstract",
       "prob": 0.4095883071422577,
       "is_author_statement": true,
       "is_in_expected_section": true
@@ -337,7 +337,7 @@
           "page": 0
         }
       ],
-      "section": " @@ abstract",
+      "section": "Abstract",
       "prob": 0.5333324074745178,
       "is_author_statement": true,
       "is_in_expected_section": true
@@ -361,7 +361,7 @@
           "page": 1
         }
       ],
-      "section": " @@ abstract",
+      "section": "Abstract",
       "prob": 0.722301721572876,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -392,7 +392,7 @@
           "page": 0
         }
       ],
-      "section": " @@ abstract",
+      "section": "Abstract",
       "prob": 0.5064322352409363,
       "is_author_statement": true,
       "is_in_expected_section": true
@@ -409,7 +409,7 @@
           "page": 0
         }
       ],
-      "section": " @@ abstract",
+      "section": "Abstract",
       "prob": 0.5572414994239807,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -433,7 +433,7 @@
           "page": 0
         }
       ],
-      "section": " @@ abstract",
+      "section": "Abstract",
       "prob": 0.46776002645492554,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -457,7 +457,7 @@
           "page": 0
         }
       ],
-      "section": " @@ abstract",
+      "section": "Abstract",
       "prob": 0.6178346276283264,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -481,7 +481,7 @@
           "page": 1
         }
       ],
-      "section": " @@ abstract",
+      "section": "Abstract",
       "prob": 0.8778695464134216,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -500,7 +500,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.40687987208366394,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -524,7 +524,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.6694847941398621,
       "is_author_statement": false,
       "is_in_expected_section": true
@@ -562,7 +562,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.696153998374939,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -588,7 +588,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.36043983697891235,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -619,7 +619,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.4432009160518646,
       "is_author_statement": true,
       "is_in_expected_section": true
@@ -660,7 +660,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.5004971027374268,
       "is_author_statement": false,
       "is_in_expected_section": true
@@ -691,7 +691,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.620433509349823,
       "is_author_statement": true,
       "is_in_expected_section": true
@@ -731,7 +731,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.36864858865737915,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -762,7 +762,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.8270595073699951,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -793,7 +793,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.8378204703330994,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -833,7 +833,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.47170689702033997,
       "is_author_statement": false,
       "is_in_expected_section": false
@@ -864,7 +864,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.5620381832122803,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -902,7 +902,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.6879555583000183,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -928,7 +928,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.5510774254798889,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -952,7 +952,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.29209229350090027,
       "is_author_statement": false,
       "is_in_expected_section": true
@@ -990,7 +990,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.3387570083141327,
       "is_author_statement": true,
       "is_in_expected_section": true
@@ -1021,7 +1021,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.6562635898590088,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -1038,7 +1038,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.5027691721916199,
       "is_author_statement": false,
       "is_in_expected_section": false
@@ -1062,7 +1062,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.7298760414123535,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -1102,7 +1102,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.5682372450828552,
       "is_author_statement": true,
       "is_in_expected_section": true
@@ -1133,7 +1133,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.800118625164032,
       "is_author_statement": false,
       "is_in_expected_section": false
@@ -1159,7 +1159,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.42618751525878906,
       "is_author_statement": false,
       "is_in_expected_section": false
@@ -1183,7 +1183,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.43500685691833496,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -1214,7 +1214,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.6921930909156799,
       "is_author_statement": false,
       "is_in_expected_section": false
@@ -1254,7 +1254,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.7673843502998352,
       "is_author_statement": false,
       "is_in_expected_section": false
@@ -1278,7 +1278,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.782508909702301,
       "is_author_statement": false,
       "is_in_expected_section": false
@@ -1325,7 +1325,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.6347765922546387,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -1351,7 +1351,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.5778974890708923,
       "is_author_statement": false,
       "is_in_expected_section": false
@@ -1382,7 +1382,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.4903740882873535,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -1420,7 +1420,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.2937440574169159,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -1451,7 +1451,7 @@
           "page": 1
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.28720539808273315,
       "is_author_statement": false,
       "is_in_expected_section": false
@@ -1482,7 +1482,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.3962787985801697,
       "is_author_statement": true,
       "is_in_expected_section": false
@@ -1520,7 +1520,7 @@
           "page": 0
         }
       ],
-      "section": "abstract",
+      "section": "Abstract",
       "prob": 0.8593361973762512,
       "is_author_statement": true,
       "is_in_expected_section": false
