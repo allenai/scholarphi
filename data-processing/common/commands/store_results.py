@@ -167,20 +167,8 @@ class StoreResults(ArxivBatchCommand[ArxivId, None]):
 RESULT_SPECS: List[ResultSpec] = [
     ResultSpec("bibitems", "bibitems.csv", "bibitems"),
     ResultSpec("bibitem-resolutions", "resolutions.csv", "bibitem-resolutions"),
-    ResultSpec("detected-equations", "equations.csv", "detected-equations"),
-    ResultSpec("detected-equation-tokens", "parse_results.csv", "symbol-parse-results"),
-    ResultSpec("detected-equation-tokens", "symbols.csv", "symbols"),
-    ResultSpec("detected-equation-tokens", "symbol_children.csv", "symbol-children"),
-    ResultSpec("detected-equation-tokens", "symbol_tokens.csv", "symbol-tokens"),
-    ResultSpec("detected-equation-tokens", "entities.csv", "tokens"),
     ResultSpec(
         "sources-with-colorized-citations", "**/entity_hues.csv", "citation-hues",
-    ),
-    ResultSpec(
-        "sources-with-colorized-equations", "**/entity_hues.csv", "equation-hues",
-    ),
-    ResultSpec(
-        "sources-with-colorized-equation-tokens", "**/entity_hues.csv", "token-hues",
     ),
     ResultSpec(
         "compiled-sources",
@@ -211,42 +199,6 @@ RESULT_SPECS: List[ResultSpec] = [
         "compilation-autotex-log-colorized-citations",
     ),
     ResultSpec(
-        "compiled-sources-with-colorized-equations",
-        "**/compilation_results/result",
-        "compilation-result-colorized-equations",
-    ),
-    ResultSpec(
-        "compiled-sources-with-colorized-equations",
-        "**/compilation_results/pdf_names.csv",
-        "compilation-pdf-names-colorized-equations",
-    ),
-    ResultSpec(
-        "compiled-sources-with-colorized-equations",
-        "**/auto_gen_ps.log",
-        "compilation-autotex-log-colorized-equations",
-    ),
-    ResultSpec(
-        "compiled-sources-with-colorized-equation-tokens",
-        "**/compilation_results/result",
-        "compilation-result-colorized-tokens",
-    ),
-    ResultSpec(
-        "compiled-sources-with-colorized-equation-tokens",
-        "**/compilation_results/pdf_names.csv",
-        "compilation-pdf-names-colorized-tokens",
-    ),
-    ResultSpec(
-        "compiled-sources-with-colorized-equation-tokens",
-        "**/auto_gen_ps.log",
-        "compilation-autotex-log-colorized-tokens",
-    ),
-    ResultSpec(
         "hue-locations-for-citations", "hue_locations.csv", "citation-locations",
-    ),
-    ResultSpec(
-        "hue-locations-for-equations", "hue_locations.csv", "equation-locations",
-    ),
-    ResultSpec(
-        "hue-locations-for-equation-tokens", "hue_locations.csv", "token-locations",
     ),
 ]

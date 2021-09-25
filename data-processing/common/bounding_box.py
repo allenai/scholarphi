@@ -1,30 +1,12 @@
 import logging
-from typing import (
-    Callable,
-    Dict,
-    FrozenSet,
-    Iterable,
-    Iterator,
-    List,
-    Optional,
-    Set,
-    Tuple,
-)
+from typing import (Callable, Dict, FrozenSet, Iterable, Iterator, List,
+                    Optional, Set, Tuple)
 
 import cv2
 import numpy as np
 from scipy.optimize import linear_sum_assignment
 
-from common.types import (
-    BoundingBox,
-    FloatRectangle,
-    Point,
-    Rectangle,
-    Symbol,
-    SymbolId,
-    TokenId,
-    TokenLocations,
-)
+from common.types import BoundingBox, FloatRectangle, Point, Rectangle
 
 
 def extract_bounding_boxes(
@@ -233,40 +215,6 @@ def _to_pdf_coordinates(
         height=pdf_top - pdf_bottom,
         page=page,
     )
-
-
-def get_symbol_bounding_box(
-    symbol: Symbol, symbol_id: SymbolId, token_boxes: TokenLocations
-) -> Optional[BoundingBox]:
-    boxes = []
-    for token in symbol.tokens:
-        token_id = TokenId(
-            symbol_id.tex_path, symbol_id.equation_index, token.start, token.end
-        )
-        boxes.extend(token_boxes.get(token_id, []))
-
-    if len(boxes) == 0:
-        return None
-
-    # Boxes for a symbol should be on only one page.
-    if len({box.page for box in boxes}) > 1:
-        logging.warning(  # pylint: disable=logging-not-lazy
-            (
-                "Boxes found on more than one page for symbol %s. "
-                + "Only the boxes for one page will be considered."
-            ),
-            symbol,
-        )
-
-    page = boxes[0].page
-    boxes_on_page = list(filter(lambda b: b.page == page, boxes))
-
-    left = min([box.left for box in boxes_on_page])
-    right = max([box.left + box.width for box in boxes_on_page])
-    top = min([box.top for box in boxes_on_page])
-    bottom = max([box.top + box.height for box in boxes_on_page])
-
-    return BoundingBox(left, top, right - left, bottom - top, page)
 
 
 def _is_box_in_cluster(
