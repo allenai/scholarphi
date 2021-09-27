@@ -4,13 +4,10 @@ import Close from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Toc from "@material-ui/icons/Toc";
 import { default as React } from "react";
-import { BoundingBox } from "../../api/types";
-import { PDFPageView } from "../../types/pdfjs-viewer";
-import * as uiUtils from "../../utils/ui";
 
 interface Props {
-  pageView: PDFPageView;
-  anchor: BoundingBox;
+  x: number;
+  y: number;
   handleClose: () => void;
   handleDeleteHighlight: () => void;
   handleOpenDrawer: () => void;
@@ -18,16 +15,15 @@ interface Props {
 
 class DiscourseControlToolbar extends React.PureComponent<Props> {
   render() {
-    const { pageView, anchor } = this.props;
-
-    const anchorPosition = uiUtils.getPositionInPageView(pageView, anchor);
+    const { x, y } = this.props;
 
     return (
       <div
         className="discourse-control-toolbar side-right"
         style={{
-          top: anchorPosition.top,
-          left: anchorPosition.left + anchorPosition.width + 10,
+          top: y,
+          left: x,
+          transform: "translate(-50%, 0)",
         }}
       >
         <table>
