@@ -46,6 +46,7 @@ export class Facets extends React.PureComponent<Props> {
 
     return (
       <>
+        <p className="discourse-palette-heading">Filter highlights</p>
         <div>
           <DiscoursePalette
             discourseToColorMap={uiUtils.getDiscourseToColorMap()}

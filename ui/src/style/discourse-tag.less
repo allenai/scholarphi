@@ -32,7 +32,7 @@
   position: relative;
   width: @document-snippets-container-width + 20px;
   margin: 0 auto;
-  margin-top: 20px;
+  margin-top: 5px;
 
   .discourse-chip-palette {
     height: fit-content;
@@ -43,9 +43,15 @@
     .discourse-chip {
       margin: 2px 2px;
       border-radius: 6px !important;
+      opacity: 0.8;
 
       &.deselected {
         opacity: 0.6;
+      }
+
+      &:hover:not(.deselected) {
+        opacity: 1;
+        border-color: grey;
       }
     }
 
@@ -67,4 +73,10 @@
   &:hover {
     z-index: 1000;
   }
+}
+
+.discourse-palette-heading {
+  text-align: center;
+  font-weight: 500;
+  margin-top: 15px;
 }
