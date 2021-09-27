@@ -464,3 +464,23 @@ export function sortDiscourseObjs(discourseObjs: DiscourseObj[]) {
   });
   return sorted;
 }
+
+export function addClassToElementsByClassname(classname: string, classToAdd: string) {
+  let retries = 0;
+  const interval = setInterval(() => {
+    const highlight = document.getElementsByClassName(classname);
+    if (highlight !== null) {
+      Array.from(highlight).forEach((x) => x.classList.add(classToAdd));
+      clearInterval(interval);
+    }
+    if (retries >= 10) {
+      clearInterval(interval);
+    }
+    retries += 1;
+  }, 100);
+}
+
+export function removeClassFromElementsByClassname(classToRemove: string) {
+  const prevSelected = document.querySelectorAll(`.${classToRemove}`);
+  prevSelected.forEach((x) => x.classList.remove(classToRemove));
+}

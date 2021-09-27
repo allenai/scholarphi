@@ -3,6 +3,7 @@ import React from "react";
 import { getRemoteLogger } from "../../logging";
 import * as selectors from "../../selectors";
 import { RichText } from "../common";
+import * as uiUtils from "../../utils/ui";
 
 const logger = getRemoteLogger();
 
@@ -18,17 +19,23 @@ class FacetSnippet extends React.PureComponent<Props> {
     super(props);
   }
 
+  markAsSelected = (classname: string) => {
+    uiUtils.addClassToElementsByClassname(classname, "selected");
+  };
+
+  clearAllSelected = () => {
+    uiUtils.removeClassFromElementsByClassname("selected");
+  };
+
   onClick() {
     logger.log("debug", "clicked-jump-to-facet-snippet-context", {
       contextEntity: this.props.id,
     });
     if (this.props.handleJumpToDiscourseObj) {
-      const facetSnippet = document.getElementById(
-        `facet-snippet-${this.props.id}`
-      );
-      if (facetSnippet !== null) {
-        facetSnippet.classList.add("scrolled-to");
-      }
+      this.clearAllSelected();
+      this.markAsSelected(`facet-snippet-${this.props.id}`);
+      this.markAsSelected(`highlight-${this.props.id}`);
+
       this.props.handleJumpToDiscourseObj(this.props.id);
     }
   }
@@ -39,8 +46,7 @@ class FacetSnippet extends React.PureComponent<Props> {
     return (
       <>
         <div
-          id={`facet-snippet-${id}`}
-          className={classNames("snippet")}
+          className={classNames("snippet", `facet-snippet-${id}`)}
           onClick={() => this.onClick()}
         >
           <div

@@ -61,6 +61,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
       )
     ) {
       this.closeControlToolbar();
+      this.clearAllSelected();
     }
   };
 
@@ -70,6 +71,8 @@ class HighlightLayer extends React.PureComponent<Props, State> {
     lineIndex: number
   ) => {
     const pageRect = this.props.pageView.div.getBoundingClientRect();
+    this.clearAllSelected();
+    this.markHighlightAsSelected(sentence);
     this.setState({
       showControlToolbar: true,
       focusedDiscourseObj: sentence,
@@ -87,41 +90,32 @@ class HighlightLayer extends React.PureComponent<Props, State> {
     });
   };
 
-  showControlToolbar = (d: DiscourseObj) => {
-    this.setState({
-      showControlToolbar: true,
-      focusedDiscourseObj: d,
-    });
+  markHighlightAsSelected = (d: DiscourseObj) => {
+    uiUtils.addClassToElementsByClassname(`highlight-${d.id}`, "selected");
   };
 
-  toggleControlToolbar = (d: DiscourseObj) => {
-    if (this.state.focusedDiscourseObj !== d) {
-      this.showControlToolbar(d);
-    } else {
-      this.closeControlToolbar();
-    }
+  clearAllSelected = () => {
+    uiUtils.removeClassFromElementsByClassname("selected");
   };
 
   scrollToSnippetInDrawer = (focusedDiscourseObj: DiscourseObj) => {
-    const prevScrolledTo = document.querySelectorAll(".scrolled-to");
-    prevScrolledTo.forEach((x) => x.classList.remove("scrolled-to"));
-
     let retries = 0;
     const interval = setInterval(() => {
       const facetSnippet = document.getElementById(
         `facet-snippet-${focusedDiscourseObj.id}`
       );
       if (facetSnippet !== null) {
-        facetSnippet.classList.add("scrolled-to");
+        facetSnippet.classList.add("selected");
         facetSnippet.scrollIntoView({
           block: "center",
         });
+        clearInterval(interval);
       }
-      if (retries >= 5) {
+      if (retries >= 10) {
         clearInterval(interval);
       }
       retries += 1;
-    }, 200);
+    }, 100);
   };
 
   render() {
