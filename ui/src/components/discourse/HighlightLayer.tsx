@@ -101,8 +101,8 @@ class HighlightLayer extends React.PureComponent<Props, State> {
   scrollToSnippetInDrawer = (focusedDiscourseObj: DiscourseObj) => {
     let retries = 0;
     const interval = setInterval(() => {
-      const facetSnippet = document.getElementById(
-        `facet-snippet-${focusedDiscourseObj.id}`
+      const facetSnippet = document.querySelector(
+        `.facet-snippet-${focusedDiscourseObj.id}`
       );
       if (facetSnippet !== null) {
         facetSnippet.classList.add("selected");
