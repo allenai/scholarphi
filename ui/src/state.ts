@@ -1,16 +1,15 @@
-import { SnackbarMode } from "./components/overlay/AppOverlay";
-import { DrawerContentType, DrawerMode } from "./components/drawer/Drawer";
+import { PDFDocumentProxy } from "pdfjs-dist/types/display/api";
+import { BoundingBox, DiscourseObj, Entity, Paper } from "./api/types";
 import { AreaSelectionMethod } from "./components/control/EntityCreationToolbar";
+import { DrawerContentType, DrawerMode } from "./components/drawer/Drawer";
+import { SnackbarMode } from "./components/overlay/AppOverlay";
 import { FindMode, FindQuery, SymbolFilter } from "./components/search/FindBar";
 import { Settings } from "./settings";
-import { Entity, Paper, DiscourseObj } from "./api/types";
 import {
   PDFPageView,
   PDFViewer,
   PDFViewerApplication,
 } from "./types/pdfjs-viewer";
-
-import { PDFDocumentProxy } from "pdfjs-dist/types/display/api";
 
 /**
  * An object containing all the shared global state. It is designed to be used as follows:
@@ -153,6 +152,7 @@ export interface State extends Settings {
   skimOpacity: number;
   showSkimmingAnnotations: boolean;
   currentDiscourseObjId: string | null;
+  leadSentences: { text: string; bboxes: BoundingBox[] }[];
   discourseObjs: DiscourseObj[];
   discourseObjsById: { [id: string]: DiscourseObj };
   deselectedDiscourses: string[];

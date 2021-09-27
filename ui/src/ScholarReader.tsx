@@ -12,7 +12,6 @@ import {
   isTerm,
   Paper,
   RhetoricUnit,
-  SentenceUnit,
   Symbol,
 } from "./api/types";
 import Control from "./components/control/Control";
@@ -132,6 +131,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       skimOpacity: 0.3,
       showSkimmingAnnotations: true,
 
+      leadSentences:
+        props.paperId !== undefined
+          ? Object(sentenceData)[props.paperId.id]
+          : [],
       currentDiscourseObjId: null,
       discourseObjs: [],
       discourseObjsById: {},
@@ -594,6 +597,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       drawerMode: "open",
       drawerContentType,
     });
+  };
+
+  openDrawerWithFacets = () => {
+    this.openDrawer("facets");
   };
 
   closeDrawer = (): void => {
@@ -1281,12 +1288,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       this._jumpedToInitialFocus = true;
     }
 
-    let leadSentences: SentenceUnit[] = [];
-    if (this.props.paperId !== undefined) {
-      if (this.state.leadSentencesEnabled) {
-        leadSentences = Object(sentenceData)[this.props.paperId!.id];
-      }
-    }
+    const leadSentences = this.state.leadSentencesEnabled
+      ? this.state.leadSentences
+      : null;
 
     return (
       <>
@@ -1710,17 +1714,15 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     {this.props.paperId !== undefined &&
                       this.state.showSkimmingAnnotations &&
                       (this.state.discourseObjs.length > 0 ||
-                        leadSentences.length > 0) &&
+                        (leadSentences !== null && leadSentences.length > 0)) &&
                       this.state.cueingStyle === "highlight" && (
                         <HighlightLayer
                           pageView={pageView}
                           discourseObjs={this.state.discourseObjs}
                           leadSentences={leadSentences}
                           opacity={this.state.skimOpacity}
-                          handleHideDiscourseObj={(d) =>
-                            this.handleHideDiscourseObj(d)
-                          }
-                          handleOpenDrawer={() => this.openDrawer("facets")}
+                          handleHideDiscourseObj={this.handleHideDiscourseObj}
+                          handleOpenDrawer={this.openDrawerWithFacets}
                           drawerOpen={
                             this.state.drawerMode === "open" &&
                             this.state.drawerContentType === "facets"
@@ -1731,7 +1733,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     {this.props.paperId !== undefined &&
                       this.state.showSkimmingAnnotations &&
                       (this.state.discourseObjs.length > 0 ||
-                        leadSentences.length > 0) &&
+                        (leadSentences !== null && leadSentences.length > 0)) &&
                       this.state.cueingStyle === "underline" && (
                         <UnderlineLayer
                           pageView={pageView}
