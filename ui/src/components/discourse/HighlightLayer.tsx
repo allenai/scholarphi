@@ -9,7 +9,6 @@ interface Props {
   discourseObjs: DiscourseObj[];
   leadSentences: SentenceUnit[] | null;
   opacity: number;
-  drawerOpen: boolean;
   handleHideDiscourseObj: (d: DiscourseObj) => void;
   handleOpenDrawer: () => void;
 }
@@ -146,8 +145,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
       pageView,
       discourseObjs,
       leadSentences,
-      opacity,
-      drawerOpen,
+      opacity
     } = this.props;
     const {
       showControlToolbar,

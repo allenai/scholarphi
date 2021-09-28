@@ -1723,10 +1723,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                           opacity={this.state.skimOpacity}
                           handleHideDiscourseObj={this.handleHideDiscourseObj}
                           handleOpenDrawer={this.openDrawerWithFacets}
-                          drawerOpen={
-                            this.state.drawerMode === "open" &&
-                            this.state.drawerContentType === "facets"
-                          }
                         ></HighlightLayer>
                       )}
 
