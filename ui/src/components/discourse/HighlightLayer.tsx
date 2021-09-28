@@ -98,24 +98,47 @@ class HighlightLayer extends React.PureComponent<Props, State> {
     uiUtils.removeClassFromElementsByClassname("selected");
   };
 
-  scrollToSnippetInDrawer = (focusedDiscourseObj: DiscourseObj) => {
-    let retries = 0;
-    const interval = setInterval(() => {
-      const facetSnippet = document.querySelector(
-        `.facet-snippet-${focusedDiscourseObj.id}`
-      );
+  componentDidUpdate = () => {
+    /*
+     * When the selected sentence changes, scroll the drawer to the
+     * newly selected sentence.
+     */
+    this.selectSnippetInDrawer(this.state.focusedDiscourseObj);
+  };
+
+  selectSnippetInDrawer = (selection: DiscourseObj | null) => {
+    let elementToSelectClass;
+    if (selection !== null) {
+      elementToSelectClass = `facet-snippet-${selection.id}`;
+    }
+
+    const prevScrolledTo = document.querySelectorAll(".scrolled-to");
+    if (prevScrolledTo.length > 0) {
+      /*
+       * If the element is already selected, do nothing.
+       */
+      if (
+        elementToSelectClass !== undefined &&
+        prevScrolledTo[0].classList.contains(elementToSelectClass)
+      ) {
+        return;
+      }
+      /*
+       * Otherwise, deselect currently selected elements.
+       */
+      prevScrolledTo.forEach((x) => x.classList.remove("scrolled-to"));
+    }
+
+    if (elementToSelectClass !== undefined) {
+      const facetSnippet = document.querySelector(`.${elementToSelectClass}`);
       if (facetSnippet !== null) {
         facetSnippet.classList.add("selected");
         facetSnippet.scrollIntoView({
           block: "center",
+          behavior: "smooth",
         });
-        clearInterval(interval);
       }
-      if (retries >= 10) {
-        clearInterval(interval);
-      }
-      retries += 1;
-    }, 100);
+    }
   };
 
   render() {
@@ -162,10 +185,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
               <React.Fragment key={`highlight-${i}-${j}`}>
                 <div
                   className={`highlight-mask__highlight discourse-highlight highlight-${d.id}`}
-                  onClick={(event: React.MouseEvent) => {
-                    if (drawerOpen) {
-                      this.scrollToSnippetInDrawer(d);
-                    }
+                  onMouseEnter={(event: React.MouseEvent) => {
                     this.onClickSentence(event, d, j);
                   }}
                   style={{
@@ -213,7 +233,9 @@ class HighlightLayer extends React.PureComponent<Props, State> {
               }
               handleOpenDrawer={() => {
                 this.props.handleOpenDrawer();
-                this.scrollToSnippetInDrawer(focusedDiscourseObj);
+                setTimeout(() => {
+                  this.selectSnippetInDrawer(this.state.focusedDiscourseObj);
+                }, 300);
               }}
             />
           )}
