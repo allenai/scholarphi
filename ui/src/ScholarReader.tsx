@@ -1311,7 +1311,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               handleCloseDrawer={this.closeDrawer}
             />
             <PdfjsToolbar>
-              {this.state.showSkimmingAnnotations && (
+              {this.state.showSkimmingAnnotations && this.state.facetHighlights && (
                 <>
                   <button
                     onClick={() => {
