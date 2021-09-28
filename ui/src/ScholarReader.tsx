@@ -816,25 +816,21 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   selectAbstractHighlights = () => {
+    let selectedAbstractHighlights: RhetoricUnit[] = [];
+
     let abstractHighlights = Object(abstractData)[this.props.paperId!.id];
 
-    const topObjective = abstractHighlights
-      .filter((r: RhetoricUnit) => r.label === "Objective" && r.prob !== null)
-      .sort((r1: RhetoricUnit, r2: RhetoricUnit) =>
-        r1.prob! > r2.prob! ? -1 : 1
-      );
-    const topMethod = abstractHighlights
-      .filter((r: RhetoricUnit) => r.label === "Method" && r.prob !== null)
-      .sort((r1: RhetoricUnit, r2: RhetoricUnit) =>
-        r1.prob! > r2.prob! ? -1 : 1
-      );
-    const topResult = abstractHighlights
-      .filter((r: RhetoricUnit) => r.label === "Result" && r.prob !== null)
-      .sort((r1: RhetoricUnit, r2: RhetoricUnit) =>
-        r1.prob! > r2.prob! ? -1 : 1
-      );
+    const labels = ["Objective", "Method", "Result"];
+    labels.forEach((label) => {
+      const sortedLabelObjs = abstractHighlights
+        .filter((r: RhetoricUnit) => r.label === label && r.prob !== null)
+        .sort((r1: RhetoricUnit, r2: RhetoricUnit) =>
+          r1.prob! > r2.prob! ? -1 : 1
+        );
+      selectedAbstractHighlights.push(...sortedLabelObjs.slice(0, 2));
+    });
 
-    return [...topObjective, ...topMethod, ...topResult];
+    return selectedAbstractHighlights;
   };
 
   subscribeToPDFViewerStateChanges = (

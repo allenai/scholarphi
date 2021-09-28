@@ -1,6 +1,54 @@
 {
   "1908.07816": [
     {
+      "text": "However, they do not explicitly learn the subtle emotional interactions captured in human dialogs.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.15583333333333335,
+          "top": 0.40255050505050505,
+          "width": 0.32463235294117654,
+          "height": 0.012578282828282827,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.417645202020202,
+          "width": 0.32600326797385626,
+          "height": 0.012578282828282883,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.8810749650001526,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "chatbots, affective computing, deep learning, natural language processing",
+      "label": "Other",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6483358585858585,
+          "width": 0.3953153594771242,
+          "height": 0.012578282828282772,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6634305555555555,
+          "width": 0.1147156862745098,
+          "height": 0.012578282828282772,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.4732831120491028,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
       "text": "In this paper, we propose a multi-turn dialog system aimed at learning and generating emotional responses that so far only humans know how to do.",
       "label": "Objective",
       "bboxes": [
@@ -169,6 +217,185 @@
   ],
   "1810.11143": [
     {
+      "text": "Communities who suffer from poor air quality often rely on experts to identify pollution sources due to the lack of accessible tools.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.36866013071895426,
+          "top": 0.3751565656565657,
+          "width": 0.1118006535947712,
+          "height": 0.011320707070707037,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.38899242424242425,
+          "width": 0.3950294117647059,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.40282954545454547,
+          "width": 0.2929330065359478,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.9554718136787415,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Urban air pollution has been linked to various human health considerations, including cardiopulmonary diseases.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.36131944444444447,
+          "width": 0.39503104575163406,
+          "height": 0.011320707070707037,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3751565656565657,
+          "width": 0.2770898692810458,
+          "height": 0.011320707070707037,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.8492742776870728,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "These reports are also sent to the local health department and visualized on a map along with air quality data from monitoring stations.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.18359150326797385,
+          "top": 0.45817803030303034,
+          "width": 0.2993431372549019,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.47201515151515155,
+          "width": 0.3925571895424837,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.48585227272727277,
+          "width": 0.12186111111111113,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.6662141680717468,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Taking this into account, we developed Smell Pittsburgh , a system that enables community members to report odors and track where these odors are frequently concentrated.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.3845,
+          "top": 0.40282954545454547,
+          "width": 0.09595915032679736,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4166666666666667,
+          "width": 0.3925604575163399,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4305037878787879,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4443409090909091,
+          "width": 0.17079248366013072,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.5592308044433594,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Additionally, with these reports and air quality data, we developed a model to predict upcoming smell events and send push notifications to inform communities.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.3386437908496732,
+          "top": 0.499689393939394,
+          "width": 0.14182516339869283,
+          "height": 0.011320707070707037,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5135265151515152,
+          "width": 0.395031045751634,
+          "height": 0.011320707070706981,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5273623737373737,
+          "width": 0.3948153594771242,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.4032613933086395,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Citizen science, smell, air quality, sustainable HCI, machine learning, community empowerment",
+      "label": "Other",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6866022727272727,
+          "width": 0.395031045751634,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.700439393939394,
+          "width": 0.18508660130718957,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.47939833998680115,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
       "text": "This visualization provides a comprehensive overview of the local pollution landscape.",
       "label": "Result",
       "bboxes": [
@@ -229,9 +456,181 @@
       "prob": 0.7549203634262085,
       "is_author_statement": true,
       "is_in_expected_section": false
+    },
+    {
+      "text": "All smell report data are publicly accessible online.",
+      "label": "Other",
+      "bboxes": [
+        {
+          "left": 0.2623676470588235,
+          "top": 0.4443409090909091,
+          "width": 0.22057189542483668,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.45817803030303034,
+          "width": 0.09200980392156864,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.8184800744056702,
+      "is_author_statement": false,
+      "is_in_expected_section": false
     }
   ],
   "2010.07358": [
+    {
+      "text": "Many such taskssuch as house cleaning, packing for a trip, or organizing a living spacecan be characterized as object-rearrangement tasks defined by users navigating through an environment, picking up objects, and placing them in different locations.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.3346062091503268,
+          "top": 0.4855669191919192,
+          "width": 0.4853856209150327,
+          "height": 0.010063131313131302,
+          "page": 0
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.5012916666666667,
+          "width": 0.6999901960784314,
+          "height": 0.010073232323232317,
+          "page": 0
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.5170151515151515,
+          "width": 0.13982189542483658,
+          "height": 0.010063131313131302,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.9152302742004395,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Augmented-reality (AR) glasseswhich will have access to real-time, high-fidelity data regarding a users environment via onboard sensors, as well as an ability to seamlessly display real-time information to the userpresent a unique opportunity to provide users with assistance in completing quotidian tasks.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.11954575163398694,
+          "top": 0.4541199494949495,
+          "width": 0.7004575163398692,
+          "height": 0.010063131313131302,
+          "page": 0
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.46984343434343434,
+          "width": 0.6999983660130719,
+          "height": 0.010063131313131357,
+          "page": 0
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.4855669191919192,
+          "width": 0.2120049019607843,
+          "height": 0.010063131313131302,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.7910376787185669,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "In this initial study, we assume that the AR systems observations include a map of the environment and real-time localization of the objects and user within that map.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.5401323529411765,
+          "top": 0.5799103535353535,
+          "width": 0.2798692810457517,
+          "height": 0.010063131313131302,
+          "page": 0
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.5956338383838384,
+          "width": 0.6110408496732027,
+          "height": 0.010063131313131302,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.5604440569877625,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "In particular, we study the effect of our proposed AR assistance on users task performance and sense of agency over a range of task difficulties.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.5238006535947712,
+          "top": 0.12486237373737374,
+          "width": 0.35619771241830067,
+          "height": 0.010063131313131302,
+          "page": 1
+        },
+        {
+          "left": 0.18000163398692812,
+          "top": 0.1405858585858586,
+          "width": 0.3924444444444444,
+          "height": 0.010063131313131302,
+          "page": 1
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.5177206993103027,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "These modeling choices allow us to formalize the problem of computing AR assistance for any object-rearrangement task as a planning problem that reduces to solving a capacitated vehicle-routing problem (CVRP), which is a variant of the classical traveling salesman problem (TSP) in combinatorial optimization.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.7340049019607844,
+          "top": 0.5956338383838384,
+          "width": 0.08599673202614366,
+          "height": 0.010063131313131302,
+          "page": 0
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.6113585858585859,
+          "width": 0.6999901960784314,
+          "height": 0.010063131313131302,
+          "page": 0
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.6270820707070707,
+          "width": 0.6999983660130719,
+          "height": 0.010063131313131302,
+          "page": 0
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.6428055555555555,
+          "width": 0.14552614379084966,
+          "height": 0.010063131313131302,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.38323959708213806,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
     {
       "text": "The embodied agent comprises a hybrid between the AR system and the user, in that it has the observation space (i.e., sensor measurements) of the AR system and the action space (i.e., task-execution actions) of the user; its policy is learned by minimizing the the time to complete the task.",
       "label": "Method",
@@ -463,6 +862,23 @@
       "is_in_expected_section": false
     },
     {
+      "text": "Mechanical Turk (AMT) [3] and collect data using psiTurk [20].",
+      "label": "Other",
+      "bboxes": [
+        {
+          "left": 0.18000163398692812,
+          "top": 0.12486237373737374,
+          "width": 0.3408382352941176,
+          "height": 0.010063131313131302,
+          "page": 1
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.7255045771598816,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
       "text": "Our results indicate that providing users with the proposed form of AR assistance improves the users overall performance.",
       "label": "Result",
       "bboxes": [
@@ -485,9 +901,181 @@
       "prob": 0.8778695464134216,
       "is_author_statement": true,
       "is_in_expected_section": false
+    },
+    {
+      "text": "Fig. 1.",
+      "label": "Other",
+      "bboxes": [
+        {
+          "left": 0.1200016339869281,
+          "top": 0.3728800505050505,
+          "width": 0.031468954248366,
+          "height": 0.010063131313131302,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.48296502232551575,
+      "is_author_statement": false,
+      "is_in_expected_section": false
     }
   ],
   "2103.06807": [
+    {
+      "text": "However, effects on users are hard to predict as they depend on factors that are latent and evolve over the course of interaction.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.2754477124183007,
+          "top": 0.6786098484848484,
+          "width": 0.20502124183006537,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6924469696969697,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7062840909090908,
+          "width": 0.18508169934640523,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.9498826861381531,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "A carelessly picked adaptation may impose high costs to the user  for example, due to surprise or relearning effort  or trap the process to a suboptimal design immaturely.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.41098856209150325,
+          "top": 0.6370997474747475,
+          "width": 0.06985130718954247,
+          "height": 0.011320707070706981,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6509356060606061,
+          "width": 0.39416830065359476,
+          "height": 0.011320707070706981,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6647727272727273,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6786098484848484,
+          "width": 0.1838545751633987,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.946113109588623,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Adapting an interface requires taking into account both the positive and negative effects that changes may have on the user.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.0873921568627451,
+          "top": 0.6232626262626263,
+          "width": 0.393078431372549,
+          "height": 0.011320707070706981,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6370997474747475,
+          "width": 0.32015359477124183,
+          "height": 0.011320707070706981,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.860236406326294,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "We propose a novel approach for adaptive user interfaces that yields a conservative adaptation policy: It finds beneficial changes when there are such and avoids changes when there are none.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.27712581699346406,
+          "top": 0.7062840909090908,
+          "width": 0.20361274509803917,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7201212121212122,
+          "width": 0.3942843137254902,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7339583333333333,
+          "width": 0.39256045751633994,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08736437908496732,
+          "top": 0.7477954545454546,
+          "width": 0.13391339869281044,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.42967489361763,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Adaptive User Interfaces; Reinforcement Learning; Predictive Models; Monte Carlo Tree Search",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.5190212418300654,
+          "top": 0.768881313131313,
+          "width": 0.39554901960784306,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7827184343434344,
+          "width": 0.17272058823529413,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.42384225130081177,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
     {
       "text": "Our model-based reinforcement learning",
       "label": "Result",
@@ -570,6 +1158,133 @@
   ],
   "2104.03820": [
     {
+      "text": "Generative models have become adept at producing artifacts such as images, videos, and prose at human-like levels of proficiency.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.1200016339869281,
+          "top": 0.33047601010101013,
+          "width": 0.6734689542483661,
+          "height": 0.010063131313131302,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.9499941468238831,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "The artifacts produced in this way may contain imperfections, such as compilation or logical errors.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.4949673202614379,
+          "top": 0.3619242424242424,
+          "width": 0.3264656862745097,
+          "height": 0.010063131313131302,
+          "page": 0
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.3776477272727273,
+          "width": 0.201218954248366,
+          "height": 0.010063131313131357,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.9396002292633057,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "New generative techniques, such as unsupervised neural machine translation (NMT), have recently been applied to the task of generating source code, translating it from one programming language to another.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.7964052287581699,
+          "top": 0.33047601010101013,
+          "width": 0.02407026143790847,
+          "height": 0.010063131313131302,
+          "page": 0
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.3462007575757575,
+          "width": 0.6999950980392158,
+          "height": 0.010063131313131357,
+          "page": 0
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.3619242424242424,
+          "width": 0.3717205882352942,
+          "height": 0.010063131313131302,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.8557249903678894,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Our three-stage scenario sparked discussions about the utility and desirability working with an imperfect AI system, how acceptance of that systems outputs would be established, and future opportunities generative AI in application modernization.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.41613235294117645,
+          "top": 0.4248194444444444,
+          "width": 0.4042026143790851,
+          "height": 0.010063131313131357,
+          "page": 0
+        },
+        {
+          "left": 0.13416176470588234,
+          "top": 0.4405429292929293,
+          "width": 0.6858398692810457,
+          "height": 0.010063131313131302,
+          "page": 0
+        },
+        {
+          "left": 0.13876470588235296,
+          "top": 0.4562676767676767,
+          "width": 0.23288071895424833,
+          "height": 0.010063131313131357,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.7097061276435852,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "We examine the extent to which software engineers would tolerate such imperfections and explore ways to aid the detection and correction of those errors.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.3247140522875817,
+          "top": 0.3776477272727273,
+          "width": 0.49528758169934645,
+          "height": 0.010063131313131357,
+          "page": 0
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.3933712121212121,
+          "width": 0.35347385620915034,
+          "height": 0.010063131313131302,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.49545973539352417,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
       "text": "Our study highlights how UI features such as confidence highlighting and alternate translations help software engineers work with and better understand generative NMT models.",
       "label": "Result",
       "bboxes": [
@@ -625,11 +1340,408 @@
       "is_in_expected_section": true
     }
   ],
-  "2102.08235": [],
+  "2102.08235": [
+    {
+      "text": "With the growing ubiquity of wearable devices, sensed physiological responses provide new means to connect with others.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.08720261437908497,
+          "top": 0.3422373737373738,
+          "width": 0.3957369281045753,
+          "height": 0.011320707070707037,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.356074494949495,
+          "width": 0.3519313725490196,
+          "height": 0.011320707070707037,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.9429890513420105,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "However, the addition of biosignals introduced concerns about autonomy and agency over the messages they sent.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.2507516339869281,
+          "top": 0.49444444444444446,
+          "width": 0.23218790849673204,
+          "height": 0.011320707070706981,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5082815656565657,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070706981,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5221186868686868,
+          "width": 0.060493464052287574,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.9330630302429199,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "While recent research demonstrates the expressive potential for biosignals, the value of sharing these personal data remains unclear.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.44354248366013066,
+          "top": 0.356074494949495,
+          "width": 0.036926470588235394,
+          "height": 0.011320707070707037,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3699116161616162,
+          "width": 0.3941683006535948,
+          "height": 0.011320707070707037,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3837487373737373,
+          "width": 0.33362091503267977,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.8854116797447205,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "computer-mediated communication, biosignals, interpersonal communication, social connection, smartwatches, heart rate, couples",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6499873737373737,
+          "width": 0.39502941176470585,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.663824494949495,
+          "width": 0.3857156862745098,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.6266940236091614,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "In a one-month study with 20 couples, participants used Significant Otter with biosignals sensing OFF and ON.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.17145751633986928,
+          "top": 0.4390972222222222,
+          "width": 0.30900490196078434,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4529343434343434,
+          "width": 0.36833986928104573,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.490937739610672,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "We discuss design implications and future directions for communication systems that recommend messages based on biosignals.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.15324019607843137,
+          "top": 0.5221186868686868,
+          "width": 0.3272287581699347,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.535955808080808,
+          "width": 0.3925637254901962,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5497929292929292,
+          "width": 0.06302777777777778,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.452892929315567,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "We found that while sensing OFF enabled couples to keep in touch, sensing ON enabled easier and more authentic communication that fostered social connection.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.4607434640522876,
+          "top": 0.4529343434343434,
+          "width": 0.019725490196078443,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.46677146464646463,
+          "width": 0.39417810457516345,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.48060858585858585,
+          "width": 0.39256045751633994,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.49444444444444446,
+          "width": 0.15916830065359477,
+          "height": 0.011320707070706981,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.4424879252910614,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "To understand their role in communication, we created Significant Otter, an Apple Watch/iPhone app that enables romantic partners to share and respond to each others biosignals in the form of animated otter avatars.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.4251601307189542,
+          "top": 0.3837487373737373,
+          "width": 0.05777614379084972,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.39758585858585854,
+          "width": 0.3925571895424837,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.0873921568627451,
+          "top": 0.41142297979797976,
+          "width": 0.3930751633986928,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.425260101010101,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4390972222222222,
+          "width": 0.07989052287581701,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.43699756264686584,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    }
+  ],
   "2102.09039": [
     {
-      "text": "Spacewalker then parses the annotated HTML specification, and intelligently generates and distributes various configurations of the web UI to crowd workers for evaluation.",
+      "text": "User interface design is a complex task that involves designers examining a wide range of options.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.2585669191919192,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.2724040404040404,
+          "width": 0.22149999999999997,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.8719049692153931,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Based on our experiments, Spacewalker allows designers to effectively search a large design space of a UI, using the language they are familiar with, and improve their design rapidly at a minimal cost.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.44607843137254904,
+          "top": 0.3969381313131313,
+          "width": 0.03438725490196082,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.41077398989898994,
+          "width": 0.39293790849673205,
+          "height": 0.011320707070706981,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.42461111111111105,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.43844823232323227,
+          "width": 0.3903464052287582,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.7685990333557129,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Markup language, crowdsourcing, design search, tools, genetic programming",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5282512626262627,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5420883838383839,
+          "width": 0.08217810457516338,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.5442944765090942,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "We enhanced a genetic algorithm to accommodate crowd worker responses from pairwise comparison of UI designs, which is crucial for obtaining reliable feedback.",
       "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.26858333333333334,
+          "top": 0.3692638888888889,
+          "width": 0.21188071895424831,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3831010101010101,
+          "width": 0.392562091503268,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3969381313131313,
+          "width": 0.3552156862745098,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.44135934114456177,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "We present Spacewalker, a tool that allows designers to rapidly search a large design space for an optimal web UI with integrated support.",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.3144705882352941,
+          "top": 0.2724040404040404,
+          "width": 0.16599836601307194,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.28624116161616164,
+          "width": 0.3925637254901962,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.30007828282828286,
+          "width": 0.29678758169934644,
+          "height": 0.011320707070707037,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.4108668565750122,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Spacewalker then parses the annotated HTML specification, and intelligently generates and distributes various configurations of the web UI to crowd workers for evaluation.",
+      "label": "Background",
       "bboxes": [
         {
           "left": 0.4055326797385621,
@@ -666,8 +1778,25 @@
       "is_in_expected_section": true
     },
     {
+      "text": "Human-centeredcomputing  Interactivesystemsandtools .",
+      "label": "Other",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4824318181818182,
+          "width": 0.40661437908496734,
+          "height": 0.012238636363636368,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.5495071411132812,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
       "text": "Designers first annotate each attribute they want to explore in a typical HTML page, using a simple markup extension we designed.",
-      "label": "Method",
+      "label": "Background",
       "bboxes": [
         {
           "left": 0.39001307189542483,
@@ -698,6 +1827,140 @@
     }
   ],
   "2101.11778": [
+    {
+      "text": "Consequently, many people feel a lack of agency over their app use, which is linked to negative life effects such as loss of sleep.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.16063235294117648,
+          "top": 0.36216035353535353,
+          "width": 0.3201127450980392,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.37599747474747475,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707037,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.38983459595959596,
+          "width": 0.04906535947712419,
+          "height": 0.011320707070707037,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.9396924376487732,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "In the attention economy, video apps employ design mechanisms like autoplay that exploit psychological vulnerabilities to maximize watch time.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.33448611111111115,
+          "width": 0.39255392156862745,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.34832323232323237,
+          "width": 0.3925604575163399,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08736437908496732,
+          "top": 0.36216035353535353,
+          "width": 0.0696062091503268,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.9366628527641296,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Prior design research has innovated external mechanisms that police multiple apps, such as lockout timers.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.14064869281045753,
+          "top": 0.38983459595959596,
+          "width": 0.33982026143790856,
+          "height": 0.011332070707070707,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4036717171717172,
+          "width": 0.30823529411764705,
+          "height": 0.011320707070707037,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.8879344463348389,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "We discuss implications for how designers can help users reclaim a sense of agency over their media use.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.46075163398692814,
+          "top": 0.5005303030303031,
+          "width": 0.01971078431372547,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5143674242424243,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5282045454545455,
+          "width": 0.22304575163398693,
+          "height": 0.011320707070706981,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.47798794507980347,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "digital wellbeing, sense of agency, social media, YouTube",
+      "label": "Other",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6162575757575758,
+          "width": 0.3400343137254902,
+          "height": 0.011320707070706981,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.5853622555732727,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
     {
       "text": "In this work, we shift the focus to how the internal mechanisms of an app can support user agency, taking the popular YouTube mobile app as a test case.",
       "label": "Objective",
@@ -801,6 +2064,92 @@
   ],
   "2102.00625": [
     {
+      "text": "How to attribute responsibility for autonomous artificial intelligence (AI) systems actions has been widely debated across the humanities and social science disciplines.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.30378282828282827,
+          "width": 0.39502941176470585,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3176199494949495,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3314570707070707,
+          "width": 0.24731862745098043,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.952176034450531,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "We discuss policy and HCI implications of these findings, such as the need for explainable AI in high-stakes scenarios.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.4607434640522876,
+          "top": 0.48366414141414144,
+          "width": 0.019725490196078443,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.49750126262626265,
+          "width": 0.392562091503268,
+          "height": 0.011320707070707037,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5113383838383838,
+          "width": 0.2902205882352941,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.5979416966438293,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "AI, Moral Responsibility, Responsibility, Moral Judgment, Blame, Liability, COMPAS, Bail Decision-Making",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.0873921568627451,
+          "top": 0.6250340909090909,
+          "width": 0.39468627450980387,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6388712121212121,
+          "width": 0.2485686274509804,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.5057668089866638,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
       "text": "However, there was a meaningful difference in how people perceived these agents moral responsibility; human agents were ascribed to a higher degree of present-looking and forward-looking notions of responsibility than AI agents.",
       "label": "Result",
       "bboxes": [
@@ -870,6 +2219,44 @@
       "is_in_expected_section": false
     },
     {
+      "text": "This work presents two experiments (  =200 each) that measure peoples perceptions of eight different notions of moral responsibility concerning AI and human agents in the context of bail decision-making.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.3388790849673203,
+          "top": 0.3314570707070707,
+          "width": 0.14159150326797387,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.34278030303030305,
+          "width": 0.39256045751633994,
+          "height": 0.013834595959595963,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.35913131313131313,
+          "width": 0.3925571895424837,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.37296843434343435,
+          "width": 0.32429901960784313,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.34034499526023865,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
       "text": "Using reallife adapted vignettes, our experiments show that AI agents are held causally responsible and blamed similarly to human agents for an identical task.",
       "label": "Result",
       "bboxes": [
@@ -910,6 +2297,92 @@
   ],
   "2103.00912": [
     {
+      "text": "Concretely, a Variational Autoencoder embeds gestures recorded as 3D skeletons on an interactive 2D map.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.4525980392156863,
+          "top": 0.6125164141414141,
+          "width": 0.030336601307189515,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6263535353535353,
+          "width": 0.3925571895424837,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6401906565656565,
+          "width": 0.21164215686274518,
+          "height": 0.011320707070706981,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.6908750534057617,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "We discuss implications for elicitation studies and research, and opportunities to extend our approach to additional tasks in gesture elicitation.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.8485032679738562,
+          "top": 0.5952196969696969,
+          "width": 0.06359150326797391,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6090568181818181,
+          "width": 0.39255882352941185,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6228939393939393,
+          "width": 0.38236111111111115,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.578715980052948,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "It further opens new directions, such as comparing elicitations across studies.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.794281045751634,
+          "top": 0.5813825757575758,
+          "width": 0.11835294117647055,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.5952196969696969,
+          "width": 0.32599673202614377,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.4786106050014496,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
       "text": "This paper presents GestureMap , a visual analytics tool for gesture elicitation which directly visualises the space of gestures.",
       "label": "Objective",
       "bboxes": [
@@ -931,6 +2404,47 @@
       "section": "Abstract",
       "prob": 0.5510774254798889,
       "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Gesture elicitation, dimensionality reduction, deep learning, visual analytics",
+      "label": "Other",
+      "bboxes": [
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7269255050505051,
+          "width": 0.3925669934640523,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.7407626262626262,
+          "width": 0.05333006535947715,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.5342118144035339,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "visual understanding of elicited gesture spaces.",
+      "label": "Other",
+      "bboxes": [
+        {
+          "left": 0.5191683006535948,
+          "top": 0.5813825757575758,
+          "width": 0.27221241830065357,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.3705880045890808,
+      "is_author_statement": false,
       "is_in_expected_section": false
     },
     {
@@ -1044,6 +2558,30 @@
       "is_in_expected_section": false
     },
     {
+      "text": "1) represent gesture groups at a glance;",
+      "label": "Other",
+      "bboxes": [
+        {
+          "left": 0.28737418300653594,
+          "top": 0.6817007575757577,
+          "width": 0.19309150326797386,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6955378787878788,
+          "width": 0.04294934640522875,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.6308313012123108,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
       "text": "Our findings show how GestureMap facilitates exploring large datasets and helps researchers to gain a",
       "label": "Result",
       "bboxes": [
@@ -1069,6 +2607,157 @@
     }
   ],
   "2102.09087": [
+    {
+      "text": "With phone form factor as auxiliary information, TapNet can jointly learn from data across devices and simultaneously recognize multiple tap properties, including tap direction and tap location.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.1300751633986928,
+          "top": 0.34158964646464646,
+          "width": 0.35039052287581707,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3554267676767677,
+          "width": 0.39256045751633994,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3692638888888889,
+          "width": 0.39482026143790855,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.8429444432258606,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Along with the datasets, codebase 1 , and extensive experiments, TapNet establishes a new technical foundation for off-screen mobile input.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.392609477124183,
+          "top": 0.42461111111111105,
+          "width": 0.08785620915032688,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.43597853535353537,
+          "width": 0.3925604575163399,
+          "height": 0.013790404040403992,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4522853535353535,
+          "width": 0.3299395424836602,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.5071479678153992,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "We present the design, training, implementation and applications of TapNet, a multi-task network that detects tapping on the smartphone.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.08720261437908497,
+          "top": 0.3139154040404041,
+          "width": 0.3932549019607844,
+          "height": 0.011320707070707037,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.32775252525252524,
+          "width": 0.39502941176470585,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.34158964646464646,
+          "width": 0.03962745098039215,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.42259061336517334,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "We developed two datasets consisting of over 135K training samples, 38K testing samples, and 32 participants in total.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.08720261437908497,
+          "top": 0.3831010101010101,
+          "width": 0.39574509803921576,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3969381313131313,
+          "width": 0.31067810457516337,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.4062401056289673,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Back-of-device, gesture recognition, IMU",
+      "label": "Other",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5422209595959596,
+          "width": 0.24514052287581706,
+          "height": 0.011320707070706981,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.5678095817565918,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Human-centered computing  Gestural input .",
+      "label": "Other",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.49633459595959595,
+          "width": 0.3190392156862745,
+          "height": 0.012238636363636424,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.499292254447937,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
     {
       "text": "To make off-screen interaction without specialized hardware practical, we investigate using deep learning methods to process the common built-in IMU sensor (accelerometers and gyroscopes) on mobile phones into a useful set of one-handed interaction events.",
       "label": "Method",
@@ -1137,9 +2826,146 @@
       "prob": 0.800118625164032,
       "is_author_statement": false,
       "is_in_expected_section": false
+    },
+    {
+      "text": "KEYWORDS",
+      "label": "Other",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5230151515151515,
+          "width": 0.10108823529411763,
+          "height": 0.013773989898989925,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.9414592385292053,
+      "is_author_statement": false,
+      "is_in_expected_section": false
     }
   ],
   "2102.04174": [
+    {
+      "text": "Informed by user performance, the psychologist component updates its beliefs about each users memory state for each item.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.1738627450980392,
+          "top": 0.446895202020202,
+          "width": 0.6461323529411765,
+          "height": 0.010063131313131357,
+          "page": 0
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.4594734848484849,
+          "width": 0.027629084967320236,
+          "height": 0.010063131313131302,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.744242250919342,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Whereas previous work has focused on either personalization of teaching or optimization of teaching intervention sequences, the proposed individualized model-based planning approach represents convergence of these two lines of research.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.3406535947712418,
+          "top": 0.5133282828282828,
+          "width": 0.47934967320261435,
+          "height": 0.010063131313131302,
+          "page": 0
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.5290517676767676,
+          "width": 0.6999934640522876,
+          "height": 0.010063131313131302,
+          "page": 0
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.5447765151515152,
+          "width": 0.0904950980392157,
+          "height": 0.010063131313131302,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.6619350910186768,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "The approach is novel in its use of a cognitive model that can account for several key individualand material-specific characteristics related to recall/forgetting, along with a planning technique that considers users practice schedules.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.11961111111111111,
+          "top": 0.5605,
+          "width": 0.7003888888888888,
+          "height": 0.010063131313131302,
+          "page": 0
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.5762234848484848,
+          "width": 0.538281045751634,
+          "height": 0.010063131313131302,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.5194849371910095,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Model-based planning picks the best interventions via interactive learning of a user memory models parameters.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.2137581699346405,
+          "top": 0.5447765151515152,
+          "width": 0.6082467320261439,
+          "height": 0.010063131313131302,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.4282682240009308,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "The paper presents a novel model-based method for intelligent tutoring, with particular emphasis on the problem of selecting teaching interventions in interaction with humans.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.11961111111111111,
+          "top": 0.497604797979798,
+          "width": 0.7003839869281046,
+          "height": 0.010063131313131246,
+          "page": 0
+        },
+        {
+          "left": 0.1200016339869281,
+          "top": 0.5133282828282828,
+          "width": 0.21757679738562097,
+          "height": 0.010063131313131302,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.3553033173084259,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
     {
       "text": "To predict the consequences of particular candidate sequences for the human learner, the planner component consults the psychologist; then, the planner chooses the teaching intervention that maximizes the potential for meeting the learning objective.",
       "label": "Objective",
@@ -1218,9 +3044,195 @@
       "prob": 0.6921930909156799,
       "is_author_statement": false,
       "is_in_expected_section": false
+    },
+    {
+      "text": "Fig. 1.",
+      "label": "Other",
+      "bboxes": [
+        {
+          "left": 0.1200016339869281,
+          "top": 0.43431565656565657,
+          "width": 0.03283660130718953,
+          "height": 0.010063131313131302,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.48296502232551575,
+      "is_author_statement": false,
+      "is_in_expected_section": false
     }
   ],
   "2108.11259": [
+    {
+      "text": "While all agents were curious and enthusiastic, the style of humour was manipulated such that the agent either expressed an affiliative style, a self-defeating style, or no humour.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.44354248366013066,
+          "top": 0.3678977272727273,
+          "width": 0.036926470588235394,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3817348484848485,
+          "width": 0.39255392156862745,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3955719696969697,
+          "width": 0.39416830065359476,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.40940909090909094,
+          "width": 0.21988562091503266,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.7274823188781738,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Previous studies have highlighted the benefits of pedagogical conversational agents using socially-oriented conversation with students.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.2572020202020202,
+          "width": 0.39503431372549025,
+          "height": 0.011320707070707037,
+          "page": 0
+        },
+        {
+          "left": 0.08753921568627451,
+          "top": 0.2710391414141414,
+          "width": 0.39540359477124176,
+          "height": 0.011320707070707037,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.28487626262626264,
+          "width": 0.03617973856209149,
+          "height": 0.011320707070707037,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.7214733362197876,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "In this work, we examine the effects of a conversational agents use of affiliative and self-defeating humour  considered conducive to social well-being and enhancing interpersonal relationships  on learners perception of the agent and attitudes towards the task.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.1291062091503268,
+          "top": 0.28487626262626264,
+          "width": 0.35136274509803933,
+          "height": 0.011320707070707037,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.2987133838383838,
+          "width": 0.3925571895424837,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.312550505050505,
+          "width": 0.3950294117647059,
+          "height": 0.011320707070707037,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3263876262626263,
+          "width": 0.39256372549019614,
+          "height": 0.011320707070706981,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.34022348484848486,
+          "width": 0.10625163398692812,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.34847891330718994,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Conversational Agent, Education, Motivation, Learning Experience, Learning Outcomes, Humour",
+      "label": "Other",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5670972222222223,
+          "width": 0.39416830065359476,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5809343434343435,
+          "width": 0.17500653594771243,
+          "height": 0.011320707070706981,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.46725204586982727,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Using a between-subjects protocol, 58 participants taught a conversational agent about rock classification using a learning-by-teaching platform, the Curiosity Notebook.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.1989248366013072,
+          "top": 0.34022348484848486,
+          "width": 0.2840098039215686,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3540606060606061,
+          "width": 0.39256699346405227,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.3678977272727273,
+          "width": 0.351452614379085,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.2969474792480469,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
     {
       "text": "Results demonstrate that affiliative humour can significantly increase motivation and effort, while self-defeating humour, although enhancing effort, negatively impacts enjoyment.",
       "label": "Result",
@@ -1286,6 +3298,178 @@
   ],
   "2102.00593": [
     {
+      "text": "Decision support tools (DSTs) embodying machine learning models may help improve the treatment selection process, but often fail in clinical practice due to poor system integration.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.42476136363636363,
+          "width": 0.39256045751633994,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.43859848484848485,
+          "width": 0.3925571895424837,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.45243560606060607,
+          "width": 0.28548856209150325,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.9285722970962524,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "While many antidepressant medications are available, few clinical guidelines support choosing among them.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.2448235294117647,
+          "top": 0.39708838383838385,
+          "width": 0.23564215686274512,
+          "height": 0.011320707070706981,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4109242424242424,
+          "width": 0.39481535947712426,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.8963396549224854,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Major depressive disorder is a debilitating disease affecting 264 million people worldwide.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.38325126262626263,
+          "width": 0.3928921568627451,
+          "height": 0.011320707070706981,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.39708838383838385,
+          "width": 0.1533725490196079,
+          "height": 0.011320707070706981,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.7675274610519409,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "We identify ways in which DSTs need to engage with the healthcare sociotechnical system, including clinical processes, patient preferences, resource constraints, and domain knowledge.",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.08720261437908497,
+          "top": 0.4939469696969697,
+          "width": 0.39326470588235296,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5077840909090909,
+          "width": 0.39503104575163406,
+          "height": 0.011320707070706981,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5216212121212122,
+          "width": 0.31960784313725493,
+          "height": 0.011320707070706981,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.5271534323692322,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "We use an iterative, co-design process to investigate clinicians perceptions of using DSTs in antidepressant treatment decisions.",
+      "label": "Method",
+      "bboxes": [
+        {
+          "left": 0.10418464052287582,
+          "top": 0.4662727272727273,
+          "width": 0.3778464052287581,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.4801098484848485,
+          "width": 0.3948202614379085,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.4400816261768341,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Through this work, we demonstrate how current trends in explainable AI may be inappropriate for clinical environments and consider paths towards designing these tools for real-world medical systems.",
+      "label": "Result",
+      "bboxes": [
+        {
+          "left": 0.24073202614379086,
+          "top": 0.5769684343434344,
+          "width": 0.2402794117647059,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.5908055555555556,
+          "width": 0.39255555555555555,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.6046426767676768,
+          "width": 0.3928333333333333,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.618479797979798,
+          "width": 0.16677287581699346,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.3391100764274597,
+      "is_author_statement": true,
+      "is_in_expected_section": false
+    },
+    {
       "text": "Our results suggest that clinical DSTs should be designed as multi-user systems that support patient-provider collaboration and offer on-demand explanations that address discrepancies between predictions and current standards of care.",
       "label": "Result",
       "bboxes": [
@@ -1329,9 +3513,98 @@
       "prob": 0.6347765922546387,
       "is_author_statement": true,
       "is_in_expected_section": false
+    },
+    {
+      "text": "decision support tools, healthcare, major depressive disorder",
+      "label": "Other",
+      "bboxes": [
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7411073232323232,
+          "width": 0.36217156862745103,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.6674591302871704,
+      "is_author_statement": false,
+      "is_in_expected_section": false
     }
   ],
   "2104.04842": [
+    {
+      "text": "However, designing an effective interview chatbot is non-trivial.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.22954575163398694,
+          "top": 0.7055315656565656,
+          "width": 0.2514640522875817,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.7193686868686869,
+          "width": 0.13479411764705884,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.8921480774879456,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "Few tools exist to help designers design, evaluate, and improve an interview chatbot iteratively.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.2279754901960784,
+          "top": 0.7193686868686869,
+          "width": 0.254107843137255,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.08790522875816993,
+          "top": 0.733205808080808,
+          "width": 0.3248578431372549,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.6959090232849121,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
+    {
+      "text": "and offer design suggestions for improving the chatbot based on such metrics.",
+      "label": "Background",
+      "bboxes": [
+        {
+          "left": 0.5195343137254902,
+          "top": 0.6743989898989899,
+          "width": 0.392563725490196,
+          "height": 0.011320707070707092,
+          "page": 0
+        },
+        {
+          "left": 0.5195343137254902,
+          "top": 0.688236111111111,
+          "width": 0.0803692810457517,
+          "height": 0.011320707070707092,
+          "page": 0
+        }
+      ],
+      "section": "Abstract",
+      "prob": 0.3921799957752228,
+      "is_author_statement": false,
+      "is_in_expected_section": false
+    },
     {
       "text": "Recent studies show the effectiveness of interview chatbots for information elicitation.",
       "label": "Result",
