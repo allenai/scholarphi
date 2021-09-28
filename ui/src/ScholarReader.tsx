@@ -1188,6 +1188,35 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     }
   };
 
+  handleFilterToDiscourse = (discourse: string) => {
+    if (
+      this.state.deselectedDiscourses.length === 1 &&
+      this.state.deselectedDiscourses[0] === discourse
+    ) {
+      return;
+    }
+
+    const discourseToColorMap = uiUtils.getDiscourseToColorMap();
+    const availableDiscourseClasses = [
+      ...new Set(this.state.discourseObjs.map((x: DiscourseObj) => x.label)),
+    ];
+    const hidden = ["Highlight", "Author"];
+    const filteredDiscourses = Object.keys(discourseToColorMap)
+      .filter((key) => !hidden.includes(key))
+      .filter(
+        (key) =>
+          availableDiscourseClasses.includes(key) ||
+          this.state.deselectedDiscourses.includes(key)
+      )
+      .filter((key) => key !== discourse);
+    this.setState(
+      {
+        deselectedDiscourses: filteredDiscourses,
+      },
+      this.initDiscourseObjs
+    );
+  };
+
   handleIncreaseNumHighlights = (discourse: string) => {
     if (this.state.numHighlightMultiplier[discourse] >= 1) {
       return;
@@ -1311,28 +1340,29 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               handleCloseDrawer={this.closeDrawer}
             />
             <PdfjsToolbar>
-              {this.state.showSkimmingAnnotations && this.state.facetHighlights && (
-                <>
-                  <button
-                    onClick={() => {
-                      this.handleIncreaseNumHighlights("Method");
-                      this.handleIncreaseNumHighlights("Result");
-                    }}
-                    className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
-                  >
-                    <span>More highlights</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      this.handleDecreaseNumHighlights("Method");
-                      this.handleDecreaseNumHighlights("Result");
-                    }}
-                    className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
-                  >
-                    <span>Less highlights</span>
-                  </button>
-                </>
-              )}
+              {this.state.showSkimmingAnnotations &&
+                this.state.facetHighlights && (
+                  <>
+                    <button
+                      onClick={() => {
+                        this.handleIncreaseNumHighlights("Method");
+                        this.handleIncreaseNumHighlights("Result");
+                      }}
+                      className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
+                    >
+                      <span>More highlights</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        this.handleDecreaseNumHighlights("Method");
+                        this.handleDecreaseNumHighlights("Result");
+                      }}
+                      className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
+                    >
+                      <span>Less highlights</span>
+                    </button>
+                  </>
+                )}
               <button
                 onClick={this.toggleSkimmingAnnotations}
                 className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
@@ -1723,6 +1753,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                           opacity={this.state.skimOpacity}
                           handleHideDiscourseObj={this.handleHideDiscourseObj}
                           handleOpenDrawer={this.openDrawerWithFacets}
+                          handleFilterToDiscourse={this.handleFilterToDiscourse}
                         ></HighlightLayer>
                       )}
 

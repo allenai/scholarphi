@@ -11,6 +11,7 @@ interface Props {
   opacity: number;
   handleHideDiscourseObj: (d: DiscourseObj) => void;
   handleOpenDrawer: () => void;
+  handleFilterToDiscourse: (discourse: string) => void;
 }
 
 interface State {
@@ -72,6 +73,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
     const pageRect = this.props.pageView.div.getBoundingClientRect();
     this.clearAllSelected();
     this.markHighlightAsSelected(sentence);
+    this.selectSnippetInDrawer(sentence);
     this.setState({
       showControlToolbar: true,
       focusedDiscourseObj: sentence,
@@ -102,7 +104,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
      * When the selected sentence changes, scroll the drawer to the
      * newly selected sentence.
      */
-    this.selectSnippetInDrawer(this.state.focusedDiscourseObj);
+    // this.selectSnippetInDrawer(this.state.focusedDiscourseObj);
   };
 
   selectSnippetInDrawer = (selection: DiscourseObj | null) => {
@@ -129,6 +131,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
     }
 
     if (elementToSelectClass !== undefined) {
+      this.clearAllSelected();
       const facetSnippet = document.querySelector(`.${elementToSelectClass}`);
       if (facetSnippet !== null) {
         facetSnippet.classList.add("selected");
@@ -141,12 +144,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const {
-      pageView,
-      discourseObjs,
-      leadSentences,
-      opacity
-    } = this.props;
+    const { pageView, discourseObjs, leadSentences, opacity } = this.props;
     const {
       showControlToolbar,
       focusedDiscourseObj,
@@ -225,6 +223,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
             <DiscourseControlToolbar
               x={tooltipX}
               y={tooltipY}
+              label={focusedDiscourseObj.label}
               handleClose={this.closeControlToolbar}
               handleDeleteHighlight={() =>
                 this.props.handleHideDiscourseObj(focusedDiscourseObj)
@@ -235,6 +234,9 @@ class HighlightLayer extends React.PureComponent<Props, State> {
                   this.selectSnippetInDrawer(this.state.focusedDiscourseObj);
                 }, 300);
               }}
+              handleFilterToDiscourse={() =>
+                this.props.handleFilterToDiscourse(focusedDiscourseObj.label)
+              }
             />
           )}
       </>

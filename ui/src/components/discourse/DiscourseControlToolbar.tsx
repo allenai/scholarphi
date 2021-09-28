@@ -2,20 +2,23 @@ import IconButton from "@material-ui/core/IconButton";
 import MuiTooltip from "@material-ui/core/Tooltip";
 import Close from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
-import Toc from "@material-ui/icons/Toc";
+import FilterIcon from "@material-ui/icons/Filter";
+import MenuOpenIcon from "@material-ui/icons/MenuOpen";
 import { default as React } from "react";
 
 interface Props {
   x: number;
   y: number;
+  label: string;
   handleClose: () => void;
   handleDeleteHighlight: () => void;
   handleOpenDrawer: () => void;
+  handleFilterToDiscourse: () => void;
 }
 
 class DiscourseControlToolbar extends React.PureComponent<Props> {
   render() {
-    const { x, y } = this.props;
+    const { x, y, label } = this.props;
 
     return (
       <div
@@ -35,7 +38,17 @@ class DiscourseControlToolbar extends React.PureComponent<Props> {
                     size="small"
                     onClick={this.props.handleOpenDrawer}
                   >
-                    <Toc />
+                    <MenuOpenIcon />
+                  </IconButton>
+                </MuiTooltip>
+              </td>
+              <td>
+                <MuiTooltip title={`Show ${label} highlights only`}>
+                  <IconButton
+                    size="small"
+                    onClick={this.props.handleFilterToDiscourse}
+                  >
+                    <FilterIcon />
                   </IconButton>
                 </MuiTooltip>
               </td>
