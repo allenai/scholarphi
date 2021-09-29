@@ -3,22 +3,24 @@ import MuiTooltip from "@material-ui/core/Tooltip";
 import Close from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
 import FilterIcon from "@material-ui/icons/Filter";
-import MenuOpenIcon from "@material-ui/icons/MenuOpen";
+import ListIcon from "@material-ui/icons/List";
 import { default as React } from "react";
 
 interface Props {
   x: number;
   y: number;
   label: string;
+  drawerOpen: boolean;
   handleClose: () => void;
   handleDeleteHighlight: () => void;
   handleOpenDrawer: () => void;
+  handleCloseDrawer: () => void;
   handleFilterToDiscourse: () => void;
 }
 
 class DiscourseControlToolbar extends React.PureComponent<Props> {
   render() {
-    const { x, y, label } = this.props;
+    const { x, y, label, drawerOpen } = this.props;
 
     return (
       <div
@@ -33,12 +35,16 @@ class DiscourseControlToolbar extends React.PureComponent<Props> {
           <tbody>
             <tr>
               <td>
-                <MuiTooltip title="Open drawer">
+                <MuiTooltip title={drawerOpen ? "Close drawer" : "Open drawer"}>
                   <IconButton
                     size="small"
-                    onClick={this.props.handleOpenDrawer}
+                    onClick={
+                      drawerOpen
+                        ? this.props.handleCloseDrawer
+                        : this.props.handleOpenDrawer
+                    }
                   >
-                    <MenuOpenIcon />
+                    <ListIcon />
                   </IconButton>
                 </MuiTooltip>
               </td>

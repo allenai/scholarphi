@@ -1741,6 +1741,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                           opacity={this.state.skimOpacity}
                           handleHideDiscourseObj={this.hideDiscourseObj}
                           handleOpenDrawer={this.openDrawerWithFacets}
+                          handleCloseDrawer={this.closeDrawer}
+                          drawerOpen={this.state.drawerMode === "open"}
                           handleFilterToDiscourse={this.filterToDiscourse}
                         ></HighlightLayer>
                       )}

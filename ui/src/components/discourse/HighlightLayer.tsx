@@ -9,8 +9,10 @@ interface Props {
   discourseObjs: DiscourseObj[];
   leadSentences: SentenceUnit[] | null;
   opacity: number;
+  drawerOpen: boolean;
   handleHideDiscourseObj: (d: DiscourseObj) => void;
   handleOpenDrawer: () => void;
+  handleCloseDrawer: () => void;
   handleFilterToDiscourse: (discourse: string) => void;
 }
 
@@ -144,7 +146,13 @@ class HighlightLayer extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { pageView, discourseObjs, leadSentences, opacity } = this.props;
+    const {
+      pageView,
+      discourseObjs,
+      leadSentences,
+      opacity,
+      drawerOpen,
+    } = this.props;
     const {
       showControlToolbar,
       focusedDiscourseObj,
@@ -224,6 +232,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
               x={tooltipX}
               y={tooltipY}
               label={focusedDiscourseObj.label}
+              drawerOpen={drawerOpen}
               handleClose={this.closeControlToolbar}
               handleDeleteHighlight={() =>
                 this.props.handleHideDiscourseObj(focusedDiscourseObj)
@@ -234,6 +243,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
                   this.selectSnippetInDrawer(this.state.focusedDiscourseObj);
                 }, 300);
               }}
+              handleCloseDrawer={this.props.handleCloseDrawer}
               handleFilterToDiscourse={() =>
                 this.props.handleFilterToDiscourse(focusedDiscourseObj.label)
               }
