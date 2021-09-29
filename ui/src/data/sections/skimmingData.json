@@ -8,7 +8,8 @@
         "width": 0.15346921035666872,
         "height": 0.015315238875572127,
         "page": 0
-      }
+      },
+      "id": "0"
     },
     {
       "text": "CCS CONCEPTS",
@@ -18,7 +19,8 @@
         "width": 0.12210935704848346,
         "height": 0.015368952895655777,
         "page": 0
-      }
+      },
+      "id": "1"
     },
     {
       "text": "Neural Dialog Models with Affect Information",
@@ -28,7 +30,8 @@
         "width": 0.341522216796875,
         "height": 0.014252710824060922,
         "page": 1
-      }
+      },
+      "id": "2"
     },
     {
       "text": "Neural Dialog Generation",
@@ -38,7 +41,8 @@
         "width": 0.19228527592677697,
         "height": 0.014298381227435488,
         "page": 1
-      }
+      },
+      "id": "3"
     },
     {
       "text": "2 RELATED WORK",
@@ -48,7 +52,8 @@
         "width": 0.15582006117876837,
         "height": 0.014429785988547585,
         "page": 1
-      }
+      },
+      "id": "4"
     },
     {
       "text": "Summary",
@@ -58,7 +63,8 @@
         "width": 0.07161325566908892,
         "height": 0.01460135103476168,
         "page": 2
-      }
+      },
+      "id": "5"
     },
     {
       "text": "Hierarchical Attention",
@@ -68,7 +74,8 @@
         "width": 0.1665778066597733,
         "height": 0.014992453835227272,
         "page": 2
-      }
+      },
+      "id": "6"
     },
     {
       "text": "3 MODEL",
@@ -78,7 +85,8 @@
         "width": 0.08363058052810968,
         "height": 0.014234253854462595,
         "page": 2
-      }
+      },
+      "id": "7"
     },
     {
       "text": "Emotion Encoder",
@@ -88,7 +96,8 @@
         "width": 0.12810037650314032,
         "height": 0.015247229373816288,
         "page": 3
-      }
+      },
+      "id": "8"
     },
     {
       "text": "4 EVALUATION",
@@ -98,7 +107,8 @@
         "width": 0.12459035636552798,
         "height": 0.016214428525982483,
         "page": 4
-      }
+      },
+      "id": "9"
     },
     {
       "text": "Datasets",
@@ -108,7 +118,8 @@
         "width": 0.06364241456673815,
         "height": 0.014994226320825442,
         "page": 4
-      }
+      },
+      "id": "10"
     },
     {
       "text": "Decoding",
@@ -118,7 +129,8 @@
         "width": 0.07276227115805632,
         "height": 0.014679571594854798,
         "page": 4
-      }
+      },
+      "id": "11"
     },
     {
       "text": "Baselines and Implementation",
@@ -128,7 +140,8 @@
         "width": 0.22387915343240974,
         "height": 0.014863081652708728,
         "page": 5
-      }
+      },
+      "id": "12"
     },
     {
       "text": "Evaluation Metrics",
@@ -138,7 +151,8 @@
         "width": 0.13970618777804905,
         "height": 0.015090325866082702,
         "page": 5
-      }
+      },
+      "id": "13"
     },
     {
       "text": "Results and Analysis",
@@ -148,7 +162,8 @@
         "width": 0.1516925088720384,
         "height": 0.016407706520774147,
         "page": 6
-      }
+      },
+      "id": "14"
     },
     {
       "text": "5 DISCUSSION",
@@ -158,7 +173,8 @@
         "width": 0.12174882452472363,
         "height": 0.015105199332189078,
         "page": 8
-      }
+      },
+      "id": "15"
     },
     {
       "text": "Emotion Recognition",
@@ -168,7 +184,8 @@
         "width": 0.15764102437137778,
         "height": 0.014842871463660038,
         "page": 8
-      }
+      },
+      "id": "16"
     },
     {
       "text": "Evaluation",
@@ -178,7 +195,8 @@
         "width": 0.08013302672143076,
         "height": 0.014713017627446338,
         "page": 8
-      }
+      },
+      "id": "17"
     },
     {
       "text": "Training Data",
@@ -188,7 +206,8 @@
         "width": 0.10332040225758272,
         "height": 0.015178218032374527,
         "page": 8
-      }
+      },
+      "id": "18"
     },
     {
       "text": "Model Extensions",
@@ -198,7 +217,8 @@
         "width": 0.131144704382404,
         "height": 0.014581699563999368,
         "page": 9
-      }
+      },
+      "id": "19"
     },
     {
       "text": "6 CONCLUSION",
@@ -208,7 +228,8 @@
         "width": 0.13404386807111354,
         "height": 0.014523361668442234,
         "page": 9
-      }
+      },
+      "id": "20"
     }
   ],
   "1810.11143": [
@@ -220,7 +241,8 @@
         "width": 0.16885056838490606,
         "height": 0.016369174225161775,
         "page": 0
-      }
+      },
+      "id": "21"
     },
     {
       "text": "CCS CONCEPTS",
@@ -230,7 +252,8 @@
         "width": 0.13238694932725695,
         "height": 0.017292793350990373,
         "page": 0
-      }
+      },
+      "id": "22"
     },
     {
       "text": "2 RELATED WORK",
@@ -240,7 +263,8 @@
         "width": 0.17129785874310663,
         "height": 0.015951214414654358,
         "page": 1
-      }
+      },
+      "id": "23"
     },
     {
       "text": "2.1 Community Data in Citizen Science",
@@ -250,7 +274,8 @@
         "width": 0.3300910214193506,
         "height": 0.014456777861624054,
         "page": 2
-      }
+      },
+      "id": "24"
     },
     {
       "text": "2.2 Machine Learning for Citizen Science",
@@ -260,7 +285,8 @@
         "width": 0.3432883966981975,
         "height": 0.015808567856297348,
         "page": 2
-      }
+      },
+      "id": "25"
     },
     {
       "text": "3.1 Collecting Smell Data at Scale with Ease",
@@ -270,7 +296,8 @@
         "width": 0.3633713753394831,
         "height": 0.015391995208431977,
         "page": 3
-      }
+      },
+      "id": "26"
     },
     {
       "text": "4.1 Submitting and Visualizing Smell Reports",
@@ -280,7 +307,8 @@
         "width": 0.3822273304259855,
         "height": 0.015643765227963225,
         "page": 3
-      }
+      },
+      "id": "27"
     },
     {
       "text": "3 DESIGN PRINCIPLES AND CHALLENGES",
@@ -290,7 +318,8 @@
         "width": 0.3681101019865547,
         "height": 0.01512908935546875,
         "page": 3
-      }
+      },
+      "id": "28"
     },
     {
       "text": "3.2 What is Useful Data? A Wicked Problem",
@@ -300,7 +329,8 @@
         "width": 0.3671170527638953,
         "height": 0.016139560275607638,
         "page": 3
-      }
+      },
+      "id": "29"
     },
     {
       "text": "4 SYSTEM",
@@ -310,7 +340,8 @@
         "width": 0.09581636915019914,
         "height": 0.016309911554509945,
         "page": 3
-      }
+      },
+      "id": "30"
     },
     {
       "text": "5.1 System Usage Study",
@@ -320,7 +351,8 @@
         "width": 0.20005547143275443,
         "height": 0.015733391347557607,
         "page": 4
-      }
+      },
+      "id": "31"
     },
     {
       "text": "5 EVALUATION",
@@ -330,7 +362,8 @@
         "width": 0.13996270746966594,
         "height": 0.015681257151594064,
         "page": 4
-      }
+      },
+      "id": "32"
     },
     {
       "text": "4.2 Sending Push Notifications",
@@ -340,7 +373,8 @@
         "width": 0.25964803633347056,
         "height": 0.014989746941460503,
         "page": 4
-      }
+      },
+      "id": "33"
     },
     {
       "text": "5.2 Smell Dataset Study",
@@ -350,7 +384,8 @@
         "width": 0.19902393864650353,
         "height": 0.015007712624289772,
         "page": 5
-      }
+      },
+      "id": "34"
     },
     {
       "text": "5.3 Survey Study",
@@ -360,7 +395,8 @@
         "width": 0.14503528869229984,
         "height": 0.016407976246843436,
         "page": 7
-      }
+      },
+      "id": "35"
     },
     {
       "text": "6 DISCUSSION",
@@ -370,7 +406,8 @@
         "width": 0.1320674621980954,
         "height": 0.015550940927833018,
         "page": 10
-      }
+      },
+      "id": "36"
     },
     {
       "text": "6.1 Limitation",
@@ -380,7 +417,8 @@
         "width": 0.12785763210720485,
         "height": 0.01660479921283144,
         "page": 10
-      }
+      },
+      "id": "37"
     },
     {
       "text": "7 CONCLUSION",
@@ -390,7 +428,8 @@
         "width": 0.1429427277808096,
         "height": 0.015465013908617424,
         "page": 11
-      }
+      },
+      "id": "38"
     },
     {
       "text": "ACKNOWLEDGMENTS",
@@ -400,7 +439,8 @@
         "width": 0.19203703387889987,
         "height": 0.016056407581676136,
         "page": 11
-      }
+      },
+      "id": "39"
     },
     {
       "text": "8 CORRECTIONS",
@@ -410,7 +450,8 @@
         "width": 0.15622699961942785,
         "height": 0.015403285171046402,
         "page": 14
-      }
+      },
+      "id": "40"
     },
     {
       "text": "8.1 System Usage Study",
@@ -420,7 +461,8 @@
         "width": 0.19928973328833485,
         "height": 0.015605849449080651,
         "page": 14
-      }
+      },
+      "id": "41"
     },
     {
       "text": "8.2 Smell Dataset Study",
@@ -430,7 +472,8 @@
         "width": 0.2031806247686249,
         "height": 0.015838777176057448,
         "page": 14
-      }
+      },
+      "id": "42"
     }
   ],
   "2010.07358": [
@@ -442,7 +485,8 @@
         "width": 0.10666690153234146,
         "height": 0.013828431717073075,
         "page": 1
-      }
+      },
+      "id": "43"
     },
     {
       "text": "2 Related Work",
@@ -452,7 +496,8 @@
         "width": 0.11396091436248978,
         "height": 0.01575731990313289,
         "page": 2
-      }
+      },
+      "id": "44"
     },
     {
       "text": "2.1 AR assistance",
@@ -462,7 +507,8 @@
         "width": 0.12566727282954196,
         "height": 0.01423660432449495,
         "page": 2
-      }
+      },
+      "id": "45"
     },
     {
       "text": "2.2 Embodied-agent simulation frameworks",
@@ -472,7 +518,8 @@
         "width": 0.30081992055855544,
         "height": 0.012849557279336333,
         "page": 3
-      }
+      },
+      "id": "46"
     },
     {
       "text": "3 AR-Assistance Model",
@@ -482,7 +529,8 @@
         "width": 0.15948882757448682,
         "height": 0.014259030120541352,
         "page": 4
-      }
+      },
+      "id": "47"
     },
     {
       "text": "2.3 Evaluating user response to digital assistance",
@@ -492,7 +540,8 @@
         "width": 0.3280660591873468,
         "height": 0.014222886827256944,
         "page": 4
-      }
+      },
+      "id": "48"
     },
     {
       "text": "3.1 Embodied AI formulation",
@@ -502,7 +551,8 @@
         "width": 0.2036400713951759,
         "height": 0.013282727713536734,
         "page": 5
-      }
+      },
+      "id": "49"
     },
     {
       "text": "3.2 Object-rearrangement planner: capacitated vehicle routing problem",
@@ -512,7 +562,8 @@
         "width": 0.4866750006582223,
         "height": 0.013112386067708334,
         "page": 5
-      }
+      },
+      "id": "50"
     },
     {
       "text": "4 AR simulator and deployment at-scale",
@@ -522,7 +573,8 @@
         "width": 0.2732851240370009,
         "height": 0.013897866913766571,
         "page": 6
-      }
+      },
+      "id": "51"
     },
     {
       "text": "5 Study setup",
@@ -532,7 +584,8 @@
         "width": 0.09821873085171569,
         "height": 0.013519633900035511,
         "page": 7
-      }
+      },
+      "id": "52"
     },
     {
       "text": "5.1 House-cleaning task",
@@ -542,7 +595,8 @@
         "width": 0.173920799704159,
         "height": 0.01308310152304293,
         "page": 7
-      }
+      },
+      "id": "53"
     },
     {
       "text": "5.2 Study conditions: assistance fidelity and task difficulty",
@@ -552,7 +606,8 @@
         "width": 0.39508244882222093,
         "height": 0.01358446448740333,
         "page": 8
-      }
+      },
+      "id": "54"
     },
     {
       "text": "5.3 Metrics",
@@ -562,7 +617,8 @@
         "width": 0.08419892055536407,
         "height": 0.013845154733368845,
         "page": 9
-      }
+      },
+      "id": "55"
     },
     {
       "text": "5.4 HIT overview",
@@ -572,7 +628,8 @@
         "width": 0.12239302840887331,
         "height": 0.01418036643904869,
         "page": 10
-      }
+      },
+      "id": "56"
     },
     {
       "text": "6.1 Effects of varying assistance fidelity",
@@ -582,7 +639,8 @@
         "width": 0.2629738601983762,
         "height": 0.013376332292653094,
         "page": 10
-      }
+      },
+      "id": "57"
     },
     {
       "text": "6 User study",
@@ -592,7 +650,8 @@
         "width": 0.09165553173987694,
         "height": 0.014285964195174401,
         "page": 10
-      }
+      },
+      "id": "58"
     },
     {
       "text": "6.2 Interactions between assistance and task difficulty",
@@ -602,7 +661,8 @@
         "width": 0.3590157577414918,
         "height": 0.013662318990688132,
         "page": 12
-      }
+      },
+      "id": "59"
     },
     {
       "text": "7 Conclusions",
@@ -612,7 +672,8 @@
         "width": 0.10377681956571691,
         "height": 0.013776374585700758,
         "page": 13
-      }
+      },
+      "id": "60"
     },
     {
       "text": "A Participants statistics in our study",
@@ -622,7 +683,8 @@
         "width": 0.2485389210819419,
         "height": 0.014231132738517992,
         "page": 16
-      }
+      },
+      "id": "61"
     },
     {
       "text": "B Web application implementation details",
@@ -632,7 +694,8 @@
         "width": 0.28952956355475135,
         "height": 0.013934106537790009,
         "page": 16
-      }
+      },
+      "id": "62"
     },
     {
       "text": "C Disorganized house generation",
@@ -642,7 +705,8 @@
         "width": 0.23062477859796263,
         "height": 0.01356668183297822,
         "page": 16
-      }
+      },
+      "id": "63"
     },
     {
       "text": "C.2 Object placement",
@@ -652,7 +716,8 @@
         "width": 0.15618827919554867,
         "height": 0.015430257777975064,
         "page": 16
-      }
+      },
+      "id": "64"
     },
     {
       "text": "C.1 Bin placement",
@@ -662,7 +727,8 @@
         "width": 0.13304725347780713,
         "height": 0.014528486463758681,
         "page": 16
-      }
+      },
+      "id": "65"
     },
     {
       "text": "C.3 Starting Location",
@@ -672,7 +738,8 @@
         "width": 0.15248307371451184,
         "height": 0.013165522103357797,
         "page": 17
-      }
+      },
+      "id": "66"
     },
     {
       "text": "E",
@@ -682,7 +749,8 @@
         "width": 0.14570463093277675,
         "height": 0.012969277121803978,
         "page": 17
-      }
+      },
+      "id": "67"
     },
     {
       "text": "E.1 Effects of varying assistance fidelity",
@@ -692,7 +760,8 @@
         "width": 0.27222613415686914,
         "height": 0.013124918696856258,
         "page": 18
-      }
+      },
+      "id": "68"
     },
     {
       "text": "E.2 Interactions between assistance and task difficulty",
@@ -702,7 +771,8 @@
         "width": 0.3689619575450623,
         "height": 0.013394654399216777,
         "page": 18
-      }
+      },
+      "id": "69"
     }
   ],
   "2103.06807": [
@@ -714,7 +784,8 @@
         "width": 0.10207561418121937,
         "height": 0.015260022095959596,
         "page": 0
-      }
+      },
+      "id": "70"
     },
     {
       "text": "CCS CONCEPTS",
@@ -724,7 +795,8 @@
         "width": 0.1338505464441636,
         "height": 0.016671614213423294,
         "page": 0
-      }
+      },
+      "id": "71"
     },
     {
       "text": "2 PREVIOUS WORK: MACHINE LEARNING METHODS FOR ADAPTIVE INTERFACES",
@@ -734,7 +806,8 @@
         "width": 0.3714141845703125,
         "height": 0.031965082341974434,
         "page": 1
-      }
+      },
+      "id": "72"
     },
     {
       "text": "1 INTRODUCTION",
@@ -744,7 +817,8 @@
         "width": 0.16835647782469107,
         "height": 0.016306260619500672,
         "page": 1
-      }
+      },
+      "id": "73"
     },
     {
       "text": "2.1 Rules, heuristics, and logic",
@@ -754,7 +828,8 @@
         "width": 0.25867078195210375,
         "height": 0.015447982633956756,
         "page": 1
-      }
+      },
+      "id": "74"
     },
     {
       "text": "3 PROBLEM FORMULATION",
@@ -764,7 +839,8 @@
         "width": 0.2470437841477737,
         "height": 0.015952601577296402,
         "page": 2
-      }
+      },
+      "id": "75"
     },
     {
       "text": "2.2 Machine learning",
@@ -774,7 +850,8 @@
         "width": 0.18206608217526105,
         "height": 0.016253365410698786,
         "page": 2
-      }
+      },
+      "id": "76"
     },
     {
       "text": "2.4 Reinforcement learning",
@@ -784,7 +861,8 @@
         "width": 0.23533099305395985,
         "height": 0.015679253472222224,
         "page": 2
-      }
+      },
+      "id": "77"
     },
     {
       "text": "2.3 Bandit systems and Bayesian optimisation",
@@ -794,7 +872,8 @@
         "width": 0.3857676749135934,
         "height": 0.015152671120383522,
         "page": 2
-      }
+      },
+      "id": "78"
     },
     {
       "text": "4 METHOD: DEEP MODEL-BASED REINFORCEMENT LEARNING",
@@ -804,7 +883,8 @@
         "width": 0.29711617363823783,
         "height": 0.03208746091283933,
         "page": 3
-      }
+      },
+      "id": "79"
     },
     {
       "text": "4.1 Planning with MCTS",
@@ -814,7 +894,8 @@
         "width": 0.20939805772569445,
         "height": 0.0159046481354068,
         "page": 3
-      }
+      },
+      "id": "80"
     },
     {
       "text": "4.2 Value Estimation with Deep Neural Networks",
@@ -824,7 +905,8 @@
         "width": 0.32331035339754394,
         "height": 0.03056127374822443,
         "page": 4
-      }
+      },
+      "id": "81"
     },
     {
       "text": "4.3 Applications in Adaptive Interfaces",
@@ -834,7 +916,8 @@
         "width": 0.32705813139871837,
         "height": 0.01634539979876894,
         "page": 4
-      }
+      },
+      "id": "82"
     },
     {
       "text": "5 APPLICATION: ADAPTIVE MENUS",
@@ -844,7 +927,8 @@
         "width": 0.31427061791513483,
         "height": 0.01568607368854561,
         "page": 5
-      }
+      },
+      "id": "83"
     },
     {
       "text": "5.1 Problem Definition",
@@ -854,7 +938,8 @@
         "width": 0.19652587292241117,
         "height": 0.01677700004192314,
         "page": 5
-      }
+      },
+      "id": "84"
     },
     {
       "text": "5.2 Models for Simulating Menu Search",
@@ -864,7 +949,8 @@
         "width": 0.32981112112406813,
         "height": 0.015865826847577334,
         "page": 6
-      }
+      },
+      "id": "85"
     },
     {
       "text": "5.3 Neural Network for Rewards Estimation",
@@ -874,7 +960,8 @@
         "width": 0.3650607439427594,
         "height": 0.015624768806226326,
         "page": 7
-      }
+      },
+      "id": "86"
     },
     {
       "text": "6.1 Technical Evaluation",
@@ -884,7 +971,8 @@
         "width": 0.21255788616105623,
         "height": 0.015874804872455017,
         "page": 8
-      }
+      },
+      "id": "87"
     },
     {
       "text": "6 EVALUATION",
@@ -894,7 +982,8 @@
         "width": 0.14022458768358417,
         "height": 0.01583569459240846,
         "page": 8
-      }
+      },
+      "id": "88"
     },
     {
       "text": "6.2 Empirical Evaluation",
@@ -904,7 +993,8 @@
         "width": 0.21267809899024714,
         "height": 0.015466516668146307,
         "page": 9
-      }
+      },
+      "id": "89"
     },
     {
       "text": "6.2.6 Quantitative Results.",
@@ -914,7 +1004,8 @@
         "width": 0.1603123783286101,
         "height": 0.012202407374526516,
         "page": 9
-      }
+      },
+      "id": "90"
     },
     {
       "text": "7 CONCLUSION",
@@ -924,7 +1015,8 @@
         "width": 0.14430451237298306,
         "height": 0.016197474315913035,
         "page": 10
-      }
+      },
+      "id": "91"
     },
     {
       "text": "6.3 Summary",
@@ -934,7 +1026,8 @@
         "width": 0.11916161830129188,
         "height": 0.015913606894136678,
         "page": 10
-      }
+      },
+      "id": "92"
     },
     {
       "text": "ACKNOWLEDGMENTS",
@@ -944,7 +1037,8 @@
         "width": 0.19162500917521957,
         "height": 0.016123453776041668,
         "page": 11
-      }
+      },
+      "id": "93"
     },
     {
       "text": "Limitations and Future Work",
@@ -954,7 +1048,8 @@
         "width": 0.23593707489811516,
         "height": 0.014550026017005998,
         "page": 11
-      }
+      },
+      "id": "94"
     },
     {
       "text": "8 OPEN SCIENCE",
@@ -964,7 +1059,8 @@
         "width": 0.15557251101225808,
         "height": 0.015655440513533774,
         "page": 11
-      }
+      },
+      "id": "95"
     }
   ],
   "2104.03820": [
@@ -976,7 +1072,8 @@
         "width": 0.13686142715753294,
         "height": 0.014119466145833334,
         "page": 0
-      }
+      },
+      "id": "96"
     },
     {
       "text": "2.1 AI Techniques for Software Engineering",
@@ -986,7 +1083,8 @@
         "width": 0.30240776959587545,
         "height": 0.013168970743815104,
         "page": 2
-      }
+      },
+      "id": "97"
     },
     {
       "text": "2.3 Co-Creation with Generative AI",
@@ -996,7 +1094,8 @@
         "width": 0.2450670479169858,
         "height": 0.013212955359256628,
         "page": 2
-      }
+      },
+      "id": "98"
     },
     {
       "text": "2 RELATED WORK",
@@ -1006,7 +1105,8 @@
         "width": 0.140380859375,
         "height": 0.014968833538016887,
         "page": 2
-      }
+      },
+      "id": "99"
     },
     {
       "text": "2.2 Imperfect AI",
@@ -1016,7 +1116,8 @@
         "width": 0.11800344629225389,
         "height": 0.014380406851720328,
         "page": 2
-      }
+      },
+      "id": "100"
     },
     {
       "text": "3 DESIGN SCENARIO",
@@ -1026,7 +1127,8 @@
         "width": 0.1567129870645361,
         "height": 0.01380642977627841,
         "page": 3
-      }
+      },
+      "id": "101"
     },
     {
       "text": "4 METHOD",
@@ -1036,7 +1138,8 @@
         "width": 0.08694252313352098,
         "height": 0.013842226278902305,
         "page": 4
-      }
+      },
+      "id": "102"
     },
     {
       "text": "4.2 Variant-Specific Questions",
@@ -1046,7 +1149,8 @@
         "width": 0.2110803890851588,
         "height": 0.013764699300130209,
         "page": 5
-      }
+      },
+      "id": "103"
     },
     {
       "text": "4.1 Participants",
@@ -1056,7 +1160,8 @@
         "width": 0.11299842635011362,
         "height": 0.014247701625631314,
         "page": 5
-      }
+      },
+      "id": "104"
     },
     {
       "text": "5 RESULTS",
@@ -1066,7 +1171,8 @@
         "width": 0.08412555619782093,
         "height": 0.013528881650982481,
         "page": 5
-      }
+      },
+      "id": "105"
     },
     {
       "text": "5.1 Acceptance Through Verification, Not Understanding",
@@ -1076,7 +1182,8 @@
         "width": 0.3893541323593239,
         "height": 0.014165627835976958,
         "page": 6
-      }
+      },
+      "id": "106"
     },
     {
       "text": "5.2 Human-AI Patterns of Interaction",
@@ -1086,7 +1193,8 @@
         "width": 0.25467226863686554,
         "height": 0.01366941856615471,
         "page": 8
-      }
+      },
+      "id": "107"
     },
     {
       "text": "5.3 Utility of Imperfect AI",
@@ -1096,7 +1204,8 @@
         "width": 0.18164754381366804,
         "height": 0.014471034811000632,
         "page": 8
-      }
+      },
+      "id": "108"
     },
     {
       "text": "5.4 Beyond our Design Scenario: Opportunities for Generative AI Across the Modernization Lifecycle",
@@ -1106,7 +1215,8 @@
         "width": 0.6834466472949857,
         "height": 0.014071175546357126,
         "page": 10
-      }
+      },
+      "id": "109"
     },
     {
       "text": "6.1 Human-AI Partnerships",
@@ -1116,7 +1226,8 @@
         "width": 0.19062908646327997,
         "height": 0.013513584329624368,
         "page": 11
-      }
+      },
+      "id": "110"
     },
     {
       "text": "6 DISCUSSION",
@@ -1126,7 +1237,8 @@
         "width": 0.11168708053289675,
         "height": 0.01382623537622317,
         "page": 11
-      }
+      },
+      "id": "111"
     },
     {
       "text": "6.3 Future Directions for Generative AI in Application Modernization",
@@ -1136,7 +1248,8 @@
         "width": 0.47298067379621117,
         "height": 0.01357754794034091,
         "page": 12
-      }
+      },
+      "id": "112"
     },
     {
       "text": "6.2 Toward Explainable Generative AI",
@@ -1146,7 +1259,8 @@
         "width": 0.26285893309350106,
         "height": 0.013058710579920297,
         "page": 12
-      }
+      },
+      "id": "113"
     },
     {
       "text": "8 CONCLUSION",
@@ -1156,7 +1270,8 @@
         "width": 0.12032917745752272,
         "height": 0.01324185458096591,
         "page": 13
-      }
+      },
+      "id": "114"
     },
     {
       "text": "7 LIMITATIONS",
@@ -1166,7 +1281,8 @@
         "width": 0.1156458013197955,
         "height": 0.013866886948094223,
         "page": 13
-      }
+      },
+      "id": "115"
     }
   ],
   "2102.08235": [
@@ -1178,7 +1294,8 @@
         "width": 0.13228446362065335,
         "height": 0.015236478863340435,
         "page": 0
-      }
+      },
+      "id": "116"
     },
     {
       "text": "2.1 Research Context: Technology for Romantic Couples",
@@ -1188,7 +1305,8 @@
         "width": 0.316489375494664,
         "height": 0.03554929868139402,
         "page": 1
-      }
+      },
+      "id": "117"
     },
     {
       "text": "1 INTRODUCTION",
@@ -1198,7 +1316,8 @@
         "width": 0.1681199167288986,
         "height": 0.016200865157926927,
         "page": 1
-      }
+      },
+      "id": "118"
     },
     {
       "text": "2.2 AI-Mediated Communication",
@@ -1208,7 +1327,8 @@
         "width": 0.2782123042087929,
         "height": 0.015265879004892676,
         "page": 1
-      }
+      },
+      "id": "119"
     },
     {
       "text": "2.3 Effects of Biosignals on Communication and Connection",
@@ -1218,7 +1338,8 @@
         "width": 0.36055218316371146,
         "height": 0.031321939795908305,
         "page": 2
-      }
+      },
+      "id": "120"
     },
     {
       "text": "3 SIGNIFICANT OTTER SYSTEM",
@@ -1228,7 +1349,8 @@
         "width": 0.2808542189255259,
         "height": 0.016623140585542928,
         "page": 2
-      }
+      },
+      "id": "121"
     },
     {
       "text": "3.1 Pilot Studies",
@@ -1238,7 +1360,8 @@
         "width": 0.14102821100771037,
         "height": 0.01650419138898753,
         "page": 3
-      }
+      },
+      "id": "122"
     },
     {
       "text": "3.2 Otter Animations",
@@ -1248,7 +1371,8 @@
         "width": 0.18337638705384499,
         "height": 0.015512119640003551,
         "page": 3
-      }
+      },
+      "id": "123"
     },
     {
       "text": "3.3 Sharing Otter States",
@@ -1258,7 +1382,8 @@
         "width": 0.20010460747612846,
         "height": 0.016208224826388888,
         "page": 4
-      }
+      },
+      "id": "124"
     },
     {
       "text": "3.4 Reacting to an Otter State",
@@ -1268,7 +1393,8 @@
         "width": 0.24924851087183733,
         "height": 0.015631242231889206,
         "page": 5
-      }
+      },
+      "id": "125"
     },
     {
       "text": "3.5 Notifications",
@@ -1278,7 +1404,8 @@
         "width": 0.14565426695580577,
         "height": 0.018004022463403567,
         "page": 5
-      }
+      },
+      "id": "126"
     },
     {
       "text": "4.1 Participants",
@@ -1288,7 +1415,8 @@
         "width": 0.1378720913058013,
         "height": 0.016111046376854482,
         "page": 6
-      }
+      },
+      "id": "127"
     },
     {
       "text": "4 METHODS",
@@ -1298,7 +1426,8 @@
         "width": 0.11585156434501698,
         "height": 0.015985199899384468,
         "page": 6
-      }
+      },
+      "id": "128"
     },
     {
       "text": "4.2 Procedure",
@@ -1308,7 +1437,8 @@
         "width": 0.1215264438803679,
         "height": 0.01595714838817866,
         "page": 7
-      }
+      },
+      "id": "129"
     },
     {
       "text": "5.1 Opportunities for Biosignals: \u201cEnhanced Emojis\u201d",
@@ -1318,7 +1448,8 @@
         "width": 0.36452972811031964,
         "height": 0.030946057252209596,
         "page": 8
-      }
+      },
+      "id": "130"
     },
     {
       "text": "5 RESULTS",
@@ -1328,7 +1459,8 @@
         "width": 0.1046444761986826,
         "height": 0.016617707531861585,
         "page": 8
-      }
+      },
+      "id": "131"
     },
     {
       "text": "5.1.1 Effects on the Stages of Communication.",
@@ -1338,7 +1470,8 @@
         "width": 0.2739650751251021,
         "height": 0.012923577819207702,
         "page": 8
-      }
+      },
+      "id": "132"
     },
     {
       "text": "4.3 Analysis",
@@ -1348,7 +1481,8 @@
         "width": 0.11059845818413629,
         "height": 0.015433417426215278,
         "page": 8
-      }
+      },
+      "id": "133"
     },
     {
       "text": "5.1.2 Effects on Social Connection.",
@@ -1358,7 +1492,8 @@
         "width": 0.2066998450584661,
         "height": 0.013471352933633208,
         "page": 9
-      }
+      },
+      "id": "134"
     },
     {
       "text": "5.2 Challenges for Biosignals: Me vs the System",
@@ -1368,7 +1503,8 @@
         "width": 0.39461471831876466,
         "height": 0.01598115400834517,
         "page": 10
-      }
+      },
+      "id": "135"
     },
     {
       "text": "5.2.2 Effects on Social Connection.",
@@ -1378,7 +1514,8 @@
         "width": 0.20381349052479064,
         "height": 0.013396369086371528,
         "page": 10
-      }
+      },
+      "id": "136"
     },
     {
       "text": "5.2.1 Effects on the Stages of Communication.",
@@ -1388,7 +1525,8 @@
         "width": 0.27210717419393704,
         "height": 0.012883041844223484,
         "page": 10
-      }
+      },
+      "id": "137"
     },
     {
       "text": "6.1 Summary of Results",
@@ -1398,7 +1536,8 @@
         "width": 0.20269695606107027,
         "height": 0.01598859074139836,
         "page": 11
-      }
+      },
+      "id": "138"
     },
     {
       "text": "6 DISCUSSION",
@@ -1408,7 +1547,8 @@
         "width": 0.13078237670698975,
         "height": 0.015279596502130682,
         "page": 11
-      }
+      },
+      "id": "139"
     },
     {
       "text": "8 CONCLUSION",
@@ -1418,7 +1558,8 @@
         "width": 0.14439013113383375,
         "height": 0.015105738784327652,
         "page": 12
-      }
+      },
+      "id": "140"
     },
     {
       "text": "7 LIMITATIONS",
@@ -1428,7 +1569,8 @@
         "width": 0.1441896600660935,
         "height": 0.016272959083017676,
         "page": 12
-      }
+      },
+      "id": "141"
     },
     {
       "text": "ACKNOWLEDGEMENTS",
@@ -1438,7 +1580,8 @@
         "width": 0.2030587040520961,
         "height": 0.014695312037612453,
         "page": 13
-      }
+      },
+      "id": "142"
     },
     {
       "text": "Daily Survey Questions",
@@ -1448,7 +1591,8 @@
         "width": 0.3156963298523348,
         "height": 0.032196247216426964,
         "page": 15
-      }
+      },
+      "id": "143"
     },
     {
       "text": "Sending your State Otter",
@@ -1458,7 +1602,8 @@
         "width": 0.2013716604195389,
         "height": 0.01789382009795218,
         "page": 15
-      }
+      },
+      "id": "144"
     },
     {
       "text": "Mid-Study Interview Questions",
@@ -1468,7 +1613,8 @@
         "width": 0.3348615933087916,
         "height": 0.024478112808381667,
         "page": 17
-      }
+      },
+      "id": "145"
     },
     {
       "text": "Sharing Behavior",
@@ -1478,7 +1624,8 @@
         "width": 0.1426596797369664,
         "height": 0.017928653293185763,
         "page": 17
-      }
+      },
+      "id": "146"
     },
     {
       "text": "Exit Interview Questions",
@@ -1488,7 +1635,8 @@
         "width": 0.2681254343269697,
         "height": 0.025190873579545456,
         "page": 18
-      }
+      },
+      "id": "147"
     },
     {
       "text": "General",
@@ -1498,7 +1646,8 @@
         "width": 0.06318038740968393,
         "height": 0.017390241526594064,
         "page": 18
-      }
+      },
+      "id": "148"
     },
     {
       "text": "Communication Behavior",
@@ -1508,7 +1657,8 @@
         "width": 0.20801985497568168,
         "height": 0.017089554757782906,
         "page": 20
-      }
+      },
+      "id": "149"
     }
   ],
   "2102.09039": [
@@ -1520,7 +1670,8 @@
         "width": 0.16846807018604154,
         "height": 0.015502236106178978,
         "page": 0
-      }
+      },
+      "id": "150"
     },
     {
       "text": "CCS CONCEPTS",
@@ -1530,7 +1681,8 @@
         "width": 0.133401509203942,
         "height": 0.01575466117473564,
         "page": 0
-      }
+      },
+      "id": "151"
     },
     {
       "text": "2.1 Traditional UI Evaluation Methods",
@@ -1540,7 +1692,8 @@
         "width": 0.3207958570492813,
         "height": 0.016513785930595014,
         "page": 1
-      }
+      },
+      "id": "152"
     },
     {
       "text": "2 RELATED WORK",
@@ -1550,7 +1703,8 @@
         "width": 0.17053271898257186,
         "height": 0.01580956969598327,
         "page": 1
-      }
+      },
+      "id": "153"
     },
     {
       "text": "2.2 Crowd-Powered UI Design & Evaluation",
@@ -1560,7 +1714,8 @@
         "width": 0.3616573358672896,
         "height": 0.016105189467921402,
         "page": 1
-      }
+      },
+      "id": "154"
     },
     {
       "text": "2.3 Interactive UI Design Optimization",
@@ -1570,7 +1725,8 @@
         "width": 0.3233885796241511,
         "height": 0.01567285711115057,
         "page": 2
-      }
+      },
+      "id": "155"
     },
     {
       "text": "3 USING SPACEWALKER",
@@ -1580,7 +1736,8 @@
         "width": 0.2178764654919992,
         "height": 0.015898039846709282,
         "page": 2
-      }
+      },
+      "id": "156"
     },
     {
       "text": "4 THE SPACEWALKER SYSTEM",
@@ -1590,7 +1747,8 @@
         "width": 0.27022475822299136,
         "height": 0.015356121641216856,
         "page": 3
-      }
+      },
+      "id": "157"
     },
     {
       "text": "4.1 Spacewalker Markup Syntax & Parsing",
@@ -1600,7 +1758,8 @@
         "width": 0.35565060883565663,
         "height": 0.016328869443951233,
         "page": 3
-      }
+      },
+      "id": "158"
     },
     {
       "text": "4.2 Spacewalker Genetic Algorithms",
@@ -1610,7 +1769,8 @@
         "width": 0.3033617431042241,
         "height": 0.01584565519082426,
         "page": 4
-      }
+      },
+      "id": "159"
     },
     {
       "text": "5 EXPERIMENTS",
@@ -1620,7 +1780,8 @@
         "width": 0.15428420920777164,
         "height": 0.016008088082978218,
         "page": 5
-      }
+      },
+      "id": "160"
     },
     {
       "text": "4.3 Architectures",
@@ -1630,7 +1791,8 @@
         "width": 0.14885100196389592,
         "height": 0.015713547215317234,
         "page": 5
-      }
+      },
+      "id": "161"
     },
     {
       "text": "5.1 User Study",
@@ -1640,7 +1802,8 @@
         "width": 0.1271326900307649,
         "height": 0.016619017629912407,
         "page": 5
-      }
+      },
+      "id": "162"
     },
     {
       "text": "5.2 Exploration Performance Evaluation",
@@ -1650,7 +1813,8 @@
         "width": 0.3363064098981471,
         "height": 0.016340120874270045,
         "page": 6
-      }
+      },
+      "id": "163"
     },
     {
       "text": "6 DISCUSSION & FUTURE WORK",
@@ -1660,7 +1824,8 @@
         "width": 0.28806248833151427,
         "height": 0.014290857796717172,
         "page": 7
-      }
+      },
+      "id": "164"
     },
     {
       "text": "ACKNOWLEDGEMENTS",
@@ -1670,7 +1835,8 @@
         "width": 0.20345101948657068,
         "height": 0.016781566118953203,
         "page": 9
-      }
+      },
+      "id": "165"
     },
     {
       "text": "7 CONCLUSION",
@@ -1680,7 +1846,8 @@
         "width": 0.14379428414737477,
         "height": 0.015293930516098484,
         "page": 9
-      }
+      },
+      "id": "166"
     }
   ],
   "2101.11778": [
@@ -1692,7 +1859,8 @@
         "width": 0.16919887767118566,
         "height": 0.016059509431472933,
         "page": 0
-      }
+      },
+      "id": "167"
     },
     {
       "text": "CCS CONCEPTS",
@@ -1702,7 +1870,8 @@
         "width": 0.13327685212777332,
         "height": 0.01541576963482481,
         "page": 0
-      }
+      },
+      "id": "168"
     },
     {
       "text": "2.2 Designing to Support Sense of Agency",
@@ -1712,7 +1881,8 @@
         "width": 0.3474164975234886,
         "height": 0.015974757647273515,
         "page": 1
-      }
+      },
+      "id": "169"
     },
     {
       "text": "2.1 Designing to Undermine Sense of Agency",
@@ -1722,7 +1892,8 @@
         "width": 0.37582162470599406,
         "height": 0.015465476296164772,
         "page": 1
-      }
+      },
+      "id": "170"
     },
     {
       "text": "2 BACKGROUND AND MOTIVATION",
@@ -1732,7 +1903,8 @@
         "width": 0.3184780357709897,
         "height": 0.016085807723228377,
         "page": 1
-      }
+      },
+      "id": "171"
     },
     {
       "text": "2.3 Design Mechanisms for Digital Wellbeing",
@@ -1742,7 +1914,8 @@
         "width": 0.37805430717717586,
         "height": 0.015786103527955335,
         "page": 2
-      }
+      },
+      "id": "172"
     },
     {
       "text": "3 STUDY 1: SURVEY OF 120 YOUTUBE USERS",
@@ -1752,7 +1925,8 @@
         "width": 0.3857999814102073,
         "height": 0.01623034236407039,
         "page": 2
-      }
+      },
+      "id": "173"
     },
     {
       "text": "3.1 Participants",
@@ -1762,7 +1936,8 @@
         "width": 0.13829434463401247,
         "height": 0.016452095725319603,
         "page": 2
-      }
+      },
+      "id": "174"
     },
     {
       "text": "3.3 Coding reliability thematic analysis",
@@ -1772,7 +1947,8 @@
         "width": 0.32966334523718344,
         "height": 0.016009783503985166,
         "page": 3
-      }
+      },
+      "id": "175"
     },
     {
       "text": "3.2 Procedure",
@@ -1782,7 +1958,8 @@
         "width": 0.1229815514259089,
         "height": 0.018200999558574023,
         "page": 3
-      }
+      },
+      "id": "176"
     },
     {
       "text": "How Existing Mechanisms Influence Sense of Agency",
@@ -1792,7 +1969,8 @@
         "width": 0.3552495919021906,
         "height": 0.012589734010022096,
         "page": 4
-      }
+      },
+      "id": "177"
     },
     {
       "text": "3.4 Results and Analysis",
@@ -1802,7 +1980,8 @@
         "width": 0.20950621561287275,
         "height": 0.016259164521188446,
         "page": 4
-      }
+      },
+      "id": "178"
     },
     {
       "text": "4 STUDY 2: CO-DESIGN WITH YOUTUBE USERS",
@@ -1812,7 +1991,8 @@
         "width": 0.35032224343493096,
         "height": 0.0312593248155382,
         "page": 7
-      }
+      },
+      "id": "179"
     },
     {
       "text": "4.1 Preparatory Design Work",
@@ -1822,7 +2002,8 @@
         "width": 0.2482053781646529,
         "height": 0.015456074416035354,
         "page": 7
-      }
+      },
+      "id": "180"
     },
     {
       "text": "4.2 Participants",
@@ -1832,7 +2013,8 @@
         "width": 0.13810565424900428,
         "height": 0.016641327829071968,
         "page": 7
-      }
+      },
+      "id": "181"
     },
     {
       "text": "4.4 Codebook Thematic Analysis",
@@ -1842,7 +2024,8 @@
         "width": 0.27724580827102163,
         "height": 0.015187157524956597,
         "page": 9
-      }
+      },
+      "id": "182"
     },
     {
       "text": "4.5 Results and Analysis",
@@ -1852,7 +2035,8 @@
         "width": 0.20838100458282272,
         "height": 0.016669379340277776,
         "page": 9
-      }
+      },
+      "id": "183"
     },
     {
       "text": "4.3 Procedures",
@@ -1862,7 +2046,8 @@
         "width": 0.12908249275357114,
         "height": 0.01571144720520636,
         "page": 9
-      }
+      },
+      "id": "184"
     },
     {
       "text": "5 OVERALL DISCUSSION",
@@ -1872,7 +2057,8 @@
         "width": 0.22036409066393484,
         "height": 0.015470369897707545,
         "page": 10
-      }
+      },
+      "id": "185"
     },
     {
       "text": "5.1 Rethinking What \u2018Relevance\u2019 Means for Recommendations",
@@ -1882,7 +2068,8 @@
         "width": 0.36176080641403696,
         "height": 0.030017505992542614,
         "page": 11
-      }
+      },
+      "id": "186"
     },
     {
       "text": "5.2 Designing to Support Microplanning",
@@ -1892,7 +2079,8 @@
         "width": 0.3357049779954299,
         "height": 0.015775584211253156,
         "page": 11
-      }
+      },
+      "id": "187"
     },
     {
       "text": "5.3 Different Levels of Control for Ritualized and Instrumental Use",
@@ -1902,7 +2090,8 @@
         "width": 0.3751232359144423,
         "height": 0.03278901841905382,
         "page": 12
-      }
+      },
+      "id": "188"
     },
     {
       "text": "5.4 Towards a Language of Attention Capture Dark Patterns",
@@ -1912,7 +2101,8 @@
         "width": 0.3783754336288552,
         "height": 0.03212614733763416,
         "page": 12
-      }
+      },
+      "id": "189"
     },
     {
       "text": "6 CONCLUSION",
@@ -1922,7 +2112,8 @@
         "width": 0.1425082512151182,
         "height": 0.015451681734335542,
         "page": 13
-      }
+      },
+      "id": "190"
     },
     {
       "text": "ACKNOWLEDGMENTS",
@@ -1932,7 +2123,8 @@
         "width": 0.19225814919066586,
         "height": 0.01675034532643328,
         "page": 13
-      }
+      },
+      "id": "191"
     },
     {
       "text": "5.5 Limitations",
@@ -1942,7 +2134,8 @@
         "width": 0.13359828400456047,
         "height": 0.015975528293185763,
         "page": 13
-      }
+      },
+      "id": "192"
     }
   ],
   "2102.00625": [
@@ -1954,7 +2147,8 @@
         "width": 0.16948465584150327,
         "height": 0.01566603689482718,
         "page": 0
-      }
+      },
+      "id": "193"
     },
     {
       "text": "2.1 Theories of (Moral) Responsibility",
@@ -1964,7 +2158,8 @@
         "width": 0.3172592212951261,
         "height": 0.016321471243193657,
         "page": 1
-      }
+      },
+      "id": "194"
     },
     {
       "text": "2 BACKGROUND",
@@ -1974,7 +2169,8 @@
         "width": 0.15510504853491688,
         "height": 0.016775651411576706,
         "page": 1
-      }
+      },
+      "id": "195"
     },
     {
       "text": "2.2 Techno-Responsibility Gaps",
@@ -1984,7 +2180,8 @@
         "width": 0.26918304044436786,
         "height": 0.016248606672190656,
         "page": 1
-      }
+      },
+      "id": "196"
     },
     {
       "text": "2.3 Responsibility, Fairness, Trust in HCI Literature",
@@ -1994,7 +2191,8 @@
         "width": 0.34163350996628306,
         "height": 0.03163601653744476,
         "page": 2
-      }
+      },
+      "id": "197"
     },
     {
       "text": "3.1 Algorithmic Decision-Making",
@@ -2004,7 +2202,8 @@
         "width": 0.2834568896324806,
         "height": 0.014813259394481929,
         "page": 2
-      }
+      },
+      "id": "198"
     },
     {
       "text": "3.2 The Plurality of Responsibility",
@@ -2014,7 +2213,8 @@
         "width": 0.290812673132404,
         "height": 0.015753659335049717,
         "page": 2
-      }
+      },
+      "id": "199"
     },
     {
       "text": "3 METHODOLOGY",
@@ -2024,7 +2224,8 @@
         "width": 0.16577736848320057,
         "height": 0.01623483137650923,
         "page": 2
-      }
+      },
+      "id": "200"
     },
     {
       "text": "3.3 Survey Design",
@@ -2034,7 +2235,8 @@
         "width": 0.1578532200233609,
         "height": 0.015904975659919506,
         "page": 3
-      }
+      },
+      "id": "201"
     },
     {
       "text": "4.2 Responsibility Assignment to AI and Humans",
@@ -2044,7 +2246,8 @@
         "width": 0.33586544460720485,
         "height": 0.0313938795918166,
         "page": 5
-      }
+      },
+      "id": "202"
     },
     {
       "text": "3.4 Participants and Recruitment",
@@ -2054,7 +2257,8 @@
         "width": 0.2810223024655012,
         "height": 0.015566970362807766,
         "page": 5
-      }
+      },
+      "id": "203"
     },
     {
       "text": "4.1 Responsibility in Bail Decisions",
@@ -2064,7 +2268,8 @@
         "width": 0.2987237568774255,
         "height": 0.01645003424750434,
         "page": 5
-      }
+      },
+      "id": "204"
     },
     {
       "text": "4 RESULTS",
@@ -2074,7 +2279,8 @@
         "width": 0.10520890179802389,
         "height": 0.016627764461016416,
         "page": 5
-      }
+      },
+      "id": "205"
     },
     {
       "text": "5.2 Humans Are More Responsible for Their Tasks Than AI Programs",
@@ -2084,7 +2290,8 @@
         "width": 0.3695857727449704,
         "height": 0.031760398787681506,
         "page": 7
-      }
+      },
+      "id": "206"
     },
     {
       "text": "5.1 The Relation Between Notions of Responsibility",
@@ -2094,7 +2301,8 @@
         "width": 0.3125670563940908,
         "height": 0.033161047733191285,
         "page": 7
-      }
+      },
+      "id": "207"
     },
     {
       "text": "5 DISCUSSION",
@@ -2104,7 +2312,8 @@
         "width": 0.13294806511573543,
         "height": 0.016715541030421402,
         "page": 7
-      }
+      },
+      "id": "208"
     },
     {
       "text": "5.4 AI and Human Agents Are Similarly Responsible for Consequences",
@@ -2114,7 +2323,8 @@
         "width": 0.3357754376978656,
         "height": 0.030198270624334164,
         "page": 8
-      }
+      },
+      "id": "209"
     },
     {
       "text": "5.3 The Need for Explanations",
@@ -2124,7 +2334,8 @@
         "width": 0.25800973605486305,
         "height": 0.015529093116220801,
         "page": 8
-      }
+      },
+      "id": "210"
     },
     {
       "text": "7 CONCLUDING REMARKS",
@@ -2134,7 +2345,8 @@
         "width": 0.2383630291309232,
         "height": 0.016374299020478218,
         "page": 9
-      }
+      },
+      "id": "211"
     },
     {
       "text": "6 IMPLICATIONS",
@@ -2144,7 +2356,8 @@
         "width": 0.1560951058381523,
         "height": 0.01565906254932134,
         "page": 9
-      }
+      },
+      "id": "212"
     },
     {
       "text": "ACKNOWLEDGMENTS",
@@ -2154,7 +2367,8 @@
         "width": 0.19307855219622844,
         "height": 0.015560496937144886,
         "page": 12
-      }
+      },
+      "id": "213"
     },
     {
       "text": "A APPENDIX",
@@ -2164,7 +2378,8 @@
         "width": 0.12426653095320159,
         "height": 0.016621541495275016,
         "page": 12
-      }
+      },
+      "id": "214"
     }
   ],
   "2103.00912": [
@@ -2176,7 +2391,8 @@
         "width": 0.16997074301725898,
         "height": 0.017369125828598484,
         "page": 0
-      }
+      },
+      "id": "215"
     },
     {
       "text": "CCS CONCEPTS",
@@ -2186,7 +2402,8 @@
         "width": 0.1328993155286203,
         "height": 0.016448126898871526,
         "page": 0
-      }
+      },
+      "id": "216"
     },
     {
       "text": "KEYWORDS",
@@ -2196,7 +2413,8 @@
         "width": 0.10409306544883579,
         "height": 0.01581981928661616,
         "page": 0
-      }
+      },
+      "id": "217"
     },
     {
       "text": "2.1 Gesture Elicitation Studies",
@@ -2206,7 +2424,8 @@
         "width": 0.25708431667751735,
         "height": 0.016069970949731692,
         "page": 1
-      }
+      },
+      "id": "218"
     },
     {
       "text": "2 RELATED WORK",
@@ -2216,7 +2435,8 @@
         "width": 0.1713122199563419,
         "height": 0.01636884670064907,
         "page": 1
-      }
+      },
+      "id": "219"
     },
     {
       "text": "2.2 Gesture Analysis Tools",
@@ -2226,7 +2446,8 @@
         "width": 0.22622845219630822,
         "height": 0.014926640674321338,
         "page": 1
-      }
+      },
+      "id": "220"
     },
     {
       "text": "3.1 Feature Requirements and Overview",
@@ -2236,7 +2457,8 @@
         "width": 0.3372056749131944,
         "height": 0.015242990821298926,
         "page": 2
-      }
+      },
+      "id": "221"
     },
     {
       "text": "3 GESTUREMAP CONCEPT",
@@ -2246,7 +2468,8 @@
         "width": 0.23641588796977125,
         "height": 0.015422050399009627,
         "page": 2
-      }
+      },
+      "id": "222"
     },
     {
       "text": "2.3 Visualization of High Dimensional Data",
@@ -2256,7 +2479,8 @@
         "width": 0.36443105710098167,
         "height": 0.015369569412385575,
         "page": 2
-      }
+      },
+      "id": "223"
     },
     {
       "text": "3.4 Analysis Concepts Using the Gesture Map",
@@ -2266,7 +2490,8 @@
         "width": 0.37931504592396853,
         "height": 0.01645043883660827,
         "page": 3
-      }
+      },
+      "id": "224"
     },
     {
       "text": "3.2 The Learned 2D Gesture Map",
@@ -2276,7 +2501,8 @@
         "width": 0.2773807874692032,
         "height": 0.015572056625828598,
         "page": 3
-      }
+      },
+      "id": "225"
     },
     {
       "text": "3.3 Map Interaction Concepts",
@@ -2286,7 +2512,8 @@
         "width": 0.2504539240419475,
         "height": 0.01662445068359375,
         "page": 3
-      }
+      },
+      "id": "226"
     },
     {
       "text": "4.2 Consensus as Variation Around Barycenter",
@@ -2296,7 +2523,8 @@
         "width": 0.38917651207618464,
         "height": 0.01479794280697601,
         "page": 4
-      }
+      },
+      "id": "227"
     },
     {
       "text": "4 CONSENSUS AND CLUSTERING WITH DBA",
@@ -2306,7 +2534,8 @@
         "width": 0.3878878799139285,
         "height": 0.016252536966343118,
         "page": 4
-      }
+      },
+      "id": "228"
     },
     {
       "text": "4.1 Computing an Average Gesture with DBA",
@@ -2316,7 +2545,8 @@
         "width": 0.3797689699659161,
         "height": 0.01515051331182923,
         "page": 4
-      }
+      },
+      "id": "229"
     },
     {
       "text": "5 IMPLEMENTATION OF GESTUREMAP",
@@ -2326,7 +2556,8 @@
         "width": 0.3446812536202225,
         "height": 0.016224716648910984,
         "page": 5
-      }
+      },
+      "id": "230"
     },
     {
       "text": "5.1 User Interface and Functionality",
@@ -2336,7 +2567,8 @@
         "width": 0.30351896846995635,
         "height": 0.015118916829427084,
         "page": 5
-      }
+      },
+      "id": "231"
     },
     {
       "text": "6.3 Global Observations",
@@ -2346,7 +2578,8 @@
         "width": 0.20352696437461704,
         "height": 0.015555718932488952,
         "page": 5
-      }
+      },
+      "id": "232"
     },
     {
       "text": "6 EXPERIMENTS",
@@ -2356,7 +2589,8 @@
         "width": 0.15399733400033191,
         "height": 0.015779630102292455,
         "page": 5
-      }
+      },
+      "id": "233"
     },
     {
       "text": "6.1 Datasets",
@@ -2366,7 +2600,8 @@
         "width": 0.10872365914139093,
         "height": 0.016220670757871685,
         "page": 5
-      }
+      },
+      "id": "234"
     },
     {
       "text": "5.2 Architecture",
@@ -2376,7 +2611,8 @@
         "width": 0.1428440567714716,
         "height": 0.016158575963492346,
         "page": 5
-      }
+      },
+      "id": "235"
     },
     {
       "text": "4.3 Clustering Gestures with DBA & K-Means",
@@ -2386,7 +2622,8 @@
         "width": 0.37953076954760584,
         "height": 0.014446701666321417,
         "page": 5
-      }
+      },
+      "id": "236"
     },
     {
       "text": "6.2 Model Training",
@@ -2396,7 +2633,8 @@
         "width": 0.1666394401999081,
         "height": 0.016407167068635573,
         "page": 5
-      }
+      },
+      "id": "237"
     },
     {
       "text": "6.4 Local Observations",
@@ -2406,7 +2644,8 @@
         "width": 0.19287052653194253,
         "height": 0.015893261842053346,
         "page": 6
-      }
+      },
+      "id": "238"
     },
     {
       "text": "6.5 Interactive Clustering",
@@ -2416,7 +2655,8 @@
         "width": 0.21979385575437857,
         "height": 0.014243809863774463,
         "page": 7
-      }
+      },
+      "id": "239"
     },
     {
       "text": "6.6 Comparison Between Datasets",
@@ -2426,7 +2666,8 @@
         "width": 0.2857811809365266,
         "height": 0.015092483674636994,
         "page": 7
-      }
+      },
+      "id": "240"
     },
     {
       "text": "7.1 Procedure",
@@ -2436,7 +2677,8 @@
         "width": 0.12297162822648591,
         "height": 0.016562876075205176,
         "page": 7
-      }
+      },
+      "id": "241"
     },
     {
       "text": "7 USER STUDY",
@@ -2446,7 +2688,8 @@
         "width": 0.1339944266026316,
         "height": 0.015733121621488322,
         "page": 7
-      }
+      },
+      "id": "242"
     },
     {
       "text": "8.1 Extending the Gesture Elicitation Toolbox",
@@ -2456,7 +2699,8 @@
         "width": 0.3806312411439185,
         "height": 0.016545767735953284,
         "page": 8
-      }
+      },
+      "id": "243"
     },
     {
       "text": "8 DISCUSSION",
@@ -2466,7 +2710,8 @@
         "width": 0.1321944193123213,
         "height": 0.015181416212910354,
         "page": 8
-      }
+      },
+      "id": "244"
     },
     {
       "text": "7.2 Findings",
@@ -2476,7 +2721,8 @@
         "width": 0.10933445325863907,
         "height": 0.015968158991649897,
         "page": 8
-      }
+      },
+      "id": "245"
     },
     {
       "text": "9 CONCLUSION",
@@ -2486,7 +2732,8 @@
         "width": 0.1439688688789318,
         "height": 0.016172698049834282,
         "page": 9
-      }
+      },
+      "id": "246"
     },
     {
       "text": "ACKNOWLEDGMENTS",
@@ -2496,7 +2743,8 @@
         "width": 0.19090704824410232,
         "height": 0.01616961546618529,
         "page": 9
-      }
+      },
+      "id": "247"
     },
     {
       "text": "8.2 Reflection on Model & Clustering Choices",
@@ -2506,7 +2754,8 @@
         "width": 0.3788473964516633,
         "height": 0.01572822801994555,
         "page": 9
-      }
+      },
+      "id": "248"
     },
     {
       "text": "8.3 Opportunities for Research & Applications",
@@ -2516,7 +2765,8 @@
         "width": 0.38709457247864965,
         "height": 0.016194661458333332,
         "page": 9
-      }
+      },
+      "id": "249"
     }
   ],
   "2102.09087": [
@@ -2528,7 +2778,8 @@
         "width": 0.16832040026296977,
         "height": 0.01604168824475221,
         "page": 0
-      }
+      },
+      "id": "250"
     },
     {
       "text": "CCS CONCEPTS",
@@ -2538,7 +2789,8 @@
         "width": 0.13231298035266353,
         "height": 0.015357354674676452,
         "page": 0
-      }
+      },
+      "id": "251"
     },
     {
       "text": "2.3 Multi-Task Learning and Training with Auxiliary Information",
@@ -2548,7 +2800,8 @@
         "width": 0.35255571751812703,
         "height": 0.03174725927487768,
         "page": 1
-      }
+      },
+      "id": "252"
     },
     {
       "text": "2.1 Off-Screen Interaction",
@@ -2558,7 +2811,8 @@
         "width": 0.22038496553508286,
         "height": 0.014320758858112374,
         "page": 1
-      }
+      },
+      "id": "253"
     },
     {
       "text": "2 RELATED WORK",
@@ -2568,7 +2822,8 @@
         "width": 0.16927573260139017,
         "height": 0.01771872934668955,
         "page": 1
-      }
+      },
+      "id": "254"
     },
     {
       "text": "2.2 Tap Detection from IMU Signals",
@@ -2578,7 +2833,8 @@
         "width": 0.2999301486545139,
         "height": 0.01618876601710464,
         "page": 1
-      }
+      },
+      "id": "255"
     },
     {
       "text": "3 RECOGNIZING TAP PROPERTIES",
@@ -2588,7 +2844,8 @@
         "width": 0.30492207271600863,
         "height": 0.015838237723918878,
         "page": 2
-      }
+      },
+      "id": "256"
     },
     {
       "text": "3.3 One-Channel Convolutional Layers",
@@ -2598,7 +2855,8 @@
         "width": 0.32975095861098347,
         "height": 0.016198206429529672,
         "page": 2
-      }
+      },
+      "id": "257"
     },
     {
       "text": "3.1 Pipeline Overview",
@@ -2608,7 +2866,8 @@
         "width": 0.188883214215048,
         "height": 0.015640952370383522,
         "page": 2
-      }
+      },
+      "id": "258"
     },
     {
       "text": "3.2 Design of TapNet Architecture",
@@ -2618,7 +2877,8 @@
         "width": 0.2865689844866983,
         "height": 0.01697166519935685,
         "page": 2
-      }
+      },
+      "id": "259"
     },
     {
       "text": "4 DATASET DEVELOPMENT",
@@ -2628,7 +2888,8 @@
         "width": 0.24569602417790032,
         "height": 0.014577788535994713,
         "page": 3
-      }
+      },
+      "id": "260"
     },
     {
       "text": "3.5 Sensor Signal and Temporal Alignment",
@@ -2638,7 +2899,8 @@
         "width": 0.35617708069047116,
         "height": 0.015538918851601958,
         "page": 3
-      }
+      },
+      "id": "261"
     },
     {
       "text": "3.4 Signal Gating for Neural Network",
@@ -2648,7 +2910,8 @@
         "width": 0.3122730504453572,
         "height": 0.016133973092743843,
         "page": 3
-      }
+      },
+      "id": "262"
     },
     {
       "text": "4.1 One-Person Training Dataset",
@@ -2658,7 +2921,8 @@
         "width": 0.27739625818589153,
         "height": 0.015198293358388574,
         "page": 3
-      }
+      },
+      "id": "263"
     },
     {
       "text": "5 MACHINE LEARNING EXPERIMENTS",
@@ -2668,7 +2932,8 @@
         "width": 0.34047868516710067,
         "height": 0.016025350551412562,
         "page": 4
-      }
+      },
+      "id": "264"
     },
     {
       "text": "4.2 Multi-Person Testing Dataset",
@@ -2678,7 +2943,8 @@
         "width": 0.27622009102815115,
         "height": 0.015512948084359218,
         "page": 4
-      }
+      },
+      "id": "265"
     },
     {
       "text": "5.1 Performance on Tap Recognition Tasks",
@@ -2688,7 +2954,8 @@
         "width": 0.35881343542360794,
         "height": 0.01585499927251026,
         "page": 5
-      }
+      },
+      "id": "266"
     },
     {
       "text": "5.2 Ablation Studies: Multi- Input and Output",
@@ -2698,7 +2965,8 @@
         "width": 0.38256608426960464,
         "height": 0.01613732540246212,
         "page": 6
-      }
+      },
+      "id": "267"
     },
     {
       "text": "5.3 Signal Alignment in One-Channel CNN",
@@ -2708,7 +2976,8 @@
         "width": 0.3598388285418741,
         "height": 0.01604022401751894,
         "page": 7
-      }
+      },
+      "id": "268"
     },
     {
       "text": "6 DISCUSSION",
@@ -2718,7 +2987,8 @@
         "width": 0.1324361601686166,
         "height": 0.016046620378590594,
         "page": 7
-      }
+      },
+      "id": "269"
     },
     {
       "text": "7.3 Interactive Wallpaper",
@@ -2728,7 +2998,8 @@
         "width": 0.21751942354090073,
         "height": 0.01420285003353851,
         "page": 8
-      }
+      },
+      "id": "270"
     },
     {
       "text": "7 HCI APPLICATIONS OF TAPNET",
@@ -2738,7 +3009,8 @@
         "width": 0.29675166435491024,
         "height": 0.015702989366319444,
         "page": 8
-      }
+      },
+      "id": "271"
     },
     {
       "text": "7.2 ExplorativeTap",
@@ -2748,7 +3020,8 @@
         "width": 0.162627425848269,
         "height": 0.01743671147510259,
         "page": 8
-      }
+      },
+      "id": "272"
     },
     {
       "text": "7.1 AssistiveTap",
@@ -2758,7 +3031,8 @@
         "width": 0.14165738049675436,
         "height": 0.016925156718552714,
         "page": 8
-      }
+      },
+      "id": "273"
     },
     {
       "text": "7.4 Inertial Touch",
@@ -2768,7 +3042,8 @@
         "width": 0.15560020496642668,
         "height": 0.016207300051294192,
         "page": 8
-      }
+      },
+      "id": "274"
     },
     {
       "text": "8 CONCLUSION",
@@ -2778,7 +3053,8 @@
         "width": 0.14372648600659338,
         "height": 0.015437694511028251,
         "page": 9
-      }
+      },
+      "id": "275"
     },
     {
       "text": "7.5 Summary of Use Cases",
@@ -2788,7 +3064,8 @@
         "width": 0.22452805089015587,
         "height": 0.015200335570056029,
         "page": 9
-      }
+      },
+      "id": "276"
     }
   ],
   "2102.04174": [
@@ -2800,7 +3077,8 @@
         "width": 0.13661540411656198,
         "height": 0.013665921760327888,
         "page": 1
-      }
+      },
+      "id": "277"
     },
     {
       "text": "2.1 Rule-based systems",
@@ -2810,7 +3088,8 @@
         "width": 0.16417146819868897,
         "height": 0.014809887818615846,
         "page": 2
-      }
+      },
+      "id": "278"
     },
     {
       "text": "2.2 Model-free and model-based learning",
@@ -2820,7 +3099,8 @@
         "width": 0.2850097706115324,
         "height": 0.013719192659011994,
         "page": 2
-      }
+      },
+      "id": "279"
     },
     {
       "text": "2 RELATED WORK",
@@ -2830,7 +3110,8 @@
         "width": 0.13962901495640573,
         "height": 0.013770190152254972,
         "page": 2
-      }
+      },
+      "id": "280"
     },
     {
       "text": "3.1 General characterization of the problem",
@@ -2840,7 +3121,8 @@
         "width": 0.30161284153757534,
         "height": 0.013591496631352588,
         "page": 3
-      }
+      },
+      "id": "281"
     },
     {
       "text": "3 INDIVIDUALIZED MODEL-BASED PLANNING",
@@ -2850,7 +3132,8 @@
         "width": 0.3354435839684181,
         "height": 0.013460448293974905,
         "page": 3
-      }
+      },
+      "id": "282"
     },
     {
       "text": "2.3 Our technique",
@@ -2860,7 +3143,8 @@
         "width": 0.13026763566958358,
         "height": 0.013531193588719223,
         "page": 3
-      }
+      },
+      "id": "283"
     },
     {
       "text": "4.1 The psychologist: The model and inference",
@@ -2870,7 +3154,8 @@
         "width": 0.31919408312030867,
         "height": 0.013740346889303189,
         "page": 4
-      }
+      },
+      "id": "284"
     },
     {
       "text": "3.2 POMDP formulation",
@@ -2880,7 +3165,8 @@
         "width": 0.17270134321225236,
         "height": 0.015148605963196417,
         "page": 4
-      }
+      },
+      "id": "285"
     },
     {
       "text": "4 IMPLEMENTATION",
@@ -2890,7 +3176,8 @@
         "width": 0.1505387374778199,
         "height": 0.014638573232323232,
         "page": 4
-      }
+      },
+      "id": "286"
     },
     {
       "text": "4.2 The planner: Reward and planning algorithms",
@@ -2900,7 +3187,8 @@
         "width": 0.3403582604102839,
         "height": 0.014236989647451074,
         "page": 5
-      }
+      },
+      "id": "287"
     },
     {
       "text": "5.2 Methods",
@@ -2910,7 +3198,8 @@
         "width": 0.09059108160679637,
         "height": 0.0141448974609375,
         "page": 6
-      }
+      },
+      "id": "288"
     },
     {
       "text": "5 THE SIMULATION STUDIES",
@@ -2920,7 +3209,8 @@
         "width": 0.20894748712676803,
         "height": 0.014159655330157039,
         "page": 6
-      }
+      },
+      "id": "289"
     },
     {
       "text": "5.1 The baseline: The Leitner system",
@@ -2930,7 +3220,8 @@
         "width": 0.24970792633256103,
         "height": 0.012854412348583491,
         "page": 6
-      }
+      },
+      "id": "290"
     },
     {
       "text": "5.3 Results",
@@ -2940,7 +3231,8 @@
         "width": 0.08059955422395194,
         "height": 0.01335745146780303,
         "page": 8
-      }
+      },
+      "id": "291"
     },
     {
       "text": "6.1 Methods",
@@ -2950,7 +3242,8 @@
         "width": 0.09151742972579657,
         "height": 0.013800322407423848,
         "page": 10
-      }
+      },
+      "id": "292"
     },
     {
       "text": "6 THE USER STUDY",
@@ -2960,7 +3253,8 @@
         "width": 0.13947222591225616,
         "height": 0.014210383097330729,
         "page": 10
-      }
+      },
+      "id": "293"
     },
     {
       "text": "7 DISCUSSION AND CONCLUSIONS",
@@ -2970,7 +3264,8 @@
         "width": 0.2543703465679892,
         "height": 0.013013589261758208,
         "page": 12
-      }
+      },
+      "id": "294"
     },
     {
       "text": "ACKNOWLEDGMENTS",
@@ -2980,7 +3275,8 @@
         "width": 0.15778005512711268,
         "height": 0.014079296227657434,
         "page": 13
-      }
+      },
+      "id": "295"
     }
   ],
   "2108.11259": [
@@ -2992,7 +3288,8 @@
         "width": 0.16810640945933222,
         "height": 0.015582537410235164,
         "page": 0
-      }
+      },
+      "id": "296"
     },
     {
       "text": "2.1 Teachable Agents",
@@ -3002,7 +3299,8 @@
         "width": 0.1811176873500051,
         "height": 0.016439803923019254,
         "page": 0
-      }
+      },
+      "id": "297"
     },
     {
       "text": "CCS CONCEPTS",
@@ -3012,7 +3310,8 @@
         "width": 0.13294362086875766,
         "height": 0.016652425130208332,
         "page": 0
-      }
+      },
+      "id": "298"
     },
     {
       "text": "2 RELATED WORK",
@@ -3022,7 +3321,8 @@
         "width": 0.17123039096009499,
         "height": 0.015228194419783776,
         "page": 0
-      }
+      },
+      "id": "299"
     },
     {
       "text": "2.2 Humour",
@@ -3032,7 +3332,8 @@
         "width": 0.11019990335102954,
         "height": 0.015177524451053503,
         "page": 1
-      }
+      },
+      "id": "300"
     },
     {
       "text": "2.3 Humour in Conversational Agents",
@@ -3042,7 +3343,8 @@
         "width": 0.3209109836154514,
         "height": 0.015182552915630919,
         "page": 1
-      }
+      },
+      "id": "301"
     },
     {
       "text": "3.1 Curiosity Notebook",
@@ -3052,7 +3354,8 @@
         "width": 0.200859206953859,
         "height": 0.016174701729206122,
         "page": 2
-      }
+      },
+      "id": "302"
     },
     {
       "text": "3 STUDY DESIGN",
@@ -3062,7 +3365,8 @@
         "width": 0.15474901012345857,
         "height": 0.014591872090041036,
         "page": 2
-      }
+      },
+      "id": "303"
     },
     {
       "text": "3.2 Experimental Protocol",
@@ -3072,7 +3376,8 @@
         "width": 0.22464481054567823,
         "height": 0.01607339069096729,
         "page": 3
-      }
+      },
+      "id": "304"
     },
     {
       "text": "4.1 Pilot Study",
@@ -3082,7 +3387,8 @@
         "width": 0.12914504256902956,
         "height": 0.016331374043166036,
         "page": 4
-      }
+      },
+      "id": "305"
     },
     {
       "text": "4.2 Main Study",
@@ -3092,7 +3398,8 @@
         "width": 0.13289781956890828,
         "height": 0.016075057212752524,
         "page": 4
-      }
+      },
+      "id": "306"
     },
     {
       "text": "4 ANALYSIS",
@@ -3102,7 +3409,8 @@
         "width": 0.11213343751196768,
         "height": 0.015602728333136048,
         "page": 4
-      }
+      },
+      "id": "307"
     },
     {
       "text": "5.1 Perception of the agents",
@@ -3112,7 +3420,8 @@
         "width": 0.23770928850360945,
         "height": 0.015666807540739427,
         "page": 5
-      }
+      },
+      "id": "308"
     },
     {
       "text": "5 RESULTS",
@@ -3122,7 +3431,8 @@
         "width": 0.10386915144577526,
         "height": 0.017314101710464016,
         "page": 5
-      }
+      },
+      "id": "309"
     },
     {
       "text": "6.1 Humorous vs. Non-humorous Teachable Agents",
@@ -3132,7 +3442,8 @@
         "width": 0.36985165465111824,
         "height": 0.03179642648407907,
         "page": 8
-      }
+      },
+      "id": "310"
     },
     {
       "text": "6 DISCUSSION",
@@ -3142,7 +3453,8 @@
         "width": 0.13161049637140013,
         "height": 0.016166109027284565,
         "page": 8
-      }
+      },
+      "id": "311"
     },
     {
       "text": "5.3 Learning",
@@ -3152,7 +3464,8 @@
         "width": 0.1135188582675909,
         "height": 0.01595660893604009,
         "page": 8
-      }
+      },
+      "id": "312"
     },
     {
       "text": "6.2 Insights for Participants with Different Humour Styles",
@@ -3162,7 +3475,8 @@
         "width": 0.35368222504659413,
         "height": 0.03153537018130524,
         "page": 9
-      }
+      },
+      "id": "313"
     },
     {
       "text": "6.3 Limitations",
@@ -3172,7 +3486,8 @@
         "width": 0.1345151016135621,
         "height": 0.01573660879424124,
         "page": 10
-      }
+      },
+      "id": "314"
     },
     {
       "text": "7 CONCLUSION",
@@ -3182,7 +3497,8 @@
         "width": 0.14380750469132966,
         "height": 0.016103339917732006,
         "page": 10
-      }
+      },
+      "id": "315"
     },
     {
       "text": "8 ACKNOWLEDGMENTS",
@@ -3192,7 +3508,8 @@
         "width": 0.22081459269804113,
         "height": 0.014558811380405618,
         "page": 11
-      }
+      },
+      "id": "316"
     }
   ],
   "2102.00593": [
@@ -3204,7 +3521,8 @@
         "width": 0.16772720237183414,
         "height": 0.01564738726375079,
         "page": 0
-      }
+      },
+      "id": "317"
     },
     {
       "text": "2.2 Clinical Decision Support Tools: Healthcare System Integration",
@@ -3214,7 +3532,8 @@
         "width": 0.3912557464799071,
         "height": 0.03214969057025331,
         "page": 1
-      }
+      },
+      "id": "318"
     },
     {
       "text": "2.1 Co-designing AI Systems",
@@ -3224,7 +3543,8 @@
         "width": 0.24195138145895564,
         "height": 0.013840723519373422,
         "page": 1
-      }
+      },
+      "id": "319"
     },
     {
       "text": "2 RELATED WORK",
@@ -3234,7 +3554,8 @@
         "width": 0.16959131776896957,
         "height": 0.016391407359730114,
         "page": 1
-      }
+      },
+      "id": "320"
     },
     {
       "text": "3 USER STUDY 1: NEEDS ELICITATION 3.1 Methods",
@@ -3244,7 +3565,8 @@
         "width": 0.3372187894933364,
         "height": 0.03440500509859336,
         "page": 2
-      }
+      },
+      "id": "321"
     },
     {
       "text": "2.3 Major Depressive Disorder",
@@ -3254,7 +3576,8 @@
         "width": 0.2561768675162122,
         "height": 0.016017451430812027,
         "page": 2
-      }
+      },
+      "id": "322"
     },
     {
       "text": "3.2 Findings: Clinical Expectations for ML Decision Support",
@@ -3264,7 +3587,8 @@
         "width": 0.3466964671814364,
         "height": 0.03154685280539773,
         "page": 3
-      }
+      },
+      "id": "323"
     },
     {
       "text": "5 USER STUDY 2: PROTOTYPE FEEDBACK 5.1 Methods",
@@ -3274,7 +3598,8 @@
         "width": 0.3637664395999285,
         "height": 0.03261778089735243,
         "page": 6
-      }
+      },
+      "id": "324"
     },
     {
       "text": "4 PROTOTYPE REDESIGN",
@@ -3284,7 +3609,8 @@
         "width": 0.22543075661254086,
         "height": 0.015329149034288194,
         "page": 6
-      }
+      },
+      "id": "325"
     },
     {
       "text": "5.2 Findings",
@@ -3294,7 +3620,8 @@
         "width": 0.11049970614364724,
         "height": 0.016252459901751892,
         "page": 8
-      }
+      },
+      "id": "326"
     },
     {
       "text": "6.1 Creating multi-user systems for collaborative decision-making",
@@ -3304,7 +3631,8 @@
         "width": 0.2994970433852252,
         "height": 0.031524349944760104,
         "page": 10
-      }
+      },
+      "id": "327"
     },
     {
       "text": "6.2 Connecting DSTs to Existing Healthcare System Processes",
@@ -3314,7 +3642,8 @@
         "width": 0.3614329917758119,
         "height": 0.03120362638223051,
         "page": 10
-      }
+      },
+      "id": "328"
     },
     {
       "text": "6 DISCUSSION",
@@ -3324,7 +3653,8 @@
         "width": 0.13177801269331788,
         "height": 0.01577764568906842,
         "page": 10
-      }
+      },
+      "id": "329"
     },
     {
       "text": "6.3 Designing for Resource Constraints",
@@ -3334,7 +3664,8 @@
         "width": 0.32744718065448836,
         "height": 0.015893570100418246,
         "page": 10
-      }
+      },
+      "id": "330"
     },
     {
       "text": "6.4 Adapting decision support for contrasting information",
@@ -3344,7 +3675,8 @@
         "width": 0.3790012247422162,
         "height": 0.03165212303701073,
         "page": 11
-      }
+      },
+      "id": "331"
     },
     {
       "text": "8 CONCLUSION",
@@ -3354,7 +3686,8 @@
         "width": 0.14323021383846507,
         "height": 0.015703760012231692,
         "page": 11
-      }
+      },
+      "id": "332"
     },
     {
       "text": "ACKNOWLEDGMENTS",
@@ -3364,7 +3697,8 @@
         "width": 0.19116026435802186,
         "height": 0.016454292066169506,
         "page": 11
-      }
+      },
+      "id": "333"
     },
     {
       "text": "7 LIMITATIONS",
@@ -3374,7 +3708,8 @@
         "width": 0.14412684222452002,
         "height": 0.01607139664466935,
         "page": 11
-      }
+      },
+      "id": "334"
     }
   ],
   "2104.04842": [
@@ -3386,7 +3721,8 @@
         "width": 0.13508461347592424,
         "height": 0.016785901002209596,
         "page": 0
-      }
+      },
+      "id": "335"
     },
     {
       "text": "1 INTRODUCTION",
@@ -3396,7 +3732,8 @@
         "width": 0.1682797288582995,
         "height": 0.015729615182587593,
         "page": 1
-      }
+      },
+      "id": "336"
     },
     {
       "text": "2.1 Chatbots for Information Elicitation",
@@ -3406,7 +3743,8 @@
         "width": 0.3365376291711346,
         "height": 0.01580694949988163,
         "page": 1
-      }
+      },
+      "id": "337"
     },
     {
       "text": "2 RELATED WORK",
@@ -3416,7 +3754,8 @@
         "width": 0.16981451495800143,
         "height": 0.014956618800307766,
         "page": 1
-      }
+      },
+      "id": "338"
     },
     {
       "text": "2.4 Design Suggestion Generation for Effective Interaction",
@@ -3426,7 +3765,8 @@
         "width": 0.3854704713509753,
         "height": 0.031701675569168246,
         "page": 2
-      }
+      },
+      "id": "339"
     },
     {
       "text": "2.2 Chatbot Platforms",
@@ -3436,7 +3776,8 @@
         "width": 0.19128559461606096,
         "height": 0.016041842373934658,
         "page": 2
-      }
+      },
+      "id": "340"
     },
     {
       "text": "2.3 Evaluating Conversational AI Systems",
@@ -3446,7 +3787,8 @@
         "width": 0.35010174520654613,
         "height": 0.015506937046243686,
         "page": 2
-      }
+      },
+      "id": "341"
     },
     {
       "text": "3.3 Supporting Easy Integration and Public Access",
@@ -3456,7 +3798,8 @@
         "width": 0.3558950985179228,
         "height": 0.03220660277087279,
         "page": 3
-      }
+      },
+      "id": "342"
     },
     {
       "text": "4 FORMATIVE STUDY AND DERIVED ICHATPROFILE DESIGN GUIDANCE",
@@ -3466,7 +3809,8 @@
         "width": 0.32344090081507865,
         "height": 0.03282620208431976,
         "page": 3
-      }
+      },
+      "id": "343"
     },
     {
       "text": "3.2 Supporting Non-IT Designers",
@@ -3476,7 +3820,8 @@
         "width": 0.27651285034379147,
         "height": 0.014926563609730114,
         "page": 3
-      }
+      },
+      "id": "344"
     },
     {
       "text": "3.1 Supporting Interview Chatbots",
@@ -3486,7 +3831,8 @@
         "width": 0.29058988733229296,
         "height": 0.016046273587930083,
         "page": 3
-      }
+      },
+      "id": "345"
     },
     {
       "text": "3 STUDY PLATFORM - JUJI",
@@ -3496,7 +3842,8 @@
         "width": 0.23473668565937117,
         "height": 0.015832284484246766,
         "page": 3
-      }
+      },
+      "id": "346"
     },
     {
       "text": "5 COMPUTATIONAL FRAMEWORK FOR QUANTIFYING INTERVIEW CHATBOT EFFECTIVENESS",
@@ -3506,7 +3853,8 @@
         "width": 0.347363440819036,
         "height": 0.04979405258641099,
         "page": 4
-      }
+      },
+      "id": "347"
     },
     {
       "text": "4.1 Two Types of Design Assistance Wanted",
@@ -3516,7 +3864,8 @@
         "width": 0.36419907114864175,
         "height": 0.015520038026751894,
         "page": 4
-      }
+      },
+      "id": "348"
     },
     {
       "text": "4.2 iChatProfile Design Guidance",
@@ -3526,7 +3875,8 @@
         "width": 0.27928924560546875,
         "height": 0.016482439908114346,
         "page": 4
-      }
+      },
+      "id": "349"
     },
     {
       "text": "5.1 Elicitation Ability",
@@ -3536,7 +3886,8 @@
         "width": 0.18465464722876454,
         "height": 0.016676584879557293,
         "page": 5
-      }
+      },
+      "id": "350"
     },
     {
       "text": "5.2 User Experience",
@@ -3546,7 +3897,8 @@
         "width": 0.1719255135729422,
         "height": 0.016766557789812186,
         "page": 5
-      }
+      },
+      "id": "351"
     },
     {
       "text": "5.3 Ethics",
@@ -3556,7 +3908,8 @@
         "width": 0.08991755067912582,
         "height": 0.015233280682804608,
         "page": 6
-      }
+      },
+      "id": "352"
     },
     {
       "text": "6.3 Generating Design Suggestions",
@@ -3566,7 +3919,8 @@
         "width": 0.2904766805810866,
         "height": 0.016512707026317866,
         "page": 7
-      }
+      },
+      "id": "353"
     },
     {
       "text": "6 ICHATPROFILE",
@@ -3576,7 +3930,8 @@
         "width": 0.1582383236853905,
         "height": 0.016588230325718118,
         "page": 7
-      }
+      },
+      "id": "354"
     },
     {
       "text": "6.2 Profiling Interview Chatbots",
@@ -3586,7 +3941,8 @@
         "width": 0.2718236087973601,
         "height": 0.015598104457662564,
         "page": 7
-      }
+      },
+      "id": "355"
     },
     {
       "text": "6.1 System Overview",
@@ -3596,7 +3952,8 @@
         "width": 0.17913512310950586,
         "height": 0.015795698069562814,
         "page": 7
-      }
+      },
+      "id": "356"
     },
     {
       "text": "6.4 Presenting Chatbot Profile and Design Suggestions",
@@ -3606,7 +3963,8 @@
         "width": 0.3502655029296875,
         "height": 0.03227330217457781,
         "page": 8
-      }
+      },
+      "id": "357"
     },
     {
       "text": "7 EVALUATION",
@@ -3616,7 +3974,8 @@
         "width": 0.14125744190091402,
         "height": 0.016383354109947127,
         "page": 8
-      }
+      },
+      "id": "358"
     },
     {
       "text": "7.1 Study Method",
@@ -3626,7 +3985,8 @@
         "width": 0.15340513341567097,
         "height": 0.01651910338738952,
         "page": 8
-      }
+      },
+      "id": "359"
     },
     {
       "text": "7.2 Participants",
@@ -3636,7 +3996,8 @@
         "width": 0.13892573936312808,
         "height": 0.016640788376933398,
         "page": 9
-      }
+      },
+      "id": "360"
     },
     {
       "text": "7.3 Study Results",
@@ -3646,7 +4007,8 @@
         "width": 0.15031143886591095,
         "height": 0.016135707046046402,
         "page": 9
-      }
+      },
+      "id": "361"
     },
     {
       "text": "Guiding Designers to Make Practical Chatbot Improvements",
@@ -3656,7 +4018,8 @@
         "width": 0.3468317642710567,
         "height": 0.013204362657335069,
         "page": 11
-      }
+      },
+      "id": "362"
     },
     {
       "text": "8 DISCUSSIONS",
@@ -3666,7 +4029,8 @@
         "width": 0.14019865148207722,
         "height": 0.0156667304761482,
         "page": 12
-      }
+      },
+      "id": "363"
     },
     {
       "text": "8.1 Limitations",
@@ -3676,7 +4040,8 @@
         "width": 0.13453894347147224,
         "height": 0.015733969331991792,
         "page": 12
-      }
+      },
+      "id": "364"
     },
     {
       "text": "8.2 Future Work and Design Implications",
@@ -3686,7 +4051,8 @@
         "width": 0.34696835785909413,
         "height": 0.016140407986111112,
         "page": 12
-      }
+      },
+      "id": "365"
     },
     {
       "text": "9 CONCLUSIONS",
@@ -3696,7 +4062,8 @@
         "width": 0.15517620011871935,
         "height": 0.018102010091145832,
         "page": 13
-      }
+      },
+      "id": "366"
     }
   ]
 }

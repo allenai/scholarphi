@@ -22,7 +22,8 @@
       "section": "Abstract",
       "prob": 0.8810749650001526,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7411"
     },
     {
       "text": "chatbots, affective computing, deep learning, natural language processing",
@@ -46,7 +47,8 @@
       "section": "Abstract",
       "prob": 0.4732831120491028,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7412"
     },
     {
       "text": "In this paper, we propose a multi-turn dialog system aimed at learning and generating emotional responses that so far only humans know how to do.",
@@ -84,7 +86,8 @@
       "section": "Abstract",
       "prob": 0.5824331045150757,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7413"
     },
     {
       "text": "Open-domain dialog systems (also known as chatbots) have increasingly drawn attention in natural language processing. Some of the recent work aims at incorporating affect information into sequence-to-sequence neural dialog modeling, making the response emotionally richer, while others use hand-crafted rules to determine the desired emotion response.",
@@ -143,7 +146,8 @@
       "section": "Abstract",
       "prob": 0.6561979651451111,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7414"
     },
     {
       "text": "Further human evaluations confirm that our chatbot can keep track of the conversation context and generate emotionally more appropriate responses while performing equally well on grammar.",
@@ -181,7 +185,8 @@
       "section": "Abstract",
       "prob": 0.7647748589515686,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7415"
     },
     {
       "text": "Compared with two baseline models, offline experiments show that our method performs the best in perplexity scores.",
@@ -212,7 +217,8 @@
       "section": "Abstract",
       "prob": 0.7503337264060974,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7416"
     }
   ],
   "1810.11143": [
@@ -245,7 +251,8 @@
       "section": "Abstract",
       "prob": 0.9554718136787415,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7417"
     },
     {
       "text": "Urban air pollution has been linked to various human health considerations, including cardiopulmonary diseases.",
@@ -269,7 +276,8 @@
       "section": "Abstract",
       "prob": 0.8492742776870728,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7418"
     },
     {
       "text": "These reports are also sent to the local health department and visualized on a map along with air quality data from monitoring stations.",
@@ -300,7 +308,8 @@
       "section": "Abstract",
       "prob": 0.6662141680717468,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7419"
     },
     {
       "text": "Taking this into account, we developed Smell Pittsburgh , a system that enables community members to report odors and track where these odors are frequently concentrated.",
@@ -338,7 +347,8 @@
       "section": "Abstract",
       "prob": 0.5592308044433594,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7420"
     },
     {
       "text": "Additionally, with these reports and air quality data, we developed a model to predict upcoming smell events and send push notifications to inform communities.",
@@ -369,7 +379,8 @@
       "section": "Abstract",
       "prob": 0.4032613933086395,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7421"
     },
     {
       "text": "Citizen science, smell, air quality, sustainable HCI, machine learning, community empowerment",
@@ -393,7 +404,8 @@
       "section": "Abstract",
       "prob": 0.47939833998680115,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7422"
     },
     {
       "text": "This visualization provides a comprehensive overview of the local pollution landscape.",
@@ -417,7 +429,8 @@
       "section": "Abstract",
       "prob": 0.5223193168640137,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7423"
     },
     {
       "text": "Our evaluation of this system demonstrates that engaging residents in documenting their experiences with pollution odors can help identify local air pollution patterns, and can empower communities to advocate for better air quality.",
@@ -455,7 +468,8 @@
       "section": "Abstract",
       "prob": 0.7549203634262085,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7424"
     },
     {
       "text": "All smell report data are publicly accessible online.",
@@ -479,7 +493,8 @@
       "section": "Abstract",
       "prob": 0.8184800744056702,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7425"
     }
   ],
   "2010.07358": [
@@ -512,7 +527,8 @@
       "section": "Abstract",
       "prob": 0.9152302742004395,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7426"
     },
     {
       "text": "Augmented-reality (AR) glasseswhich will have access to real-time, high-fidelity data regarding a users environment via onboard sensors, as well as an ability to seamlessly display real-time information to the userpresent a unique opportunity to provide users with assistance in completing quotidian tasks.",
@@ -543,7 +559,8 @@
       "section": "Abstract",
       "prob": 0.7910376787185669,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7427"
     },
     {
       "text": "In this initial study, we assume that the AR systems observations include a map of the environment and real-time localization of the objects and user within that map.",
@@ -567,7 +584,8 @@
       "section": "Abstract",
       "prob": 0.5604440569877625,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7428"
     },
     {
       "text": "In particular, we study the effect of our proposed AR assistance on users task performance and sense of agency over a range of task difficulties.",
@@ -591,7 +609,8 @@
       "section": "Abstract",
       "prob": 0.5177206993103027,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7429"
     },
     {
       "text": "These modeling choices allow us to formalize the problem of computing AR assistance for any object-rearrangement task as a planning problem that reduces to solving a capacitated vehicle-routing problem (CVRP), which is a variant of the classical traveling salesman problem (TSP) in combinatorial optimization.",
@@ -629,7 +648,8 @@
       "section": "Abstract",
       "prob": 0.38323959708213806,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7430"
     },
     {
       "text": "The embodied agent comprises a hybrid between the AR system and the user, in that it has the observation space (i.e., sensor measurements) of the AR system and the action space (i.e., task-execution actions) of the user; its policy is learned by minimizing the the time to complete the task.",
@@ -660,7 +680,8 @@
       "section": "Abstract",
       "prob": 0.4064534902572632,
       "is_author_statement": false,
-      "is_in_expected_section": true
+      "is_in_expected_section": true,
+      "id": "7431"
     },
     {
       "text": "(b) We also introduce a novel AR simulator based on Habitat [37] that can enable large-scale web-based evaluation of AR-like assistance (Image courtesy [39]).",
@@ -684,7 +705,8 @@
       "section": "Abstract",
       "prob": 0.29601770639419556,
       "is_author_statement": true,
-      "is_in_expected_section": true
+      "is_in_expected_section": true,
+      "id": "7432"
     },
     {
       "text": "We introduce a novel framework for computing and displaying AR assistance that consists of (1) associating an optimal action sequence with the policy of an embodied agent and (2) presenting this optimal action sequence to the user as suggestion notifications in the AR systems heads-up display.",
@@ -715,7 +737,8 @@
       "section": "Abstract",
       "prob": 0.4095883071422577,
       "is_author_statement": true,
-      "is_in_expected_section": true
+      "is_in_expected_section": true,
+      "id": "7433"
     },
     {
       "text": "In addition, we introduce a novel AR simulator that can enable web-based evaluation of AR-like assistance and associated large-scale data collection; our approach is based on the Habitat [37] simulator for embodied artificial intelligence (AI).",
@@ -739,7 +762,8 @@
       "section": "Abstract",
       "prob": 0.5333324074745178,
       "is_author_statement": true,
-      "is_in_expected_section": true
+      "is_in_expected_section": true,
+      "id": "7434"
     },
     {
       "text": "Additionally, we show that while users report a negative impact to their agency, that they may prefer this when presented with a system that aides them in task completion.",
@@ -763,7 +787,8 @@
       "section": "Abstract",
       "prob": 0.722301721572876,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7435"
     },
     {
       "text": "(a) We present a novel framework for AR assistance in object-rearrangement tasks such as house cleaning that leverages an embodied user-AR hybrid agent and a capacitated vehicle routing problem (CVRP) formulation to compute and display the optimal action sequence for the task to the user in AR.",
@@ -794,7 +819,8 @@
       "section": "Abstract",
       "prob": 0.5064322352409363,
       "is_author_statement": true,
-      "is_in_expected_section": true
+      "is_in_expected_section": true,
+      "id": "7436"
     },
     {
       "text": "We perform the study at scale using Amazon",
@@ -811,7 +837,8 @@
       "section": "Abstract",
       "prob": 0.5572414994239807,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7437"
     },
     {
       "text": "Finally, we perform a study that evaluates how users respond to the AR assistance generated by the proposed framework on a specific quotidian object-rearrangement taskhouse cleaningusing our proposed AR simulator.",
@@ -835,7 +862,8 @@
       "section": "Abstract",
       "prob": 0.46776002645492554,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7438"
     },
     {
       "text": "(c) We deploy our framework on Amazon Mechanical Turk[3]tostudytheeffectofourproposedARassistanceonuserstaskperformanceandsenseofagencyoverarangeoftaskdifficulties.",
@@ -859,7 +887,8 @@
       "section": "Abstract",
       "prob": 0.6178346276283264,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7439"
     },
     {
       "text": "Mechanical Turk (AMT) [3] and collect data using psiTurk [20].",
@@ -876,7 +905,8 @@
       "section": "Abstract",
       "prob": 0.7255045771598816,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7440"
     },
     {
       "text": "Our results indicate that providing users with the proposed form of AR assistance improves the users overall performance.",
@@ -900,7 +930,8 @@
       "section": "Abstract",
       "prob": 0.8778695464134216,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7441"
     },
     {
       "text": "Fig. 1.",
@@ -917,7 +948,8 @@
       "section": "Abstract",
       "prob": 0.48296502232551575,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7442"
     }
   ],
   "2103.06807": [
@@ -950,7 +982,8 @@
       "section": "Abstract",
       "prob": 0.9498826861381531,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7443"
     },
     {
       "text": "A carelessly picked adaptation may impose high costs to the user  for example, due to surprise or relearning effort  or trap the process to a suboptimal design immaturely.",
@@ -988,7 +1021,8 @@
       "section": "Abstract",
       "prob": 0.946113109588623,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7444"
     },
     {
       "text": "Adapting an interface requires taking into account both the positive and negative effects that changes may have on the user.",
@@ -1012,7 +1046,8 @@
       "section": "Abstract",
       "prob": 0.860236406326294,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7445"
     },
     {
       "text": "We propose a novel approach for adaptive user interfaces that yields a conservative adaptation policy: It finds beneficial changes when there are such and avoids changes when there are none.",
@@ -1050,7 +1085,8 @@
       "section": "Abstract",
       "prob": 0.42967489361763,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7446"
     },
     {
       "text": "Adaptive User Interfaces; Reinforcement Learning; Predictive Models; Monte Carlo Tree Search",
@@ -1074,7 +1110,8 @@
       "section": "Abstract",
       "prob": 0.42384225130081177,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7447"
     },
     {
       "text": "Our model-based reinforcement learning",
@@ -1091,7 +1128,8 @@
       "section": "Abstract",
       "prob": 0.40687987208366394,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7448"
     },
     {
       "text": "method plans sequences of adaptations and consults predictive HCI models to estimate their effects.",
@@ -1115,7 +1153,8 @@
       "section": "Abstract",
       "prob": 0.6694847941398621,
       "is_author_statement": false,
-      "is_in_expected_section": true
+      "is_in_expected_section": true,
+      "id": "7449"
     },
     {
       "text": "We present empirical and simulation results from the case of adaptive menus, showing that the method outperforms both a non-adaptive and a frequency-based policy.",
@@ -1153,7 +1192,8 @@
       "section": "Abstract",
       "prob": 0.696153998374939,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7450"
     }
   ],
   "2104.03820": [
@@ -1172,7 +1212,8 @@
       "section": "Abstract",
       "prob": 0.9499941468238831,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7451"
     },
     {
       "text": "The artifacts produced in this way may contain imperfections, such as compilation or logical errors.",
@@ -1196,7 +1237,8 @@
       "section": "Abstract",
       "prob": 0.9396002292633057,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7452"
     },
     {
       "text": "New generative techniques, such as unsupervised neural machine translation (NMT), have recently been applied to the task of generating source code, translating it from one programming language to another.",
@@ -1227,7 +1269,8 @@
       "section": "Abstract",
       "prob": 0.8557249903678894,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7453"
     },
     {
       "text": "Our three-stage scenario sparked discussions about the utility and desirability working with an imperfect AI system, how acceptance of that systems outputs would be established, and future opportunities generative AI in application modernization.",
@@ -1258,7 +1301,8 @@
       "section": "Abstract",
       "prob": 0.7097061276435852,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7454"
     },
     {
       "text": "We examine the extent to which software engineers would tolerate such imperfections and explore ways to aid the detection and correction of those errors.",
@@ -1282,7 +1326,8 @@
       "section": "Abstract",
       "prob": 0.49545973539352417,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7455"
     },
     {
       "text": "Our study highlights how UI features such as confidence highlighting and alternate translations help software engineers work with and better understand generative NMT models.",
@@ -1306,7 +1351,8 @@
       "section": "Abstract",
       "prob": 0.36043983697891235,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7456"
     },
     {
       "text": "Using a design scenario approach, we interviewed 11 software engineers to understand their reactions to the use of an NMT model in the context of application modernization, focusing on the task translating source code from one language to another.",
@@ -1337,7 +1383,8 @@
       "section": "Abstract",
       "prob": 0.4432009160518646,
       "is_author_statement": true,
-      "is_in_expected_section": true
+      "is_in_expected_section": true,
+      "id": "7457"
     }
   ],
   "2102.08235": [
@@ -1363,7 +1410,8 @@
       "section": "Abstract",
       "prob": 0.9429890513420105,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7458"
     },
     {
       "text": "However, the addition of biosignals introduced concerns about autonomy and agency over the messages they sent.",
@@ -1394,7 +1442,8 @@
       "section": "Abstract",
       "prob": 0.9330630302429199,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7459"
     },
     {
       "text": "While recent research demonstrates the expressive potential for biosignals, the value of sharing these personal data remains unclear.",
@@ -1425,7 +1474,8 @@
       "section": "Abstract",
       "prob": 0.8854116797447205,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7460"
     },
     {
       "text": "computer-mediated communication, biosignals, interpersonal communication, social connection, smartwatches, heart rate, couples",
@@ -1449,7 +1499,8 @@
       "section": "Abstract",
       "prob": 0.6266940236091614,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7461"
     },
     {
       "text": "In a one-month study with 20 couples, participants used Significant Otter with biosignals sensing OFF and ON.",
@@ -1473,7 +1524,8 @@
       "section": "Abstract",
       "prob": 0.490937739610672,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7462"
     },
     {
       "text": "We discuss design implications and future directions for communication systems that recommend messages based on biosignals.",
@@ -1504,7 +1556,8 @@
       "section": "Abstract",
       "prob": 0.452892929315567,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7463"
     },
     {
       "text": "We found that while sensing OFF enabled couples to keep in touch, sensing ON enabled easier and more authentic communication that fostered social connection.",
@@ -1542,7 +1595,8 @@
       "section": "Abstract",
       "prob": 0.4424879252910614,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7464"
     },
     {
       "text": "To understand their role in communication, we created Significant Otter, an Apple Watch/iPhone app that enables romantic partners to share and respond to each others biosignals in the form of animated otter avatars.",
@@ -1587,7 +1641,8 @@
       "section": "Abstract",
       "prob": 0.43699756264686584,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7465"
     }
   ],
   "2102.09039": [
@@ -1613,7 +1668,8 @@
       "section": "Abstract",
       "prob": 0.8719049692153931,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7466"
     },
     {
       "text": "Based on our experiments, Spacewalker allows designers to effectively search a large design space of a UI, using the language they are familiar with, and improve their design rapidly at a minimal cost.",
@@ -1651,7 +1707,8 @@
       "section": "Abstract",
       "prob": 0.7685990333557129,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7467"
     },
     {
       "text": "Markup language, crowdsourcing, design search, tools, genetic programming",
@@ -1675,7 +1732,8 @@
       "section": "Abstract",
       "prob": 0.5442944765090942,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7468"
     },
     {
       "text": "We enhanced a genetic algorithm to accommodate crowd worker responses from pairwise comparison of UI designs, which is crucial for obtaining reliable feedback.",
@@ -1706,7 +1764,8 @@
       "section": "Abstract",
       "prob": 0.44135934114456177,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7469"
     },
     {
       "text": "We present Spacewalker, a tool that allows designers to rapidly search a large design space for an optimal web UI with integrated support.",
@@ -1737,7 +1796,8 @@
       "section": "Abstract",
       "prob": 0.4108668565750122,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7470"
     },
     {
       "text": "Spacewalker then parses the annotated HTML specification, and intelligently generates and distributes various configurations of the web UI to crowd workers for evaluation.",
@@ -1775,7 +1835,8 @@
       "section": "Abstract",
       "prob": 0.5004971027374268,
       "is_author_statement": false,
-      "is_in_expected_section": true
+      "is_in_expected_section": true,
+      "id": "7471"
     },
     {
       "text": "Human-centeredcomputing  Interactivesystemsandtools .",
@@ -1792,7 +1853,8 @@
       "section": "Abstract",
       "prob": 0.5495071411132812,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7472"
     },
     {
       "text": "Designers first annotate each attribute they want to explore in a typical HTML page, using a simple markup extension we designed.",
@@ -1823,7 +1885,8 @@
       "section": "Abstract",
       "prob": 0.620433509349823,
       "is_author_statement": true,
-      "is_in_expected_section": true
+      "is_in_expected_section": true,
+      "id": "7473"
     }
   ],
   "2101.11778": [
@@ -1856,7 +1919,8 @@
       "section": "Abstract",
       "prob": 0.9396924376487732,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7474"
     },
     {
       "text": "In the attention economy, video apps employ design mechanisms like autoplay that exploit psychological vulnerabilities to maximize watch time.",
@@ -1887,7 +1951,8 @@
       "section": "Abstract",
       "prob": 0.9366628527641296,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7475"
     },
     {
       "text": "Prior design research has innovated external mechanisms that police multiple apps, such as lockout timers.",
@@ -1911,7 +1976,8 @@
       "section": "Abstract",
       "prob": 0.8879344463348389,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7476"
     },
     {
       "text": "We discuss implications for how designers can help users reclaim a sense of agency over their media use.",
@@ -1942,7 +2008,8 @@
       "section": "Abstract",
       "prob": 0.47798794507980347,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7477"
     },
     {
       "text": "digital wellbeing, sense of agency, social media, YouTube",
@@ -1959,7 +2026,8 @@
       "section": "Abstract",
       "prob": 0.5853622555732727,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7478"
     },
     {
       "text": "In this work, we shift the focus to how the internal mechanisms of an app can support user agency, taking the popular YouTube mobile app as a test case.",
@@ -1997,7 +2065,8 @@
       "section": "Abstract",
       "prob": 0.36864858865737915,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7479"
     },
     {
       "text": "From a survey of 120 U.S. users, we find that autoplay and recommendations primarily undermine sense of agency, while search and playlists support it.",
@@ -2028,7 +2097,8 @@
       "section": "Abstract",
       "prob": 0.8270595073699951,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7480"
     },
     {
       "text": "From 13 co-design sessions, we find that when users have a specific intention for how they want to use YouTube they prefer interfaces that support greater agency.",
@@ -2059,7 +2129,8 @@
       "section": "Abstract",
       "prob": 0.8378204703330994,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7481"
     }
   ],
   "2102.00625": [
@@ -2092,7 +2163,8 @@
       "section": "Abstract",
       "prob": 0.952176034450531,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7482"
     },
     {
       "text": "We discuss policy and HCI implications of these findings, such as the need for explainable AI in high-stakes scenarios.",
@@ -2123,7 +2195,8 @@
       "section": "Abstract",
       "prob": 0.5979416966438293,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7483"
     },
     {
       "text": "AI, Moral Responsibility, Responsibility, Moral Judgment, Blame, Liability, COMPAS, Bail Decision-Making",
@@ -2147,7 +2220,8 @@
       "section": "Abstract",
       "prob": 0.5057668089866638,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7484"
     },
     {
       "text": "However, there was a meaningful difference in how people perceived these agents moral responsibility; human agents were ascribed to a higher degree of present-looking and forward-looking notions of responsibility than AI agents.",
@@ -2185,7 +2259,8 @@
       "section": "Abstract",
       "prob": 0.47170689702033997,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7485"
     },
     {
       "text": "We also found that people expect both AI and human decision-makers and advisors to justify their decisions regardless of their nature.",
@@ -2216,7 +2291,8 @@
       "section": "Abstract",
       "prob": 0.5620381832122803,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7486"
     },
     {
       "text": "This work presents two experiments (  =200 each) that measure peoples perceptions of eight different notions of moral responsibility concerning AI and human agents in the context of bail decision-making.",
@@ -2254,7 +2330,8 @@
       "section": "Abstract",
       "prob": 0.34034499526023865,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7487"
     },
     {
       "text": "Using reallife adapted vignettes, our experiments show that AI agents are held causally responsible and blamed similarly to human agents for an identical task.",
@@ -2292,7 +2369,8 @@
       "section": "Abstract",
       "prob": 0.6879555583000183,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7488"
     }
   ],
   "2103.00912": [
@@ -2325,7 +2403,8 @@
       "section": "Abstract",
       "prob": 0.6908750534057617,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7489"
     },
     {
       "text": "We discuss implications for elicitation studies and research, and opportunities to extend our approach to additional tasks in gesture elicitation.",
@@ -2356,7 +2435,8 @@
       "section": "Abstract",
       "prob": 0.578715980052948,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7490"
     },
     {
       "text": "It further opens new directions, such as comparing elicitations across studies.",
@@ -2380,7 +2460,8 @@
       "section": "Abstract",
       "prob": 0.4786106050014496,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7491"
     },
     {
       "text": "This paper presents GestureMap , a visual analytics tool for gesture elicitation which directly visualises the space of gestures.",
@@ -2404,7 +2485,8 @@
       "section": "Abstract",
       "prob": 0.5510774254798889,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7492"
     },
     {
       "text": "Gesture elicitation, dimensionality reduction, deep learning, visual analytics",
@@ -2428,7 +2510,8 @@
       "section": "Abstract",
       "prob": 0.5342118144035339,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7493"
     },
     {
       "text": "visual understanding of elicited gesture spaces.",
@@ -2445,7 +2528,8 @@
       "section": "Abstract",
       "prob": 0.3705880045890808,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7494"
     },
     {
       "text": "2) compute a new consensus measure (variance around average gesture); and",
@@ -2469,7 +2553,8 @@
       "section": "Abstract",
       "prob": 0.29209229350090027,
       "is_author_statement": false,
-      "is_in_expected_section": true
+      "is_in_expected_section": true,
+      "id": "7495"
     },
     {
       "text": "GestureMap further integrates three computational capabilities to connect exploration to quantitative measures: Leveraging DTW Barycenter Averaging (DBA), we compute average gestures to",
@@ -2507,7 +2592,8 @@
       "section": "Abstract",
       "prob": 0.3387570083141327,
       "is_author_statement": true,
-      "is_in_expected_section": true
+      "is_in_expected_section": true,
+      "id": "7496"
     },
     {
       "text": "We evaluate GestureMap and its concepts with eight experts and an in-depth analysis of published data.",
@@ -2538,7 +2624,8 @@
       "section": "Abstract",
       "prob": 0.6562635898590088,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7497"
     },
     {
       "text": "3) cluster gestures with k-means.",
@@ -2555,7 +2642,8 @@
       "section": "Abstract",
       "prob": 0.5027691721916199,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7498"
     },
     {
       "text": "1) represent gesture groups at a glance;",
@@ -2579,7 +2667,8 @@
       "section": "Abstract",
       "prob": 0.6308313012123108,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7499"
     },
     {
       "text": "Our findings show how GestureMap facilitates exploring large datasets and helps researchers to gain a",
@@ -2603,7 +2692,8 @@
       "section": "Abstract",
       "prob": 0.7298760414123535,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7500"
     }
   ],
   "2102.09087": [
@@ -2636,7 +2726,8 @@
       "section": "Abstract",
       "prob": 0.8429444432258606,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7501"
     },
     {
       "text": "Along with the datasets, codebase 1 , and extensive experiments, TapNet establishes a new technical foundation for off-screen mobile input.",
@@ -2667,7 +2758,8 @@
       "section": "Abstract",
       "prob": 0.5071479678153992,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7502"
     },
     {
       "text": "We present the design, training, implementation and applications of TapNet, a multi-task network that detects tapping on the smartphone.",
@@ -2698,7 +2790,8 @@
       "section": "Abstract",
       "prob": 0.42259061336517334,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7503"
     },
     {
       "text": "We developed two datasets consisting of over 135K training samples, 38K testing samples, and 32 participants in total.",
@@ -2722,7 +2815,8 @@
       "section": "Abstract",
       "prob": 0.4062401056289673,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7504"
     },
     {
       "text": "Back-of-device, gesture recognition, IMU",
@@ -2739,7 +2833,8 @@
       "section": "Abstract",
       "prob": 0.5678095817565918,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7505"
     },
     {
       "text": "Human-centered computing  Gestural input .",
@@ -2756,7 +2851,8 @@
       "section": "Abstract",
       "prob": 0.499292254447937,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7506"
     },
     {
       "text": "To make off-screen interaction without specialized hardware practical, we investigate using deep learning methods to process the common built-in IMU sensor (accelerometers and gyroscopes) on mobile phones into a useful set of one-handed interaction events.",
@@ -2794,7 +2890,8 @@
       "section": "Abstract",
       "prob": 0.5682372450828552,
       "is_author_statement": true,
-      "is_in_expected_section": true
+      "is_in_expected_section": true,
+      "id": "7507"
     },
     {
       "text": "Experimental evaluation demonstrated the effectiveness of the TapNet design and its significant improvement over the state of the art.",
@@ -2825,7 +2922,8 @@
       "section": "Abstract",
       "prob": 0.800118625164032,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7508"
     },
     {
       "text": "KEYWORDS",
@@ -2842,7 +2940,8 @@
       "section": "Abstract",
       "prob": 0.9414592385292053,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7509"
     }
   ],
   "2102.04174": [
@@ -2868,7 +2967,8 @@
       "section": "Abstract",
       "prob": 0.744242250919342,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7510"
     },
     {
       "text": "Whereas previous work has focused on either personalization of teaching or optimization of teaching intervention sequences, the proposed individualized model-based planning approach represents convergence of these two lines of research.",
@@ -2899,7 +2999,8 @@
       "section": "Abstract",
       "prob": 0.6619350910186768,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7511"
     },
     {
       "text": "The approach is novel in its use of a cognitive model that can account for several key individualand material-specific characteristics related to recall/forgetting, along with a planning technique that considers users practice schedules.",
@@ -2923,7 +3024,8 @@
       "section": "Abstract",
       "prob": 0.5194849371910095,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7512"
     },
     {
       "text": "Model-based planning picks the best interventions via interactive learning of a user memory models parameters.",
@@ -2940,7 +3042,8 @@
       "section": "Abstract",
       "prob": 0.4282682240009308,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7513"
     },
     {
       "text": "The paper presents a novel model-based method for intelligent tutoring, with particular emphasis on the problem of selecting teaching interventions in interaction with humans.",
@@ -2964,7 +3067,8 @@
       "section": "Abstract",
       "prob": 0.3553033173084259,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7514"
     },
     {
       "text": "To predict the consequences of particular candidate sequences for the human learner, the planner component consults the psychologist; then, the planner chooses the teaching intervention that maximizes the potential for meeting the learning objective.",
@@ -2988,7 +3092,8 @@
       "section": "Abstract",
       "prob": 0.42618751525878906,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7515"
     },
     {
       "text": "We propose a model-based planning approach for intelligent tutoring that combines parameter inference and sequence planning.",
@@ -3012,7 +3117,8 @@
       "section": "Abstract",
       "prob": 0.43500685691833496,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7516"
     },
     {
       "text": "Taking a rule-based approach as a baseline, the authors evaluated the methods benefits in a controlled study of artificial teaching in second-language vocabulary learning (  = 53).",
@@ -3043,7 +3149,8 @@
       "section": "Abstract",
       "prob": 0.6921930909156799,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7517"
     },
     {
       "text": "Fig. 1.",
@@ -3060,7 +3167,8 @@
       "section": "Abstract",
       "prob": 0.48296502232551575,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7518"
     }
   ],
   "2108.11259": [
@@ -3100,7 +3208,8 @@
       "section": "Abstract",
       "prob": 0.7274823188781738,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7519"
     },
     {
       "text": "Previous studies have highlighted the benefits of pedagogical conversational agents using socially-oriented conversation with students.",
@@ -3131,7 +3240,8 @@
       "section": "Abstract",
       "prob": 0.7214733362197876,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7520"
     },
     {
       "text": "In this work, we examine the effects of a conversational agents use of affiliative and self-defeating humour  considered conducive to social well-being and enhancing interpersonal relationships  on learners perception of the agent and attitudes towards the task.",
@@ -3176,7 +3286,8 @@
       "section": "Abstract",
       "prob": 0.34847891330718994,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7521"
     },
     {
       "text": "Conversational Agent, Education, Motivation, Learning Experience, Learning Outcomes, Humour",
@@ -3200,7 +3311,8 @@
       "section": "Abstract",
       "prob": 0.46725204586982727,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7522"
     },
     {
       "text": "Using a between-subjects protocol, 58 participants taught a conversational agent about rock classification using a learning-by-teaching platform, the Curiosity Notebook.",
@@ -3231,7 +3343,8 @@
       "section": "Abstract",
       "prob": 0.2969474792480469,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7523"
     },
     {
       "text": "Results demonstrate that affiliative humour can significantly increase motivation and effort, while self-defeating humour, although enhancing effort, negatively impacts enjoyment.",
@@ -3269,7 +3382,8 @@
       "section": "Abstract",
       "prob": 0.7673843502998352,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7524"
     },
     {
       "text": "Findings further highlight the importance of understanding learner characteristics when using humour.",
@@ -3293,7 +3407,8 @@
       "section": "Abstract",
       "prob": 0.782508909702301,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7525"
     }
   ],
   "2102.00593": [
@@ -3326,7 +3441,8 @@
       "section": "Abstract",
       "prob": 0.9285722970962524,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7526"
     },
     {
       "text": "While many antidepressant medications are available, few clinical guidelines support choosing among them.",
@@ -3350,7 +3466,8 @@
       "section": "Abstract",
       "prob": 0.8963396549224854,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7527"
     },
     {
       "text": "Major depressive disorder is a debilitating disease affecting 264 million people worldwide.",
@@ -3374,7 +3491,8 @@
       "section": "Abstract",
       "prob": 0.7675274610519409,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7528"
     },
     {
       "text": "We identify ways in which DSTs need to engage with the healthcare sociotechnical system, including clinical processes, patient preferences, resource constraints, and domain knowledge.",
@@ -3405,7 +3523,8 @@
       "section": "Abstract",
       "prob": 0.5271534323692322,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7529"
     },
     {
       "text": "We use an iterative, co-design process to investigate clinicians perceptions of using DSTs in antidepressant treatment decisions.",
@@ -3429,7 +3548,8 @@
       "section": "Abstract",
       "prob": 0.4400816261768341,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7530"
     },
     {
       "text": "Through this work, we demonstrate how current trends in explainable AI may be inappropriate for clinical environments and consider paths towards designing these tools for real-world medical systems.",
@@ -3467,7 +3587,8 @@
       "section": "Abstract",
       "prob": 0.3391100764274597,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7531"
     },
     {
       "text": "Our results suggest that clinical DSTs should be designed as multi-user systems that support patient-provider collaboration and offer on-demand explanations that address discrepancies between predictions and current standards of care.",
@@ -3512,7 +3633,8 @@
       "section": "Abstract",
       "prob": 0.6347765922546387,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7532"
     },
     {
       "text": "decision support tools, healthcare, major depressive disorder",
@@ -3529,7 +3651,8 @@
       "section": "Abstract",
       "prob": 0.6674591302871704,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7533"
     }
   ],
   "2104.04842": [
@@ -3555,7 +3678,8 @@
       "section": "Abstract",
       "prob": 0.8921480774879456,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7534"
     },
     {
       "text": "Few tools exist to help designers design, evaluate, and improve an interview chatbot iteratively.",
@@ -3579,7 +3703,8 @@
       "section": "Abstract",
       "prob": 0.6959090232849121,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7535"
     },
     {
       "text": "and offer design suggestions for improving the chatbot based on such metrics.",
@@ -3603,7 +3728,8 @@
       "section": "Abstract",
       "prob": 0.3921799957752228,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7536"
     },
     {
       "text": "Recent studies show the effectiveness of interview chatbots for information elicitation.",
@@ -3627,7 +3753,8 @@
       "section": "Abstract",
       "prob": 0.5778974890708923,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7537"
     },
     {
       "text": "Based on a formative study and literature reviews, we propose a computational framework for quantifying the performance of interview chatbots.",
@@ -3658,7 +3785,8 @@
       "section": "Abstract",
       "prob": 0.4903740882873535,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7538"
     },
     {
       "text": "To validate the effectiveness of iChatProfile , we designed and conducted a between-subject study that compared the performance of 10 interview chatbots designed with or without using iChatProfile .",
@@ -3696,7 +3824,8 @@
       "section": "Abstract",
       "prob": 0.2937440574169159,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7539"
     },
     {
       "text": "Conversational AI Agents; Interview Chatbot; Chatbot Debugging; Chatbot Evaluation Framework; Chatbot Design Suggestion; Automatic Chatbot Profiling; Automatic Chatbot Evaluation",
@@ -3727,7 +3856,8 @@
       "section": "Abstract",
       "prob": 0.28720539808273315,
       "is_author_statement": false,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7540"
     },
     {
       "text": "Incorporating the framework, we have developed iChatProfile , an assistive chatbot design tool that can automatically generate a profile of an interview chatbot with quantified performance metrics",
@@ -3758,7 +3888,8 @@
       "section": "Abstract",
       "prob": 0.3962787985801697,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7541"
     },
     {
       "text": "Based on the live chats between the 10 chatbots and 1349 users, our results show that iChatProfile helped the designers build significantly more effective interview chatbots, improving both interview quality and user experience.",
@@ -3796,7 +3927,8 @@
       "section": "Abstract",
       "prob": 0.8593361973762512,
       "is_author_statement": true,
-      "is_in_expected_section": false
+      "is_in_expected_section": false,
+      "id": "7542"
     }
   ]
 }
