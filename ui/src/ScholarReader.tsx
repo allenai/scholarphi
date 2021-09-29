@@ -1482,8 +1482,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 discourseObjs={discourseObjs}
                 deselectedDiscourses={this.state.deselectedDiscourses}
                 handleDiscourseSelected={this.selectDiscourseClass}
-                handleIncreaseNumHighlights={this.increaseNumHighlights}
-                handleDecreaseNumHighlights={this.decreaseNumHighlights}
                 handleJumpToDiscourseObj={this.jumpToDiscourseObj}
                 propagateEntityEdits={this.state.propagateEntityEdits}
                 handleJumpToEntity={this.jumpToEntityWithBackMessage}

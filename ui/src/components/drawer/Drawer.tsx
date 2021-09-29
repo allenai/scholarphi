@@ -32,8 +32,6 @@ interface Props {
   deselectedDiscourses: string[];
   propagateEntityEdits: boolean;
   handleDiscourseSelected: (discourse: string) => void;
-  handleIncreaseNumHighlights: (discourse: string) => void;
-  handleDecreaseNumHighlights: (discourse: string) => void;
   handleClose: () => void;
   handleJumpToEntity: (entityId: string) => void;
   handleJumpToDiscourseObj: (id: string) => void;
@@ -182,8 +180,6 @@ export class Drawer extends React.PureComponent<Props> {
               deselectedDiscourses={deselectedDiscourses}
               handleJumpToDiscourseObj={this.props.handleJumpToDiscourseObj}
               handleDiscourseSelected={this.props.handleDiscourseSelected}
-              handleIncreaseNumHighlights={this.props.handleIncreaseNumHighlights}
-              handleDecreaseNumHighlights={this.props.handleDecreaseNumHighlights}
             />
           )}
         </div>
