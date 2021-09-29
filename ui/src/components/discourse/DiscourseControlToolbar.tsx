@@ -52,7 +52,7 @@ class DiscourseControlToolbar extends React.PureComponent<Props> {
                   </IconButton>
                 </MuiTooltip>
               </td>
-              <td>
+              {/* <td>
                 <MuiTooltip title="Delete highlight">
                   <IconButton
                     size="small"
@@ -64,9 +64,9 @@ class DiscourseControlToolbar extends React.PureComponent<Props> {
                     <DeleteIcon />
                   </IconButton>
                 </MuiTooltip>
-              </td>
+              </td> */}
               <td>
-                <MuiTooltip title="Close tooltip">
+                <MuiTooltip title="Close">
                   <IconButton size="small" onClick={this.props.handleClose}>
                     <Close />
                   </IconButton>
