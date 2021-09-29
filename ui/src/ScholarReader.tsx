@@ -939,7 +939,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       );
   };
 
-  handleDiscourseSelected = (discourse: string) => {
+  selectDiscourseClass = (discourse: string) => {
     if (this.state.deselectedDiscourses.includes(discourse)) {
       if (this.state.numHighlightMultiplier[discourse] === 0) {
         return;
@@ -955,7 +955,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     }
   };
 
-  handleFilterToDiscourse = (discourse: string) => {
+  filterToDiscourse = (discourse: string) => {
     if (
       this.state.deselectedDiscourses.length === 1 &&
       this.state.deselectedDiscourses[0] === discourse
@@ -974,7 +974,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     });
   };
 
-  handleIncreaseNumHighlights = (discourse: string) => {
+  increaseNumHighlights = (discourse: string) => {
     if (this.state.numHighlightMultiplier[discourse] >= 1) {
       return;
     }
@@ -1019,7 +1019,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     );
   };
 
-  handleDecreaseNumHighlights = (discourse: string) => {
+  decreaseNumHighlights = (discourse: string) => {
     if (this.state.numHighlightMultiplier[discourse] <= 0) {
       return;
     }
@@ -1064,11 +1064,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     );
   };
 
-  handleScrollbarMarkClicked = (id: string) => {
+  onScrollbarMarkClicked = (id: string) => {
     this.jumpToDiscourseObj(id);
   };
 
-  handleHideDiscourseObj = (d: DiscourseObj) => {
+  hideDiscourseObj = (d: DiscourseObj) => {
     this.setState((prevState) => ({
       hiddenDiscourseObjs: [...prevState.hiddenDiscourseObjs, d],
     }));
@@ -1335,8 +1335,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                   <>
                     <button
                       onClick={() => {
-                        this.handleIncreaseNumHighlights("Method");
-                        this.handleIncreaseNumHighlights("Result");
+                        this.increaseNumHighlights("Method");
+                        this.increaseNumHighlights("Result");
                       }}
                       className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
                     >
@@ -1344,8 +1344,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     </button>
                     <button
                       onClick={() => {
-                        this.handleDecreaseNumHighlights("Method");
-                        this.handleDecreaseNumHighlights("Result");
+                        this.decreaseNumHighlights("Method");
+                        this.decreaseNumHighlights("Result");
                       }}
                       className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
                     >
@@ -1481,9 +1481,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 selectedEntityIds={this.state.selectedEntityIds}
                 discourseObjs={discourseObjs}
                 deselectedDiscourses={this.state.deselectedDiscourses}
-                handleDiscourseSelected={this.handleDiscourseSelected}
-                handleIncreaseNumHighlights={this.handleIncreaseNumHighlights}
-                handleDecreaseNumHighlights={this.handleDecreaseNumHighlights}
+                handleDiscourseSelected={this.selectDiscourseClass}
+                handleIncreaseNumHighlights={this.increaseNumHighlights}
+                handleDecreaseNumHighlights={this.decreaseNumHighlights}
                 handleJumpToDiscourseObj={this.jumpToDiscourseObj}
                 propagateEntityEdits={this.state.propagateEntityEdits}
                 handleJumpToEntity={this.jumpToEntityWithBackMessage}
@@ -1519,7 +1519,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                         ? Object(captionData)[this.props.paperId!.id]
                         : []
                     }
-                    handleMarkClicked={this.handleScrollbarMarkClicked}
+                    handleMarkClicked={this.onScrollbarMarkClicked}
                   ></ScrollbarMarkup>
                 )}
             </ViewerOverlay>
@@ -1741,9 +1741,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                           discourseObjs={discourseObjs}
                           leadSentences={leadSentences}
                           opacity={this.state.skimOpacity}
-                          handleHideDiscourseObj={this.handleHideDiscourseObj}
+                          handleHideDiscourseObj={this.hideDiscourseObj}
                           handleOpenDrawer={this.openDrawerWithFacets}
-                          handleFilterToDiscourse={this.handleFilterToDiscourse}
+                          handleFilterToDiscourse={this.filterToDiscourse}
                         ></HighlightLayer>
                       )}
 
