@@ -398,6 +398,7 @@ export interface LogEntryCreatePayload {
 }
 
 export interface RhetoricUnit {
+  id: string;
   text: string;
   label: string;
   bboxes: BoundingBox[];

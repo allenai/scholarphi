@@ -769,39 +769,29 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.jumpToDiscourseObj(nextId);
   };
 
-  initDiscourseObjs() {
-    let discourseObjs = uiUtils.sortDiscourseObjs(
-      this.makeDiscourseObjectsForFacets([
-        ...Object(facetData)[this.props.paperId!.id],
-        ...Object(abstractData)[this.props.paperId!.id],
-      ])
-    );
+  initDiscourseObjs = () => {
+    const unitsToShow: RhetoricUnit[] = [];
 
-    // Add processed facet highlights
-    if (!this.state.facetHighlights) {
-      discourseObjs = discourseObjs.filter(
-        (x: DiscourseObj) => x.label === "Author"
-      );
-    }
+    unitsToShow.push(...this.getAbstractHighlights());
 
-    // Remove "Author" statements if not enabled
-    if (!this.state.authorStatementsEnabled) {
-      discourseObjs = discourseObjs.filter(
-        (x: DiscourseObj) => x.label !== "Author"
-      );
-    }
+    let data = Object(facetData)[this.props.paperId!.id];
+    data = this.preprocessData(data);
+    unitsToShow.push(...this.getNoveltyHighlights(data));
+    unitsToShow.push(...this.getObjectiveHighlights(data));
+    unitsToShow.push(...this.getMethodHighlights(data));
+    unitsToShow.push(...this.getResultHighlights(data));
+    // unitsToShow.push(...this.getConclusionHighlights(data));
+    unitsToShow.push(...this.getAuthorStatements(data));
 
-    // Filter out deselected facets
-    discourseObjs = discourseObjs.filter(
-      (x: DiscourseObj) => !this.state.deselectedDiscourses.includes(x.label)
-    );
-
-    // Filter out individual discourse objects that a user has selected to hide
-    discourseObjs = discourseObjs.filter((x: DiscourseObj) => {
-      const hiddenIds = this.state.hiddenDiscourseObjs.map((d) => d.id);
-      return !hiddenIds.includes(x.id);
+    let discourseObjs = this.makeDiscourseObjsFromRhetoricUnits(unitsToShow);
+    discourseObjs = this.disambiguateDiscourseLabels(discourseObjs);
+    this.setState({
+      discourseObjs: discourseObjs,
+      discourseObjsById: this.makeDiscourseByIdMap(discourseObjs),
     });
+  };
 
+  makeDiscourseByIdMap = (discourseObjs: DiscourseObj[]) => {
     const discourseObjsById = discourseObjs.reduce(
       (acc: { [id: string]: DiscourseObj }, d: DiscourseObj) => {
         acc[d.id] = d;
@@ -809,13 +799,27 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       },
       {}
     );
-    this.setState({
-      discourseObjs: discourseObjs,
-      discourseObjsById: discourseObjsById,
-    });
-  }
+    return discourseObjsById;
+  };
 
-  selectAbstractHighlights = () => {
+  makeDiscourseObjsFromRhetoricUnits = (
+    units: RhetoricUnit[]
+  ): DiscourseObj[] => {
+    const discourseToColorMap: {
+      [label: string]: string;
+    } = uiUtils.getDiscourseToColorMap();
+
+    return units.map((r: RhetoricUnit) => ({
+      id: r.id,
+      entity: r,
+      label: r.label,
+      bboxes: r.bboxes,
+      tagLocation: r.bboxes[0],
+      color: discourseToColorMap[r.label] ?? discourseToColorMap["Highlight"],
+    }));
+  };
+
+  getAbstractHighlights = () => {
     let selectedAbstractHighlights: RhetoricUnit[] = [];
 
     let abstractHighlights = Object(abstractData)[this.props.paperId!.id];
@@ -831,6 +835,243 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     });
 
     return selectedAbstractHighlights;
+  };
+
+  getNoveltyHighlights = (data: RhetoricUnit[]) => {
+    return data.filter(
+      (r) =>
+        r.label === "Novelty" &&
+        r.is_in_expected_section &&
+        r.is_author_statement
+    );
+  };
+
+  getMethodHighlights = (data: RhetoricUnit[]) => {
+    const method = data.filter(
+      (r) => r.label === "Method" && r.is_in_expected_section
+    );
+    const heuristicPreds = method.filter((r) => r.prob === null);
+    const classifierPreds = method
+      .filter((r) => r.prob !== null)
+      .sort((r1, r2) => (r1.prob! > r2.prob! ? -1 : 1));
+    const combined = [...classifierPreds, ...heuristicPreds];
+    return combined.slice(
+      0,
+      Math.round(this.state.numHighlightMultiplier["Method"] * combined.length)
+    );
+  };
+
+  getResultHighlights = (data: RhetoricUnit[]) => {
+    const result = data.filter((r) => {
+      const hasCitation = new RegExp(/\[.*\d.*\]/).test(r.text);
+      return r.label === "Result" && r.is_in_expected_section && !hasCitation;
+    });
+    const heuristicPreds = result.filter((r) => r.prob === null);
+    const classifierPreds = result
+      .filter((r: RhetoricUnit) => r.prob !== null)
+      .sort((r1, r2) => (r1.prob! > r2.prob! ? -1 : 1));
+
+    const combined = [...heuristicPreds, ...classifierPreds];
+    return combined.slice(
+      0,
+      Math.round(this.state.numHighlightMultiplier["Result"] * combined.length)
+    );
+  };
+
+  getObjectiveHighlights = (data: RhetoricUnit[]) => {
+    return data.filter(
+      (r) =>
+        r.label === "Objective" &&
+        r.is_author_statement &&
+        r.is_in_expected_section
+    );
+  };
+
+  getConclusionHighlights = (data: RhetoricUnit[]) => {
+    return data.filter(
+      (r) =>
+        r.label === "Conclusion" &&
+        r.is_author_statement &&
+        r.is_in_expected_section
+    );
+  };
+
+  getAuthorStatements = (data: RhetoricUnit[]) => {
+    return data.filter((r) => r.label === "Author");
+  };
+
+  preprocessData = (data: RhetoricUnit[]) => {
+    // Remove sentence fragments that were detected (i.e., start with a lowercase letter).
+    // Exception: author statements
+    return data.filter(
+      (r: RhetoricUnit) =>
+        r.label === "Author" || r.text[0] !== r.text[0].toLowerCase()
+    );
+  };
+
+  disambiguateDiscourseLabels = (discourseObjs: DiscourseObj[]) => {
+    // Because heuristics and the classifier may assign multiple labels to a single sentence,
+    // we enforce a label prioritization scheme to ensure each sentence gets a unique label.
+    const text_to_labels: { [text: string]: DiscourseObj[] } = {};
+    discourseObjs.forEach((d) => {
+      if (!text_to_labels.hasOwnProperty(d.entity.text)) {
+        text_to_labels[d.entity.text] = [];
+      }
+      text_to_labels[d.entity.text].push(d);
+    });
+    return Object.values(text_to_labels)
+      .map((labels) => {
+        const sortedLabels = labels.sort((firstEl, _) => {
+          if (firstEl.label === "Contribution") {
+            return -1;
+          } else if (firstEl.label === "Result") {
+            return -1;
+          } else if (firstEl.label === "Novelty") {
+            return -1;
+          } else {
+            return 0;
+          }
+        });
+        return sortedLabels;
+      })
+      .map(
+        (objsWithMultipleLabels: DiscourseObj[]) => objsWithMultipleLabels[0]
+      );
+  };
+
+  handleDiscourseSelected = (discourse: string) => {
+    if (this.state.deselectedDiscourses.includes(discourse)) {
+      if (this.state.numHighlightMultiplier[discourse] === 0) {
+        return;
+      }
+      const deselectedDiscourses = this.state.deselectedDiscourses.filter(
+        (x) => x !== discourse
+      );
+      this.setState({ deselectedDiscourses });
+    } else {
+      this.setState((prevState) => ({
+        deselectedDiscourses: [...prevState.deselectedDiscourses, discourse],
+      }));
+    }
+  };
+
+  handleFilterToDiscourse = (discourse: string) => {
+    if (
+      this.state.deselectedDiscourses.length === 1 &&
+      this.state.deselectedDiscourses[0] === discourse
+    ) {
+      return;
+    }
+
+    const availableDiscourseClasses = [
+      ...new Set(this.state.discourseObjs.map((d) => d.label)),
+    ];
+    const deselectedDiscourses = availableDiscourseClasses.filter(
+      (d) => d !== discourse
+    );
+    this.setState({
+      deselectedDiscourses: deselectedDiscourses,
+    });
+  };
+
+  handleIncreaseNumHighlights = (discourse: string) => {
+    if (this.state.numHighlightMultiplier[discourse] >= 1) {
+      return;
+    }
+    this.setState(
+      (prevState) => {
+        const prevMultiplier = prevState.numHighlightMultiplier[discourse];
+        const increment = 0.1;
+        const highlightMult = Math.min(
+          1,
+          Math.round((prevMultiplier + increment) * 10) / 10
+        );
+        const newMultiplier = {
+          ...prevState.numHighlightMultiplier,
+          [discourse]: highlightMult,
+        };
+        return {
+          numHighlightMultiplier: newMultiplier,
+          deselectedDiscourses:
+            prevMultiplier === 0
+              ? prevState.deselectedDiscourses.filter((d) => d !== discourse)
+              : prevState.deselectedDiscourses,
+        };
+      },
+      () => {
+        const data = Object(facetData)[this.props.paperId!.id];
+        let units: RhetoricUnit[] = [];
+        if (discourse === "Method") {
+          units = this.getMethodHighlights(data);
+        } else if (discourse === "Result") {
+          units = this.getResultHighlights(data);
+        }
+        const discourseObjs = this.makeDiscourseObjsFromRhetoricUnits(units);
+        let newDiscourseObjs = this.state.discourseObjs
+          .filter((d) => d.label !== discourse)
+          .concat(discourseObjs);
+        let newDiscourseByIdMap = this.makeDiscourseByIdMap(newDiscourseObjs);
+        this.setState({
+          discourseObjs: newDiscourseObjs,
+          discourseObjsById: newDiscourseByIdMap,
+        });
+      }
+    );
+  };
+
+  handleDecreaseNumHighlights = (discourse: string) => {
+    if (this.state.numHighlightMultiplier[discourse] <= 0) {
+      return;
+    }
+    this.setState(
+      (prevState) => {
+        const prevMultiplier = prevState.numHighlightMultiplier[discourse];
+        const decrement = 0.1;
+        const highlightMult = Math.max(
+          0,
+          Math.round((prevMultiplier - decrement) * 10) / 10
+        );
+        const newMultiplier = {
+          ...prevState.numHighlightMultiplier,
+          [discourse]: highlightMult,
+        };
+        return {
+          numHighlightMultiplier: newMultiplier,
+          deselectedDiscourses:
+            highlightMult === 0
+              ? [...prevState.deselectedDiscourses, discourse]
+              : prevState.deselectedDiscourses,
+        };
+      },
+      () => {
+        const data = Object(facetData)[this.props.paperId!.id];
+        let units: RhetoricUnit[] = [];
+        if (discourse === "Method") {
+          units = this.getMethodHighlights(data);
+        } else if (discourse === "Result") {
+          units = this.getResultHighlights(data);
+        }
+        const discourseObjs = this.makeDiscourseObjsFromRhetoricUnits(units);
+        let newDiscourseObjs = this.state.discourseObjs
+          .filter((d) => d.label !== discourse)
+          .concat(discourseObjs);
+        let newDiscourseByIdMap = this.makeDiscourseByIdMap(newDiscourseObjs);
+        this.setState({
+          discourseObjs: newDiscourseObjs,
+          discourseObjsById: newDiscourseByIdMap,
+        });
+      }
+    );
+  };
+
+  handleScrollbarMarkClicked = (id: string) => {
+    this.jumpToDiscourseObj(id);
+  };
+
+  handleHideDiscourseObj = (d: DiscourseObj) => {
+    this.setState((prevState) => ({
+      hiddenDiscourseObjs: [...prevState.hiddenDiscourseObjs, d],
+    }));
   };
 
   subscribeToPDFViewerStateChanges = (
@@ -1020,272 +1261,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     return true;
   };
 
-  makeDiscourseObjectsForFacets = (data: RhetoricUnit[]): DiscourseObj[] => {
-    const discourseToColorMap: {
-      [label: string]: string;
-    } = uiUtils.getDiscourseToColorMap();
-
-    const unitsToShow: RhetoricUnit[] = [];
-
-    // Add abstract highlights first, selecting the most probable from each facet.
-    unitsToShow.push(...this.selectAbstractHighlights());
-
-    // Remove sentence fragments that were detected (i.e., start with a lowercase letter).
-    // Exception: author statements
-    data = data.filter(
-      (r: RhetoricUnit) =>
-        r.label === "Author" || r.text[0] !== r.text[0].toLowerCase()
-    );
-
-    // ---- NOVELTY ---- //
-    // We want to keep Novelty tags that are also author statements.
-    // If there are none, we keep up to a max number of other Novelty tags.
-    const MAX_NUM_NOVELTY = 3;
-    const authorNovelty = data.filter(
-      (r: RhetoricUnit) =>
-        r.label === "Novelty" &&
-        r.is_in_expected_section &&
-        r.is_author_statement
-    );
-    // const notAuthorNovelty = data.filter(
-    //   (r: RhetoricUnit) =>
-    //     r.label === "Novelty" &&
-    //     r.is_in_expected_section &&
-    //     !r.is_author_statement
-    // );
-    // const notAuthorNoveltyNotIntro = notAuthorNovelty.filter(
-    //   (r: RhetoricUnit) => !r.section.toLowerCase().includes("introduction")
-    // );
-
-    unitsToShow.push(...authorNovelty);
-    // const numNoveltyLeft = MAX_NUM_NOVELTY - authorNovelty.length;
-    // if (numNoveltyLeft > 0) {
-    //   unitsToShow.push(...notAuthorNoveltyNotIntro.slice(0, numNoveltyLeft));
-    // }
-
-    // ---- OBJECTIVE ---- //
-    const objective = data.filter(
-      (r: RhetoricUnit) =>
-        r.label === "Objective" &&
-        r.is_author_statement &&
-        r.is_in_expected_section
-    );
-    unitsToShow.push(...objective);
-
-    // ---- METHOD ---- //
-    const method = data.filter(
-      (r: RhetoricUnit) => r.label === "Method" && r.is_in_expected_section
-    );
-    const method_heuristic = method.filter(
-      (r: RhetoricUnit) => r.prob === null
-    );
-    const method_classifier = method
-      .filter((r: RhetoricUnit) => r.prob !== null)
-      .sort((r1, r2) => (r1.prob! > r2.prob! ? -1 : 1));
-    const method_sorted = method_classifier.concat(method_heuristic);
-    unitsToShow.push(
-      ...method_sorted.slice(
-        0,
-        Math.round(
-          this.state.numHighlightMultiplier["Method"] * method_sorted.length
-        )
-      )
-    );
-
-    // ---- RESULT ---- //
-    const result = data.filter((r: RhetoricUnit) => {
-      const hasCitation = new RegExp(/\[.*\d.*\]/).test(r.text);
-      return r.label === "Result" && r.is_in_expected_section && !hasCitation;
-    });
-    const result_heuristic = result.filter(
-      (r: RhetoricUnit) => r.prob === null
-    );
-    const result_classifier = result
-      .filter((r: RhetoricUnit) => r.prob !== null)
-      .sort((r1, r2) => (r1.prob! > r2.prob! ? -1 : 1));
-    const result_sorted = result_heuristic.concat(result_classifier);
-    unitsToShow.push(
-      ...result_sorted.slice(
-        0,
-        Math.round(
-          this.state.numHighlightMultiplier["Result"] * result_sorted.length
-        )
-      )
-    );
-
-    // ---- CONCLUSION ---- //
-    // const conclusion = data.filter(
-    //   (r: RhetoricUnit) =>
-    //     r.label === "Conclusion" &&
-    //     r.is_author_statement &&
-    //     r.is_in_expected_section
-    // );
-    // unitsToShow.push(...conclusion);
-
-    // ---- Author statements ---- //
-    const authorStatements = data.filter(
-      (r: RhetoricUnit) => r.label === "Author"
-    );
-    unitsToShow.push(...authorStatements);
-
-    let discourseObjs = unitsToShow.map((r: RhetoricUnit, index: number) => ({
-      id: index.toString(),
-      entity: r,
-      label: r.label,
-      bboxes: r.bboxes,
-      tagLocation: r.bboxes[0],
-      color: discourseToColorMap[r.label] ?? discourseToColorMap["Highlight"],
-    }));
-
-    // If a sentence has multiple labels, define a prioritization so that each sentence has a unqiue label
-    const text_to_labels: { [text: string]: DiscourseObj[] } = {};
-    discourseObjs.forEach((x: DiscourseObj) => {
-      if (!text_to_labels.hasOwnProperty(x.entity.text)) {
-        text_to_labels[x.entity.text] = [];
-      }
-      text_to_labels[x.entity.text].push(x);
-    });
-    discourseObjs = Object.values(text_to_labels)
-      .map((labels) => {
-        const sortedLabels = labels.sort((firstEl, secondEl) => {
-          if (firstEl.label === "Contribution") {
-            return -1;
-          } else if (firstEl.label === "Result") {
-            return -1;
-          } else if (firstEl.label === "Novelty") {
-            return -1;
-          } else {
-            return 0;
-          }
-        });
-        return sortedLabels;
-      })
-      .map((x: DiscourseObj[]) => x[0]);
-
-    return discourseObjs;
-  };
-
-  handleDiscourseSelected = (discourse: string) => {
-    if (this.state.deselectedDiscourses.includes(discourse)) {
-      if (this.state.numHighlightMultiplier[discourse] === 0) {
-        return;
-      }
-      const deselectedDiscourses = this.state.deselectedDiscourses.filter(
-        (x) => x !== discourse
-      );
-      this.setState({ deselectedDiscourses }, this.initDiscourseObjs);
-    } else {
-      this.setState(
-        (prevState) => ({
-          deselectedDiscourses: [...prevState.deselectedDiscourses, discourse],
-        }),
-        this.initDiscourseObjs
-      );
-    }
-  };
-
-  handleFilterToDiscourse = (discourse: string) => {
-    if (
-      this.state.deselectedDiscourses.length === 1 &&
-      this.state.deselectedDiscourses[0] === discourse
-    ) {
-      return;
-    }
-
-    const discourseToColorMap = uiUtils.getDiscourseToColorMap();
-    const availableDiscourseClasses = [
-      ...new Set(this.state.discourseObjs.map((x: DiscourseObj) => x.label)),
-    ];
-    const hidden = ["Highlight", "Author"];
-    const filteredDiscourses = Object.keys(discourseToColorMap)
-      .filter((key) => !hidden.includes(key))
-      .filter(
-        (key) =>
-          availableDiscourseClasses.includes(key) ||
-          this.state.deselectedDiscourses.includes(key)
-      )
-      .filter((key) => key !== discourse);
-    this.setState(
-      {
-        deselectedDiscourses: filteredDiscourses,
-      },
-      this.initDiscourseObjs
-    );
-  };
-
-  handleIncreaseNumHighlights = (discourse: string) => {
-    if (this.state.numHighlightMultiplier[discourse] >= 1) {
-      return;
-    }
-    this.setState(
-      (prevState) => {
-        const prevMultiplier = prevState.numHighlightMultiplier[discourse];
-        const increment = 0.1;
-        const highlightMult = Math.min(
-          1,
-          Math.round((prevMultiplier + increment) * 10) / 10
-        );
-        const newMultiplier = {
-          ...prevState.numHighlightMultiplier,
-          [discourse]: highlightMult,
-        };
-        return {
-          numHighlightMultiplier: newMultiplier,
-          deselectedDiscourses:
-            prevMultiplier === 0
-              ? prevState.deselectedDiscourses.filter((d) => d !== discourse)
-              : prevState.deselectedDiscourses,
-        };
-      },
-      () => {
-        this.initDiscourseObjs();
-      }
-    );
-  };
-
-  handleDecreaseNumHighlights = (discourse: string) => {
-    if (this.state.numHighlightMultiplier[discourse] <= 0) {
-      return;
-    }
-    this.setState(
-      (prevState) => {
-        const prevMultiplier = prevState.numHighlightMultiplier[discourse];
-        const decrement = 0.1;
-        const highlightMult = Math.max(
-          0,
-          Math.round((prevMultiplier - decrement) * 10) / 10
-        );
-        const newMultiplier = {
-          ...prevState.numHighlightMultiplier,
-          [discourse]: highlightMult,
-        };
-        return {
-          numHighlightMultiplier: newMultiplier,
-          deselectedDiscourses:
-            highlightMult === 0
-              ? [...prevState.deselectedDiscourses, discourse]
-              : prevState.deselectedDiscourses,
-        };
-      },
-      () => {
-        this.initDiscourseObjs();
-      }
-    );
-  };
-
-  handleScrollbarMarkClicked = (id: string) => {
-    this.jumpToDiscourseObj(id);
-  };
-
-  handleHideDiscourseObj = (d: DiscourseObj) => {
-    this.setState(
-      (prevState) => ({
-        hiddenDiscourseObjs: [...prevState.hiddenDiscourseObjs, d],
-      }),
-      this.initDiscourseObjs
-    );
-  };
-
   render() {
     let findMatchEntityId: string | null = null;
     if (
@@ -1316,6 +1291,25 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     const leadSentences = this.state.leadSentencesEnabled
       ? this.state.leadSentences
       : null;
+
+    let discourseObjs = this.state.discourseObjs;
+    if (!this.state.facetHighlights) {
+      discourseObjs = discourseObjs.filter(
+        (x: DiscourseObj) => x.label === "Author"
+      );
+    }
+    if (!this.state.authorStatementsEnabled) {
+      discourseObjs = discourseObjs.filter(
+        (x: DiscourseObj) => x.label !== "Author"
+      );
+    }
+    discourseObjs = discourseObjs.filter(
+      (x: DiscourseObj) => !this.state.deselectedDiscourses.includes(x.label)
+    );
+    discourseObjs = discourseObjs.filter((x: DiscourseObj) => {
+      const hiddenIds = this.state.hiddenDiscourseObjs.map((d) => d.id);
+      return !hiddenIds.includes(x.id);
+    });
 
     return (
       <>
@@ -1485,7 +1479,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 }
                 entities={this.state.entities}
                 selectedEntityIds={this.state.selectedEntityIds}
-                discourseObjs={this.state.discourseObjs}
+                discourseObjs={discourseObjs}
                 deselectedDiscourses={this.state.deselectedDiscourses}
                 handleDiscourseSelected={this.handleDiscourseSelected}
                 handleIncreaseNumHighlights={this.handleIncreaseNumHighlights}
@@ -1514,12 +1508,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 this.state.pages !== null &&
                 this.state.showSkimmingAnnotations &&
                 this.state.facetHighlights &&
-                this.state.discourseObjs.length > 0 && (
+                discourseObjs.length > 0 && (
                   <ScrollbarMarkup
                     numPages={
                       this.state.pdfViewerApplication?.pdfDocument?.numPages
                     }
-                    discourseObjs={this.state.discourseObjs}
+                    discourseObjs={discourseObjs}
                     captionUnits={
                       this.state.mediaScrollbarMarkupEnabled
                         ? Object(captionData)[this.props.paperId!.id]
@@ -1728,10 +1722,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     {this.props.paperId !== undefined &&
                       this.state.showSkimmingAnnotations &&
                       this.state.facetTextEnabled &&
-                      this.state.discourseObjs.length > 0 && (
+                      discourseObjs.length > 0 && (
                         <DiscourseTagLayer
                           pageView={pageView}
-                          discourseObjs={this.state.discourseObjs.filter(
+                          discourseObjs={discourseObjs.filter(
                             (x) => x.label !== "Author"
                           )}
                         ></DiscourseTagLayer>
@@ -1739,12 +1733,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
                     {this.props.paperId !== undefined &&
                       this.state.showSkimmingAnnotations &&
-                      (this.state.discourseObjs.length > 0 ||
+                      (discourseObjs.length > 0 ||
                         (leadSentences !== null && leadSentences.length > 0)) &&
                       this.state.cueingStyle === "highlight" && (
                         <HighlightLayer
                           pageView={pageView}
-                          discourseObjs={this.state.discourseObjs}
+                          discourseObjs={discourseObjs}
                           leadSentences={leadSentences}
                           opacity={this.state.skimOpacity}
                           handleHideDiscourseObj={this.handleHideDiscourseObj}
@@ -1755,12 +1749,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
                     {this.props.paperId !== undefined &&
                       this.state.showSkimmingAnnotations &&
-                      (this.state.discourseObjs.length > 0 ||
+                      (discourseObjs.length > 0 ||
                         (leadSentences !== null && leadSentences.length > 0)) &&
                       this.state.cueingStyle === "underline" && (
                         <UnderlineLayer
                           pageView={pageView}
-                          discourseObjs={this.state.discourseObjs}
+                          discourseObjs={discourseObjs}
                           leadSentences={leadSentences}
                         ></UnderlineLayer>
                       )}
