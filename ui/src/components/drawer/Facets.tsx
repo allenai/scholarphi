@@ -15,8 +15,9 @@ export class Facets extends React.PureComponent<Props> {
   render() {
     const { discourseObjs, deselectedDiscourses } = this.props;
 
-    const bySection = discourseObjs.reduce(
-      (acc: { [section: string]: DiscourseObj[] }, d: DiscourseObj) => {
+    const bySection = uiUtils
+      .sortDiscourseObjs(discourseObjs)
+      .reduce((acc: { [section: string]: DiscourseObj[] }, d: DiscourseObj) => {
         // The section attribute contains (when they exist) section, subsection, and
         // subsubsection header data, delimited by "@@".
         const long_section = d.entity.section;
@@ -26,9 +27,7 @@ export class Facets extends React.PureComponent<Props> {
         }
         acc[section].push(d);
         return acc;
-      },
-      {}
-    );
+      }, {});
 
     return (
       <>
