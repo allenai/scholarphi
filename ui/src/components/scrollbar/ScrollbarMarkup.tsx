@@ -34,6 +34,7 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
       <>
         {ScrollbarMarkup.scrollbarHeight !== undefined ? (
           <div className={"scrollbar-markup"}>
+            <div className={"scrollbar-track"}></div>
             {captionUnits.map((c: CaptionUnit, i: number) => (
               <MediaTag
                 key={`media-tag-${i}`}

@@ -12,13 +12,23 @@
   }
 }
 
+.scrollbar-track {
+  position: absolute;
+  right: 0;
+  width: @scrollbarWidth;
+  height: 100%;
+  z-index: -1;
+  overflow-y: hidden;
+  pointer-events: none;
+  background-color: white;
+}
+
 .scrollbar-markup {
   position: absolute;
   right: 0;
   top: @pdfjs-toolbarViewer-height;
   width: @scrollbarWidth;
   height: calc(100% - @pdfjs-toolbarViewer-height);
-  z-index: 1001;
   overflow-y: hidden;
   pointer-events: none;
 }
@@ -29,6 +39,7 @@
   border: 1px solid grey;
   width: @scrollbarWidth;
   height: @scrollbarMarkHeight;
+  z-index: 1000;
 
   &:hover {
     cursor: pointer;
