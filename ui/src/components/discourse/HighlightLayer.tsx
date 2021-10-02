@@ -101,6 +101,14 @@ class HighlightLayer extends React.PureComponent<Props, State> {
     uiUtils.removeClassFromElementsByClassname("selected");
   };
 
+  markHighlightAsHovered = (d: DiscourseObj) => {
+    uiUtils.addClassToElementsByClassname(`highlight-${d.id}`, "hovered");
+  };
+
+  clearAllHovered = () => {
+    uiUtils.removeClassFromElementsByClassname("hovered");
+  };
+
   componentDidUpdate = () => {
     /*
      * When the selected sentence changes, scroll the drawer to the
@@ -189,7 +197,9 @@ class HighlightLayer extends React.PureComponent<Props, State> {
               <React.Fragment key={`highlight-${i}-${j}`}>
                 <div
                   className={`highlight-mask__highlight discourse-highlight highlight-${d.id}`}
-                  onMouseEnter={(event: React.MouseEvent) => {
+                  onMouseEnter={() => this.markHighlightAsHovered(d)}
+                  onMouseLeave={this.clearAllHovered}
+                  onMouseDown={(event: React.MouseEvent) => {
                     this.onClickSentence(event, d, j);
                   }}
                   style={{
