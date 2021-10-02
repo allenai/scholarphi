@@ -742,8 +742,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   moveToNextDiscourseObj = () => {
-    const discourseIds = this.state.discourseObjs.map((x) => x.id);
-    const numDiscourseObjs = this.state.discourseObjs.length;
+    const activeDiscourseObjs = this.filterDiscourseObjsToShow(
+      this.state.discourseObjs
+    );
+    const discourseIds = activeDiscourseObjs.map((x) => x.id);
+    const numDiscourseObjs = activeDiscourseObjs.length;
     let nextId = "";
     if (this.state.currentDiscourseObjId !== null) {
       const currIdx = discourseIds.indexOf(this.state.currentDiscourseObjId);
@@ -752,12 +755,17 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     } else {
       nextId = discourseIds[0];
     }
+    uiUtils.removeClassFromElementsByClassname("selected");
+    uiUtils.addClassToElementsByClassname(`highlight-${nextId}`, "selected");
     this.jumpToDiscourseObj(nextId);
   };
 
   moveToPreviousDiscourseObj = () => {
-    const discourseIds = this.state.discourseObjs.map((x) => x.id);
-    const numDiscourseObjs = this.state.discourseObjs.length;
+    const activeDiscourseObjs = this.filterDiscourseObjsToShow(
+      this.state.discourseObjs
+    );
+    const discourseIds = activeDiscourseObjs.map((x) => x.id);
+    const numDiscourseObjs = activeDiscourseObjs.length;
     let nextId = "";
     if (this.state.currentDiscourseObjId !== null) {
       const currIdx = discourseIds.indexOf(this.state.currentDiscourseObjId);
@@ -766,7 +774,15 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     } else {
       nextId = discourseIds[numDiscourseObjs - 1];
     }
+    uiUtils.removeClassFromElementsByClassname("selected");
+    uiUtils.addClassToElementsByClassname(`highlight-${nextId}`, "selected");
     this.jumpToDiscourseObj(nextId);
+  };
+
+  setCurrentDiscourseObjId = (d: DiscourseObj) => {
+    this.setState({
+      currentDiscourseObjId: d.id,
+    });
   };
 
   initDiscourseObjs = () => {
@@ -786,9 +802,30 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     let discourseObjs = this.makeDiscourseObjsFromRhetoricUnits(unitsToShow);
     discourseObjs = this.disambiguateDiscourseLabels(discourseObjs);
     this.setState({
-      discourseObjs: discourseObjs,
+      discourseObjs: uiUtils.sortDiscourseObjs(discourseObjs),
       discourseObjsById: this.makeDiscourseByIdMap(discourseObjs),
     });
+  };
+
+  filterDiscourseObjsToShow = (discourseObjs: DiscourseObj[]) => {
+    if (!this.state.facetHighlights) {
+      discourseObjs = discourseObjs.filter(
+        (x: DiscourseObj) => x.label === "Author"
+      );
+    }
+    if (!this.state.authorStatementsEnabled) {
+      discourseObjs = discourseObjs.filter(
+        (x: DiscourseObj) => x.label !== "Author"
+      );
+    }
+    discourseObjs = discourseObjs.filter(
+      (x: DiscourseObj) => !this.state.deselectedDiscourses.includes(x.label)
+    );
+    discourseObjs = discourseObjs.filter((x: DiscourseObj) => {
+      const hiddenIds = this.state.hiddenDiscourseObjs.map((d) => d.id);
+      return !hiddenIds.includes(x.id);
+    });
+    return discourseObjs;
   };
 
   makeDiscourseByIdMap = (discourseObjs: DiscourseObj[]) => {
@@ -1265,24 +1302,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       ? this.state.leadSentences
       : null;
 
-    let discourseObjs = this.state.discourseObjs;
-    if (!this.state.facetHighlights) {
-      discourseObjs = discourseObjs.filter(
-        (x: DiscourseObj) => x.label === "Author"
-      );
-    }
-    if (!this.state.authorStatementsEnabled) {
-      discourseObjs = discourseObjs.filter(
-        (x: DiscourseObj) => x.label !== "Author"
-      );
-    }
-    discourseObjs = discourseObjs.filter(
-      (x: DiscourseObj) => !this.state.deselectedDiscourses.includes(x.label)
+    let discourseObjs = this.filterDiscourseObjsToShow(
+      this.state.discourseObjs
     );
-    discourseObjs = discourseObjs.filter((x: DiscourseObj) => {
-      const hiddenIds = this.state.hiddenDiscourseObjs.map((d) => d.id);
-      return !hiddenIds.includes(x.id);
-    });
 
     return (
       <>
@@ -1710,6 +1732,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                           discourseObjs={discourseObjs}
                           leadSentences={leadSentences}
                           opacity={this.state.skimOpacity}
+                          handleDiscourseObjSelected={
+                            this.setCurrentDiscourseObjId
+                          }
                           handleHideDiscourseObj={this.hideDiscourseObj}
                           handleOpenDrawer={this.openDrawerWithFacets}
                           handleCloseDrawer={this.closeDrawer}

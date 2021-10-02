@@ -10,6 +10,7 @@ interface Props {
   leadSentences: SentenceUnit[] | null;
   opacity: number;
   drawerOpen: boolean;
+  handleDiscourseObjSelected: (d: DiscourseObj) => void;
   handleHideDiscourseObj: (d: DiscourseObj) => void;
   handleOpenDrawer: () => void;
   handleCloseDrawer: () => void;
@@ -74,6 +75,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
   ) => {
     const pageRect = this.props.pageView.div.getBoundingClientRect();
     this.clearAllSelected();
+    this.props.handleDiscourseObjSelected(sentence);
     this.markHighlightAsSelected(sentence);
     this.selectSnippetInDrawer(sentence);
     this.setState({
