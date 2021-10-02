@@ -977,94 +977,64 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     });
   };
 
-  increaseNumHighlights = (discourse: string) => {
-    if (this.state.numHighlightMultiplier[discourse] >= 1) {
-      return;
-    }
-    this.setState(
-      (prevState) => {
+  increaseNumHighlights = (discourses: string[]) => {
+    this.setState((prevState) => {
+      let newHighlightMultiplier = prevState.numHighlightMultiplier;
+      discourses.forEach((discourse: string) => {
         const prevMultiplier = prevState.numHighlightMultiplier[discourse];
         const increment = 0.1;
         const highlightMult = Math.min(
           1,
           Math.round((prevMultiplier + increment) * 10) / 10
         );
-        const newMultiplier = {
-          ...prevState.numHighlightMultiplier,
+        newHighlightMultiplier = {
+          ...newHighlightMultiplier,
           [discourse]: highlightMult,
         };
-        return {
-          numHighlightMultiplier: newMultiplier,
-          deselectedDiscourses:
-            prevMultiplier === 0
-              ? prevState.deselectedDiscourses.filter((d) => d !== discourse)
-              : prevState.deselectedDiscourses,
-        };
-      },
-      () => {
-        const data = Object(facetData)[this.props.paperId!.id];
-        let units: RhetoricUnit[] = [];
-        if (discourse === "Method") {
-          units = this.getMethodHighlights(data);
-        } else if (discourse === "Result") {
-          units = this.getResultHighlights(data);
+      });
+
+      let newDeselectedDiscourses = prevState.deselectedDiscourses;
+      discourses.forEach((discourse: string) => {
+        if (prevState.numHighlightMultiplier[discourse] === 0) {
+          newDeselectedDiscourses = newDeselectedDiscourses.filter(
+            (d) => d !== discourse
+          );
         }
-        const discourseObjs = this.makeDiscourseObjsFromRhetoricUnits(units);
-        let newDiscourseObjs = this.state.discourseObjs
-          .filter((d) => d.label !== discourse)
-          .concat(discourseObjs);
-        let newDiscourseByIdMap = this.makeDiscourseByIdMap(newDiscourseObjs);
-        this.setState({
-          discourseObjs: newDiscourseObjs,
-          discourseObjsById: newDiscourseByIdMap,
-        });
-      }
-    );
+      });
+      return {
+        numHighlightMultiplier: newHighlightMultiplier,
+        deselectedDiscourses: newDeselectedDiscourses,
+      };
+    }, this.initDiscourseObjs);
   };
 
-  decreaseNumHighlights = (discourse: string) => {
-    if (this.state.numHighlightMultiplier[discourse] <= 0) {
-      return;
-    }
-    this.setState(
-      (prevState) => {
+  decreaseNumHighlights = (discourses: string[]) => {
+    this.setState((prevState) => {
+      let newHighlightMultiplier = prevState.numHighlightMultiplier;
+      discourses.forEach((discourse: string) => {
         const prevMultiplier = prevState.numHighlightMultiplier[discourse];
         const decrement = 0.1;
         const highlightMult = Math.max(
           0,
           Math.round((prevMultiplier - decrement) * 10) / 10
         );
-        const newMultiplier = {
-          ...prevState.numHighlightMultiplier,
+        newHighlightMultiplier = {
+          ...newHighlightMultiplier,
           [discourse]: highlightMult,
         };
-        return {
-          numHighlightMultiplier: newMultiplier,
-          deselectedDiscourses:
-            highlightMult === 0
-              ? [...prevState.deselectedDiscourses, discourse]
-              : prevState.deselectedDiscourses,
-        };
-      },
-      () => {
-        const data = Object(facetData)[this.props.paperId!.id];
-        let units: RhetoricUnit[] = [];
-        if (discourse === "Method") {
-          units = this.getMethodHighlights(data);
-        } else if (discourse === "Result") {
-          units = this.getResultHighlights(data);
+      });
+
+      let newDeselectedDiscourses = prevState.deselectedDiscourses;
+      discourses.forEach((discourse: string) => {
+        if (newHighlightMultiplier[discourse] === 0) {
+          newDeselectedDiscourses.push(discourse);
         }
-        const discourseObjs = this.makeDiscourseObjsFromRhetoricUnits(units);
-        let newDiscourseObjs = this.state.discourseObjs
-          .filter((d) => d.label !== discourse)
-          .concat(discourseObjs);
-        let newDiscourseByIdMap = this.makeDiscourseByIdMap(newDiscourseObjs);
-        this.setState({
-          discourseObjs: newDiscourseObjs,
-          discourseObjsById: newDiscourseByIdMap,
-        });
-      }
-    );
+      });
+      return {
+        numHighlightMultiplier: newHighlightMultiplier,
+        deselectedDiscourses: newDeselectedDiscourses,
+      };
+    }, this.initDiscourseObjs);
   };
 
   onScrollbarMarkClicked = (id: string) => {
@@ -1338,8 +1308,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                   <>
                     <button
                       onClick={() => {
-                        this.increaseNumHighlights("Method");
-                        this.increaseNumHighlights("Result");
+                        this.increaseNumHighlights(["Result", "Method"]);
                       }}
                       className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
                     >
@@ -1347,8 +1316,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     </button>
                     <button
                       onClick={() => {
-                        this.decreaseNumHighlights("Method");
-                        this.decreaseNumHighlights("Result");
+                        this.decreaseNumHighlights(["Result", "Method"]);
                       }}
                       className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
                     >
