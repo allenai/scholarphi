@@ -28,6 +28,8 @@ import UnderlineLayer from "./components/discourse/UnderlineLayer";
 import { Drawer, DrawerContentType } from "./components/drawer/Drawer";
 import EntityAnnotationLayer from "./components/entity/EntityAnnotationLayer";
 import EquationDiagram from "./components/entity/equation/EquationDiagram";
+import { MinusIcon } from "./components/icon/MinusIcon";
+import { PlusIcon } from "./components/icon/PlusIcon";
 import EntityPageMask from "./components/mask/EntityPageMask";
 import SearchPageMask from "./components/mask/SearchPageMask";
 import AppOverlay from "./components/overlay/AppOverlay";
@@ -1328,21 +1330,28 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               {this.state.showSkimmingAnnotations &&
                 this.state.facetHighlights && (
                   <>
-                    <button
-                      onClick={() => {
-                        this.increaseNumHighlights(["Result", "Method"]);
-                      }}
-                      className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
+                    <label
+                      htmlFor="moreHighlightsButton"
+                      className="toolbarLabel pdfjs-toolbar__label"
                     >
-                      <span>More highlights</span>
-                    </button>
+                      Number of highlights
+                    </label>
                     <button
                       onClick={() => {
                         this.decreaseNumHighlights(["Result", "Method"]);
                       }}
                       className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
                     >
-                      <span>Less highlights</span>
+                      <MinusIcon width="16" height="16" />
+                    </button>
+                    <button
+                      id="moreHighlightsButton"
+                      onClick={() => {
+                        this.increaseNumHighlights(["Result", "Method"]);
+                      }}
+                      className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
+                    >
+                      <PlusIcon width="16" height="16" />
                     </button>
                   </>
                 )}
