@@ -32,18 +32,52 @@
   position: relative;
   width: @document-snippets-container-width + 20px;
   margin: 0 auto;
-  margin-top: 5px;
+  padding-top: @padding;
+  position: fixed;
+  background-color: @white;
+  padding-bottom: @padding;
+  border-bottom: 1px solid lightgray;
+  z-index: 2;
+
+  .discourse-palette-header {
+    text-align: center;
+    font-weight: normal;
+    padding-bottom: @padding / 2;
+  }
 
   .discourse-chip-palette {
-    height: fit-content;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
+    &__tags {
+      height: fit-content;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+
+      .discourse-chip {
+        /*
+         * Expand buttons to fill drawer, but do not shrink buttons to
+         * the point where their contents will wrap.
+         */
+        flex-shrink: 0;
+        flex-grow: 1;
+      }
+    }
+
+    &__everything {
+      padding-top: @padding / 2;
+    }
 
     .discourse-chip {
+      text-align: center;
+      padding: (@padding / 2) @padding;
       margin: 2px 2px;
       border-radius: 6px !important;
-      opacity: 0.8;
+      border-width: 1px;
+      border-style: solid;
+      border-color: rgba(0, 0, 0, 0);
+      cursor: pointer;
+
+      font-weight: bolder;
+      font-size: @medium;
 
       &.deselected {
         opacity: 0.6;
@@ -53,12 +87,15 @@
         opacity: 1;
         border-color: grey;
       }
-    }
 
-    .discourse-chip-label {
-      vertical-align: middle;
-      font-weight: bold;
-      font-size: 14px;
+      &__label {
+        vertical-align: bottom;
+        padding-right: @padding / 4;
+      }
+
+      &__checkbox {
+        padding: 0;
+      }
     }
   }
 }
@@ -75,10 +112,4 @@
   &:hover {
     z-index: 1000;
   }
-}
-
-.discourse-palette-heading {
-  text-align: center;
-  font-weight: 500;
-  margin-top: 15px;
 }
