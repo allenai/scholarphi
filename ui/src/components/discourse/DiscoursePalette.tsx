@@ -1,7 +1,6 @@
-import Chip from "@material-ui/core/Chip";
-import classNames from "classnames";
 import React from "react";
 import { DiscourseObj } from "../../api/types";
+import DiscourseTagChip from "./DiscourseTagChip";
 
 interface Props {
   discourseToColorMap: { [discourse: string]: string };
@@ -10,49 +9,130 @@ interface Props {
   handleDiscourseSelected: (discourse: string) => void;
 }
 
-class DiscoursePalette extends React.PureComponent<Props> {
+interface State {
+  firstSelection: boolean;
+}
+
+const TAG_DISPLAY_NAMES: { [key: string]: string } = {
+  Objective: "Objectives",
+  Novelty: "Novelty Statements",
+  Method: "Methods",
+};
+class DiscoursePalette extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
+    this.state = {
+      firstSelection: true,
+    };
   }
 
-  render() {
+  onClickTag = (tag: string) => {
+    if (this.state.firstSelection) {
+      for (const otherTag of this.getAvailableDiscourseTags()) {
+        if (otherTag !== tag) {
+          this.props.handleDiscourseSelected(otherTag);
+        }
+      }
+      this.setState({
+        firstSelection: false,
+      });
+    } else {
+      this.props.handleDiscourseSelected(tag);
+    }
+  };
+
+  onClickEverything = () => {
+    const { deselectedDiscourses } = this.props;
+
+    if (this.state.firstSelection) {
+      this.setState({
+        firstSelection: false,
+      });
+      return;
+    }
+
+    const allTags = this.getAvailableDiscourseTags();
+    /**
+     * If every tag is already selected, then deselect every tag.
+     */
+    if (deselectedDiscourses.length === 0) {
+      for (const clazz of allTags) {
+        this.props.handleDiscourseSelected(clazz);
+      }
+    } else {
+      /**
+       * Otherwise, select all unselected tags.
+       */
+      for (const clazz of allTags) {
+        if (deselectedDiscourses.indexOf(clazz) !== -1) {
+          this.props.handleDiscourseSelected(clazz);
+        }
+      }
+    }
+  };
+
+  getAvailableDiscourseTags = () => {
     const {
       discourseToColorMap,
       discourseObjs,
       deselectedDiscourses,
     } = this.props;
-
-    const availableDiscourseClasses = [
+    const selectedDiscourseClasses = [
       ...new Set(discourseObjs.map((x: DiscourseObj) => x.label)),
     ];
-    const filteredDiscourseToColorMap = Object.keys(discourseToColorMap)
+    const hidden = ["Highlight", "Author"];
+    return Object.keys(discourseToColorMap)
+      .filter((key) => !hidden.includes(key))
       .filter(
         (key) =>
-          availableDiscourseClasses.includes(key) ||
+          selectedDiscourseClasses.includes(key) ||
           deselectedDiscourses.includes(key)
-      )
-      .reduce((obj: { [label: string]: string }, key) => {
+      );
+  };
+
+  render() {
+    const { discourseToColorMap, deselectedDiscourses } = this.props;
+    const { firstSelection: beforeFirstSelection } = this.state;
+
+    const filteredDiscourseToColorMap = this.getAvailableDiscourseTags().reduce(
+      (obj: { [label: string]: string }, key) => {
         obj[key] = discourseToColorMap[key];
         return obj;
-      }, {});
+      },
+      {}
+    );
 
     return (
-      <div className={"discourse-chip-palette-wrapper"}>
-        <div className={"discourse-chip-palette"}>
-          {Object.entries(filteredDiscourseToColorMap).map(([d, color]) => {
-            return (
-              <Chip
-                className={classNames("discourse-chip", {
-                  deselected: deselectedDiscourses.includes(d),
-                })}
-                label={<span className={"discourse-chip-label"}>{d}</span>}
-                key={d}
-                onClick={() => this.props.handleDiscourseSelected(d)}
-                style={{ backgroundColor: color }}
-                variant="outlined"
-              />
-            );
-          })}
+      <div className="discourse-chip-palette-wrapper">
+        <p className="discourse-palette-header">Show me...</p>
+        <div className="discourse-chip-palette">
+          <div className="discourse-chip-palette__tags">
+            {Object.entries(filteredDiscourseToColorMap).map(([d, color]) => {
+              return (
+                <DiscourseTagChip
+                  id={d}
+                  name={TAG_DISPLAY_NAMES[d] || d}
+                  selected={
+                    !beforeFirstSelection && !deselectedDiscourses.includes(d)
+                  }
+                  color={color}
+                  handleSelection={this.onClickTag}
+                />
+              );
+            })}
+          </div>
+          <div className="discourse-chip-palette__everything">
+            <DiscourseTagChip
+              id="everything"
+              className="everything-chip"
+              name={"Everything"}
+              selected={
+                !beforeFirstSelection && deselectedDiscourses.length === 0
+              }
+              color={"lightgray"}
+              handleSelection={this.onClickEverything}
+            />
+          </div>
         </div>
       </div>
     );
