@@ -9,18 +9,48 @@ interface Props {
   handleDiscourseSelected: (discourse: string) => void;
 }
 
+interface State {
+  firstSelection: boolean;
+}
+
 const TAG_DISPLAY_NAMES: { [key: string]: string } = {
   Objective: "Objectives",
   Novelty: "Novelty Statements",
   Method: "Methods",
 };
-class DiscoursePalette extends React.PureComponent<Props> {
+class DiscoursePalette extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
+    this.state = {
+      firstSelection: true,
+    };
   }
+
+  onClickTag = (tag: string) => {
+    if (this.state.firstSelection) {
+      for (const otherTag of this.getAvailableDiscourseTags()) {
+        if (otherTag !== tag) {
+          this.props.handleDiscourseSelected(otherTag);
+        }
+      }
+      this.setState({
+        firstSelection: false,
+      });
+    } else {
+      this.props.handleDiscourseSelected(tag);
+    }
+  };
 
   onClickEverything = () => {
     const { deselectedDiscourses } = this.props;
+
+    if (this.state.firstSelection) {
+      this.setState({
+        firstSelection: false,
+      });
+      return;
+    }
+
     const allTags = this.getAvailableDiscourseTags();
     /**
      * If every tag is already selected, then deselect every tag.
@@ -62,6 +92,7 @@ class DiscoursePalette extends React.PureComponent<Props> {
 
   render() {
     const { discourseToColorMap, deselectedDiscourses } = this.props;
+    const { firstSelection: beforeFirstSelection } = this.state;
 
     const filteredDiscourseToColorMap = this.getAvailableDiscourseTags().reduce(
       (obj: { [label: string]: string }, key) => {
@@ -81,9 +112,11 @@ class DiscoursePalette extends React.PureComponent<Props> {
                 <DiscourseTagChip
                   id={d}
                   name={TAG_DISPLAY_NAMES[d] || d}
-                  selected={!deselectedDiscourses.includes(d)}
+                  selected={
+                    !beforeFirstSelection && !deselectedDiscourses.includes(d)
+                  }
                   color={color}
-                  handleSelection={this.props.handleDiscourseSelected}
+                  handleSelection={this.onClickTag}
                 />
               );
             })}
@@ -93,7 +126,9 @@ class DiscoursePalette extends React.PureComponent<Props> {
               id="everything"
               className="everything-chip"
               name={"Everything"}
-              selected={deselectedDiscourses.length === 0}
+              selected={
+                !beforeFirstSelection && deselectedDiscourses.length === 0
+              }
               color={"lightgray"}
               handleSelection={this.onClickEverything}
             />
