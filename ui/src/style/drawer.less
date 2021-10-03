@@ -4,7 +4,7 @@
 @{drawer} {
   top: @pdfjs-toolbarViewer-height;
   height: calc(100% - @pdfjs-toolbarViewer-height);
-  right: 18px;
+  right: @scrollbarWidth + 2px;
 }
 
 /**
@@ -47,4 +47,19 @@
     line-height: @medium * @line-height-ratio;
     color: @s2-text-default;
   }
+}
+
+/**
+ * Floating action button used to open and close the drawer.
+ */
+#drawer-control-fab {
+  position: absolute;
+  top: 50%;
+  height: 35px;
+  width: 35px;
+  z-index: 1200;
+  transition: right 225ms cubic-bezier(0, 0, 0.2, 1) 0ms;
+  min-height: 0px !important;
+  line-height: 15px;
+  vertical-align: middle;
 }

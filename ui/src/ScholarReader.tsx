@@ -26,6 +26,7 @@ import DiscourseTagLayer from "./components/discourse/DiscourseTagLayer";
 import HighlightLayer from "./components/discourse/HighlightLayer";
 import UnderlineLayer from "./components/discourse/UnderlineLayer";
 import { Drawer, DrawerContentType } from "./components/drawer/Drawer";
+import DrawerControlFab from "./components/drawer/DrawerControlFab";
 import EntityAnnotationLayer from "./components/entity/EntityAnnotationLayer";
 import EquationDiagram from "./components/entity/equation/EquationDiagram";
 import { MinusIcon } from "./components/icon/MinusIcon";
@@ -1371,18 +1372,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               >
                 <span>Customize UI</span>
               </button> */}
-              {this.state.facetDrawerEnabled ? (
-                <button
-                  onClick={() => this.toggleDrawer("facets")}
-                  className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
-                >
-                  <span>
-                    {this.state.drawerMode === "closed"
-                      ? "Open drawer"
-                      : "Close drawer"}
-                  </span>
-                </button>
-              ) : null}
             </PdfjsToolbar>
             <PdfjsBrandbar />
             <ViewerOverlay
@@ -1492,6 +1481,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 handleDeleteEntity={this.deleteEntity}
                 handleSetPropagateEntityEdits={this.setPropagateEntityEdits}
               />
+              {this.state.showSkimmingAnnotations &&
+                this.state.facetDrawerEnabled && (
+                  <DrawerControlFab
+                    drawerMode={this.state.drawerMode}
+                    handleOpenDrawer={this.openDrawerWithFacets}
+                    handleCloseDrawer={this.closeDrawer}
+                  />
+                )}
               {this.state.definitionPreviewEnabled &&
               this.state.pages !== null &&
               this.state.pdfDocument !== null &&
