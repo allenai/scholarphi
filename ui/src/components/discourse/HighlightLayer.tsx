@@ -15,6 +15,7 @@ interface Props {
   handleOpenDrawer: () => void;
   handleCloseDrawer: () => void;
   handleFilterToDiscourse: (discourse: string) => void;
+  selectSnippetInDrawer: (d: DiscourseObj) => void;
 }
 
 interface State {
@@ -77,7 +78,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
     this.clearAllSelected();
     this.props.handleDiscourseObjSelected(sentence);
     this.markHighlightAsSelected(sentence);
-    this.selectSnippetInDrawer(sentence);
+    this.props.selectSnippetInDrawer(sentence);
     this.setState({
       showControlToolbar: true,
       focusedDiscourseObj: sentence,
@@ -117,42 +118,6 @@ class HighlightLayer extends React.PureComponent<Props, State> {
      * newly selected sentence.
      */
     // this.selectSnippetInDrawer(this.state.focusedDiscourseObj);
-  };
-
-  selectSnippetInDrawer = (selection: DiscourseObj | null) => {
-    let elementToSelectClass;
-    if (selection !== null) {
-      elementToSelectClass = `facet-snippet-${selection.id}`;
-    }
-
-    const prevScrolledTo = document.querySelectorAll(".scrolled-to");
-    if (prevScrolledTo.length > 0) {
-      /*
-       * If the element is already selected, do nothing.
-       */
-      if (
-        elementToSelectClass !== undefined &&
-        prevScrolledTo[0].classList.contains(elementToSelectClass)
-      ) {
-        return;
-      }
-      /*
-       * Otherwise, deselect currently selected elements.
-       */
-      prevScrolledTo.forEach((x) => x.classList.remove("scrolled-to"));
-    }
-
-    if (elementToSelectClass !== undefined) {
-      this.clearAllSelected();
-      const facetSnippet = document.querySelector(`.${elementToSelectClass}`);
-      if (facetSnippet !== null) {
-        facetSnippet.classList.add("selected");
-        facetSnippet.scrollIntoView({
-          block: "center",
-          behavior: "smooth",
-        });
-      }
-    }
   };
 
   render() {
@@ -252,7 +217,11 @@ class HighlightLayer extends React.PureComponent<Props, State> {
               handleOpenDrawer={() => {
                 this.props.handleOpenDrawer();
                 setTimeout(() => {
-                  this.selectSnippetInDrawer(this.state.focusedDiscourseObj);
+                  if (this.state.focusedDiscourseObj !== null) {
+                    this.props.selectSnippetInDrawer(
+                      this.state.focusedDiscourseObj
+                    );
+                  }
                 }, 300);
               }}
               handleCloseDrawer={this.props.handleCloseDrawer}

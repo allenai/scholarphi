@@ -1,7 +1,7 @@
 import React from "react";
 import { CaptionUnit, DiscourseObj } from "../../api/types";
-import * as uiUtils from "../../utils/ui";
 import { MediaTag } from "./MediaTag";
+import { ScrollbarMark } from "./ScrollbarMark";
 
 interface Props {
   numPages: number;
@@ -18,7 +18,7 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
     super(props);
   }
 
-  mapDiscourseToScrollBar = (page: number, top: number) => {
+  mapDiscourseToScrollBar = (page: number, top: number): number => {
     if (ScrollbarMarkup.scrollbarHeight === undefined) {
       return 0;
     }
@@ -48,18 +48,11 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
             {discourseObjs
               .filter((d: DiscourseObj) => d.label !== "Author")
               .map((d: DiscourseObj, i: number) => (
-                <div
-                  className={"scrollbar-mark"}
-                  onClick={() => this.props.handleMarkClicked(d.id)}
-                  style={{
-                    top: this.mapDiscourseToScrollBar(
-                      d.bboxes[0].page,
-                      d.bboxes[0].top
-                    ),
-                    background: uiUtils.updateAlpha(d.color, 0.9),
-                  }}
-                  key={`scrollbar-mark-${i}`}
-                ></div>
+                <ScrollbarMark
+                  sentence={d}
+                  handleMarkClicked={() => this.props.handleMarkClicked(d.id)}
+                  mapDiscourseToScrollBar={this.mapDiscourseToScrollBar}
+                />
               ))}
           </div>
         ) : null}

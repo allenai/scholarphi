@@ -1079,6 +1079,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
   onScrollbarMarkClicked = (id: string) => {
     this.jumpToDiscourseObj(id);
+    setTimeout(() => {
+      this.selectSnippetInDrawer(this.state.discourseObjsById[id]);
+    }, 200);
   };
 
   hideDiscourseObj = (d: DiscourseObj) => {
@@ -1272,6 +1275,26 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     });
 
     return true;
+  };
+
+  selectSnippetInDrawer = (selection: DiscourseObj | null) => {
+    let elementToSelectClass;
+    if (selection !== null) {
+      elementToSelectClass = `facet-snippet-${selection.id}`;
+    }
+
+    if (elementToSelectClass !== undefined) {
+      uiUtils.removeClassFromElementsByClassname("selected");
+      const facetSnippet = document.querySelector(`.${elementToSelectClass}`);
+      console.log(facetSnippet);
+      if (facetSnippet !== null) {
+        facetSnippet.classList.add("selected");
+        facetSnippet.scrollIntoView({
+          block: "center",
+          behavior: "smooth",
+        });
+      }
+    }
   };
 
   render() {
@@ -1746,6 +1769,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                           handleCloseDrawer={this.closeDrawer}
                           drawerOpen={this.state.drawerMode === "open"}
                           handleFilterToDiscourse={this.filterToDiscourse}
+                          selectSnippetInDrawer={this.selectSnippetInDrawer}
                         ></HighlightLayer>
                       )}
 
