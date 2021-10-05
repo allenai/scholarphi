@@ -72,13 +72,16 @@ class ApiServer {
           request.headers["x-real-ip"] || request.info.remoteAddress;
         const payload = request.payload as LogEntryCreatePayload;
         try {
-          await dbConnection.insertLogEntry({
+          const event = {
             ip_address: ipAddress,
             username: payload.username,
             level: payload.level,
             event_type: payload.event_type,
             data: payload.data,
-          });
+          }
+          const message = { "message_type": "s2-skimmer-event", "event": event }
+          console.log(JSON.stringify(message));
+          await dbConnection.insertLogEntry(event);
           return h.response().code(200);
         } catch (e) {
           return h.response().code(500);
