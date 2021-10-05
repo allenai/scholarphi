@@ -167,6 +167,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   toggleSkimmingAnnotations = (): void => {
     this.setState((prevState) => ({
       showSkimmingAnnotations: !prevState.showSkimmingAnnotations,
+      drawerMode: "closed",
     }));
   };
 
