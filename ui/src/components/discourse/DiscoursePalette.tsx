@@ -115,6 +115,7 @@ class DiscoursePalette extends React.PureComponent<Props, State> {
             {Object.entries(filteredDiscourseToColorMap).map(([d, color]) => {
               return (
                 <DiscourseTagChip
+                  key={d}
                   id={d}
                   name={TAG_DISPLAY_NAMES[d] || d}
                   selected={
