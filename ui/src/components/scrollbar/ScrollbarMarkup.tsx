@@ -49,6 +49,7 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
               .filter((d: DiscourseObj) => d.label !== "Author")
               .map((d: DiscourseObj, i: number) => (
                 <ScrollbarMark
+                  key={`scrollbar-mark-${i}`}
                   sentence={d}
                   handleMarkClicked={() => this.props.handleMarkClicked(d.id)}
                   mapDiscourseToScrollBar={this.mapDiscourseToScrollBar}

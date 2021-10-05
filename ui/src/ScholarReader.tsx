@@ -1286,7 +1286,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     if (elementToSelectClass !== undefined) {
       uiUtils.removeClassFromElementsByClassname("selected");
       const facetSnippet = document.querySelector(`.${elementToSelectClass}`);
-      console.log(facetSnippet);
       if (facetSnippet !== null) {
         facetSnippet.classList.add("selected");
         facetSnippet.scrollIntoView({
