@@ -2,16 +2,30 @@ import Fab from "@material-ui/core/Fab";
 import { MenuOpen } from "@material-ui/icons";
 import Close from "@material-ui/icons/Close";
 import React from "react";
+import { getRemoteLogger } from "../../logging";
+
+const logger = getRemoteLogger();
 
 interface Props {
-  drawerMode: string;
+  drawerOpen: boolean;
   handleOpenDrawer: () => void;
   handleCloseDrawer: () => void;
 }
 
 export class DrawerControlFab extends React.PureComponent<Props> {
+  handleFabClicked = () => {
+    const { drawerOpen } = this.props;
+    if (drawerOpen) {
+      logger.log("debug", "click-close-drawer-tooltip-button");
+      this.props.handleCloseDrawer();
+    } else {
+      logger.log("debug", "click-open-drawer-tooltip-button");
+      this.props.handleOpenDrawer();
+    }
+  };
+
   render() {
-    const { drawerMode } = this.props;
+    const { drawerOpen } = this.props;
 
     return (
       <>
@@ -19,15 +33,15 @@ export class DrawerControlFab extends React.PureComponent<Props> {
           id="drawer-control-fab"
           color="default"
           style={{
-            right: drawerMode === "closed" ? "50px" : "365px",
+            right: drawerOpen ? "365px" : "50px",
           }}
           onClick={
-            drawerMode === "closed"
-              ? this.props.handleOpenDrawer
-              : this.props.handleCloseDrawer
+            drawerOpen
+              ? this.props.handleCloseDrawer
+              : this.props.handleOpenDrawer
           }
         >
-          {drawerMode === "closed" ? <MenuOpen /> : <Close />}
+          {drawerOpen ? <Close /> : <MenuOpen />}
         </Fab>
       </>
     );

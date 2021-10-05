@@ -165,6 +165,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   toggleSkimmingAnnotations = (): void => {
+    if (this.state.showSkimmingAnnotations) {
+      logger.log("debug", "deactivate-skimming-mode");
+    } else {
+      logger.log("debug", "activate-skimming-mode");
+    }
     this.setState((prevState) => ({
       showSkimmingAnnotations: !prevState.showSkimmingAnnotations,
       drawerMode: "closed",
@@ -728,11 +733,13 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
     document.addEventListener("keydown", (event) => {
       if (uiUtils.isKeypressShiftTab(event)) {
+        logger.log("debug", "navigate-next-highlight");
         event.preventDefault();
         if (this.state.discourseObjs.length > 0) {
           this.moveToPreviousDiscourseObj();
         }
       } else if (uiUtils.isKeypressTab(event)) {
+        logger.log("debug", "navigate-prev-highlight");
         event.preventDefault();
         if (this.state.discourseObjs.length > 0) {
           this.moveToNextDiscourseObj();
@@ -1021,9 +1028,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   increaseNumHighlights = (discourses: string[]) => {
     this.setState((prevState) => {
       let newHighlightMultiplier = prevState.numHighlightMultiplier;
+      const increment = 0.1;
       discourses.forEach((discourse: string) => {
         const prevMultiplier = prevState.numHighlightMultiplier[discourse];
-        const increment = 0.1;
         const highlightMult = Math.min(
           1,
           Math.round((prevMultiplier + increment) * 10) / 10
@@ -1032,6 +1039,13 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
           ...newHighlightMultiplier,
           [discourse]: highlightMult,
         };
+      });
+
+      logger.log("debug", "increase-num-highlights", {
+        discourses: discourses,
+        prevMultiplier: prevState.numHighlightMultiplier,
+        newMultiplier: newHighlightMultiplier,
+        increment: increment,
       });
 
       let newDeselectedDiscourses = prevState.deselectedDiscourses;
@@ -1052,9 +1066,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   decreaseNumHighlights = (discourses: string[]) => {
     this.setState((prevState) => {
       let newHighlightMultiplier = prevState.numHighlightMultiplier;
+      const decrement = 0.1;
       discourses.forEach((discourse: string) => {
         const prevMultiplier = prevState.numHighlightMultiplier[discourse];
-        const decrement = 0.1;
         const highlightMult = Math.max(
           0,
           Math.round((prevMultiplier - decrement) * 10) / 10
@@ -1063,6 +1077,13 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
           ...newHighlightMultiplier,
           [discourse]: highlightMult,
         };
+      });
+
+      logger.log("debug", "decrease-num-highlights", {
+        discourses: discourses,
+        prevMultiplier: prevState.numHighlightMultiplier,
+        newMultiplier: newHighlightMultiplier,
+        decrement: decrement,
       });
 
       let newDeselectedDiscourses = prevState.deselectedDiscourses;
@@ -1510,7 +1531,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               {this.state.showSkimmingAnnotations &&
                 this.state.facetDrawerEnabled && (
                   <DrawerControlFab
-                    drawerMode={this.state.drawerMode}
+                    drawerOpen={this.state.drawerMode === "open"}
                     handleOpenDrawer={this.openDrawerWithFacets}
                     handleCloseDrawer={this.closeDrawer}
                   />

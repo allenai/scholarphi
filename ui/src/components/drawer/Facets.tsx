@@ -1,8 +1,11 @@
 import React from "react";
 import { DiscourseObj } from "../../api/types";
+import { getRemoteLogger } from "../../logging";
 import * as uiUtils from "../../utils/ui";
 import DiscoursePalette from "../discourse/DiscoursePalette";
 import FacetSnippet from "./FacetSnippet";
+
+const logger = getRemoteLogger();
 
 interface Props {
   discourseObjs: DiscourseObj[];
@@ -12,6 +15,27 @@ interface Props {
 }
 
 export class Facets extends React.PureComponent<Props> {
+  handleFacetSnippetClicked = (sentence: DiscourseObj) => {
+    logger.log("debug", "click-facet-snippet", {
+      discourse: sentence,
+    });
+    if (this.props.handleJumpToDiscourseObj) {
+      this.clearAllSelected();
+      this.markAsSelected(`facet-snippet-${sentence.id}`);
+      this.markAsSelected(`highlight-${sentence.id}`);
+
+      this.props.handleJumpToDiscourseObj(sentence.id);
+    }
+  };
+
+  markAsSelected = (classname: string) => {
+    uiUtils.addClassToElementsByClassname(classname, "selected");
+  };
+
+  clearAllSelected = () => {
+    uiUtils.removeClassFromElementsByClassname("selected");
+  };
+
   render() {
     const { discourseObjs, deselectedDiscourses } = this.props;
 
@@ -51,6 +75,7 @@ export class Facets extends React.PureComponent<Props> {
                         key={d.id}
                         id={d.id}
                         color={d.color}
+                        onClick={() => this.handleFacetSnippetClicked(d)}
                         handleJumpToDiscourseObj={
                           this.props.handleJumpToDiscourseObj
                         }

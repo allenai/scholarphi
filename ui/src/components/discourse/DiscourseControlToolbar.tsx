@@ -1,10 +1,12 @@
 import IconButton from "@material-ui/core/IconButton";
 import MuiTooltip from "@material-ui/core/Tooltip";
 import Close from "@material-ui/icons/Close";
-import DeleteIcon from "@material-ui/icons/Delete";
 import FilterIcon from "@material-ui/icons/Filter";
 import ListIcon from "@material-ui/icons/List";
 import { default as React } from "react";
+import { getRemoteLogger } from "../../logging";
+
+const logger = getRemoteLogger();
 
 interface Props {
   x: number;
@@ -19,6 +21,29 @@ interface Props {
 }
 
 class DiscourseControlToolbar extends React.PureComponent<Props> {
+  handleDrawerButtonClicked = () => {
+    const { drawerOpen } = this.props;
+    if (drawerOpen) {
+      logger.log("debug", "click-close-drawer-tooltip-button");
+      this.props.handleCloseDrawer();
+    } else {
+      logger.log("debug", "click-open-drawer-tooltip-button");
+      this.props.handleOpenDrawer();
+    }
+  };
+
+  handleFilterToDiscourse = () => {
+    logger.log("debug", "click-filter-to-discourse-tooltip-button", {
+      discourse: this.props.label,
+    });
+    this.props.handleFilterToDiscourse();
+  };
+
+  handleClose = () => {
+    logger.log("debug", "click-close-tooltip-button");
+    this.props.handleClose();
+  };
+
   render() {
     const { x, y, label, drawerOpen } = this.props;
 
@@ -38,11 +63,7 @@ class DiscourseControlToolbar extends React.PureComponent<Props> {
                 <MuiTooltip title={drawerOpen ? "Close drawer" : "Open drawer"}>
                   <IconButton
                     size="small"
-                    onClick={
-                      drawerOpen
-                        ? this.props.handleCloseDrawer
-                        : this.props.handleOpenDrawer
-                    }
+                    onClick={this.handleDrawerButtonClicked}
                   >
                     <ListIcon />
                   </IconButton>
@@ -52,7 +73,7 @@ class DiscourseControlToolbar extends React.PureComponent<Props> {
                 <MuiTooltip title={`Show ${label} highlights only`}>
                   <IconButton
                     size="small"
-                    onClick={this.props.handleFilterToDiscourse}
+                    onClick={this.handleFilterToDiscourse}
                   >
                     <FilterIcon />
                   </IconButton>
@@ -73,7 +94,7 @@ class DiscourseControlToolbar extends React.PureComponent<Props> {
               </td> */}
               <td>
                 <MuiTooltip title="Close">
-                  <IconButton size="small" onClick={this.props.handleClose}>
+                  <IconButton size="small" onClick={this.handleClose}>
                     <Close />
                   </IconButton>
                 </MuiTooltip>

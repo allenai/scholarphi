@@ -1,8 +1,11 @@
 import React from "react";
 import { BoundingBox, DiscourseObj, SentenceUnit } from "../../api/types";
+import { getRemoteLogger } from "../../logging";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
 import DiscourseControlToolbar from "./DiscourseControlToolbar";
+
+const logger = getRemoteLogger();
 
 interface Props {
   pageView: PDFPageView;
@@ -64,6 +67,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
           e.classList.contains("discourse-control-toolbar")
       )
     ) {
+      logger.log("debug", "click-anywhere-close-toolbar");
       this.closeControlToolbar();
       this.clearAllSelected();
     }
@@ -74,6 +78,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
     sentence: DiscourseObj,
     lineIndex: number
   ) => {
+    logger.log("debug", "click-highlight", { discourse: sentence });
     const pageRect = this.props.pageView.div.getBoundingClientRect();
     this.clearAllSelected();
     this.props.handleDiscourseObjSelected(sentence);
@@ -110,14 +115,6 @@ class HighlightLayer extends React.PureComponent<Props, State> {
 
   clearAllHovered = () => {
     uiUtils.removeClassFromElementsByClassname("hovered");
-  };
-
-  componentDidUpdate = () => {
-    /*
-     * When the selected sentence changes, scroll the drawer to the
-     * newly selected sentence.
-     */
-    // this.selectSnippetInDrawer(this.state.focusedDiscourseObj);
   };
 
   render() {
@@ -164,7 +161,10 @@ class HighlightLayer extends React.PureComponent<Props, State> {
               <React.Fragment key={`highlight-${i}-${j}`}>
                 <div
                   className={`highlight-mask__highlight discourse-highlight highlight-${d.id}`}
-                  onMouseEnter={() => this.markHighlightAsHovered(d)}
+                  onMouseEnter={() => {
+                    this.markHighlightAsHovered(d);
+                    logger.log("debug", "hover-highlight", { discourse: d });
+                  }}
                   onMouseLeave={this.clearAllHovered}
                   onMouseDown={(event: React.MouseEvent) => {
                     this.onClickSentence(event, d, j);

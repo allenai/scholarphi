@@ -1,6 +1,9 @@
 import React from "react";
 import { DiscourseObj } from "../../api/types";
+import { getRemoteLogger } from "../../logging";
 import DiscourseTagChip from "./DiscourseTagChip";
+
+const logger = getRemoteLogger();
 
 interface Props {
   discourseToColorMap: { [discourse: string]: string };
@@ -27,6 +30,7 @@ class DiscoursePalette extends React.PureComponent<Props, State> {
   }
 
   onClickTag = (tag: string) => {
+    logger.log("debug", "click-facet-tag", { tag: tag });
     if (this.state.firstSelection) {
       for (const otherTag of this.getAvailableDiscourseTags()) {
         if (otherTag !== tag) {
@@ -42,6 +46,7 @@ class DiscoursePalette extends React.PureComponent<Props, State> {
   };
 
   onClickEverything = () => {
+    logger.log("debug", "click-all-facets-tag");
     const { deselectedDiscourses } = this.props;
 
     if (this.state.firstSelection) {
