@@ -22,12 +22,12 @@ export class DiscourseTagChip extends React.PureComponent<Props> {
         style={{ backgroundColor: this.props.color }}
       >
         <span className="discourse-chip__label">{this.props.name}</span>
-        <Checkbox
+        {/* <Checkbox
           className="discourse-chip__checkbox"
           checked={this.props.selected}
           size="small"
           color="default"
-        />
+        /> */}
       </div>
     );
   }

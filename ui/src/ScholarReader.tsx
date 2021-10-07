@@ -1518,7 +1518,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 entities={this.state.entities}
                 selectedEntityIds={this.state.selectedEntityIds}
                 discourseObjs={discourseObjs}
-                deselectedDiscourses={this.state.deselectedDiscourses}
+                deselectedDiscourses={this.state.deselectedDiscourses.filter(
+                  (label) => !["Highlight", "Author"].includes(label)
+                )}
                 handleDiscourseSelected={this.selectDiscourseClass}
                 handleJumpToDiscourseObj={this.jumpToDiscourseObj}
                 propagateEntityEdits={this.state.propagateEntityEdits}

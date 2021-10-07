@@ -71,19 +71,18 @@
       padding: (@padding / 2) @padding;
       margin: 2px 2px;
       border-radius: 6px !important;
-      border-width: 1px;
-      border-style: solid;
-      border-color: rgba(0, 0, 0, 0);
+      border: 1px solid grey;
       cursor: pointer;
-
+      opacity: 0.9;
       font-weight: bolder;
       font-size: @medium;
 
       &.deselected {
         opacity: 0.6;
+        border: 0;
       }
 
-      &:hover:not(.deselected) {
+      &:hover {
         opacity: 1;
         border-color: grey;
       }
