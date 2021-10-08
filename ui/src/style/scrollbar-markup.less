@@ -31,6 +31,12 @@
   height: calc(100% - @pdfjs-toolbarViewer-height);
   overflow-y: hidden;
   pointer-events: none;
+
+  &.drawer-open {
+    right: @drawer-width;
+    // transition-property: right;
+    // transition-duration: 0.2s;
+  }
 }
 
 .scrollbar-mark {

@@ -83,7 +83,7 @@
 /**
  * ELEMENT DIMENSIONS
  */
- @brandbar-height: 48px;
+@brandbar-height: 48px;
 @paper-summary-width: 400px;
 @paper-padding: 20px;
 
@@ -124,9 +124,12 @@
 @pdfjs-toolbarViewer-height: 32px + @brandbar-height;
 @pdfjs-sidebarContainer-z-index: 100;
 
-
 /**
  * Variables added for the skimming components.
  */
 @scrollbarWidth: 16px;
 @scrollbarMarkHeight: 5px;
+@drawer-width: calc(
+  @document-snippets-container-width + @scrollbarWidth + @padding * 2 + @padding *
+    2
+);

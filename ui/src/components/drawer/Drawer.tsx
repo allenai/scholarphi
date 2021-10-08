@@ -43,6 +43,7 @@ interface Props {
   handleDeleteEntity: (id: string) => Promise<boolean>;
 }
 
+const SCROLLBAR_ELEMENT_SELECTORS = [".scrollbar-markup"];
 export class Drawer extends React.PureComponent<Props> {
   constructor(props: Props) {
     super(props);
@@ -70,12 +71,59 @@ export class Drawer extends React.PureComponent<Props> {
     }
   }
 
-  positionPdfForDrawerOpen(
+  componentDidUpdate = (prevProps: Props) => {
+    const { pdfViewer } = this.props;
+    if (prevProps.mode === "open" && this.props.mode === "closed") {
+      this.removePdfPositioningForDrawerOpen(pdfViewer.container);
+    }
+    // SOMETHING IS WRONG WITH THE SCALING... I AM THINKING THAT I MIGHT
+    // PREFER AN IMPLEMENTATION THAT SCROLLS THE PAPER LEFTWARDS...
+    // I DO NOT THINK THE ORIGINAL PAPER IS VISIBLE AT THE SAME TIME AS
+    // THE DISCOURSE OBJECTS ON MY SCREEN.
+
+    // TODO; make so it only shifts if some of the sentences will be occluded.
+    if (prevProps.mode === "closed" && this.props.mode === "open") {
+      const page = document.querySelector(".page");
+      if (page !== null) {
+        const DRAWER_WIDTH = 380;
+        const updatedViewportWidth =
+          pdfViewer.container.getBoundingClientRect().width - DRAWER_WIDTH;
+        const width = page.getBoundingClientRect().width;
+        if (width > updatedViewportWidth) {
+          const rightOffset =
+            pdfViewer.container.getBoundingClientRect().right -
+            page.getBoundingClientRect().right;
+          const leftOffset =
+            page.getBoundingClientRect().left -
+            pdfViewer.container.getBoundingClientRect().left;
+          const occlusion = DRAWER_WIDTH - Math.max(rightOffset, 0);
+          const compensatingSpace =
+            Math.max(rightOffset, 0) + Math.max(leftOffset, 0);
+          const adjust = occlusion - compensatingSpace;
+          const currentScale = (pdfViewer as any).currentScale;
+          const newScale = currentScale * ((width - adjust) / width);
+          if (Math.abs(newScale - currentScale) >= 0.05) {
+            setTimeout(() => {
+              (pdfViewer as any)._setScale(newScale);
+            }, 50);
+          }
+        }
+      }
+
+      pdfViewer.container.classList.add(`drawer-${this.props.contentType}`);
+      for (const selector of SCROLLBAR_ELEMENT_SELECTORS) {
+        const element = window.document.querySelector(selector);
+        if (element !== null) {
+          element.classList.add("drawer-open");
+        }
+      }
+    }
+  };
+
+  positionPdfForDrawerOpen = (
     pdfViewerContainer: HTMLElement,
     drawerContentType: string
-  ) {
-    pdfViewerContainer.classList.add(`drawer-${drawerContentType}`);
-  }
+  ) => {};
 
   removePdfPositioningForDrawerOpen(pdfViewerContainer: HTMLElement) {
     pdfViewerContainer.classList.forEach((c) => {
@@ -83,6 +131,12 @@ export class Drawer extends React.PureComponent<Props> {
         pdfViewerContainer.classList.remove(c);
       }
     });
+    for (const selector of SCROLLBAR_ELEMENT_SELECTORS) {
+      const element = window.document.querySelector(selector);
+      if (element !== null) {
+        element.classList.remove("drawer-open");
+      }
+    }
   }
 
   closeDrawer() {
@@ -112,14 +166,14 @@ export class Drawer extends React.PureComponent<Props> {
       firstSelectedEntity = entities.byId[selectedEntityIds[0]] || null;
     }
 
-    if (pdfViewer != null) {
-      if (mode === "open" && contentType !== null) {
-        this.removePdfPositioningForDrawerOpen(pdfViewer.container);
-        this.positionPdfForDrawerOpen(pdfViewer.container, contentType);
-      } else {
-        this.removePdfPositioningForDrawerOpen(pdfViewer.container);
-      }
-    }
+    // if (pdfViewer != null) {
+    //   if (mode === "open" && contentType !== null) {
+    //     this.removePdfPositioningForDrawerOpen(pdfViewer.container);
+    //     this.positionPdfForDrawerOpen(pdfViewer.container, contentType);
+    //   } else {
+    //     this.removePdfPositioningForDrawerOpen(pdfViewer.container);
+    //   }
+    // }
 
     return (
       <MuiDrawer
@@ -132,6 +186,7 @@ export class Drawer extends React.PureComponent<Props> {
          */
         open={mode === "open" && contentType !== null}
         onScroll={this.onScroll}
+        transitionDuration={0}
       >
         <div className="drawer__content">
           {contentType === "entity-property-editor" && (

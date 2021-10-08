@@ -45,22 +45,24 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
                 )}
               />
             ))}
-            {discourseObjs
-              .filter((d: DiscourseObj) => d.label !== "Author")
-              .map((d: DiscourseObj, i: number) => (
-                <div
-                  className={"scrollbar-mark"}
-                  onClick={() => this.props.handleMarkClicked(d.id)}
-                  style={{
-                    top: this.mapDiscourseToScrollBar(
-                      d.bboxes[0].page,
-                      d.bboxes[0].top
-                    ),
-                    background: uiUtils.updateAlpha(d.color, 0.9),
-                  }}
-                  key={`scrollbar-mark-${i}`}
-                ></div>
-              ))}
+            <div className="scrollbar-mark-container">
+              {discourseObjs
+                .filter((d: DiscourseObj) => d.label !== "Author")
+                .map((d: DiscourseObj, i: number) => (
+                  <div
+                    className={"scrollbar-mark"}
+                    onClick={() => this.props.handleMarkClicked(d.id)}
+                    style={{
+                      top: this.mapDiscourseToScrollBar(
+                        d.bboxes[0].page,
+                        d.bboxes[0].top
+                      ),
+                      background: uiUtils.updateAlpha(d.color, 0.9),
+                    }}
+                    key={`scrollbar-mark-${i}`}
+                  ></div>
+                ))}
+            </div>
           </div>
         ) : null}
       </>
