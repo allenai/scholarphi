@@ -87,9 +87,12 @@ export class Drawer extends React.PureComponent<Props> {
       if (page !== null) {
         const DRAWER_WIDTH = 380;
         const updatedViewportWidth =
-          pdfViewer.container.getBoundingClientRect().width - DRAWER_WIDTH;
-        const width = page.getBoundingClientRect().width;
-        if (width > updatedViewportWidth) {
+          pdfViewer.container.clientWidth - DRAWER_WIDTH;
+        const pagevisibleWidth = Math.min(
+          pdfViewer.container.clientWidth,
+          page.clientWidth
+        );
+        if (pagevisibleWidth > updatedViewportWidth) {
           const rightOffset =
             pdfViewer.container.getBoundingClientRect().right -
             page.getBoundingClientRect().right;
@@ -101,7 +104,8 @@ export class Drawer extends React.PureComponent<Props> {
             Math.max(rightOffset, 0) + Math.max(leftOffset, 0);
           const adjust = occlusion - compensatingSpace;
           const currentScale = (pdfViewer as any).currentScale;
-          const newScale = currentScale * ((width - adjust) / width);
+          const newScale =
+            currentScale * ((pagevisibleWidth - adjust) / pagevisibleWidth);
           if (Math.abs(newScale - currentScale) >= 0.05) {
             setTimeout(() => {
               (pdfViewer as any)._setScale(newScale);
