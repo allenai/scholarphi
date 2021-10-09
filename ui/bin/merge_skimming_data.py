@@ -9,12 +9,19 @@ input_dirs = [
     "src/data/abstract",
 ]
 
+# Specify the arxiv ids for the papers used in the user study
+# so we build a merged data file with only those papers
+selected_arxiv_ids = ["2102.09039", "1602.06979", "2104.03820"]
+
 cur_id = 0
 for input_dir in input_dirs:
     merged = {}
     for data_e in os.scandir(input_dir):
         id, ext = os.path.splitext(data_e.name)
         if id == "skimmingData":
+            continue
+
+        if id not in selected_arxiv_ids:
             continue
 
         if ext != ".json":
@@ -29,4 +36,4 @@ for input_dir in input_dirs:
             merged[id] = data
 
     with open(f"{input_dir}/skimmingData.json", "w") as out:
-        json.dump(merged, out, indent=2)
+        json.dump(merged, out)
