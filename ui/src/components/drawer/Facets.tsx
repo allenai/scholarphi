@@ -9,6 +9,7 @@ const logger = getRemoteLogger();
 
 interface Props {
   discourseObjs: DiscourseObj[];
+  leadSentenceObjs: DiscourseObj[];
   deselectedDiscourses: string[];
   handleDiscourseSelected: (discourse: string) => void;
   handleJumpToDiscourseObj: (id: string) => void;
@@ -37,10 +38,14 @@ export class Facets extends React.PureComponent<Props> {
   };
 
   render() {
-    const { discourseObjs, deselectedDiscourses } = this.props;
+    const {
+      leadSentenceObjs,
+      discourseObjs,
+      deselectedDiscourses,
+    } = this.props;
 
     const bySection = uiUtils
-      .sortDiscourseObjs(discourseObjs)
+      .sortDiscourseObjs([...discourseObjs, ...leadSentenceObjs])
       .reduce((acc: { [section: string]: DiscourseObj[] }, d: DiscourseObj) => {
         // The section attribute contains (when they exist) section, subsection, and
         // subsubsection header data, delimited by "@@".
@@ -53,17 +58,26 @@ export class Facets extends React.PureComponent<Props> {
         return acc;
       }, {});
 
+    // We want to hide the palette and shift the snippets up when only lead sentences are shown
+    const showFacetHighlights =
+      discourseObjs.length > 0 || deselectedDiscourses.length > 0;
+
     return (
       <>
-        <div>
-          <DiscoursePalette
-            discourseToColorMap={uiUtils.getDiscourseToColorMap()}
-            discourseObjs={discourseObjs}
-            deselectedDiscourses={deselectedDiscourses}
-            handleDiscourseSelected={this.props.handleDiscourseSelected}
-          ></DiscoursePalette>
-        </div>
-        <div className="document-snippets discourse-objs">
+        {showFacetHighlights && (
+          <div>
+            <DiscoursePalette
+              discourseToColorMap={uiUtils.getDiscourseToColorMap()}
+              discourseObjs={discourseObjs}
+              deselectedDiscourses={deselectedDiscourses}
+              handleDiscourseSelected={this.props.handleDiscourseSelected}
+            ></DiscoursePalette>
+          </div>
+        )}
+        <div
+          className="document-snippets discourse-objs"
+          style={{ marginTop: showFacetHighlights ? "9em" : 0 }}
+        >
           {Object.entries(bySection).map(
             ([section, ds], sectionIdx: number) => {
               return (

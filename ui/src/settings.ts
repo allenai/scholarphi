@@ -166,6 +166,7 @@ const PRESETS: Preset[] = [
     annotationHintsEnabled: false,
     primerPageEnabled: false,
     leadSentencesEnabled: true,
+    facetDrawerEnabled: true,
   },
   {
     key: "skim-facet",

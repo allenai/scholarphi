@@ -1,5 +1,11 @@
 import { PDFDocumentProxy } from "pdfjs-dist/types/display/api";
-import { BoundingBox, DiscourseObj, Entity, Paper } from "./api/types";
+import {
+  BoundingBox,
+  DiscourseObj,
+  Entity,
+  Paper,
+  SentenceUnit,
+} from "./api/types";
 import { AreaSelectionMethod } from "./components/control/EntityCreationToolbar";
 import { DrawerContentType, DrawerMode } from "./components/drawer/Drawer";
 import { SnackbarMode } from "./components/overlay/AppOverlay";
@@ -152,7 +158,8 @@ export interface State extends Settings {
   skimOpacity: number;
   showSkimmingAnnotations: boolean;
   currentDiscourseObjId: string | null;
-  leadSentences: { text: string; bboxes: BoundingBox[] }[];
+  leadSentences: SentenceUnit[];
+  leadSentenceObjs: DiscourseObj[];
   discourseObjs: DiscourseObj[];
   discourseObjsById: { [id: string]: DiscourseObj };
   deselectedDiscourses: string[];

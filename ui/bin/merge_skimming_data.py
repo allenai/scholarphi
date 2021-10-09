@@ -33,6 +33,8 @@ for input_dir in input_dirs:
             for x in data:
                 x["id"] = str(cur_id)
                 cur_id += 1
+            if input_dir in ["src/data/sentences"]:
+                data = [x for x in data if x["section"] != ""]
             merged[id] = data
 
     with open(f"{input_dir}/skimmingData.json", "w") as out:

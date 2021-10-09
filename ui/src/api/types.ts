@@ -415,13 +415,15 @@ export interface CaptionUnit {
 }
 
 export interface SentenceUnit {
+  id: string;
   text: string;
   bboxes: BoundingBox[];
+  section: string;
 }
 
 export interface DiscourseObj {
   id: string;
-  entity: RhetoricUnit;
+  entity: RhetoricUnit | SentenceUnit;
   label: string;
   bboxes: BoundingBox[];
   tagLocation: BoundingBox;

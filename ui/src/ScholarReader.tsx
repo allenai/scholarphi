@@ -12,6 +12,7 @@ import {
   isTerm,
   Paper,
   RhetoricUnit,
+  SentenceUnit,
   Symbol,
 } from "./api/types";
 import Control from "./components/control/Control";
@@ -138,6 +139,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         props.paperId !== undefined
           ? Object(sentenceData)[props.paperId.id]
           : [],
+      leadSentenceObjs: [],
       currentDiscourseObjId: null,
       discourseObjs: [],
       discourseObjsById: {},
@@ -812,9 +814,30 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
     let discourseObjs = this.makeDiscourseObjsFromRhetoricUnits(unitsToShow);
     discourseObjs = this.disambiguateDiscourseLabels(discourseObjs);
+
+    // Initialize lead sentence objects
+    const discourseToColorMap: {
+      [label: string]: string;
+    } = uiUtils.getDiscourseToColorMap();
+
+    const leadSentenceObjs = Object(sentenceData)[this.props.paperId!.id].map(
+      (s: SentenceUnit) => ({
+        id: s.id,
+        entity: s,
+        label: "lead-sentence",
+        bboxes: s.bboxes,
+        tagLocation: s.bboxes[0],
+        color: discourseToColorMap["Highlight"],
+      })
+    );
+
     this.setState({
       discourseObjs: uiUtils.sortDiscourseObjs(discourseObjs),
-      discourseObjsById: this.makeDiscourseByIdMap(discourseObjs),
+      leadSentenceObjs: uiUtils.sortDiscourseObjs(leadSentenceObjs),
+      discourseObjsById: this.makeDiscourseByIdMap(
+        discourseObjs,
+        leadSentenceObjs
+      ),
     });
   };
 
@@ -839,8 +862,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     return discourseObjs;
   };
 
-  makeDiscourseByIdMap = (discourseObjs: DiscourseObj[]) => {
-    const discourseObjsById = discourseObjs.reduce(
+  makeDiscourseByIdMap = (
+    discourseObjs: DiscourseObj[],
+    leadSentenceObjs: DiscourseObj[]
+  ) => {
+    const discourseObjsById = [...discourseObjs, ...leadSentenceObjs].reduce(
       (acc: { [id: string]: DiscourseObj }, d: DiscourseObj) => {
         acc[d.id] = d;
         return acc;
@@ -1351,6 +1377,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     const leadSentences = this.state.leadSentencesEnabled
       ? this.state.leadSentences
       : null;
+    const leadSentenceObjs = this.state.leadSentencesEnabled
+      ? this.state.leadSentenceObjs
+      : [];
 
     let discourseObjs = this.filterDiscourseObjsToShow(
       this.state.discourseObjs
@@ -1517,6 +1546,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 }
                 entities={this.state.entities}
                 selectedEntityIds={this.state.selectedEntityIds}
+                leadSentenceObjs={leadSentenceObjs}
                 discourseObjs={discourseObjs}
                 deselectedDiscourses={this.state.deselectedDiscourses.filter(
                   (label) => !["Highlight", "Author"].includes(label)
