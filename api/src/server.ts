@@ -1,11 +1,10 @@
 import { Server, ServerInjectOptions } from "@hapi/hapi";
-import * as nconf from "nconf";
 import * as api from "./api";
+import * as conf from "./conf";
 import { Connection } from "./db-connection";
 import { LogEntryCreatePayload } from "./types/api";
 import * as validation from "./types/validation";
 import { debugFailAction } from "./types/validation";
-import * as conf from "./conf";
 
 /**
  * Wrapper around hapi server that takes care of stateful server start and stop operations.
@@ -30,7 +29,11 @@ class ApiServer {
       },
       routes: {
         cors: {
-          origin: ['*.semanticscholar.org', '*.allenai.org', '*.allenai.org:8080'],
+          origin: [
+            "*.semanticscholar.org",
+            "*.allenai.org",
+            "*.allenai.org:8080",
+          ],
         },
         validate: {
           failAction: this._debug ? debugFailAction : undefined,
@@ -55,25 +58,27 @@ class ApiServer {
       options: {
         connection: dbConnection,
         debug: this._debug,
-        config: this._config
+        config: this._config,
       },
       routes: {
         prefix: "/api/v0/",
       },
     });
 
-    this._server.route({ method: "GET", path: "/api/health", handler: () => "👍" });
+    this._server.route({
+      method: "GET",
+      path: "/api/health",
+      handler: () => "👍",
+    });
 
     this._server.route({
       method: "POST",
       path: "/api/log",
       handler: async (request, h) => {
-        const ipAddress =
-          request.headers["x-real-ip"] || request.info.remoteAddress;
         const payload = request.payload as LogEntryCreatePayload;
         try {
           await dbConnection.insertLogEntry({
-            ip_address: ipAddress,
+            session_id: payload.session_id,
             username: payload.username,
             level: payload.level,
             event_type: payload.event_type,
@@ -142,8 +147,6 @@ class ApiServer {
     }
     return this._server.inject(options);
   }
-
-
 }
 
 export default ApiServer;

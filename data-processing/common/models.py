@@ -211,8 +211,8 @@ class LogEntry(TimestampsMixin, OutputModel):
     Log data from the user interface. Only intended to be written to by the user interface code.
     """
 
-    ip_address = TextField()
-    " IP address of client that logged the event. "
+    session_id = TextField(index=True, null=True)
+    " ID of a browser session that logged the event. "
 
     username = TextField(null=True, index=True)
     """

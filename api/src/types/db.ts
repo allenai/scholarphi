@@ -54,7 +54,7 @@ type EntityDataRowType =
   | "relation-id";
 
 interface LogEntryRow {
-  ip_address: string;
+  session_id: string | null;
   username: string | null;
   level: string;
   event_type: string | null;
