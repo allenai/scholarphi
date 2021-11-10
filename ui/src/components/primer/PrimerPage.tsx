@@ -100,7 +100,6 @@ class PrimerPage extends React.PureComponent<Props> {
         <p className="primer-page__header">Introducing Semantic Reader Beta</p>
         <p>
           Semantic Reader puts relevant information directly in the context of the paper you are reading.
-          The features currently supported in this reader are:
         </p>
         <p>
           Citations are currently supported in this reader. Click a citation to see the abstract for that citation.
