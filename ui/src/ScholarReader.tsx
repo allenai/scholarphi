@@ -147,7 +147,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       hiddenDiscourseObjs: [],
       numHighlightMultiplier: {
         Method: 0.8,
-        Result: 0.7,
+        Result: 0.8,
       },
 
       ...settings,
@@ -938,7 +938,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   getResultHighlights = (data: RhetoricUnit[]) => {
     const result = data.filter((r) => {
       const hasCitation = new RegExp(/\[.*\d.*\]/).test(r.text);
-      return r.label === "Result" && r.is_in_expected_section && !hasCitation;
+      return r.label === "Result" && !hasCitation;
     });
     const heuristicPreds = result.filter((r) => r.prob === null);
     const classifierPreds = result
