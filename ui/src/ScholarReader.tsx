@@ -1620,7 +1620,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         ) : null}
         {
           /* Add overlays (e.g., annotations, etc.) atop each page. */
-          this.state.pages !== null && this.state.entities !== null ? (
+          this.state.pages !== null &&
+          (this.state.entities !== null ||
+            (this.props.paperId !== undefined &&
+              this.props.paperId.type === "custom")) ? (
             <>
               {Object.keys(this.state.pages).map((pageNumberKey) => {
                 const pages = this.state.pages as Pages;

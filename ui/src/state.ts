@@ -202,7 +202,7 @@ export interface PageModel {
 
 export interface PaperId {
   id: string;
-  type: "s2" | "arxiv";
+  type: "s2" | "arxiv" | "custom";
 }
 
 /**

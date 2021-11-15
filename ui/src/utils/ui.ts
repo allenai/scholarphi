@@ -408,6 +408,11 @@ export function extractArxivId(url: string): string | undefined {
   return matches[1];
 }
 
+export function extractCustomId(url: string): string | undefined {
+  const matches = url.match(/rayfok\.github\.io\/files\/uist-papers\/(.*)(?:\.pdf)/) || [];
+  return matches[1];
+}
+
 export function updateAlpha(color: string, opacity: number): string {
   // Keep first character (#) denoting hex value, and next six characters denoting RGB values
   color = color.substring(0, 7);

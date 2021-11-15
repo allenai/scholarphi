@@ -2,7 +2,7 @@ import queryString from "query-string";
 import React from "react";
 import ReactDOM from "react-dom";
 import ScholarReader from "./ScholarReader";
-import { extractArxivId } from './utils/ui';
+import { extractArxivId, extractCustomId } from './utils/ui';
 import { PaperId } from "./state";
 import { PDFViewerApplication } from "./types/pdfjs-viewer";
 require("mathjax-full/es5/core");
@@ -35,6 +35,11 @@ if (url !== undefined) {
   const arxivId = extractArxivId(url);
   if (arxivId !== undefined) {
     paperId = { type: "arxiv", id: arxivId };
+  } else {
+    const customId = extractCustomId(url);
+    if (customId !== undefined) {
+      paperId = { type: "custom", id: customId };
+    }
   }
 }
 
@@ -51,8 +56,8 @@ if (params.annotateCitations !== undefined) {
 
   if (element.sheet) {
     element.sheet.insertRule(`
-        .citation-annotation { 
-            background-color: rgba(0, 0, 255, 0.1) !important; 
+        .citation-annotation {
+            background-color: rgba(0, 0, 255, 0.1) !important;
         }`,
       0);
   }
@@ -64,8 +69,8 @@ if (params.annotateSymbols !== undefined) {
 
   if (element.sheet) {
     element.sheet.insertRule(`
-        .symbol-annotation { 
-            background-color: rgba(255, 0, 0, 0.1) !important; 
+        .symbol-annotation {
+            background-color: rgba(255, 0, 0, 0.1) !important;
             border: 1px solid rgba(0, 0, 0, 0.1) !important;
         }`,
       0);
@@ -78,8 +83,8 @@ if (params.annotateEquations !== undefined) {
 
   if (element.sheet) {
     element.sheet.insertRule(`
-        .equation-annotation { 
-            background-color: rgba(0, 255, 0, 0.1) !important; 
+        .equation-annotation {
+            background-color: rgba(0, 255, 0, 0.1) !important;
         }`,
       0);
   }

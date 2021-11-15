@@ -13,6 +13,9 @@ input_dirs = [
 # so we build a merged data file with only those papers
 selected_arxiv_ids = ["2102.09039", "1602.06979", "2104.03820"]
 
+uist_papers = [f"uist-{i}" for i in range(9)]
+selected_arxiv_ids += uist_papers
+
 cur_id = 0
 for input_dir in input_dirs:
     merged = {}
