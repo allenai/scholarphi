@@ -8,8 +8,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.5
--- Dumped by pg_dump version 11.5
+-- Dumped from database version 11.12
+-- Dumped by pg_dump version 13.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -30,8 +30,6 @@ CREATE SCHEMA dev;
 
 
 SET default_tablespace = '';
-
-SET default_with_oids = false;
 
 --
 -- Name: boundingbox; Type: TABLE; Schema: dev; Owner: -
@@ -147,6 +145,43 @@ ALTER SEQUENCE dev.entitydata_id_seq OWNED BY dev.entitydata.id;
 
 
 --
+-- Name: logentry; Type: TABLE; Schema: dev; Owner: -
+--
+
+CREATE TABLE dev.logentry (
+    id integer NOT NULL,
+    created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+    updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+    session_id text NOT NULL,
+    ip_address text,
+    username text,
+    level text NOT NULL,
+    event_type text,
+    data jsonb
+);
+
+
+--
+-- Name: logentry_id_seq; Type: SEQUENCE; Schema: dev; Owner: -
+--
+
+CREATE SEQUENCE dev.logentry_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: logentry_id_seq; Type: SEQUENCE OWNED BY; Schema: dev; Owner: -
+--
+
+ALTER SEQUENCE dev.logentry_id_seq OWNED BY dev.logentry.id;
+
+
+--
 -- Name: paper; Type: TABLE; Schema: dev; Owner: -
 --
 
@@ -247,6 +282,13 @@ ALTER TABLE ONLY dev.entitydata ALTER COLUMN id SET DEFAULT nextval('dev.entityd
 
 
 --
+-- Name: logentry id; Type: DEFAULT; Schema: dev; Owner: -
+--
+
+ALTER TABLE ONLY dev.logentry ALTER COLUMN id SET DEFAULT nextval('dev.logentry_id_seq'::regclass);
+
+
+--
 -- Name: summary id; Type: DEFAULT; Schema: dev; Owner: -
 --
 
@@ -282,6 +324,14 @@ ALTER TABLE ONLY dev.entity
 
 ALTER TABLE ONLY dev.entitydata
     ADD CONSTRAINT entitydata_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: logentry logentry_pkey; Type: CONSTRAINT; Schema: dev; Owner: -
+--
+
+ALTER TABLE ONLY dev.logentry
+    ADD CONSTRAINT logentry_pkey PRIMARY KEY (id);
 
 
 --
@@ -404,6 +454,34 @@ CREATE INDEX entitydata_relation_type ON dev.entitydata USING btree (relation_ty
 --
 
 CREATE INDEX entitydata_source ON dev.entitydata USING btree (source);
+
+
+--
+-- Name: logentry_data; Type: INDEX; Schema: dev; Owner: -
+--
+
+CREATE INDEX logentry_data ON dev.logentry USING gin (data);
+
+
+--
+-- Name: logentry_event_type; Type: INDEX; Schema: dev; Owner: -
+--
+
+CREATE INDEX logentry_event_type ON dev.logentry USING btree (event_type);
+
+
+--
+-- Name: logentry_level; Type: INDEX; Schema: dev; Owner: -
+--
+
+CREATE INDEX logentry_level ON dev.logentry USING btree (level);
+
+
+--
+-- Name: logentry_username; Type: INDEX; Schema: dev; Owner: -
+--
+
+CREATE INDEX logentry_username ON dev.logentry USING btree (username);
 
 
 --

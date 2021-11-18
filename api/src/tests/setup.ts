@@ -1,9 +1,9 @@
 import * as fs from "fs";
 import * as Knex from "knex";
 import * as nconf from "nconf";
+import * as conf from "../conf";
 import { createQueryBuilder } from "../db-connection";
 import { default as APIServer } from "../server";
-import * as conf from "../conf";
 
 /**
  * Configure the tests to connect to a test database instead of the production database.
@@ -20,9 +20,9 @@ nconf
       database: "scholar-reader",
       user: "postgres",
       password: "pdfsarefun",
-      schema: "test"
+      schema: "test",
     },
-    adminToken: "test"
+    adminToken: "test",
   });
 
 const config = conf.Config.fromConfig(nconf);
@@ -59,6 +59,7 @@ export async function truncateTables(knex: Knex, tables?: string[]) {
     "entity",
     "boundingbox",
     "entitydata",
+    "logentry",
   ];
   for (const table of tables) {
     await knex.raw(`TRUNCATE TABLE ${table} CASCADE`);

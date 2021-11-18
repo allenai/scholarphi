@@ -1,4 +1,5 @@
 import { Server, ServerInjectOptions } from "@hapi/hapi";
+import { ulid } from "ulid";
 import * as api from "./api";
 import * as conf from "./conf";
 import { Connection } from "./db-connection";
@@ -65,6 +66,11 @@ class ApiServer {
       },
     });
 
+    this._server.state("sessionId", {
+      ttl: null /* TODO(andrewhead): replace with some number */,
+      encoding: "none",
+    });
+
     this._server.route({
       method: "GET",
       path: "/api/health",
@@ -76,9 +82,13 @@ class ApiServer {
       path: "/api/log",
       handler: async (request, h) => {
         const payload = request.payload as LogEntryCreatePayload;
+        const sessionId = request.state.sessionId || ulid();
+        if (request.state.sessionId === undefined) {
+          h.state("sessionId", sessionId);
+        }
         try {
           await dbConnection.insertLogEntry({
-            session_id: payload.session_id,
+            session_id: sessionId,
             username: payload.username,
             level: payload.level,
             event_type: payload.event_type,
@@ -92,6 +102,10 @@ class ApiServer {
       options: {
         validate: {
           payload: validation.logEntry,
+        },
+        state: {
+          parse: true,
+          failAction: "error",
         },
       },
     });

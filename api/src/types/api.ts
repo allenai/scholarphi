@@ -433,7 +433,6 @@ export interface BoundingBox {
  * Data for a logging event.
  */
 export interface LogEntryCreatePayload {
-  session_id: string | null;
   username: string | null;
   level: string;
   event_type: string | null;
