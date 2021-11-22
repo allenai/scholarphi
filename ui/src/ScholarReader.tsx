@@ -915,8 +915,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     return data.filter(
       (r) =>
         r.label === "Novelty" &&
-        r.is_in_expected_section &&
-        r.is_author_statement
+        r.is_in_expected_section
     );
   };
 
