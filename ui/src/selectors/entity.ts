@@ -417,7 +417,7 @@ export function cleanTex(tex: string) {
   const oneArgMacro = (name: string) =>
     new RegExp(`\\\\${name}\\{([^}]*)\\}`, "g");
   return tex
-    .replace(/%.*?$/gm, "")
+    // .replace(/%.*?$/gm, "")
     .replace(/\\&/gm, "&")
     .replace(/\{\s*\\bf\s*([^}]*)\}/g, "$1")
     .replace(oneArgMacro("label"), "")
