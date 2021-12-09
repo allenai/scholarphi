@@ -1013,22 +1013,29 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   selectDiscourseClass = (discourse: string) => {
-    this.setState((prevState) => {
-      if (prevState.deselectedDiscourses.includes(discourse)) {
-        if (prevState.numHighlightMultiplier[discourse] === 0) {
-          return prevState;
-        }
-        const tagRemoved = prevState.deselectedDiscourses.filter(
-          (d) => d !== discourse
-        );
-        return { ...prevState, deselectedDiscourses: tagRemoved };
-      } else {
-        return {
-          ...prevState,
-          deselectedDiscourses: [...prevState.deselectedDiscourses, discourse],
-        };
-      }
-    });
+    // this.setState((prevState) => {
+    //   console.log(prevState.deselectedDiscourses)
+    //   if (prevState.deselectedDiscourses.includes(discourse)) {
+    //     if (prevState.numHighlightMultiplier[discourse] === 0) {
+    //       return prevState;
+    //     }
+    //     const tagRemoved = prevState.deselectedDiscourses.filter(
+    //       (d) => d !== discourse
+    //     );
+    //     return { ...prevState, deselectedDiscourses: tagRemoved };
+    //   } else {
+    //     return {
+    //       ...prevState,
+    //       deselectedDiscourses: [...prevState.deselectedDiscourses, discourse],
+    //     };
+    //   }
+    // });
+
+    if (discourse === "all") {
+      this.setState({ deselectedDiscourses: [] });
+    } else {
+      this.filterToDiscourse(discourse);
+    }
   };
 
   filterToDiscourse = (discourse: string) => {
