@@ -148,6 +148,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       numHighlightMultiplier: {
         Method: 0.8,
         Result: 0.8,
+        Novelty: 1.0,
+        Objective: 1.0,
       },
 
       ...settings,
@@ -912,10 +914,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   getNoveltyHighlights = (data: RhetoricUnit[]) => {
-    return data.filter(
-      (r) =>
-        r.label === "Novelty" &&
-        r.is_in_expected_section
+    let filtered = data.filter(
+      (r) => r.label === "Novelty" && r.is_in_expected_section
+    );
+    return filtered.slice(
+      0,
+      Math.round(this.state.numHighlightMultiplier["Novelty"] * filtered.length)
     );
   };
 
@@ -952,11 +956,17 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   getObjectiveHighlights = (data: RhetoricUnit[]) => {
-    return data.filter(
+    let filtered = data.filter(
       (r) =>
         r.label === "Objective" &&
         r.is_author_statement &&
         r.is_in_expected_section
+    );
+    return filtered.slice(
+      0,
+      Math.round(
+        this.state.numHighlightMultiplier["Objective"] * filtered.length
+      )
     );
   };
 
@@ -1421,7 +1431,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     </label>
                     <button
                       onClick={() => {
-                        this.decreaseNumHighlights(["Result", "Method"]);
+                        this.decreaseNumHighlights([
+                          "Result",
+                          "Method",
+                          "Objective",
+                          "Novelty",
+                        ]);
                       }}
                       className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
                     >
@@ -1430,7 +1445,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     <button
                       id="moreHighlightsButton"
                       onClick={() => {
-                        this.increaseNumHighlights(["Result", "Method"]);
+                        this.increaseNumHighlights([
+                          "Result",
+                          "Method",
+                          "Objective",
+                          "Novelty",
+                        ]);
                       }}
                       className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
                     >
