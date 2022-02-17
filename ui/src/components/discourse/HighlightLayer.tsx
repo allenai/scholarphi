@@ -84,8 +84,16 @@ class HighlightLayer extends React.PureComponent<Props, State> {
     this.props.handleDiscourseObjSelected(sentence);
     this.markHighlightAsSelected(sentence);
     this.props.selectSnippetInDrawer(sentence);
+    if (!this.props.drawerOpen) {
+      this.props.handleOpenDrawer();
+      setTimeout(() => {
+        if (this.state.focusedDiscourseObj !== null) {
+          this.props.selectSnippetInDrawer(this.state.focusedDiscourseObj);
+        }
+      }, 300);
+    }
     this.setState({
-      showControlToolbar: true,
+      // showControlToolbar: true,
       focusedDiscourseObj: sentence,
       clickedLineBox: sentence.bboxes[lineIndex],
       clickX: event.clientX - pageRect.left,
