@@ -1,4 +1,4 @@
-import logging
+import logging, coloredlogs
 import os.path
 from dataclasses import dataclass
 from typing import Iterator, List
@@ -9,6 +9,11 @@ from common.types import ArxivId, SerializableReference
 
 from ..types import Bibitem, BibitemMatch
 from ..utils import ngram_sim
+import requests
+import json
+import time
+
+coloredlogs.install()
 
 
 @dataclass(frozen=True)
@@ -70,18 +75,69 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
             yield MatchTask(arxiv_id, bibitems, references)
 
     def process(self, item: MatchTask) -> Iterator[BibitemMatch]:
+        citation_matching_url = "http://pipeline-api.prod.s2.allenai.org/citation/match"
+        # bib_titles = annotated_doc.new_annotations.get("bib_title")
+        # bib_entries = annotated_doc.new_annotations.get("biblStruct")
+        # bib_dois = deque(annotated_doc.new_annotations.pop("bib_idno", []))
+
         ref_match_count = 0
-        for bibitem in item.bibitems:
+        headers = {"Content-Type": "application/json"}
+
+        payload = [{"title": bibitem.title} for bibitem in item.bibitems]
+
+        try:
+            response = requests.post(
+                citation_matching_url, headers=headers, json=payload
+            )
+
+            if response.status_code == 200:
+                # matching_ids = deque(response.json())
+                # logging.info(json.dumps(item.bibitems[0].text, indent = 4))
+                logging.info(
+                    str(sum([item > 0 for item in response.json()]))
+                    + "/"
+                    + str(len(response.json()))
+                )
+
+            else:
+                logging.error(response.status_code)
+                response.raise_for_status()
+        except Exception as e:
+            logging.warning(
+                "Exception encountered while trying to retrieve citation matchings for title "
+                + bibitem.text,
+                e,
+            )
+            raise e
+
+        for bibitem_id in range(len(item.bibitems)):
+            bibitem = item.bibitems[bibitem_id]
+            paper_id = bibitem_id
             max_similarity = 0.0
             most_similar_reference = None
+            # is bibitem.text the title element
+
+            print("\n[EXTRACTED-TITLE]" + payload[paper_id]["title"])
             for reference in item.references:
                 similarity = ngram_sim(reference.title, bibitem.text)
                 if similarity > SIMILARITY_THRESHOLD and similarity > max_similarity:
                     max_similarity = similarity
                     most_similar_reference = reference
 
+            if response.json()[paper_id] < 0:
+                print("[CORPUS-TITLE] " + "No Match!!!")
+            else:
+                time.sleep(1)
+                corpus_id = response.json()[paper_id]
+                base_url = "api.semanticscholar.org"
+                corpus_response = requests.get(
+                    f"https://{base_url}/v1/paper/CorpusID:{corpus_id}"
+                )
+                print("[CORPUS-TITLE] " + corpus_response.json()["title"])
+            
             if most_similar_reference is not None:
                 ref_match_count += 1
+                print("[OLD-MATCH-TITLE] " + most_similar_reference.title)
                 yield BibitemMatch(
                     bibitem.id_,
                     bibitem.text,
@@ -89,6 +145,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
                     most_similar_reference.title,
                 )
             else:
+                print("[OLD-MATCH-TITLE] " + "No Match!!!")
                 logging.warning(
                     "Could not find a sufficiently similar reference for bibitem %s of paper %s",
                     bibitem.id_,
@@ -98,13 +155,13 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
         if item.bibitems:
             if ref_match_count == 0:
                 logging.warning(
-                    f"Paper {item.arxiv_id} has {len(item.bibitems)} reference(s), " +
-                    f"but could not match any to S2 reference data."
+                    f"Paper {item.arxiv_id} has {len(item.bibitems)} reference(s), "
+                    + f"but could not match any to S2 reference data."
                 )
             else:
                 logging.info(
-                    f"Paper has {len(item.bibitems)} references, " +
-                    f"able to match {ref_match_count} reference(s) to S2 data."
+                    f"Paper has {len(item.bibitems)} references, "
+                    + f"able to match {ref_match_count} reference(s) to S2 data."
                 )
         else:
             logging.warning(

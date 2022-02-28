@@ -447,6 +447,7 @@ def extract_plaintext(tex_path: str, tex: str) -> JournaledString:
             plaintext = plaintext.edit(match.end, keep_after, "")
             keep_after = match.end
         if match.pattern in REPLACE_PATTERNS:
+            print(match.text)
             plaintext = plaintext.edit(
                 match.start,
                 match.end,

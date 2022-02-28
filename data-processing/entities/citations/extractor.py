@@ -25,6 +25,9 @@ class BibitemExtractor:
                 continue
             key = self._extract_key(bibitem.text)
             tokens = self._extract_text(bibitem_soup)
+            logging.info(tokens)
+            title = self._extract_title(bibitem_soup)
+            logging.info("***"+title)
             if key is None:
                 logging.warning(
                     "Detected bibitem with null key %s. Skipping.", str(bibitem_soup)
@@ -33,6 +36,7 @@ class BibitemExtractor:
             yield Bibitem(
                 id_=key,
                 text=tokens,
+                title=title,
                 start=-1,
                 end=-1,
                 tex_path="N/A",
@@ -88,6 +92,42 @@ class BibitemExtractor:
                 text += str(content)
         return _clean_bibitem_text(text)
 
+    def _extract_title(self, bibitem: TexSoup) -> str:
+        text = ""
+        for content in list(bibitem.contents)[2:]:
+            if isinstance(content, TexNode) and content.string is not None:
+                text += content.string
+                print("====1 " + content.string) 
+            # Extract text from hyperlinks, e.g., extract the reference text from
+            # `\href{<LINK>}{<Reference text...>}`. Some conferences like ACL
+            # frequently typeset some parts of references, like titles, as hyperlinks.
+            elif (
+                isinstance(content, TexNode)
+                and content.name == "href"
+                and len(content.args) >= 2
+                and isinstance(content.args[1], RArg)
+            ):
+                text += content.args[1].value
+                print("====2 " + content.args[1].value ) 
+            else:
+                print("==== " + str(content)) 
+            # One common pattern in TeX is to force capitalization for a bibliography entry by
+            # surrounding tokens with curly braces. This gets interpreted (incorrectly)
+            # by TeXSoup as an RArg. Here, the contents of an RArg are extracted as literal
+            # text. A space is appended after the RArg's value because TeXSoup will remove the
+            # spaces between what it interprets as RArgs. As only approximate matching will be
+            # performed on the text, erroneous insertion of spaces shouldn't be an issue.
+            
+            if isinstance(content, RArg) and content.value[0] != "\\":
+                text += content.value + " "
+                print("=RArg " + str(content))
+            elif isinstance(content, TokenWithPosition):
+                text += str(content)
+                print("=TokenWithPosition " + str(content))
+            else:
+                print("= " + str(content))
+        print("FINAL " + _clean_bibitem_text(text))
+        return _clean_bibitem_text(text)
 
 def _clean_bibitem_text(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()

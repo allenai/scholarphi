@@ -18,7 +18,8 @@ class Bibitem(SerializableEntity):
 
     text: str
     " Plaintext extracted for bibitem. "
-
+    title: str
+    " Title content extracted from bibitem"
 
 @dataclass(frozen=True)
 class BibitemMatch:
