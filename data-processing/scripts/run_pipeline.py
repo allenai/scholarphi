@@ -522,7 +522,7 @@ if __name__ == "__main__":
         )
         arxiv_ids = arxiv_ids[: args.max_papers]
 
-    logging.debug(
+    logging.info(
         "The following commands will be run, in this order: %s",
         [CommandClass.get_name() for CommandClass in filtered_commands],
     )

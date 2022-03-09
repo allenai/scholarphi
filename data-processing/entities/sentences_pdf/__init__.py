@@ -1,6 +1,7 @@
 from common.commands.base import CommandList
 from common.commands.base import CommandList
 from common.commands.upload_entities import make_upload_entities_command
+from common.commands.fetch_arxiv_pdf import FetchArxivPdf
 from entities.sentences_pdf.commands.fetch_spp_jsons import FetchSppJsons
 from entities.sentences_pdf.commands.locate_sentences import LocateSentencesCommand
 from scripts.pipelines import EntityPipeline, register_entity_pipeline
@@ -9,7 +10,7 @@ from .upload import upload_sentences
 
 from common import directories
 
-commands: CommandList = []
+commands: CommandList = [FetchArxivPdf]
 
 # step 2: download spp from s3
 directories.register('fetched-spp-jsons')
