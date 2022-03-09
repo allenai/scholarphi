@@ -8,9 +8,6 @@ from common.commands.normalize_tex import NormalizeTexSources
 from common.commands.raster_pages import RasterPages
 from common.commands.unpack_sources import UnpackSources
 
-
-from common.commands.fetch_arxiv_pdf import FetchArxivPdf
-
 # Force the importing of modules for entity processing. This forces a call from each of the entity
 # modules to register pipelines for processing each entity. If these aren't imported,
 # 'entity_pipelines' will be empty and all of the commands for processing entities will be missing.
