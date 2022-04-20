@@ -41,7 +41,8 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
         bibitems: List[Bibitem]
     ) -> Dict[str, str]:
         def acceptable_str(maybe_str: Optional[str]) -> bool:
-            return maybe_str is not None and maybe_str != ""
+            # Not perfect but should weed some stuff out.
+            return maybe_str is not None and maybe_str.strip() != ""
 
         bibitem_texts: Dict[str, str] = {}
         for bibitem in bibitems:
