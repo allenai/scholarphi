@@ -136,6 +136,9 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
         key_s2_ids = item.key_s2_ids
         bibitem_texts = item.bibitem_texts
 
+        # for mypy
+        assert bibitem_texts is not None
+
         entity_infos = []
 
         citation_index = 0
