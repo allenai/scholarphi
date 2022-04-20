@@ -35,7 +35,11 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
     def get_arxiv_ids_dirkey(self) -> str:
         return "citations-locations"
 
-    def _get_bibitem_texts(self, arxiv_id: ArxivId, bibitems: List[Bibitem]) -> Dict[str, str]:
+    def _get_bibitem_texts_from_bibitems(
+        self,
+        arxiv_id: ArxivId,
+        bibitems: List[Bibitem]
+    ) -> Dict[str, str]:
         def acceptable_str(maybe_str: Optional[str]) -> bool:
             return maybe_str is not None and maybe_str != ""
 
@@ -79,7 +83,10 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                 )
                 continue
             bibitems = list(file_utils.load_from_csv(bibitems_path, Bibitem))
-            bibitem_texts: Dict[str, str] = self._get_bibitem_texts(arxiv_id, bibitems)
+            bibitem_texts: Dict[str, str] = self._get_bibitem_texts_from_bibitems(
+                arxiv_id,
+                bibitems,
+            )
 
             # Load citation locations
             citation_locations = load_located_citations(arxiv_id)
