@@ -176,7 +176,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                     data={
                         "key": citation_key,
                         "paper_id": key_s2_ids[citation_key],
-                        "raw_bibitem_text": bibitem_texts[citation_key],
+                        "bibitem_text": bibitem_texts[citation_key],
                     },
                 )
                 entity_infos.append(entity_info)
