@@ -2,11 +2,12 @@ import ast
 import dataclasses
 import logging
 import os.path
-from typing import Dict, Iterator, List, cast
+from typing import Dict, Iterator, List, Optional, cast
 
 from common import directories, file_utils
 from common.commands.database import DatabaseUploadCommand
 from common.types import (
+    ArxivId,
     BoundingBox,
     CitationData,
     EntityUploadInfo,
@@ -34,11 +35,40 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
     def get_arxiv_ids_dirkey(self) -> str:
         return "citations-locations"
 
+    def _get_bibitem_texts(self, arxiv_id: ArxivId, bibitems: List[Bibitem]) -> Dict[str, str]:
+        def acceptable_str(maybe_str: Optional[str]) -> bool:
+            return maybe_str is not None and maybe_str != ""
+
+        bibitem_texts: Dict[str, str] = {}
+        for bibitem in bibitems:
+            maybe_bibitem_id = bibitem.id_
+            maybe_bibitem_text = bibitem.text
+            if acceptable_str(maybe_bibitem_id) and acceptable_str(maybe_bibitem_text):
+                if maybe_bibitem_id in bibitem_texts:
+                    curr_text = bibitem_texts[maybe_bibitem_id]
+                    if curr_text != maybe_bibitem_text:
+                        logging.warning(  # pylint: disable=logging-not-lazy
+                            "About to overwrite the text for bibitem with "
+                            + "key %s in paper %s. Old text: %s, New text: %s.",
+                            maybe_bibitem_id,
+                            arxiv_id,
+                            curr_text,
+                            maybe_bibitem_text,
+                        )
+                bibitem_texts[maybe_bibitem_id] = maybe_bibitem_text
+            else:
+                logging.warning(
+                    "Missing bibitem id (%s) or text (%s) for a bibitem in paper %s.",
+                    maybe_bibitem_id,
+                    maybe_bibitem_text,
+                    arxiv_id,
+                )
+        return bibitem_texts
+
     def load(self) -> Iterator[CitationData]:
         for arxiv_id in self.arxiv_ids:
 
             # Map bibitem keys to the raw text
-            bibitem_texts: Dict[str, str] = {}
             bibitems_dir = directories.arxiv_subdir("detected-citations", arxiv_id)
             bibitems_path = os.path.join(bibitems_dir, "entities.csv")
             if not os.path.exists(bibitems_path):
@@ -49,29 +79,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                 )
                 continue
             bibitems = list(file_utils.load_from_csv(bibitems_path, Bibitem))
-            for bibitem in bibitems:
-                maybe_bibitem_id = bibitem.id_
-                maybe_bibitem_text = bibitem.text
-                if maybe_bibitem_id is not None and maybe_bibitem_text is not None:
-                    if maybe_bibitem_id in bibitem_texts:
-                        curr_text = bibitem_texts[maybe_bibitem_id]
-                        if curr_text != maybe_bibitem_text:
-                            logging.warning(  # pylint: disable=logging-not-lazy
-                                "About to overwrite the text for bibitem with "
-                                + "key %s in paper %s. Old text: %s, New text: %s.",
-                                maybe_bibitem_id,
-                                arxiv_id,
-                                curr_text,
-                                maybe_bibitem_text,
-                            )
-                    bibitem_texts[maybe_bibitem_id] = maybe_bibitem_text
-                else:
-                    logging.warning(
-                        "Missing bibitem id (%s) or text (%s) for a bibitem in paper %s.",
-                        maybe_bibitem_id,
-                        maybe_bibitem_text,
-                        arxiv_id,
-                    )
+            bibitem_texts: Dict[str, str] = self._get_bibitem_texts(arxiv_id, bibitems)
 
             # Load citation locations
             citation_locations = load_located_citations(arxiv_id)
