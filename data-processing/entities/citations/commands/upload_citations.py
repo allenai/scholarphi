@@ -134,6 +134,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
     def save(self, item: CitationData, _: None) -> None:
         citation_locations = item.citation_locations
         key_s2_ids = item.key_s2_ids
+        bibitem_texts = item.bibitem_texts
 
         entity_infos = []
 
@@ -154,7 +155,11 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                     id_=f"{citation_key}-{cluster_index}",
                     type_="citation",
                     bounding_boxes=boxes,
-                    data={"key": citation_key, "paper_id": key_s2_ids[citation_key]},
+                    data={
+                        "key": citation_key,
+                        "paper_id": key_s2_ids[citation_key],
+                        "raw_bibitem_text": bibitem_texts[citation_key],
+                    },
                 )
                 entity_infos.append(entity_info)
                 citation_index += 1
