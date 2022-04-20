@@ -14,7 +14,7 @@ from common.types import (
 )
 from common.upload_entities import save_entities
 
-from ..types import BibitemMatch
+from ..types import Bibitem, BibitemMatch
 from ..utils import load_located_citations
 
 CitationKey = str
@@ -36,6 +36,42 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
 
     def load(self) -> Iterator[CitationData]:
         for arxiv_id in self.arxiv_ids:
+
+            # Map bibitem keys to the raw text
+            bibitem_texts: Dict[str, str] = {}
+            bibitems_dir = directories.arxiv_subdir("detected-citations", arxiv_id)
+            bibitems_path = os.path.join(bibitems_dir, "entities.csv")
+            if not os.path.exists(bibitems_path):
+                logging.warning(
+                    "Could not find bibitems at %s for paper %s. Skipping",
+                    bibitems_path,
+                    arxiv_id,
+                )
+                continue
+            bibitems = list(file_utils.load_from_csv(bibitems_path, Bibitem))
+            for bibitem in bibitems:
+                maybe_bibitem_id = bibitem.id_
+                maybe_bibitem_text = bibitem.text
+                if maybe_bibitem_id is not None and maybe_bibitem_text is not None:
+                    if maybe_bibitem_id in bibitem_texts:
+                        curr_text = bibitem_texts[maybe_bibitem_id]
+                        if curr_text != maybe_bibitem_text:
+                            logging.warning(  # pylint: disable=logging-not-lazy
+                                "About to overwrite the text for bibitem with "
+                                + "key %s in paper %s. Old text: %s, New text: %s.",
+                                maybe_bibitem_id,
+                                arxiv_id,
+                                curr_text,
+                                maybe_bibitem_text,
+                            )
+                    bibitem_texts[maybe_bibitem_id] = maybe_bibitem_text
+                else:
+                    logging.warning(
+                        "Missing bibitem id (%s) or text (%s) for a bibitem in paper %s.",
+                        maybe_bibitem_id,
+                        maybe_bibitem_text,
+                        arxiv_id,
+                    )
 
             # Load citation locations
             citation_locations = load_located_citations(arxiv_id)
@@ -89,7 +125,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                 s2_data[metadata.s2_id] = metadata
 
             yield CitationData(
-                arxiv_id, s2_id, citation_locations, key_s2_ids, s2_data,
+                arxiv_id, s2_id, citation_locations, key_s2_ids, s2_data, bibitem_texts
             )
 
     def process(self, _: CitationData) -> Iterator[None]:
