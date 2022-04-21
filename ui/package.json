@@ -9,6 +9,7 @@
     "lint:fix": "eslint '**/*.{js,ts,tsx,json}' --fix && npx sort-package-json  && echo '🛠  Lint --fix complete'",
     "start": "webpack serve --hot --mode development",
     "start:local": "webpack serve --hot --mode development --env PROXY=http://localhost:3000",
+    "start:docker-compose": "webpack serve --hot --mode development --env PROXY=http://api:8000",
     "test": "jest"
   },
   "resolutions": {

@@ -1,0 +1,27 @@
+version: '3'
+services:
+    ui:
+        build:
+            context: ./ui
+            dockerfile: Dockerfile-local
+        working_dir: /ui
+        entrypoint: ["npm", "run", "start:docker-compose"]
+        ports:
+            - 3001:3001
+        depends_on:
+            - api
+    api:
+        build:
+            context: ./api
+            dockerfile: Dockerfile-api-proxy
+        volumes:
+            - ./api:/api
+        working_dir: /api
+        environment:
+            # This ensures that errors are printed as they occur, which
+            # makes debugging easier.
+            - PYTHONUNBUFFERED=1
+            - LOG_LEVEL=DEBUG
+        command: ["main:app", "--host", "0.0.0.0", "--reload"]
+        ports:
+            - 8000:8000

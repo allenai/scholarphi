@@ -30,15 +30,15 @@ export class Usages extends React.PureComponent<Props> {
 
     return (
       <div className="document-snippets usages">
-        <p className="drawer__content__header">Usages</p>
+        <p className="drawer__content__header">Paper Details on Demand</p>
         {selectedEntityIds.length === 0 && (
-          <p>To see usages, select a symbol or term.</p>
+          <p>To see details, select a term in the abstract.</p>
         )}
         {selectedEntityIds.length > 0 && (
           <p>
             {usages.length === 0
-              ? `No usages were found for the selected ${entityTypes}.`
-              : `Showing ${usages.length} usage${
+              ? `No instances were found for the selected ${entityTypes}.`
+              : `Showing ${usages.length} instance${
                   usages.length === 1 ? "" : "s"
                 } of the selected ${entityTypes}.`}
           </p>

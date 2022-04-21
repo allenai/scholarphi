@@ -14,6 +14,9 @@
 # editing
 .*.swp
 
+# python
+__pycache__
+
 # misc
 .DS_Store
 .env.local
@@ -28,3 +31,6 @@ yarn-error.log*
 # pycharm
 .idea
 .python-version
+
+# vscode
+.vscode

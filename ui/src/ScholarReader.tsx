@@ -109,8 +109,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       findMatchIndex: null,
       findMatchCount: null,
       findMatchedEntities: null,
-      drawerMode: "closed",
-      drawerContentType: null,
+      drawerMode: "open",
+      drawerContentType: "usages",
       snackbarMode: "closed",
       snackbarActivationTimeMs: null,
       snackbarMessage: null,
@@ -1116,7 +1116,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                         citationAnnotationsEnabled={
                           this.state.citationGlossesEnabled
                         }
-                        termAnnotationsEnabled={this.state.termGlossesEnabled}
+                        // termAnnotationsEnabled={this.state.termGlossesEnabled}
+                        // lucas@: pretty ugly hack for now, but not sure
+                        // how can we keep the state to true
+                        termAnnotationsEnabled={true}
                         symbolUnderlineMethod={this.state.symbolUnderlineMethod}
                         definitionsInSymbolGloss={this.state.definitionsInSymbolGloss}
                         glossStyle={this.state.glossStyle}

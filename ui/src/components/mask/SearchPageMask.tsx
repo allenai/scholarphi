@@ -34,6 +34,7 @@ export class SearchPageMask extends React.PureComponent<Props> {
       return null;
     }
     const sentencesToShow = selectors.sentences(matchingEntityIds, entities);
+
     const pageNumber = uiUtils.getPageNumber(this.props.pageView);
     const show = sentencesToShow
       .map((s) => s.attributes.bounding_boxes)
