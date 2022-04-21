@@ -51,8 +51,8 @@ if (params.annotateCitations !== undefined) {
 
   if (element.sheet) {
     element.sheet.insertRule(`
-        .citation-annotation { 
-            background-color: rgba(0, 0, 255, 0.1) !important; 
+        .citation-annotation {
+            background-color: rgba(0, 0, 255, 0.1) !important;
         }`,
       0);
   }
@@ -64,8 +64,8 @@ if (params.annotateSymbols !== undefined) {
 
   if (element.sheet) {
     element.sheet.insertRule(`
-        .symbol-annotation { 
-            background-color: rgba(255, 0, 0, 0.1) !important; 
+        .symbol-annotation {
+            background-color: rgba(255, 0, 0, 0.1) !important;
             border: 1px solid rgba(0, 0, 0, 0.1) !important;
         }`,
       0);
@@ -78,11 +78,28 @@ if (params.annotateEquations !== undefined) {
 
   if (element.sheet) {
     element.sheet.insertRule(`
-        .equation-annotation { 
-            background-color: rgba(0, 255, 0, 0.1) !important; 
+        .equation-annotation {
+            background-color: rgba(0, 255, 0, 0.1) !important;
         }`,
       0);
   }
+}
+
+// lucas@: syle overriddes
+const element = document.createElement("style");
+document.head.appendChild(element);
+
+if (element.sheet) {
+  element.sheet.insertRule(`
+      .find-bar {
+            visibility: hidden;
+      }`,
+    0);
+  element.sheet.insertRule(`
+      .drawer__close_icon {
+            visibility: hidden;
+      }`,
+    0);
 }
 
 let context: any = {};

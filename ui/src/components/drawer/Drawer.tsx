@@ -127,6 +127,9 @@ export class Drawer extends React.PureComponent<Props> {
          */
         open={mode === "open" && contentType !== null}
         onScroll={this.onScroll}
+        ModalProps={{
+            keepMounted: true,
+        }}
       >
         <div className="drawer__header">
           <div className="drawer__close_icon">

@@ -99,9 +99,7 @@ sample_term = [
         },
         "relationships": {
             'sentence': {'type': "sentence", "id": sent_abstract},
-            'definition_sentences': [
-                {'type': "sentence", "id": sent_abstract}
-            ],
+            'definition_sentences': [],
             'snippet_sentences': [
                 {'type': "sentence", "id": sent_sent_1},
                 {'type': "sentence", "id": sent_sent_2},
@@ -123,9 +121,7 @@ sample_term = [
         },
         "relationships": {
             'sentence': {'type': "sentence", "id": sent_sent_1},
-            'definition_sentences': [
-                {'type': "sentence", "id": sent_abstract}
-            ],
+            'definition_sentences': [],
             'snippet_sentences': [
                 {'type': "sentence", "id": sent_sent_1},
                 {'type': "sentence", "id": sent_sent_2},
