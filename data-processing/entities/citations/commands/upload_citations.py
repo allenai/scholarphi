@@ -169,13 +169,13 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                 )
                 continue
 
-            data: EntityData = {
+            entity_data: EntityData = {
                 "key": citation_key,
                 "paper_id": key_s2_ids[citation_key],
             }
 
             if citation_key in bibitem_texts:
-                data["bibitem_text"] = bibitem_texts[citation_key]
+                entity_data["bibitem_text"] = bibitem_texts[citation_key]
             else:
                 logging.warning(
                     "Missing bibitem text for bibitem with key %s for paper %s",
@@ -189,7 +189,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                     id_=f"{citation_key}-{cluster_index}",
                     type_="citation",
                     bounding_boxes=boxes,
-                    data=data,
+                    data=entity_data,
                 )
                 entity_infos.append(entity_info)
                 citation_index += 1
