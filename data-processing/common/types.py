@@ -581,6 +581,7 @@ class CitationData:
     citation_locations: Dict[str, Dict[int, Set[EntityLocationInfo]]]
     key_s2_ids: Dict[str, str]
     s2_data: Dict[S2Id, SerializableReference]
+    bibitem_texts: Optional[Dict[str, str]] = None
 
 
 """
