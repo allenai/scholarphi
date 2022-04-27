@@ -180,17 +180,8 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
         citation_index = 0
         for citation_key, locations in citation_locations.items():
 
-            if citation_key not in key_s2_ids:
-                logging.warning(  # pylint: disable=logging-not-lazy
-                    "Not uploading bounding box information for citation with key "
-                    + "%s because it was not resolved to a paper S2 ID.",
-                    citation_key,
-                )
-                continue
-
             entity_data: EntityData = {
                 "key": citation_key,
-                "paper_id": key_s2_ids[citation_key],
             }
 
             if citation_key in bibitem_texts:
@@ -198,6 +189,15 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
             else:
                 logging.warning(
                     "Missing bibitem text for bibitem with key %s for paper %s",
+                    citation_key,
+                    item.arxiv_id,
+                )
+
+            if citation_key in key_s2_ids:
+                entity_data["paper_id"] = key_s2_ids[citation_key]
+            else:
+                logging.warning(
+                    "Missing S2 match for bibitem with key %s for paper %s",
                     citation_key,
                     item.arxiv_id,
                 )
