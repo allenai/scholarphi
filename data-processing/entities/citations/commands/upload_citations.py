@@ -42,15 +42,34 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
         bibitems: List[Bibitem]
     ) -> Dict[str, str]:
         def acceptable_str(maybe_str: Optional[str]) -> bool:
-            # Not perfect but should weed some stuff out.
+            """
+            Note: I haven't actually seen any cases where this has returned False
+            in the testing I've done. I'm mostly going off the signature of the
+            method that extracts keys (returns an Optional[str]), and the fact
+            that an empty string for either the bib item key or text probably
+            wouldn't do much for us down the line.
+            """
             return maybe_str is not None and maybe_str.strip() != ""
 
+        # We want to construct a map from bib item key to the text associated with the
+        # corresponding bib entry.
         bibitem_texts: Dict[str, str] = {}
         for bibitem in bibitems:
             maybe_bibitem_id = bibitem.id_
             maybe_bibitem_text = bibitem.text
+
             if acceptable_str(maybe_bibitem_id) and acceptable_str(maybe_bibitem_text):
+                # only include an entry in the map if both the key and text are defined
+                # and not empty strings
+
                 if maybe_bibitem_id in bibitem_texts:
+                    # Occasionally, it seems as though we might have two bib items with
+                    # the same key. At the moment, I'm not sure why this happens, and
+                    # I don't have a programmatic way of figuring out which text is
+                    # the 'right' one when the corresponding bib entry texts are different.
+                    # So when we have the same key but different texts, we just use the
+                    # last one we see, but log a warning.
+
                     curr_text = bibitem_texts[maybe_bibitem_id]
                     if curr_text != maybe_bibitem_text:
                         logging.warning(  # pylint: disable=logging-not-lazy
