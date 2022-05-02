@@ -1,3 +1,6 @@
 [submodule "ui/public/pdfjs"]
 	path = ui/pdf.js
 	url = git@github.com:allenai/scholar-reader-pdfjs.git
+[submodule "api/pdod"]
+	path = api/pdod
+	url = git@github.com:allenai/paper-details-on-demand.git

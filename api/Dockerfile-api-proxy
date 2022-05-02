@@ -1,13 +1,13 @@
-FROM python:3.8.12
-
+FROM soldni/mmda-pytorch-transformer-cpu:1.2
 
 # Setup a spot for the api code
 WORKDIR /api
 
-
 # Install Python dependencies
-RUN pip install --upgrade pip setuptools wheel
-RUN pip install fastapi uvicorn httpx pydantic
+RUN pip install --upgrade pip install fastapi uvicorn httpx pydantic setuptools wheel
+
+COPY pdod /tmp/pdod
+# RUN pip install /tmp/pdod
 
 ########## COPYING SOURCE CODE FROM HERE ON ##########
 
