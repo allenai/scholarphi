@@ -24,7 +24,7 @@ interface AttributesBase {
   bounding_boxes: BoundingBox[];
 }
 
-type Relationship = { id: string } | string;
+type Relationship = { id: string, score?: number } | string;
 
 export interface Citation extends EntityBase {
   type: 'citation';
@@ -169,11 +169,13 @@ export function toLegacyRelationship(rel: Relationship, type: string): LegacyRel
   if (typeof rel === "string") {
     return {
       id: rel,
+      score: null,
       type
     };
   }
   return {
     id: rel.id,
+    score: rel.score,
     type
   };
 }

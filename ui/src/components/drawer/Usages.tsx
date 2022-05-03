@@ -24,6 +24,11 @@ export class Usages extends React.PureComponent<Props> {
     const entityIds = selectedEntityIdsWithUsages.map((e) => e.id);
     const usages = selectors.usages(entityIds, entities);
 
+    // const sortedUsages = usages.sort(function(a, b) {
+    //   return 1 ? a.contextEntity.score > b.contextEntity.score : -1;
+    // });
+    console.log({usages, entities, selectedEntityIdsWithUsages});
+
     const entityTypes = uiUtils.joinStrings(
       selectedEntityIdsWithUsages.map((e) => `${e.type}s`)
     );

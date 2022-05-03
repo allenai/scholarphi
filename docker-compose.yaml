@@ -16,12 +16,14 @@ services:
             dockerfile: Dockerfile-api-proxy
         volumes:
             - ./api:/api
+
         working_dir: /api
         environment:
             # This ensures that errors are printed as they occur, which
             # makes debugging easier.
             - PYTHONUNBUFFERED=1
             - LOG_LEVEL=DEBUG
+
         command: ["main:app", "--host", "0.0.0.0", "--reload"]
         ports:
             - 8000:8000

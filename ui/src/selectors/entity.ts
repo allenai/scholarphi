@@ -248,10 +248,16 @@ export function orderExcerpts(
     if (contextPage === null) {
       continue;
     }
-    contextualized.push({ excerpt, contextEntity });
+    contextualized.push({ score: context.score, excerpt, contextEntity });
   }
-  return contextualized.sort((c1, c2) =>
-    comparePosition(c1.contextEntity, c2.contextEntity)
+  return contextualized.sort((c1, c2) => {
+      console.log({c1, c2});
+      if (c1.score != null && c2.score != null) {
+        return c2.score - c1.score;
+      } else {
+        return comparePosition(c1.contextEntity, c2.contextEntity);
+      }
+    }
   );
 }
 

@@ -137,6 +137,7 @@ export interface Relationships {}
 export interface Relationship {
   type: string;
   id: string | null;
+  score?: number | null;
 }
 
 export function isRelationship(o: any): o is Relationship {
@@ -299,6 +300,7 @@ export interface TermAttributes extends BaseEntityAttributes {
    */
   snippets: string[];
 }
+
 
 export interface TermRelationships {
   sentence: Relationship;
