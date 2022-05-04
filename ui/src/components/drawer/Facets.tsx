@@ -10,7 +10,7 @@ const logger = getRemoteLogger();
 interface Props {
   discourseObjs: DiscourseObj[];
   leadSentenceObjs: DiscourseObj[];
-  deselectedDiscourses: string[];
+  selectedDiscourses: string[];
   handleDiscourseSelected: (discourse: string) => void;
   handleJumpToDiscourseObj: (id: string) => void;
 }
@@ -38,11 +38,7 @@ export class Facets extends React.PureComponent<Props> {
   };
 
   render() {
-    const {
-      leadSentenceObjs,
-      discourseObjs,
-      deselectedDiscourses,
-    } = this.props;
+    const { leadSentenceObjs, discourseObjs, selectedDiscourses } = this.props;
 
     const bySection = uiUtils
       .sortDiscourseObjs([...discourseObjs, ...leadSentenceObjs])
@@ -60,7 +56,7 @@ export class Facets extends React.PureComponent<Props> {
 
     // We want to hide the palette and shift the snippets up when only lead sentences are shown
     const showFacetHighlights =
-      discourseObjs.length > 0 || deselectedDiscourses.length > 0;
+      discourseObjs.length > 0 || selectedDiscourses.length === 0;
 
     return (
       <>
@@ -69,7 +65,7 @@ export class Facets extends React.PureComponent<Props> {
             <DiscoursePalette
               discourseToColorMap={uiUtils.getDiscourseToColorMap()}
               discourseObjs={discourseObjs}
-              deselectedDiscourses={deselectedDiscourses}
+              selectedDiscourses={selectedDiscourses}
               handleDiscourseSelected={this.props.handleDiscourseSelected}
             ></DiscoursePalette>
           </div>

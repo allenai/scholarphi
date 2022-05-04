@@ -30,7 +30,7 @@ interface Props {
   selectedEntityIds: string[];
   leadSentenceObjs: DiscourseObj[];
   discourseObjs: DiscourseObj[];
-  deselectedDiscourses: string[];
+  selectedDiscourses: string[];
   propagateEntityEdits: boolean;
   handleDiscourseSelected: (discourse: string) => void;
   handleClose: () => void;
@@ -106,7 +106,7 @@ export class Drawer extends React.PureComponent<Props> {
       selectedEntityIds,
       leadSentenceObjs,
       discourseObjs,
-      deselectedDiscourses,
+      selectedDiscourses,
     } = this.props;
 
     let firstSelectedEntity: Entity | null = null;
@@ -180,7 +180,7 @@ export class Drawer extends React.PureComponent<Props> {
             <Facets
               discourseObjs={discourseObjs}
               leadSentenceObjs={leadSentenceObjs}
-              deselectedDiscourses={deselectedDiscourses}
+              selectedDiscourses={selectedDiscourses}
               handleJumpToDiscourseObj={this.props.handleJumpToDiscourseObj}
               handleDiscourseSelected={this.props.handleDiscourseSelected}
             />

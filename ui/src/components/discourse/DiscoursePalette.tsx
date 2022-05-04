@@ -8,7 +8,7 @@ const logger = getRemoteLogger();
 interface Props {
   discourseToColorMap: { [discourse: string]: string };
   discourseObjs: DiscourseObj[];
-  deselectedDiscourses: string[];
+  selectedDiscourses: string[];
   handleDiscourseSelected: (discourse: string) => void;
 }
 
@@ -34,48 +34,15 @@ class DiscoursePalette extends React.PureComponent<Props, State> {
 
   onClickEverything = () => {
     logger.log("debug", "click-all-facets-tag");
-    const { deselectedDiscourses } = this.props;
-
     this.props.handleDiscourseSelected("all");
-
-    // const allTags = this.getAvailableDiscourseTags();
-    // /**
-    //  * If every tag is already selected, then deselect every tag.
-    //  */
-    // if (deselectedDiscourses.length === 0) {
-    //   for (const clazz of allTags) {
-    //     this.props.handleDiscourseSelected(clazz);
-    //   }
-    // } else {
-    //   /**
-    //    * Otherwise, select all unselected tags.
-    //    */
-    //   for (const clazz of allTags) {
-    //     if (deselectedDiscourses.indexOf(clazz) !== -1) {
-    //       this.props.handleDiscourseSelected(clazz);
-    //     }
-    //   }
-    // }
   };
 
   getAvailableDiscourseTags = () => {
-    const {
-      discourseToColorMap,
-      discourseObjs,
-      deselectedDiscourses,
-    } = this.props;
-    const selectedDiscourseClasses = [
-      ...new Set(discourseObjs.map((x: DiscourseObj) => x.label)),
-    ];
-    return Object.keys(discourseToColorMap).filter(
-      (key) =>
-        selectedDiscourseClasses.includes(key) ||
-        deselectedDiscourses.includes(key)
-    );
+    return ["Objective", "Novelty", "Method", "Result"];
   };
 
   render() {
-    const { discourseToColorMap, deselectedDiscourses } = this.props;
+    const { discourseToColorMap, selectedDiscourses } = this.props;
 
     const filteredDiscourseToColorMap = this.getAvailableDiscourseTags().reduce(
       (obj: { [label: string]: string }, key) => {
@@ -96,10 +63,7 @@ class DiscoursePalette extends React.PureComponent<Props, State> {
                   key={d}
                   id={d}
                   name={TAG_DISPLAY_NAMES[d] || d}
-                  selected={
-                    // !beforeFirstSelection && !deselectedDiscourses.includes(d)
-                    !deselectedDiscourses.includes(d)
-                  }
+                  selected={selectedDiscourses.includes(d)}
                   color={color}
                   handleSelection={this.onClickTag}
                 />
@@ -111,7 +75,7 @@ class DiscoursePalette extends React.PureComponent<Props, State> {
               id="everything"
               className="everything-chip"
               name={"Everything"}
-              selected={deselectedDiscourses.length === 0}
+              selected={selectedDiscourses.length > 0}
               color={"lightgray"}
               handleSelection={this.onClickEverything}
             />

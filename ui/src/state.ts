@@ -162,7 +162,7 @@ export interface State extends Settings {
   leadSentenceObjs: DiscourseObj[];
   discourseObjs: DiscourseObj[];
   discourseObjsById: { [id: string]: DiscourseObj };
-  deselectedDiscourses: string[];
+  selectedDiscourses: string[];
   hiddenDiscourseObjs: DiscourseObj[];
   numHighlightMultiplier: { [discourse: string]: number };
 }

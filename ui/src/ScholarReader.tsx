@@ -143,7 +143,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       currentDiscourseObjId: null,
       discourseObjs: [],
       discourseObjsById: {},
-      deselectedDiscourses: [],
+      selectedDiscourses: this.getAvailableFacets(),
       hiddenDiscourseObjs: [],
       numHighlightMultiplier: {
         Method: 0.8,
@@ -155,6 +155,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       ...settings,
     };
   }
+
+  getAvailableFacets = () => {
+    return ["Objective", "Novelty", "Method", "Result"];
+  };
 
   toggleControlPanelShowing = (): void => {
     this.setState((prevState) => ({
@@ -854,8 +858,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         (x: DiscourseObj) => x.label !== "Author"
       );
     }
-    discourseObjs = discourseObjs.filter(
-      (x: DiscourseObj) => !this.state.deselectedDiscourses.includes(x.label)
+    discourseObjs = discourseObjs.filter((x: DiscourseObj) =>
+      this.state.selectedDiscourses.includes(x.label)
     );
     discourseObjs = discourseObjs.filter((x: DiscourseObj) => {
       const hiddenIds = this.state.hiddenDiscourseObjs.map((d) => d.id);
@@ -1023,48 +1027,25 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   selectDiscourseClass = (discourse: string) => {
-    // this.setState((prevState) => {
-    //   console.log(prevState.deselectedDiscourses)
-    //   if (prevState.deselectedDiscourses.includes(discourse)) {
-    //     if (prevState.numHighlightMultiplier[discourse] === 0) {
-    //       return prevState;
-    //     }
-    //     const tagRemoved = prevState.deselectedDiscourses.filter(
-    //       (d) => d !== discourse
-    //     );
-    //     return { ...prevState, deselectedDiscourses: tagRemoved };
-    //   } else {
-    //     return {
-    //       ...prevState,
-    //       deselectedDiscourses: [...prevState.deselectedDiscourses, discourse],
-    //     };
-    //   }
-    // });
-
     if (discourse === "all") {
-      this.setState({ deselectedDiscourses: [] });
+      this.setState({ selectedDiscourses: this.getAvailableFacets() });
     } else {
       this.filterToDiscourse(discourse);
     }
   };
 
   filterToDiscourse = (discourse: string) => {
-    if (
-      this.state.deselectedDiscourses.length === 1 &&
-      this.state.deselectedDiscourses[0] === discourse
-    ) {
-      return;
+    if (this.state.selectedDiscourses.includes(discourse)) {
+      this.setState({
+        selectedDiscourses: this.state.selectedDiscourses.filter(
+          (d) => d !== discourse
+        ),
+      });
+    } else {
+      this.setState((prevState) => ({
+        selectedDiscourses: [...prevState.selectedDiscourses, discourse],
+      }));
     }
-
-    const availableDiscourseClasses = [
-      ...new Set(this.state.discourseObjs.map((d) => d.label)),
-    ];
-    const deselectedDiscourses = availableDiscourseClasses.filter(
-      (d) => d !== discourse
-    );
-    this.setState({
-      deselectedDiscourses: deselectedDiscourses,
-    });
   };
 
   increaseNumHighlights = (discourses: string[]) => {
@@ -1090,17 +1071,16 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         increment: increment,
       });
 
-      let newDeselectedDiscourses = prevState.deselectedDiscourses;
+      let newSelectedDiscourses = prevState.selectedDiscourses;
       discourses.forEach((discourse: string) => {
         if (prevState.numHighlightMultiplier[discourse] === 0) {
-          newDeselectedDiscourses = newDeselectedDiscourses.filter(
-            (d) => d !== discourse
-          );
+          newSelectedDiscourses.push(discourse);
         }
       });
+
       return {
         numHighlightMultiplier: newHighlightMultiplier,
-        deselectedDiscourses: newDeselectedDiscourses,
+        selectedDiscourses: newSelectedDiscourses,
       };
     }, this.initDiscourseObjs);
   };
@@ -1128,15 +1108,19 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         decrement: decrement,
       });
 
-      let newDeselectedDiscourses = prevState.deselectedDiscourses;
+      let discoursesToRemove: Array<string> = [];
       discourses.forEach((discourse: string) => {
         if (newHighlightMultiplier[discourse] === 0) {
-          newDeselectedDiscourses.push(discourse);
+          if (prevState.selectedDiscourses.includes(discourse)) {
+            discoursesToRemove.push(discourse);
+          }
         }
       });
       return {
         numHighlightMultiplier: newHighlightMultiplier,
-        deselectedDiscourses: newDeselectedDiscourses,
+        selectedDiscourses: prevState.selectedDiscourses.filter(
+          (d) => !discoursesToRemove.includes(d)
+        ),
       };
     }, this.initDiscourseObjs);
   };
@@ -1574,9 +1558,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 selectedEntityIds={this.state.selectedEntityIds}
                 leadSentenceObjs={leadSentenceObjs}
                 discourseObjs={discourseObjs}
-                deselectedDiscourses={this.state.deselectedDiscourses.filter(
-                  (label) => !["Highlight", "Author"].includes(label)
-                )}
+                selectedDiscourses={this.state.selectedDiscourses}
                 handleDiscourseSelected={this.selectDiscourseClass}
                 handleJumpToDiscourseObj={this.jumpToDiscourseObj}
                 propagateEntityEdits={this.state.propagateEntityEdits}
