@@ -3,6 +3,7 @@ import Snippet from "./Snippet";
 import { Entities } from "../../state";
 import { isSymbol, isTerm, Symbol, Term } from "../../api/types";
 import * as uiUtils from "../../utils/ui";
+import { BaseEntityAttributes, SymbolAttributes, TermAttributes } from "../../api/types";
 
 import React from "react";
 
@@ -10,6 +11,18 @@ interface Props {
   selectedEntityIds: string[];
   entities: Entities;
   handleJumpToEntity: (id: string) => void;
+}
+
+function nameSelector(ent: SymbolAttributes | TermAttributes | null){
+  if (ent != null && 'name' in ent) {
+    // SymbolAttributes
+    return ent.name;
+  }
+  if (ent != null &&'tex' in ent) {
+    // TermAttributes
+    return ent.tex;
+  }
+  return null
 }
 
 export class Usages extends React.PureComponent<Props> {
@@ -23,19 +36,23 @@ export class Usages extends React.PureComponent<Props> {
 
     const entityIds = selectedEntityIdsWithUsages.map((e) => e.id);
     const usages = selectors.usages(entityIds, entities);
-
-    // const sortedUsages = usages.sort(function(a, b) {
-    //   return 1 ? a.contextEntity.score > b.contextEntity.score : -1;
-    // });
-    console.log({usages});
-
     const entityTypes = uiUtils.joinStrings(
       selectedEntityIdsWithUsages.map((e) => `${e.type}s`)
     );
+    const eAttrs = selectedEntityIdsWithUsages.length > 0 ?
+      selectedEntityIdsWithUsages[0].attributes : null
+    const eName = nameSelector(eAttrs);
 
     return (
       <div className="document-snippets usages">
         <p className="drawer__content__header">Paper Details on Demand</p>
+        {
+          eName ?
+          <div className="query-link">
+              <i>{"Query: "}</i>
+              <b>{ eName }</b>
+          </div> : null
+        }
         {selectedEntityIds.length === 0 && (
           <p>To see details, select a term in the abstract.</p>
         )}
@@ -48,7 +65,8 @@ export class Usages extends React.PureComponent<Props> {
                 } of the selected ${entityTypes}.`}
           </p>
         )}
-        {usages.map((u, i) => (
+        {
+        usages.map((u, i) => (
           <Snippet
             key={u.contextEntity.id}
             id={`usage-${i}-${u.contextEntity.id}`}
