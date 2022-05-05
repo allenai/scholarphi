@@ -27,7 +27,7 @@ export class Usages extends React.PureComponent<Props> {
     // const sortedUsages = usages.sort(function(a, b) {
     //   return 1 ? a.contextEntity.score > b.contextEntity.score : -1;
     // });
-    console.log({usages, entities, selectedEntityIdsWithUsages});
+    console.log({usages});
 
     const entityTypes = uiUtils.joinStrings(
       selectedEntityIdsWithUsages.map((e) => `${e.type}s`)
@@ -53,6 +53,7 @@ export class Usages extends React.PureComponent<Props> {
             key={u.contextEntity.id}
             id={`usage-${i}-${u.contextEntity.id}`}
             context={u.contextEntity}
+            score={u.score}
             handleJumpToContext={this.props.handleJumpToEntity}
           >
             {u.excerpt}

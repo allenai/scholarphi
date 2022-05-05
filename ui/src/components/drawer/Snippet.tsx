@@ -13,9 +13,11 @@ interface Props {
   context?: Entity;
   handleJumpToContext?: (contextEntityId: string) => void;
   children: string;
+  score?: number | null;
 }
 
 class Snippet extends React.PureComponent<Props> {
+
   constructor(props: Props) {
     super(props);
     this.onClick = this.onClick.bind(this);
@@ -32,6 +34,16 @@ class Snippet extends React.PureComponent<Props> {
 
   render() {
     const { context } = this.props;
+    const score: number | null = this.props.score ?? null;
+
+    const formattedScore: string | null =
+      score != null ?
+      Intl.NumberFormat(
+        'en-US',
+        { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+      ).format(score) :
+      null;
+
     return (
       <>
         <div
@@ -42,6 +54,12 @@ class Snippet extends React.PureComponent<Props> {
         >
           <RichText>{selectors.cleanTex(this.props.children)}</RichText>
         </div>
+        {score != null ? (
+           <p className="entity-link-message">
+             {"Snipped Score: "}
+             <b>{formattedScore}</b>
+           </p>
+         ): null}
         {this.props.handleJumpToContext && context ? (
           <p className="entity-link-message">
             {"See in context on page "}
@@ -60,4 +78,11 @@ class Snippet extends React.PureComponent<Props> {
   }
 }
 
+
 export default Snippet;
+
+// {score != null ? (
+//           <p className="score-message">
+//             {"Snipped Score: " + score}
+//           </p>
+//         ): null}

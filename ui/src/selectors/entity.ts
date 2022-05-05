@@ -228,6 +228,13 @@ export const orderByPosition = defaultMemoize(
  * 'contexts' should have the same dimensions, where each definition is associated with one context.
  * 'contexts' are used to sort the order of the definitions.
  */
+
+export interface OrderedExcerpt {
+  excerpt: string;
+  contextEntity: Entity;
+  score: number | null;
+}
+
 export function orderExcerpts(
   excerpts: string[],
   contexts: Relationship[],
@@ -248,12 +255,23 @@ export function orderExcerpts(
     if (contextPage === null) {
       continue;
     }
-    contextualized.push({ score: context.score, excerpt, contextEntity });
+    if (context.score != null && context.score < 0.001){
+      continue;
+    }
+    const orderedExcerpt: OrderedExcerpt = {
+      score: context.score || null,
+      excerpt: excerpt,
+      contextEntity: contextEntity,
+    }
+    contextualized.push(orderedExcerpt);
   }
   return contextualized.sort((c1, c2) => {
-      console.log({c1, c2});
       if (c1.score != null && c2.score != null) {
-        return c2.score - c1.score;
+        if (c2.score == c1.score) {
+          return comparePosition(c1.contextEntity, c2.contextEntity);
+        } else {
+          return c2.score - c1.score;
+        }
       } else {
         return comparePosition(c1.contextEntity, c2.contextEntity);
       }
