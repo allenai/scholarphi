@@ -78,6 +78,7 @@ export class SearchPageMask extends React.PureComponent<Props> {
     const EXPECTED_LABEL_WIDTH = 210;
     const EXPECTED_LABEL_HEIGHT = 25;
 
+    return null;
     return (
       <PageMask
         pageView={this.props.pageView}

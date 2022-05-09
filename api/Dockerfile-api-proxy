@@ -6,13 +6,17 @@ WORKDIR /api
 # Install Python dependencies
 RUN pip install --upgrade pip install fastapi uvicorn httpx pydantic setuptools wheel
 
-COPY pdod /tmp/pdod
-# RUN pip install /tmp/pdod
+COPY pdod/ pdod/
+# needs to be installed before requirements cuz it's needed for build
+RUN pip install torch==1.9.0
+RUN pip install -r pdod/requirements.txt
 
 ########## COPYING SOURCE CODE FROM HERE ON ##########
 
 # Copy over the source code
 COPY main.py main.py
+COPY __init__.py __init__.py
+ENV PYTHONPATH "/api/pdod/src/:${PYTHONPATH}"
 
 # Kick things off
 ENTRYPOINT [ "uvicorn" ]

@@ -1,11 +1,13 @@
 import json
 import logging
 import os
+from pathlib import Path
 import httpx
 from fastapi import FastAPI
 from fastapi.responses import Response, JSONResponse
+import requests
 
-# from mmda_pdf_scorer.parser import MmdaPdfParser
+from mmda_pdf_scorer.parser import MmdaPdfParser
 
 
 API = 'https://s2-reader.apps.allenai.org'
@@ -14,17 +16,17 @@ logger = logging.getLogger("uvicorn")
 
 app = FastAPI()
 
-# parser = MmdaPdfParser()
+parser = MmdaPdfParser()
 
 
-# @app.on_event("startup")
-# def start_up():
-#     import spacy
-#     # download spacy model
-#     spacy.cli.download('en_core_web_sm')
+@app.on_event("startup")
+def start_up():
+    import spacy
+    # download spacy model
+    spacy.cli.download('en_core_web_sm')
 
-#     # init layout predictor
-#     parser.layout_predictor
+    # init layout predictor
+    parser.layout_predictor
 
 
 @app.get("/")
@@ -41,16 +43,35 @@ async def log(content: dict):
 @app.get('/api/v0/papers/{arxiv_id}/entities-deduped')
 async def entities_deduped(arxiv_id: str):
 
-    cache = f'data/{arxiv_id}.jsonl'
-    if os.path.exists(cache):
-        logger.info(f'CACHE HIT: {cache}')
-        with open(cache, 'r', encoding='utf-8') as f:
-            parsed = [json.loads(ln) for ln in f]
-        # parsed = parser.score_all_sentences('temp.pdf')
-        response = {'entities': parsed}
-    else:
-        logger.info(f'CACHE MISS: {cache}')
-        response = {'entities': []}
+    pdf_cache = Path(f'data/{arxiv_id}.pdf')
+    json_cache = Path(f'data/{arxiv_id}.jsonl')
+    if not pdf_cache.exists():
+        try:
+            _, id_ = arxiv_id.split(':', 1)
+            url = f'https://export.arxiv.org/pdf/{id_}.pdf'
+            req = requests.get(url, allow_redirects=True)
+            with requests.Session() as sess, open(pdf_cache, 'wb') as f:
+                req = sess.get(url, allow_redirects=True)
+                f.write(req.content)
+        except Exception as e:
+            if pdf_cache.exists():
+                os.remove(pdf_cache)
+            raise e
+
+    if not json_cache.exists():
+        try:
+            parsed = parser.score_all_sentences(pdf_cache)
+            with open(json_cache, 'w', encoding='utf-8') as f:
+                for sentence in parsed:
+                    f.write(sentence.json() + '\n')
+        except Exception as e:
+            if json_cache.exists():
+                os.remove(json_cache)
+            raise e
+
+    with open(json_cache, 'r', encoding='utf-8') as f:
+        parsed = [json.loads(ln) for ln in f]
+    response = {'entities': parsed}
 
     return JSONResponse(content=response, status_code=200)
 
