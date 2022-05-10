@@ -6,8 +6,6 @@ services:
             dockerfile: Dockerfile-local
         working_dir: /ui
         entrypoint: ["npm", "run", "start:docker-compose"]
-        ports:
-            - 3001:3001
         depends_on:
             - api
     api:
@@ -25,5 +23,10 @@ services:
             - LOG_LEVEL=DEBUG
 
         command: ["main:app", "--host", "0.0.0.0", "--reload"]
+    proxy:
+        build: ./proxy
         ports:
-            - 8000:8000
+            - 8080:80
+        depends_on:
+            - api
+            - ui
