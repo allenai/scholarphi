@@ -26,3 +26,4 @@ class BibitemMatch:
     bibitem_text: str
     s2_id: str
     s2_title: str
+    similarity_score: float
