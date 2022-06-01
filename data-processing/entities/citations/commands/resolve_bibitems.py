@@ -75,11 +75,15 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
 
     def process(self, item: MatchTask) -> Iterator[BibitemMatch]:
         ref_match_count = 0
+        n_authors = 5
         for bibitem in item.bibitems:
             max_similarity = 0.0
             most_similar_reference = None
+            bibitem_concat = ' '.join([bibitem.text, ResolveBibitems.split_key(bibitem.id_)])
             for reference in item.references:
-                similarity = ngram_sim(reference.title, bibitem.text)
+                reference_concat = ' '.join([reference.title, ' '.join(reference.authors[:n_authors]), reference.doi,
+                                             reference.venue, str(reference.year)])
+                similarity = ResolveBibitems.similarity_count_vectorizer(reference_concat, bibitem_concat)
                 if similarity > SIMILARITY_THRESHOLD and similarity > max_similarity:
                     max_similarity = similarity
                     most_similar_reference = reference
