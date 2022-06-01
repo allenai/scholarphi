@@ -3,6 +3,10 @@ import os.path
 from dataclasses import dataclass
 from typing import Iterator, List
 
+from sklearn.feature_extraction.text import CountVectorizer
+import numpy as np
+import re
+
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
 from common.types import ArxivId, SerializableReference
@@ -118,3 +122,25 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
 
         resolutions_path = os.path.join(resolutions_dir, "resolutions.csv")
         file_utils.append_to_csv(resolutions_path, result)
+
+    @staticmethod
+    def similarity_count_vectorizer(concat_text, extracted_text_key):
+        if not concat_text or not extracted_text_key:
+            return 0.0
+
+        vectorizer = CountVectorizer(binary=True, ngram_range=(1, 7), stop_words='english')
+        try:
+            vectorizer.fit([concat_text])
+        except ValueError as e:
+            print(e)
+            return 0.0
+            
+        if len(vectorizer.get_feature_names()) > 3:
+            return float(np.average(vectorizer.transform([extracted_text_key]).toarray(), axis=1))
+        
+        return 0.0
+
+    def split_key(key):
+        if key:
+            return re.sub(r"(\w)([A-Z])", r"\1 \2", re.sub(r"(?i)([a-z]*)([0-9]*)([a-z]*)", r"\1 \2 \3", str(key)))
+        return key
