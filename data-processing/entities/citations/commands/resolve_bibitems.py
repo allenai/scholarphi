@@ -1,3 +1,4 @@
+import ast
 import logging
 import os.path
 from dataclasses import dataclass
@@ -12,7 +13,6 @@ from common.commands.base import ArxivBatchCommand
 from common.types import ArxivId, SerializableReference
 
 from ..types import Bibitem, BibitemMatch
-from ..utils import ngram_sim
 
 
 @dataclass(frozen=True)
@@ -81,8 +81,11 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
             most_similar_reference = None
             bibitem_concat = ' '.join([bibitem.text, ResolveBibitems.split_key(bibitem.id_)])
             for reference in item.references:
-                reference_concat = ' '.join([reference.title, ' '.join(reference.authors[:n_authors]), reference.doi,
-                                             reference.venue, str(reference.year)])
+                list_of_authors = [entry['name'] for entry in ast.literal_eval(reference.authors)[:n_authors]]
+                reference_concat = ' '.join([reference.title,
+                                             ' '.join(list_of_authors),
+                                             reference.venue, str(reference.year),
+                                             reference.arxivId])
                 similarity = ResolveBibitems.similarity_count_vectorizer(reference_concat, bibitem_concat)
                 if similarity > SIMILARITY_THRESHOLD and similarity > max_similarity:
                     max_similarity = similarity
@@ -129,23 +132,42 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
         file_utils.append_to_csv(resolutions_path, result)
 
     @staticmethod
-    def similarity_count_vectorizer(concat_text, extracted_text_key):
-        if not concat_text or not extracted_text_key:
+    def similarity_count_vectorizer(s2_return: str, bibliography_reference: str) -> float:
+        """
+        Similarity measure based on CountVectorizer
+        https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text
+        .CountVectorizer.html#sklearn.feature_extraction.text.CountVectorizer.fit_transform
+        Implementation is using n_gram in range of 1-7. vectorizer is trained on the first parameter
+        which is the concatenated API return.
+        transform call returns a binary vector, each value corresponds to the dictionary entries in the
+        extracted_text_key
+        @param s2_return: Concatenated s2 return
+        @param bibliography_reference: Bibliography reference trying to match
+        @return:
+        """
+        if not s2_return or not bibliography_reference:
             return 0.0
 
-        vectorizer = CountVectorizer(binary=True, ngram_range=(1, 7), stop_words='english')
+        vectorizer = CountVectorizer(binary=True, ngram_range=(1, 5), stop_words='english')
         try:
-            vectorizer.fit([concat_text])
+            vectorizer.fit([s2_return])
         except ValueError as e:
             print(e)
             return 0.0
-            
+
         if len(vectorizer.get_feature_names()) > 3:
-            return float(np.average(vectorizer.transform([extracted_text_key]).toarray(), axis=1))
-        
+            return float(np.average(vectorizer.transform([bibliography_reference]).toarray(), axis=1))
+
         return 0.0
 
-    def split_key(key):
+    @staticmethod
+    def split_key(key: str) -> str:
+        """
+        Attempt to split the bibliography key in 3 parts
+        Canonical way of creating keys is to have 3 parts example: kanatani2011hyper first word corresponds to the first
+        author last name, year and the first word of the publication.
+        @param key: Key to be split in 3 parts
+        """
         if key:
-            return re.sub(r"(\w)([A-Z])", r"\1 \2", re.sub(r"(?i)([a-z]*)([0-9]*)([a-z]*)", r"\1 \2 \3", str(key)))
+            return re.sub(r"(\w)([A-Z])", r"\1 \2", re.sub(r"(?i)([a-z]*)(\d*)([a-z]*)", r"\1 \2 \3", str(key)))
         return key
