@@ -169,5 +169,6 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
         @param key: Key to be split in 3 parts
         """
         if key:
-            return re.sub(r"(\w)([A-Z])", r"\1 \2", re.sub(r"(?i)([a-z]*)(\d*)([a-z]*)", r"\1 \2 \3", str(key)))
+            return (
+                re.sub(r"(\w)([A-Z])", r"\1 \2", re.sub(r"(?i)([a-z]*)(\d*)([a-z]*)", r"\1 \2 \3", str(key)))).strip()
         return key
