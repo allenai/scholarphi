@@ -19,6 +19,9 @@ class Bibitem(SerializableEntity):
     text: str
     " Plaintext extracted for bibitem. "
 
+    bibitem_code: str
+    ' Bibitem code'
+
 
 @dataclass(frozen=True)
 class BibitemMatch:
@@ -27,3 +30,4 @@ class BibitemMatch:
     s2_id: str
     s2_title: str
     similarity_score: float
+    bibitem_code: str
