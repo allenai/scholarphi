@@ -67,6 +67,7 @@ def bibitem(key: str) -> Bibitem:
         tex_path="N/A",
         tex="N/A",
         context_tex="N/A",
+        bibitem_code="\{journal}{Colors} text"
     )
 
 

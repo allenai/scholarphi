@@ -25,15 +25,18 @@ def test_process():
         resolve_bibitems = ResolveBibitems('2020.2123')
         item = MatchTask(
             '001',
-            bibitems=[Bibitem(id_='one1999two', text='dog cat monkey', context_tex='N/A', start=-1, end=-1, tex_path='N/A',
-                     tex='N/A'),
-                     Bibitem(id_='two2020two', text='one two three', context_tex='N/A', start=-1, end=-1, tex_path='N/A',
-                     tex='N/A')],
+            bibitems=[Bibitem(id_='one1999two', text='dog cat monkey', context_tex='N/A',
+                              start=-1, end=-1, tex_path='N/A',
+                              tex='N/A', bibitem_code='\journal{dog and cats} dog cat monkey'),
+                     Bibitem(id_='two2020two', text='one two three', context_tex='N/A', start=-1, end=-1,
+                             tex_path='N/A', tex='N/A', bibitem_code='\journal{numerology} one two three')],
+
             references=[SerializableReference(s2_id='111', arxivId='2022.04708', doi=None, title='Dog on a walk',
                                    authors="[{'id': 1, 'name': 'Charles Dickens'}, {'id':2, 'name': 'Ernest Hemingway'}]",
                                    venue='arXiv', year='2022')]
         )
         result = next(resolve_bibitems.process(item))
         assert result == BibitemMatch(key='one1999two', bibitem_text='dog cat monkey', s2_id='111',
-                                      s2_title='Dog on a walk', similarity_score=0.02564102564102564)
+                                      s2_title='Dog on a walk', bibitem_code='\journal{dog and cats} dog cat monkey',
+                                      similarity_score=0.02564102564102564)
         assert isinstance(result, BibitemMatch)
