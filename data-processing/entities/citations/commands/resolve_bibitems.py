@@ -79,7 +79,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
         for bibitem in item.bibitems:
             max_similarity = 0.0
             most_similar_reference = None
-            bibitem_concat = ' '.join([bibitem.text, ResolveBibitems.split_key(bibitem.id_)])
+            bibitem_concat = ' '.join([bibitem.bibitem_code, ResolveBibitems.split_key(bibitem.id_)])
             for reference in item.references:
                 list_of_authors = [entry['name'] for entry in ast.literal_eval(reference.authors)[:n_authors]]
                 reference_concat = ' '.join([reference.title,
@@ -99,6 +99,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
                     most_similar_reference.s2_id,
                     most_similar_reference.title,
                     max_similarity,
+                    bibitem.bibitem_code,
                 )
             else:
                 logging.warning(
