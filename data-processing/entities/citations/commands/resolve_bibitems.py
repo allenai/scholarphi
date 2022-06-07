@@ -152,7 +152,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
         try:
             vectorizer.fit([s2_return])
         except ValueError as e:
-            print(e)
+            logging.error(e)
             return 0.0
 
         if len(vectorizer.get_feature_names()) > 3:
