@@ -137,7 +137,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
         Similarity measure based on CountVectorizer
         https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text
         .CountVectorizer.html#sklearn.feature_extraction.text.CountVectorizer.fit_transform
-        Implementation is using n_gram in range of 1-7. vectorizer is trained on the first parameter
+        Implementation is using n_gram in range of 1-5. vectorizer is trained on the first parameter
         which is the concatenated API return.
         transform call returns a binary vector, each value corresponds to the dictionary entries in the
         extracted_text_key
