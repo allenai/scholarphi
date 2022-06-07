@@ -38,6 +38,7 @@ class BibitemExtractor:
                 tex_path="N/A",
                 tex="N/A",
                 context_tex="N/A",
+                bibitem_code=bibitem.text,
             )
 
     def _extract_key(self, bibitem_text: TexSoup) -> Optional[str]:
