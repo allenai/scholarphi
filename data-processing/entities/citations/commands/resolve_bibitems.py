@@ -26,7 +26,7 @@ class MatchTask:
 The title and authors must have at least this much overlap with the bibitem's text using
 the similarity metric below to be considered a match.
 """
-SIMILARITY_THRESHOLD = 0.0
+SIMILARITY_THRESHOLD = 0.2
 
 
 class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
