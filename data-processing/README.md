@@ -220,6 +220,8 @@ before running the tests:
 export DEFINITIONS_BASE_URL=<alternative base url>
 ```
 
+Changing something to test CI in a PR...
+
 ## Troubleshooting the installation
 
 ### Installing psycopg2
