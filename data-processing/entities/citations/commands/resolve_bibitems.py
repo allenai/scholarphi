@@ -75,6 +75,8 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
 
     def process(self, item: MatchTask) -> Iterator[BibitemMatch]:
         ref_match_count = 0
+        # Fixing upper bound of authors to five. This showed to reduce the size of the vocabulary. Some papers have
+        # many authors which would make the vocabulary size large and such s2_ids as result would have low match scores.
         n_authors = 5
         for bibitem in item.bibitems:
             max_similarity = 0.0
