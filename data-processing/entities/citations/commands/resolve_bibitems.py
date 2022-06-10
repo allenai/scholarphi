@@ -150,7 +150,12 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
         """
         if not s2_return or not bibliography_reference:
             return 0.0
-
+        """
+        binary=True produced binary values in the vector corresponding to the dictionary of the ngram, this bounds the
+        similarity score to [0, 1] range which is a good measure for the distance function.
+        ngram = (1, 5) is a tuning parameter and upper bound 5 is sufficient enough to capture the order of the words
+        in the title of the paper to represent uniquely s2 item
+        """
         vectorizer = CountVectorizer(binary=True, ngram_range=(1, 5), stop_words='english')
         try:
             vectorizer.fit([s2_return])
