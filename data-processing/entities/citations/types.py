@@ -17,10 +17,10 @@ class Bibitem(SerializableEntity):
     """
 
     text: str
-    " Plaintext extracted for bibitem. "
+    "Plaintext extracted for bibitem. "
 
     bibitem_code: str
-    ' Bibitem code'
+    "Latex code extracted for the bibliography file or latex file corresponding to the bibliography key"
 
 
 @dataclass(frozen=True)
