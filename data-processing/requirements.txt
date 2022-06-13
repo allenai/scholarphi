@@ -10,6 +10,7 @@ opencv-python-headless==3.4.8.29
 # uploading either of them, and it still resolves the references to the entities correctly.
 # The references do not resolve correctly in 3.13.3, hence hard-coding Peewee to 3.12.0.
 peewee==3.12.0
+protobuf<=3.20
 psycopg2-binary
 pysbd==0.3.0
 pytorch-crf==0.7.2
