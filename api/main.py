@@ -10,23 +10,31 @@ import requests
 from mmda_pdf_scorer.parser import MmdaPdfParser
 
 
+
+RUN_MMDA = os.environ.get('RUN_MMDA', '') in {'True', 'true', '1'}
+
 API = 'https://s2-reader.apps.allenai.org'
 
 logger = logging.getLogger("uvicorn")
 
 app = FastAPI()
 
-parser = MmdaPdfParser()
+if RUN_MMDA:
+    parser = MmdaPdfParser()
+else:
+    parser = None
 
 
 @app.on_event("startup")
 def start_up():
-    import spacy
-    # download spacy model
-    spacy.cli.download('en_core_web_sm')
 
-    # init layout predictor
-    parser.layout_predictor
+    if parser:
+        import spacy
+        # download spacy model
+        spacy.cli.download('en_core_web_sm')
+
+        # init layout predictor
+        parser.layout_predictor
 
 
 @app.get("/")
@@ -45,7 +53,7 @@ async def entities_deduped(arxiv_id: str):
 
     pdf_cache = Path(f'data/{arxiv_id}.pdf')
     json_cache = Path(f'data/{arxiv_id}.jsonl')
-    if not pdf_cache.exists():
+    if not pdf_cache.exists() and parser is not None:
         try:
             _, id_ = arxiv_id.split(':', 1)
             url = f'https://export.arxiv.org/pdf/{id_}.pdf'
@@ -58,7 +66,7 @@ async def entities_deduped(arxiv_id: str):
                 os.remove(pdf_cache)
             raise e
 
-    if not json_cache.exists():
+    if not json_cache.exists() and parser is not None:
         try:
             parsed = parser.score_all_sentences(pdf_cache)
             with open(json_cache, 'w', encoding='utf-8') as f:
