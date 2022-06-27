@@ -1,14 +1,18 @@
+import ast
 import logging
 import os.path
 from dataclasses import dataclass
 from typing import Iterator, List
+
+from sklearn.feature_extraction.text import CountVectorizer
+import numpy as np
+import re
 
 from common import directories, file_utils
 from common.commands.base import ArxivBatchCommand
 from common.types import ArxivId, SerializableReference
 
 from ..types import Bibitem, BibitemMatch
-from ..utils import ngram_sim
 
 
 @dataclass(frozen=True)
@@ -22,7 +26,7 @@ class MatchTask:
 The title and authors must have at least this much overlap with the bibitem's text using
 the similarity metric below to be considered a match.
 """
-SIMILARITY_THRESHOLD = 0.5
+SIMILARITY_THRESHOLD = 0.2
 
 
 class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
@@ -71,11 +75,20 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
 
     def process(self, item: MatchTask) -> Iterator[BibitemMatch]:
         ref_match_count = 0
+        # Fixing upper bound of authors to five. This showed to reduce the size of the vocabulary. Some papers have
+        # many authors which would make the vocabulary size large and such s2_ids as result would have low match scores.
+        n_authors = 5
         for bibitem in item.bibitems:
             max_similarity = 0.0
             most_similar_reference = None
+            bibitem_concat = ' '.join([bibitem.bibitem_code, ResolveBibitems.split_key(bibitem.id_)])
             for reference in item.references:
-                similarity = ngram_sim(reference.title, bibitem.text)
+                list_of_authors = [entry['name'] for entry in ast.literal_eval(reference.authors)[:n_authors]]
+                reference_concat = ' '.join([reference.title,
+                                             ' '.join(list_of_authors),
+                                             reference.venue, str(reference.year),
+                                             reference.arxivId])
+                similarity = ResolveBibitems.similarity_count_vectorizer(reference_concat, bibitem_concat)
                 if similarity > SIMILARITY_THRESHOLD and similarity > max_similarity:
                     max_similarity = similarity
                     most_similar_reference = reference
@@ -87,6 +100,8 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
                     bibitem.text,
                     most_similar_reference.s2_id,
                     most_similar_reference.title,
+                    max_similarity,
+                    bibitem.bibitem_code,
                 )
             else:
                 logging.warning(
@@ -118,3 +133,50 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
 
         resolutions_path = os.path.join(resolutions_dir, "resolutions.csv")
         file_utils.append_to_csv(resolutions_path, result)
+
+    @staticmethod
+    def similarity_count_vectorizer(s2_return: str, bibliography_reference: str) -> float:
+        """
+        Similarity measure based on CountVectorizer
+        https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text
+        .CountVectorizer.html#sklearn.feature_extraction.text.CountVectorizer.fit_transform
+        Implementation is using n_gram in range of 1-5. vectorizer is trained on the first parameter
+        which is the concatenated API return.
+        transform call returns a binary vector, each value corresponds to the dictionary entries in the
+        extracted_text_key
+        @param s2_return: Concatenated s2 return
+        @param bibliography_reference: Bibliography reference trying to match
+        @return:
+        """
+        if not s2_return or not bibliography_reference:
+            return 0.0
+        """
+        binary=True produced binary values in the vector corresponding to the dictionary of the ngram, this bounds the
+        similarity score to [0, 1] range which is a good measure for the distance function.
+        ngram = (1, 5) is a tuning parameter and upper bound 5 is sufficient enough to capture the order of the words
+        in the title of the paper to represent uniquely s2 item
+        """
+        vectorizer = CountVectorizer(binary=True, ngram_range=(1, 5), stop_words='english')
+        try:
+            vectorizer.fit([s2_return])
+        except ValueError as e:
+            logging.error(e)
+            return 0.0
+
+        if len(vectorizer.get_feature_names()) > 3:
+            return float(np.average(vectorizer.transform([bibliography_reference]).toarray(), axis=1))
+
+        return 0.0
+
+    @staticmethod
+    def split_key(key: str) -> str:
+        """
+        Attempt to split the bibliography key in 3 parts
+        Canonical way of creating keys is to have 3 parts example: kanatani2011hyper first word corresponds to the first
+        author last name, year and the first word of the publication.
+        @param key: Key to be split in 3 parts
+        """
+        if key:
+            return (
+                re.sub(r"(\w)([A-Z])", r"\1 \2", re.sub(r"(?i)([a-z]*)(\d*)([a-z]*)", r"\1 \2 \3", str(key)))).strip()
+        return key
