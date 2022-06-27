@@ -17,6 +17,7 @@ RUN pip install -r pdod/requirements.txt
 COPY main.py main.py
 COPY __init__.py __init__.py
 ENV PYTHONPATH "/api/pdod/src/:${PYTHONPATH}"
+ENV RUN_MMDA "1"
 
 # Kick things off
 ENTRYPOINT [ "uvicorn" ]
