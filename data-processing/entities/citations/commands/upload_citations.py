@@ -100,6 +100,37 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                 )
         return bibitem_texts
 
+    def _entity_data_from_text_and_matches(
+        self,
+        arxiv_id: ArxivId,
+        bibitem_texts: Dict[str, str],
+        key_s2_ids: Dict[str, str],
+        bibitem_key: str,
+    ) -> EntityData:
+        entity_data: EntityData = {
+            "key": bibitem_key,
+        }
+
+        if bibitem_key in bibitem_texts:
+            entity_data["bibitem_text"] = bibitem_texts[bibitem_key]
+        else:
+            logging.warning(
+                "Missing bibitem text for bibitem with key %s for paper %s",
+                bibitem_key,
+                arxiv_id,
+            )
+
+        if bibitem_key in key_s2_ids:
+            entity_data["paper_id"] = key_s2_ids[bibitem_key]
+        else:
+            logging.warning(
+                "Missing S2 match for bibitem with key %s for paper %s",
+                bibitem_key,
+                arxiv_id,
+            )
+
+        return entity_data
+
     def load(self) -> Iterator[CitationData]:
         for arxiv_id in self.arxiv_ids:
 
@@ -193,27 +224,12 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
         # mentions - all mentions have at least one bounding box
         for citation_key, locations in citation_locations.items():
 
-            entity_data: EntityData = {
-                "key": citation_key,
-            }
-
-            if citation_key in bibitem_texts:
-                entity_data["bibitem_text"] = bibitem_texts[citation_key]
-            else:
-                logging.warning(
-                    "Missing bibitem text for bibitem with key %s for paper %s",
-                    citation_key,
-                    item.arxiv_id,
-                )
-
-            if citation_key in key_s2_ids:
-                entity_data["paper_id"] = key_s2_ids[citation_key]
-            else:
-                logging.warning(
-                    "Missing S2 match for bibitem with key %s for paper %s",
-                    citation_key,
-                    item.arxiv_id,
-                )
+            entity_data = self._entity_data_from_text_and_matches(
+                arxiv_id=item.arxiv_id,
+                bibitem_texts=bibitem_texts,
+                key_s2_ids=key_s2_ids,
+                bibitem_key=citation_key,
+            )
 
             for cluster_index, location_set in locations.items():
                 boxes = cast(List[BoundingBox], list(location_set))
