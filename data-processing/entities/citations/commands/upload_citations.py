@@ -241,6 +241,24 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                 )
                 entity_infos.append(entity_info)
 
+        # what downstream systems call 'entities' - no bounding boxes
+        # this is a little more specific than what scholarphi calls an
+        # entity
+        for bibitem_key in bibitem_keys:
+            entity_data = self._entity_data_from_text_and_matches(
+                arxiv_id=item.arxiv_id,
+                bibitem_texts=bibitem_texts,
+                key_s2_ids=key_s2_ids,
+                bibitem_key=bibitem_key,
+            )
+            entity_info = EntityUploadInfo(
+                id_=bibitem_key,
+                type_="citation",
+                bounding_boxes=[],
+                data=entity_data,
+            )
+            entity_infos.append(entity_info)
+
         save_entities(
             s2_id=item.s2_id,
             arxiv_id=item.arxiv_id,
