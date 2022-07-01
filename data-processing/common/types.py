@@ -582,6 +582,7 @@ class CitationData:
     key_s2_ids: Dict[str, str]
     s2_data: Dict[S2Id, SerializableReference]
     bibitem_texts: Optional[Dict[str, str]] = None
+    bibitem_keys: Optional[Set[str]] = None
 
 
 """
