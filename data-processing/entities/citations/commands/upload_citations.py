@@ -2,7 +2,7 @@ import ast
 import dataclasses
 import logging
 import os.path
-from typing import Dict, Iterator, List, Optional, cast
+from typing import Dict, Iterator, List, Optional, Set, cast
 
 from common import directories, file_utils
 from common.commands.database import DatabaseUploadCommand
@@ -36,20 +36,30 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
     def get_arxiv_ids_dirkey(self) -> str:
         return "citations-locations"
 
+    def _acceptable_str(self, maybe_str: Optional[str]) -> bool:
+        """
+        Note: I haven't actually seen any cases where this has returned False
+        in the testing I've done. I'm mostly going off the signature of the
+        method that extracts keys (returns an Optional[str]), and the fact
+        that an empty string for either the bib item key or text probably
+        wouldn't do much for us down the line.
+        """
+        return maybe_str is not None and maybe_str.strip() != ""
+
+    def _get_bibitem_keys_from_bibitems(self, bibitems: List[Bibitem]) -> Set[str]:
+        list_version = [item.id_ for item in bibitems if self._acceptable_str(item.id_)]
+        if len(list_version) < len(bibitems):
+            logging.warning("Some bibitems have empty keys.")
+        set_version = set(list_version)
+        if len(set_version) < len(list_version):
+            logging.warning("Some bibitems have the same key.")
+        return set_version
+
     def _get_bibitem_texts_from_bibitems(
         self,
         arxiv_id: ArxivId,
         bibitems: List[Bibitem]
     ) -> Dict[str, str]:
-        def acceptable_str(maybe_str: Optional[str]) -> bool:
-            """
-            Note: I haven't actually seen any cases where this has returned False
-            in the testing I've done. I'm mostly going off the signature of the
-            method that extracts keys (returns an Optional[str]), and the fact
-            that an empty string for either the bib item key or text probably
-            wouldn't do much for us down the line.
-            """
-            return maybe_str is not None and maybe_str.strip() != ""
 
         # We want to construct a map from bib item key to the text associated with the
         # corresponding bib entry.
@@ -58,7 +68,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
             maybe_bibitem_id = bibitem.id_
             maybe_bibitem_text = bibitem.text
 
-            if acceptable_str(maybe_bibitem_id) and acceptable_str(maybe_bibitem_text):
+            if self._acceptable_str(maybe_bibitem_id) and self._acceptable_str(maybe_bibitem_text):
                 # only include an entry in the map if both the key and text are defined
                 # and not empty strings
 
