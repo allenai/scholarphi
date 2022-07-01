@@ -361,6 +361,10 @@ def write_to_file(entity_infos: List[EntityUploadInfo], output_file_name: str) -
         json.dump(to_write, output_file)
 
 
+def upload_info_is_mention(upload_info: EntityUploadInfo) -> bool:
+    return len(upload_info.bounding_boxes) > 0
+
+
 def save_entities(
     s2_id: S2Id,
     arxiv_id: ArxivId,
@@ -378,10 +382,12 @@ def save_entities(
         write_to_file(entity_infos=entity_infos, output_file_name=output_file_name)
 
     if output_details.can_save_to_db():
+        # scholarphi only cares about mentions rn
+        mention_infos = [info for info in entity_infos if upload_info_is_mention(info)]
         logging.info("Saving to db...")
         upload_entities(
             s2_id=s2_id,
             arxiv_id=arxiv_id,
-            entities=entity_infos,
+            entities=mention_infos,
             data_version=data_version,
         )
