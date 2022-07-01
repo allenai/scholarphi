@@ -190,7 +190,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
 
         entity_infos = []
 
-        citation_index = 0
+        # mentions - all mentions have at least one bounding box
         for citation_key, locations in citation_locations.items():
 
             entity_data: EntityData = {
@@ -224,7 +224,6 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                     data=entity_data,
                 )
                 entity_infos.append(entity_info)
-                citation_index += 1
 
         save_entities(
             s2_id=item.s2_id,
