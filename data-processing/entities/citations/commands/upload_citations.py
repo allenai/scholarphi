@@ -266,6 +266,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
             data_version=self.args.data_version,
             output_details=self.output_details,
             filename="citations.json",
+            do_not_save_boundingboxless_to_db=True,
         )
 
     def can_write_to_file(self) -> bool:
