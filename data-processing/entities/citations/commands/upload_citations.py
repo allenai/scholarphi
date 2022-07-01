@@ -46,13 +46,13 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
         """
         return maybe_str is not None and maybe_str.strip() != ""
 
-    def _get_bibitem_keys_from_bibitems(self, bibitems: List[Bibitem]) -> Set[str]:
+    def _get_bibitem_keys_from_bibitems(self, arxiv_id: ArxivId, bibitems: List[Bibitem]) -> Set[str]:
         list_version = [item.id_ for item in bibitems if self._acceptable_str(item.id_)]
         if len(list_version) < len(bibitems):
-            logging.warning("Some bibitems have empty keys.")
+            logging.warning("Some bibitems have empty keys for paper %s.", arxiv_id)
         set_version = set(list_version)
         if len(set_version) < len(list_version):
-            logging.warning("Some bibitems have the same key.")
+            logging.warning("Some bibitems have the same key for paper %s.", arxiv_id)
         return set_version
 
     def _get_bibitem_texts_from_bibitems(
@@ -114,6 +114,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                 )
                 continue
             bibitems = list(file_utils.load_from_csv(bibitems_path, Bibitem))
+            bibitem_keys: Set[str] = self._get_bibitem_keys_from_bibitems(arxiv_id, bibitems)
             bibitem_texts: Dict[str, str] = self._get_bibitem_texts_from_bibitems(
                 arxiv_id,
                 bibitems,
