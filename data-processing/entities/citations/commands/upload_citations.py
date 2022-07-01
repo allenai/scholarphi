@@ -172,7 +172,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                 s2_data[metadata.s2_id] = metadata
 
             yield CitationData(
-                arxiv_id, s2_id, citation_locations, key_s2_ids, s2_data, bibitem_texts
+                arxiv_id, s2_id, citation_locations, key_s2_ids, s2_data, bibitem_texts, bibitem_keys
             )
 
     def process(self, _: CitationData) -> Iterator[None]:
@@ -182,9 +182,11 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
         citation_locations = item.citation_locations
         key_s2_ids = item.key_s2_ids
         bibitem_texts = item.bibitem_texts
+        bibitem_keys = item.bibitem_keys
 
         # for mypy
         assert bibitem_texts is not None
+        assert bibitem_keys is not None
 
         entity_infos = []
 
