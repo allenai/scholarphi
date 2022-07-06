@@ -103,7 +103,7 @@ def test_save_entities_considers_boundingboxless_arg():
                 do_not_save_boundingboxless_to_db=False,
             )
 
-            # do_not_save_boundingboxless_to_db=False
+            # do_not_save_boundingboxless_to_db=True
             save_entities(
                 s2_id=s2_id,
                 arxiv_id=arxiv_id,
@@ -126,22 +126,26 @@ def test_save_entities_considers_boundingboxless_arg():
                 entities=[item_with_bb],
                 data_version=data_version,
             )
-            write_to_file_false = call(
+            write_to_file_call_false = call(
                 entity_infos=items,
                 output_file_name=filename,
             )
-            write_to_file_true = call(
+            write_to_file_call_true = call(
                 entity_infos=items,
                 output_file_name=filename,
             )
 
-            assert mock_upload_entities.assert_has_calls(
-                upload_entity_call_false,
-                upload_entity_call_true,
+            mock_upload_entities.assert_has_calls(
+                [
+                    upload_entity_call_false,
+                    upload_entity_call_true,
+                ]
             )
-            assert mock_write_to_file.assert_has_calls(
-                write_to_file_false,
-                write_to_file_true,
+            mock_write_to_file.assert_has_calls(
+                [
+                    write_to_file_call_false,
+                    write_to_file_call_true,
+                ]
             )
 
 def test_output_details_validation_db_no_dir():
