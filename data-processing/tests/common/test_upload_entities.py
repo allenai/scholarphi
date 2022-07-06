@@ -126,13 +126,15 @@ def test_save_entities_considers_boundingboxless_arg():
                 entities=[item_with_bb],
                 data_version=data_version,
             )
+
+            output_path = f"{output_details.output_dir}/{filename}"
             write_to_file_call_false = call(
                 entity_infos=items,
-                output_file_name=filename,
+                output_file_name=output_path,
             )
             write_to_file_call_true = call(
                 entity_infos=items,
-                output_file_name=filename,
+                output_file_name=output_path,
             )
 
             mock_upload_entities.assert_has_calls(
