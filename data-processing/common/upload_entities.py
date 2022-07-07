@@ -368,6 +368,7 @@ def save_entities(
     data_version: Optional[int],
     output_details: OutputDetails,
     filename: str,
+    do_not_save_boundingboxless_to_db: bool = False,
 ) -> None:
 
     if output_details.can_save_to_file():
@@ -378,10 +379,16 @@ def save_entities(
         write_to_file(entity_infos=entity_infos, output_file_name=output_file_name)
 
     if output_details.can_save_to_db():
+        # make sure that for the db path, we're still only
+        # saving bounding-box-less items when we expect to
+        if do_not_save_boundingboxless_to_db:
+            infos_to_save = [info for info in entity_infos if len(info.bounding_boxes) > 0]
+        else:
+            infos_to_save = entity_infos
         logging.info("Saving to db...")
         upload_entities(
             s2_id=s2_id,
             arxiv_id=arxiv_id,
-            entities=entity_infos,
+            entities=infos_to_save,
             data_version=data_version,
         )

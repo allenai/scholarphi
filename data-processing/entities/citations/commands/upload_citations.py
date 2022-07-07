@@ -2,7 +2,7 @@ import ast
 import dataclasses
 import logging
 import os.path
-from typing import Dict, Iterator, List, Optional, cast
+from typing import Dict, Iterator, List, Optional, Set, cast
 
 from common import directories, file_utils
 from common.commands.database import DatabaseUploadCommand
@@ -36,20 +36,30 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
     def get_arxiv_ids_dirkey(self) -> str:
         return "citations-locations"
 
+    def _acceptable_str(self, maybe_str: Optional[str]) -> bool:
+        """
+        Note: I haven't actually seen any cases where this has returned False
+        in the testing I've done. I'm mostly going off the signature of the
+        method that extracts keys (returns an Optional[str]), and the fact
+        that an empty string for either the bib item key or text probably
+        wouldn't do much for us down the line.
+        """
+        return maybe_str is not None and maybe_str.strip() != ""
+
+    def _get_bibitem_keys_from_bibitems(self, arxiv_id: ArxivId, bibitems: List[Bibitem]) -> Set[str]:
+        list_version = [item.id_ for item in bibitems if self._acceptable_str(item.id_)]
+        if len(list_version) < len(bibitems):
+            logging.warning("Some bibitems have empty keys for paper %s.", arxiv_id)
+        set_version = set(list_version)
+        if len(set_version) < len(list_version):
+            logging.warning("Some bibitems have the same key for paper %s.", arxiv_id)
+        return set_version
+
     def _get_bibitem_texts_from_bibitems(
         self,
         arxiv_id: ArxivId,
         bibitems: List[Bibitem]
     ) -> Dict[str, str]:
-        def acceptable_str(maybe_str: Optional[str]) -> bool:
-            """
-            Note: I haven't actually seen any cases where this has returned False
-            in the testing I've done. I'm mostly going off the signature of the
-            method that extracts keys (returns an Optional[str]), and the fact
-            that an empty string for either the bib item key or text probably
-            wouldn't do much for us down the line.
-            """
-            return maybe_str is not None and maybe_str.strip() != ""
 
         # We want to construct a map from bib item key to the text associated with the
         # corresponding bib entry.
@@ -58,7 +68,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
             maybe_bibitem_id = bibitem.id_
             maybe_bibitem_text = bibitem.text
 
-            if acceptable_str(maybe_bibitem_id) and acceptable_str(maybe_bibitem_text):
+            if self._acceptable_str(maybe_bibitem_id) and self._acceptable_str(maybe_bibitem_text):
                 # only include an entry in the map if both the key and text are defined
                 # and not empty strings
 
@@ -90,6 +100,37 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                 )
         return bibitem_texts
 
+    def _entity_data_from_text_and_matches(
+        self,
+        arxiv_id: ArxivId,
+        bibitem_texts: Dict[str, str],
+        key_s2_ids: Dict[str, str],
+        bibitem_key: str,
+    ) -> EntityData:
+        entity_data: EntityData = {
+            "key": bibitem_key,
+        }
+
+        if bibitem_key in bibitem_texts:
+            entity_data["bibitem_text"] = bibitem_texts[bibitem_key]
+        else:
+            logging.warning(
+                "Missing bibitem text for bibitem with key %s for paper %s",
+                bibitem_key,
+                arxiv_id,
+            )
+
+        if bibitem_key in key_s2_ids:
+            entity_data["paper_id"] = key_s2_ids[bibitem_key]
+        else:
+            logging.warning(
+                "Missing S2 match for bibitem with key %s for paper %s",
+                bibitem_key,
+                arxiv_id,
+            )
+
+        return entity_data
+
     def load(self) -> Iterator[CitationData]:
         for arxiv_id in self.arxiv_ids:
 
@@ -104,6 +145,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                 )
                 continue
             bibitems = list(file_utils.load_from_csv(bibitems_path, Bibitem))
+            bibitem_keys: Set[str] = self._get_bibitem_keys_from_bibitems(arxiv_id, bibitems)
             bibitem_texts: Dict[str, str] = self._get_bibitem_texts_from_bibitems(
                 arxiv_id,
                 bibitems,
@@ -161,7 +203,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                 s2_data[metadata.s2_id] = metadata
 
             yield CitationData(
-                arxiv_id, s2_id, citation_locations, key_s2_ids, s2_data, bibitem_texts
+                arxiv_id, s2_id, citation_locations, key_s2_ids, s2_data, bibitem_texts, bibitem_keys
             )
 
     def process(self, _: CitationData) -> Iterator[None]:
@@ -171,36 +213,23 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
         citation_locations = item.citation_locations
         key_s2_ids = item.key_s2_ids
         bibitem_texts = item.bibitem_texts
+        bibitem_keys = item.bibitem_keys
 
         # for mypy
         assert bibitem_texts is not None
+        assert bibitem_keys is not None
 
         entity_infos = []
 
-        citation_index = 0
+        # mentions - all mentions have at least one bounding box
         for citation_key, locations in citation_locations.items():
 
-            entity_data: EntityData = {
-                "key": citation_key,
-            }
-
-            if citation_key in bibitem_texts:
-                entity_data["bibitem_text"] = bibitem_texts[citation_key]
-            else:
-                logging.warning(
-                    "Missing bibitem text for bibitem with key %s for paper %s",
-                    citation_key,
-                    item.arxiv_id,
-                )
-
-            if citation_key in key_s2_ids:
-                entity_data["paper_id"] = key_s2_ids[citation_key]
-            else:
-                logging.warning(
-                    "Missing S2 match for bibitem with key %s for paper %s",
-                    citation_key,
-                    item.arxiv_id,
-                )
+            entity_data = self._entity_data_from_text_and_matches(
+                arxiv_id=item.arxiv_id,
+                bibitem_texts=bibitem_texts,
+                key_s2_ids=key_s2_ids,
+                bibitem_key=citation_key,
+            )
 
             for cluster_index, location_set in locations.items():
                 boxes = cast(List[BoundingBox], list(location_set))
@@ -211,7 +240,24 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                     data=entity_data,
                 )
                 entity_infos.append(entity_info)
-                citation_index += 1
+
+        # what downstream systems call 'entities' - no bounding boxes
+        # this is a little more specific than what scholarphi calls an
+        # entity
+        for bibitem_key in bibitem_keys:
+            entity_data = self._entity_data_from_text_and_matches(
+                arxiv_id=item.arxiv_id,
+                bibitem_texts=bibitem_texts,
+                key_s2_ids=key_s2_ids,
+                bibitem_key=bibitem_key,
+            )
+            entity_info = EntityUploadInfo(
+                id_=bibitem_key,
+                type_="citation",
+                bounding_boxes=[],
+                data=entity_data,
+            )
+            entity_infos.append(entity_info)
 
         save_entities(
             s2_id=item.s2_id,
@@ -220,6 +266,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
             data_version=self.args.data_version,
             output_details=self.output_details,
             filename="citations.json",
+            do_not_save_boundingboxless_to_db=True,
         )
 
     def can_write_to_file(self) -> bool:
