@@ -1051,6 +1051,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   increaseNumHighlights = (discourses: string[]) => {
     this.setState((prevState) => {
       let newHighlightMultiplier = prevState.numHighlightMultiplier;
+
       const increment = 0.1;
       discourses.forEach((discourse: string) => {
         const prevMultiplier = prevState.numHighlightMultiplier[discourse];
@@ -1428,6 +1429,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     </button>
                     <button
                       id="moreHighlightsButton"
+                      disabled={Object.values(this.state.numHighlightMultiplier).every(m => m === 1)}
                       onClick={() => {
                         this.increaseNumHighlights([
                           "Result",
