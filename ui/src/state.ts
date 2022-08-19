@@ -158,8 +158,6 @@ export interface State extends Settings {
   skimOpacity: number;
   showSkimmingAnnotations: boolean;
   currentDiscourseObjId: string | null;
-  leadSentences: SentenceUnit[];
-  leadSentenceObjs: DiscourseObj[];
   discourseObjs: DiscourseObj[];
   discourseObjsById: { [id: string]: DiscourseObj };
   selectedDiscourses: string[];

@@ -12,7 +12,6 @@ import {
   isTerm,
   Paper,
   RhetoricUnit,
-  SentenceUnit,
   Symbol,
 } from "./api/types";
 import Control from "./components/control/Control";
@@ -37,16 +36,13 @@ import SearchPageMask from "./components/mask/SearchPageMask";
 import AppOverlay from "./components/overlay/AppOverlay";
 import PageOverlay from "./components/overlay/PageOverlay";
 import ViewerOverlay from "./components/overlay/ViewerOverlay";
-import PdfjsBrandbar from "./components/pdfjs/PdfjsBrandbar";
 import PdfjsToolbar from "./components/pdfjs/PdfjsToolbar";
 import DefinitionPreview from "./components/preview/DefinitionPreview";
 import PrimerPage from "./components/primer/PrimerPage";
 import ScrollbarMarkup from "./components/scrollbar/ScrollbarMarkup";
 import FindBar, { FindQuery } from "./components/search/FindBar";
-import abstractData from "./data/abstract/skimmingData.json";
-import captionData from "./data/captions/skimmingData.json";
-import facetData from "./data/facets/skimmingData.json";
-import sentenceData from "./data/sentences/skimmingData.json";
+import skimmingData from "./skimmingData/facets.json";
+
 import logger from "./logging";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
@@ -135,21 +131,16 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       skimOpacity: 0.3,
       showSkimmingAnnotations: true,
 
-      leadSentences:
-        props.paperId !== undefined
-          ? Object(sentenceData)[props.paperId.id]
-          : [],
-      leadSentenceObjs: [],
       currentDiscourseObjId: null,
       discourseObjs: [],
       discourseObjsById: {},
       selectedDiscourses: this.getAvailableFacets(),
       hiddenDiscourseObjs: [],
       numHighlightMultiplier: {
-        Method: 0.8,
-        Result: 0.8,
-        Novelty: 1.0,
-        Objective: 1.0,
+        objective: 1.0,
+        novelty: 1.0,
+        method: 1.0,
+        result: 1.0,
       },
 
       ...settings,
@@ -157,7 +148,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   getAvailableFacets = () => {
-    return ["Objective", "Novelty", "Method", "Result"];
+    return ["objective", "novelty", "method", "result"];
   };
 
   toggleControlPanelShowing = (): void => {
@@ -807,72 +798,38 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   initDiscourseObjs = () => {
     const unitsToShow: RhetoricUnit[] = [];
 
-    unitsToShow.push(...this.getAbstractHighlights());
-
-    let data = Object(facetData)[this.props.paperId!.id];
+    let data = Object(skimmingData)[this.props.paperId!.id];
+    console.log(data, this.props.paperId);
     data = this.preprocessData(data);
     unitsToShow.push(...this.getNoveltyHighlights(data));
     unitsToShow.push(...this.getObjectiveHighlights(data));
     unitsToShow.push(...this.getMethodHighlights(data));
     unitsToShow.push(...this.getResultHighlights(data));
-    // unitsToShow.push(...this.getConclusionHighlights(data));
-    unitsToShow.push(...this.getAuthorStatements(data));
+
+    // TODO: Always show faceted highlights in abstract.
 
     let discourseObjs = this.makeDiscourseObjsFromRhetoricUnits(unitsToShow);
     discourseObjs = this.disambiguateDiscourseLabels(discourseObjs);
 
-    // Initialize lead sentence objects
-    const discourseToColorMap: {
-      [label: string]: string;
-    } = uiUtils.getDiscourseToColorMap();
-
-    const leadSentenceObjs = Object(sentenceData)[this.props.paperId!.id].map(
-      (s: SentenceUnit) => ({
-        id: s.id,
-        entity: s,
-        label: "lead-sentence",
-        bboxes: s.bboxes,
-        tagLocation: s.bboxes[0],
-        color: discourseToColorMap["Highlight"],
-      })
-    );
-
     this.setState({
       discourseObjs: uiUtils.sortDiscourseObjs(discourseObjs),
-      leadSentenceObjs: uiUtils.sortDiscourseObjs(leadSentenceObjs),
-      discourseObjsById: this.makeDiscourseByIdMap(
-        discourseObjs,
-        leadSentenceObjs
-      ),
+      discourseObjsById: this.makeDiscourseByIdMap(discourseObjs),
     });
   };
 
   filterDiscourseObjsToShow = (discourseObjs: DiscourseObj[]) => {
-    if (!this.state.facetHighlights) {
-      discourseObjs = discourseObjs.filter(
-        (x: DiscourseObj) => x.label === "Author"
-      );
-    }
-    if (!this.state.authorStatementsEnabled) {
-      discourseObjs = discourseObjs.filter(
-        (x: DiscourseObj) => x.label !== "Author"
-      );
-    }
-    discourseObjs = discourseObjs.filter((x: DiscourseObj) =>
-      this.state.selectedDiscourses.includes(x.label)
-    );
-    discourseObjs = discourseObjs.filter((x: DiscourseObj) => {
-      const hiddenIds = this.state.hiddenDiscourseObjs.map((d) => d.id);
-      return !hiddenIds.includes(x.id);
-    });
-    return discourseObjs;
+    return discourseObjs
+      .filter((x: DiscourseObj) =>
+        this.state.selectedDiscourses.includes(x.label)
+      )
+      .filter((x: DiscourseObj) => {
+        const hiddenIds = this.state.hiddenDiscourseObjs.map((d) => d.id);
+        return !hiddenIds.includes(x.id);
+      });
   };
 
-  makeDiscourseByIdMap = (
-    discourseObjs: DiscourseObj[],
-    leadSentenceObjs: DiscourseObj[]
-  ) => {
-    const discourseObjsById = [...discourseObjs, ...leadSentenceObjs].reduce(
+  makeDiscourseByIdMap = (discourseObjs: DiscourseObj[]) => {
+    const discourseObjsById = discourseObjs.reduce(
       (acc: { [id: string]: DiscourseObj }, d: DiscourseObj) => {
         acc[d.id] = d;
         return acc;
@@ -893,106 +850,54 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       id: r.id,
       entity: r,
       label: r.label,
-      bboxes: r.bboxes,
-      tagLocation: r.bboxes[0],
+      boxes: r.boxes,
+      tagLocation: r.boxes[0],
       color: discourseToColorMap[r.label] ?? discourseToColorMap["Highlight"],
     }));
   };
 
-  getAbstractHighlights = () => {
-    let selectedAbstractHighlights: RhetoricUnit[] = [];
-
-    let abstractHighlights = Object(abstractData)[this.props.paperId!.id];
-
-    const labels = ["Objective", "Method", "Result"];
-    labels.forEach((label) => {
-      const sortedLabelObjs = abstractHighlights
-        .filter((r: RhetoricUnit) => r.label === label && r.prob !== null)
-        .sort((r1: RhetoricUnit, r2: RhetoricUnit) =>
-          r1.prob! > r2.prob! ? -1 : 1
-        );
-      selectedAbstractHighlights.push(...sortedLabelObjs.slice(0, 2));
-    });
-
-    return selectedAbstractHighlights;
-  };
-
   getNoveltyHighlights = (data: RhetoricUnit[]) => {
-    let filtered = data.filter(
-      (r) => r.label === "Novelty" && r.is_in_expected_section
-    );
-    return filtered.slice(
+    let novelty = data.filter((r) => r.label === "novelty");
+    return novelty.slice(
       0,
-      Math.round(this.state.numHighlightMultiplier["Novelty"] * filtered.length)
+      Math.round(this.state.numHighlightMultiplier["novelty"] * novelty.length)
     );
   };
 
   getMethodHighlights = (data: RhetoricUnit[]) => {
-    const method = data.filter(
-      (r) => r.label === "Method" && r.is_in_expected_section
-    );
-    const heuristicPreds = method.filter((r) => r.prob === null);
-    const classifierPreds = method
-      .filter((r) => r.prob !== null)
-      .sort((r1, r2) => (r1.prob! > r2.prob! ? -1 : 1));
-    const combined = [...classifierPreds, ...heuristicPreds];
-    return combined.slice(
+    const methods = data.filter((r) => r.label === "method");
+    return methods.slice(
       0,
-      Math.round(this.state.numHighlightMultiplier["Method"] * combined.length)
+      Math.round(this.state.numHighlightMultiplier["method"] * methods.length)
     );
   };
 
   getResultHighlights = (data: RhetoricUnit[]) => {
-    const result = data.filter((r) => {
+    const results = data.filter((r) => {
       const hasCitation = new RegExp(/\[.*\d.*\]/).test(r.text);
-      return r.label === "Result" && !hasCitation;
+      return r.label === "result" && !hasCitation;
     });
-    const heuristicPreds = result.filter((r) => r.prob === null);
-    const classifierPreds = result
-      .filter((r: RhetoricUnit) => r.prob !== null)
-      .sort((r1, r2) => (r1.prob! > r2.prob! ? -1 : 1));
 
-    const combined = [...heuristicPreds, ...classifierPreds];
-    return combined.slice(
+    return results.slice(
       0,
-      Math.round(this.state.numHighlightMultiplier["Result"] * combined.length)
+      Math.round(this.state.numHighlightMultiplier["result"] * results.length)
     );
   };
 
   getObjectiveHighlights = (data: RhetoricUnit[]) => {
-    let filtered = data.filter(
-      (r) =>
-        r.label === "Objective" &&
-        r.is_author_statement &&
-        r.is_in_expected_section
-    );
-    return filtered.slice(
+    const objectives = data.filter((r) => r.label === "objective");
+    return objectives.slice(
       0,
       Math.round(
-        this.state.numHighlightMultiplier["Objective"] * filtered.length
+        this.state.numHighlightMultiplier["objective"] * objectives.length
       )
     );
   };
 
-  getConclusionHighlights = (data: RhetoricUnit[]) => {
-    return data.filter(
-      (r) =>
-        r.label === "Conclusion" &&
-        r.is_author_statement &&
-        r.is_in_expected_section
-    );
-  };
-
-  getAuthorStatements = (data: RhetoricUnit[]) => {
-    return data.filter((r) => r.label === "Author");
-  };
-
   preprocessData = (data: RhetoricUnit[]) => {
     // Remove sentence fragments that were detected (i.e., start with a lowercase letter).
-    // Exception: author statements
     return data.filter(
-      (r: RhetoricUnit) =>
-        r.label === "Author" || r.text[0] !== r.text[0].toLowerCase()
+      (r: RhetoricUnit) => r.text[0] !== r.text[0].toLowerCase()
     );
   };
 
@@ -1009,11 +914,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     return Object.values(text_to_labels)
       .map((labels) => {
         const sortedLabels = labels.sort((firstEl, _) => {
-          if (firstEl.label === "Contribution") {
+          if (firstEl.label === "result") {
             return -1;
-          } else if (firstEl.label === "Result") {
-            return -1;
-          } else if (firstEl.label === "Novelty") {
+          } else if (firstEl.label === "novelty") {
             return -1;
           } else {
             return 0;
@@ -1302,7 +1205,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       return false;
     }
 
-    const dest = discourseObjsById[id].bboxes[0];
+    const dest = discourseObjsById[id].boxes[0];
     const page = Object.values(pages)[0];
     const { left, top } = uiUtils.convertBoxToPdfCoordinates(page.view, dest);
 
@@ -1375,13 +1278,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       this._jumpedToInitialFocus = true;
     }
 
-    const leadSentences = this.state.leadSentencesEnabled
-      ? this.state.leadSentences
-      : null;
-    const leadSentenceObjs = this.state.leadSentencesEnabled
-      ? this.state.leadSentenceObjs
-      : [];
-
     let discourseObjs = this.filterDiscourseObjsToShow(
       this.state.discourseObjs
     );
@@ -1417,10 +1313,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     <button
                       onClick={() => {
                         this.decreaseNumHighlights([
-                          "Result",
-                          "Method",
-                          "Objective",
-                          "Novelty",
+                          "result",
+                          "method",
+                          "objective",
+                          "novelty",
                         ]);
                       }}
                       className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
@@ -1429,13 +1325,15 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     </button>
                     <button
                       id="moreHighlightsButton"
-                      disabled={Object.values(this.state.numHighlightMultiplier).every(m => m === 1)}
+                      disabled={Object.values(
+                        this.state.numHighlightMultiplier
+                      ).every((m) => m === 1)}
                       onClick={() => {
                         this.increaseNumHighlights([
-                          "Result",
-                          "Method",
-                          "Objective",
-                          "Novelty",
+                          "result",
+                          "method",
+                          "objective",
+                          "novelty",
                         ]);
                       }}
                       className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
@@ -1461,7 +1359,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 <span>Customize UI</span>
               </button> */}
             </PdfjsToolbar>
-            {/* <PdfjsBrandbar /> */}
             <ViewerOverlay
               pdfViewer={this.state.pdfViewer}
               handleSetTextSelection={this.setTextSelection}
@@ -1558,7 +1455,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 }
                 entities={this.state.entities}
                 selectedEntityIds={this.state.selectedEntityIds}
-                leadSentenceObjs={leadSentenceObjs}
                 discourseObjs={discourseObjs}
                 selectedDiscourses={this.state.selectedDiscourses}
                 handleDiscourseSelected={this.selectDiscourseClass}
@@ -1600,11 +1496,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       this.state.pdfViewerApplication?.pdfDocument?.numPages
                     }
                     discourseObjs={discourseObjs}
-                    captionUnits={
-                      this.state.mediaScrollbarMarkupEnabled
-                        ? Object(captionData)[this.props.paperId!.id]
-                        : []
-                    }
+                    captionUnits={[]}
                     handleMarkClicked={this.onScrollbarMarkClicked}
                   ></ScrollbarMarkup>
                 )}
@@ -1814,21 +1706,17 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       discourseObjs.length > 0 && (
                         <DiscourseTagLayer
                           pageView={pageView}
-                          discourseObjs={discourseObjs.filter(
-                            (x) => x.label !== "Author"
-                          )}
+                          discourseObjs={discourseObjs}
                         ></DiscourseTagLayer>
                       )}
 
                     {this.props.paperId !== undefined &&
                       this.state.showSkimmingAnnotations &&
-                      (discourseObjs.length > 0 ||
-                        (leadSentences !== null && leadSentences.length > 0)) &&
+                      discourseObjs.length > 0 &&
                       this.state.cueingStyle === "highlight" && (
                         <HighlightLayer
                           pageView={pageView}
                           discourseObjs={discourseObjs}
-                          leadSentences={leadSentences}
                           opacity={this.state.skimOpacity}
                           handleDiscourseObjSelected={
                             this.setCurrentDiscourseObjId
@@ -1844,13 +1732,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
                     {this.props.paperId !== undefined &&
                       this.state.showSkimmingAnnotations &&
-                      (discourseObjs.length > 0 ||
-                        (leadSentences !== null && leadSentences.length > 0)) &&
+                      discourseObjs.length > 0 &&
                       this.state.cueingStyle === "underline" && (
                         <UnderlineLayer
                           pageView={pageView}
                           discourseObjs={discourseObjs}
-                          leadSentences={leadSentences}
                         ></UnderlineLayer>
                       )}
                   </PageOverlay>

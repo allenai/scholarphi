@@ -409,7 +409,8 @@ export function extractArxivId(url: string): string | undefined {
 }
 
 export function extractCustomId(url: string): string | undefined {
-  const matches = url.match(/rayfok\.github\.io\/files\/uist-papers\/(.*)(?:\.pdf)/) || [];
+  const matches =
+    url.match(/rayfok\.github\.io\/files\/study-papers\/(.*)(?:\.pdf)/) || [];
   return matches[1];
 }
 
@@ -422,41 +423,40 @@ export function updateAlpha(color: string, opacity: number): string {
 
 export function getDiscourseToColorMap(): { [label: string]: string } {
   return {
-    Highlight: "#F1E7407D",
-    Objective: "#95F0387D",
-    Novelty: "#F578425D",
-    Contribution: "#62DECF4D",
-    Method: "#75BCE57D",
-    StudySetup: "#ECCE8E7D",
-    Result: "#F285A07D",
-    Conclusion: "#8616284D",
-    "Future Work": "#EDD96D2D",
+    highlight: "#F1E7407D",
+    objective: "#95F0387D",
+    novelty: "#F578425D",
+    method: "#75BCE57D",
+    studySetup: "#ECCE8E7D",
+    result: "#F285A07D",
+    conclusion: "#8616284D",
+    futureWork: "#EDD96D2D",
   };
 }
 
 export function sortDiscourseObjs(discourseObjs: DiscourseObj[]) {
   const sorted = discourseObjs.sort((d1: DiscourseObj, d2: DiscourseObj) => {
-    const d1MinPage = d1.bboxes.reduce((b1, b2) => {
+    const d1MinPage = d1.boxes.reduce((b1, b2) => {
       return b1.page < b2.page ? b1 : b2;
     }).page;
-    const d2MinPage = d2.bboxes.reduce((b1, b2) => {
+    const d2MinPage = d2.boxes.reduce((b1, b2) => {
       return b1.page < b2.page ? b1 : b2;
     }).page;
 
     if (d1MinPage === d2MinPage) {
-      const d1MinLeft = d1.bboxes.reduce((b1, b2) => {
+      const d1MinLeft = d1.boxes.reduce((b1, b2) => {
         return b1.left < b2.left ? b1 : b2;
       }).left;
-      const d2MinLeft = d2.bboxes.reduce((b1, b2) => {
+      const d2MinLeft = d2.boxes.reduce((b1, b2) => {
         return b1.left < b2.left ? b1 : b2;
       }).left;
       const allowedDelta = 0.02;
 
       if (Math.abs(d1MinLeft - d2MinLeft) < allowedDelta) {
-        const d1MinTop = d1.bboxes.reduce((b1, b2) => {
+        const d1MinTop = d1.boxes.reduce((b1, b2) => {
           return b1.top < b2.top ? b1 : b2;
         }).top;
-        const d2MinTop = d2.bboxes.reduce((b1, b2) => {
+        const d2MinTop = d2.boxes.reduce((b1, b2) => {
           return b1.top < b2.top ? b1 : b2;
         }).top;
         return d1MinTop < d2MinTop ? -1 : 1;
@@ -470,7 +470,10 @@ export function sortDiscourseObjs(discourseObjs: DiscourseObj[]) {
   return sorted;
 }
 
-export function addClassToElementsByClassname(classname: string, classToAdd: string) {
+export function addClassToElementsByClassname(
+  classname: string,
+  classToAdd: string
+) {
   let retries = 0;
   const interval = setInterval(() => {
     const highlight = document.getElementsByClassName(classname);

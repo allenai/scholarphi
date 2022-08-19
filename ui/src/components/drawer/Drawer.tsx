@@ -28,7 +28,6 @@ interface Props {
   contentType: DrawerContentType;
   entities: Entities | null;
   selectedEntityIds: string[];
-  leadSentenceObjs: DiscourseObj[];
   discourseObjs: DiscourseObj[];
   selectedDiscourses: string[];
   propagateEntityEdits: boolean;
@@ -104,7 +103,6 @@ export class Drawer extends React.PureComponent<Props> {
       contentType,
       entities,
       selectedEntityIds,
-      leadSentenceObjs,
       discourseObjs,
       selectedDiscourses,
     } = this.props;
@@ -179,7 +177,6 @@ export class Drawer extends React.PureComponent<Props> {
           {contentType === "facets" && (
             <Facets
               discourseObjs={discourseObjs}
-              leadSentenceObjs={leadSentenceObjs}
               selectedDiscourses={selectedDiscourses}
               handleJumpToDiscourseObj={this.props.handleJumpToDiscourseObj}
               handleDiscourseSelected={this.props.handleDiscourseSelected}

@@ -17,10 +17,10 @@ interface State {
 }
 
 const TAG_DISPLAY_NAMES: { [key: string]: string } = {
-  Objective: "Objectives",
-  Novelty: "Novelty Statements",
-  Method: "Methods",
-  Result: "Results",
+  objective: "Objectives",
+  novelty: "Novelty Statements",
+  method: "Methods",
+  result: "Results",
 };
 class DiscoursePalette extends React.PureComponent<Props, State> {
   constructor(props: Props) {
@@ -38,7 +38,7 @@ class DiscoursePalette extends React.PureComponent<Props, State> {
   };
 
   getAvailableDiscourseTags = () => {
-    return ["Objective", "Novelty", "Method", "Result"];
+    return ["objective", "novelty", "method", "result"];
   };
 
   render() {

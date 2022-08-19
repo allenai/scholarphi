@@ -23,4 +23,6 @@ src/data/sentences/*
 src/data/abstract/*
 !src/data/abstract/skimmingData.json
 
+old/
+
 helper-scripts/

@@ -9,7 +9,6 @@ const logger = getRemoteLogger();
 
 interface Props {
   discourseObjs: DiscourseObj[];
-  leadSentenceObjs: DiscourseObj[];
   selectedDiscourses: string[];
   handleDiscourseSelected: (discourse: string) => void;
   handleJumpToDiscourseObj: (id: string) => void;
@@ -38,19 +37,38 @@ export class Facets extends React.PureComponent<Props> {
   };
 
   render() {
-    const { leadSentenceObjs, discourseObjs, selectedDiscourses } = this.props;
+    const { discourseObjs, selectedDiscourses } = this.props;
 
-    const bySection = uiUtils
-      .sortDiscourseObjs([...discourseObjs, ...leadSentenceObjs])
-      .reduce((acc: { [section: string]: DiscourseObj[] }, d: DiscourseObj) => {
-        // The section attribute contains (when they exist) section, subsection, and
-        // subsubsection header data, delimited by "@@".
-        const long_section = d.entity.section;
-        const section = long_section.split("@@").pop() || "";
-        if (!acc[section]) {
-          acc[section] = [];
+    /**
+     * MMDA output does not provide section metadata for spans.
+     * We therefore cannot split sentences by section in the sidebar.
+     * TODO: Add section headers back when they can be parsed.
+     */
+
+    // const bySection = uiUtils
+    //   .sortDiscourseObjs(discourseObjs)
+    //   .reduce((acc: { [section: string]: DiscourseObj[] }, d: DiscourseObj) => {
+    //     // The section attribute contains (when they exist) section, subsection, and
+    //     // subsubsection header data, delimited by "@@".
+    //     const long_section = d.entity.section;
+    //     const section = long_section.split("@@").pop() || "";
+    //     if (!acc[section]) {
+    //       acc[section] = [];
+    //     }
+    //     acc[section].push(d);
+    //     return acc;
+    //   }, {});
+
+    console.log(discourseObjs);
+
+    const byPage = uiUtils
+      .sortDiscourseObjs(discourseObjs)
+      .reduce((acc: { [page: number]: DiscourseObj[] }, d: DiscourseObj) => {
+        const page = d.boxes[0]["page"] + 1;
+        if (!acc[page]) {
+          acc[page] = [];
         }
-        acc[section].push(d);
+        acc[page].push(d);
         return acc;
       }, {});
 
@@ -74,7 +92,47 @@ export class Facets extends React.PureComponent<Props> {
           className="document-snippets discourse-objs"
           style={{ marginTop: showFacetHighlights ? "9em" : 0 }}
         >
-          {Object.entries(bySection).map(
+          {/* No delimiter */}
+          {/* {uiUtils.sortDiscourseObjs(discourseObjs).map((d: DiscourseObj) => {
+            return (
+              <FacetSnippet
+                key={d.id}
+                id={d.id}
+                color={d.color}
+                onClick={() => this.handleFacetSnippetClicked(d)}
+                handleJumpToDiscourseObj={this.props.handleJumpToDiscourseObj}
+              >
+                {d.entity.text}
+              </FacetSnippet>
+            );
+          })} */}
+
+          {/* Page delimiter */}
+          {Object.entries(byPage).map(([page, ds], pageIdx: number) => {
+            return (
+              <React.Fragment key={pageIdx}>
+                <p className="discourse-page-header">Page {page}</p>
+                {uiUtils.sortDiscourseObjs(ds).map((d: DiscourseObj) => {
+                  return (
+                    <FacetSnippet
+                      key={d.id}
+                      id={d.id}
+                      color={d.color}
+                      onClick={() => this.handleFacetSnippetClicked(d)}
+                      handleJumpToDiscourseObj={
+                        this.props.handleJumpToDiscourseObj
+                      }
+                    >
+                      {d.entity.text}
+                    </FacetSnippet>
+                  );
+                })}
+              </React.Fragment>
+            );
+          })}
+
+          {/* Section delimiter */}
+          {/* {Object.entries(bySection).map(
             ([section, ds], sectionIdx: number) => {
               return (
                 <React.Fragment key={sectionIdx}>
@@ -97,7 +155,7 @@ export class Facets extends React.PureComponent<Props> {
                 </React.Fragment>
               );
             }
-          )}
+          )} */}
         </div>
       </>
     );

@@ -10,7 +10,6 @@ const logger = getRemoteLogger();
 interface Props {
   pageView: PDFPageView;
   discourseObjs: DiscourseObj[];
-  leadSentences: SentenceUnit[] | null;
   opacity: number;
   drawerOpen: boolean;
   handleDiscourseObjSelected: (d: DiscourseObj) => void;
@@ -95,7 +94,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
     this.setState({
       // showControlToolbar: true,
       focusedDiscourseObj: sentence,
-      clickedLineBox: sentence.bboxes[lineIndex],
+      clickedLineBox: sentence.boxes[lineIndex],
       clickX: event.clientX - pageRect.left,
     });
   };
@@ -126,13 +125,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const {
-      pageView,
-      discourseObjs,
-      leadSentences,
-      opacity,
-      drawerOpen,
-    } = this.props;
+    const { pageView, discourseObjs, opacity, drawerOpen } = this.props;
     const {
       showControlToolbar,
       focusedDiscourseObj,
@@ -154,18 +147,11 @@ class HighlightLayer extends React.PureComponent<Props, State> {
       (d) => d.tagLocation.page === pageNumber
     );
 
-    let filteredLeadSentences: SentenceUnit[] = [];
-    if (leadSentences !== null) {
-      filteredLeadSentences = leadSentences.filter((s) =>
-        s.bboxes.every((b: BoundingBox) => b.page === pageNumber)
-      );
-    }
-
     return (
       <>
         {filteredDiscourseObjs &&
           filteredDiscourseObjs.map((d, i) =>
-            d.bboxes.map((b, j) => (
+            d.boxes.map((b, j) => (
               <React.Fragment key={`highlight-${i}-${j}`}>
                 <div
                   className={`highlight-mask__highlight discourse-highlight highlight-${d.id}`}
@@ -190,25 +176,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
               </React.Fragment>
             ))
           )}
-        {filteredLeadSentences &&
-          filteredLeadSentences.map((s, i) =>
-            s.bboxes.map((b, j) => (
-              <React.Fragment key={`highlight-${i}-${j}`}>
-                <div
-                  className={`highlight-mask__highlight highlight-${i}`}
-                  style={{
-                    position: "absolute",
-                    left: b.left * width,
-                    top: b.top * height,
-                    width: b.width * width,
-                    height: b.height * height,
-                    backgroundColor: "#F1E740",
-                    opacity: 0.25,
-                  }}
-                />
-              </React.Fragment>
-            ))
-          )}
+
         {showControlToolbar &&
           focusedDiscourseObj &&
           tooltipX !== null &&

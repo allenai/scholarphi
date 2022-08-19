@@ -28,8 +28,8 @@ export class ScrollbarMark extends React.PureComponent<Props> {
         onClick={this.onMarkClicked}
         style={{
           top: this.props.mapDiscourseToScrollBar(
-            sentence.bboxes[0].page,
-            sentence.bboxes[0].top
+            sentence.boxes[0].page,
+            sentence.boxes[0].top
           ),
           background: uiUtils.updateAlpha(sentence.color, 0.9),
         }}

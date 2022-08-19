@@ -6,7 +6,6 @@ import Annotation from "../entity/Annotation";
 interface Props {
   pageView: PDFPageView;
   discourseObjs: DiscourseObj[];
-  leadSentences: SentenceUnit[] | null;
 }
 
 class UnderlineLayer extends React.Component<Props> {
@@ -15,7 +14,7 @@ class UnderlineLayer extends React.Component<Props> {
   }
 
   render() {
-    const { pageView, discourseObjs, leadSentences } = this.props;
+    const { pageView, discourseObjs } = this.props;
 
     return (
       <div className={"underline-layer"}>
@@ -29,25 +28,10 @@ class UnderlineLayer extends React.Component<Props> {
             active={false}
             selected={false}
             color={x.color}
-            boundingBoxes={x.bboxes}
+            boundingBoxes={x.boxes}
             handleSelect={() => {}}
           />
         ))}
-        {leadSentences !== null &&
-          leadSentences.map((x: SentenceUnit, index: number) => (
-            <Annotation
-              pageView={pageView}
-              key={index.toString()}
-              id={index.toString()}
-              className={"discourse-underline"}
-              underline={true}
-              active={false}
-              selected={false}
-              color={"#b3b300"}
-              boundingBoxes={x.bboxes}
-              handleSelect={() => {}}
-            />
-          ))}
       </div>
     );
   }
