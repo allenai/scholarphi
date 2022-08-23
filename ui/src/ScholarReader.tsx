@@ -139,7 +139,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       numHighlightMultiplier: {
         objective: 1.0,
         novelty: 1.0,
-        method: 0.7,
+        method: 0.8,
         result: 0.8,
       },
 
