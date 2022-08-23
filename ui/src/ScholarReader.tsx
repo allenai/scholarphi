@@ -139,8 +139,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       numHighlightMultiplier: {
         objective: 1.0,
         novelty: 1.0,
-        method: 1.0,
-        result: 1.0,
+        method: 0.7,
+        result: 0.8,
       },
 
       ...settings,
@@ -914,9 +914,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     return Object.values(text_to_labels)
       .map((labels) => {
         const sortedLabels = labels.sort((firstEl, _) => {
-          if (firstEl.label === "result") {
+          if (firstEl.label === "novelty") {
             return -1;
-          } else if (firstEl.label === "novelty") {
+          } else if (firstEl.label === "objective") {
             return -1;
           } else {
             return 0;
