@@ -1,3 +1,4 @@
+import MuiTooltip from "@material-ui/core/Tooltip";
 import classNames from "classnames";
 import React from "react";
 import * as api from "./api/api";
@@ -41,8 +42,6 @@ import DefinitionPreview from "./components/preview/DefinitionPreview";
 import PrimerPage from "./components/primer/PrimerPage";
 import ScrollbarMarkup from "./components/scrollbar/ScrollbarMarkup";
 import FindBar, { FindQuery } from "./components/search/FindBar";
-import skimmingData from "./skimmingData/facets.json";
-
 import logger from "./logging";
 import * as selectors from "./selectors";
 import { matchingSymbols } from "./selectors";
@@ -52,6 +51,7 @@ import {
   getSettings,
   GlossStyle,
 } from "./settings";
+import skimmingData from "./skimmingData/facets.json";
 import {
   Entities,
   KnownEntityType,
@@ -800,7 +800,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     const unitsToShow: RhetoricUnit[] = [];
 
     let data = Object(skimmingData)[this.props.paperId!.id];
-    console.log(data, this.props.paperId);
     data = this.preprocessData(data);
     unitsToShow.push(...this.getNoveltyHighlights(data));
     unitsToShow.push(...this.getObjectiveHighlights(data));
@@ -1028,6 +1027,18 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         ),
       };
     }, this.initDiscourseObjs);
+  };
+
+  isHighlightQuantityMaximum = () => {
+    return Object.values(this.state.numHighlightMultiplier).every(
+      (m) => m === 1
+    );
+  };
+
+  isHighlightQuantityMinimum = () => {
+    return Object.values(this.state.numHighlightMultiplier).every(
+      (m) => m === 0
+    );
   };
 
   onScrollbarMarkClicked = (id: string) => {
@@ -1339,36 +1350,56 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     >
                       Number of highlights
                     </label>
-                    <button
-                      onClick={() => {
-                        this.decreaseNumHighlights([
-                          "result",
-                          "method",
-                          "objective",
-                          "novelty",
-                        ]);
-                      }}
-                      className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
+                    <MuiTooltip
+                      title={
+                        this.isHighlightQuantityMinimum()
+                          ? "Min highlights shown"
+                          : "Decrease number of highlights"
+                      }
                     >
-                      <MinusIcon width="16" height="16" />
-                    </button>
-                    <button
-                      id="moreHighlightsButton"
-                      disabled={Object.values(
-                        this.state.numHighlightMultiplier
-                      ).every((m) => m === 1)}
-                      onClick={() => {
-                        this.increaseNumHighlights([
-                          "result",
-                          "method",
-                          "objective",
-                          "novelty",
-                        ]);
-                      }}
-                      className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
+                      <span>
+                        <button
+                          id="fewerHighlightsButton"
+                          disabled={this.isHighlightQuantityMinimum()}
+                          onClick={() => {
+                            this.decreaseNumHighlights([
+                              "result",
+                              "method",
+                              "objective",
+                              "novelty",
+                            ]);
+                          }}
+                          className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
+                        >
+                          <MinusIcon width="16" height="16" />
+                        </button>
+                      </span>
+                    </MuiTooltip>
+                    <MuiTooltip
+                      title={
+                        this.isHighlightQuantityMaximum()
+                          ? "Max highlights shown"
+                          : "Increase number of highlights"
+                      }
                     >
-                      <PlusIcon width="16" height="16" />
-                    </button>
+                      <span>
+                        <button
+                          id="moreHighlightsButton"
+                          disabled={this.isHighlightQuantityMaximum()}
+                          onClick={() => {
+                            this.increaseNumHighlights([
+                              "result",
+                              "method",
+                              "objective",
+                              "novelty",
+                            ]);
+                          }}
+                          className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
+                        >
+                          <PlusIcon width="16" height="16" />
+                        </button>
+                      </span>
+                    </MuiTooltip>
                     <button
                       onClick={this.exportSkimmingAnnotations}
                       className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
