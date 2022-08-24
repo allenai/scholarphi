@@ -1230,6 +1230,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     );
     const facetColors = uiUtils.getFacetColors();
     const facetDisplayNames = uiUtils.getFacetDisplayNames();
+    const paperId = this.props.paperId?.id;
 
     const doc = new jsPDF();
     const highlightsList = document.createElement("ul");
@@ -1255,7 +1256,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
     doc.html(highlightsList, {
       callback: function (doc) {
-        doc.save("sample.pdf");
+        doc.save(`annotations-${paperId}.pdf`);
       },
       autoPaging: "text",
       margin: [25, 15, 25, 25],
