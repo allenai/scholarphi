@@ -130,6 +130,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
       skimOpacity: 0.3,
       showSkimmingAnnotations: true,
+      showSkimmingAnnotationColors: true,
 
       currentDiscourseObjId: null,
       discourseObjs: [],
@@ -852,7 +853,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       label: r.label,
       boxes: r.boxes,
       tagLocation: r.boxes[0],
-      color: discourseToColorMap[r.label] ?? discourseToColorMap["Highlight"],
+      color: discourseToColorMap[r.label] ?? discourseToColorMap["highlight"],
     }));
   };
 
@@ -1251,6 +1252,34 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     }
   };
 
+  exportSkimmingAnnotations = () => {
+    // TODO: Figure out how to export selected discourse objects (highlights).
+  };
+
+  toggleSkimmingAnnotationColors = () => {
+    const newShowSkimmingAnnotationColors = !this.state
+      .showSkimmingAnnotationColors;
+
+    const discourseToColorMap: {
+      [label: string]: string;
+    } = uiUtils.getDiscourseToColorMap();
+
+    const discourseObjs = this.state.discourseObjs.map((x) => {
+      x.color =
+        newShowSkimmingAnnotationColors &&
+        Object.keys(discourseToColorMap).includes(x.label)
+          ? discourseToColorMap[x.label]
+          : discourseToColorMap["highlight"];
+      return x;
+    });
+
+    this.setState({
+      discourseObjs: uiUtils.sortDiscourseObjs(discourseObjs),
+      discourseObjsById: this.makeDiscourseByIdMap(discourseObjs),
+      showSkimmingAnnotationColors: newShowSkimmingAnnotationColors,
+    });
+  };
+
   render() {
     let findMatchEntityId: string | null = null;
     if (
@@ -1340,16 +1369,33 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     >
                       <PlusIcon width="16" height="16" />
                     </button>
+                    <button
+                      onClick={this.exportSkimmingAnnotations}
+                      className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
+                    >
+                      <span>Export Annotations</span>
+                    </button>
+                    <button
+                      onClick={this.toggleSkimmingAnnotationColors}
+                      className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
+                    >
+                      <span>
+                        {this.state.showSkimmingAnnotationColors
+                          ? "Disable color"
+                          : "Enable color"}
+                      </span>
+                    </button>
                   </>
                 )}
+
               <button
                 onClick={this.toggleSkimmingAnnotations}
                 className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
               >
                 <span>
                   {this.state.showSkimmingAnnotations
-                    ? "Deactivate skimming"
-                    : "Activate skimming"}
+                    ? "Disable skimming"
+                    : "Enable skimming"}
                 </span>
               </button>
               {/* <button
