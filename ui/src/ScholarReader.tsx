@@ -1,5 +1,5 @@
-import MuiTooltip from "@material-ui/core/Tooltip";
 import classNames from "classnames";
+import jsPDF from "jspdf";
 import React from "react";
 import * as api from "./api/api";
 import {
@@ -30,8 +30,6 @@ import { Drawer, DrawerContentType } from "./components/drawer/Drawer";
 import DrawerControlFab from "./components/drawer/DrawerControlFab";
 import EntityAnnotationLayer from "./components/entity/EntityAnnotationLayer";
 import EquationDiagram from "./components/entity/equation/EquationDiagram";
-import { MinusIcon } from "./components/icon/MinusIcon";
-import { PlusIcon } from "./components/icon/PlusIcon";
 import EntityPageMask from "./components/mask/EntityPageMask";
 import SearchPageMask from "./components/mask/SearchPageMask";
 import AppOverlay from "./components/overlay/AppOverlay";
@@ -1224,7 +1222,51 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   exportSkimmingAnnotations = () => {
-    // TODO: Figure out how to export selected discourse objects (highlights).
+    const highlightsByFacet = this.state.discourseObjs.reduce(
+      (acc: { [facet: string]: DiscourseObj[] }, d: DiscourseObj) => {
+        return { ...acc, [d.label]: [...(acc[d.label] || []), d] };
+      },
+      {}
+    );
+    const facetColors = uiUtils.getDiscourseToColorMap();
+    const facetDisplayNames = uiUtils.getFacetDisplayNames();
+
+    console.log(highlightsByFacet);
+
+    const doc = new jsPDF();
+    const highlightsList = document.createElement("ul");
+    highlightsList.style.width = "160px";
+    highlightsList.style.listStyleType = "none";
+    Object.entries(highlightsByFacet).map(([facet, highlights]) => {
+      const facetHeaderText = document.createElement("span");
+      facetHeaderText.style.fontSize = "8px";
+      facetHeaderText.style.color = facetColors[facet];
+      facetHeaderText.appendChild(
+        document.createTextNode(facetDisplayNames[facet])
+      );
+      highlightsList.appendChild(facetHeaderText);
+      highlights.forEach((highlight) => {
+        let li = document.createElement("li");
+        li.innerText = `${highlight.entity.text} (Page ${highlight.entity.boxes[0].page})`;
+        li.style.fontSize = "4px";
+        li.style.overflowWrap = "break-word";
+        li.style.margin = "4px 0";
+        highlightsList.appendChild(li);
+      });
+    });
+
+    doc.html(highlightsList, {
+      callback: function (doc) {
+        doc.save("sample.pdf");
+      },
+      autoPaging: "text",
+      margin: [25, 15, 25, 25],
+      width: doc.internal.pageSize.getWidth(),
+      windowWidth: 200,
+      html2canvas: {
+        scale: 1,
+      },
+    });
   };
 
   toggleSkimmingAnnotationColors = () => {

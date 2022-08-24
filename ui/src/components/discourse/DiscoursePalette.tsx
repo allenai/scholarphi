@@ -2,6 +2,7 @@ import React from "react";
 import { DiscourseObj } from "../../api/types";
 import { getRemoteLogger } from "../../logging";
 import DiscourseTagChip from "./DiscourseTagChip";
+import * as uiUtils from "../../utils/ui";
 
 const logger = getRemoteLogger();
 
@@ -16,12 +17,6 @@ interface State {
   firstSelection: boolean;
 }
 
-const TAG_DISPLAY_NAMES: { [key: string]: string } = {
-  objective: "Objectives",
-  novelty: "Novelty Statements",
-  method: "Methods",
-  result: "Results",
-};
 class DiscoursePalette extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -55,6 +50,7 @@ class DiscoursePalette extends React.PureComponent<Props, State> {
       },
       {}
     );
+    const facetDisplayNames = uiUtils.getFacetDisplayNames();
 
     return (
       <div className="discourse-chip-palette-wrapper">
@@ -66,7 +62,7 @@ class DiscoursePalette extends React.PureComponent<Props, State> {
                 <DiscourseTagChip
                   key={d}
                   id={d}
-                  name={`${TAG_DISPLAY_NAMES[d] || d} (${
+                  name={`${facetDisplayNames[d] || d} (${
                     discourseObjs.filter((x) => x.label === d).length
                   })`}
                   selected={selectedDiscourses.includes(d)}

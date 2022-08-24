@@ -434,6 +434,15 @@ export function getDiscourseToColorMap(): { [label: string]: string } {
   };
 }
 
+export function getFacetDisplayNames(): { [key: string]: string } {
+  return {
+    objective: "Objectives",
+    novelty: "Novelty Statements",
+    method: "Methods",
+    result: "Results",
+  };
+}
+
 export function sortDiscourseObjs(discourseObjs: DiscourseObj[]) {
   const sorted = discourseObjs.sort((d1: DiscourseObj, d2: DiscourseObj) => {
     const d1MinPage = d1.boxes.reduce((b1, b2) => {
