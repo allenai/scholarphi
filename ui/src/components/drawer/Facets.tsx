@@ -75,25 +75,20 @@ export class Facets extends React.PureComponent<Props> {
         return acc;
       }, {});
 
-    // We want to hide the palette and shift the snippets up when only lead sentences are shown
-    const showFacetHighlights =
-      discourseObjs.length > 0 || selectedDiscourses.length === 0;
-
     return (
       <>
-        {showFacetHighlights && (
-          <div>
-            <DiscoursePalette
-              discourseToColorMap={uiUtils.getDiscourseToColorMap()}
-              discourseObjs={discourseObjs}
-              selectedDiscourses={selectedDiscourses}
-              handleDiscourseSelected={this.props.handleDiscourseSelected}
-            ></DiscoursePalette>
-          </div>
-        )}
+        <div>
+          <DiscoursePalette
+            discourseToColorMap={uiUtils.getDiscourseToColorMap()}
+            discourseObjs={discourseObjs}
+            selectedDiscourses={selectedDiscourses}
+            handleDiscourseSelected={this.props.handleDiscourseSelected}
+          ></DiscoursePalette>
+        </div>
+
         <div
           className="document-snippets discourse-objs"
-          style={{ marginTop: showFacetHighlights ? "9em" : 0 }}
+          style={{ marginTop: "9em" }}
         >
           <Box width={"100%"}>
             <span>Number of highlights</span>
