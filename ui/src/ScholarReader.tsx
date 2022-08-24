@@ -1255,7 +1255,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     });
 
     doc.html(highlightsList, {
-      callback: function (doc) {
+      callback: (doc: any) => {
         doc.save(`annotations-${paperId}.pdf`);
       },
       autoPaging: "text",
