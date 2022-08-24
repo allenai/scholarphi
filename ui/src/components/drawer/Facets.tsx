@@ -1,17 +1,22 @@
+import Box from "@material-ui/core/Box";
+import Slider from "@material-ui/core/Slider";
 import React from "react";
 import { DiscourseObj } from "../../api/types";
 import { getRemoteLogger } from "../../logging";
 import * as uiUtils from "../../utils/ui";
 import DiscoursePalette from "../discourse/DiscoursePalette";
 import FacetSnippet from "./FacetSnippet";
+import Typography from "@material-ui/core/Typography";
 
 const logger = getRemoteLogger();
 
 interface Props {
   discourseObjs: DiscourseObj[];
   selectedDiscourses: string[];
+  highlightQuantity: number;
   handleDiscourseSelected: (discourse: string) => void;
   handleJumpToDiscourseObj: (id: string) => void;
+  handleHighlightQuantityChanged: (value: number) => void;
 }
 
 export class Facets extends React.PureComponent<Props> {
@@ -59,8 +64,6 @@ export class Facets extends React.PureComponent<Props> {
     //     return acc;
     //   }, {});
 
-    console.log(discourseObjs);
-
     const byPage = uiUtils
       .sortDiscourseObjs(discourseObjs)
       .reduce((acc: { [page: number]: DiscourseObj[] }, d: DiscourseObj) => {
@@ -92,6 +95,18 @@ export class Facets extends React.PureComponent<Props> {
           className="document-snippets discourse-objs"
           style={{ marginTop: showFacetHighlights ? "9em" : 0 }}
         >
+          <Box width={"100%"}>
+            <span>Number of highlights</span>
+            <Slider
+              value={this.props.highlightQuantity}
+              step={10}
+              marks
+              onChange={(e, value) =>
+                this.props.handleHighlightQuantityChanged(value as number)
+              }
+            />
+          </Box>
+
           {/* No delimiter */}
           {/* {uiUtils.sortDiscourseObjs(discourseObjs).map((d: DiscourseObj) => {
             return (

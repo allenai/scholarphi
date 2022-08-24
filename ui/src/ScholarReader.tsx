@@ -144,6 +144,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         result: 0.8,
       },
 
+      highlightQuantity: 70,
+
       ...settings,
     };
   }
@@ -951,28 +953,26 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     }
   };
 
-  increaseNumHighlights = (discourses: string[]) => {
+  handleHighlightQuantityChanged = (value: number) => {
+    this.setState({ highlightQuantity: value });
+
+    const discourses = ["result", "method", "objective", "novelty"];
     this.setState((prevState) => {
       let newHighlightMultiplier = prevState.numHighlightMultiplier;
 
-      const increment = 0.1;
       discourses.forEach((discourse: string) => {
-        const prevMultiplier = prevState.numHighlightMultiplier[discourse];
-        const highlightMult = Math.min(
-          1,
-          Math.round((prevMultiplier + increment) * 10) / 10
-        );
+        // Handle objective and novelty highlights a bit differently (proritize showing them)
+        if (["objective", "novelty"].includes(discourse)) {
+          value *= 3;
+        }
         newHighlightMultiplier = {
           ...newHighlightMultiplier,
-          [discourse]: highlightMult,
+          [discourse]: value / 100,
         };
       });
 
       logger.log("debug", "increase-num-highlights", {
-        discourses: discourses,
-        prevMultiplier: prevState.numHighlightMultiplier,
-        newMultiplier: newHighlightMultiplier,
-        increment: increment,
+        highlightQuantity: value,
       });
 
       let newSelectedDiscourses = prevState.selectedDiscourses;
@@ -985,46 +985,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       return {
         numHighlightMultiplier: newHighlightMultiplier,
         selectedDiscourses: newSelectedDiscourses,
-      };
-    }, this.initDiscourseObjs);
-  };
-
-  decreaseNumHighlights = (discourses: string[]) => {
-    this.setState((prevState) => {
-      let newHighlightMultiplier = prevState.numHighlightMultiplier;
-      const decrement = 0.1;
-      discourses.forEach((discourse: string) => {
-        const prevMultiplier = prevState.numHighlightMultiplier[discourse];
-        const highlightMult = Math.max(
-          0,
-          Math.round((prevMultiplier - decrement) * 10) / 10
-        );
-        newHighlightMultiplier = {
-          ...newHighlightMultiplier,
-          [discourse]: highlightMult,
-        };
-      });
-
-      logger.log("debug", "decrease-num-highlights", {
-        discourses: discourses,
-        prevMultiplier: prevState.numHighlightMultiplier,
-        newMultiplier: newHighlightMultiplier,
-        decrement: decrement,
-      });
-
-      let discoursesToRemove: Array<string> = [];
-      discourses.forEach((discourse: string) => {
-        if (newHighlightMultiplier[discourse] === 0) {
-          if (prevState.selectedDiscourses.includes(discourse)) {
-            discoursesToRemove.push(discourse);
-          }
-        }
-      });
-      return {
-        numHighlightMultiplier: newHighlightMultiplier,
-        selectedDiscourses: prevState.selectedDiscourses.filter(
-          (d) => !discoursesToRemove.includes(d)
-        ),
       };
     }, this.initDiscourseObjs);
   };
@@ -1344,62 +1304,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               {this.state.showSkimmingAnnotations &&
                 this.state.facetHighlights && (
                   <>
-                    <label
-                      htmlFor="moreHighlightsButton"
-                      className="toolbarLabel pdfjs-toolbar__label"
-                    >
-                      Number of highlights
-                    </label>
-                    <MuiTooltip
-                      title={
-                        this.isHighlightQuantityMinimum()
-                          ? "Min highlights shown"
-                          : "Decrease number of highlights"
-                      }
-                    >
-                      <span>
-                        <button
-                          id="fewerHighlightsButton"
-                          disabled={this.isHighlightQuantityMinimum()}
-                          onClick={() => {
-                            this.decreaseNumHighlights([
-                              "result",
-                              "method",
-                              "objective",
-                              "novelty",
-                            ]);
-                          }}
-                          className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
-                        >
-                          <MinusIcon width="16" height="16" />
-                        </button>
-                      </span>
-                    </MuiTooltip>
-                    <MuiTooltip
-                      title={
-                        this.isHighlightQuantityMaximum()
-                          ? "Max highlights shown"
-                          : "Increase number of highlights"
-                      }
-                    >
-                      <span>
-                        <button
-                          id="moreHighlightsButton"
-                          disabled={this.isHighlightQuantityMaximum()}
-                          onClick={() => {
-                            this.increaseNumHighlights([
-                              "result",
-                              "method",
-                              "objective",
-                              "novelty",
-                            ]);
-                          }}
-                          className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
-                        >
-                          <PlusIcon width="16" height="16" />
-                        </button>
-                      </span>
-                    </MuiTooltip>
                     <button
                       onClick={this.exportSkimmingAnnotations}
                       className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
@@ -1534,6 +1438,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 selectedEntityIds={this.state.selectedEntityIds}
                 discourseObjs={discourseObjs}
                 selectedDiscourses={this.state.selectedDiscourses}
+                highlightQuantity={this.state.highlightQuantity}
                 handleDiscourseSelected={this.selectDiscourseClass}
                 handleJumpToDiscourseObj={this.jumpToDiscourseObj}
                 propagateEntityEdits={this.state.propagateEntityEdits}
@@ -1542,6 +1447,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 handleUpdateEntity={this.updateEntity}
                 handleDeleteEntity={this.deleteEntity}
                 handleSetPropagateEntityEdits={this.setPropagateEntityEdits}
+                handleHighlightQuantityChanged={
+                  this.handleHighlightQuantityChanged
+                }
               />
               {this.state.showSkimmingAnnotations &&
                 this.state.facetDrawerEnabled && (
