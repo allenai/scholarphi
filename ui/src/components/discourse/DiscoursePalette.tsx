@@ -42,7 +42,11 @@ class DiscoursePalette extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { discourseToColorMap, selectedDiscourses } = this.props;
+    const {
+      discourseToColorMap,
+      selectedDiscourses,
+      discourseObjs,
+    } = this.props;
 
     const filteredDiscourseToColorMap = this.getAvailableDiscourseTags().reduce(
       (obj: { [label: string]: string }, key) => {
@@ -62,7 +66,9 @@ class DiscoursePalette extends React.PureComponent<Props, State> {
                 <DiscourseTagChip
                   key={d}
                   id={d}
-                  name={TAG_DISPLAY_NAMES[d] || d}
+                  name={`${TAG_DISPLAY_NAMES[d] || d} (${
+                    discourseObjs.filter((x) => x.label === d).length
+                  })`}
                   selected={selectedDiscourses.includes(d)}
                   color={color}
                   handleSelection={this.onClickTag}
