@@ -1,14 +1,13 @@
 import React from "react";
 import { DiscourseObj } from "../../api/types";
 import { getRemoteLogger } from "../../logging";
-import DiscourseTagChip from "./DiscourseTagChip";
 import * as uiUtils from "../../utils/ui";
+import DiscourseTagChip from "./DiscourseTagChip";
 
 const logger = getRemoteLogger();
 
 interface Props {
-  discourseToColorMap: { [discourse: string]: string };
-  discourseObjs: DiscourseObj[];
+  allDiscourseObjs: DiscourseObj[];
   selectedDiscourses: string[];
   handleDiscourseSelected: (discourse: string) => void;
 }
@@ -32,41 +31,31 @@ class DiscoursePalette extends React.PureComponent<Props, State> {
     this.props.handleDiscourseSelected("all");
   };
 
-  getAvailableDiscourseTags = () => {
+  getAvailableFacets = () => {
     return ["objective", "novelty", "method", "result"];
   };
 
   render() {
-    const {
-      discourseToColorMap,
-      selectedDiscourses,
-      discourseObjs,
-    } = this.props;
+    const { selectedDiscourses, allDiscourseObjs } = this.props;
 
-    const filteredDiscourseToColorMap = this.getAvailableDiscourseTags().reduce(
-      (obj: { [label: string]: string }, key) => {
-        obj[key] = discourseToColorMap[key];
-        return obj;
-      },
-      {}
-    );
     const facetDisplayNames = uiUtils.getFacetDisplayNames();
+    const facetColors = uiUtils.getFacetColors();
 
     return (
       <div className="discourse-chip-palette-wrapper">
         <p className="discourse-palette-header">Show me...</p>
         <div className="discourse-chip-palette">
           <div className="discourse-chip-palette__tags">
-            {Object.entries(filteredDiscourseToColorMap).map(([d, color]) => {
+            {this.getAvailableFacets().map((facet) => {
               return (
                 <DiscourseTagChip
-                  key={d}
-                  id={d}
-                  name={`${facetDisplayNames[d] || d} (${
-                    discourseObjs.filter((x) => x.label === d).length
+                  key={facet}
+                  id={facet}
+                  name={`${facetDisplayNames[facet] || facet} (${
+                    allDiscourseObjs.filter((x) => x.label === facet).length
                   })`}
-                  selected={selectedDiscourses.includes(d)}
-                  color={color}
+                  selected={selectedDiscourses.includes(facet)}
+                  color={facetColors[facet]}
                   handleSelection={this.onClickTag}
                 />
               );

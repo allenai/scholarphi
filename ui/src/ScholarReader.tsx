@@ -844,7 +844,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   ): DiscourseObj[] => {
     const discourseToColorMap: {
       [label: string]: string;
-    } = uiUtils.getDiscourseToColorMap();
+    } = uiUtils.getFacetColors();
 
     return units.map((r: RhetoricUnit) => ({
       id: r.id,
@@ -1228,10 +1228,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       },
       {}
     );
-    const facetColors = uiUtils.getDiscourseToColorMap();
+    const facetColors = uiUtils.getFacetColors();
     const facetDisplayNames = uiUtils.getFacetDisplayNames();
-
-    console.log(highlightsByFacet);
 
     const doc = new jsPDF();
     const highlightsList = document.createElement("ul");
@@ -1275,7 +1273,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
     const discourseToColorMap: {
       [label: string]: string;
-    } = uiUtils.getDiscourseToColorMap();
+    } = uiUtils.getFacetColors();
 
     const discourseObjs = this.state.discourseObjs.map((x) => {
       x.color =
@@ -1320,6 +1318,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       this._jumpedToInitialFocus = true;
     }
 
+    const allDiscourseObjs = this.state.discourseObjs;
     let discourseObjs = this.filterDiscourseObjsToShow(
       this.state.discourseObjs
     );
@@ -1478,6 +1477,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 }
                 entities={this.state.entities}
                 selectedEntityIds={this.state.selectedEntityIds}
+                allDiscourseObjs={allDiscourseObjs}
                 discourseObjs={discourseObjs}
                 selectedDiscourses={this.state.selectedDiscourses}
                 highlightQuantity={this.state.highlightQuantity}

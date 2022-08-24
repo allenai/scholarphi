@@ -29,6 +29,7 @@ interface Props {
   entities: Entities | null;
   selectedEntityIds: string[];
   discourseObjs: DiscourseObj[];
+  allDiscourseObjs: DiscourseObj[];
   selectedDiscourses: string[];
   propagateEntityEdits: boolean;
   highlightQuantity: number;
@@ -106,6 +107,7 @@ export class Drawer extends React.PureComponent<Props> {
       entities,
       selectedEntityIds,
       discourseObjs,
+      allDiscourseObjs,
       selectedDiscourses,
       highlightQuantity,
     } = this.props;
@@ -180,6 +182,7 @@ export class Drawer extends React.PureComponent<Props> {
           {contentType === "facets" && (
             <Facets
               discourseObjs={discourseObjs}
+              allDiscourseObjs={allDiscourseObjs}
               selectedDiscourses={selectedDiscourses}
               highlightQuantity={highlightQuantity}
               handleJumpToDiscourseObj={this.props.handleJumpToDiscourseObj}

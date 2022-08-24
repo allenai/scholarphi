@@ -421,7 +421,7 @@ export function updateAlpha(color: string, opacity: number): string {
   return color + _opacity.toString(16).toUpperCase();
 }
 
-export function getDiscourseToColorMap(): { [label: string]: string } {
+export function getFacetColors(): { [label: string]: string } {
   return {
     highlight: "#F1E7407D",
     objective: "#95F0387D",

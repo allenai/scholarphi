@@ -12,6 +12,7 @@ const logger = getRemoteLogger();
 
 interface Props {
   discourseObjs: DiscourseObj[];
+  allDiscourseObjs: DiscourseObj[];
   selectedDiscourses: string[];
   highlightQuantity: number;
   handleDiscourseSelected: (discourse: string) => void;
@@ -42,7 +43,7 @@ export class Facets extends React.PureComponent<Props> {
   };
 
   render() {
-    const { discourseObjs, selectedDiscourses } = this.props;
+    const { discourseObjs, allDiscourseObjs, selectedDiscourses } = this.props;
 
     /**
      * MMDA output does not provide section metadata for spans.
@@ -79,8 +80,7 @@ export class Facets extends React.PureComponent<Props> {
       <>
         <div>
           <DiscoursePalette
-            discourseToColorMap={uiUtils.getDiscourseToColorMap()}
-            discourseObjs={discourseObjs}
+            allDiscourseObjs={allDiscourseObjs}
             selectedDiscourses={selectedDiscourses}
             handleDiscourseSelected={this.props.handleDiscourseSelected}
           ></DiscoursePalette>
