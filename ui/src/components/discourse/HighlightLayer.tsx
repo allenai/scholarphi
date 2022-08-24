@@ -143,38 +143,36 @@ class HighlightLayer extends React.PureComponent<Props, State> {
     const pageNumber = uiUtils.getPageNumber(pageView);
     const { width, height } = uiUtils.getPageViewDimensions(pageView);
 
-    const filteredDiscourseObjs = discourseObjs.filter(
-      (d) => d.tagLocation.page === pageNumber
-    );
-
     return (
       <>
-        {filteredDiscourseObjs &&
-          filteredDiscourseObjs.map((d, i) =>
-            d.boxes.map((b, j) => (
-              <React.Fragment key={`highlight-${i}-${j}`}>
-                <div
-                  className={`highlight-mask__highlight discourse-highlight highlight-${d.id}`}
-                  onMouseEnter={() => {
-                    this.markHighlightAsHovered(d);
-                    logger.log("debug", "hover-highlight", { discourse: d });
-                  }}
-                  onMouseLeave={this.clearAllHovered}
-                  onMouseDown={(event: React.MouseEvent) => {
-                    this.onClickSentence(event, d, j);
-                  }}
-                  style={{
-                    position: "absolute",
-                    left: b.left * width,
-                    top: b.top * height,
-                    width: b.width * width,
-                    height: b.height * height * 1.2,
-                    backgroundColor: d.color,
-                    opacity: opacity,
-                  }}
-                />
-              </React.Fragment>
-            ))
+        {discourseObjs &&
+          discourseObjs.map((d, i) =>
+            d.boxes
+              .filter((b) => b.page === pageNumber)
+              .map((b, j) => (
+                <React.Fragment key={`highlight-${i}-${j}`}>
+                  <div
+                    className={`highlight-mask__highlight discourse-highlight highlight-${d.id}`}
+                    onMouseEnter={() => {
+                      this.markHighlightAsHovered(d);
+                      logger.log("debug", "hover-highlight", { discourse: d });
+                    }}
+                    onMouseLeave={this.clearAllHovered}
+                    onMouseDown={(event: React.MouseEvent) => {
+                      this.onClickSentence(event, d, j);
+                    }}
+                    style={{
+                      position: "absolute",
+                      left: b.left * width,
+                      top: b.top * height,
+                      width: b.width * width,
+                      height: b.height * height * 1.2,
+                      backgroundColor: d.color,
+                      opacity: opacity,
+                    }}
+                  />
+                </React.Fragment>
+              ))
           )}
 
         {showControlToolbar &&
