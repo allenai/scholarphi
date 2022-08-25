@@ -801,14 +801,21 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
     let data = Object(skimmingData)[this.props.paperId!.id];
     data = this.preprocessData(data);
+
+    // Add highlights for the four facets
     unitsToShow.push(...this.getNoveltyHighlights(data));
     unitsToShow.push(...this.getObjectiveHighlights(data));
     unitsToShow.push(...this.getMethodHighlights(data));
     unitsToShow.push(...this.getResultHighlights(data));
 
-    // TODO: Always show faceted highlights in abstract.
-
     let discourseObjs = this.makeDiscourseObjsFromRhetoricUnits(unitsToShow);
+
+    // Disable faceted highlights in abstract
+    discourseObjs = discourseObjs.filter(
+      (d) => d.entity.section.toLowerCase() !== "abstract"
+    );
+
+    // Select the most appropriate facet for sentences that have more than one
     discourseObjs = this.disambiguateDiscourseLabels(discourseObjs);
 
     this.setState({
