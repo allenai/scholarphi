@@ -1,5 +1,6 @@
+import Tooltip from "@material-ui/core/Tooltip";
 import React from "react";
-import { BoundingBox, DiscourseObj, SentenceUnit } from "../../api/types";
+import { BoundingBox, DiscourseObj } from "../../api/types";
 import { getRemoteLogger } from "../../logging";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
@@ -151,26 +152,36 @@ class HighlightLayer extends React.PureComponent<Props, State> {
               .filter((b) => b.page === pageNumber)
               .map((b, j) => (
                 <React.Fragment key={`highlight-${i}-${j}`}>
-                  <div
-                    className={`highlight-mask__highlight discourse-highlight highlight-${d.id}`}
-                    onMouseEnter={() => {
-                      this.markHighlightAsHovered(d);
-                      logger.log("debug", "hover-highlight", { discourse: d });
-                    }}
-                    onMouseLeave={this.clearAllHovered}
-                    onMouseDown={(event: React.MouseEvent) => {
-                      this.onClickSentence(event, d, j);
-                    }}
-                    style={{
-                      position: "absolute",
-                      left: b.left * width,
-                      top: b.top * height,
-                      width: b.width * width,
-                      height: b.height * height * 1.2,
-                      backgroundColor: d.color,
-                      opacity: opacity,
-                    }}
-                  />
+                  <Tooltip
+                    disableFocusListener
+                    disableTouchListener
+                    title={d.label.replace(/(^\w|\s\w)/g, (m) =>
+                      m.toUpperCase()
+                    )}
+                  >
+                    <div
+                      className={`highlight-mask__highlight discourse-highlight highlight-${d.id}`}
+                      onMouseEnter={() => {
+                        this.markHighlightAsHovered(d);
+                        logger.log("debug", "hover-highlight", {
+                          discourse: d,
+                        });
+                      }}
+                      onMouseLeave={this.clearAllHovered}
+                      onMouseDown={(event: React.MouseEvent) => {
+                        this.onClickSentence(event, d, j);
+                      }}
+                      style={{
+                        position: "absolute",
+                        left: b.left * width,
+                        top: b.top * height,
+                        width: b.width * width,
+                        height: b.height * height * 1.2,
+                        backgroundColor: d.color,
+                        opacity: opacity,
+                      }}
+                    />
+                  </Tooltip>
                 </React.Fragment>
               ))
           )}
