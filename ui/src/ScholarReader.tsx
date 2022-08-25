@@ -142,7 +142,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         result: 0.8,
       },
 
-      highlightQuantity: 70,
+      highlightQuantity: 80,
 
       ...settings,
     };
@@ -811,9 +811,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     let discourseObjs = this.makeDiscourseObjsFromRhetoricUnits(unitsToShow);
 
     // Disable faceted highlights in abstract
-    discourseObjs = discourseObjs.filter(
-      (d) => d.entity.section.toLowerCase() !== "abstract"
-    );
+    // discourseObjs = discourseObjs.filter(
+    //   (d) => d.entity.section.toLowerCase() !== "abstract"
+    // );
 
     // Select the most appropriate facet for sentences that have more than one
     discourseObjs = this.disambiguateDiscourseLabels(discourseObjs);
@@ -968,7 +968,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       discourses.forEach((discourse: string) => {
         // Handle objective and novelty highlights a bit differently (proritize showing them)
         if (["objective", "novelty"].includes(discourse)) {
-          value *= 3;
+          value *= 2;
         }
         newHighlightMultiplier = {
           ...newHighlightMultiplier,
