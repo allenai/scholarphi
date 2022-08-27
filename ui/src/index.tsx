@@ -23,9 +23,9 @@ declare global {
 }
 
 const params = queryString.parse(window.location.search);
-let url: string | undefined = undefined;
+let url: string = "";
 if (params.file instanceof Array) {
-  url = params.file[0];
+  url = params.file[0] as string;
 } else if (typeof params.file === "string") {
   url = params.file;
 }
@@ -45,7 +45,7 @@ if (url !== undefined) {
 
 let presets: string[] | undefined = undefined;
 if (params.preset instanceof Array) {
-  presets = params.preset;
+  presets = params.preset as string[];
 } else if (typeof params.preset === "string") {
   presets = [params.preset];
 }

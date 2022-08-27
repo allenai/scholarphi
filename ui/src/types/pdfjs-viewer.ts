@@ -1,4 +1,4 @@
-import { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist/types/display/api";
+import { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist/types/src/display/api";
 
 /**
  * Declarations for the PDF.js viewer application. These types are not declared as part of

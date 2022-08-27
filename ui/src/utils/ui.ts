@@ -1,4 +1,4 @@
-import { PDFPageProxy } from "pdfjs-dist/types/display/api";
+import { PDFPageProxy } from "pdfjs-dist/types/src/display/api";
 import React from "react";
 import { PageModel, Pages } from "../state";
 import { BoundingBox, DiscourseObj } from "../api/types";

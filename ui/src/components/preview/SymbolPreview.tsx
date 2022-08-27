@@ -1,4 +1,4 @@
-import { PDFDocumentProxy } from "pdfjs-dist/types/display/api";
+import { PDFDocumentProxy } from "pdfjs-dist/types/src/display/api";
 import React from "react";
 import { Sentence, Symbol } from "../../api/types";
 import PaperClipping from "./PaperClipping";

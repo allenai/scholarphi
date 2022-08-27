@@ -37,9 +37,7 @@ module.exports = (env, argv) => {
     },
     resolve: {
       extensions: [".tsx", ".ts", ".js", ".jsx"],
-      alias: {
-        "react-dom": "@hot-loader/react-dom",
-      },
+      fallback: { querystring: require.resolve("querystring-es3") },
     },
     plugins: [
       // Generates an `index.html` file with the <script> injected.
@@ -66,7 +64,10 @@ module.exports = (env, argv) => {
             filter: (absPathToFile) => {
               return !absPathToFile.endsWith(".html");
             },
-            transformPath: (p) => p.replace(/^public\//, ""),
+            // transformPath: (p) => p.replace(/^public\//, ""),
+            to({ context, absoluteFilename }) {
+              return absoluteFilename.replace(/^public\//, "");
+            },
           },
         ],
       }),
@@ -90,7 +91,7 @@ module.exports = (env, argv) => {
     performance: false,
     devServer: {
       compress: true,
-      contentBase: path.resolve(__dirname, "public"),
+      static: path.resolve(__dirname, "public"),
       hot: true,
       host: "0.0.0.0",
       // The `ui` host is used by the reverse proxy when requesting the UI while working locally.
@@ -104,12 +105,6 @@ module.exports = (env, argv) => {
           changeOrigin: true,
         },
       },
-      // Apparently webpack's dev server doesn't write files to disk. This makes it hard to
-      // debug the build process, as there's no way to examine the output. We change this
-      // setting so that it's easier to inspect what's built. This in theory might make things
-      // slower, but it's probably worth the extra nanosecond.
-      writeToDisk: true,
-      lazy: false,
     },
   };
 };

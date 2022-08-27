@@ -184,7 +184,7 @@ const PaperList = () => {
                 );
               })}
               <TableRow>
-                <TablePagination
+                {/* <TablePagination
                   count={results.total}
                   page={query.offset/query.size}
                   rowsPerPage={query.size}
@@ -200,7 +200,7 @@ const PaperList = () => {
                     const q = query.withSize(s);
                     updateURL(q);
                     setListRequest(q);
-                  }} />
+                  }} /> */}
               </TableRow>
             </TableBody>
           </Table>
