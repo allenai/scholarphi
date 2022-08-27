@@ -1,12 +1,12 @@
-import Box from "@material-ui/core/Box";
-import Slider from "@material-ui/core/Slider";
+import Box from "@mui/material/Box";
+import Slider from "@mui/material/Slider";
+import Switch from "@mui/material/Switch";
 import React from "react";
 import { DiscourseObj } from "../../api/types";
 import { getRemoteLogger } from "../../logging";
 import * as uiUtils from "../../utils/ui";
 import DiscoursePalette from "../discourse/DiscoursePalette";
 import FacetSnippet from "./FacetSnippet";
-import Typography from "@material-ui/core/Typography";
 
 const logger = getRemoteLogger();
 
@@ -15,9 +15,11 @@ interface Props {
   allDiscourseObjs: DiscourseObj[];
   selectedDiscourses: string[];
   highlightQuantity: number;
+  showSkimmingAnnotationColors: boolean;
   handleDiscourseSelected: (discourse: string) => void;
   handleJumpToDiscourseObj: (id: string) => void;
   handleHighlightQuantityChanged: (value: number) => void;
+  handleSkimmingAnnotationColorsChanged: (value: boolean) => void;
 }
 
 export class Facets extends React.PureComponent<Props> {
@@ -42,8 +44,20 @@ export class Facets extends React.PureComponent<Props> {
     uiUtils.removeClassFromElementsByClassname("selected");
   };
 
+  handleSkimmingAnnotationColorsChanged = (
+    _: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => {
+    this.props.handleSkimmingAnnotationColorsChanged(checked);
+  };
+
   render() {
-    const { discourseObjs, allDiscourseObjs, selectedDiscourses } = this.props;
+    const {
+      discourseObjs,
+      allDiscourseObjs,
+      selectedDiscourses,
+      showSkimmingAnnotationColors,
+    } = this.props;
 
     /**
      * MMDA output does not provide section metadata for spans.
@@ -91,15 +105,41 @@ export class Facets extends React.PureComponent<Props> {
           style={{ marginTop: "9em" }}
         >
           <Box width={"100%"}>
-            <span>Number of highlights</span>
+            <p>Number of highlights</p>
             <Slider
               value={this.props.highlightQuantity}
               step={10}
               marks
-              onChange={(e, value) =>
+              onChange={(_, value) =>
                 this.props.handleHighlightQuantityChanged(value as number)
               }
             />
+          </Box>
+          <Box width={"100%"}>
+            <p>Number of Colors</p>
+
+            <span
+              style={{
+                fontSize: "16px",
+                margin: "0 auto",
+                padding: 0,
+              }}
+            >
+              Single
+            </span>
+            <Switch
+              checked={showSkimmingAnnotationColors}
+              onChange={this.handleSkimmingAnnotationColorsChanged}
+            />
+            <span
+              style={{
+                fontSize: "16px",
+                margin: "0 auto",
+                padding: 0,
+              }}
+            >
+              Multiple
+            </span>
           </Box>
 
           {/* No delimiter */}

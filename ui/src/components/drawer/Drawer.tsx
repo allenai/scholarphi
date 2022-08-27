@@ -33,6 +33,7 @@ interface Props {
   selectedDiscourses: string[];
   propagateEntityEdits: boolean;
   highlightQuantity: number;
+  showSkimmingAnnotationColors: boolean;
   handleDiscourseSelected: (discourse: string) => void;
   handleClose: () => void;
   handleJumpToEntity: (entityId: string) => void;
@@ -44,6 +45,7 @@ interface Props {
   ) => Promise<boolean>;
   handleDeleteEntity: (id: string) => Promise<boolean>;
   handleHighlightQuantityChanged: (value: number) => void;
+  handleSkimmingAnnotationColorsChanged: (value: boolean) => void;
 }
 
 export class Drawer extends React.PureComponent<Props> {
@@ -110,6 +112,7 @@ export class Drawer extends React.PureComponent<Props> {
       allDiscourseObjs,
       selectedDiscourses,
       highlightQuantity,
+      showSkimmingAnnotationColors,
     } = this.props;
 
     let firstSelectedEntity: Entity | null = null;
@@ -185,10 +188,14 @@ export class Drawer extends React.PureComponent<Props> {
               allDiscourseObjs={allDiscourseObjs}
               selectedDiscourses={selectedDiscourses}
               highlightQuantity={highlightQuantity}
+              showSkimmingAnnotationColors={showSkimmingAnnotationColors}
               handleJumpToDiscourseObj={this.props.handleJumpToDiscourseObj}
               handleDiscourseSelected={this.props.handleDiscourseSelected}
               handleHighlightQuantityChanged={
                 this.props.handleHighlightQuantityChanged
+              }
+              handleSkimmingAnnotationColorsChanged={
+                this.props.handleSkimmingAnnotationColorsChanged
               }
             />
           )}

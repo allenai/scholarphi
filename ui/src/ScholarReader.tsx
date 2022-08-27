@@ -13,13 +13,13 @@ import {
   isTerm,
   Paper,
   RhetoricUnit,
-  Symbol,
+  Symbol
 } from "./api/types";
 import Control from "./components/control/Control";
 import EntityCreationCanvas from "./components/control/EntityCreationCanvas";
 import EntityCreationToolbar, {
   AreaSelectionMethod,
-  createCreateEntityDataWithBoxes,
+  createCreateEntityDataWithBoxes
 } from "./components/control/EntityCreationToolbar";
 import MainControlPanel from "./components/control/MainControlPanel";
 import TextSelectionMenu from "./components/control/TextSelectionMenu";
@@ -47,7 +47,7 @@ import {
   ConfigurableSetting,
   CONFIGURABLE_SETTINGS,
   getSettings,
-  GlossStyle,
+  GlossStyle
 } from "./settings";
 import skimmingData from "./skimmingData/facets.json";
 import {
@@ -56,13 +56,13 @@ import {
   Pages,
   PaperId,
   State,
-  SymbolFilters,
+  SymbolFilters
 } from "./state";
 import "./style/index.less";
 import {
   DocumentLoadedEvent,
   PageRenderedEvent,
-  PDFViewerApplication,
+  PDFViewerApplication
 } from "./types/pdfjs-viewer";
 import * as stateUtils from "./utils/state";
 import * as uiUtils from "./utils/ui";
@@ -862,7 +862,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       label: r.label,
       boxes: r.boxes,
       tagLocation: r.boxes[0],
-      color: discourseToColorMap[r.label] ?? discourseToColorMap["highlight"],
+      color: this.state.showSkimmingAnnotationColors
+        ? discourseToColorMap[r.label] ?? discourseToColorMap["highlight"]
+        : discourseToColorMap["highlight"],
     }));
   };
 
@@ -962,7 +964,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   handleHighlightQuantityChanged = (value: number) => {
-    console.log(value, this.state.highlightQuantity);
     localStorage.setItem("highlightQuantity", value.toString());
     const discourses = ["result", "method", "objective", "novelty"];
     this.setState((prevState) => {
@@ -1278,18 +1279,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     });
   };
 
-  toggleSkimmingAnnotationColors = () => {
-    const newShowSkimmingAnnotationColors = !this.state
-      .showSkimmingAnnotationColors;
-
+  handleSkimmingAnnotationColorsChanged = (showMultiColor: boolean) => {
     const discourseToColorMap: {
       [label: string]: string;
     } = uiUtils.getFacetColors();
 
     const discourseObjs = this.state.discourseObjs.map((x) => {
       x.color =
-        newShowSkimmingAnnotationColors &&
-        Object.keys(discourseToColorMap).includes(x.label)
+        showMultiColor && Object.keys(discourseToColorMap).includes(x.label)
           ? discourseToColorMap[x.label]
           : discourseToColorMap["highlight"];
       return x;
@@ -1298,7 +1295,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.setState({
       discourseObjs: uiUtils.sortDiscourseObjs(discourseObjs),
       discourseObjsById: this.makeDiscourseByIdMap(discourseObjs),
-      showSkimmingAnnotationColors: newShowSkimmingAnnotationColors,
+      showSkimmingAnnotationColors: showMultiColor,
     });
   };
 
@@ -1361,16 +1358,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
                     >
                       <span>Export Annotations</span>
-                    </button>
-                    <button
-                      onClick={this.toggleSkimmingAnnotationColors}
-                      className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
-                    >
-                      <span>
-                        {this.state.showSkimmingAnnotationColors
-                          ? "Disable color"
-                          : "Enable color"}
-                      </span>
                     </button>
                   </>
                 )}
@@ -1492,6 +1479,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 discourseObjs={discourseObjs}
                 selectedDiscourses={this.state.selectedDiscourses}
                 highlightQuantity={this.state.highlightQuantity}
+                showSkimmingAnnotationColors={
+                  this.state.showSkimmingAnnotationColors
+                }
                 handleDiscourseSelected={this.selectDiscourseClass}
                 handleJumpToDiscourseObj={this.jumpToDiscourseObj}
                 propagateEntityEdits={this.state.propagateEntityEdits}
@@ -1502,6 +1492,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 handleSetPropagateEntityEdits={this.setPropagateEntityEdits}
                 handleHighlightQuantityChanged={
                   this.handleHighlightQuantityChanged
+                }
+                handleSkimmingAnnotationColorsChanged={
+                  this.handleSkimmingAnnotationColorsChanged
                 }
               />
               {this.state.showSkimmingAnnotations &&
