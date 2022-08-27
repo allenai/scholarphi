@@ -45,6 +45,7 @@
     "file-loader": "^6.2.0",
     "fork-ts-checker-webpack-plugin": "^7.2.13",
     "html-webpack-plugin": "^5.5.0",
+    "jest": "^28.0.0",
     "jspdf": "^2.5.1",
     "katex": "^0.16.0",
     "labella": "^1.1.4",
