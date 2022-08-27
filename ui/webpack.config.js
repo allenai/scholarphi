@@ -60,14 +60,11 @@ module.exports = (env, argv) => {
       new CopyPlugin({
         patterns: [
           {
-            from: "public/**/*",
+            from: "public",
             filter: (absPathToFile) => {
               return !absPathToFile.endsWith(".html");
             },
-            // transformPath: (p) => p.replace(/^public\//, ""),
-            to({ context, absoluteFilename }) {
-              return absoluteFilename.replace(/^public\//, "");
-            },
+            // transformPath: (p) => p.replace(/^public\//, "")
           },
         ],
       }),
