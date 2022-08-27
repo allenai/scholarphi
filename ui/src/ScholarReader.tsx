@@ -142,7 +142,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         result: 0.8,
       },
 
-      highlightQuantity: 80,
+      highlightQuantity:
+        localStorage.getItem("highlightQuantity") !== null
+          ? +localStorage.getItem("highlightQuantity")!
+          : 80,
 
       ...settings,
     };
@@ -959,20 +962,19 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   handleHighlightQuantityChanged = (value: number) => {
-    this.setState({ highlightQuantity: value });
-
+    console.log(value, this.state.highlightQuantity);
+    localStorage.setItem("highlightQuantity", value.toString());
     const discourses = ["result", "method", "objective", "novelty"];
     this.setState((prevState) => {
       let newHighlightMultiplier = prevState.numHighlightMultiplier;
 
       discourses.forEach((discourse: string) => {
         // Handle objective and novelty highlights a bit differently (proritize showing them)
-        if (["objective", "novelty"].includes(discourse)) {
-          value *= 2;
-        }
         newHighlightMultiplier = {
           ...newHighlightMultiplier,
-          [discourse]: value / 100,
+          [discourse]: ["objective", "novelty"].includes(discourse)
+            ? (value / 100) * 2
+            : value / 100,
         };
       });
 
@@ -988,6 +990,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       });
 
       return {
+        highlightQuantity: value,
         numHighlightMultiplier: newHighlightMultiplier,
         selectedDiscourses: newSelectedDiscourses,
       };
