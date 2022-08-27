@@ -1,7 +1,7 @@
-import Card from "@material-ui/core/Card";
-import FormGroup from "@material-ui/core/FormGroup";
-import IconButton from "@material-ui/core/IconButton";
-import Close from "@material-ui/icons/Close";
+import Card from "@mui/material/Card";
+import FormGroup from "@mui/material/FormGroup";
+import IconButton from "@mui/material/IconButton";
+import Close from "@mui/icons-material/Close";
 import classNames from "classnames";
 import React from "react";
 

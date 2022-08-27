@@ -1,8 +1,8 @@
-import IconButton from "@material-ui/core/IconButton";
-import MuiTooltip from "@material-ui/core/Tooltip";
-import Close from "@material-ui/icons/Close";
-import FilterIcon from "@material-ui/icons/Filter";
-import ListIcon from "@material-ui/icons/List";
+import IconButton from "@mui/material/IconButton";
+import MuiTooltip from "@mui/material/Tooltip";
+import Close from "@mui/icons-material/Close";
+import FilterIcon from "@mui/icons-material/Filter";
+import ListIcon from "@mui/icons-material/List";
 import { default as React } from "react";
 import { getRemoteLogger } from "../../logging";
 

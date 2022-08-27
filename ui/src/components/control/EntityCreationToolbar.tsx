@@ -1,9 +1,10 @@
-import Button from "@material-ui/core/Button";
-import Card from "@material-ui/core/Card";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
+import { SelectChangeEvent } from "@mui/material";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
 import classNames from "classnames";
 import React from "react";
 import {
@@ -166,11 +167,17 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
     });
   }
 
-  onChangeEntityType(event: React.ChangeEvent<{ value: unknown }>) {
+  onChangeEntityType(
+    event: SelectChangeEvent<{ value: KnownEntityType }>,
+    _: React.ReactNode
+  ) {
     this.props.handleSelectEntityType(event.target.value as KnownEntityType);
   }
 
-  onChangeSelectionMethod(event: React.ChangeEvent<{ value: unknown }>) {
+  onChangeSelectionMethod(
+    event: SelectChangeEvent<{ value: AreaSelectionMethod }>,
+    _: React.ReactNode
+  ) {
     this.props.handleSelectSelectionMethod(
       event.target.value as AreaSelectionMethod
     );
@@ -267,7 +274,7 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
           </InputLabel>
           <Select
             labelId="entity-creation-toolbar__type-select-label"
-            value={this.props.entityType}
+            value={{ value: this.props.entityType }}
             onChange={this.onChangeEntityType}
             disabled={this.state.state !== "interactive"}
           >
@@ -284,7 +291,7 @@ class EntityCreationToolbar extends React.PureComponent<Props, State> {
           </InputLabel>
           <Select
             labelId="entity-creation-toolbar__selection-method-select-label"
-            value={selectionMethod}
+            value={{ value: selectionMethod }}
             onChange={this.onChangeSelectionMethod}
             disabled={this.state.state !== "interactive"}
           >

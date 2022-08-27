@@ -6,9 +6,9 @@ import {
   GenericRelationships,
 } from "../../api/types";
 
-import Button from "@material-ui/core/Button";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Switch from "@material-ui/core/Switch";
+import Button from "@mui/material/Button";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
 import katex from "katex";
 import React from "react";
 

@@ -1,4 +1,4 @@
-import Card from "@material-ui/core/Card";
+import Card from "@mui/material/Card";
 import React from "react";
 import { BoundingBox } from "../../api/types";
 import { PDFPageView } from "../../types/pdfjs-viewer";

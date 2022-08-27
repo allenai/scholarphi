@@ -1,4 +1,4 @@
-import MuiDrawer from "@material-ui/core/Drawer";
+import MuiDrawer from "@mui/material/Drawer";
 import React from "react";
 import { DiscourseObj, Entity, EntityUpdateData } from "../../api/types";
 import { getRemoteLogger } from "../../logging";

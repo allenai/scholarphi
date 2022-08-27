@@ -1,7 +1,7 @@
 import { getRemoteLogger } from "../../logging";
 
-import IconButton from "@material-ui/core/IconButton";
-import ThumbsUp from "@material-ui/icons/ThumbUpSharp";
+import IconButton from "@mui/material/IconButton";
+import ThumbsUp from "@mui/icons-material/ThumbUpSharp";
 import React from "react";
 
 interface Props {

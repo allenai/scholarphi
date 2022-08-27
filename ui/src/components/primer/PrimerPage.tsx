@@ -4,10 +4,10 @@ import TermDefinitionGloss from "./TermDefinitionGloss";
 import { isSymbol, isTerm, Symbol, Term } from "../../api/types";
 import { PDFViewer } from "../../types/pdfjs-viewer";
 
-import FormControl from "@material-ui/core/FormControl";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import LinearProgress from "@material-ui/core/LinearProgress";
-import Switch from "@material-ui/core/Switch";
+import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import LinearProgress from "@mui/material/LinearProgress";
+import Switch from "@mui/material/Switch";
 import React from "react";
 import ReactDOM from "react-dom";
 import FeedbackLink from "../common/FeedbackLink";

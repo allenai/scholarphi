@@ -5,8 +5,8 @@ import { BoundingBox, isSentence, Sentence, Symbol } from "../../api/types";
 import { PDFViewer } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
 
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
 import { PDFDocumentProxy } from "pdfjs-dist/types/src/display/api";
 import React from "react";
 
@@ -206,7 +206,7 @@ class DefinitionPreview extends React.PureComponent<Props, State> {
 
     return (
       <Card
-        ref={(ref: HTMLElement) => (this.element = ref)}
+        ref={(ref: HTMLDivElement) => (this.element = ref)}
         style={style}
         className="definition-preview"
       >

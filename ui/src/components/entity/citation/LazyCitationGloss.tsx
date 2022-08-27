@@ -5,7 +5,7 @@ import { Citation, Paper } from "../../../api/types";
 import { VoteButton } from "../../common";
 import { Nullable } from '../../../types/ui';
 import { getPaper } from '../../../api/api';
-import { LinearProgress } from "@material-ui/core";
+import { LinearProgress } from "@mui/material";
 
 interface Props {
   citation: Citation;

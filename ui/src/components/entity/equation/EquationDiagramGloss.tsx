@@ -2,7 +2,7 @@ import { RichText } from "../../common";
 import { Point } from "../../control/Selection";
 import * as uiUtils from "../../../utils/ui";
 
-import Card from "@material-ui/core/Card";
+import Card from "@mui/material/Card";
 import classNames from "classnames";
 import React from "react";
 

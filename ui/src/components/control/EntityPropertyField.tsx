@@ -1,13 +1,13 @@
 import { Property } from "./EntityPropertyEditor";
 import { RichText } from "../common";
 
-import Card from "@material-ui/core/Card";
-import IconButton from "@material-ui/core/IconButton";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import TextField from "@material-ui/core/TextField";
-import Add from "@material-ui/icons/Add";
-import DeleteForever from "@material-ui/icons/DeleteForever";
+import Card from "@mui/material/Card";
+import IconButton from "@mui/material/IconButton";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import TextField from "@mui/material/TextField";
+import Add from "@mui/icons-material/Add";
+import DeleteForever from "@mui/icons-material/DeleteForever";
 import katex from "katex";
 import React from "react";
 
@@ -146,7 +146,6 @@ class EntityPropertyField extends React.PureComponent<Props> {
               fullWidth={true}
               multiline={multiline}
               rows={multiline ? 1 : 1}
-              rowsMax={multiline ? 4 : 1}
               onChange={this.onFieldChanged}
             >
               {choices !== undefined ? (
@@ -212,7 +211,6 @@ class EntityPropertyField extends React.PureComponent<Props> {
                       placeholder={"NULL"}
                       multiline={multiline}
                       rows={multiline ? 1 : 1}
-                      rowsMax={multiline ? 4 : 1}
                       onChange={this.onFieldChanged}
                     >
                       {choices !== undefined ? (

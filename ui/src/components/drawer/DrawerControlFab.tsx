@@ -1,6 +1,6 @@
-import Fab from "@material-ui/core/Fab";
-import { MenuOpen } from "@material-ui/icons";
-import Close from "@material-ui/icons/Close";
+import Fab from "@mui/material/Fab";
+import { MenuOpen } from "@mui/icons-material";
+import Close from "@mui/icons-material/Close";
 import React from "react";
 import { getRemoteLogger } from "../../logging";
 

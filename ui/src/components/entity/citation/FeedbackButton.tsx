@@ -1,8 +1,8 @@
 import { createFeedbackLink, openFeedbackWindow } from "../../../utils/feedback";
 import { PaperId } from "../../../state";
 
-import Button from "@material-ui/core/Button";
-import FeedbackIcon from "@material-ui/icons/FeedbackOutlined";
+import Button from "@mui/material/Button";
+import FeedbackIcon from "@mui/icons-material/FeedbackOutlined";
 import React from "react";
 
 interface Props {

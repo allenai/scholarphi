@@ -5,9 +5,9 @@ import {
   PDFViewerApplication,
 } from "../../types/pdfjs-viewer";
 
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Switch from "@material-ui/core/Switch";
-import TextField from "@material-ui/core/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+import TextField from "@mui/material/TextField";
 import React from "react";
 
 const logger = getRemoteLogger();

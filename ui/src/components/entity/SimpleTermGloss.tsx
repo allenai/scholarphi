@@ -5,10 +5,10 @@ import * as selectors from "../../selectors";
 import { Entities } from "../../state";
 import { Term } from "../../api/types";
 
-import IconButton from "@material-ui/core/IconButton";
-import MuiTooltip from "@material-ui/core/Tooltip";
-import Close from "@material-ui/icons/Close";
-import Toc from "@material-ui/icons/Toc";
+import IconButton from "@mui/material/IconButton";
+import MuiTooltip from "@mui/material/Tooltip";
+import Close from "@mui/icons-material/Close";
+import Toc from "@mui/icons-material/Toc";
 import classNames from "classnames";
 import React from "react";
 

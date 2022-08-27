@@ -1,10 +1,10 @@
 import { ConfigurableSetting } from "../../settings";
 
-import FormControl from "@material-ui/core/FormControl";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import Switch from "@material-ui/core/Switch";
-import TextField from "@material-ui/core/TextField";
+import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Switch from "@mui/material/Switch";
+import TextField from "@mui/material/TextField";
 import React from "react";
 
 interface Props {
