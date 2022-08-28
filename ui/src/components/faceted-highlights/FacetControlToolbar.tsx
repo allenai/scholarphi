@@ -17,10 +17,10 @@ interface Props {
   handleDeleteHighlight: () => void;
   handleOpenDrawer: () => void;
   handleCloseDrawer: () => void;
-  handleFilterToDiscourse: () => void;
+  handleFilterToFacet: () => void;
 }
 
-class DiscourseControlToolbar extends React.PureComponent<Props> {
+class FacetControlToolbar extends React.PureComponent<Props> {
   handleDrawerButtonClicked = () => {
     const { drawerOpen } = this.props;
     if (drawerOpen) {
@@ -32,11 +32,11 @@ class DiscourseControlToolbar extends React.PureComponent<Props> {
     }
   };
 
-  handleFilterToDiscourse = () => {
-    logger.log("debug", "click-filter-to-discourse-tooltip-button", {
-      discourse: this.props.label,
+  handleFilterToFacet = () => {
+    logger.log("debug", "click-filter-to-facet-tooltip-button", {
+      facet: this.props.label,
     });
-    this.props.handleFilterToDiscourse();
+    this.props.handleFilterToFacet();
   };
 
   handleClose = () => {
@@ -49,7 +49,7 @@ class DiscourseControlToolbar extends React.PureComponent<Props> {
 
     return (
       <div
-        className="discourse-control-toolbar side-right"
+        className="facet-control-toolbar side-right"
         style={{
           top: y,
           left: x,
@@ -71,10 +71,7 @@ class DiscourseControlToolbar extends React.PureComponent<Props> {
               </td>
               <td>
                 <MuiTooltip title={`Show ${label} highlights only`}>
-                  <IconButton
-                    size="small"
-                    onClick={this.handleFilterToDiscourse}
-                  >
+                  <IconButton size="small" onClick={this.handleFilterToFacet}>
                     <FilterIcon />
                   </IconButton>
                 </MuiTooltip>
@@ -107,4 +104,4 @@ class DiscourseControlToolbar extends React.PureComponent<Props> {
   }
 }
 
-export default DiscourseControlToolbar;
+export default FacetControlToolbar;

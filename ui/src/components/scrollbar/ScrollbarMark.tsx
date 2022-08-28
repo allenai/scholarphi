@@ -1,20 +1,20 @@
 import React from "react";
-import { DiscourseObj } from "../../api/types";
+import { FacetedHighlight } from "../../api/types";
 import { getRemoteLogger } from "../../logging";
 import * as uiUtils from "../../utils/ui";
 
 const logger = getRemoteLogger();
 
 interface Props {
-  sentence: DiscourseObj;
+  sentence: FacetedHighlight;
   handleMarkClicked: () => void;
-  mapDiscourseToScrollBar: (page: number, top: number) => number;
+  mapHighlightToScrollbar: (page: number, top: number) => number;
 }
 
 export class ScrollbarMark extends React.PureComponent<Props> {
   onMarkClicked = () => {
     logger.log("debug", "click-scrollbar-mark", {
-      discourse: this.props.sentence,
+      highlight: this.props.sentence,
     });
     this.props.handleMarkClicked();
   };
@@ -27,7 +27,7 @@ export class ScrollbarMark extends React.PureComponent<Props> {
         className={"scrollbar-mark"}
         onClick={this.onMarkClicked}
         style={{
-          top: this.props.mapDiscourseToScrollBar(
+          top: this.props.mapHighlightToScrollbar(
             sentence.boxes[0].page,
             sentence.boxes[0].top
           ),

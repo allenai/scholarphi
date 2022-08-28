@@ -1,4 +1,4 @@
-.scholar-reader-discourse-tag {
+.scholar-reader-facet-tag {
   position: absolute;
   padding: 4px;
   font-weight: bold;
@@ -19,16 +19,16 @@
   }
 }
 
-.discourse-tag-rule {
+.facet-tag-rule {
   position: absolute;
   border: none;
   border-top: 1px dotted grey;
 }
 
 /**
- * Discourse palette allowing users to toggle which discourse classes to show.
+ * facet palette allowing users to toggle which facet classes to show.
  */
-.discourse-chip-palette-wrapper {
+.facet-chip-palette-wrapper {
   position: relative;
   width: @document-snippets-container-width + 20px;
   margin: 0 auto;
@@ -39,20 +39,20 @@
   border-bottom: 1px solid lightgray;
   z-index: 2;
 
-  .discourse-palette-header {
+  .facet-palette-header {
     text-align: center;
     font-weight: normal;
     padding-bottom: @padding / 2;
   }
 
-  .discourse-chip-palette {
+  .facet-chip-palette {
     &__tags {
       height: fit-content;
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
 
-      .discourse-chip {
+      .facet-chip {
         /*
          * Expand buttons to fill drawer, but do not shrink buttons to
          * the point where their contents will wrap.
@@ -66,7 +66,7 @@
       padding-top: @padding / 2;
     }
 
-    .discourse-chip {
+    .facet-chip {
       text-align: center;
       padding: (@padding / 2) @padding;
       margin: 2px 2px;
@@ -99,7 +99,7 @@
   }
 }
 
-.discourse-control-toolbar {
+.facet-control-toolbar {
   position: absolute;
   padding: 4px;
   width: fit-content;

@@ -1,7 +1,7 @@
 import { PDFPageProxy } from "pdfjs-dist/types/src/display/api";
 import React from "react";
+import { BoundingBox, FacetedHighlight } from "../api/types";
 import { PageModel, Pages } from "../state";
-import { BoundingBox, DiscourseObj } from "../api/types";
 import { PDFPageView } from "../types/pdfjs-viewer";
 import { Dimensions, Rectangle } from "../types/ui";
 
@@ -443,39 +443,41 @@ export function getFacetDisplayNames(): { [key: string]: string } {
   };
 }
 
-export function sortDiscourseObjs(discourseObjs: DiscourseObj[]) {
-  const sorted = discourseObjs.sort((d1: DiscourseObj, d2: DiscourseObj) => {
-    const d1MinPage = d1.boxes.reduce((b1, b2) => {
-      return b1.page < b2.page ? b1 : b2;
-    }).page;
-    const d2MinPage = d2.boxes.reduce((b1, b2) => {
-      return b1.page < b2.page ? b1 : b2;
-    }).page;
+export function sortFacetedHighlights(facetedHighlights: FacetedHighlight[]) {
+  const sorted = facetedHighlights.sort(
+    (d1: FacetedHighlight, d2: FacetedHighlight) => {
+      const d1MinPage = d1.boxes.reduce((b1, b2) => {
+        return b1.page < b2.page ? b1 : b2;
+      }).page;
+      const d2MinPage = d2.boxes.reduce((b1, b2) => {
+        return b1.page < b2.page ? b1 : b2;
+      }).page;
 
-    if (d1MinPage === d2MinPage) {
-      const d1MinLeft = d1.boxes.reduce((b1, b2) => {
-        return b1.left < b2.left ? b1 : b2;
-      }).left;
-      const d2MinLeft = d2.boxes.reduce((b1, b2) => {
-        return b1.left < b2.left ? b1 : b2;
-      }).left;
-      const allowedDelta = 0.02;
+      if (d1MinPage === d2MinPage) {
+        const d1MinLeft = d1.boxes.reduce((b1, b2) => {
+          return b1.left < b2.left ? b1 : b2;
+        }).left;
+        const d2MinLeft = d2.boxes.reduce((b1, b2) => {
+          return b1.left < b2.left ? b1 : b2;
+        }).left;
+        const allowedDelta = 0.02;
 
-      if (Math.abs(d1MinLeft - d2MinLeft) < allowedDelta) {
-        const d1MinTop = d1.boxes.reduce((b1, b2) => {
-          return b1.top < b2.top ? b1 : b2;
-        }).top;
-        const d2MinTop = d2.boxes.reduce((b1, b2) => {
-          return b1.top < b2.top ? b1 : b2;
-        }).top;
-        return d1MinTop < d2MinTop ? -1 : 1;
+        if (Math.abs(d1MinLeft - d2MinLeft) < allowedDelta) {
+          const d1MinTop = d1.boxes.reduce((b1, b2) => {
+            return b1.top < b2.top ? b1 : b2;
+          }).top;
+          const d2MinTop = d2.boxes.reduce((b1, b2) => {
+            return b1.top < b2.top ? b1 : b2;
+          }).top;
+          return d1MinTop < d2MinTop ? -1 : 1;
+        } else {
+          return d1MinLeft < d2MinLeft ? -1 : 1;
+        }
       } else {
-        return d1MinLeft < d2MinLeft ? -1 : 1;
+        return d1MinPage < d2MinPage ? -1 : 1;
       }
-    } else {
-      return d1MinPage < d2MinPage ? -1 : 1;
     }
-  });
+  );
   return sorted;
 }
 

@@ -1,11 +1,11 @@
 import React from "react";
-import { DiscourseObj, SentenceUnit } from "../../api/types";
+import { FacetedHighlight } from "../../api/types";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import Annotation from "../entity/Annotation";
 
 interface Props {
   pageView: PDFPageView;
-  discourseObjs: DiscourseObj[];
+  facetedHighlights: FacetedHighlight[];
 }
 
 class UnderlineLayer extends React.Component<Props> {
@@ -14,16 +14,16 @@ class UnderlineLayer extends React.Component<Props> {
   }
 
   render() {
-    const { pageView, discourseObjs } = this.props;
+    const { pageView, facetedHighlights } = this.props;
 
     return (
       <div className={"underline-layer"}>
-        {discourseObjs.map((x: DiscourseObj) => (
+        {facetedHighlights.map((x: FacetedHighlight) => (
           <Annotation
             pageView={pageView}
             key={x.id}
             id={x.id}
-            className={"discourse-underline"}
+            className={"facet-underline"}
             underline={true}
             active={false}
             selected={false}

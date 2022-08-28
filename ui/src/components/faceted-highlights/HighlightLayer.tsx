@@ -1,29 +1,29 @@
 import Tooltip from "@mui/material/Tooltip";
 import React from "react";
-import { BoundingBox, DiscourseObj } from "../../api/types";
+import { BoundingBox, FacetedHighlight } from "../../api/types";
 import { getRemoteLogger } from "../../logging";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
-import DiscourseControlToolbar from "./DiscourseControlToolbar";
+import FacetControlToolbar from "./FacetControlToolbar";
 
 const logger = getRemoteLogger();
 
 interface Props {
   pageView: PDFPageView;
-  discourseObjs: DiscourseObj[];
+  facetedHighlights: FacetedHighlight[];
   opacity: number;
   drawerOpen: boolean;
-  handleDiscourseObjSelected: (d: DiscourseObj) => void;
-  handleHideDiscourseObj: (d: DiscourseObj) => void;
+  handleHighlightSelected: (d: FacetedHighlight) => void;
+  handleHideHighlight: (d: FacetedHighlight) => void;
   handleOpenDrawer: () => void;
   handleCloseDrawer: () => void;
-  handleFilterToDiscourse: (discourse: string) => void;
-  selectSnippetInDrawer: (d: DiscourseObj) => void;
+  handleFilterToFacet: (facet: string) => void;
+  selectSnippetInDrawer: (d: FacetedHighlight) => void;
 }
 
 interface State {
   showControlToolbar: boolean;
-  focusedDiscourseObj: DiscourseObj | null;
+  focusedHighlight: FacetedHighlight | null;
   clickedLineBox: BoundingBox | null;
   clickX: number | null;
 }
@@ -34,7 +34,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
 
     this.state = {
       showControlToolbar: false,
-      focusedDiscourseObj: null,
+      focusedHighlight: null,
       clickedLineBox: null,
       clickX: null,
     };
@@ -64,7 +64,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
         event.target,
         (e) =>
           e.classList.contains("highlight-mask__highlight") ||
-          e.classList.contains("discourse-control-toolbar")
+          e.classList.contains("facet-control-toolbar")
       )
     ) {
       logger.log("debug", "click-anywhere-close-toolbar");
@@ -75,26 +75,26 @@ class HighlightLayer extends React.PureComponent<Props, State> {
 
   onClickSentence = (
     event: React.MouseEvent,
-    sentence: DiscourseObj,
+    sentence: FacetedHighlight,
     lineIndex: number
   ) => {
-    logger.log("debug", "click-highlight", { discourse: sentence });
+    logger.log("debug", "click-highlight", { highlight: sentence });
     const pageRect = this.props.pageView.div.getBoundingClientRect();
     this.clearAllSelected();
-    this.props.handleDiscourseObjSelected(sentence);
+    this.props.handleHighlightSelected(sentence);
     this.markHighlightAsSelected(sentence);
     this.props.selectSnippetInDrawer(sentence);
     if (!this.props.drawerOpen) {
       this.props.handleOpenDrawer();
       setTimeout(() => {
-        if (this.state.focusedDiscourseObj !== null) {
-          this.props.selectSnippetInDrawer(this.state.focusedDiscourseObj);
+        if (this.state.focusedHighlight !== null) {
+          this.props.selectSnippetInDrawer(this.state.focusedHighlight);
         }
       }, 300);
     }
     this.setState({
       // showControlToolbar: true,
-      focusedDiscourseObj: sentence,
+      focusedHighlight: sentence,
       clickedLineBox: sentence.boxes[lineIndex],
       clickX: event.clientX - pageRect.left,
     });
@@ -103,13 +103,13 @@ class HighlightLayer extends React.PureComponent<Props, State> {
   closeControlToolbar = () => {
     this.setState({
       showControlToolbar: false,
-      focusedDiscourseObj: null,
+      focusedHighlight: null,
       clickedLineBox: null,
       clickX: null,
     });
   };
 
-  markHighlightAsSelected = (d: DiscourseObj) => {
+  markHighlightAsSelected = (d: FacetedHighlight) => {
     uiUtils.addClassToElementsByClassname(`highlight-${d.id}`, "selected");
   };
 
@@ -117,7 +117,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
     uiUtils.removeClassFromElementsByClassname("selected");
   };
 
-  markHighlightAsHovered = (d: DiscourseObj) => {
+  markHighlightAsHovered = (d: FacetedHighlight) => {
     uiUtils.addClassToElementsByClassname(`highlight-${d.id}`, "hovered");
   };
 
@@ -126,10 +126,10 @@ class HighlightLayer extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { pageView, discourseObjs, opacity, drawerOpen } = this.props;
+    const { pageView, facetedHighlights, opacity, drawerOpen } = this.props;
     const {
       showControlToolbar,
-      focusedDiscourseObj,
+      focusedHighlight,
       clickedLineBox,
       clickX,
     } = this.state;
@@ -146,8 +146,8 @@ class HighlightLayer extends React.PureComponent<Props, State> {
 
     return (
       <>
-        {discourseObjs &&
-          discourseObjs.map((d, i) =>
+        {facetedHighlights &&
+          facetedHighlights.map((d, i) =>
             d.boxes
               .filter((b) => b.page === pageNumber)
               .map((b, j) => (
@@ -160,11 +160,11 @@ class HighlightLayer extends React.PureComponent<Props, State> {
                     )}
                   >
                     <div
-                      className={`highlight-mask__highlight discourse-highlight highlight-${d.id}`}
+                      className={`highlight-mask__highlight facet-highlight highlight-${d.id}`}
                       onMouseEnter={() => {
                         this.markHighlightAsHovered(d);
                         logger.log("debug", "hover-highlight", {
-                          discourse: d,
+                          highlight: d,
                         });
                       }}
                       onMouseLeave={this.clearAllHovered}
@@ -187,31 +187,31 @@ class HighlightLayer extends React.PureComponent<Props, State> {
           )}
 
         {showControlToolbar &&
-          focusedDiscourseObj &&
+          focusedHighlight &&
           tooltipX !== null &&
           tooltipY !== null && (
-            <DiscourseControlToolbar
+            <FacetControlToolbar
               x={tooltipX}
               y={tooltipY}
-              label={focusedDiscourseObj.label}
+              label={focusedHighlight.label}
               drawerOpen={drawerOpen}
               handleClose={this.closeControlToolbar}
               handleDeleteHighlight={() =>
-                this.props.handleHideDiscourseObj(focusedDiscourseObj)
+                this.props.handleHideHighlight(focusedHighlight)
               }
               handleOpenDrawer={() => {
                 this.props.handleOpenDrawer();
                 setTimeout(() => {
-                  if (this.state.focusedDiscourseObj !== null) {
+                  if (this.state.focusedHighlight !== null) {
                     this.props.selectSnippetInDrawer(
-                      this.state.focusedDiscourseObj
+                      this.state.focusedHighlight
                     );
                   }
                 }, 300);
               }}
               handleCloseDrawer={this.props.handleCloseDrawer}
-              handleFilterToDiscourse={() =>
-                this.props.handleFilterToDiscourse(focusedDiscourseObj.label)
+              handleFilterToFacet={() =>
+                this.props.handleFilterToFacet(focusedHighlight.label)
               }
             />
           )}

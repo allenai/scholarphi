@@ -1,34 +1,34 @@
 import React from "react";
-import { DiscourseObj } from "../../api/types";
+import { FacetedHighlight } from "../../api/types";
 import { getRemoteLogger } from "../../logging";
 import * as uiUtils from "../../utils/ui";
-import DiscourseTagChip from "./DiscourseTagChip";
+import FacetTagChip from "./FacetTagChip";
 
 const logger = getRemoteLogger();
 
 interface Props {
-  allDiscourseObjs: DiscourseObj[];
-  selectedDiscourses: string[];
-  handleDiscourseSelected: (discourse: string) => void;
+  allFacetedHighlights: FacetedHighlight[];
+  selectedFacets: string[];
+  handleFacetSelected: (facet: string) => void;
 }
 
 interface State {
   firstSelection: boolean;
 }
 
-class DiscoursePalette extends React.PureComponent<Props, State> {
+class FacetPalette extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
   }
 
   onClickTag = (tag: string) => {
     logger.log("debug", "click-facet-tag", { tag: tag });
-    this.props.handleDiscourseSelected(tag);
+    this.props.handleFacetSelected(tag);
   };
 
   onClickEverything = () => {
     logger.log("debug", "click-all-facets-tag");
-    this.props.handleDiscourseSelected("all");
+    this.props.handleFacetSelected("all");
   };
 
   getAvailableFacets = () => {
@@ -36,37 +36,37 @@ class DiscoursePalette extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { selectedDiscourses, allDiscourseObjs } = this.props;
+    const { selectedFacets, allFacetedHighlights } = this.props;
 
     const facetDisplayNames = uiUtils.getFacetDisplayNames();
     const facetColors = uiUtils.getFacetColors();
 
     return (
-      <div className="discourse-chip-palette-wrapper">
-        <p className="discourse-palette-header">Show me...</p>
-        <div className="discourse-chip-palette">
-          <div className="discourse-chip-palette__tags">
+      <div className="facet-chip-palette-wrapper">
+        <p className="facet-palette-header">Show me...</p>
+        <div className="facet-chip-palette">
+          <div className="facet-chip-palette__tags">
             {this.getAvailableFacets().map((facet) => {
               return (
-                <DiscourseTagChip
+                <FacetTagChip
                   key={facet}
                   id={facet}
                   name={`${facetDisplayNames[facet] || facet} (${
-                    allDiscourseObjs.filter((x) => x.label === facet).length
+                    allFacetedHighlights.filter((x) => x.label === facet).length
                   })`}
-                  selected={selectedDiscourses.includes(facet)}
+                  selected={selectedFacets.includes(facet)}
                   color={facetColors[facet]}
                   handleSelection={this.onClickTag}
                 />
               );
             })}
           </div>
-          <div className="discourse-chip-palette__everything">
-            <DiscourseTagChip
+          <div className="facet-chip-palette__everything">
+            <FacetTagChip
               id="everything"
               className="everything-chip"
               name={"Everything"}
-              selected={selectedDiscourses.length > 0}
+              selected={selectedFacets.length > 0}
               color={"lightgray"}
               handleSelection={this.onClickEverything}
             />
@@ -77,4 +77,4 @@ class DiscoursePalette extends React.PureComponent<Props, State> {
   }
 }
 
-export default DiscoursePalette;
+export default FacetPalette;

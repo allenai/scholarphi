@@ -33,7 +33,7 @@ interface Props {
 /**
  * A side note shown in the margin of a page.
  */
-export class DiscourseTag extends React.PureComponent<Props> {
+export class FacetTag extends React.PureComponent<Props> {
   render() {
     const { pageView, anchor, content, color } = this.props;
 
@@ -74,7 +74,7 @@ export class DiscourseTag extends React.PureComponent<Props> {
     return (
       <>
         <hr
-          className="discourse-tag-rule"
+          className="facet-tag-rule"
           style={{
             top: ruleTop,
             left: ruleLeft,
@@ -83,8 +83,8 @@ export class DiscourseTag extends React.PureComponent<Props> {
           }}
         />
         <Card
-          className={classNames("scholar-reader-discourse-tag", `side-${side}`)}
-          id={`discourse-tag-${this.props.entityId}`}
+          className={classNames("scholar-reader-facet-tag", `side-${side}`)}
+          id={`facet-tag-${this.props.entityId}`}
           style={{
             top: sidenoteTop,
             backgroundColor: color !== undefined ? color : undefined,
@@ -97,4 +97,4 @@ export class DiscourseTag extends React.PureComponent<Props> {
   }
 }
 
-export default DiscourseTag;
+export default FacetTag;

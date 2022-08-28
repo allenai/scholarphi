@@ -10,20 +10,20 @@ interface Props {
   handleSelection: (key: string) => void;
 }
 
-export class DiscourseTagChip extends React.PureComponent<Props> {
+export class FacetTagChip extends React.PureComponent<Props> {
   render() {
     return (
       <div
-        className={classNames("discourse-chip", this.props.className, {
+        className={classNames("facet-chip", this.props.className, {
           deselected: !this.props.selected,
         })}
         onClick={() => this.props.handleSelection(this.props.id)}
         style={{ backgroundColor: this.props.color }}
       >
-        <span className="discourse-chip__label">{this.props.name}</span>
+        <span className="facet-chip__label">{this.props.name}</span>
       </div>
     );
   }
 }
 
-export default DiscourseTagChip;
+export default FacetTagChip;

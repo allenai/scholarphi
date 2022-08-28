@@ -1,11 +1,11 @@
 import React from "react";
-import { CaptionUnit, DiscourseObj } from "../../api/types";
+import { CaptionUnit, FacetedHighlight } from "../../api/types";
 import { MediaTag } from "./MediaTag";
 import { ScrollbarMark } from "./ScrollbarMark";
 
 interface Props {
   numPages: number;
-  discourseObjs: DiscourseObj[];
+  facetedHighlights: FacetedHighlight[];
   captionUnits: CaptionUnit[];
   handleMarkClicked: (id: string) => void;
 }
@@ -18,7 +18,7 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
     super(props);
   }
 
-  mapDiscourseToScrollBar = (page: number, top: number): number => {
+  mapHighlightToScrollbar = (page: number, top: number): number => {
     if (ScrollbarMarkup.scrollbarHeight === undefined) {
       return 0;
     }
@@ -28,7 +28,7 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
   };
 
   render() {
-    const { discourseObjs, captionUnits } = this.props;
+    const { facetedHighlights, captionUnits } = this.props;
 
     return (
       <>
@@ -39,21 +39,20 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
               <MediaTag
                 key={`media-tag-${i}`}
                 type={c.type}
-                yOffset={this.mapDiscourseToScrollBar(
+                yOffset={this.mapHighlightToScrollbar(
                   c.bbox.page + 1,
                   c.bbox.top
                 )}
               />
             ))}
-            {discourseObjs
-              .map((d: DiscourseObj, i: number) => (
-                <ScrollbarMark
-                  key={`scrollbar-mark-${i}`}
-                  sentence={d}
-                  handleMarkClicked={() => this.props.handleMarkClicked(d.id)}
-                  mapDiscourseToScrollBar={this.mapDiscourseToScrollBar}
-                />
-              ))}
+            {facetedHighlights.map((d: FacetedHighlight, i: number) => (
+              <ScrollbarMark
+                key={`scrollbar-mark-${i}`}
+                sentence={d}
+                handleMarkClicked={() => this.props.handleMarkClicked(d.id)}
+                mapHighlightToScrollbar={this.mapHighlightToScrollbar}
+              />
+            ))}
           </div>
         ) : null}
       </>

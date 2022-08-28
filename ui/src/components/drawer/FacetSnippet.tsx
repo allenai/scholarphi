@@ -8,7 +8,7 @@ interface Props {
   color: string;
   children: string;
   onClick: () => void;
-  handleJumpToDiscourseObj: (id: string) => void;
+  handleJumpToHighlight: (id: string) => void;
 }
 
 class FacetSnippet extends React.PureComponent<Props> {

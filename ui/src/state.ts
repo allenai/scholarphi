@@ -1,11 +1,5 @@
 import { PDFDocumentProxy } from "pdfjs-dist/types/src/display/api";
-import {
-  BoundingBox,
-  DiscourseObj,
-  Entity,
-  Paper,
-  SentenceUnit,
-} from "./api/types";
+import { Entity, FacetedHighlight, Paper } from "./api/types";
 import { AreaSelectionMethod } from "./components/control/EntityCreationToolbar";
 import { DrawerContentType, DrawerMode } from "./components/drawer/Drawer";
 import { SnackbarMode } from "./components/overlay/AppOverlay";
@@ -158,12 +152,12 @@ export interface State extends Settings {
   skimOpacity: number;
   showSkimmingAnnotations: boolean;
   showSkimmingAnnotationColors: boolean;
-  currentDiscourseObjId: string | null;
-  discourseObjs: DiscourseObj[];
-  discourseObjsById: { [id: string]: DiscourseObj };
-  selectedDiscourses: string[];
-  hiddenDiscourseObjs: DiscourseObj[];
-  numHighlightMultiplier: { [discourse: string]: number };
+  currentHighlightId: string | null;
+  facetedHighlights: FacetedHighlight[];
+  highlightsById: { [id: string]: FacetedHighlight };
+  selectedFacets: string[];
+  hiddenFacetedHighlights: FacetedHighlight[];
+  numHighlightMultiplier: { [facet: string]: number };
   highlightQuantity: number;
 }
 

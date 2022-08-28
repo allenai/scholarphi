@@ -1,6 +1,6 @@
 import MuiDrawer from "@mui/material/Drawer";
 import React from "react";
-import { DiscourseObj, Entity, EntityUpdateData } from "../../api/types";
+import { FacetedHighlight, Entity, EntityUpdateData } from "../../api/types";
 import { getRemoteLogger } from "../../logging";
 import { Entities } from "../../state";
 import { PDFViewer } from "../../types/pdfjs-viewer";
@@ -28,16 +28,16 @@ interface Props {
   contentType: DrawerContentType;
   entities: Entities | null;
   selectedEntityIds: string[];
-  discourseObjs: DiscourseObj[];
-  allDiscourseObjs: DiscourseObj[];
-  selectedDiscourses: string[];
+  facetedHighlights: FacetedHighlight[];
+  allFacetedHighlights: FacetedHighlight[];
+  selectedFacets: string[];
   propagateEntityEdits: boolean;
   highlightQuantity: number;
   showSkimmingAnnotationColors: boolean;
-  handleDiscourseSelected: (discourse: string) => void;
+  handleFacetSelected: (facet: string) => void;
   handleClose: () => void;
   handleJumpToEntity: (entityId: string) => void;
-  handleJumpToDiscourseObj: (id: string) => void;
+  handleJumpToHighlight: (id: string) => void;
   handleSetPropagateEntityEdits: (propagate: boolean) => void;
   handleUpdateEntity: (
     entity: Entity,
@@ -108,9 +108,9 @@ export class Drawer extends React.PureComponent<Props> {
       contentType,
       entities,
       selectedEntityIds,
-      discourseObjs,
-      allDiscourseObjs,
-      selectedDiscourses,
+      facetedHighlights,
+      allFacetedHighlights,
+      selectedFacets,
       highlightQuantity,
       showSkimmingAnnotationColors,
     } = this.props;
@@ -184,13 +184,13 @@ export class Drawer extends React.PureComponent<Props> {
           )}
           {contentType === "facets" && (
             <Facets
-              discourseObjs={discourseObjs}
-              allDiscourseObjs={allDiscourseObjs}
-              selectedDiscourses={selectedDiscourses}
+              facetedHighlights={facetedHighlights}
+              allFacetedHighlights={allFacetedHighlights}
+              selectedFacets={selectedFacets}
               highlightQuantity={highlightQuantity}
               showSkimmingAnnotationColors={showSkimmingAnnotationColors}
-              handleJumpToDiscourseObj={this.props.handleJumpToDiscourseObj}
-              handleDiscourseSelected={this.props.handleDiscourseSelected}
+              handleJumpToHighlight={this.props.handleJumpToHighlight}
+              handleFacetSelected={this.props.handleFacetSelected}
               handleHighlightQuantityChanged={
                 this.props.handleHighlightQuantityChanged
               }

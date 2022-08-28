@@ -2,37 +2,37 @@ import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
 import Switch from "@mui/material/Switch";
 import React from "react";
-import { DiscourseObj } from "../../api/types";
+import { FacetedHighlight } from "../../api/types";
 import { getRemoteLogger } from "../../logging";
 import * as uiUtils from "../../utils/ui";
-import DiscoursePalette from "../discourse/DiscoursePalette";
+import FacetPalette from "../faceted-highlights/FacetPalette";
 import FacetSnippet from "./FacetSnippet";
 
 const logger = getRemoteLogger();
 
 interface Props {
-  discourseObjs: DiscourseObj[];
-  allDiscourseObjs: DiscourseObj[];
-  selectedDiscourses: string[];
+  facetedHighlights: FacetedHighlight[];
+  allFacetedHighlights: FacetedHighlight[];
+  selectedFacets: string[];
   highlightQuantity: number;
   showSkimmingAnnotationColors: boolean;
-  handleDiscourseSelected: (discourse: string) => void;
-  handleJumpToDiscourseObj: (id: string) => void;
+  handleFacetSelected: (facet: string) => void;
+  handleJumpToHighlight: (id: string) => void;
   handleHighlightQuantityChanged: (value: number) => void;
   handleSkimmingAnnotationColorsChanged: (value: boolean) => void;
 }
 
 export class Facets extends React.PureComponent<Props> {
-  handleFacetSnippetClicked = (sentence: DiscourseObj) => {
+  handleFacetSnippetClicked = (sentence: FacetedHighlight) => {
     logger.log("debug", "click-facet-snippet", {
-      discourse: sentence,
+      highlight: sentence,
     });
-    if (this.props.handleJumpToDiscourseObj) {
+    if (this.props.handleJumpToHighlight) {
       this.clearAllSelected();
       this.markAsSelected(`facet-snippet-${sentence.id}`);
       this.markAsSelected(`highlight-${sentence.id}`);
 
-      this.props.handleJumpToDiscourseObj(sentence.id);
+      this.props.handleJumpToHighlight(sentence.id);
     }
   };
 
@@ -53,9 +53,9 @@ export class Facets extends React.PureComponent<Props> {
 
   render() {
     const {
-      discourseObjs,
-      allDiscourseObjs,
-      selectedDiscourses,
+      facetedHighlights,
+      allFacetedHighlights,
+      selectedFacets,
       showSkimmingAnnotationColors,
     } = this.props;
 
@@ -66,8 +66,8 @@ export class Facets extends React.PureComponent<Props> {
      */
 
     // const bySection = uiUtils
-    //   .sortDiscourseObjs(discourseObjs)
-    //   .reduce((acc: { [section: string]: DiscourseObj[] }, d: DiscourseObj) => {
+    //   .sortFacetedHighlights(facetedHighlights)
+    //   .reduce((acc: { [section: string]: FacetedHighlight[] }, d: FacetedHighlight) => {
     //     // The section attribute contains (when they exist) section, subsection, and
     //     // subsubsection header data, delimited by "@@".
     //     const long_section = d.entity.section;
@@ -80,28 +80,31 @@ export class Facets extends React.PureComponent<Props> {
     //   }, {});
 
     const byPage = uiUtils
-      .sortDiscourseObjs(discourseObjs)
-      .reduce((acc: { [page: number]: DiscourseObj[] }, d: DiscourseObj) => {
-        const page = d.boxes[0]["page"] + 1;
-        if (!acc[page]) {
-          acc[page] = [];
-        }
-        acc[page].push(d);
-        return acc;
-      }, {});
+      .sortFacetedHighlights(facetedHighlights)
+      .reduce(
+        (acc: { [page: number]: FacetedHighlight[] }, d: FacetedHighlight) => {
+          const page = d.boxes[0]["page"] + 1;
+          if (!acc[page]) {
+            acc[page] = [];
+          }
+          acc[page].push(d);
+          return acc;
+        },
+        {}
+      );
 
     return (
       <>
         <div>
-          <DiscoursePalette
-            allDiscourseObjs={allDiscourseObjs}
-            selectedDiscourses={selectedDiscourses}
-            handleDiscourseSelected={this.props.handleDiscourseSelected}
-          ></DiscoursePalette>
+          <FacetPalette
+            allFacetedHighlights={allFacetedHighlights}
+            selectedFacets={selectedFacets}
+            handleFacetSelected={this.props.handleFacetSelected}
+          ></FacetPalette>
         </div>
 
         <div
-          className="document-snippets discourse-objs"
+          className="document-snippets facet-objs"
           style={{ marginTop: "9em" }}
         >
           <Box width={"100%"}>
@@ -143,14 +146,14 @@ export class Facets extends React.PureComponent<Props> {
           </Box>
 
           {/* No delimiter */}
-          {/* {uiUtils.sortDiscourseObjs(discourseObjs).map((d: DiscourseObj) => {
+          {/* {uiUtils.sortFacetedHighlights(facetedHighlights).map((d: FacetedHighlight) => {
             return (
               <FacetSnippet
                 key={d.id}
                 id={d.id}
                 color={d.color}
                 onClick={() => this.handleFacetSnippetClicked(d)}
-                handleJumpToDiscourseObj={this.props.handleJumpToDiscourseObj}
+                handleJumpToHighlight={this.props.handleJumpToHighlight}
               >
                 {d.entity.text}
               </FacetSnippet>
@@ -161,22 +164,22 @@ export class Facets extends React.PureComponent<Props> {
           {Object.entries(byPage).map(([page, ds], pageIdx: number) => {
             return (
               <React.Fragment key={pageIdx}>
-                <p className="discourse-page-header">Page {page}</p>
-                {uiUtils.sortDiscourseObjs(ds).map((d: DiscourseObj) => {
-                  return (
-                    <FacetSnippet
-                      key={d.id}
-                      id={d.id}
-                      color={d.color}
-                      onClick={() => this.handleFacetSnippetClicked(d)}
-                      handleJumpToDiscourseObj={
-                        this.props.handleJumpToDiscourseObj
-                      }
-                    >
-                      {d.entity.text}
-                    </FacetSnippet>
-                  );
-                })}
+                <p className="facet-page-header">Page {page}</p>
+                {uiUtils
+                  .sortFacetedHighlights(ds)
+                  .map((d: FacetedHighlight) => {
+                    return (
+                      <FacetSnippet
+                        key={d.id}
+                        id={d.id}
+                        color={d.color}
+                        onClick={() => this.handleFacetSnippetClicked(d)}
+                        handleJumpToHighlight={this.props.handleJumpToHighlight}
+                      >
+                        {d.text}
+                      </FacetSnippet>
+                    );
+                  })}
               </React.Fragment>
             );
           })}
@@ -186,16 +189,16 @@ export class Facets extends React.PureComponent<Props> {
             ([section, ds], sectionIdx: number) => {
               return (
                 <React.Fragment key={sectionIdx}>
-                  <p className="discourse-page-header">{section}</p>
-                  {uiUtils.sortDiscourseObjs(ds).map((d: DiscourseObj) => {
+                  <p className="facet-page-header">{section}</p>
+                  {uiUtils.sortFacetedHighlights(ds).map((d: FacetedHighlight) => {
                     return (
                       <FacetSnippet
                         key={d.id}
                         id={d.id}
                         color={d.color}
                         onClick={() => this.handleFacetSnippetClicked(d)}
-                        handleJumpToDiscourseObj={
-                          this.props.handleJumpToDiscourseObj
+                        handleJumpToHighlight={
+                          this.props.handleJumpToHighlight
                         }
                       >
                         {d.entity.text}

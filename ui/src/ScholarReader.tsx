@@ -3,29 +3,28 @@ import jsPDF from "jspdf";
 import React from "react";
 import * as api from "./api/api";
 import {
-  DiscourseObj,
   Entity,
   EntityCreateData,
   EntityUpdateData,
+  FacetedHighlight,
   isCitation,
   isEquation,
   isSymbol,
   isTerm,
   Paper,
-  RhetoricUnit,
-  Symbol
+  Symbol,
 } from "./api/types";
 import Control from "./components/control/Control";
 import EntityCreationCanvas from "./components/control/EntityCreationCanvas";
 import EntityCreationToolbar, {
   AreaSelectionMethod,
-  createCreateEntityDataWithBoxes
+  createCreateEntityDataWithBoxes,
 } from "./components/control/EntityCreationToolbar";
 import MainControlPanel from "./components/control/MainControlPanel";
 import TextSelectionMenu from "./components/control/TextSelectionMenu";
-import DiscourseTagLayer from "./components/discourse/DiscourseTagLayer";
-import HighlightLayer from "./components/discourse/HighlightLayer";
-import UnderlineLayer from "./components/discourse/UnderlineLayer";
+import FacetLabelLayer from "./components/faceted-highlights/FacetLabelLayer";
+import HighlightLayer from "./components/faceted-highlights/HighlightLayer";
+import UnderlineLayer from "./components/faceted-highlights/UnderlineLayer";
 import { Drawer, DrawerContentType } from "./components/drawer/Drawer";
 import DrawerControlFab from "./components/drawer/DrawerControlFab";
 import EntityAnnotationLayer from "./components/entity/EntityAnnotationLayer";
@@ -47,7 +46,7 @@ import {
   ConfigurableSetting,
   CONFIGURABLE_SETTINGS,
   getSettings,
-  GlossStyle
+  GlossStyle,
 } from "./settings";
 import skimmingData from "./skimmingData/facets.json";
 import {
@@ -56,13 +55,13 @@ import {
   Pages,
   PaperId,
   State,
-  SymbolFilters
+  SymbolFilters,
 } from "./state";
 import "./style/index.less";
 import {
   DocumentLoadedEvent,
   PageRenderedEvent,
-  PDFViewerApplication
+  PDFViewerApplication,
 } from "./types/pdfjs-viewer";
 import * as stateUtils from "./utils/state";
 import * as uiUtils from "./utils/ui";
@@ -130,11 +129,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       showSkimmingAnnotations: true,
       showSkimmingAnnotationColors: true,
 
-      currentDiscourseObjId: null,
-      discourseObjs: [],
-      discourseObjsById: {},
-      selectedDiscourses: this.getAvailableFacets(),
-      hiddenDiscourseObjs: [],
+      currentHighlightId: null,
+      facetedHighlights: [],
+      highlightsById: {},
+      selectedFacets: this.getAvailableFacets(),
+      hiddenFacetedHighlights: [],
       numHighlightMultiplier: {
         objective: 1.0,
         novelty: 1.0,
@@ -738,190 +737,200 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       if (uiUtils.isKeypressShiftTab(event)) {
         logger.log("debug", "navigate-next-highlight");
         event.preventDefault();
-        if (this.state.discourseObjs.length > 0) {
-          this.moveToPreviousDiscourseObj();
+        if (this.state.facetedHighlights.length > 0) {
+          this.moveToPreviousHighlight();
         }
       } else if (uiUtils.isKeypressTab(event)) {
         logger.log("debug", "navigate-prev-highlight");
         event.preventDefault();
-        if (this.state.discourseObjs.length > 0) {
-          this.moveToNextDiscourseObj();
+        if (this.state.facetedHighlights.length > 0) {
+          this.moveToNextHighlight();
         }
       }
     });
 
     if (this.props.paperId !== undefined) {
-      this.initDiscourseObjs();
+      this.initFacetedHighlights();
     }
   }
 
-  moveToNextDiscourseObj = () => {
-    const activeDiscourseObjs = this.filterDiscourseObjsToShow(
-      this.state.discourseObjs
+  moveToNextHighlight = () => {
+    const activeHighlights = this.filterFacetedHighlights(
+      this.state.facetedHighlights
     );
-    const discourseIds = activeDiscourseObjs.map((x) => x.id);
-    const numDiscourseObjs = activeDiscourseObjs.length;
+    const highlightIds = activeHighlights.map((x) => x.id);
+    const numHighlights = activeHighlights.length;
     let nextId = "";
-    if (this.state.currentDiscourseObjId !== null) {
-      const currIdx = discourseIds.indexOf(this.state.currentDiscourseObjId);
-      const nextIdx = (currIdx + 1) % numDiscourseObjs;
-      nextId = discourseIds[nextIdx];
+    if (this.state.currentHighlightId !== null) {
+      const currIdx = highlightIds.indexOf(this.state.currentHighlightId);
+      const nextIdx = (currIdx + 1) % numHighlights;
+      nextId = highlightIds[nextIdx];
     } else {
-      nextId = discourseIds[0];
+      nextId = highlightIds[0];
     }
     uiUtils.removeClassFromElementsByClassname("selected");
     uiUtils.addClassToElementsByClassname(`highlight-${nextId}`, "selected");
-    this.jumpToDiscourseObj(nextId);
+    this.jumpToHighlight(nextId);
   };
 
-  moveToPreviousDiscourseObj = () => {
-    const activeDiscourseObjs = this.filterDiscourseObjsToShow(
-      this.state.discourseObjs
+  moveToPreviousHighlight = () => {
+    const activeHighlights = this.filterFacetedHighlights(
+      this.state.facetedHighlights
     );
-    const discourseIds = activeDiscourseObjs.map((x) => x.id);
-    const numDiscourseObjs = activeDiscourseObjs.length;
+    const highlightIds = activeHighlights.map((x) => x.id);
+    const numHighlights = activeHighlights.length;
     let nextId = "";
-    if (this.state.currentDiscourseObjId !== null) {
-      const currIdx = discourseIds.indexOf(this.state.currentDiscourseObjId);
-      const nextIdx = (numDiscourseObjs + currIdx - 1) % numDiscourseObjs;
-      nextId = discourseIds[nextIdx];
+    if (this.state.currentHighlightId !== null) {
+      const currIdx = highlightIds.indexOf(this.state.currentHighlightId);
+      const nextIdx = (numHighlights + currIdx - 1) % numHighlights;
+      nextId = highlightIds[nextIdx];
     } else {
-      nextId = discourseIds[numDiscourseObjs - 1];
+      nextId = highlightIds[numHighlights - 1];
     }
     uiUtils.removeClassFromElementsByClassname("selected");
     uiUtils.addClassToElementsByClassname(`highlight-${nextId}`, "selected");
-    this.jumpToDiscourseObj(nextId);
+    this.jumpToHighlight(nextId);
   };
 
-  setCurrentDiscourseObjId = (d: DiscourseObj) => {
+  setCurrentHighlightId = (d: FacetedHighlight) => {
     this.setState({
-      currentDiscourseObjId: d.id,
+      currentHighlightId: d.id,
     });
   };
 
-  initDiscourseObjs = () => {
-    const unitsToShow: RhetoricUnit[] = [];
+  initFacetedHighlights = () => {
+    const unitsToShow: FacetedHighlight[] = [];
 
-    let data = Object(skimmingData)[this.props.paperId!.id];
-    data = this.preprocessData(data);
+    const facetToColorMap: {
+      [label: string]: string;
+    } = uiUtils.getFacetColors();
+
+    let facetedHighlights = Object(skimmingData)[this.props.paperId!.id].map(
+      (x: any) => ({
+        id: x.id,
+        text: x.text,
+        section: x.section,
+        label: x.label,
+        score: x.score,
+        boxes: x.boxes,
+        tagLocation: x.boxes[0],
+        color: this.state.showSkimmingAnnotationColors
+          ? facetToColorMap[x.label] ?? facetToColorMap["highlight"]
+          : facetToColorMap["highlight"],
+      })
+    );
+    // data = this.preprocessData(data);
 
     // Add highlights for the four facets
-    unitsToShow.push(...this.getNoveltyHighlights(data));
-    unitsToShow.push(...this.getObjectiveHighlights(data));
-    unitsToShow.push(...this.getMethodHighlights(data));
-    unitsToShow.push(...this.getResultHighlights(data));
-
-    let discourseObjs = this.makeDiscourseObjsFromRhetoricUnits(unitsToShow);
+    unitsToShow.push(...this.getNoveltyHighlights(facetedHighlights));
+    unitsToShow.push(...this.getObjectiveHighlights(facetedHighlights));
+    unitsToShow.push(...this.getMethodHighlights(facetedHighlights));
+    unitsToShow.push(...this.getResultHighlights(facetedHighlights));
 
     // Disable faceted highlights in abstract
-    // discourseObjs = discourseObjs.filter(
+    // facetedHighlights = facetedHighlights.filter(
     //   (d) => d.entity.section.toLowerCase() !== "abstract"
     // );
 
     // Select the most appropriate facet for sentences that have more than one
-    discourseObjs = this.disambiguateDiscourseLabels(discourseObjs);
+    facetedHighlights = this.disambiguateFacetsForHighlight(facetedHighlights);
 
     this.setState({
-      discourseObjs: uiUtils.sortDiscourseObjs(discourseObjs),
-      discourseObjsById: this.makeDiscourseByIdMap(discourseObjs),
+      facetedHighlights: uiUtils.sortFacetedHighlights(facetedHighlights),
+      highlightsById: this.makeHighlightByIdMap(facetedHighlights),
     });
   };
 
-  filterDiscourseObjsToShow = (discourseObjs: DiscourseObj[]) => {
-    return discourseObjs
-      .filter((x: DiscourseObj) =>
-        this.state.selectedDiscourses.includes(x.label)
+  filterFacetedHighlights = (facetedHighlights: FacetedHighlight[]) => {
+    return facetedHighlights
+      .filter((x: FacetedHighlight) =>
+        this.state.selectedFacets.includes(x.label)
       )
-      .filter((x: DiscourseObj) => {
-        const hiddenIds = this.state.hiddenDiscourseObjs.map((d) => d.id);
+      .filter((x: FacetedHighlight) => {
+        const hiddenIds = this.state.hiddenFacetedHighlights.map((d) => d.id);
         return !hiddenIds.includes(x.id);
       });
   };
 
-  makeDiscourseByIdMap = (discourseObjs: DiscourseObj[]) => {
-    const discourseObjsById = discourseObjs.reduce(
-      (acc: { [id: string]: DiscourseObj }, d: DiscourseObj) => {
+  makeHighlightByIdMap = (facetedHighlights: FacetedHighlight[]) => {
+    const highlightsById = facetedHighlights.reduce(
+      (acc: { [id: string]: FacetedHighlight }, d: FacetedHighlight) => {
         acc[d.id] = d;
         return acc;
       },
       {}
     );
-    return discourseObjsById;
+    return highlightsById;
   };
 
-  makeDiscourseObjsFromRhetoricUnits = (
-    units: RhetoricUnit[]
-  ): DiscourseObj[] => {
-    const discourseToColorMap: {
-      [label: string]: string;
-    } = uiUtils.getFacetColors();
-
-    return units.map((r: RhetoricUnit) => ({
-      id: r.id,
-      entity: r,
-      label: r.label,
-      boxes: r.boxes,
-      tagLocation: r.boxes[0],
-      color: this.state.showSkimmingAnnotationColors
-        ? discourseToColorMap[r.label] ?? discourseToColorMap["highlight"]
-        : discourseToColorMap["highlight"],
-    }));
+  getNoveltyHighlights = (highlights: FacetedHighlight[]) => {
+    let novelty = highlights.filter((r) => r.label === "novelty");
+    return novelty
+      .sort((x) => x.score)
+      .reverse()
+      .slice(
+        0,
+        Math.round(
+          this.state.numHighlightMultiplier["novelty"] * novelty.length
+        )
+      );
   };
 
-  getNoveltyHighlights = (data: RhetoricUnit[]) => {
-    let novelty = data.filter((r) => r.label === "novelty");
-    return novelty.slice(
-      0,
-      Math.round(this.state.numHighlightMultiplier["novelty"] * novelty.length)
-    );
+  getMethodHighlights = (highlights: FacetedHighlight[]) => {
+    const methods = highlights.filter((r) => r.label === "method");
+    return methods
+      .sort((x) => x.score)
+      .reverse()
+      .slice(
+        0,
+        Math.round(this.state.numHighlightMultiplier["method"] * methods.length)
+      );
   };
 
-  getMethodHighlights = (data: RhetoricUnit[]) => {
-    const methods = data.filter((r) => r.label === "method");
-    return methods.slice(
-      0,
-      Math.round(this.state.numHighlightMultiplier["method"] * methods.length)
-    );
-  };
-
-  getResultHighlights = (data: RhetoricUnit[]) => {
-    const results = data.filter((r) => {
+  getResultHighlights = (highlights: FacetedHighlight[]) => {
+    const results = highlights.filter((r) => {
       const hasCitation = new RegExp(/\[.*\d.*\]/).test(r.text);
       return r.label === "result" && !hasCitation;
     });
 
-    return results.slice(
-      0,
-      Math.round(this.state.numHighlightMultiplier["result"] * results.length)
-    );
+    return results
+      .sort((x) => x.score)
+      .reverse()
+      .slice(
+        0,
+        Math.round(this.state.numHighlightMultiplier["result"] * results.length)
+      );
   };
 
-  getObjectiveHighlights = (data: RhetoricUnit[]) => {
-    const objectives = data.filter((r) => r.label === "objective");
-    return objectives.slice(
-      0,
-      Math.round(
-        this.state.numHighlightMultiplier["objective"] * objectives.length
-      )
-    );
+  getObjectiveHighlights = (highlights: FacetedHighlight[]) => {
+    const objectives = highlights.filter((r) => r.label === "objective");
+    return objectives
+      .sort((x) => x.score)
+      .reverse()
+      .slice(
+        0,
+        Math.round(
+          this.state.numHighlightMultiplier["objective"] * objectives.length
+        )
+      );
   };
 
-  preprocessData = (data: RhetoricUnit[]) => {
+  preprocessData = (highlights: FacetedHighlight[]) => {
     // Remove sentence fragments that were detected (i.e., start with a lowercase letter).
-    return data.filter(
-      (r: RhetoricUnit) => r.text[0] !== r.text[0].toLowerCase()
+    return highlights.filter(
+      (r: FacetedHighlight) => r.text[0] !== r.text[0].toLowerCase()
     );
   };
 
-  disambiguateDiscourseLabels = (discourseObjs: DiscourseObj[]) => {
+  disambiguateFacetsForHighlight = (facaetedHighlights: FacetedHighlight[]) => {
     // Because heuristics and the classifier may assign multiple labels to a single sentence,
     // we enforce a label prioritization scheme to ensure each sentence gets a unique label.
-    const text_to_labels: { [text: string]: DiscourseObj[] } = {};
-    discourseObjs.forEach((d) => {
-      if (!text_to_labels.hasOwnProperty(d.entity.text)) {
-        text_to_labels[d.entity.text] = [];
+    const text_to_labels: { [text: string]: FacetedHighlight[] } = {};
+    facaetedHighlights.forEach((f) => {
+      if (!text_to_labels.hasOwnProperty(f.text)) {
+        text_to_labels[f.text] = [];
       }
-      text_to_labels[d.entity.text].push(d);
+      text_to_labels[f.text].push(f);
     });
     return Object.values(text_to_labels)
       .map((labels) => {
@@ -937,43 +946,42 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         return sortedLabels;
       })
       .map(
-        (objsWithMultipleLabels: DiscourseObj[]) => objsWithMultipleLabels[0]
+        (objsWithMultipleLabels: FacetedHighlight[]) =>
+          objsWithMultipleLabels[0]
       );
   };
 
-  selectDiscourseClass = (discourse: string) => {
-    if (discourse === "all") {
-      this.setState({ selectedDiscourses: this.getAvailableFacets() });
+  selectFacet = (facet: string) => {
+    if (facet === "all") {
+      this.setState({ selectedFacets: this.getAvailableFacets() });
     } else {
-      this.filterToDiscourse(discourse);
+      this.filterToFacet(facet);
     }
   };
 
-  filterToDiscourse = (discourse: string) => {
-    if (this.state.selectedDiscourses.includes(discourse)) {
+  filterToFacet = (facet: string) => {
+    if (this.state.selectedFacets.includes(facet)) {
       this.setState({
-        selectedDiscourses: this.state.selectedDiscourses.filter(
-          (d) => d !== discourse
-        ),
+        selectedFacets: this.state.selectedFacets.filter((d) => d !== facet),
       });
     } else {
       this.setState((prevState) => ({
-        selectedDiscourses: [...prevState.selectedDiscourses, discourse],
+        selectedFacets: [...prevState.selectedFacets, facet],
       }));
     }
   };
 
   handleHighlightQuantityChanged = (value: number) => {
     localStorage.setItem("highlightQuantity", value.toString());
-    const discourses = ["result", "method", "objective", "novelty"];
+    const facets = ["result", "method", "objective", "novelty"];
     this.setState((prevState) => {
       let newHighlightMultiplier = prevState.numHighlightMultiplier;
 
-      discourses.forEach((discourse: string) => {
+      facets.forEach((facet: string) => {
         // Handle objective and novelty highlights a bit differently (proritize showing them)
         newHighlightMultiplier = {
           ...newHighlightMultiplier,
-          [discourse]: ["objective", "novelty"].includes(discourse)
+          [facet]: ["objective", "novelty"].includes(facet)
             ? (value / 100) * 2
             : value / 100,
         };
@@ -983,19 +991,19 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         highlightQuantity: value,
       });
 
-      let newSelectedDiscourses = prevState.selectedDiscourses;
-      discourses.forEach((discourse: string) => {
-        if (prevState.numHighlightMultiplier[discourse] === 0) {
-          newSelectedDiscourses.push(discourse);
+      let newSelectedFacets = prevState.selectedFacets;
+      facets.forEach((facet: string) => {
+        if (prevState.numHighlightMultiplier[facet] === 0) {
+          newSelectedFacets.push(facet);
         }
       });
 
       return {
         highlightQuantity: value,
         numHighlightMultiplier: newHighlightMultiplier,
-        selectedDiscourses: newSelectedDiscourses,
+        selectedFacets: newSelectedFacets,
       };
-    }, this.initDiscourseObjs);
+    }, this.initFacetedHighlights);
   };
 
   isHighlightQuantityMaximum = () => {
@@ -1011,15 +1019,15 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   onScrollbarMarkClicked = (id: string) => {
-    this.jumpToDiscourseObj(id);
+    this.jumpToHighlight(id);
     setTimeout(() => {
-      this.selectSnippetInDrawer(this.state.discourseObjsById[id]);
+      this.selectSnippetInDrawer(this.state.highlightsById[id]);
     }, 200);
   };
 
-  hideDiscourseObj = (d: DiscourseObj) => {
+  hideHighlight = (d: FacetedHighlight) => {
     this.setState((prevState) => ({
-      hiddenDiscourseObjs: [...prevState.hiddenDiscourseObjs, d],
+      hiddenFacetedHighlights: [...prevState.hiddenFacetedHighlights, d],
     }));
   };
 
@@ -1166,7 +1174,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     return true;
   };
 
-  jumpToDiscourseObj = (id: string) => {
+  jumpToHighlight = (id: string) => {
     const SCROLL_OFFSET_X = -200;
     const SCROLL_OFFSET_Y = +100;
 
@@ -1174,7 +1182,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       pdfViewerApplication,
       pdfViewer,
       pages,
-      discourseObjsById,
+      highlightsById,
     } = this.state;
 
     if (
@@ -1186,7 +1194,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       return false;
     }
 
-    const dest = discourseObjsById[id].boxes[0];
+    const dest = highlightsById[id].boxes[0];
     const page = Object.values(pages)[0];
     const { left, top } = uiUtils.convertBoxToPdfCoordinates(page.view, dest);
 
@@ -1207,13 +1215,13 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
      */
     this.setState({
       jumpTarget: id,
-      currentDiscourseObjId: id,
+      currentHighlightId: id,
     });
 
     return true;
   };
 
-  selectSnippetInDrawer = (selection: DiscourseObj | null) => {
+  selectSnippetInDrawer = (selection: FacetedHighlight | null) => {
     let elementToSelectClass;
     if (selection !== null) {
       elementToSelectClass = `facet-snippet-${selection.id}`;
@@ -1233,8 +1241,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   exportSkimmingAnnotations = () => {
-    const highlightsByFacet = this.state.discourseObjs.reduce(
-      (acc: { [facet: string]: DiscourseObj[] }, d: DiscourseObj) => {
+    const highlightsByFacet = this.state.facetedHighlights.reduce(
+      (acc: { [facet: string]: FacetedHighlight[] }, d: FacetedHighlight) => {
         return { ...acc, [d.label]: [...(acc[d.label] || []), d] };
       },
       {}
@@ -1257,7 +1265,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       highlightsList.appendChild(facetHeaderText);
       highlights.forEach((highlight) => {
         let li = document.createElement("li");
-        li.innerText = `${highlight.entity.text} (Page ${highlight.entity.boxes[0].page})`;
+        li.innerText = `${highlight.text} (Page ${highlight.boxes[0].page})`;
         li.style.fontSize = "4px";
         li.style.overflowWrap = "break-word";
         li.style.margin = "4px 0";
@@ -1280,21 +1288,21 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   handleSkimmingAnnotationColorsChanged = (showMultiColor: boolean) => {
-    const discourseToColorMap: {
+    const facetToColorMap: {
       [label: string]: string;
     } = uiUtils.getFacetColors();
 
-    const discourseObjs = this.state.discourseObjs.map((x) => {
+    const facetedHighlights = this.state.facetedHighlights.map((x) => {
       x.color =
-        showMultiColor && Object.keys(discourseToColorMap).includes(x.label)
-          ? discourseToColorMap[x.label]
-          : discourseToColorMap["highlight"];
+        showMultiColor && Object.keys(facetToColorMap).includes(x.label)
+          ? facetToColorMap[x.label]
+          : facetToColorMap["highlight"];
       return x;
     });
 
     this.setState({
-      discourseObjs: uiUtils.sortDiscourseObjs(discourseObjs),
-      discourseObjsById: this.makeDiscourseByIdMap(discourseObjs),
+      facetedHighlights: uiUtils.sortFacetedHighlights(facetedHighlights),
+      highlightsById: this.makeHighlightByIdMap(facetedHighlights),
       showSkimmingAnnotationColors: showMultiColor,
     });
   };
@@ -1326,9 +1334,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       this._jumpedToInitialFocus = true;
     }
 
-    const allDiscourseObjs = this.state.discourseObjs;
-    let discourseObjs = this.filterDiscourseObjsToShow(
-      this.state.discourseObjs
+    const allFacetedHighlights = this.state.facetedHighlights;
+    let facetedHighlights = this.filterFacetedHighlights(
+      this.state.facetedHighlights
     );
 
     return (
@@ -1475,15 +1483,15 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 }
                 entities={this.state.entities}
                 selectedEntityIds={this.state.selectedEntityIds}
-                allDiscourseObjs={allDiscourseObjs}
-                discourseObjs={discourseObjs}
-                selectedDiscourses={this.state.selectedDiscourses}
+                allFacetedHighlights={allFacetedHighlights}
+                facetedHighlights={facetedHighlights}
+                selectedFacets={this.state.selectedFacets}
                 highlightQuantity={this.state.highlightQuantity}
                 showSkimmingAnnotationColors={
                   this.state.showSkimmingAnnotationColors
                 }
-                handleDiscourseSelected={this.selectDiscourseClass}
-                handleJumpToDiscourseObj={this.jumpToDiscourseObj}
+                handleFacetSelected={this.selectFacet}
+                handleJumpToHighlight={this.jumpToHighlight}
                 propagateEntityEdits={this.state.propagateEntityEdits}
                 handleJumpToEntity={this.jumpToEntityWithBackMessage}
                 handleClose={this.closeDrawer}
@@ -1521,12 +1529,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 this.state.pages !== null &&
                 this.state.showSkimmingAnnotations &&
                 this.state.facetHighlights &&
-                discourseObjs.length > 0 && (
+                facetedHighlights.length > 0 && (
                   <ScrollbarMarkup
                     numPages={
                       this.state.pdfViewerApplication?.pdfDocument?.numPages
                     }
-                    discourseObjs={discourseObjs}
+                    facetedHighlights={facetedHighlights}
                     captionUnits={[]}
                     handleMarkClicked={this.onScrollbarMarkClicked}
                   ></ScrollbarMarkup>
@@ -1734,40 +1742,38 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                     {this.props.paperId !== undefined &&
                       this.state.showSkimmingAnnotations &&
                       this.state.facetTextEnabled &&
-                      discourseObjs.length > 0 && (
-                        <DiscourseTagLayer
+                      facetedHighlights.length > 0 && (
+                        <FacetLabelLayer
                           pageView={pageView}
-                          discourseObjs={discourseObjs}
-                        ></DiscourseTagLayer>
+                          facetedHighlights={facetedHighlights}
+                        ></FacetLabelLayer>
                       )}
 
                     {this.props.paperId !== undefined &&
                       this.state.showSkimmingAnnotations &&
-                      discourseObjs.length > 0 &&
+                      facetedHighlights.length > 0 &&
                       this.state.cueingStyle === "highlight" && (
                         <HighlightLayer
                           pageView={pageView}
-                          discourseObjs={discourseObjs}
+                          facetedHighlights={facetedHighlights}
                           opacity={this.state.skimOpacity}
-                          handleDiscourseObjSelected={
-                            this.setCurrentDiscourseObjId
-                          }
-                          handleHideDiscourseObj={this.hideDiscourseObj}
+                          handleHighlightSelected={this.setCurrentHighlightId}
+                          handleHideHighlight={this.hideHighlight}
                           handleOpenDrawer={this.openDrawerWithFacets}
                           handleCloseDrawer={this.closeDrawer}
                           drawerOpen={this.state.drawerMode === "open"}
-                          handleFilterToDiscourse={this.filterToDiscourse}
+                          handleFilterToFacet={this.filterToFacet}
                           selectSnippetInDrawer={this.selectSnippetInDrawer}
                         ></HighlightLayer>
                       )}
 
                     {this.props.paperId !== undefined &&
                       this.state.showSkimmingAnnotations &&
-                      discourseObjs.length > 0 &&
+                      facetedHighlights.length > 0 &&
                       this.state.cueingStyle === "underline" && (
                         <UnderlineLayer
                           pageView={pageView}
-                          discourseObjs={discourseObjs}
+                          facetedHighlights={facetedHighlights}
                         ></UnderlineLayer>
                       )}
                   </PageOverlay>

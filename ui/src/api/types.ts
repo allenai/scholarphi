@@ -421,10 +421,12 @@ export interface SentenceUnit {
   section: string;
 }
 
-export interface DiscourseObj {
+export interface FacetedHighlight {
   id: string;
-  entity: RhetoricUnit | SentenceUnit;
+  text: string;
+  section: string;
   label: string;
+  score: number;
   boxes: BoundingBox[];
   tagLocation: BoundingBox;
   color: string;
