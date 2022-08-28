@@ -4,10 +4,10 @@ import ReactDOM from "react-dom";
 /**
  * Adds widgets to the pdf.js toolbar at the top of the application.
  */
-class PdfjsToolbar extends React.PureComponent {
+class PdfjsToolbarRight extends React.PureComponent {
   render() {
     const elControlsContainer = document.getElementById(
-      "scholarReaderControls"
+      "scholarReaderControlsRight"
     );
 
     return elControlsContainer
@@ -16,4 +16,4 @@ class PdfjsToolbar extends React.PureComponent {
   }
 }
 
-export default PdfjsToolbar;
+export default PdfjsToolbarRight;

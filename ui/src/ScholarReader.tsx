@@ -12,29 +12,31 @@ import {
   isSymbol,
   isTerm,
   Paper,
-  Symbol,
+  Symbol
 } from "./api/types";
 import Control from "./components/control/Control";
 import EntityCreationCanvas from "./components/control/EntityCreationCanvas";
 import EntityCreationToolbar, {
   AreaSelectionMethod,
-  createCreateEntityDataWithBoxes,
+  createCreateEntityDataWithBoxes
 } from "./components/control/EntityCreationToolbar";
 import MainControlPanel from "./components/control/MainControlPanel";
 import TextSelectionMenu from "./components/control/TextSelectionMenu";
-import FacetLabelLayer from "./components/faceted-highlights/FacetLabelLayer";
-import HighlightLayer from "./components/faceted-highlights/HighlightLayer";
-import UnderlineLayer from "./components/faceted-highlights/UnderlineLayer";
 import { Drawer, DrawerContentType } from "./components/drawer/Drawer";
 import DrawerControlFab from "./components/drawer/DrawerControlFab";
 import EntityAnnotationLayer from "./components/entity/EntityAnnotationLayer";
 import EquationDiagram from "./components/entity/equation/EquationDiagram";
+import FacetLabelLayer from "./components/faceted-highlights/FacetLabelLayer";
+import HighlightLayer from "./components/faceted-highlights/HighlightLayer";
+import Legend from "./components/faceted-highlights/Legend";
+import UnderlineLayer from "./components/faceted-highlights/UnderlineLayer";
 import EntityPageMask from "./components/mask/EntityPageMask";
 import SearchPageMask from "./components/mask/SearchPageMask";
 import AppOverlay from "./components/overlay/AppOverlay";
 import PageOverlay from "./components/overlay/PageOverlay";
 import ViewerOverlay from "./components/overlay/ViewerOverlay";
-import PdfjsToolbar from "./components/pdfjs/PdfjsToolbar";
+import PdfjsToolbarLeft from "./components/pdfjs/PdfjsToolbarLeft";
+import PdfjsToolbarRight from "./components/pdfjs/PdfjsToolbarRight";
 import DefinitionPreview from "./components/preview/DefinitionPreview";
 import PrimerPage from "./components/primer/PrimerPage";
 import ScrollbarMarkup from "./components/scrollbar/ScrollbarMarkup";
@@ -46,7 +48,7 @@ import {
   ConfigurableSetting,
   CONFIGURABLE_SETTINGS,
   getSettings,
-  GlossStyle,
+  GlossStyle
 } from "./settings";
 import skimmingData from "./skimmingData/facets.json";
 import {
@@ -55,13 +57,13 @@ import {
   Pages,
   PaperId,
   State,
-  SymbolFilters,
+  SymbolFilters
 } from "./state";
 import "./style/index.less";
 import {
   DocumentLoadedEvent,
   PageRenderedEvent,
-  PDFViewerApplication,
+  PDFViewerApplication
 } from "./types/pdfjs-viewer";
 import * as stateUtils from "./utils/state";
 import * as uiUtils from "./utils/ui";
@@ -1357,17 +1359,18 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               handleCloseSnackbar={this.closeSnackbar}
               handleCloseDrawer={this.closeDrawer}
             />
-            <PdfjsToolbar>
+            <PdfjsToolbarLeft>
+              <Legend />
+            </PdfjsToolbarLeft>
+            <PdfjsToolbarRight>
               {this.state.showSkimmingAnnotations &&
                 this.state.facetHighlights && (
-                  <>
-                    <button
-                      onClick={this.exportSkimmingAnnotations}
-                      className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
-                    >
-                      <span>Export Annotations</span>
-                    </button>
-                  </>
+                  <button
+                    onClick={this.exportSkimmingAnnotations}
+                    className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
+                  >
+                    <span>Export Annotations</span>
+                  </button>
                 )}
 
               <button
@@ -1386,7 +1389,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               >
                 <span>Customize UI</span>
               </button> */}
-            </PdfjsToolbar>
+            </PdfjsToolbarRight>
             <ViewerOverlay
               pdfViewer={this.state.pdfViewer}
               handleSetTextSelection={this.setTextSelection}
