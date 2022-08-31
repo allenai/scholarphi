@@ -12,13 +12,13 @@ import {
   isSymbol,
   isTerm,
   Paper,
-  Symbol
+  Symbol,
 } from "./api/types";
 import Control from "./components/control/Control";
 import EntityCreationCanvas from "./components/control/EntityCreationCanvas";
 import EntityCreationToolbar, {
   AreaSelectionMethod,
-  createCreateEntityDataWithBoxes
+  createCreateEntityDataWithBoxes,
 } from "./components/control/EntityCreationToolbar";
 import MainControlPanel from "./components/control/MainControlPanel";
 import TextSelectionMenu from "./components/control/TextSelectionMenu";
@@ -48,7 +48,7 @@ import {
   ConfigurableSetting,
   CONFIGURABLE_SETTINGS,
   getSettings,
-  GlossStyle
+  GlossStyle,
 } from "./settings";
 import skimmingData from "./skimmingData/facets.json";
 import {
@@ -57,13 +57,13 @@ import {
   Pages,
   PaperId,
   State,
-  SymbolFilters
+  SymbolFilters,
 } from "./state";
 import "./style/index.less";
 import {
   DocumentLoadedEvent,
   PageRenderedEvent,
-  PDFViewerApplication
+  PDFViewerApplication,
 } from "./types/pdfjs-viewer";
 import * as stateUtils from "./utils/state";
 import * as uiUtils from "./utils/ui";
@@ -821,7 +821,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
           : facetToColorMap["highlight"],
       })
     );
-    // data = this.preprocessData(data);
+
+    // facetedHighlights
+    //   .filter((x: any) => x.score !== 1)
+    //   .map((x: any) => (x["color"] = "grey"));
 
     // Add highlights for the four facets
     unitsToShow.push(...this.getNoveltyHighlights(facetedHighlights));
@@ -831,14 +834,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
     // Disable faceted highlights in abstract
     // facetedHighlights = facetedHighlights.filter(
-    //   (d) => d.entity.section.toLowerCase() !== "abstract"
+    //   (d: any) => d.section.toLowerCase() !== "abstract"
     // );
 
-    // Select the most appropriate facet for sentences that have more than one
-    facetedHighlights = this.disambiguateFacetsForHighlight(facetedHighlights);
-
     this.setState({
-      facetedHighlights: uiUtils.sortFacetedHighlights(facetedHighlights),
+      facetedHighlights: unitsToShow,
       highlightsById: this.makeHighlightByIdMap(facetedHighlights),
     });
   };
@@ -868,8 +868,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   getNoveltyHighlights = (highlights: FacetedHighlight[]) => {
     let novelty = highlights.filter((r) => r.label === "novelty");
     return novelty
-      .sort((x) => x.score)
-      .reverse()
+      .sort((x1, x2) => x2.score - x1.score)
       .slice(
         0,
         Math.round(
@@ -881,8 +880,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   getMethodHighlights = (highlights: FacetedHighlight[]) => {
     const methods = highlights.filter((r) => r.label === "method");
     return methods
-      .sort((x) => x.score)
-      .reverse()
+      .sort((x1, x2) => x2.score - x1.score)
       .slice(
         0,
         Math.round(this.state.numHighlightMultiplier["method"] * methods.length)
@@ -896,8 +894,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     });
 
     return results
-      .sort((x) => x.score)
-      .reverse()
+      .sort((x1, x2) => x2.score - x1.score)
       .slice(
         0,
         Math.round(this.state.numHighlightMultiplier["result"] * results.length)
@@ -914,42 +911,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         Math.round(
           this.state.numHighlightMultiplier["objective"] * objectives.length
         )
-      );
-  };
-
-  preprocessData = (highlights: FacetedHighlight[]) => {
-    // Remove sentence fragments that were detected (i.e., start with a lowercase letter).
-    return highlights.filter(
-      (r: FacetedHighlight) => r.text[0] !== r.text[0].toLowerCase()
-    );
-  };
-
-  disambiguateFacetsForHighlight = (facaetedHighlights: FacetedHighlight[]) => {
-    // Because heuristics and the classifier may assign multiple labels to a single sentence,
-    // we enforce a label prioritization scheme to ensure each sentence gets a unique label.
-    const text_to_labels: { [text: string]: FacetedHighlight[] } = {};
-    facaetedHighlights.forEach((f) => {
-      if (!text_to_labels.hasOwnProperty(f.text)) {
-        text_to_labels[f.text] = [];
-      }
-      text_to_labels[f.text].push(f);
-    });
-    return Object.values(text_to_labels)
-      .map((labels) => {
-        const sortedLabels = labels.sort((firstEl, _) => {
-          if (firstEl.label === "novelty") {
-            return -1;
-          } else if (firstEl.label === "objective") {
-            return -1;
-          } else {
-            return 0;
-          }
-        });
-        return sortedLabels;
-      })
-      .map(
-        (objsWithMultipleLabels: FacetedHighlight[]) =>
-          objsWithMultipleLabels[0]
       );
   };
 
@@ -984,7 +945,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         newHighlightMultiplier = {
           ...newHighlightMultiplier,
           [facet]: ["objective", "novelty"].includes(facet)
-            ? (value / 100) * 2
+            ? (value / 100) * 1.5
             : value / 100,
         };
       });
@@ -1006,18 +967,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         selectedFacets: newSelectedFacets,
       };
     }, this.initFacetedHighlights);
-  };
-
-  isHighlightQuantityMaximum = () => {
-    return Object.values(this.state.numHighlightMultiplier).every(
-      (m) => m === 1
-    );
-  };
-
-  isHighlightQuantityMinimum = () => {
-    return Object.values(this.state.numHighlightMultiplier).every(
-      (m) => m === 0
-    );
   };
 
   onScrollbarMarkClicked = (id: string) => {
@@ -1303,7 +1252,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     });
 
     this.setState({
-      facetedHighlights: uiUtils.sortFacetedHighlights(facetedHighlights),
+      facetedHighlights: facetedHighlights,
       highlightsById: this.makeHighlightByIdMap(facetedHighlights),
       showSkimmingAnnotationColors: showMultiColor,
     });

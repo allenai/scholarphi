@@ -110,10 +110,6 @@ export interface Settings {
 
   mediaScrollbarMarkupEnabled: boolean;
 
-  authorStatementsEnabled: boolean;
-
-  leadSentencesEnabled: boolean;
-
   cueingStyle: string;
 }
 
@@ -148,26 +144,6 @@ const PRESETS: Preset[] = [
   //   symbolUnderlineMethod: "top-level-symbols",
   //   equationDiagramsEnabled: false,
   // },
-  {
-    key: "skim",
-    annotationHintsEnabled: false,
-    primerPageEnabled: false,
-    facetHighlights: true,
-    facetTextEnabled: false,
-    facetDrawerEnabled: true,
-  },
-  {
-    key: "skim-base",
-    annotationHintsEnabled: false,
-    primerPageEnabled: false,
-  },
-  {
-    key: "skim-lead",
-    annotationHintsEnabled: false,
-    primerPageEnabled: false,
-    leadSentencesEnabled: true,
-    facetDrawerEnabled: true,
-  },
   {
     key: "skim-facet",
     annotationHintsEnabled: false,
@@ -209,8 +185,6 @@ export function getSettings(presets?: string[]) {
     facetTextEnabled: false,
     facetDrawerEnabled: false,
     mediaScrollbarMarkupEnabled: false,
-    authorStatementsEnabled: false,
-    leadSentencesEnabled: false,
     cueingStyle: "highlight",
   };
 
@@ -342,16 +316,6 @@ export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
     key: "mediaScrollbarMarkupEnabled",
     type: "flag",
     label: "Fig/tab scrollbar markers",
-  },
-  {
-    key: "authorStatementsEnabled",
-    type: "flag",
-    label: "Author statements",
-  },
-  {
-    key: "leadSentencesEnabled",
-    type: "flag",
-    label: "Lead sentences",
   },
   {
     key: "cueingStyle",
