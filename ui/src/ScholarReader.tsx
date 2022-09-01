@@ -801,8 +801,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   initFacetedHighlights = () => {
-    const unitsToShow: FacetedHighlight[] = [];
-
     const facetToColorMap: {
       [label: string]: string;
     } = uiUtils.getFacetColors();
@@ -827,10 +825,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     //   .map((x: any) => (x["color"] = "grey"));
 
     // Add highlights for the four facets
-    unitsToShow.push(...this.getNoveltyHighlights(facetedHighlights));
-    unitsToShow.push(...this.getObjectiveHighlights(facetedHighlights));
-    unitsToShow.push(...this.getMethodHighlights(facetedHighlights));
-    unitsToShow.push(...this.getResultHighlights(facetedHighlights));
+    facetedHighlights = [
+      ...this.getNoveltyHighlights(facetedHighlights),
+      ...this.getObjectiveHighlights(facetedHighlights),
+      ...this.getMethodHighlights(facetedHighlights),
+      ...this.getResultHighlights(facetedHighlights),
+    ];
 
     // Disable faceted highlights in abstract
     // facetedHighlights = facetedHighlights.filter(
@@ -838,7 +838,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     // );
 
     this.setState({
-      facetedHighlights: unitsToShow,
+      facetedHighlights: uiUtils.sortFacetedHighlights(facetedHighlights),
       highlightsById: this.makeHighlightByIdMap(facetedHighlights),
     });
   };
