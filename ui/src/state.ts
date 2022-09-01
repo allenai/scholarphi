@@ -1,5 +1,5 @@
 import { PDFDocumentProxy } from "pdfjs-dist/types/src/display/api";
-import { Entity, FacetedHighlight, Paper } from "./api/types";
+import { Entity, FacetedHighlight, Section, Paper } from "./api/types";
 import { AreaSelectionMethod } from "./components/control/EntityCreationToolbar";
 import { DrawerContentType, DrawerMode } from "./components/drawer/Drawer";
 import { SnackbarMode } from "./components/overlay/AppOverlay";
@@ -154,7 +154,9 @@ export interface State extends Settings {
   showSkimmingAnnotationColors: boolean;
   currentHighlightId: string | null;
   facetedHighlights: FacetedHighlight[];
-  highlightsById: { [id: string]: FacetedHighlight };
+  sections: Section[];
+  highlightsBySection: { [section: string]: FacetedHighlight[] };
+  allHighlightsById: { [id: string]: FacetedHighlight };
   selectedFacets: string[];
   hiddenFacetedHighlights: FacetedHighlight[];
   numHighlightMultiplier: { [facet: string]: number };

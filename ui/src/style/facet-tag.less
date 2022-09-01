@@ -112,3 +112,30 @@
     z-index: 1000;
   }
 }
+
+.reader-marker {
+  position: absolute;
+  width: 16px;
+  border-radius: 50%;
+  height: 16px;
+  cursor: pointer;
+  background-color: lightgrey;
+
+  &.side-left {
+    right: 89%;
+    margin-right: @sidenote-margin;
+  }
+
+  &.side-right {
+    left: 89%;
+    margin-left: @sidenote-margin;
+  }
+
+  &:hover {
+    z-index: 1000;
+  }
+
+  &.active {
+    background-color: grey;
+  }
+}

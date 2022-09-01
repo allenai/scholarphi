@@ -29,6 +29,7 @@ import EquationDiagram from "./components/entity/equation/EquationDiagram";
 import FacetLabelLayer from "./components/faceted-highlights/FacetLabelLayer";
 import HighlightLayer from "./components/faceted-highlights/HighlightLayer";
 import Legend from "./components/faceted-highlights/Legend";
+import MarkerLayer from "./components/faceted-highlights/MarkerLayer";
 import UnderlineLayer from "./components/faceted-highlights/UnderlineLayer";
 import EntityPageMask from "./components/mask/EntityPageMask";
 import SearchPageMask from "./components/mask/SearchPageMask";
@@ -133,7 +134,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
       currentHighlightId: null,
       facetedHighlights: [],
-      highlightsById: {},
+      sections: [],
+      highlightsBySection: {},
+      allHighlightsById: {},
       selectedFacets: this.getAvailableFacets(),
       hiddenFacetedHighlights: [],
       numHighlightMultiplier: {
@@ -752,7 +755,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     });
 
     if (this.props.paperId !== undefined) {
-      this.initFacetedHighlights();
+      // This sets the proper highlight level based on user settings
+      // and initializes the faceted highlights
+      this.handleHighlightQuantityChanged(this.state.highlightQuantity);
     }
   }
 
@@ -801,28 +806,52 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   initFacetedHighlights = () => {
+    const sections = Object(skimmingData)[this.props.paperId!.id]["sections"];
+
     const facetToColorMap: {
       [label: string]: string;
     } = uiUtils.getFacetColors();
 
-    let facetedHighlights = Object(skimmingData)[this.props.paperId!.id].map(
-      (x: any) => ({
-        id: x.id,
-        text: x.text,
-        section: x.section,
-        label: x.label,
-        score: x.score,
-        boxes: x.boxes,
-        tagLocation: x.boxes[0],
-        color: this.state.showSkimmingAnnotationColors
-          ? facetToColorMap[x.label] ?? facetToColorMap["highlight"]
-          : facetToColorMap["highlight"],
-      })
+    let facetedHighlights = Object(skimmingData)[this.props.paperId!.id][
+      "highlights"
+    ].map((x: any) => ({
+      id: x.id,
+      text: x.text,
+      section: x.section,
+      label: x.label,
+      score: x.score,
+      boxes: x.boxes,
+      tagLocation: x.boxes[0],
+      color: this.state.showSkimmingAnnotationColors
+        ? facetToColorMap[x.label] ?? facetToColorMap["highlight"]
+        : facetToColorMap["highlight"],
+    }));
+
+    // Disable faceted highlights in abstract
+    facetedHighlights = facetedHighlights.filter(
+      (h: FacetedHighlight) => h.section.toLowerCase() !== "abstract"
     );
 
-    // facetedHighlights
-    //   .filter((x: any) => x.score !== 1)
-    //   .map((x: any) => (x["color"] = "grey"));
+    // Save all faceted highlights before we further filtering
+    const allHighlightsById = this.makeHighlightByIdMap(facetedHighlights);
+    const highlightsBySection = facetedHighlights.reduce(
+      (acc: { [section: string]: FacetedHighlight[] }, h: FacetedHighlight) => {
+        // The section attribute contains (when they exist) section, subsection, and subsubsection header data, delimited by "@@".
+        const long_section = h.section;
+        const section = long_section.split("@@").pop()?.trim() || "";
+        if (!acc[section]) {
+          acc[section] = [];
+        }
+        acc[section].push(h);
+        return acc;
+      },
+      {}
+    );
+
+    // Filter highlights at score threshold
+    facetedHighlights = facetedHighlights.filter(
+      (h: FacetedHighlight) => h.score >= 0.9
+    );
 
     // Add highlights for the four facets
     facetedHighlights = [
@@ -832,14 +861,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       ...this.getResultHighlights(facetedHighlights),
     ];
 
-    // Disable faceted highlights in abstract
-    // facetedHighlights = facetedHighlights.filter(
-    //   (d: any) => d.section.toLowerCase() !== "abstract"
-    // );
-
     this.setState({
       facetedHighlights: uiUtils.sortFacetedHighlights(facetedHighlights),
-      highlightsById: this.makeHighlightByIdMap(facetedHighlights),
+      highlightsBySection: highlightsBySection,
+      allHighlightsById: allHighlightsById,
+      sections: sections,
     });
   };
 
@@ -855,14 +881,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   makeHighlightByIdMap = (facetedHighlights: FacetedHighlight[]) => {
-    const highlightsById = facetedHighlights.reduce(
+    const allHighlightsById = facetedHighlights.reduce(
       (acc: { [id: string]: FacetedHighlight }, d: FacetedHighlight) => {
         acc[d.id] = d;
         return acc;
       },
       {}
     );
-    return highlightsById;
+    return allHighlightsById;
   };
 
   getNoveltyHighlights = (highlights: FacetedHighlight[]) => {
@@ -972,7 +998,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   onScrollbarMarkClicked = (id: string) => {
     this.jumpToHighlight(id);
     setTimeout(() => {
-      this.selectSnippetInDrawer(this.state.highlightsById[id]);
+      this.selectSnippetInDrawer(this.state.allHighlightsById[id]);
     }, 200);
   };
 
@@ -980,6 +1006,24 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.setState((prevState) => ({
       hiddenFacetedHighlights: [...prevState.hiddenFacetedHighlights, d],
     }));
+  };
+
+  showAllHighlightsForSection = (section: string, active: boolean) => {
+    if (active) {
+      const existingIds = this.state.facetedHighlights.map((h) => h.id);
+      const newHighlightsToShow = this.state.highlightsBySection[
+        section
+      ].filter((h: FacetedHighlight) => !existingIds.includes(h.id));
+      console.log(newHighlightsToShow);
+      this.setState((prevState) => ({
+        facetedHighlights: [
+          ...prevState.facetedHighlights,
+          ...newHighlightsToShow,
+        ],
+      }));
+    } else {
+      this.initFacetedHighlights();
+    }
   };
 
   subscribeToPDFViewerStateChanges = (
@@ -1133,7 +1177,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       pdfViewerApplication,
       pdfViewer,
       pages,
-      highlightsById,
+      allHighlightsById,
     } = this.state;
 
     if (
@@ -1145,7 +1189,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       return false;
     }
 
-    const dest = highlightsById[id].boxes[0];
+    const dest = allHighlightsById[id].boxes[0];
     const page = Object.values(pages)[0];
     const { left, top } = uiUtils.convertBoxToPdfCoordinates(page.view, dest);
 
@@ -1253,7 +1297,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
     this.setState({
       facetedHighlights: facetedHighlights,
-      highlightsById: this.makeHighlightByIdMap(facetedHighlights),
+      allHighlightsById: this.makeHighlightByIdMap(facetedHighlights),
       showSkimmingAnnotationColors: showMultiColor,
     });
   };
@@ -1285,7 +1329,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       this._jumpedToInitialFocus = true;
     }
 
-    const allFacetedHighlights = this.state.facetedHighlights;
     let facetedHighlights = this.filterFacetedHighlights(
       this.state.facetedHighlights
     );
@@ -1313,7 +1356,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
             </PdfjsToolbarLeft>
             <PdfjsToolbarRight>
               {this.state.showSkimmingAnnotations &&
-                this.state.facetHighlights && (
+                this.state.facetedHighlights && (
                   <button
                     onClick={this.exportSkimmingAnnotations}
                     className="toolbarButton hiddenLargeView pdfjs-toolbar__button"
@@ -1435,7 +1478,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 }
                 entities={this.state.entities}
                 selectedEntityIds={this.state.selectedEntityIds}
-                allFacetedHighlights={allFacetedHighlights}
+                allFacetedHighlights={Object.values(
+                  this.state.allHighlightsById
+                )}
                 facetedHighlights={facetedHighlights}
                 selectedFacets={this.state.selectedFacets}
                 highlightQuantity={this.state.highlightQuantity}
@@ -1480,7 +1525,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               {this.state.pdfViewerApplication &&
                 this.state.pages !== null &&
                 this.state.showSkimmingAnnotations &&
-                this.state.facetHighlights &&
+                this.state.facetedHighlights &&
                 facetedHighlights.length > 0 && (
                   <ScrollbarMarkup
                     numPages={
@@ -1705,18 +1750,29 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       this.state.showSkimmingAnnotations &&
                       facetedHighlights.length > 0 &&
                       this.state.cueingStyle === "highlight" && (
-                        <HighlightLayer
-                          pageView={pageView}
-                          facetedHighlights={facetedHighlights}
-                          opacity={this.state.skimOpacity}
-                          handleHighlightSelected={this.setCurrentHighlightId}
-                          handleHideHighlight={this.hideHighlight}
-                          handleOpenDrawer={this.openDrawerWithFacets}
-                          handleCloseDrawer={this.closeDrawer}
-                          drawerOpen={this.state.drawerMode === "open"}
-                          handleFilterToFacet={this.filterToFacet}
-                          selectSnippetInDrawer={this.selectSnippetInDrawer}
-                        ></HighlightLayer>
+                        <>
+                          <MarkerLayer
+                            pageView={pageView}
+                            sections={this.state.sections.filter(
+                              (s) => s.section in this.state.highlightsBySection
+                            )}
+                            handleMarkerClicked={
+                              this.showAllHighlightsForSection
+                            }
+                          ></MarkerLayer>
+                          <HighlightLayer
+                            pageView={pageView}
+                            facetedHighlights={facetedHighlights}
+                            opacity={this.state.skimOpacity}
+                            handleHighlightSelected={this.setCurrentHighlightId}
+                            handleHideHighlight={this.hideHighlight}
+                            handleOpenDrawer={this.openDrawerWithFacets}
+                            handleCloseDrawer={this.closeDrawer}
+                            drawerOpen={this.state.drawerMode === "open"}
+                            handleFilterToFacet={this.filterToFacet}
+                            selectSnippetInDrawer={this.selectSnippetInDrawer}
+                          ></HighlightLayer>
+                        </>
                       )}
 
                     {this.props.paperId !== undefined &&
