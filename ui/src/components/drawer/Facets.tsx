@@ -59,39 +59,39 @@ export class Facets extends React.PureComponent<Props> {
       showSkimmingAnnotationColors,
     } = this.props;
 
-    /**
-     * MMDA output does not provide section metadata for spans.
-     * We therefore cannot split sentences by section in the sidebar.
-     * TODO: Add section headers back when they can be parsed.
-     */
-
-    // const bySection = uiUtils
-    //   .sortFacetedHighlights(facetedHighlights)
-    //   .reduce((acc: { [section: string]: FacetedHighlight[] }, d: FacetedHighlight) => {
-    //     // The section attribute contains (when they exist) section, subsection, and
-    //     // subsubsection header data, delimited by "@@".
-    //     const long_section = d.entity.section;
-    //     const section = long_section.split("@@").pop() || "";
-    //     if (!acc[section]) {
-    //       acc[section] = [];
-    //     }
-    //     acc[section].push(d);
-    //     return acc;
-    //   }, {});
-
-    const byPage = uiUtils
+    const bySection = uiUtils
       .sortFacetedHighlights(facetedHighlights)
       .reduce(
-        (acc: { [page: number]: FacetedHighlight[] }, d: FacetedHighlight) => {
-          const page = d.boxes[0]["page"] + 1;
-          if (!acc[page]) {
-            acc[page] = [];
+        (
+          acc: { [section: string]: FacetedHighlight[] },
+          d: FacetedHighlight
+        ) => {
+          // The section attribute contains (when they exist) section, subsection, and
+          // subsubsection header data, delimited by "@@".
+          const long_section = d.section;
+          const section = long_section.split("@@").pop() || "";
+          if (!acc[section]) {
+            acc[section] = [];
           }
-          acc[page].push(d);
+          acc[section].push(d);
           return acc;
         },
         {}
       );
+
+    // const byPage = uiUtils
+    //   .sortFacetedHighlights(facetedHighlights)
+    //   .reduce(
+    //     (acc: { [page: number]: FacetedHighlight[] }, d: FacetedHighlight) => {
+    //       const page = d.boxes[0]["page"] + 1;
+    //       if (!acc[page]) {
+    //         acc[page] = [];
+    //       }
+    //       acc[page].push(d);
+    //       return acc;
+    //     },
+    //     {}
+    //   );
 
     return (
       <>
@@ -155,13 +155,13 @@ export class Facets extends React.PureComponent<Props> {
                 onClick={() => this.handleFacetSnippetClicked(d)}
                 handleJumpToHighlight={this.props.handleJumpToHighlight}
               >
-                {d.entity.text}
+                {d.text}
               </FacetSnippet>
             );
           })} */}
 
           {/* Page delimiter */}
-          {Object.entries(byPage).map(([page, ds], pageIdx: number) => {
+          {/* {Object.entries(byPage).map(([page, ds], pageIdx: number) => {
             return (
               <React.Fragment key={pageIdx}>
                 <p className="facet-page-header">Page {page}</p>
@@ -182,33 +182,35 @@ export class Facets extends React.PureComponent<Props> {
                   })}
               </React.Fragment>
             );
-          })}
+          })} */}
 
           {/* Section delimiter */}
-          {/* {Object.entries(bySection).map(
+          {Object.entries(bySection).map(
             ([section, ds], sectionIdx: number) => {
               return (
                 <React.Fragment key={sectionIdx}>
                   <p className="facet-page-header">{section}</p>
-                  {uiUtils.sortFacetedHighlights(ds).map((d: FacetedHighlight) => {
-                    return (
-                      <FacetSnippet
-                        key={d.id}
-                        id={d.id}
-                        color={d.color}
-                        onClick={() => this.handleFacetSnippetClicked(d)}
-                        handleJumpToHighlight={
-                          this.props.handleJumpToHighlight
-                        }
-                      >
-                        {d.entity.text}
-                      </FacetSnippet>
-                    );
-                  })}
+                  {uiUtils
+                    .sortFacetedHighlights(ds)
+                    .map((d: FacetedHighlight) => {
+                      return (
+                        <FacetSnippet
+                          key={d.id}
+                          id={d.id}
+                          color={d.color}
+                          onClick={() => this.handleFacetSnippetClicked(d)}
+                          handleJumpToHighlight={
+                            this.props.handleJumpToHighlight
+                          }
+                        >
+                          {d.text}
+                        </FacetSnippet>
+                      );
+                    })}
                 </React.Fragment>
               );
             }
-          )} */}
+          )}
         </div>
       </>
     );
