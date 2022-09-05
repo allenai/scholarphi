@@ -17,7 +17,6 @@ interface Props {
   handleDeleteHighlight: () => void;
   handleOpenDrawer: () => void;
   handleCloseDrawer: () => void;
-  handleFilterToFacet: () => void;
 }
 
 class FacetControlToolbar extends React.PureComponent<Props> {
@@ -30,13 +29,6 @@ class FacetControlToolbar extends React.PureComponent<Props> {
       logger.log("debug", "click-open-drawer-tooltip-button");
       this.props.handleOpenDrawer();
     }
-  };
-
-  handleFilterToFacet = () => {
-    logger.log("debug", "click-filter-to-facet-tooltip-button", {
-      facet: this.props.label,
-    });
-    this.props.handleFilterToFacet();
   };
 
   handleClose = () => {
@@ -66,13 +58,6 @@ class FacetControlToolbar extends React.PureComponent<Props> {
                     onClick={this.handleDrawerButtonClicked}
                   >
                     <ListIcon />
-                  </IconButton>
-                </MuiTooltip>
-              </td>
-              <td>
-                <MuiTooltip title={`Show ${label} highlights only`}>
-                  <IconButton size="small" onClick={this.handleFilterToFacet}>
-                    <FilterIcon />
                   </IconButton>
                 </MuiTooltip>
               </td>

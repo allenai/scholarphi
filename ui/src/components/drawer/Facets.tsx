@@ -94,20 +94,15 @@ export class Facets extends React.PureComponent<Props> {
     //   );
 
     return (
-      <>
-        <div>
+      <div className="document-snippets facet-objs">
+        <div style={{ border: "1px solid grey", padding: "5px", borderRadius: "3px" }}>
+          <p>Facets</p>
           <FacetPalette
             allFacetedHighlights={allFacetedHighlights}
             selectedFacets={selectedFacets}
             handleFacetSelected={this.props.handleFacetSelected}
           ></FacetPalette>
-        </div>
-
-        <div
-          className="document-snippets facet-objs"
-          style={{ marginTop: "9em" }}
-        >
-          <Box width={"100%"}>
+          <Box width={"95%"}>
             <p>Number of highlights</p>
             <Slider
               value={this.props.highlightQuantity}
@@ -119,11 +114,11 @@ export class Facets extends React.PureComponent<Props> {
             />
           </Box>
           <Box width={"100%"}>
-            <p>Number of Colors</p>
+            <p>Number of colors</p>
 
             <span
               style={{
-                fontSize: "16px",
+                fontSize: "14px",
                 margin: "0 auto",
                 padding: 0,
               }}
@@ -136,7 +131,7 @@ export class Facets extends React.PureComponent<Props> {
             />
             <span
               style={{
-                fontSize: "16px",
+                fontSize: "14px",
                 margin: "0 auto",
                 padding: 0,
               }}
@@ -144,24 +139,10 @@ export class Facets extends React.PureComponent<Props> {
               Multiple
             </span>
           </Box>
+        </div>
 
-          {/* No delimiter */}
-          {/* {uiUtils.sortFacetedHighlights(facetedHighlights).map((d: FacetedHighlight) => {
-            return (
-              <FacetSnippet
-                key={d.id}
-                id={d.id}
-                color={d.color}
-                onClick={() => this.handleFacetSnippetClicked(d)}
-                handleJumpToHighlight={this.props.handleJumpToHighlight}
-              >
-                {d.text}
-              </FacetSnippet>
-            );
-          })} */}
-
-          {/* Page delimiter */}
-          {/* {Object.entries(byPage).map(([page, ds], pageIdx: number) => {
+        {/* Page delimiter */}
+        {/* {Object.entries(byPage).map(([page, ds], pageIdx: number) => {
             return (
               <React.Fragment key={pageIdx}>
                 <p className="facet-page-header">Page {page}</p>
@@ -184,35 +165,28 @@ export class Facets extends React.PureComponent<Props> {
             );
           })} */}
 
-          {/* Section delimiter */}
-          {Object.entries(bySection).map(
-            ([section, ds], sectionIdx: number) => {
-              return (
-                <React.Fragment key={sectionIdx}>
-                  <p className="facet-page-header">{section}</p>
-                  {uiUtils
-                    .sortFacetedHighlights(ds)
-                    .map((d: FacetedHighlight) => {
-                      return (
-                        <FacetSnippet
-                          key={d.id}
-                          id={d.id}
-                          color={d.color}
-                          onClick={() => this.handleFacetSnippetClicked(d)}
-                          handleJumpToHighlight={
-                            this.props.handleJumpToHighlight
-                          }
-                        >
-                          {d.text}
-                        </FacetSnippet>
-                      );
-                    })}
-                </React.Fragment>
-              );
-            }
-          )}
-        </div>
-      </>
+        {/* Section delimiter */}
+        {Object.entries(bySection).map(([section, ds], sectionIdx: number) => {
+          return (
+            <React.Fragment key={sectionIdx}>
+              <p className="facet-page-header">{section}</p>
+              {uiUtils.sortFacetedHighlights(ds).map((d: FacetedHighlight) => {
+                return (
+                  <FacetSnippet
+                    key={d.id}
+                    id={d.id}
+                    color={d.color}
+                    onClick={() => this.handleFacetSnippetClicked(d)}
+                    handleJumpToHighlight={this.props.handleJumpToHighlight}
+                  >
+                    {d.text}
+                  </FacetSnippet>
+                );
+              })}
+            </React.Fragment>
+          );
+        })}
+      </div>
     );
   }
 }

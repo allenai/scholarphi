@@ -940,15 +940,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       );
   };
 
-  selectFacet = (facet: string) => {
-    if (facet === "all") {
-      this.setState({ selectedFacets: this.getAvailableFacets() });
-    } else {
-      this.filterToFacet(facet);
-    }
-  };
-
-  filterToFacet = (facet: string) => {
+  toggleFacet = (facet: string) => {
     if (this.state.selectedFacets.includes(facet)) {
       this.setState({
         selectedFacets: this.state.selectedFacets.filter((d) => d !== facet),
@@ -958,7 +950,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         selectedFacets: [...prevState.selectedFacets, facet],
       }));
     }
-  };
+  }
 
   handleHighlightQuantityChanged = (value: number) => {
     localStorage.setItem("highlightQuantity", value.toString());
@@ -1487,7 +1479,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                 showSkimmingAnnotationColors={
                   this.state.showSkimmingAnnotationColors
                 }
-                handleFacetSelected={this.selectFacet}
+                handleFacetSelected={this.toggleFacet}
                 handleJumpToHighlight={this.jumpToHighlight}
                 propagateEntityEdits={this.state.propagateEntityEdits}
                 handleJumpToEntity={this.jumpToEntityWithBackMessage}
@@ -1751,7 +1743,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       facetedHighlights.length > 0 &&
                       this.state.cueingStyle === "highlight" && (
                         <>
-                          <MarkerLayer
+                          {/* <MarkerLayer
                             pageView={pageView}
                             sections={this.state.sections.filter(
                               (s) => s.section in this.state.highlightsBySection
@@ -1759,7 +1751,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                             handleMarkerClicked={
                               this.showAllHighlightsForSection
                             }
-                          ></MarkerLayer>
+                          ></MarkerLayer> */}
                           <HighlightLayer
                             pageView={pageView}
                             facetedHighlights={facetedHighlights}
@@ -1769,7 +1761,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                             handleOpenDrawer={this.openDrawerWithFacets}
                             handleCloseDrawer={this.closeDrawer}
                             drawerOpen={this.state.drawerMode === "open"}
-                            handleFilterToFacet={this.filterToFacet}
                             selectSnippetInDrawer={this.selectSnippetInDrawer}
                           ></HighlightLayer>
                         </>

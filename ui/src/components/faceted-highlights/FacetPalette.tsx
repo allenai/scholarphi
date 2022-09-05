@@ -1,8 +1,10 @@
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormGroup from "@mui/material/FormGroup";
+import Switch from "@mui/material/Switch";
 import React from "react";
 import { FacetedHighlight } from "../../api/types";
 import { getRemoteLogger } from "../../logging";
 import * as uiUtils from "../../utils/ui";
-import FacetTagChip from "./FacetTagChip";
 
 const logger = getRemoteLogger();
 
@@ -21,14 +23,9 @@ class FacetPalette extends React.PureComponent<Props, State> {
     super(props);
   }
 
-  onClickTag = (tag: string) => {
+  onFacetSelected = (tag: string) => {
     logger.log("debug", "click-facet-tag", { tag: tag });
     this.props.handleFacetSelected(tag);
-  };
-
-  onClickEverything = () => {
-    logger.log("debug", "click-all-facets-tag");
-    this.props.handleFacetSelected("all");
   };
 
   getAvailableFacets = () => {
@@ -43,34 +40,41 @@ class FacetPalette extends React.PureComponent<Props, State> {
 
     return (
       <div className="facet-chip-palette-wrapper">
-        <p className="facet-palette-header">Show me...</p>
         <div className="facet-chip-palette">
-          <div className="facet-chip-palette__tags">
+          <FormGroup>
             {this.getAvailableFacets().map((facet) => {
+              const numHighlights = allFacetedHighlights.filter(
+                (x) => x.label === facet
+              ).length;
+              const checked =
+                selectedFacets.includes(facet) && numHighlights > 0;
               return (
-                <FacetTagChip
+                <FormControlLabel
                   key={facet}
-                  id={facet}
-                  name={`${facetDisplayNames[facet] || facet} (${
-                    allFacetedHighlights.filter((x) => x.label === facet).length
-                  })`}
-                  selected={selectedFacets.includes(facet)}
-                  color={facetColors[facet]}
-                  handleSelection={this.onClickTag}
+                  control={
+                    <Switch
+                      disabled={numHighlights === 0}
+                      checked={checked}
+                      onChange={() => this.props.handleFacetSelected(facet)}
+                    />
+                  }
+                  label={
+                    <div
+                      style={{
+                        backgroundColor: facetColors[facet],
+                        padding: "5px",
+                        borderRadius: "5px",
+                      }}
+                    >
+                      <span style={{ fontWeight: "bold" }}>
+                        {facetDisplayNames[facet] || facet} ({numHighlights})
+                      </span>
+                    </div>
+                  }
                 />
               );
             })}
-          </div>
-          <div className="facet-chip-palette__everything">
-            <FacetTagChip
-              id="everything"
-              className="everything-chip"
-              name={"Everything"}
-              selected={selectedFacets.length > 0}
-              color={"lightgray"}
-              handleSelection={this.onClickEverything}
-            />
-          </div>
+          </FormGroup>
         </div>
       </div>
     );

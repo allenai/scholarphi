@@ -17,7 +17,6 @@ interface Props {
   handleHideHighlight: (d: FacetedHighlight) => void;
   handleOpenDrawer: () => void;
   handleCloseDrawer: () => void;
-  handleFilterToFacet: (facet: string) => void;
   selectSnippetInDrawer: (d: FacetedHighlight) => void;
 }
 
@@ -210,9 +209,6 @@ class HighlightLayer extends React.PureComponent<Props, State> {
                 }, 300);
               }}
               handleCloseDrawer={this.props.handleCloseDrawer}
-              handleFilterToFacet={() =>
-                this.props.handleFilterToFacet(focusedHighlight.label)
-              }
             />
           )}
       </>
