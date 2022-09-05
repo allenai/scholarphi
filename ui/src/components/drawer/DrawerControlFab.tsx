@@ -1,6 +1,7 @@
-import Fab from "@mui/material/Fab";
 import { MenuOpen } from "@mui/icons-material";
 import Close from "@mui/icons-material/Close";
+import Fab from "@mui/material/Fab";
+import classNames from "classnames";
 import React from "react";
 import { getRemoteLogger } from "../../logging";
 
@@ -32,9 +33,7 @@ export class DrawerControlFab extends React.PureComponent<Props> {
         <Fab
           id="drawer-control-fab"
           color="default"
-          style={{
-            right: drawerOpen ? "365px" : "50px",
-          }}
+          className={classNames({ "drawer-open": drawerOpen })}
           onClick={
             drawerOpen
               ? this.props.handleCloseDrawer
