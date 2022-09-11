@@ -126,12 +126,8 @@ class HighlightLayer extends React.PureComponent<Props, State> {
 
   render() {
     const { pageView, facetedHighlights, opacity, drawerOpen } = this.props;
-    const {
-      showControlToolbar,
-      focusedHighlight,
-      clickedLineBox,
-      clickX,
-    } = this.state;
+    const { showControlToolbar, focusedHighlight, clickedLineBox, clickX } =
+      this.state;
 
     let tooltipX = clickX;
     let tooltipY = null;
@@ -149,40 +145,53 @@ class HighlightLayer extends React.PureComponent<Props, State> {
           facetedHighlights.map((d, i) =>
             d.boxes
               .filter((b) => b.page === pageNumber)
-              .map((b, j) => (
-                <React.Fragment key={`highlight-${i}-${j}`}>
-                  <Tooltip
-                    disableFocusListener
-                    disableTouchListener
-                    title={d.label.replace(/(^\w|\s\w)/g, (m) =>
-                      m.toUpperCase()
-                    )}
-                  >
-                    <div
-                      className={`highlight-mask__highlight facet-highlight highlight-${d.id}`}
-                      onMouseEnter={() => {
-                        this.markHighlightAsHovered(d);
-                        logger.log("debug", "hover-highlight", {
-                          highlight: d,
-                        });
-                      }}
-                      onMouseLeave={this.clearAllHovered}
-                      onMouseDown={(event: React.MouseEvent) => {
-                        this.onClickSentence(event, d, j);
-                      }}
-                      style={{
-                        position: "absolute",
-                        left: b.left * width,
-                        top: b.top * height,
-                        width: b.width * width,
-                        height: b.height * height * 1.2,
-                        backgroundColor: d.color,
-                        opacity: opacity,
-                      }}
-                    />
-                  </Tooltip>
-                </React.Fragment>
-              ))
+              .map((b, j) => {
+                // Add left rounded borders to the first span of each highlight
+                // and right rounded borders to the last span of each highlight
+                const borderRadius =
+                  j === d.boxes.length - 1
+                    ? "0px 10px 10px 0px"
+                    : j === 0
+                    ? "10px 0px 0px 10px"
+                    : 0;
+                const highlightVerticalOffset = 4;
+                const highlightLeftOffset = 4;
+                return (
+                  <React.Fragment key={`highlight-${i}-${j}`}>
+                    <Tooltip
+                      disableFocusListener
+                      disableTouchListener
+                      title={d.label.replace(/(^\w|\s\w)/g, (m) =>
+                        m.toUpperCase()
+                      )}
+                    >
+                      <div
+                        className={`highlight-mask__highlight facet-highlight highlight-${d.id}`}
+                        onMouseEnter={() => {
+                          this.markHighlightAsHovered(d);
+                          logger.log("debug", "hover-highlight", {
+                            highlight: d,
+                          });
+                        }}
+                        onMouseLeave={this.clearAllHovered}
+                        onMouseDown={(event: React.MouseEvent) => {
+                          this.onClickSentence(event, d, j);
+                        }}
+                        style={{
+                          position: "absolute",
+                          left: b.left * width - highlightLeftOffset,
+                          top: b.top * height - highlightVerticalOffset,
+                          width: b.width * width + highlightLeftOffset,
+                          height: b.height * height * 1.2,
+                          backgroundColor: d.color,
+                          borderRadius: borderRadius,
+                          opacity: opacity,
+                        }}
+                      />
+                    </Tooltip>
+                  </React.Fragment>
+                );
+              })
           )}
 
         {showControlToolbar &&
