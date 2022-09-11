@@ -29,7 +29,6 @@ import EquationDiagram from "./components/entity/equation/EquationDiagram";
 import FacetLabelLayer from "./components/faceted-highlights/FacetLabelLayer";
 import HighlightLayer from "./components/faceted-highlights/HighlightLayer";
 import Legend from "./components/faceted-highlights/Legend";
-import MarkerLayer from "./components/faceted-highlights/MarkerLayer";
 import UnderlineLayer from "./components/faceted-highlights/UnderlineLayer";
 import EntityPageMask from "./components/mask/EntityPageMask";
 import SearchPageMask from "./components/mask/SearchPageMask";
@@ -87,6 +86,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     if (props.paperId) {
       loggingContext.paperId = props.paperId;
     }
+    let userId = localStorage.getItem("userId");
+    if (userId === null) {
+      userId = Math.random().toString(36).slice(-6);
+      localStorage.setItem("userId", userId);
+    }
+    loggingContext.userId = userId;
     logger.setContext(loggingContext);
 
     this.state = {
@@ -146,10 +151,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         result: 0.8,
       },
 
-      highlightQuantity:
-        localStorage.getItem("highlightQuantity") !== null
-          ? +localStorage.getItem("highlightQuantity")!
-          : 80,
+      highlightQuantity: 80,
 
       ...settings,
     };
@@ -757,7 +759,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     if (this.props.paperId !== undefined) {
       // This sets the proper highlight level based on user settings
       // and initializes the faceted highlights
-      this.handleHighlightQuantityChanged(this.state.highlightQuantity);
+      const highlightQuantity =
+        localStorage.getItem("highlightQuantity") !== null ||
+        localStorage.getItem("highlightQuantity") !== "NaN"
+          ? +localStorage.getItem("highlightQuantity")!
+          : this.state.highlightQuantity;
+      this.handleHighlightQuantityChanged(highlightQuantity);
     }
   }
 
@@ -950,7 +957,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         selectedFacets: [...prevState.selectedFacets, facet],
       }));
     }
-  }
+  };
 
   handleHighlightQuantityChanged = (value: number) => {
     localStorage.setItem("highlightQuantity", value.toString());
@@ -1165,12 +1172,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     const SCROLL_OFFSET_X = -200;
     const SCROLL_OFFSET_Y = +100;
 
-    const {
-      pdfViewerApplication,
-      pdfViewer,
-      pages,
-      allHighlightsById,
-    } = this.state;
+    const { pdfViewerApplication, pdfViewer, pages, allHighlightsById } =
+      this.state;
 
     if (
       pdfViewerApplication === null ||
@@ -1301,9 +1304,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       this.state.findMatchIndex !== null &&
       this.state.findMatchIndex < this.state.findMatchedEntities.length
     ) {
-      findMatchEntityId = this.state.findMatchedEntities[
-        this.state.findMatchIndex
-      ];
+      findMatchEntityId =
+        this.state.findMatchedEntities[this.state.findMatchIndex];
     }
 
     if (
@@ -1583,10 +1585,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                   this.state.selectedAnnotationIds,
                   pageNumber
                 );
-                const selectedAnnotationSpanIds = selectors.annotationSpansInPage(
-                  this.state.selectedAnnotationSpanIds,
-                  pageNumber
-                );
+                const selectedAnnotationSpanIds =
+                  selectors.annotationSpansInPage(
+                    this.state.selectedAnnotationSpanIds,
+                    pageNumber
+                  );
                 const findFirstMatchEntityId =
                   this.state.symbolSearchEnabled &&
                   this.state.findMatchedEntities !== null &&
