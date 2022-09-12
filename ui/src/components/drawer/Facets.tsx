@@ -95,7 +95,13 @@ export class Facets extends React.PureComponent<Props> {
 
     return (
       <div className="document-snippets facet-objs">
-        <div style={{ border: "1px solid grey", padding: "5px", borderRadius: "3px" }}>
+        <div
+          style={{
+            border: "1px solid grey",
+            padding: "5px",
+            borderRadius: "3px",
+          }}
+        >
           <p>Facets</p>
           <FacetPalette
             allFacetedHighlights={allFacetedHighlights}
@@ -170,19 +176,22 @@ export class Facets extends React.PureComponent<Props> {
           return (
             <React.Fragment key={sectionIdx}>
               <p className="facet-page-header">{section}</p>
-              {uiUtils.sortFacetedHighlights(ds).map((d: FacetedHighlight) => {
-                return (
-                  <FacetSnippet
-                    key={d.id}
-                    id={d.id}
-                    color={d.color}
-                    onClick={() => this.handleFacetSnippetClicked(d)}
-                    handleJumpToHighlight={this.props.handleJumpToHighlight}
-                  >
-                    {d.text}
-                  </FacetSnippet>
-                );
-              })}
+              {uiUtils
+                .sortFacetedHighlights(ds)
+                .filter((d: FacetedHighlight) => d.label !== "ignore")
+                .map((d: FacetedHighlight) => {
+                  return (
+                    <FacetSnippet
+                      key={d.id}
+                      id={d.id}
+                      color={d.color}
+                      onClick={() => this.handleFacetSnippetClicked(d)}
+                      handleJumpToHighlight={this.props.handleJumpToHighlight}
+                    >
+                      {d.text}
+                    </FacetSnippet>
+                  );
+                })}
             </React.Fragment>
           );
         })}

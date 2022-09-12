@@ -431,6 +431,7 @@ export function getFacetColors(): { [label: string]: string } {
     result: "#F285A07D",
     conclusion: "#8616284D",
     futureWork: "#EDD96D2D",
+    grey: "#808080",
   };
 }
 

@@ -96,6 +96,7 @@ export interface DocumentLoadedEvent {
 export interface PDFViewer {
   container: HTMLDivElement;
   viewer: HTMLDivElement;
+  currentPageNumber: number;
   /**
    * Scroll the PDF viewer to a location of interest. Example usage:
    * pdfViewer.scrollPageIntoView({

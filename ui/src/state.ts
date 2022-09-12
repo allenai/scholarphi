@@ -154,7 +154,8 @@ export interface State extends Settings {
   showSkimmingAnnotationColors: boolean;
   currentHighlightId: string | null;
   facetedHighlights: FacetedHighlight[];
-  sections: Section[];
+  gradedHighlights: FacetedHighlight[];
+  selectedPages: number[];
   highlightsBySection: { [section: string]: FacetedHighlight[] };
   allHighlightsById: { [id: string]: FacetedHighlight };
   selectedFacets: string[];

@@ -11,8 +11,8 @@ interface Props {
 }
 
 class ScrollbarMarkup extends React.PureComponent<Props> {
-  static scrollbarHeight = document.getElementById("viewerContainer")
-    ?.clientHeight;
+  static scrollbarHeight =
+    document.getElementById("viewerContainer")?.clientHeight;
 
   constructor(props: Props) {
     super(props);
@@ -45,14 +45,16 @@ class ScrollbarMarkup extends React.PureComponent<Props> {
                 )}
               />
             ))}
-            {facetedHighlights.map((d: FacetedHighlight, i: number) => (
-              <ScrollbarMark
-                key={`scrollbar-mark-${i}`}
-                sentence={d}
-                handleMarkClicked={() => this.props.handleMarkClicked(d.id)}
-                mapHighlightToScrollbar={this.mapHighlightToScrollbar}
-              />
-            ))}
+            {facetedHighlights
+              .filter((d: FacetedHighlight) => d.label !== "ignore")
+              .map((d: FacetedHighlight, i: number) => (
+                <ScrollbarMark
+                  key={`scrollbar-mark-${i}`}
+                  sentence={d}
+                  handleMarkClicked={() => this.props.handleMarkClicked(d.id)}
+                  mapHighlightToScrollbar={this.mapHighlightToScrollbar}
+                />
+              ))}
           </div>
         ) : null}
       </>

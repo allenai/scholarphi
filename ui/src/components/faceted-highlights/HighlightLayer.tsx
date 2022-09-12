@@ -4,7 +4,6 @@ import { BoundingBox, FacetedHighlight } from "../../api/types";
 import { getRemoteLogger } from "../../logging";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
-import FacetControlToolbar from "./FacetControlToolbar";
 
 const logger = getRemoteLogger();
 
@@ -21,7 +20,6 @@ interface Props {
 }
 
 interface State {
-  showControlToolbar: boolean;
   focusedHighlight: FacetedHighlight | null;
   clickedLineBox: BoundingBox | null;
   clickX: number | null;
@@ -32,45 +30,11 @@ class HighlightLayer extends React.PureComponent<Props, State> {
     super(props);
 
     this.state = {
-      showControlToolbar: false,
       focusedHighlight: null,
       clickedLineBox: null,
       clickX: null,
     };
   }
-
-  componentDidMount = () => {
-    document.body.addEventListener("click", this.onClickAnywhere);
-  };
-
-  onClickAnywhere = (event: MouseEvent) => {
-    /*
-     * If a click occurred within the page and it was not only the tooltip or a
-     * highlight, then dismiss the highlight toolbar.
-     */
-    if (!(event.target instanceof Node)) {
-      return;
-    }
-    if (
-      !uiUtils.findParentElement(event.target, (e) =>
-        e.classList.contains("page")
-      )
-    ) {
-      return;
-    }
-    if (
-      !uiUtils.findParentElement(
-        event.target,
-        (e) =>
-          e.classList.contains("highlight-mask__highlight") ||
-          e.classList.contains("facet-control-toolbar")
-      )
-    ) {
-      logger.log("debug", "click-anywhere-close-toolbar");
-      this.closeControlToolbar();
-      this.clearAllSelected();
-    }
-  };
 
   onClickSentence = (
     event: React.MouseEvent,
@@ -92,19 +56,9 @@ class HighlightLayer extends React.PureComponent<Props, State> {
       }, 300);
     }
     this.setState({
-      // showControlToolbar: true,
       focusedHighlight: sentence,
       clickedLineBox: sentence.boxes[lineIndex],
       clickX: event.clientX - pageRect.left,
-    });
-  };
-
-  closeControlToolbar = () => {
-    this.setState({
-      showControlToolbar: false,
-      focusedHighlight: null,
-      clickedLineBox: null,
-      clickX: null,
     });
   };
 
@@ -125,16 +79,7 @@ class HighlightLayer extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { pageView, facetedHighlights, opacity, drawerOpen } = this.props;
-    const { showControlToolbar, focusedHighlight, clickedLineBox, clickX } =
-      this.state;
-
-    let tooltipX = clickX;
-    let tooltipY = null;
-    if (clickedLineBox !== null) {
-      const lineRect = uiUtils.getPositionInPageView(pageView, clickedLineBox);
-      tooltipY = lineRect.top + lineRect.height;
-    }
+    const { pageView, facetedHighlights, opacity } = this.props;
 
     const pageNumber = uiUtils.getPageNumber(pageView);
     const { width, height } = uiUtils.getPageViewDimensions(pageView);
@@ -192,33 +137,6 @@ class HighlightLayer extends React.PureComponent<Props, State> {
                   </React.Fragment>
                 );
               })
-          )}
-
-        {showControlToolbar &&
-          focusedHighlight &&
-          tooltipX !== null &&
-          tooltipY !== null && (
-            <FacetControlToolbar
-              x={tooltipX}
-              y={tooltipY}
-              label={focusedHighlight.label}
-              drawerOpen={drawerOpen}
-              handleClose={this.closeControlToolbar}
-              handleDeleteHighlight={() =>
-                this.props.handleHideHighlight(focusedHighlight)
-              }
-              handleOpenDrawer={() => {
-                this.props.handleOpenDrawer();
-                setTimeout(() => {
-                  if (this.state.focusedHighlight !== null) {
-                    this.props.selectSnippetInDrawer(
-                      this.state.focusedHighlight
-                    );
-                  }
-                }, 300);
-              }}
-              handleCloseDrawer={this.props.handleCloseDrawer}
-            />
           )}
       </>
     );
