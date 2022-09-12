@@ -777,10 +777,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     if (this.props.paperId !== undefined) {
       // This sets the proper highlight level based on user settings
       // and initializes the faceted highlights
-
       const callback = () => {
         const highlightQuantity =
-          localStorage.getItem("highlightQuantity") !== null ||
+          localStorage.getItem("highlightQuantity") !== null &&
           localStorage.getItem("highlightQuantity") !== "NaN"
             ? +localStorage.getItem("highlightQuantity")!
             : this.state.highlightQuantity;
