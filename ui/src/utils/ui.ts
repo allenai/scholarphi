@@ -424,8 +424,9 @@ export function updateAlpha(color: string, opacity: number): string {
 export function getFacetColors(): { [label: string]: string } {
   return {
     highlight: "#F1E7407D",
-    objective: "#95F0387D",
-    novelty: "#F578425D",
+    // objective: "#95F0387D",
+    // novelty: "#F578425D",
+    novelty: "#95F0387D",
     method: "#75BCE57D",
     studySetup: "#ECCE8E7D",
     result: "#F285A07D",
@@ -438,7 +439,7 @@ export function getFacetColors(): { [label: string]: string } {
 export function getFacetDisplayNames(): { [key: string]: string } {
   return {
     objective: "Objectives",
-    novelty: "Novelty Statements",
+    novelty: "Goals / Novelty",
     method: "Methods",
     result: "Results",
   };

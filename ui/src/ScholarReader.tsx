@@ -1,4 +1,3 @@
-import { ConstructionOutlined } from "@mui/icons-material";
 import classNames from "classnames";
 import jsPDF from "jspdf";
 import React from "react";
@@ -151,7 +150,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       gradedHighlights: [],
       selectedPages: [],
       highlightsBySection: {},
-      allHighlightsById: {},
+      highlightsById: {},
       selectedFacets: this.getAvailableFacets(),
       hiddenFacetedHighlights: [],
       numHighlightMultiplier: {
@@ -168,7 +167,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   getAvailableFacets = () => {
-    return ["objective", "novelty", "method", "result"];
+    return ["novelty", "method", "result"];
   };
 
   toggleControlPanelShowing = (): void => {
@@ -835,88 +834,245 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   initFacetedHighlights = (cb?: any) => {
-    // Set faceted highlights in a related work section that are not
-    // objective or novelty to novelty
-    let facetedHighlights = this.highlightData.map((x: any) => {
-      const section = x.section.toLowerCase();
-      if (["recent", "related"].some((s) => section.includes(s))) {
-        if (!["objective", "novelty"].includes(x.predictions.heuristics)) {
-          x.predictions.heuristics = "novelty";
-        }
-      }
-      return x;
-    });
-
-    // Disable faceted highlights in abstract
-    facetedHighlights = facetedHighlights.filter(
+    // we don't want any highlights in the abstract
+    const highlightData = this.highlightData.filter(
       (x: any) => x.section.toLowerCase() !== "abstract"
     );
 
-    let gradedHighlights = facetedHighlights
-      .map((x: any) => {
-        if (
-          x.scores.model >= 0.8 &&
-          ["objective", "method", "result"].includes(x.predictions.model)
-        ) {
-          return {
-            id: x.id,
-            text: x.text,
-            section: x.section,
-            label: "ignore",
-            score: x.scores.model,
-            boxes: x.boxes,
-            tagLocation: x.boxes[0],
-            color: this.facetToColorMap["highlight"],
-          };
-        } else if (x.scores.heuristics >= 0.4) {
-          return {
-            id: x.id,
-            text: x.text,
-            section: x.section,
-            label: "ignore",
-            score: x.scores.heuristics,
-            boxes: x.boxes,
-            tagLocation: x.boxes[0],
-            color: this.facetToColorMap["highlight"],
-          };
-        }
-      })
-      .filter((x: FacetedHighlight) => x !== undefined);
+    // we keep model highlights of objective, method, or result labels only
+    let modelHighlights = highlightData.filter((x: any) =>
+      ["objective", "method", "result"].includes(x.predictions.model)
+    );
 
-    // Filter highlights at score threshold
-    facetedHighlights = facetedHighlights.filter((x: any) => {
-      if (x.scores.heuristics >= 0.85) {
-        x.score = x.scores.heuristics;
-        x.label = x.predictions.heuristics;
-        return x;
-      } else if (x.predictions.model === "objective" && x.scores.model > 0.9) {
-        x.score = x.scores.model;
-        x.label = x.predictions.model;
-        return x;
+    const allSentencesByBlock: { [blockId: string]: any[] } =
+      highlightData.reduce((acc: { [block_id: string]: any[] }, x: any) => {
+        if (!acc[x.block_id]) {
+          acc[x.block_id] = [];
+        }
+        acc[x.block_id].push(x);
+        return acc;
+      }, {});
+    const highlightsByBlock: { [blockId: string]: any[] } =
+      modelHighlights.reduce((acc: { [block_id: string]: any[] }, x: any) => {
+        if (!acc[x.block_id]) {
+          acc[x.block_id] = [];
+        }
+        acc[x.block_id].push(x);
+        return acc;
+      }, {});
+    const allBlockIds = Object.keys(allSentencesByBlock);
+
+    // This code helps reduce the number of highlights in a given block.
+    // Except for blocks in the introduction and conclusion,
+    // for blocks with more than 3 sentences, no more than 50% of
+    // the sentences in the block should be highlighted.
+    let highlightIdsToRemove: string[] = [];
+    allBlockIds.map((blockId: string) => {
+      const maxHighlightRatio = 0.5;
+      const sections = [
+        ...new Set(
+          allSentencesByBlock[blockId].map((x: any) => x.section.toLowerCase())
+        ),
+      ];
+      const blockInIntroduction = sections.some((section: string) =>
+        section.includes("introduction")
+      );
+      const blockInConclusion = sections.some((section: string) =>
+        section.includes("conclusion")
+      );
+      if (!blockInIntroduction && !blockInConclusion) {
+        const blockLen = allSentencesByBlock[blockId].length;
+        const numHighlights = highlightsByBlock[blockId]?.length || 0;
+        if (blockLen > 3 && numHighlights > 0) {
+          if (numHighlights / blockLen > maxHighlightRatio) {
+            const targetNumHighlights = Math.floor(blockLen / 2);
+            const numToRemove = numHighlights - targetNumHighlights;
+            const toRemoveFromBlock = highlightsByBlock[blockId]
+              .sort((a: any, b: any) => {
+                return a.scores.model < b.scores.model ? -1 : 1;
+              })
+              .map((x: any) => x.id)
+              .slice(0, numToRemove);
+            highlightIdsToRemove.push(...toRemoveFromBlock);
+          }
+        }
+      }
+    });
+    modelHighlights = modelHighlights.filter(
+      (x: any) => !highlightIdsToRemove.includes(x.id)
+    );
+
+    // This code helps increase the number of highlights in a given block.
+    // For blocks that don't have any model prediction highlights,
+    // we add up to two highlights with the highest positive heuristic score.
+    const blocksWithHighlights: string[] = [
+      ...new Set(modelHighlights.map((x: any) => x.block_id)),
+    ] as string[];
+    const blocksWithoutHighlights = allBlockIds.filter(
+      (blockId: string) => !blocksWithHighlights.includes(blockId)
+    );
+    blocksWithoutHighlights.map((blockId: string) => {
+      const heuristicHighlightsToAdd = allSentencesByBlock[blockId]
+        .filter((x: any) => x.scores.heuristics > 0)
+        .sort((a: any, b: any) => {
+          return a.scores.heuristics < b.scores.heuristics ? 1 : -1;
+        })
+        .slice(0, 2);
+      modelHighlights.push(...heuristicHighlightsToAdd);
+      if (heuristicHighlightsToAdd.length < 2) {
+        const modelHighlightsToAdd = allSentencesByBlock[blockId]
+          .filter((x: any) => {
+            // We don't want to add less confidence model highlights
+            // in the related work section
+            const section = x.section.toLowerCase();
+            if (!["recent", "related"].some((s) => section.includes(s))) {
+              return x;
+            }
+          })
+          .filter(
+            (x: any) =>
+              !heuristicHighlightsToAdd.map((x: any) => x.id).includes(x.id)
+          )
+          .sort((a: any, b: any) => {
+            return a.scores.model < b.scores.model ? 1 : -1;
+          })
+          .slice(0, 2 - heuristicHighlightsToAdd.length);
+        modelHighlights.push(...modelHighlightsToAdd);
       }
     });
 
-    facetedHighlights = facetedHighlights.map((x: any) => ({
-      id: x.id,
-      text: x.text,
-      section: x.section,
-      label: x.label,
-      score: x.score,
-      boxes: x.boxes,
-      tagLocation: x.boxes[0],
-      color: this.state.showSkimmingAnnotationColors
-        ? this.facetToColorMap[x.label] ?? this.facetToColorMap["highlight"]
-        : this.facetToColorMap["highlight"],
-    }));
+    // Create FacetedHighlight objects
+    modelHighlights = modelHighlights
+      .map((x: any) => ({
+        id: x.id,
+        text: x.text,
+        section: x.section,
+        label: x.predictions.model,
+        score: x.scores.model,
+        boxes: x.boxes,
+        tagLocation: x.boxes[0],
+        blockId: x.block_id,
+      }))
+      .map((x: FacetedHighlight) => {
+        if (x.label === "objective") {
+          x.label = "novelty";
+        }
+        return x;
+      })
+      .map((x: FacetedHighlight) => {
+        // Heurstically "fix" some highlight classifications in certain sections
+        const section = x.section.toLowerCase();
+        if (["recent", "related"].some((s) => section.includes(s))) {
+          if (x.label !== "novelty") {
+            x.label = "novelty";
+          }
+        }
+        if (["method", "approach"].some((s) => section.includes(s))) {
+          if (x.label !== "method") {
+            x.label = "method";
+          }
+        }
+        if (
+          ["experiment", "result", "finding"].some((s) => section.includes(s))
+        ) {
+          if (x.label === "novelty") {
+            x.label = "result";
+          }
+        }
+        return x;
+      })
+      .map((x: FacetedHighlight) => {
+        x.color = this.state.showSkimmingAnnotationColors
+          ? this.facetToColorMap[x.label] ?? this.facetToColorMap["highlight"]
+          : this.facetToColorMap["highlight"];
+        return x;
+      });
+
+    /**
+     * DEPRECATED: Previously used heuristics to generate faceted highlights.
+     */
+    // // Set faceted highlights in a related work section that are not
+    // // objective or novelty to novelty
+    // let facetedHighlights = this.highlightData.map((x: any) => {
+    //   const section = x.section.toLowerCase();
+    //   if (["recent", "related"].some((s) => section.includes(s))) {
+    //     if (!["objective", "novelty"].includes(x.predictions.heuristics)) {
+    //       x.predictions.heuristics = "novelty";
+    //     }
+    //   }
+    //   return x;
+    // });
+    //
+    // let gradedHighlights = facetedHighlights
+    //   .map((x: any) => {
+    //     if (
+    //       x.scores.model >= 0.8 &&
+    //       ["objective", "method", "result"].includes(x.predictions.model)
+    //     ) {
+    //       return {
+    //         id: x.id,
+    //         text: x.text,
+    //         section: x.section,
+    //         label: "ignore",
+    //         score: x.scores.model,
+    //         boxes: x.boxes,
+    //         tagLocation: x.boxes[0],
+    //         color: this.facetToColorMap["highlight"],
+    //       };
+    //     } else if (x.scores.heuristics >= 0.4) {
+    //       return {
+    //         id: x.id,
+    //         text: x.text,
+    //         section: x.section,
+    //         label: "ignore",
+    //         score: x.scores.heuristics,
+    //         boxes: x.boxes,
+    //         tagLocation: x.boxes[0],
+    //         color: this.facetToColorMap["highlight"],
+    //       };
+    //     }
+    //   })
+    //   .filter((x: FacetedHighlight) => x !== undefined);
+
+    // // Filter highlights at score threshold
+    // facetedHighlights = facetedHighlights.filter((x: any) => {
+    //   if (x.scores.heuristics >= 0.85) {
+    //     x.score = x.scores.heuristics;
+    //     x.label = x.predictions.heuristics;
+    //     return x;
+    //   } else if (x.predictions.model === "objective" && x.scores.model > 0.9) {
+    //     x.score = x.scores.model;
+    //     x.label = x.predictions.model;
+    //     return x;
+    //   }
+    // });
+
+    // facetedHighlights = facetedHighlights.map((x: any) => ({
+    //   id: x.id,
+    //   text: x.text,
+    //   section: x.section,
+    //   label: x.label,
+    //   score: x.score,
+    //   boxes: x.boxes,
+    //   tagLocation: x.boxes[0],
+    //   color: this.state.showSkimmingAnnotationColors
+    //     ? this.facetToColorMap[x.label] ?? this.facetToColorMap["highlight"]
+    //     : this.facetToColorMap["highlight"],
+    // }));
 
     // grey highlights should not include any sentences considered as faceted highlights
-    gradedHighlights = gradedHighlights.filter(
-      (x: any) =>
-        !facetedHighlights.map((h: FacetedHighlight) => h.id).includes(x.id)
-    );
+    // gradedHighlights = gradedHighlights.filter(
+    //   (x: any) =>
+    //     !facetedHighlights.map((h: FacetedHighlight) => h.id).includes(x.id)
+    // );
+    /**
+     * DEPRECATED
+     */
 
-    // Save all faceted highlights before we further filtering
-    const allHighlightsById = this.makeHighlightByIdMap(facetedHighlights);
+    const facetedHighlights = modelHighlights;
+
+    // save faceted highlights in id and section mappings
+    const highlightsById = this.makeHighlightByIdMap(facetedHighlights);
     const highlightsBySection = facetedHighlights.reduce(
       (acc: { [section: string]: FacetedHighlight[] }, h: FacetedHighlight) => {
         // The section attribute contains (when they exist) section, subsection, and subsubsection header data, delimited by "@@".
@@ -934,15 +1090,15 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.setState(
       {
         highlightsBySection: highlightsBySection,
-        allHighlightsById: allHighlightsById,
-        gradedHighlights: gradedHighlights,
+        highlightsById: highlightsById,
+        gradedHighlights: [],
       },
       cb
     );
   };
 
   setCurrentHighlightsToShow = () => {
-    const allHighlights = Object.values(this.state.allHighlightsById);
+    const allHighlights = Object.values(this.state.highlightsById);
     const facetedHighlights = [
       ...this.getNoveltyHighlights(allHighlights),
       ...this.getObjectiveHighlights(allHighlights),
@@ -983,14 +1139,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   makeHighlightByIdMap = (facetedHighlights: FacetedHighlight[]) => {
-    const allHighlightsById = facetedHighlights.reduce(
+    const highlightsById = facetedHighlights.reduce(
       (acc: { [id: string]: FacetedHighlight }, d: FacetedHighlight) => {
         acc[d.id] = d;
         return acc;
       },
       {}
     );
-    return allHighlightsById;
+    return highlightsById;
   };
 
   getNoveltyHighlights = (highlights: FacetedHighlight[]) => {
@@ -1091,7 +1247,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   onScrollbarMarkClicked = (id: string) => {
     this.jumpToHighlight(id);
     setTimeout(() => {
-      this.selectSnippetInDrawer(this.state.allHighlightsById[id]);
+      this.selectSnippetInDrawer(this.state.highlightsById[id]);
     }, 200);
   };
 
@@ -1268,7 +1424,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     const SCROLL_OFFSET_X = -200;
     const SCROLL_OFFSET_Y = +100;
 
-    const { pdfViewerApplication, pdfViewer, pages, allHighlightsById } =
+    const { pdfViewerApplication, pdfViewer, pages, highlightsById } =
       this.state;
 
     if (
@@ -1280,7 +1436,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       return false;
     }
 
-    const dest = allHighlightsById[id].boxes[0];
+    const dest = highlightsById[id].boxes[0];
     const page = Object.values(pages)[0];
     const { left, top } = uiUtils.convertBoxToPdfCoordinates(page.view, dest);
 
@@ -1384,7 +1540,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
     this.setState({
       facetedHighlights: facetedHighlights,
-      allHighlightsById: this.makeHighlightByIdMap(facetedHighlights),
+      highlightsById: this.makeHighlightByIdMap(facetedHighlights),
       showSkimmingAnnotationColors: showMultiColor,
     });
   };

@@ -430,6 +430,7 @@ export interface FacetedHighlight {
   boxes: BoundingBox[];
   tagLocation: BoundingBox;
   color: string;
+  blockId: string;
 }
 
 export interface Section {

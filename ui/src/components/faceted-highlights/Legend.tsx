@@ -9,7 +9,6 @@ export class Legend extends React.PureComponent<Props> {
 
     const facets = {
       novelty: "Novelty",
-      objective: "Objective",
       method: "Method",
       result: "Result",
     };

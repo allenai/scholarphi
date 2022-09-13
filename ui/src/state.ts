@@ -157,7 +157,7 @@ export interface State extends Settings {
   gradedHighlights: FacetedHighlight[];
   selectedPages: number[];
   highlightsBySection: { [section: string]: FacetedHighlight[] };
-  allHighlightsById: { [id: string]: FacetedHighlight };
+  highlightsById: { [id: string]: FacetedHighlight };
   selectedFacets: string[];
   hiddenFacetedHighlights: FacetedHighlight[];
   numHighlightMultiplier: { [facet: string]: number };
