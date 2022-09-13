@@ -422,6 +422,7 @@ export interface SentenceUnit {
 }
 
 export interface FacetedHighlight {
+  entity: any;
   id: string;
   text: string;
   section: string;

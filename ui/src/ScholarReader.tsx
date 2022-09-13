@@ -3,6 +3,7 @@ import jsPDF from "jspdf";
 import React from "react";
 import * as api from "./api/api";
 import {
+  BoundingBox,
   Entity,
   EntityCreateData,
   EntityUpdateData,
@@ -167,7 +168,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   getAvailableFacets = () => {
-    return ["novelty", "method", "result"];
+    return ["objective", "novelty", "method", "result"];
   };
 
   toggleControlPanelShowing = (): void => {
@@ -836,16 +837,74 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     });
   };
 
-  initFacetedHighlights = (cb?: any) => {
-    // we don't want any highlights in the abstract
-    const highlightData = this.highlightData.filter(
-      (x: any) => x.section.toLowerCase() !== "abstract"
+  areBoxesIntersecting = (a: BoundingBox, b: BoundingBox) => {
+    const aright = a.left + a.width;
+    const bright = b.left + b.width;
+    const abottom = a.top + a.height;
+    const bbottom = b.top + b.height;
+    return (
+      a.page === b.page &&
+      aright >= b.left &&
+      bright >= a.left &&
+      abottom >= b.top &&
+      bbottom >= a.top
     );
+  };
 
-    // we keep model highlights of objective, method, or result labels only
+  mergeBoxes = (a: BoundingBox, b: BoundingBox) => {
+    const aright = a.left + a.width;
+    const bright = b.left + b.width;
+    const abottom = a.top + a.height;
+    const bbottom = b.top + b.height;
+    const left = Math.min(a.left, b.left);
+    const top = Math.min(a.top, b.top);
+    const width = Math.max(aright, bright) - left;
+    const height = Math.max(abottom, bbottom) - top;
+    return {
+      page: a.page,
+      left: left,
+      top: top,
+      width: width,
+      height: height,
+    };
+  };
+
+  initFacetedHighlights = (cb?: any) => {
+    // Start by applying some filters to the highlight data
+    // 1. we don't want any highlights in the abstract
+    // 2. we don't want any sentence fragment highlights i.e., start with lowercase letter
+    const highlightData = this.highlightData
+      .filter((x: any) => x.section.toLowerCase() !== "abstract")
+      .filter((x: any) => x.text.charAt(0) !== x.text.toLowerCase().charAt(0));
+
+    // We keep model highlights of objective, method, or result labels only
     let modelHighlights = highlightData.filter((x: any) =>
       ["objective", "method", "result"].includes(x.predictions.model)
     );
+
+    //
+    // WIP: Attempt to merge bounding boxes...
+    //
+    // highlightData.map((x: any) => {
+    //   const boxesToRemove = new Set();
+    //   const boxesToAdd: BoundingBox[] = [];
+    //   for (let i = 0; i < x.boxes.length - 1; i++) {
+    //     for (let j = i + 1; j < x.boxes.length; j++) {
+    //       const a = x.boxes[i];
+    //       const b = x.boxes[j];
+    //       if (this.areBoxesIntersecting(a, b)) {
+    //         const mergedBox = this.mergeBoxes(a, b);
+    //         boxesToAdd.push(mergedBox);
+    //         boxesToRemove.add(i);
+    //         boxesToRemove.add(j);
+    //       }
+    //     }
+    //   }
+    //   x.boxes = x.boxes.filter(
+    //     (_: BoundingBox, i: number) => ![...boxesToRemove].includes(i)
+    //   );
+    //   x.boxes = [...x.boxes, ...boxesToAdd];
+    // });
 
     const allSentencesByBlock: { [blockId: string]: any[] } =
       highlightData.reduce((acc: { [block_id: string]: any[] }, x: any) => {
@@ -871,7 +930,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     // the sentences in the block should be highlighted.
     let highlightIdsToRemove: string[] = [];
     allBlockIds.map((blockId: string) => {
-      const maxHighlightRatio = 0.5;
+      const maxHighlightRatio = 0.4;
       const sections = [
         ...new Set(
           allSentencesByBlock[blockId].map((x: any) => x.section.toLowerCase())
@@ -886,9 +945,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       if (!blockInIntroduction && !blockInConclusion) {
         const blockLen = allSentencesByBlock[blockId].length;
         const numHighlights = highlightsByBlock[blockId]?.length || 0;
-        if (blockLen > 3 && numHighlights > 0) {
+        if (numHighlights > 0) {
           if (numHighlights / blockLen > maxHighlightRatio) {
-            const targetNumHighlights = Math.floor(blockLen / 2);
+            const targetNumHighlights = Math.ceil(blockLen * maxHighlightRatio);
             const numToRemove = numHighlights - targetNumHighlights;
             const toRemoveFromBlock = highlightsByBlock[blockId]
               .sort((a: any, b: any) => {
@@ -906,7 +965,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     );
 
     // This code helps increase the number of highlights in a given block.
-    // For blocks that don't have any model prediction highlights,
+    // For blocks that:
+    //    - don't have any model prediction highlights,
+    //    - have at least 2 sentences
     // we add up to two highlights with the highest positive heuristic score.
     const blocksWithHighlights: string[] = [
       ...new Set(modelHighlights.map((x: any) => x.block_id)),
@@ -915,18 +976,37 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       (blockId: string) => !blocksWithHighlights.includes(blockId)
     );
     blocksWithoutHighlights.map((blockId: string) => {
+      const numSentsInBlock = allSentencesByBlock[blockId].length;
+      let numSentencesToAdd = 0;
+      if (numSentsInBlock <= 2) {
+        numSentencesToAdd = 0;
+      } else if (numSentsInBlock <= 4) {
+        numSentencesToAdd = 1;
+      } else {
+        numSentencesToAdd = 2;
+      }
+
       const heuristicHighlightsToAdd = allSentencesByBlock[blockId]
         .filter((x: any) => x.scores.heuristics > 0)
+        .filter((x: any) => {
+          const section = x.section.toLowerCase();
+          if (!["recent", "related"].some((s) => section.includes(s))) {
+            return x;
+          }
+        })
         .sort((a: any, b: any) => {
           return a.scores.heuristics < b.scores.heuristics ? 1 : -1;
         })
-        .slice(0, 2);
+        .slice(0, numSentencesToAdd);
+      heuristicHighlightsToAdd.map((x: any) => {
+        x.predictions.model = x.predictions.heuristics;
+        x.scores.model = Math.exp(-1 / x.scores.heuristics); // (0, 1)
+      });
       modelHighlights.push(...heuristicHighlightsToAdd);
-      if (heuristicHighlightsToAdd.length < 2) {
+      if (heuristicHighlightsToAdd.length < numSentencesToAdd) {
         const modelHighlightsToAdd = allSentencesByBlock[blockId]
           .filter((x: any) => {
-            // We don't want to add less confidence model highlights
-            // in the related work section
+            // Don't add less confident model highlights in a related work section.
             const section = x.section.toLowerCase();
             if (!["recent", "related"].some((s) => section.includes(s))) {
               return x;
@@ -939,7 +1019,13 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
           .sort((a: any, b: any) => {
             return a.scores.model < b.scores.model ? 1 : -1;
           })
-          .slice(0, 2 - heuristicHighlightsToAdd.length);
+          .slice(0, numSentencesToAdd - heuristicHighlightsToAdd.length);
+        modelHighlightsToAdd.map((x: any) => {
+          // Set the label and score here before creating the FacetedHighlight object next.
+          // These instances may be reclassfied later as results if in results section.
+          x.predictions.model = "method";
+          x.scores.model = 1 - x.scores.model;
+        });
         modelHighlights.push(...modelHighlightsToAdd);
       }
     });
@@ -947,6 +1033,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     // Create FacetedHighlight objects
     modelHighlights = modelHighlights
       .map((x: any) => ({
+        entity: x,
         id: x.id,
         text: x.text,
         section: x.section,
@@ -957,8 +1044,13 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         blockId: x.block_id,
       }))
       .map((x: FacetedHighlight) => {
+        // The model only detects "objective" facets, and not "novelty", but these are
+        // actually inclusive of "novelty". This code uses heuristics to split these
+        // highlights into separated "objective" and "novelty" facets.
         if (x.label === "objective") {
-          x.label = "novelty";
+          if (x.entity.predictions.heuristics !== "objective") {
+            x.label = "novelty";
+          }
         }
         return x;
       })
@@ -966,21 +1058,15 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         // Heurstically "fix" some highlight classifications in certain sections
         const section = x.section.toLowerCase();
         if (["recent", "related"].some((s) => section.includes(s))) {
-          if (x.label !== "novelty") {
+          if (!["novelty", "objective"].includes(x.label)) {
             x.label = "novelty";
           }
         }
         if (["method", "approach"].some((s) => section.includes(s))) {
-          if (x.label !== "method") {
-            x.label = "method";
-          }
+          x.label = "method";
         }
-        if (
-          ["experiment", "result", "finding"].some((s) => section.includes(s))
-        ) {
-          if (x.label === "novelty") {
-            x.label = "result";
-          }
+        if (["result", "finding"].some((s) => section.includes(s))) {
+          x.label = "result";
         }
         return x;
       })
@@ -1223,12 +1309,17 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       let newHighlightMultiplier = prevState.numHighlightMultiplier;
 
       facets.forEach((facet: string) => {
-        // Handle objective and novelty highlights a bit differently (proritize showing them)
+        // Handle different facets differently (proritize hiding/showing some over others
+        // when the user changes the number of highlights in the paper
+        let multiplier = value / 100;
+        if (["result"].includes(facet)) {
+          multiplier *= 1.2;
+        } else if (["objective", "novelty"].includes(facet)) {
+          multiplier *= 1.5;
+        }
         newHighlightMultiplier = {
           ...newHighlightMultiplier,
-          [facet]: ["objective", "novelty"].includes(facet)
-            ? (value / 100) * 1.5
-            : value / 100,
+          [facet]: multiplier,
         };
       });
 

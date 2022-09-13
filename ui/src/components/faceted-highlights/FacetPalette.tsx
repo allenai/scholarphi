@@ -25,7 +25,7 @@ class FacetPalette extends React.PureComponent<Props, State> {
   };
 
   getAvailableFacets = () => {
-    return ["novelty", "method", "result"];
+    return ["objective", "novelty", "method", "result"];
   };
 
   render() {

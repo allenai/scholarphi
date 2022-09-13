@@ -8,6 +8,7 @@ export class Legend extends React.PureComponent<Props> {
     const facetToColorMap = uiUtils.getFacetColors();
 
     const facets = {
+      objective: "Objective",
       novelty: "Novelty",
       method: "Method",
       result: "Result",
