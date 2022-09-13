@@ -763,18 +763,19 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         if (this.state.facetedHighlights.length > 0) {
           this.moveToNextHighlight();
         }
-      } else if (event.code === "Space") {
-        event.preventDefault();
-        const pageNumber =
-          this.state.pdfViewerApplication?.pdfViewer.currentPageNumber;
-        if (pageNumber !== undefined) {
-          // PDFJS currentPageNumber starts at 1 but the reader starts at 0
-          this.showAllHighlightsForPage(pageNumber - 1);
-          logger.log("debug", "show-all-highlights-for-page", {
-            pageNumber: pageNumber,
-          });
-        }
       }
+      // else if (event.code === "Space") {
+      //   event.preventDefault();
+      //   const pageNumber =
+      //     this.state.pdfViewerApplication?.pdfViewer.currentPageNumber;
+      //   if (pageNumber !== undefined) {
+      //     // PDFJS currentPageNumber starts at 1 but the reader starts at 0
+      //     this.showAllHighlightsForPage(pageNumber - 1);
+      //     logger.log("debug", "show-all-highlights-for-page", {
+      //       pageNumber: pageNumber,
+      //     });
+      //   }
+      // }
     });
 
     if (this.props.paperId !== undefined) {
