@@ -397,32 +397,27 @@ export interface LogEntryCreatePayload {
   data: any;
 }
 
-export interface RhetoricUnit {
-  id: string;
-  text: string;
-  label: string;
-  boxes: BoundingBox[];
-  section: string;
-  prob: number | null;
-  is_author_statement: boolean;
-  is_in_expected_section: boolean;
-}
-
+/**
+ * Data for Scim, a version of the reader with annotations for skimming
+ */
 export interface CaptionUnit {
   text: string;
   type: string;
   bbox: BoundingBox;
 }
 
-export interface SentenceUnit {
+export interface ScimSentence {
   id: string;
   text: string;
-  boxes: BoundingBox[];
   section: string;
+  predictions: {[src: string]: string};
+  scores: {[src: string]: number};
+  boxes: BoundingBox[];
+  block_id: string;
 }
 
 export interface FacetedHighlight {
-  entity: any;
+  entity: ScimSentence;
   id: string;
   text: string;
   section: string;

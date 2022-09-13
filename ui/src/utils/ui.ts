@@ -504,3 +504,36 @@ export function removeClassFromElementsByClassname(classToRemove: string) {
   const prevSelected = document.querySelectorAll(`.${classToRemove}`);
   prevSelected.forEach((x) => x.classList.remove(classToRemove));
 }
+
+
+export function areBoxesIntersecting(a: BoundingBox, b: BoundingBox) {
+  const aright = a.left + a.width;
+  const bright = b.left + b.width;
+  const abottom = a.top + a.height;
+  const bbottom = b.top + b.height;
+  return (
+    a.page === b.page &&
+    aright >= b.left &&
+    bright >= a.left &&
+    abottom >= b.top &&
+    bbottom >= a.top
+  );
+};
+
+export function mergeBoxes(a: BoundingBox, b: BoundingBox) {
+  const aright = a.left + a.width;
+  const bright = b.left + b.width;
+  const abottom = a.top + a.height;
+  const bbottom = b.top + b.height;
+  const left = Math.min(a.left, b.left);
+  const top = Math.min(a.top, b.top);
+  const width = Math.max(aright, bright) - left;
+  const height = Math.max(abottom, bbottom) - top;
+  return {
+    page: a.page,
+    left: left,
+    top: top,
+    width: width,
+    height: height,
+  };
+};
