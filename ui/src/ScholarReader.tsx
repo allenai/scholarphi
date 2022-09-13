@@ -619,7 +619,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   openDrawer = (drawerContentType: DrawerContentType): void => {
-    logger.log("debug", "request-open-drawer", { drawerContentType });
+    logger.log("debug", "open-drawer", { drawerContentType });
     this.setState({
       drawerMode: "open",
       drawerContentType,
@@ -769,6 +769,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         if (pageNumber !== undefined) {
           // PDFJS currentPageNumber starts at 1 but the reader starts at 0
           this.showAllHighlightsForPage(pageNumber - 1);
+          logger.log("debug", "show-all-highlights-for-page", {
+            pageNumber: pageNumber,
+          });
         }
       }
     });
@@ -1198,6 +1201,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   toggleFacet = (facet: string) => {
+    logger.log("debug", "toggle-facet", { facet: facet });
     if (this.state.selectedFacets.includes(facet)) {
       this.setState({
         selectedFacets: this.state.selectedFacets.filter((d) => d !== facet),
@@ -1210,6 +1214,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   handleHighlightQuantityChanged = (value: number) => {
+    logger.log("debug", "change-highlight-quantity", {
+      highlightQuantity: value,
+    });
     localStorage.setItem("highlightQuantity", value.toString());
     const facets = ["result", "method", "objective", "novelty"];
     this.setState((prevState) => {
@@ -1223,10 +1230,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
             ? (value / 100) * 1.5
             : value / 100,
         };
-      });
-
-      logger.log("debug", "increase-num-highlights", {
-        highlightQuantity: value,
       });
 
       let newSelectedFacets = prevState.selectedFacets;
@@ -1464,6 +1467,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   selectSnippetInDrawer = (selection: FacetedHighlight | null) => {
+    logger.log("debug", "select-snippet-in-drawer", {
+      highlight: selection,
+    });
     let elementToSelectClass;
     if (selection !== null) {
       elementToSelectClass = `facet-snippet-${selection.id}`;
@@ -1483,6 +1489,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   exportSkimmingAnnotations = () => {
+    logger.log("debug", "export-skimming-annotations");
     const highlightsByFacet = this.state.facetedHighlights.reduce(
       (acc: { [facet: string]: FacetedHighlight[] }, d: FacetedHighlight) => {
         return { ...acc, [d.label]: [...(acc[d.label] || []), d] };
@@ -1530,6 +1537,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   handleSkimmingAnnotationColorsChanged = (showMultiColor: boolean) => {
+    logger.log(
+      "debug",
+      showMultiColor === true
+        ? "show-multicolor-highlights"
+        : "hide-multicolor-highlights"
+    );
     const facetedHighlights = this.state.facetedHighlights.map((x) => {
       x.color =
         showMultiColor && Object.keys(this.facetToColorMap).includes(x.label)

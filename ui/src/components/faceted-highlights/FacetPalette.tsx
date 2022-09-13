@@ -3,10 +3,7 @@ import FormGroup from "@mui/material/FormGroup";
 import Switch from "@mui/material/Switch";
 import React from "react";
 import { FacetedHighlight } from "../../api/types";
-import { getRemoteLogger } from "../../logging";
 import * as uiUtils from "../../utils/ui";
-
-const logger = getRemoteLogger();
 
 interface Props {
   allFacetedHighlights: FacetedHighlight[];
@@ -24,7 +21,6 @@ class FacetPalette extends React.PureComponent<Props, State> {
   }
 
   onFacetSelected = (tag: string) => {
-    logger.log("debug", "click-facet-tag", { tag: tag });
     this.props.handleFacetSelected(tag);
   };
 
