@@ -161,8 +161,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       numHighlightMultiplier: {
         objective: 1.0,
         novelty: 1.0,
-        method: 0.8,
-        result: 0.8,
+        method: 1.0,
+        result: 1.0,
       },
 
       highlightQuantity: 80,
@@ -853,9 +853,26 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       );
 
     // We keep model highlights of objective, method, or result labels only
-    let modelHighlights = highlightData.filter((x: ScimSentence) =>
-      ["objective", "method", "result"].includes(x.predictions.model)
-    );
+    // For the first round of highlights, we keep highlights above a minimum score
+    const modelScoreThreshold = 0.4;
+    let modelHighlights = highlightData
+      .filter((x: ScimSentence) =>
+        ["objective", "method", "result"].includes(x.predictions.model)
+      )
+      .filter((x: ScimSentence) => x.scores.model > modelScoreThreshold);
+
+    // The model doesn't do well with novelty in the conclusion, so we rely
+    // on heuristics for adding that here.
+    modelHighlights.map((x: ScimSentence) => {
+      if (
+        x.section.toLowerCase().includes("conclusion") &&
+        x.predictions.heuristics === "novelty"
+      ) {
+        x.predictions.model = "novelty";
+        x.scores.model = x.scores.heuristics;
+      }
+      return x;
+    });
 
     //
     // WIP: Attempt to merge bounding boxes...
@@ -906,12 +923,11 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     const allBlockIds = Object.keys(allSentencesByBlock);
 
     // This code helps reduce the number of highlights in a given block.
-    // Except for blocks in the introduction and conclusion,
-    // for blocks with more than 3 sentences, no more than 50% of
-    // the sentences in the block should be highlighted.
+    // For blocks with more than 3 sentences, no more than 40% of
+    // the sentences in the block should be highlighted (60% for intro/conclusion).
     let highlightIdsToRemove: string[] = [];
     allBlockIds.map((blockId: string) => {
-      const maxHighlightRatio = 0.4;
+      let maxHighlightRatio = 0.4;
       const sections = [
         ...new Set(
           allSentencesByBlock[blockId].map((x: ScimSentence) =>
@@ -925,21 +941,22 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       const blockInConclusion = sections.some((section: string) =>
         section.includes("conclusion")
       );
-      if (!blockInIntroduction && !blockInConclusion) {
-        const blockLen = allSentencesByBlock[blockId].length;
-        const numHighlights = highlightsByBlock[blockId]?.length || 0;
-        if (numHighlights > 0) {
-          if (numHighlights / blockLen > maxHighlightRatio) {
-            const targetNumHighlights = Math.ceil(blockLen * maxHighlightRatio);
-            const numToRemove = numHighlights - targetNumHighlights;
-            const toRemoveFromBlock = highlightsByBlock[blockId]
-              .sort((a: ScimSentence, b: ScimSentence) => {
-                return a.scores.model < b.scores.model ? -1 : 1;
-              })
-              .map((x: ScimSentence) => x.id)
-              .slice(0, numToRemove);
-            highlightIdsToRemove.push(...toRemoveFromBlock);
-          }
+      if (blockInIntroduction || blockInConclusion) {
+        maxHighlightRatio = 0.6;
+      }
+      const blockLen = allSentencesByBlock[blockId].length;
+      const numHighlights = highlightsByBlock[blockId]?.length || 0;
+      if (numHighlights > 0) {
+        if (numHighlights / blockLen > maxHighlightRatio) {
+          const targetNumHighlights = Math.ceil(blockLen * maxHighlightRatio);
+          const numToRemove = numHighlights - targetNumHighlights;
+          const toRemoveFromBlock = highlightsByBlock[blockId]
+            .sort((a: ScimSentence, b: ScimSentence) => {
+              return a.scores.model < b.scores.model ? -1 : 1;
+            })
+            .map((x: ScimSentence) => x.id)
+            .slice(0, numToRemove);
+          highlightIdsToRemove.push(...toRemoveFromBlock);
         }
       }
     });
@@ -1005,12 +1022,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
             return a.scores.model < b.scores.model ? 1 : -1;
           })
           .slice(0, numSentencesToAdd - heuristicHighlightsToAdd.length);
-        modelHighlightsToAdd.map((x: ScimSentence) => {
-          // Set the label and score here before creating the FacetedHighlight object next.
-          // These instances may be reclassfied later as results if in results section.
-          x.predictions.model = "method";
-          x.scores.model = 1 - x.scores.model;
-        });
+        // modelHighlightsToAdd.map((x: ScimSentence) => {
+        //   // Set the label and score here before creating the FacetedHighlight object next.
+        //   // These instances may be reclassfied later as results if in results section.
+        //   x.predictions.model = "method";
+        //   x.scores.model = 1 - x.scores.model;
+        // });
         modelHighlights.push(...modelHighlightsToAdd);
       }
     });
@@ -1047,7 +1064,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
             x.label = "novelty";
           }
         }
-        if (["method", "approach"].some((s) => section.includes(s))) {
+        if (
+          ["background", "method", "approach"].some((s) => section.includes(s))
+        ) {
           x.label = "method";
         }
         if (["result", "finding"].some((s) => section.includes(s))) {
