@@ -30,11 +30,9 @@ interface Props {
   selectedEntityIds: string[];
   facetedHighlights: FacetedHighlight[];
   allFacetedHighlights: FacetedHighlight[];
-  selectedFacets: string[];
   propagateEntityEdits: boolean;
-  highlightQuantity: number;
+  highlightQuantity: { [facet: string]: number };
   showSkimmingAnnotationColors: boolean;
-  handleFacetSelected: (facet: string) => void;
   handleClose: () => void;
   handleJumpToEntity: (entityId: string) => void;
   handleJumpToHighlight: (id: string) => void;
@@ -44,7 +42,9 @@ interface Props {
     updates: EntityUpdateData
   ) => Promise<boolean>;
   handleDeleteEntity: (id: string) => Promise<boolean>;
-  handleHighlightQuantityChanged: (value: number) => void;
+  handleHighlightQuantityChanged: (highlightQuantity: {
+    [facet: string]: number;
+  }) => void;
   handleSkimmingAnnotationColorsChanged: (value: boolean) => void;
 }
 
@@ -110,7 +110,6 @@ export class Drawer extends React.PureComponent<Props> {
       selectedEntityIds,
       facetedHighlights,
       allFacetedHighlights,
-      selectedFacets,
       highlightQuantity,
       showSkimmingAnnotationColors,
     } = this.props;
@@ -186,11 +185,9 @@ export class Drawer extends React.PureComponent<Props> {
             <Facets
               facetedHighlights={facetedHighlights}
               allFacetedHighlights={allFacetedHighlights}
-              selectedFacets={selectedFacets}
               highlightQuantity={highlightQuantity}
               showSkimmingAnnotationColors={showSkimmingAnnotationColors}
               handleJumpToHighlight={this.props.handleJumpToHighlight}
-              handleFacetSelected={this.props.handleFacetSelected}
               handleHighlightQuantityChanged={
                 this.props.handleHighlightQuantityChanged
               }

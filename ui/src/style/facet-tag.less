@@ -29,13 +29,12 @@
  * facet palette allowing users to toggle which facet classes to show.
  */
 .facet-chip-palette-wrapper {
-  // width: @document-snippets-container-width;
   margin: 0 auto;
   position: relative;
-  // position: fixed;
   background-color: @white;
-  padding-bottom: @padding;
-  // border-bottom: 1px solid lightgray;
+  padding-top: @padding;
+  padding-left: @padding;
+  padding-right: @padding;
   z-index: 2;
 
   .facet-palette-header {
@@ -93,6 +92,38 @@
 
       &__checkbox {
         padding: 0;
+      }
+    }
+
+    #objective-quantity-slider {
+      color: #95F0387D;
+
+      .MuiSlider-thumb {
+        color: #95F038
+      }
+    }
+
+    #novelty-quantity-slider {
+      color: #F578425D;
+
+      .MuiSlider-thumb {
+        color: #F57842
+      }
+    }
+
+    #method-quantity-slider {
+      color: #75BCE57D;
+
+      .MuiSlider-thumb {
+        color: #75BCE5
+      }
+    }
+
+    #result-quantity-slider {
+      color: #F285A07D;
+
+      .MuiSlider-thumb {
+        color: #F285A0
       }
     }
   }

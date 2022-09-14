@@ -154,14 +154,12 @@ export interface State extends Settings {
   showSkimmingAnnotationColors: boolean;
   currentHighlightId: string | null;
   facetedHighlights: FacetedHighlight[];
-  gradedHighlights: FacetedHighlight[];
   selectedPages: number[];
   highlightsBySection: { [section: string]: FacetedHighlight[] };
   highlightsById: { [id: string]: FacetedHighlight };
-  selectedFacets: string[];
   hiddenFacetedHighlights: FacetedHighlight[];
-  numHighlightMultiplier: { [facet: string]: number };
-  highlightQuantity: number;
+  // numHighlightMultiplier: { [facet: string]: number };
+  highlightQuantity: { [facet: string]: number };
 }
 
 export type Entities = RelationalStore<Entity>;

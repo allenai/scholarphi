@@ -1,5 +1,4 @@
 import Box from "@mui/material/Box";
-import Slider from "@mui/material/Slider";
 import Switch from "@mui/material/Switch";
 import React from "react";
 import { FacetedHighlight } from "../../api/types";
@@ -13,12 +12,12 @@ const logger = getRemoteLogger();
 interface Props {
   facetedHighlights: FacetedHighlight[];
   allFacetedHighlights: FacetedHighlight[];
-  selectedFacets: string[];
-  highlightQuantity: number;
+  highlightQuantity: { [facet: string]: number };
   showSkimmingAnnotationColors: boolean;
-  handleFacetSelected: (facet: string) => void;
   handleJumpToHighlight: (id: string) => void;
-  handleHighlightQuantityChanged: (value: number) => void;
+  handleHighlightQuantityChanged: (highlightQuantity: {
+    [facet: string]: number;
+  }) => void;
   handleSkimmingAnnotationColorsChanged: (value: boolean) => void;
 }
 
@@ -51,13 +50,40 @@ export class Facets extends React.PureComponent<Props> {
     this.props.handleSkimmingAnnotationColorsChanged(checked);
   };
 
+  getSingleColorHighlightToggle = () => {
+    return (
+      <Box width={"100%"}>
+        <p>Number of colors</p>
+
+        <span
+          style={{
+            fontSize: "14px",
+            margin: "0 auto",
+            padding: 0,
+          }}
+        >
+          Single
+        </span>
+        <Switch
+          checked={this.props.showSkimmingAnnotationColors}
+          onChange={this.handleSkimmingAnnotationColorsChanged}
+        />
+        <span
+          style={{
+            fontSize: "14px",
+            margin: "0 auto",
+            padding: 0,
+          }}
+        >
+          Multiple
+        </span>
+      </Box>
+    );
+  };
+
   render() {
-    const {
-      facetedHighlights,
-      allFacetedHighlights,
-      selectedFacets,
-      showSkimmingAnnotationColors,
-    } = this.props;
+    const { facetedHighlights, allFacetedHighlights, highlightQuantity } =
+      this.props;
 
     const bySection = uiUtils
       .sortFacetedHighlights(facetedHighlights)
@@ -79,20 +105,6 @@ export class Facets extends React.PureComponent<Props> {
         {}
       );
 
-    // const byPage = uiUtils
-    //   .sortFacetedHighlights(facetedHighlights)
-    //   .reduce(
-    //     (acc: { [page: number]: FacetedHighlight[] }, d: FacetedHighlight) => {
-    //       const page = d.boxes[0]["page"] + 1;
-    //       if (!acc[page]) {
-    //         acc[page] = [];
-    //       }
-    //       acc[page].push(d);
-    //       return acc;
-    //     },
-    //     {}
-    //   );
-
     return (
       <div className="document-snippets facet-objs">
         <div
@@ -102,76 +114,17 @@ export class Facets extends React.PureComponent<Props> {
             borderRadius: "3px",
           }}
         >
-          <p>Facets</p>
           <FacetPalette
             allFacetedHighlights={allFacetedHighlights}
-            selectedFacets={selectedFacets}
-            handleFacetSelected={this.props.handleFacetSelected}
+            highlightQuantity={highlightQuantity}
+            handleHighlightQuantityChanged={
+              this.props.handleHighlightQuantityChanged
+            }
           ></FacetPalette>
-          <Box width={"95%"}>
-            <p>Number of highlights</p>
-            <Slider
-              value={this.props.highlightQuantity}
-              step={10}
-              marks
-              onChange={(_, value) =>
-                this.props.handleHighlightQuantityChanged(value as number)
-              }
-            />
-          </Box>
-          <Box width={"100%"}>
-            <p>Number of colors</p>
-
-            <span
-              style={{
-                fontSize: "14px",
-                margin: "0 auto",
-                padding: 0,
-              }}
-            >
-              Single
-            </span>
-            <Switch
-              checked={showSkimmingAnnotationColors}
-              onChange={this.handleSkimmingAnnotationColorsChanged}
-            />
-            <span
-              style={{
-                fontSize: "14px",
-                margin: "0 auto",
-                padding: 0,
-              }}
-            >
-              Multiple
-            </span>
-          </Box>
+          {/* {this.getSingleColorHighlightToggle()} */}
         </div>
 
-        {/* Page delimiter */}
-        {/* {Object.entries(byPage).map(([page, ds], pageIdx: number) => {
-            return (
-              <React.Fragment key={pageIdx}>
-                <p className="facet-page-header">Page {page}</p>
-                {uiUtils
-                  .sortFacetedHighlights(ds)
-                  .map((d: FacetedHighlight) => {
-                    return (
-                      <FacetSnippet
-                        key={d.id}
-                        id={d.id}
-                        color={d.color}
-                        onClick={() => this.handleFacetSnippetClicked(d)}
-                        handleJumpToHighlight={this.props.handleJumpToHighlight}
-                      >
-                        {d.text}
-                      </FacetSnippet>
-                    );
-                  })}
-              </React.Fragment>
-            );
-          })} */}
-
-        {/* Section delimiter */}
+        {/* Section-delimited highlight snippets */}
         {Object.entries(bySection).map(([section, ds], sectionIdx: number) => {
           return (
             <React.Fragment key={sectionIdx}>

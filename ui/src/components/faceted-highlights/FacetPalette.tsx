@@ -1,35 +1,29 @@
-import FormControlLabel from "@mui/material/FormControlLabel";
+import Box from "@mui/material/Box";
 import FormGroup from "@mui/material/FormGroup";
-import Switch from "@mui/material/Switch";
+import Slider from "@mui/material/Slider";
 import React from "react";
 import { FacetedHighlight } from "../../api/types";
 import * as uiUtils from "../../utils/ui";
 
 interface Props {
   allFacetedHighlights: FacetedHighlight[];
-  selectedFacets: string[];
-  handleFacetSelected: (facet: string) => void;
+  highlightQuantity: { [facet: string]: number };
+  handleHighlightQuantityChanged: (highlightQuantity: {
+    [facet: string]: number;
+  }) => void;
 }
 
-interface State {
-  firstSelection: boolean;
-}
-
-class FacetPalette extends React.PureComponent<Props, State> {
+class FacetPalette extends React.PureComponent<Props> {
   constructor(props: Props) {
     super(props);
   }
-
-  onFacetSelected = (tag: string) => {
-    this.props.handleFacetSelected(tag);
-  };
 
   getAvailableFacets = () => {
     return ["objective", "novelty", "method", "result"];
   };
 
   render() {
-    const { selectedFacets, allFacetedHighlights } = this.props;
+    const { allFacetedHighlights } = this.props;
 
     const facetDisplayNames = uiUtils.getFacetDisplayNames();
     const facetColors = uiUtils.getFacetColors();
@@ -37,40 +31,39 @@ class FacetPalette extends React.PureComponent<Props, State> {
     return (
       <div className="facet-chip-palette-wrapper">
         <div className="facet-chip-palette">
-          <FormGroup>
             {this.getAvailableFacets().map((facet) => {
               const numHighlights = allFacetedHighlights.filter(
                 (x) => x.label === facet
               ).length;
-              const checked =
-                selectedFacets.includes(facet) && numHighlights > 0;
               return (
-                <FormControlLabel
-                  key={facet}
-                  control={
-                    <Switch
-                      disabled={numHighlights === 0}
-                      checked={checked}
-                      onChange={() => this.props.handleFacetSelected(facet)}
-                    />
-                  }
-                  label={
-                    <div
-                      style={{
-                        backgroundColor: facetColors[facet],
-                        padding: "5px",
-                        borderRadius: "5px",
-                      }}
-                    >
-                      <span style={{ fontWeight: "bold" }}>
-                        {facetDisplayNames[facet] || facet} ({numHighlights})
-                      </span>
-                    </div>
-                  }
-                />
+                <Box width={"95%"} key={facet}>
+                  <span
+                    style={{
+                      fontSize: "14px",
+                      backgroundColor: facetColors[facet],
+                      padding: "5px",
+                      borderRadius: "5px",
+                      width: "fit-content",
+                    }}
+                  >
+                    <span style={{ fontWeight: "bold" }}>
+                      {facetDisplayNames[facet] || facet} ({numHighlights})
+                    </span>
+                  </span>
+                  <Slider
+                    // Note: slider colors are hardcoded in .less style files
+                    id={`${facet}-quantity-slider`}
+                    value={this.props.highlightQuantity[facet]}
+                    onChange={(_, value) => {
+                      this.props.handleHighlightQuantityChanged({
+                        ...this.props.highlightQuantity,
+                        [facet]: value as number,
+                      });
+                    }}
+                  />
+                </Box>
               );
             })}
-          </FormGroup>
         </div>
       </div>
     );
