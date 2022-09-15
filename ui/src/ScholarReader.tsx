@@ -27,9 +27,9 @@ import { Drawer, DrawerContentType } from "./components/drawer/Drawer";
 import DrawerControlFab from "./components/drawer/DrawerControlFab";
 import EntityAnnotationLayer from "./components/entity/EntityAnnotationLayer";
 import EquationDiagram from "./components/entity/equation/EquationDiagram";
-import BlockMarkerLayer from "./components/faceted-highlights/BlockMarkerLayer";
 import FacetLabelLayer from "./components/faceted-highlights/FacetLabelLayer";
 import HighlightLayer from "./components/faceted-highlights/HighlightLayer";
+import HighlightMarginControlsLayer from "./components/faceted-highlights/HighlightMarginControlsLayer";
 import Legend from "./components/faceted-highlights/Legend";
 import UnderlineLayer from "./components/faceted-highlights/UnderlineLayer";
 import EntityPageMask from "./components/mask/EntityPageMask";
@@ -161,6 +161,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       },
       hoveredBlockId: "",
       modifiedBlockIds: [],
+      disableIncreaseHighlights: false,
+      disableDecreaseHighlights: false,
 
       ...settings,
     };
@@ -1119,10 +1121,15 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                   y + delta > boxTop &&
                   y - delta < boxBottom
                 ) {
-                  const candidates = this.getHighlightCandidates(blockId);
-                  this.setState({
-                    hoveredBlockId: candidates.length > 0 ? blockId : "",
-                  });
+                  if (blockId !== this.state.hoveredBlockId) {
+                    this.setState({
+                      hoveredBlockId: blockId,
+                      disableIncreaseHighlights:
+                        this.getHighlightToAdd(blockId) === null,
+                      disableDecreaseHighlights:
+                        this.getHighlightToRemove(blockId) === null,
+                    });
+                  }
                   return false;
                 }
               }
@@ -1178,27 +1185,60 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     ];
 
     this.setState({
-      facetedHighlights: uiUtils.sortFacetedHighlights([...facetedHighlights]),
+      facetedHighlights: facetedHighlights,
     });
   };
 
   increaseHighlightsForBlock = (blockId: string) => {
     // If there are any highlights left to show, we show one.
-    const candidates = this.getHighlightCandidates(blockId);
-    if (candidates.length > 0) {
-      this.setState((prevState) => ({
-        facetedHighlights: uiUtils.sortFacetedHighlights([
-          ...prevState.facetedHighlights,
-          candidates[0],
-        ]),
-        modifiedBlockIds: [
-          ...new Set([...prevState.modifiedBlockIds, blockId]),
-        ],
-      }));
+    const candidate = this.getHighlightToAdd(blockId);
+    if (candidate !== null) {
+      this.setState(
+        (prevState) => ({
+          // Add the highlight with the highest score that is not already shown
+          facetedHighlights: [...prevState.facetedHighlights, candidate],
+          modifiedBlockIds: [
+            ...new Set([...prevState.modifiedBlockIds, blockId]),
+          ],
+        }),
+        () => {
+          this.setState({
+            disableIncreaseHighlights: this.getHighlightToAdd(blockId) === null,
+            disableDecreaseHighlights: false,
+          });
+        }
+      );
     }
   };
 
-  getHighlightCandidates = (blockId: string) => {
+  decreaseHighlightsForBlock = (blockId: string) => {
+    // If there are any highlights left to remove, remove one.
+    const candidate = this.getHighlightToRemove(blockId);
+    if (candidate !== null) {
+      // Remove the highlight shown with the lowest score
+      this.setState(
+        (prevState) => ({
+          facetedHighlights: [
+            ...prevState.facetedHighlights.filter(
+              (h: FacetedHighlight) => h.id !== candidate.id
+            ),
+          ],
+          modifiedBlockIds: [
+            ...new Set([...prevState.modifiedBlockIds, blockId]),
+          ],
+        }),
+        () => {
+          this.setState({
+            disableIncreaseHighlights: false,
+            disableDecreaseHighlights:
+              this.getHighlightToRemove(blockId) === null,
+          });
+        }
+      );
+    }
+  };
+
+  getHighlightToAdd = (blockId: string) => {
     const allBlockHighlights = Object.values(this.state.highlightsById).filter(
       (highlight: FacetedHighlight) => highlight.blockId === blockId
     );
@@ -1208,7 +1248,26 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     const candidates = allBlockHighlights.filter(
       (h: FacetedHighlight) => !curBlockHighlightIds.includes(h.id)
     );
-    return candidates;
+    if (candidates.length > 0) {
+      return candidates.sort((a, b) => {
+        return a.score < b.score ? 1 : -1;
+      })[0];
+    } else {
+      return null;
+    }
+  };
+
+  getHighlightToRemove = (blockId: string) => {
+    const candidates = this.state.facetedHighlights.filter(
+      (highlight: FacetedHighlight) => highlight.blockId === blockId
+    );
+    if (candidates.length > 0) {
+      return candidates.sort((a, b) => {
+        return a.score < b.score ? -1 : 1;
+      })[0];
+    } else {
+      return null;
+    }
   };
 
   filterFacetedHighlights = (facetedHighlights: FacetedHighlight[]) => {
@@ -2036,22 +2095,21 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                       facetedHighlights.length > 0 &&
                       this.state.cueingStyle === "highlight" && (
                         <>
-                          {/* <MarkerLayer
-                            pageView={pageView}
-                            sections={this.sectionData.filter(
-                              (s: Section) =>
-                                s.section in this.state.highlightsBySection
-                            )}
-                            handleMarkerClicked={
-                              this.showAllHighlightsForSection
-                            }
-                          /> */}
-                          <BlockMarkerLayer
+                          <HighlightMarginControlsLayer
                             pageView={pageView}
                             showId={this.state.hoveredBlockId}
                             blocks={this.state.blocks}
-                            handleMarkerClicked={(id) =>
+                            disableIncreaseHighlights={
+                              this.state.disableIncreaseHighlights
+                            }
+                            disableDecreaseHighlights={
+                              this.state.disableDecreaseHighlights
+                            }
+                            handleIncreaseHighlights={(id) =>
                               this.increaseHighlightsForBlock(id)
+                            }
+                            handleDecreaseHighlights={(id) =>
+                              this.decreaseHighlightsForBlock(id)
                             }
                           />
                           <HighlightLayer

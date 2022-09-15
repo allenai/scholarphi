@@ -1,3 +1,4 @@
+import { Battery20 } from "@mui/icons-material";
 import { PDFPageProxy } from "pdfjs-dist/types/src/display/api";
 import React from "react";
 import { BoundingBox, FacetedHighlight } from "../api/types";
@@ -482,6 +483,21 @@ export function sortFacetedHighlights(facetedHighlights: FacetedHighlight[]) {
   return sorted;
 }
 
+export function sortBoundingBoxes(boxes: BoundingBox[]) {
+  return boxes.sort((b1: BoundingBox, b2: BoundingBox) => {
+    const delta = 0.01;
+    if (b1.page !== b2.page) {
+      return b1.page < b2.page ? -1 : 1;
+    } else {
+      if (Math.abs(b1.top - b2.top) > delta) {
+        return b1.top < b2.top ? -1 : 1;
+      } else {
+        return b1.left < b2.left ? -1 : 1;
+      }
+    }
+  });
+}
+
 export function addClassToElementsByClassname(
   classname: string,
   classToAdd: string
@@ -505,7 +521,6 @@ export function removeClassFromElementsByClassname(classToRemove: string) {
   prevSelected.forEach((x) => x.classList.remove(classToRemove));
 }
 
-
 export function areBoxesIntersecting(a: BoundingBox, b: BoundingBox) {
   const aright = a.left + a.width;
   const bright = b.left + b.width;
@@ -518,7 +533,7 @@ export function areBoxesIntersecting(a: BoundingBox, b: BoundingBox) {
     abottom >= b.top &&
     bbottom >= a.top
   );
-};
+}
 
 export function mergeBoxes(a: BoundingBox, b: BoundingBox) {
   const aright = a.left + a.width;
@@ -536,4 +551,4 @@ export function mergeBoxes(a: BoundingBox, b: BoundingBox) {
     width: width,
     height: height,
   };
-};
+}

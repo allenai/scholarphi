@@ -162,6 +162,8 @@ export interface State extends Settings {
   highlightQuantity: { [facet: string]: number };
   hoveredBlockId: string;
   modifiedBlockIds: string[];
+  disableIncreaseHighlights: boolean;
+  disableDecreaseHighlights: boolean;
 }
 
 export type Entities = RelationalStore<Entity>;
