@@ -1,5 +1,5 @@
 import { PDFDocumentProxy } from "pdfjs-dist/types/src/display/api";
-import { Entity, FacetedHighlight, Section, Paper } from "./api/types";
+import { Entity, FacetedHighlight, Block, Paper } from "./api/types";
 import { AreaSelectionMethod } from "./components/control/EntityCreationToolbar";
 import { DrawerContentType, DrawerMode } from "./components/drawer/Drawer";
 import { SnackbarMode } from "./components/overlay/AppOverlay";
@@ -155,11 +155,13 @@ export interface State extends Settings {
   currentHighlightId: string | null;
   facetedHighlights: FacetedHighlight[];
   selectedPages: number[];
+  blocks: Block[];
   highlightsBySection: { [section: string]: FacetedHighlight[] };
   highlightsById: { [id: string]: FacetedHighlight };
   hiddenFacetedHighlights: FacetedHighlight[];
-  // numHighlightMultiplier: { [facet: string]: number };
   highlightQuantity: { [facet: string]: number };
+  hoveredBlockId: string;
+  modifiedBlockIds: string[];
 }
 
 export type Entities = RelationalStore<Entity>;

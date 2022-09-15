@@ -1,35 +1,36 @@
 import React from "react";
-import { Section } from "../../api/types";
+import { Block } from "../../api/types";
 import { PDFPageView } from "../../types/pdfjs-viewer";
 import * as uiUtils from "../../utils/ui";
 import Marker from "./Marker";
 
 interface Props {
   pageView: PDFPageView;
-  sections: Section[];
-  handleMarkerClicked: (id: string) => void;
+  showId: string;
+  blocks: Block[];
+  handleMarkerClicked?: (id: string) => void;
 }
 
-class MarkerLayer extends React.Component<Props> {
+class BlockMarkerLayer extends React.Component<Props> {
   constructor(props: Props) {
     super(props);
   }
 
   render() {
-    const { pageView, sections } = this.props;
+    const { pageView, blocks, showId } = this.props;
     const pageNumber = uiUtils.getPageNumber(pageView);
 
     return (
       <div className={"marker-layer"}>
-        {sections
-          .filter((section) => section.box.page === pageNumber)
-          .map((section) => (
+        {blocks
+          .filter((block: Block) => block.boxes[0].page === pageNumber)
+          .map((block) => (
             <Marker
-              key={section.section}
-              id={section.section}
-              show={false}
+              key={block.id}
+              id={block.id}
+              show={block.id === showId}
               pageView={pageView}
-              anchor={section.box}
+              anchor={block.boxes[0]}
               handleMarkerClicked={this.props.handleMarkerClicked}
             />
           ))}
@@ -38,4 +39,4 @@ class MarkerLayer extends React.Component<Props> {
   }
 }
 
-export default MarkerLayer;
+export default BlockMarkerLayer;

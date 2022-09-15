@@ -27,6 +27,7 @@ import { Drawer, DrawerContentType } from "./components/drawer/Drawer";
 import DrawerControlFab from "./components/drawer/DrawerControlFab";
 import EntityAnnotationLayer from "./components/entity/EntityAnnotationLayer";
 import EquationDiagram from "./components/entity/equation/EquationDiagram";
+import BlockMarkerLayer from "./components/faceted-highlights/BlockMarkerLayer";
 import FacetLabelLayer from "./components/faceted-highlights/FacetLabelLayer";
 import HighlightLayer from "./components/faceted-highlights/HighlightLayer";
 import Legend from "./components/faceted-highlights/Legend";
@@ -148,6 +149,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       currentHighlightId: null,
       facetedHighlights: [],
       selectedPages: [],
+      blocks: [],
       highlightsBySection: {},
       highlightsById: {},
       hiddenFacetedHighlights: [],
@@ -157,6 +159,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         method: 80,
         result: 100,
       },
+      hoveredBlockId: "",
+      modifiedBlockIds: [],
 
       ...settings,
     };
@@ -831,7 +835,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     // 1. we don't want any highlights in the abstract
     // 2. we don't want any sentence fragment highlights i.e., start with lowercase letter
     const highlightData = this.highlightData
-      .filter((x: ScimSentence) => x.section.toLowerCase() !== "abstract")
+      // .filter((x: ScimSentence) => x.section.toLowerCase() !== "abstract")
       .filter(
         (x: ScimSentence) => x.text.charAt(0) !== x.text.toLowerCase().charAt(0)
       );
@@ -893,7 +897,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         },
         {}
       );
-    const highlightsByBlock: { [blockId: string]: ScimSentence[] } =
+    const allBlockIds = Object.keys(allSentencesByBlock);
+
+    let selectedSentsByBlock: { [blockId: string]: ScimSentence[] } =
       modelHighlights.reduce(
         (acc: { [block_id: string]: ScimSentence[] }, x: ScimSentence) => {
           if (!acc[x.block_id]) {
@@ -904,7 +910,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         },
         {}
       );
-    const allBlockIds = Object.keys(allSentencesByBlock);
 
     // This code helps reduce the number of highlights in a given block.
     // For blocks with more than 3 sentences, no more than 40% of
@@ -919,22 +924,28 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
           )
         ),
       ];
+      const blockInAbstract = sections.some((section: string) =>
+        section.includes("abstract")
+      );
       const blockInIntroduction = sections.some((section: string) =>
         section.includes("introduction")
       );
       const blockInConclusion = sections.some((section: string) =>
         section.includes("conclusion")
       );
+      if (blockInAbstract) {
+        return;
+      }
       if (blockInIntroduction || blockInConclusion) {
         maxHighlightRatio = 0.6;
       }
       const blockLen = allSentencesByBlock[blockId].length;
-      const numHighlights = highlightsByBlock[blockId]?.length || 0;
+      const numHighlights = selectedSentsByBlock[blockId]?.length || 0;
       if (numHighlights > 0) {
         if (numHighlights / blockLen > maxHighlightRatio) {
           const targetNumHighlights = Math.ceil(blockLen * maxHighlightRatio);
           const numToRemove = numHighlights - targetNumHighlights;
-          const toRemoveFromBlock = highlightsByBlock[blockId]
+          const toRemoveFromBlock = selectedSentsByBlock[blockId]
             .sort((a: ScimSentence, b: ScimSentence) => {
               return a.scores.model < b.scores.model ? -1 : 1;
             })
@@ -1059,6 +1070,64 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         return x;
       });
 
+    const highlightsByBlock = modelHighlights.reduce(
+      (
+        acc: { [block_id: string]: FacetedHighlight[] },
+        x: FacetedHighlight
+      ) => {
+        if (!acc[x.blockId]) {
+          acc[x.blockId] = [];
+        }
+        acc[x.blockId].push(x);
+        return acc;
+      },
+      {}
+    );
+
+    document.addEventListener("mousemove", (event) => {
+      const pages = this.state.pages as Pages;
+      const pageNumber = Number(this.state.pdfViewer?.currentPageNumber) - 1;
+      if (pages !== null) {
+        const pageModel = pages[pageNumber];
+        const pageView = pageModel.view;
+        const pageDims = uiUtils.getPageViewDimensions(pageView);
+        let x = 0;
+        let y = 0;
+        if (
+          (event.target as HTMLInputElement).classList.contains("textLayer")
+        ) {
+          x = event.offsetX / pageDims["width"];
+          y = event.offsetY / pageDims["height"];
+        } else {
+          x = (event.target as HTMLInputElement).offsetLeft / pageDims["width"];
+          y = (event.target as HTMLInputElement).offsetTop / pageDims["height"];
+        }
+        for (const [blockId, sents] of Object.entries(allSentencesByBlock)) {
+          for (const sent of sents) {
+            for (const box of sent.boxes) {
+              if (box.page === pageNumber) {
+                const delta = 0.003;
+                const [boxLeft, boxRight] = [box.left, box.left + box.width];
+                const [boxTop, boxBottom] = [box.top, box.top + box.height];
+                if (
+                  x + delta > boxLeft &&
+                  x - delta < boxRight &&
+                  y + delta > boxTop &&
+                  y - delta < boxBottom
+                ) {
+                  const candidates = this.getHighlightCandidates(blockId);
+                  this.setState({
+                    hoveredBlockId: candidates.length > 0 ? blockId : "",
+                  });
+                  return false;
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+
     const facetedHighlights = modelHighlights;
 
     // save faceted highlights in id and section mappings
@@ -1076,9 +1145,18 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       },
       {}
     );
+    const blocks = allBlockIds.map((blockId: string) => ({
+      id: blockId,
+      boxes: allSentencesByBlock[blockId].flatMap(
+        (sent: ScimSentence) => sent.boxes
+      ),
+      sents: allSentencesByBlock[blockId],
+      highlights: highlightsByBlock[blockId],
+    }));
 
     this.setState(
       {
+        blocks: blocks,
         highlightsBySection: highlightsBySection,
         highlightsById: highlightsById,
       },
@@ -1098,6 +1176,35 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.setState({
       facetedHighlights: uiUtils.sortFacetedHighlights([...facetedHighlights]),
     });
+  };
+
+  increaseHighlightsForBlock = (blockId: string) => {
+    // If there are any highlights left to show, we show one.
+    const candidates = this.getHighlightCandidates(blockId);
+    if (candidates.length > 0) {
+      this.setState((prevState) => ({
+        facetedHighlights: uiUtils.sortFacetedHighlights([
+          ...prevState.facetedHighlights,
+          candidates[0],
+        ]),
+        modifiedBlockIds: [
+          ...new Set([...prevState.modifiedBlockIds, blockId]),
+        ],
+      }));
+    }
+  };
+
+  getHighlightCandidates = (blockId: string) => {
+    const allBlockHighlights = Object.values(this.state.highlightsById).filter(
+      (highlight: FacetedHighlight) => highlight.blockId === blockId
+    );
+    const curBlockHighlightIds = this.state.facetedHighlights
+      .filter((highlight: FacetedHighlight) => highlight.blockId === blockId)
+      .map((h: FacetedHighlight) => h.id);
+    const candidates = allBlockHighlights.filter(
+      (h: FacetedHighlight) => !curBlockHighlightIds.includes(h.id)
+    );
+    return candidates;
   };
 
   filterFacetedHighlights = (facetedHighlights: FacetedHighlight[]) => {
@@ -1935,6 +2042,14 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
                               this.showAllHighlightsForSection
                             }
                           /> */}
+                          <BlockMarkerLayer
+                            pageView={pageView}
+                            showId={this.state.hoveredBlockId}
+                            blocks={this.state.blocks}
+                            handleMarkerClicked={(id) =>
+                              this.increaseHighlightsForBlock(id)
+                            }
+                          />
                           <HighlightLayer
                             pageView={pageView}
                             facetedHighlights={facetedHighlights}

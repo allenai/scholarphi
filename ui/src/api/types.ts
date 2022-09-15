@@ -434,3 +434,10 @@ export interface Section {
   section: string;
   box: BoundingBox;
 }
+
+export interface Block {
+  id: string;
+  boxes: BoundingBox[];
+  sents?: ScimSentence[];
+  highlights?: FacetedHighlight[];
+}

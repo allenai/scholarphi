@@ -1,3 +1,6 @@
+import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
+import IconButton from "@mui/material/IconButton";
+import MuiTooltip from "@mui/material/Tooltip";
 import classNames from "classnames";
 import React from "react";
 import { BoundingBox } from "../../api/types";
@@ -6,6 +9,7 @@ import * as uiUtils from "../../utils/ui";
 
 interface Props {
   id: string;
+  show: boolean;
   /**
    * pdf.js PDFPageView object for the page that the anchor appears on. Used to
    * compute absolute positioning of the sidenote.
@@ -19,36 +23,25 @@ interface Props {
    * side of the paper is closer to the anchor.
    */
   anchor: BoundingBox;
-  handleMarkerClicked: (section: string, active: boolean) => void;
-}
-
-interface State {
-  active: boolean;
+  handleMarkerClicked?: (id: string) => void;
 }
 
 /**
  * A small indicator shown at a specified position.
  */
-export class Marker extends React.Component<Props, State> {
+export class Marker extends React.Component<Props> {
   constructor(props: Props) {
     super(props);
-    this.state = {
-      active: false,
-    };
   }
 
   handleOnClick = () => {
-    this.props.handleMarkerClicked(this.props.id, !this.state.active);
-    this.setState((prevState: State) => {
-      return {
-        ...prevState,
-        active: !prevState.active,
-      };
-    });
+    if (this.props.handleMarkerClicked !== undefined) {
+      this.props.handleMarkerClicked(this.props.id);
+    }
   };
 
   render() {
-    const { id, pageView, anchor } = this.props;
+    const { id, pageView, anchor, show } = this.props;
 
     const side =
       anchor.left * pageView.div.clientWidth < pageView.div.clientWidth / 2
@@ -58,16 +51,33 @@ export class Marker extends React.Component<Props, State> {
     const sidenoteTop = anchorPosition.top;
 
     return (
+      // <div
+      //   className={classNames("reader-marker", `side-${side}`)}
+      //   id={`marker-${id}`}
+      //   style={{
+      //     top: sidenoteTop,
+      //     display: show ? "block" : "none",
+      //   }}
+      //   onClick={this.handleOnClick}
+      // ><PlaylistAddIcon/></div>
+
       <div
-        className={classNames("reader-marker", `side-${side}`, {
-          active: this.state.active,
-        })}
-        id={`marker-${id}`}
+      className={classNames("reader-marker", `side-${side}`)}
+            id={`marker-${id}`}
         style={{
           top: sidenoteTop,
+          display: show ? "block" : "none",
         }}
-        onClick={this.handleOnClick}
-      ></div>
+      >
+        <MuiTooltip title={"Show more"}>
+          <IconButton
+            size="small"
+            onClick={this.handleOnClick}
+          >
+            <PlaylistAddIcon />
+          </IconButton>
+        </MuiTooltip>
+      </div>
     );
   }
 }
