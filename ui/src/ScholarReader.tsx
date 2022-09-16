@@ -1193,6 +1193,13 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     // If there are any highlights left to show, we show one.
     const candidate = this.getHighlightToAdd(blockId);
     if (candidate !== null) {
+      const facet = candidate.label;
+      const numCurHighlightsForFacet = this.state.facetedHighlights.filter(
+        (h: FacetedHighlight) => h.label === facet
+      ).length;
+      const numTotalHighlightsForFacet = Object.values(
+        this.state.highlightsById
+      ).filter((h: FacetedHighlight) => h.label === facet).length;
       this.setState(
         (prevState) => ({
           // Add the highlight with the highest score that is not already shown
@@ -1200,6 +1207,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
           modifiedBlockIds: [
             ...new Set([...prevState.modifiedBlockIds, blockId]),
           ],
+          highlightQuantity: {
+            ...prevState.highlightQuantity,
+            [candidate.label]:
+              ((numCurHighlightsForFacet + 1) / numTotalHighlightsForFacet) *
+              100,
+          },
         }),
         () => {
           this.setState({
@@ -1216,6 +1229,13 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     const candidate = this.getHighlightToRemove(blockId);
     if (candidate !== null) {
       // Remove the highlight shown with the lowest score
+      const facet = candidate.label;
+      const numCurHighlightsForFacet = this.state.facetedHighlights.filter(
+        (h: FacetedHighlight) => h.label === facet
+      ).length;
+      const numTotalHighlightsForFacet = Object.values(
+        this.state.highlightsById
+      ).filter((h: FacetedHighlight) => h.label === facet).length;
       this.setState(
         (prevState) => ({
           facetedHighlights: [
@@ -1226,6 +1246,12 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
           modifiedBlockIds: [
             ...new Set([...prevState.modifiedBlockIds, blockId]),
           ],
+          highlightQuantity: {
+            ...prevState.highlightQuantity,
+            [candidate.label]:
+              ((numCurHighlightsForFacet - 1) / numTotalHighlightsForFacet) *
+              100,
+          },
         }),
         () => {
           this.setState({
@@ -1353,6 +1379,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     this.setState(
       {
         highlightQuantity: highlightQuantity,
+        hoveredBlockId: "",
       },
       this.setCurrentHighlightsToShow
     );
