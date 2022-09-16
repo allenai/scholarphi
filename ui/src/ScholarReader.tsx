@@ -793,8 +793,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   }
 
   moveToNextHighlight = () => {
-    const activeHighlights = this.filterFacetedHighlights(
-      this.state.facetedHighlights
+    const activeHighlights = uiUtils.sortFacetedHighlights(
+      this.filterFacetedHighlights(this.state.facetedHighlights)
     );
     const highlightIds = activeHighlights.map((x) => x.id);
     const numHighlights = activeHighlights.length;
@@ -812,8 +812,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   moveToPreviousHighlight = () => {
-    const activeHighlights = this.filterFacetedHighlights(
-      this.state.facetedHighlights
+    const activeHighlights = uiUtils.sortFacetedHighlights(
+      this.filterFacetedHighlights(this.state.facetedHighlights)
     );
     const highlightIds = activeHighlights.map((x) => x.id);
     const numHighlights = activeHighlights.length;
