@@ -1190,6 +1190,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   increaseHighlightsForBlock = (blockId: string) => {
+    logger.log("debug", "increase-block-highlights", {
+      blockId: blockId,
+    });
     // If there are any highlights left to show, we show one.
     const candidate = this.getHighlightToAdd(blockId);
     if (candidate !== null) {
@@ -1225,6 +1228,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   decreaseHighlightsForBlock = (blockId: string) => {
+    logger.log("debug", "decrease-block-highlights", {
+      blockId: blockId,
+    });
     // If there are any highlights left to remove, remove one.
     const candidate = this.getHighlightToRemove(blockId);
     if (candidate !== null) {
