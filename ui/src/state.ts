@@ -154,6 +154,8 @@ export interface State extends Settings {
   showSkimmingAnnotationColors: boolean;
   currentHighlightId: string | null;
   facetedHighlights: FacetedHighlight[];
+  nonHighlightSentencesById: { [id: string]: FacetedHighlight };
+  userControlledHighlightIds: string[];
   selectedPages: number[];
   blocks: Block[];
   highlightsBySection: { [section: string]: FacetedHighlight[] };
@@ -161,7 +163,6 @@ export interface State extends Settings {
   hiddenFacetedHighlights: FacetedHighlight[];
   highlightQuantity: { [facet: string]: number };
   hoveredBlockId: string;
-  modifiedBlockIds: string[];
   disableIncreaseHighlights: boolean;
   disableDecreaseHighlights: boolean;
 }

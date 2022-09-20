@@ -77,7 +77,11 @@ export class HighlightMarginControls extends React.Component<Props> {
         >
           <div className={classNames("increase-highlights")}>
             <MuiTooltip
-              title={disableIncreaseHighlights ? "" : "Show more"}
+              title={
+                disableIncreaseHighlights
+                  ? "Show more (max shown)"
+                  : "Show more"
+              }
               placement={"top"}
             >
               <span>
@@ -93,7 +97,9 @@ export class HighlightMarginControls extends React.Component<Props> {
           </div>
           <div className={classNames("decrease-highlights")}>
             <MuiTooltip
-              title={disableDecreaseHighlights ? "" : "Show less"}
+              title={
+                disableDecreaseHighlights ? "Show less (0 shown)" : "Show less"
+              }
               placement={"bottom"}
             >
               <span>

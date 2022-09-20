@@ -148,6 +148,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       showSkimmingAnnotationColors: true,
       currentHighlightId: null,
       facetedHighlights: [],
+      nonHighlightSentencesById: {},
+      userControlledHighlightIds: [],
       selectedPages: [],
       blocks: [],
       highlightsBySection: {},
@@ -160,7 +162,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         result: 100,
       },
       hoveredBlockId: "",
-      modifiedBlockIds: [],
       disableIncreaseHighlights: false,
       disableDecreaseHighlights: false,
 
@@ -1027,54 +1028,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       }
     });
 
-    // Create FacetedHighlight objects
-    modelHighlights = modelHighlights
-      .map((x: ScimSentence) => ({
-        entity: x,
-        id: x.id,
-        text: x.text,
-        section: x.section,
-        label: x.predictions.model,
-        score: x.scores.model,
-        boxes: x.boxes,
-        tagLocation: x.boxes[0],
-        blockId: x.block_id,
-      }))
-      .map((x: FacetedHighlight) => {
-        // The model only detects "objective" facets, and not "novelty", but these are
-        // actually inclusive of "novelty". This code uses heuristics to split these
-        // highlights into separated "objective" and "novelty" facets.
-        if (x.label === "objective") {
-          if (x.entity.predictions.heuristics !== "objective") {
-            x.label = "novelty";
-          }
-        }
-        return x;
-      })
-      .map((x: FacetedHighlight) => {
-        // Heurstically "fix" some highlight classifications in certain sections
-        const section = x.section.toLowerCase();
-        if (["recent", "related"].some((s) => section.includes(s))) {
-          if (!["novelty", "objective"].includes(x.label)) {
-            x.label = "novelty";
-          }
-        }
-        if (
-          ["background", "method", "approach"].some((s) => section.includes(s))
-        ) {
-          x.label = "method";
-        }
-        if (["result", "finding"].some((s) => section.includes(s))) {
-          x.label = "result";
-        }
-        return x;
-      })
-      .map((x: FacetedHighlight) => {
-        x.color = this.state.showSkimmingAnnotationColors
-          ? this.facetToColorMap[x.label] ?? this.facetToColorMap["highlight"]
-          : this.facetToColorMap["highlight"];
-        return x;
-      });
+    // Create FacetedHighlight objects for model predicted "most significant" sentences
+    modelHighlights =
+      this.createFacetedHighlightsFromScimSentences(modelHighlights);
 
     const highlightsByBlock = modelHighlights.reduce(
       (
@@ -1139,11 +1095,9 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       }
     });
 
-    const facetedHighlights = modelHighlights;
-
     // save faceted highlights in id and section mappings
-    const highlightsById = this.makeHighlightByIdMap(facetedHighlights);
-    const highlightsBySection = facetedHighlights.reduce(
+    const highlightsById = this.makeHighlightByIdMap(modelHighlights);
+    const highlightsBySection = modelHighlights.reduce(
       (acc: { [section: string]: FacetedHighlight[] }, h: FacetedHighlight) => {
         // The section attribute contains (when they exist) section, subsection, and subsubsection header data, delimited by "@@".
         const long_section = h.section;
@@ -1165,27 +1119,100 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       highlights: highlightsByBlock[blockId],
     }));
 
+    // Create FacetedHighlight objects for all other sentences detected in the paper
+    const nonHighlightSentencesById = this.makeHighlightByIdMap(
+      this.createFacetedHighlightsFromScimSentences(
+        highlightData.filter(
+          (x: ScimSentence) => !Object.keys(highlightsById).includes(`${x.id}`)
+        )
+      )
+    );
+
     this.setState(
       {
         blocks: blocks,
         highlightsBySection: highlightsBySection,
         highlightsById: highlightsById,
+        nonHighlightSentencesById: nonHighlightSentencesById,
       },
       cb
     );
   };
 
+  createFacetedHighlightsFromScimSentences = (sentences: ScimSentence[]) => {
+    return sentences
+      .map((x: ScimSentence) => ({
+        entity: x,
+        id: x.id,
+        text: x.text,
+        section: x.section,
+        label: x.predictions.model,
+        score: x.scores.model,
+        boxes: x.boxes,
+        tagLocation: x.boxes[0],
+        blockId: x.block_id,
+        color: "", // Assigned later after label finalized
+      }))
+      .map((x: FacetedHighlight) => {
+        // The model only detects "objective" facets, and not "novelty", but these are
+        // actually inclusive of "novelty". This code uses heuristics to split these
+        // highlights into separated "objective" and "novelty" facets.
+        if (x.label === "objective") {
+          if (x.entity.predictions.heuristics !== "objective") {
+            x.label = "novelty";
+          }
+        }
+        return x;
+      })
+      .map((x: FacetedHighlight) => {
+        // Heurstically "fix" some highlight classifications in certain sections
+        const section = x.section.toLowerCase();
+        if (["recent", "related"].some((s) => section.includes(s))) {
+          if (!["novelty", "objective"].includes(x.label)) {
+            x.label = "novelty";
+          }
+        }
+        if (
+          ["background", "method", "approach"].some((s) => section.includes(s))
+        ) {
+          x.label = "method";
+        }
+        if (["result", "finding"].some((s) => section.includes(s))) {
+          x.label = "result";
+        }
+        return x;
+      })
+      .map((x: FacetedHighlight) => {
+        x.color = this.state.showSkimmingAnnotationColors
+          ? this.facetToColorMap[x.label] ?? this.facetToColorMap["highlight"]
+          : this.facetToColorMap["highlight"];
+        return x;
+      });
+  };
+
   setCurrentHighlightsToShow = () => {
+    // We don't want to remove any non-model predicted highlights that have been
+    // added manually by a reader (i.e., via section-level highlight controls).
+    const userControlledHighlights = this.state.userControlledHighlightIds.map(
+      (id: string) =>
+        this.state.highlightsById[id] ||
+        this.state.nonHighlightSentencesById[id]
+    );
+    // Get model-predicted faceted highlights prioritized by score and limited by
+    // user-defined global highlight quantity controls.
     const allHighlights = Object.values(this.state.highlightsById);
     const facetedHighlights = [
       ...this.getNoveltyHighlights(allHighlights),
       ...this.getObjectiveHighlights(allHighlights),
       ...this.getMethodHighlights(allHighlights),
       ...this.getResultHighlights(allHighlights),
-    ];
+    ].filter(
+      (h: FacetedHighlight) =>
+        !this.state.userControlledHighlightIds.includes(h.id)
+    );
 
     this.setState({
-      facetedHighlights: facetedHighlights,
+      facetedHighlights: [...facetedHighlights, ...userControlledHighlights],
     });
   };
 
@@ -1198,24 +1225,33 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     if (candidate !== null) {
       const facet = candidate.label;
       const numCurHighlightsForFacet = this.state.facetedHighlights.filter(
-        (h: FacetedHighlight) => h.label === facet
+        (h: FacetedHighlight) =>
+          h.label === facet && h.id in this.state.highlightsById
       ).length;
       const numTotalHighlightsForFacet = Object.values(
         this.state.highlightsById
       ).filter((h: FacetedHighlight) => h.label === facet).length;
+
+      // We don't update the global facet highlight quantity if the added "highlight"
+      // is not a true model-predicted highlight (i.e., just a general sentence).
+      const candidateIsHighlight = candidate.id in this.state.highlightsById;
       this.setState(
         (prevState) => ({
           // Add the highlight with the highest score that is not already shown
           facetedHighlights: [...prevState.facetedHighlights, candidate],
-          modifiedBlockIds: [
-            ...new Set([...prevState.modifiedBlockIds, blockId]),
+          userControlledHighlightIds: [
+            ...prevState.userControlledHighlightIds,
+            candidate.id,
           ],
-          highlightQuantity: {
-            ...prevState.highlightQuantity,
-            [candidate.label]:
-              ((numCurHighlightsForFacet + 1) / numTotalHighlightsForFacet) *
-              100,
-          },
+          highlightQuantity: candidateIsHighlight
+            ? {
+                ...prevState.highlightQuantity,
+                [candidate.label]:
+                  ((numCurHighlightsForFacet + 1) /
+                    numTotalHighlightsForFacet) *
+                  100,
+              }
+            : prevState.highlightQuantity,
         }),
         () => {
           this.setState({
@@ -1237,11 +1273,16 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       // Remove the highlight shown with the lowest score
       const facet = candidate.label;
       const numCurHighlightsForFacet = this.state.facetedHighlights.filter(
-        (h: FacetedHighlight) => h.label === facet
+        (h: FacetedHighlight) =>
+          h.label === facet && h.id in this.state.highlightsById
       ).length;
       const numTotalHighlightsForFacet = Object.values(
         this.state.highlightsById
       ).filter((h: FacetedHighlight) => h.label === facet).length;
+
+      // We don't update the global facet highlight quantity if the added "highlight"
+      // is not a true model-predicted highlight (i.e., just a general sentence).
+      const candidateIsHighlight = candidate.id in this.state.highlightsById;
       this.setState(
         (prevState) => ({
           facetedHighlights: [
@@ -1249,15 +1290,20 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
               (h: FacetedHighlight) => h.id !== candidate.id
             ),
           ],
-          modifiedBlockIds: [
-            ...new Set([...prevState.modifiedBlockIds, blockId]),
+          userControlledHighlightIds: [
+            ...prevState.userControlledHighlightIds.filter(
+              (id: string) => id !== candidate.id
+            ),
           ],
-          highlightQuantity: {
-            ...prevState.highlightQuantity,
-            [candidate.label]:
-              ((numCurHighlightsForFacet - 1) / numTotalHighlightsForFacet) *
-              100,
-          },
+          highlightQuantity: candidateIsHighlight
+            ? {
+                ...prevState.highlightQuantity,
+                [candidate.label]:
+                  ((numCurHighlightsForFacet - 1) /
+                    numTotalHighlightsForFacet) *
+                  100,
+              }
+            : prevState.highlightQuantity,
         }),
         () => {
           this.setState({
@@ -1285,7 +1331,18 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
         return a.score < b.score ? 1 : -1;
       })[0];
     } else {
-      return null;
+      const nonHighlightCandidates = Object.values(
+        this.state.nonHighlightSentencesById
+      )
+        .filter((x: FacetedHighlight) => x.blockId === blockId)
+        .filter((h: FacetedHighlight) => !curBlockHighlightIds.includes(h.id));
+      if (nonHighlightCandidates.length > 0) {
+        return nonHighlightCandidates.sort((a, b) => {
+          return a.score < b.score ? 1 : -1;
+        })[0];
+      } else {
+        return null;
+      }
     }
   };
 
@@ -1321,7 +1378,7 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   };
 
   getNoveltyHighlights = (highlights: FacetedHighlight[]) => {
-    let novelty = highlights.filter((r) => r.label === "novelty");
+    const novelty = highlights.filter((r) => r.label === "novelty");
     return novelty
       .sort((x1, x2) => x2.score - x1.score)
       .slice(
@@ -1394,7 +1451,10 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
   onScrollbarMarkClicked = (id: string) => {
     this.jumpToHighlight(id);
     setTimeout(() => {
-      this.selectSnippetInDrawer(this.state.highlightsById[id]);
+      this.selectSnippetInDrawer(
+        this.state.highlightsById[id] ||
+          this.state.nonHighlightSentencesById[id]
+      );
     }, 200);
   };
 
@@ -1551,8 +1611,13 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     const SCROLL_OFFSET_X = -200;
     const SCROLL_OFFSET_Y = +100;
 
-    const { pdfViewerApplication, pdfViewer, pages, highlightsById } =
-      this.state;
+    const {
+      pdfViewerApplication,
+      pdfViewer,
+      pages,
+      highlightsById,
+      nonHighlightSentencesById,
+    } = this.state;
 
     if (
       pdfViewerApplication === null ||
@@ -1563,7 +1628,8 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       return false;
     }
 
-    const dest = highlightsById[id].boxes[0];
+    const dest =
+      highlightsById[id]?.boxes[0] || nonHighlightSentencesById[id]?.boxes[0];
     const page = Object.values(pages)[0];
     const { left, top } = uiUtils.convertBoxToPdfCoordinates(page.view, dest);
 
@@ -2125,7 +2191,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
 
                     {this.props.paperId !== undefined &&
                       this.state.showSkimmingAnnotations &&
-                      facetedHighlights.length > 0 &&
                       this.state.cueingStyle === "highlight" && (
                         <>
                           <HighlightMarginControlsLayer
