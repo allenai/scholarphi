@@ -91,12 +91,15 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
     if (props.paperId) {
       loggingContext.paperId = props.paperId;
     }
-    let userId = localStorage.getItem("userId");
-    if (userId === null) {
-      userId = Math.random().toString(36).slice(-6);
-      localStorage.setItem("userId", userId);
+
+    if (loggingContext.userId === undefined) {
+      let userId = localStorage.getItem("userId");
+      if (userId === null) {
+        userId = Math.random().toString(36).slice(-6);
+        localStorage.setItem("userId", userId);
+      }
+      loggingContext.userId = userId;
     }
-    loggingContext.userId = userId;
     logger.setContext(loggingContext);
 
     this.sectionData = Object(skimmingData)[props.paperId!.id]["sections"];
@@ -144,7 +147,6 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       propagateEntityEdits: true,
 
       skimOpacity: 0.3,
-      showSkimmingAnnotations: true,
       showSkimmingAnnotationColors: true,
       currentHighlightId: null,
       facetedHighlights: [],

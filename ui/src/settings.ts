@@ -102,7 +102,7 @@ export interface Settings {
    */
   sentenceTexCopyOnOptionClickEnabled: boolean;
 
-  facetHighlights: boolean;
+  showSkimmingAnnotations: boolean;
 
   facetTextEnabled: boolean;
 
@@ -148,9 +148,17 @@ const PRESETS: Preset[] = [
     key: "skim-facet",
     annotationHintsEnabled: false,
     primerPageEnabled: false,
-    facetHighlights: true,
+    showSkimmingAnnotations: true,
     facetTextEnabled: false,
     facetDrawerEnabled: true,
+  },
+  {
+    key: "skim-disabled",
+    annotationHintsEnabled: false,
+    primerPageEnabled: false,
+    showSkimmingAnnotations: false,
+    facetTextEnabled: false,
+    facetDrawerEnabled: false,
   },
 ];
 
@@ -181,7 +189,7 @@ export function getSettings(presets?: string[]) {
     entityEditingEnabled: false,
     sentenceTexCopyOnOptionClickEnabled: false,
     glossEvaluationEnabled: false,
-    facetHighlights: false,
+    showSkimmingAnnotations: false,
     facetTextEnabled: false,
     facetDrawerEnabled: false,
     mediaScrollbarMarkupEnabled: false,
@@ -298,7 +306,7 @@ export const CONFIGURABLE_SETTINGS: ConfigurableSetting[] = [
   //   label: "<Opt> + <Click> to copy sentence TeX",
   // },
   {
-    key: "facetHighlights",
+    key: "showSkimmingAnnotations",
     type: "flag",
     label: "Facet cueing",
   },
