@@ -111,6 +111,11 @@ export interface Settings {
   mediaScrollbarMarkupEnabled: boolean;
 
   cueingStyle: string;
+
+  /**
+   * Don't save any user preferences to local storage between sessions when this flag is set.
+   */
+  isAnonymousSession: boolean;
 }
 
 /**
@@ -151,6 +156,15 @@ const PRESETS: Preset[] = [
     showSkimmingAnnotations: true,
     facetTextEnabled: false,
     facetDrawerEnabled: true,
+  },
+  {
+    key: "skim-anon",
+    annotationHintsEnabled: false,
+    primerPageEnabled: false,
+    showSkimmingAnnotations: true,
+    facetTextEnabled: false,
+    facetDrawerEnabled: true,
+    isAnonymousSession: true,
   },
   {
     key: "skim-disabled",
@@ -194,6 +208,7 @@ export function getSettings(presets?: string[]) {
     facetDrawerEnabled: false,
     mediaScrollbarMarkupEnabled: false,
     cueingStyle: "highlight",
+    isAnonymousSession: false,
   };
 
   let settings = DEFAULT_SETTINGS;

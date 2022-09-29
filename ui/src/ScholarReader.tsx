@@ -775,18 +775,20 @@ export default class ScholarReader extends React.PureComponent<Props, State> {
       // and initializes the faceted highlights
       const callback = () => {
         let highlightQuantity = this.state.highlightQuantity;
-        let userHighlightQuantity = localStorage.getItem("highlightQuantity");
-        if (userHighlightQuantity !== null) {
-          try {
-            userHighlightQuantity = JSON.parse(userHighlightQuantity!);
-            if (
-              typeof userHighlightQuantity === "object" &&
-              userHighlightQuantity !== null &&
-              !Array.isArray(userHighlightQuantity)
-            ) {
-              highlightQuantity = userHighlightQuantity;
-            }
-          } catch (e) {}
+        if (!this.state.isAnonymousSession) {
+          let userHighlightQuantity = localStorage.getItem("highlightQuantity");
+          if (userHighlightQuantity !== null) {
+            try {
+              userHighlightQuantity = JSON.parse(userHighlightQuantity!);
+              if (
+                typeof userHighlightQuantity === "object" &&
+                userHighlightQuantity !== null &&
+                !Array.isArray(userHighlightQuantity)
+              ) {
+                highlightQuantity = userHighlightQuantity;
+              }
+            } catch (e) {}
+          }
         }
         this.handleHighlightQuantityChanged(highlightQuantity);
       };
