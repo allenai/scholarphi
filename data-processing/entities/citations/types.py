@@ -25,9 +25,12 @@ class Bibitem(SerializableEntity):
 
 @dataclass(frozen=True)
 class BibitemMatch:
+    # key & bibitem_text pertain to the bib entries on PDF
+    # s2_id & s2_corpus_id & s2_title pertain to the matched reference paper in S2 corpus
     key: str
     bibitem_text: str
     s2_id: str
+    s2_corpus_id: str
     s2_title: str
     similarity_score: float
     bibitem_code: str

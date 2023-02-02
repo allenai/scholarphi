@@ -65,7 +65,7 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
         logger.info(f"Issuing request to S2 @ {base_url}")
 
         return requests.get(
-            f"https://{base_url}/v1/paper/arXiv:{versionless_id}",
+            f"https://{base_url}/graph/v1/paper/arXiv:{versionless_id}?fields=references.title,references.externalIds",
             headers=headers
         )
 
@@ -75,7 +75,7 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
 
     @staticmethod
     def get_description() -> str:
-        return "Fetch S2 metadata for papers. Includes reference information."
+        return "Fetch S2 metadata for a paper, specifically its references' titles & various IDs"
 
     def get_arxiv_ids_dirkey(self) -> str:
         return "sources-archives"
@@ -104,6 +104,7 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
                         authors.append(Author(author_data["authorId"], author_data["name"]))
                     reference = Reference(
                         s2_id=reference_data["paperId"],
+                        corpus_id=reference_data["externalIds"]["CorpusId"],
                         arxivId=reference_data["arxivId"],
                         doi=reference_data["doi"],
                         title=reference_data["title"],
@@ -140,6 +141,7 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
         for r in result.references:
             serializable = SerializableReference(
                 s2_id=r.s2_id,
+                corpus_id=r.corpus_id,
                 arxivId=r.arxivId,
                 doi=r.doi,
                 title=r.title,

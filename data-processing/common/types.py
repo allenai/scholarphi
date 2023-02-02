@@ -80,7 +80,9 @@ SEMANTIC SCHOLAR API
 """
 
 S2Id = str
+S2CorpusId = str
 S2AuthorId = str
+BibItemKey = str
 
 
 @dataclass(frozen=True)
@@ -92,6 +94,7 @@ class Author:
 @dataclass(frozen=True)
 class Reference:
     s2_id: S2Id
+    corpus_id: S2CorpusId
     arxivId: ArxivId
     doi: str
     title: str
@@ -103,6 +106,7 @@ class Reference:
 @dataclass(frozen=True)
 class SerializableReference:
     s2_id: S2Id
+    corpus_id: S2CorpusId
     arxivId: ArxivId
     doi: str
     title: str
@@ -576,10 +580,13 @@ TokenLocations = Dict[TokenId, List[BoundingBox]]
 
 @dataclass(frozen=True)
 class CitationData:
+    # arxiv_id & s2_id & citation_locations pertain to the citing paper/PDF
+    # s2_data pertains to the matched reference papers in S2 corpus
+    # key_s2_ids ties the actual bib items to its matched paper in S2 corpus
     arxiv_id: ArxivId
     s2_id: S2Id
-    citation_locations: Dict[str, Dict[int, Set[EntityLocationInfo]]]
-    key_s2_ids: Dict[str, str]
+    citation_locations: Dict[BibItemKey, Dict[int, Set[EntityLocationInfo]]]
+    key_s2_ids: Dict[BibItemKey, S2Id]
     s2_data: Dict[S2Id, SerializableReference]
     bibitem_texts: Optional[Dict[str, str]] = None
     bibitem_keys: Optional[Set[str]] = None
