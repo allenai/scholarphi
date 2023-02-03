@@ -64,8 +64,11 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
 
         logger.info(f"Issuing request to S2 @ {base_url}")
 
+        references_fields = ["authors", "title", "externalIds", "venue", "year"]
+        fields_query = "fields=references." + ",references.".join(references_fields)
+
         return requests.get(
-            f"https://{base_url}/graph/v1/paper/arXiv:{versionless_id}?fields=references.title,references.externalIds",
+            f"https://{base_url}/graph/v1/paper/arXiv:{versionless_id}?{fields_query}",
             headers=headers
         )
 
@@ -75,7 +78,7 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
 
     @staticmethod
     def get_description() -> str:
-        return "Fetch S2 metadata for a paper, specifically its references' titles & various IDs"
+        return "Fetch S2 metadata for a paper, specifically its references' titles, authors, and various IDs"
 
     def get_arxiv_ids_dirkey(self) -> str:
         return "sources-archives"
@@ -102,11 +105,20 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
                     authors = []
                     for author_data in reference_data["authors"]:
                         authors.append(Author(author_data["authorId"], author_data["name"]))
+
+                    external_ids = reference_data["externalIds"]
+                    if external_ids:
+                        corpus_id = external_ids.get("CorpusId")
+                        arxiv_id = external_ids.get("ArXiv")
+                        doi = external_ids.get("DOI")
+                    else:
+                        corpus_id = arxiv_id = doi = None
+
                     reference = Reference(
                         s2_id=reference_data["paperId"],
-                        corpus_id=reference_data["externalIds"]["CorpusId"],
-                        arxivId=reference_data["arxivId"],
-                        doi=reference_data["doi"],
+                        corpus_id=corpus_id,
+                        arxivId=arxiv_id,
+                        doi=doi,
                         title=reference_data["title"],
                         authors=authors,
                         venue=reference_data["venue"],
