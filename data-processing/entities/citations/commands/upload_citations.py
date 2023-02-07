@@ -123,12 +123,10 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
         if bibitem_key in key_s2_ids:
             reference_s2_id = key_s2_ids[bibitem_key]
             entity_data["paper_id"] = reference_s2_id
-            if reference_s2_id in s2_data:
-                entity_data["corpus_id"] = s2_data[reference_s2_id].corpus_id
-            else:
-                log_missing("S2 match corpus ID")
+            corpus_id = s2_data[reference_s2_id].corpus_id
+            entity_data["corpus_id"] = corpus_id
         else:
-            log_missing("S2 match paper ID/SHA")
+            log_missing("S2 match")
 
         return entity_data
 

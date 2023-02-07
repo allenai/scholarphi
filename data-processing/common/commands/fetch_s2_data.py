@@ -109,9 +109,9 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
 
                     external_ids = reference_data["externalIds"]
                     if external_ids:
-                        corpus_id = external_ids.get("CorpusId")
-                        arxiv_id = external_ids.get("ArXiv")
-                        doi = external_ids.get("DOI")
+                        corpus_id = external_ids.get("CorpusId")  # always present (scholar/citations/MatchResult.scala)
+                        arxiv_id = external_ids.get("ArXiv")    # may be None
+                        doi = external_ids.get("DOI")           # may be None
                     else:
                         corpus_id = arxiv_id = doi = None
 
