@@ -102,9 +102,10 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
                 data = resp.json()
                 references = []
                 for reference_data in data["references"]:
-                    authors = []
-                    for author_data in reference_data["authors"]:
-                        authors.append(Author(author_data["authorId"], author_data["name"]))
+
+                    if reference_data["paperId"] is None:
+                        # can be legit references not in our corpus, or bad references from bogus extractions
+                        continue
 
                     external_ids = reference_data["externalIds"]
                     if external_ids:
@@ -113,6 +114,10 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
                         doi = external_ids.get("DOI")
                     else:
                         corpus_id = arxiv_id = doi = None
+
+                    authors = []
+                    for author_data in reference_data["authors"]:
+                        authors.append(Author(author_data["authorId"], author_data["name"]))
 
                     reference = Reference(
                         s2_id=reference_data["paperId"],
