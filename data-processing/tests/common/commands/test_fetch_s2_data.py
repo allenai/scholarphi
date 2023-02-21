@@ -14,8 +14,8 @@ from common.commands.fetch_s2_data import (
 )
 from scripts.commands import run_command
 
-references_fields = ["authors", "title", "externalIds", "venue", "year"]
-fields_query = "fields=references." + ",references.".join(references_fields)
+expected_references_fields = ["authors", "title", "externalIds", "venue", "year"]
+expected_fields_query = "fields=references." + ",references.".join(expected_references_fields)
 
 
 @dataclass
@@ -34,7 +34,7 @@ def test_makes_request_over_public_api_in_absence_of_partner_token():
             command = FetchS2Metadata(Args(arxiv_ids=['fakeid']))
             command._mk_api_request("fakeid")
             mock_requests.get.assert_called_with(
-                f"https://api.semanticscholar.org/graph/v1/paper/arXiv:fakeid?{fields_query}",
+                f"https://api.semanticscholar.org/graph/v1/paper/arXiv:fakeid?{expected_fields_query}",
                 headers=None
             )
 
@@ -49,7 +49,7 @@ def test_makes_request_over_partner_api_when_token_present():
             command = FetchS2Metadata(Args(arxiv_ids=['fakeid']))
             command._mk_api_request("fakeid")
             mock_requests.get.assert_called_with(
-                f"https://partner.semanticscholar.org/graph/v1/paper/arXiv:fakeid?{fields_query}",
+                f"https://partner.semanticscholar.org/graph/v1/paper/arXiv:fakeid?{expected_fields_query}",
                 headers={"x-api-key": "some_token"}
             )
 

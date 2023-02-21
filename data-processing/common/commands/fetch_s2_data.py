@@ -103,33 +103,30 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
                 references = []
                 for reference_data in data["references"]:
 
-                    if reference_data["paperId"] is None:
-                        # can be legit references not in our corpus, or bad references from bogus extractions
-                        continue
+                    if reference_data["paperId"]:
+                        external_ids = reference_data["externalIds"]
+                        if external_ids:
+                            corpus_id = external_ids.get("CorpusId")  # all canonical papers have a CorpusId
+                            arxiv_id = external_ids.get("ArXiv")    # may be None
+                            doi = external_ids.get("DOI")           # may be None
+                        else:
+                            corpus_id = arxiv_id = doi = None
 
-                    external_ids = reference_data["externalIds"]
-                    if external_ids:
-                        corpus_id = external_ids.get("CorpusId")  # always present (scholar/citations/MatchResult.scala)
-                        arxiv_id = external_ids.get("ArXiv")    # may be None
-                        doi = external_ids.get("DOI")           # may be None
-                    else:
-                        corpus_id = arxiv_id = doi = None
+                        authors = []
+                        for author_data in reference_data["authors"]:
+                            authors.append(Author(author_data["authorId"], author_data["name"]))
 
-                    authors = []
-                    for author_data in reference_data["authors"]:
-                        authors.append(Author(author_data["authorId"], author_data["name"]))
-
-                    reference = Reference(
-                        s2_id=reference_data["paperId"],
-                        corpus_id=corpus_id,
-                        arxivId=arxiv_id,
-                        doi=doi,
-                        title=reference_data["title"],
-                        authors=authors,
-                        venue=reference_data["venue"],
-                        year=reference_data["year"],
-                    )
-                    references.append(reference)
+                        reference = Reference(
+                            s2_id=reference_data["paperId"],
+                            corpus_id=corpus_id,
+                            arxivId=arxiv_id,
+                            doi=doi,
+                            title=reference_data["title"],
+                            authors=authors,
+                            venue=reference_data["venue"],
+                            year=reference_data["year"],
+                        )
+                        references.append(reference)
 
                 if not references:
                     # References are required to process citations, mark job as failed
