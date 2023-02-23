@@ -104,30 +104,29 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
         self,
         arxiv_id: ArxivId,
         bibitem_texts: Dict[str, str],
-        key_s2_ids: Dict[str, str],
+        key_s2_ids: Dict[str, S2Id],
+        s2_data: Dict[S2Id, SerializableReference],
         bibitem_key: str,
     ) -> EntityData:
         entity_data: EntityData = {
             "key": bibitem_key,
         }
 
+        def log_missing(missing: str):
+            logging.warning(f"Missing {missing} for bibitem with key {bibitem_key} for paper {arxiv_id}")
+
         if bibitem_key in bibitem_texts:
             entity_data["bibitem_text"] = bibitem_texts[bibitem_key]
         else:
-            logging.warning(
-                "Missing bibitem text for bibitem with key %s for paper %s",
-                bibitem_key,
-                arxiv_id,
-            )
+            log_missing("bibitem text")
 
         if bibitem_key in key_s2_ids:
-            entity_data["paper_id"] = key_s2_ids[bibitem_key]
+            reference_s2_id = key_s2_ids[bibitem_key]
+            entity_data["paper_id"] = reference_s2_id
+            corpus_id = s2_data[reference_s2_id].corpus_id
+            entity_data["corpus_id"] = corpus_id
         else:
-            logging.warning(
-                "Missing S2 match for bibitem with key %s for paper %s",
-                bibitem_key,
-                arxiv_id,
-            )
+            log_missing("S2 match")
 
         return entity_data
 
@@ -212,6 +211,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
     def save(self, item: CitationData, _: None) -> None:
         citation_locations = item.citation_locations
         key_s2_ids = item.key_s2_ids
+        s2_data = item.s2_data
         bibitem_texts = item.bibitem_texts
         bibitem_keys = item.bibitem_keys
 
@@ -228,6 +228,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                 arxiv_id=item.arxiv_id,
                 bibitem_texts=bibitem_texts,
                 key_s2_ids=key_s2_ids,
+                s2_data=s2_data,
                 bibitem_key=citation_key,
             )
 
@@ -249,6 +250,7 @@ class UploadCitations(DatabaseUploadCommand[CitationData, None]):
                 arxiv_id=item.arxiv_id,
                 bibitem_texts=bibitem_texts,
                 key_s2_ids=key_s2_ids,
+                s2_data=s2_data,
                 bibitem_key=bibitem_key,
             )
             entity_info = EntityUploadInfo(

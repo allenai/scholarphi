@@ -64,8 +64,11 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
 
         logger.info(f"Issuing request to S2 @ {base_url}")
 
+        references_fields = ["authors", "title", "externalIds", "venue", "year"]
+        fields_query = "fields=references." + ",references.".join(references_fields)
+
         return requests.get(
-            f"https://{base_url}/v1/paper/arXiv:{versionless_id}",
+            f"https://{base_url}/graph/v1/paper/arXiv:{versionless_id}?{fields_query}",
             headers=headers
         )
 
@@ -75,7 +78,7 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
 
     @staticmethod
     def get_description() -> str:
-        return "Fetch S2 metadata for papers. Includes reference information."
+        return "Fetch S2 metadata for a paper, specifically its references' titles, authors, and various IDs"
 
     def get_arxiv_ids_dirkey(self) -> str:
         return "sources-archives"
@@ -99,19 +102,31 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
                 data = resp.json()
                 references = []
                 for reference_data in data["references"]:
-                    authors = []
-                    for author_data in reference_data["authors"]:
-                        authors.append(Author(author_data["authorId"], author_data["name"]))
-                    reference = Reference(
-                        s2_id=reference_data["paperId"],
-                        arxivId=reference_data["arxivId"],
-                        doi=reference_data["doi"],
-                        title=reference_data["title"],
-                        authors=authors,
-                        venue=reference_data["venue"],
-                        year=reference_data["year"],
-                    )
-                    references.append(reference)
+
+                    if reference_data["paperId"]:
+                        external_ids = reference_data["externalIds"]
+                        if external_ids:
+                            corpus_id = external_ids.get("CorpusId")  # all canonical papers have a CorpusId
+                            arxiv_id = external_ids.get("ArXiv")    # may be None
+                            doi = external_ids.get("DOI")           # may be None
+                        else:
+                            corpus_id = arxiv_id = doi = None
+
+                        authors = []
+                        for author_data in reference_data["authors"]:
+                            authors.append(Author(author_data["authorId"], author_data["name"]))
+
+                        reference = Reference(
+                            s2_id=reference_data["paperId"],
+                            corpus_id=corpus_id,
+                            arxivId=arxiv_id,
+                            doi=doi,
+                            title=reference_data["title"],
+                            authors=authors,
+                            venue=reference_data["venue"],
+                            year=reference_data["year"],
+                        )
+                        references.append(reference)
 
                 if not references:
                     # References are required to process citations, mark job as failed
@@ -140,6 +155,7 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
         for r in result.references:
             serializable = SerializableReference(
                 s2_id=r.s2_id,
+                corpus_id=r.corpus_id,
                 arxivId=r.arxivId,
                 doi=r.doi,
                 title=r.title,

@@ -99,6 +99,7 @@ class ResolveBibitems(ArxivBatchCommand[MatchTask, BibitemMatch]):
                     bibitem.id_,
                     bibitem.text,
                     most_similar_reference.s2_id,
+                    most_similar_reference.corpus_id,
                     most_similar_reference.title,
                     max_similarity,
                     bibitem.bibitem_code,

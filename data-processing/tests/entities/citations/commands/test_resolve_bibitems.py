@@ -36,12 +36,12 @@ def test_process():
                                             'Ernest Hemingway 2022 dog on a walk')),
                       ],
 
-            references=[SerializableReference(s2_id='111', arxivId='2022.04708', doi=None, title='Dog on a walk',
+            references=[SerializableReference(s2_id='111', corpus_id='222', arxivId='2022.04708', doi=None, title='Dog on a walk',
                                    authors="[{'id': 1, 'name': 'Charles Dickens'}, {'id':2, 'name': 'Ernest Hemingway'}]",
                                    venue='arXiv', year='2022')]
         )
         result = next(resolve_bibitems.process(item))
-        assert result == BibitemMatch(key='three2020', bibitem_text='Dog on a walk', s2_id='111',
+        assert result == BibitemMatch(key='three2020', bibitem_text='Dog on a walk', s2_id='111', s2_corpus_id = '222',
                                       s2_title='Dog on a walk',
                                       bibitem_code=('arxiv_id=2022.04708 venue \journal{journal}{arXiv} '
                                                     'Charles Dickens Ernest Hemingway 2022 dog on a walk'),

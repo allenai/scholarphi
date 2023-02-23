@@ -1,3 +1,6 @@
+# TODO: CONSIDER REMOVING ENTIRE FILE, doesn't look like it's even being used anymore.
+#  the import upload_citations from entities.citations.util has been deleted in July 2020.
+
 import logging
 import subprocess
 import sys
@@ -64,10 +67,10 @@ class PdfStructureParser:
     @staticmethod
     def should_combine(bbox1: BoundingBoxModel, bbox2: BoundingBoxModel):
         return bbox1.page == bbox2.page and (
-            abs(bbox1.top - bbox2.top) < 4 # Same y-coordinate
+                abs(bbox1.top - bbox2.top) < 4 # Same y-coordinate
         ) and (
-            abs(bbox2.left - bbox1.left - bbox1.width) < 15 # To the right
-        )
+                       abs(bbox2.left - bbox1.left - bbox1.width) < 15 # To the right
+               )
 
     def get_bounding_boxes(self, spans):
         bboxes = []
@@ -186,15 +189,15 @@ class PdfStructureParser:
 
                 citation_locations = set()
                 for box in self.get_bounding_boxes(spans):
-                        page = self.page_sizes[box.page]
-                        loc = CitationLocation(key=ref,
-                                     cluster_index=citation_index,
-                                     page=self.page_indices[box.page],
-                                     left=box.left / page['width'],
-                                     top=box.top / page['height'],
-                                     width=box.width / page['width'],
-                                     height=box.height / page['height'])
-                        citation_locations.add(loc)
+                    page = self.page_sizes[box.page]
+                    loc = CitationLocation(key=ref,
+                                           cluster_index=citation_index,
+                                           page=self.page_indices[box.page],
+                                           left=box.left / page['width'],
+                                           top=box.top / page['height'],
+                                           width=box.width / page['width'],
+                                           height=box.height / page['height'])
+                    citation_locations.add(loc)
                 locations.setdefault(ref, {})[citation_index] = citation_locations
 
             citation_index += 1
