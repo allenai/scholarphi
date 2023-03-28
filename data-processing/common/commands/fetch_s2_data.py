@@ -48,7 +48,7 @@ class S2ReferencesNotFoundException(S2MetadataException):
 class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
     def __init__(self, args: Any) -> None:
         super().__init__(args)
-        # self._partner_api_token = os.getenv("S2_PARTNER_API_TOKEN", None) # TODO: can this be used on regular api.ss.org subdomain?
+        self._partner_api_token = os.getenv("S2_PARTNER_API_TOKEN", None)
 
     def _mk_api_request(self, arxivId: ArxivId) -> requests.Response:
         # XXX(andrewhead): S2 API does not have versions of arXiv papers. I don't think this
@@ -58,8 +58,8 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
         base_url = "api.semanticscholar.org"
         headers = None
 
-        # if self._partner_api_token:   # TODO: idk, might be useful to keep for rate limits?
-        #     headers = {"x-api-key": self._partner_api_token}
+        if self._partner_api_token:
+            headers = {"x-api-key": self._partner_api_token}
 
         references_fields = ["authors", "title", "externalIds", "venue", "year"]
         fields_query = "fields=references." + ",references.".join(references_fields)
@@ -102,27 +102,28 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
                 references = []
                 for reference_data in data["references"]:
 
-                    arxiv_id = doi = None
                     if reference_data["paperId"]:
                         external_ids = reference_data["externalIds"]
                         if external_ids:
                             arxiv_id = external_ids.get("ArXiv")    # may be None
                             doi = external_ids.get("DOI")           # may be None
+                        else:
+                            arxiv_id = doi = None
 
-                    authors = []
-                    for author_data in reference_data["authors"]:
-                        authors.append(Author(author_data["authorId"], author_data["name"]))
+                        authors = []
+                        for author_data in reference_data["authors"]:
+                            authors.append(Author(author_data["authorId"], author_data["name"]))
 
-                    reference = Reference(
-                        s2_id=reference_data["paperId"],
-                        arxivId=arxiv_id,
-                        doi=doi,
-                        title=reference_data["title"],
-                        authors=authors,
-                        venue=reference_data["venue"],
-                        year=reference_data["year"],
-                    )
-                    references.append(reference)
+                        reference = Reference(
+                            s2_id=reference_data["paperId"],
+                            arxivId=arxiv_id,
+                            doi=doi,
+                            title=reference_data["title"],
+                            authors=authors,
+                            venue=reference_data["venue"],
+                            year=reference_data["year"],
+                        )
+                        references.append(reference)
 
                 if not references:
                     # References are required to process citations, mark job as failed
