@@ -48,7 +48,7 @@ class S2ReferencesNotFoundException(S2MetadataException):
 class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
     def __init__(self, args: Any) -> None:
         super().__init__(args)
-        self._partner_api_token = os.getenv("S2_PARTNER_API_TOKEN", None)
+        # self._partner_api_token = os.getenv("S2_PARTNER_API_TOKEN", None) # TODO: is this used anywhere else though???
 
     def _mk_api_request(self, arxivId: ArxivId) -> requests.Response:
         # XXX(andrewhead): S2 API does not have versions of arXiv papers. I don't think this
@@ -58,9 +58,9 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
         base_url = "api.semanticscholar.org"
         headers = None
 
-        if self._partner_api_token:
-            base_url = "partner.semanticscholar.org"
-            headers = {"x-api-key": self._partner_api_token}
+        # if self._partner_api_token:
+        #     base_url = "partner.semanticscholar.org"
+        #     headers = {"x-api-key": self._partner_api_token}
 
         logger.info(f"Issuing request to S2 @ {base_url}")
 
