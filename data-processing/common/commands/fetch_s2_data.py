@@ -25,7 +25,7 @@ class S2ApiException(Exception):
 
 class S2ApiRateLimitingException(S2ApiException):
     """
-    Caller has been rate-limited by S2's Public/Partner API.
+    Caller has been rate-limited by S2's Public API.
     """
 
 class S2MetadataException(S2ApiException):
@@ -59,7 +59,6 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
         headers = None
 
         if self._partner_api_token:
-            base_url = "partner.semanticscholar.org"
             headers = {"x-api-key": self._partner_api_token}
 
         logger.info(f"Issuing request to S2 @ {base_url}")
@@ -78,7 +77,7 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
 
     @staticmethod
     def get_description() -> str:
-        return "Fetch S2 metadata for a paper, specifically its references' titles, authors, and various IDs"
+        return "Fetch S2 metadata for a paper, including its references' titles, authors, and various IDs"
 
     def get_arxiv_ids_dirkey(self) -> str:
         return "sources-archives"
