@@ -25,7 +25,7 @@ class S2ApiException(Exception):
 
 class S2ApiRateLimitingException(S2ApiException):
     """
-    Caller has been rate-limited by S2's Public/Partner API.
+    Caller has been rate-limited by S2's Public API.
     """
 
 class S2MetadataException(S2ApiException):
@@ -48,7 +48,7 @@ class S2ReferencesNotFoundException(S2MetadataException):
 class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
     def __init__(self, args: Any) -> None:
         super().__init__(args)
-        # self._partner_api_token = os.getenv("S2_PARTNER_API_TOKEN", None) # TODO: is this used anywhere else though???
+        # self._partner_api_token = os.getenv("S2_PARTNER_API_TOKEN", None) # TODO: can this be used on regular api.ss.org subdomain?
 
     def _mk_api_request(self, arxivId: ArxivId) -> requests.Response:
         # XXX(andrewhead): S2 API does not have versions of arXiv papers. I don't think this
@@ -58,8 +58,7 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
         base_url = "api.semanticscholar.org"
         headers = None
 
-        # if self._partner_api_token:
-        #     base_url = "partner.semanticscholar.org"
+        # if self._partner_api_token:   # TODO: idk, might be useful to keep for rate limits?
         #     headers = {"x-api-key": self._partner_api_token}
 
         references_fields = ["authors", "title", "externalIds", "venue", "year"]
@@ -103,14 +102,13 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
                 references = []
                 for reference_data in data["references"]:
 
+                    corpus_id = arxiv_id = doi = None
                     if reference_data["paperId"]:
                         external_ids = reference_data["externalIds"]
                         if external_ids:
                             corpus_id = external_ids.get("CorpusId")  # all canonical papers have a CorpusId
                             arxiv_id = external_ids.get("ArXiv")    # may be None
                             doi = external_ids.get("DOI")           # may be None
-                        else:
-                            corpus_id = arxiv_id = doi = None
 
                     authors = []
                     for author_data in reference_data["authors"]:

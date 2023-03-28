@@ -118,13 +118,9 @@ export function getPaperUncached(s2Id: string, apiKey?: string): AxiosPromise<Pa
     ),
   };
   if (apiKey) {
-    conf.headers['x-api-key'] = apiKey;
+    conf.headers['x-api-key'] = apiKey; // TODO: should I keep this around?  Asking Rodney https://github.com/allenai/scholar/issues/32158#issuecomment-1487492642
   }
-  const apiOrigin = (
-    apiKey
-      ? "https://partner.semanticscholar.org/v1"
-      : "https://api.semanticscholar.org/v1"
-  );
+  const apiOrigin = "https://api.semanticscholar.org/graph/v1";
 
   return axios.get<Paper>(`${apiOrigin}/paper/${s2Id}`, conf);
 }
