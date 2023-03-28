@@ -21,19 +21,20 @@ class Args:
     arxiv_ids_file = None
 
 
-def test_makes_request_over_public_api_in_absence_of_partner_token():
-    with patch("common.commands.fetch_s2_data.os.getenv") as mock_getenv:
-        mock_getenv.return_value = None
+def test_makes_request_over_public_api():
+    with patch("common.commands.fetch_s2_data.requests") as mock_requests:
+        mock_requests.get.return_value = Mock()
 
-        with patch("common.commands.fetch_s2_data.requests") as mock_requests:
-            mock_requests.get.return_value = Mock()
+        command = FetchS2Metadata(Args(arxiv_ids=['fakeid']))
+        command._mk_api_request("fakeid")
 
-            command = FetchS2Metadata(Args(arxiv_ids=['fakeid']))
-            command._mk_api_request("fakeid")
-            mock_requests.get.assert_called_with(
-                "https://api.semanticscholar.org/v1/paper/arXiv:fakeid",
-                headers=None
-            )
+        expected_references_fields = ["authors", "title", "externalIds", "venue", "year"]
+        expected_fields_query = "fields=references." + ",references.".join(expected_references_fields)
+
+        mock_requests.get.assert_called_with(
+            f"https://api.semanticscholar.org/graph/v1/paper/arXiv:fakeid?{expected_fields_query}",
+            headers=None
+        )
 
 
 # def test_makes_request_over_partner_api_when_token_present():
