@@ -102,11 +102,10 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
                 references = []
                 for reference_data in data["references"]:
 
-                    corpus_id = arxiv_id = doi = None
+                    arxiv_id = doi = None
                     if reference_data["paperId"]:
                         external_ids = reference_data["externalIds"]
                         if external_ids:
-                            corpus_id = external_ids.get("CorpusId")  # all canonical papers have a CorpusId
                             arxiv_id = external_ids.get("ArXiv")    # may be None
                             doi = external_ids.get("DOI")           # may be None
 
@@ -116,7 +115,6 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
 
                     reference = Reference(
                         s2_id=reference_data["paperId"],
-                        # corpus_id=corpus_id,  # TODO: do we care to do this for main branch?
                         arxivId=arxiv_id,
                         doi=doi,
                         title=reference_data["title"],
