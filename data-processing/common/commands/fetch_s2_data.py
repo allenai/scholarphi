@@ -25,7 +25,7 @@ class S2ApiException(Exception):
 
 class S2ApiRateLimitingException(S2ApiException):
     """
-    Caller has been rate-limited by S2's Public/Partner API.
+    Caller has been rate-limited by S2's Public API.
     """
 
 class S2MetadataException(S2ApiException):
@@ -59,13 +59,15 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
         headers = None
 
         if self._partner_api_token:
-            base_url = "partner.semanticscholar.org"
             headers = {"x-api-key": self._partner_api_token}
+
+        fields = ["references." + f for f in ["authors", "title", "externalIds", "venue", "year"]]
 
         logger.info(f"Issuing request to S2 @ {base_url}")
 
         return requests.get(
-            f"https://{base_url}/v1/paper/arXiv:{versionless_id}",
+            f"https://{base_url}/graph/v1/paper/arXiv:{versionless_id}",
+            params={"fields": ",".join(fields)},
             headers=headers
         )
 
@@ -75,7 +77,7 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
 
     @staticmethod
     def get_description() -> str:
-        return "Fetch S2 metadata for papers. Includes reference information."
+        return "Fetch S2 metadata for a paper, includes its references' titles, authors, and various IDs"
 
     def get_arxiv_ids_dirkey(self) -> str:
         return "sources-archives"
@@ -98,27 +100,36 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
             if resp.ok:
                 data = resp.json()
                 references = []
+                unmatched_references = 0  # https://github.com/allenai/scholarphi/pull/381#discussion_r1151224885
                 for reference_data in data["references"]:
-                    authors = []
-                    for author_data in reference_data["authors"]:
-                        authors.append(Author(author_data["authorId"], author_data["name"]))
-                    reference = Reference(
-                        s2_id=reference_data["paperId"],
-                        arxivId=reference_data["arxivId"],
-                        doi=reference_data["doi"],
-                        title=reference_data["title"],
-                        authors=authors,
-                        venue=reference_data["venue"],
-                        year=reference_data["year"],
-                    )
-                    references.append(reference)
+                    if reference_data["paperId"]:
+                        arxiv_id = reference_data.get("externalIds", {}).get("ArXiv")   # may be None
+                        doi = reference_data.get("externalIds", {}).get("DOI")          # may be None
+
+                        authors = []
+                        for author_data in reference_data["authors"]:
+                            authors.append(Author(author_data["authorId"], author_data["name"]))
+
+                        reference = Reference(
+                            s2_id=reference_data["paperId"],
+                            arxivId=arxiv_id,
+                            doi=doi,
+                            title=reference_data["title"],
+                            authors=authors,
+                            venue=reference_data["venue"],
+                            year=reference_data["year"],
+                        )
+                        references.append(reference)
+                    else:
+                        unmatched_references += 1
 
                 if not references:
                     # References are required to process citations, mark job as failed
                     raise S2ReferencesNotFoundException()
 
                 s2_metadata = S2Metadata(s2_id=data["paperId"], references=references)
-                logging.debug("Fetched S2 metadata for arXiv paper %s", item)
+                logging.debug(f"Fetched S2 metadata for arXiv paper {item}, "
+                              f"and omitted {unmatched_references} unmatched references.")
                 yield s2_metadata
             elif resp.status_code == 404:
                 # Paper is unavailable in Public API -- potential race condition.
