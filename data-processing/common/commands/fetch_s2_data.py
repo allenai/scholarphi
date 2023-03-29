@@ -61,13 +61,13 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
         if self._partner_api_token:
             headers = {"x-api-key": self._partner_api_token}
 
+        fields = ["references." + f for f in ["authors", "title", "externalIds", "venue", "year"]]
+
         logger.info(f"Issuing request to S2 @ {base_url}")
 
-        references_fields = ["authors", "title", "externalIds", "venue", "year"]
-        fields_query = "fields=references." + ",references.".join(references_fields)
-
         return requests.get(
-            f"https://{base_url}/graph/v1/paper/arXiv:{versionless_id}?{fields_query}",
+            f"https://{base_url}/graph/v1/paper/arXiv:{versionless_id}",
+            params={"fields": ",".join(fields)},
             headers=headers
         )
 
@@ -77,7 +77,7 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
 
     @staticmethod
     def get_description() -> str:
-        return "Fetch S2 metadata for a paper, including its references' titles, authors, and various IDs"
+        return "Fetch S2 metadata for a paper, includes its references' titles, authors, and various IDs"
 
     def get_arxiv_ids_dirkey(self) -> str:
         return "sources-archives"
@@ -100,16 +100,12 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
             if resp.ok:
                 data = resp.json()
                 references = []
+                unmatched_references = 0  # https://github.com/allenai/scholarphi/pull/381#discussion_r1151224885
                 for reference_data in data["references"]:
-
                     if reference_data["paperId"]:
-                        external_ids = reference_data["externalIds"]
-                        if external_ids:
-                            corpus_id = external_ids.get("CorpusId")  # all canonical papers have a CorpusId
-                            arxiv_id = external_ids.get("ArXiv")    # may be None
-                            doi = external_ids.get("DOI")           # may be None
-                        else:
-                            corpus_id = arxiv_id = doi = None
+                        corpus_id = reference_data.get("externalIds", {}).get("CorpusId")  # all canonical papers got it
+                        arxiv_id = reference_data.get("externalIds", {}).get("ArXiv")   # may be None
+                        doi = reference_data.get("externalIds", {}).get("DOI")          # may be None
 
                         authors = []
                         for author_data in reference_data["authors"]:
@@ -126,13 +122,16 @@ class FetchS2Metadata(ArxivBatchCommand[ArxivId, S2Metadata]):
                             year=reference_data["year"],
                         )
                         references.append(reference)
+                    else:
+                        unmatched_references += 1
 
                 if not references:
                     # References are required to process citations, mark job as failed
                     raise S2ReferencesNotFoundException()
 
                 s2_metadata = S2Metadata(s2_id=data["paperId"], references=references)
-                logging.debug("Fetched S2 metadata for arXiv paper %s", item)
+                logging.debug(f"Fetched S2 metadata for arXiv paper {item}, "
+                              f"and omitted {unmatched_references} unmatched references.")
                 yield s2_metadata
             elif resp.status_code == 404:
                 # Paper is unavailable in Public API -- potential race condition.
