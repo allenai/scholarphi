@@ -120,7 +120,11 @@ export function getPaperUncached(s2Id: string, apiKey?: string): AxiosPromise<Pa
   if (apiKey) {
     conf.headers['x-api-key'] = apiKey;
   }
-  const apiOrigin = "https://api.semanticscholar.org/graph/v1";
+  const apiOrigin = (
+    apiKey
+      ? "https://partner.semanticscholar.org/v1"
+      : "https://api.semanticscholar.org/v1"
+  );
 
   return axios.get<Paper>(`${apiOrigin}/paper/${s2Id}`, conf);
 }
