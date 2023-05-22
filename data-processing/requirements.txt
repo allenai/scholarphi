@@ -13,7 +13,7 @@ peewee==3.12.0
 psycopg2-binary
 pysbd==0.3.0
 pytorch-crf==0.7.2
-requests==2.22.0
+requests==2.31.0
 scispacy==0.2.4
 spacy==2.2.4
 TexSoup==0.2.0
