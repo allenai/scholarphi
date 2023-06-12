@@ -19,7 +19,7 @@ spacy==2.2.4
 TexSoup==0.2.0
 torch==1.5.1
 tqdm
-transformers==2.11.0
+transformers==4.30.0
 wandb==0.10.11
 
 # SciSpacy models. See URLs for all available models at https://allenai.github.io/scispacy/.
