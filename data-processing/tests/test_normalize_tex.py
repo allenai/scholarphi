@@ -3,7 +3,7 @@ import posixpath
 from tempfile import TemporaryDirectory
 from typing import Dict
 
-from common.normalize_tex import expand_tex
+from common.expand_input import expand_tex
 from common.types import Path, RelativePath
 
 

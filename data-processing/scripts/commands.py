@@ -2,9 +2,10 @@ from typing import Dict, List
 
 from common.commands.base import Command, CommandList
 from common.commands.compile_tex import CompileNormalizedTexSources, CompileTexSources
+from common.commands.expand_inputs import ExpandInputs
+from common.commands.expand_macros import ExpandMathMacros
 from common.commands.fetch_arxiv_sources import FetchArxivSources
 from common.commands.fetch_s2_data import FetchS2Metadata
-from common.commands.normalize_tex import NormalizeTexSources
 from common.commands.raster_pages import RasterPages
 from common.commands.unpack_sources import UnpackSources
 
@@ -28,7 +29,8 @@ TEX_PREPARATION_COMMANDS: CommandList = [
     FetchS2Metadata,
     UnpackSources,
     CompileTexSources,
-    NormalizeTexSources,
+    ExpandInputs,
+    ExpandMathMacros,
     CompileNormalizedTexSources,
     RasterPages,
 ]
