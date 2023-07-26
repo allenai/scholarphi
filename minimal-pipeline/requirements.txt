@@ -1,0 +1,35 @@
+awscli==1.16.303
+psycopg2-binary
+requests==2.22.0
+tqdm
+boto3
+
+# Development dependencies
+black==19.10b0
+mypy==0.782
+mypy-extensions==0.4.3
+pylint==2.4.4
+pytest==5.3.1
+
+
+# ScholarPhi-specific dependencies
+git+https://github.com/andrewhead/texsymdetect
+git+https://github.com/andrewhead/texcompile
+
+
+# PDF parsing
+git+https://github.com/allenai/mmda
+intervaltree==3.1.0
+pdf2image
+
+
+# S2ORC DOC2JSON
+git+https://github.com/allenai/s2orc-doc2json.git
+python-magic==0.4.18
+latex2mathml==2.16.2
+beautifulsoup4==4.7.1
+lxml
+
+
+# NLP
+pysbd
