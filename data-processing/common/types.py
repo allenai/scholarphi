@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import Callable, Dict, List, NamedTuple, Optional, Set, Union
+from typing import (Callable, Dict, List, NamedTuple, Optional, Set, Tuple,
+                    Union)
 
 from typing_extensions import Literal
 
@@ -269,8 +270,8 @@ EQUATION PARSING
 """
 
 EquationIndex = int
-TokenIndex = int
 SymbolIndex = int
+MathML = str
 
 
 @dataclass(frozen=True)
@@ -304,12 +305,24 @@ class Token:
     """
 
     start: int
+    end: int
     " 'start' and 'end' are measured relative to the start of the equation."
 
-    end: int
+    mathml: MathML
+    """
+    Normalized MathML representation of the token. Note that this normalized MathML on its own
+    is _not_ enough to uniquely identify a token. Rather, 'mathml' _with_ 'font_macros' should
+    be able to uniquely identify a token. This is particularly the case for bars (e.g., as in
+    '\\bar x'), where the style (e.g., boldness) of the bar is not encoded in the 'mathvariant'
+    attribute of the MathML element, but rather can only be recovered from the font macros.
+    """
 
-
-MathML = str
+    font_macros: Tuple[str, ...]
+    """
+    List of TeX macros that were applied to the letter to style it in the equation. Note that this
+    list might be normalized (e.g., the '\\bm' macro might be replaced with '\\boldsymbol') as this
+    list of font macros is found using KaTeX, which normalizes the TeX macros.
+    """
 
 
 @dataclass
@@ -461,17 +474,6 @@ class ColorizeOptions:
     Whether to surround the colorized entity in curly braces. This seems to be important for
     preventing compilation errors for certaint types of entities, like equation tokens.
     """
-
-
-@dataclass(frozen=True)
-class ColorizedTokenWithOrigin:
-    tex_path: str
-    equation_index: int
-    token_index: int
-    start: int
-    end: int
-    text: str
-    hue: Hue
 
 
 @dataclass(frozen=True)

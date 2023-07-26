@@ -1,5 +1,11 @@
 import re
 
+from entities.citations.colorize import colorize_citations
+from entities.citations.types import Bibitem
+from entities.symbols.colorize import (
+    adjust_color_positions as adjust_token_color_positions,
+)
+
 from common.colorize_tex import (
     COLOR_MACROS,
     COLOR_MACROS_BASE_MACROS,
@@ -9,11 +15,6 @@ from common.colorize_tex import (
     colorize_entities,
 )
 from common.types import ColorizeOptions, SerializableEntity, SerializableToken
-from entities.citations.colorize import colorize_citations
-from entities.citations.types import Bibitem
-from entities.symbols.colorize import (
-    adjust_color_positions as adjust_token_color_positions,
-)
 
 COLOR_PATTERN = (
     r"\\scholarsetcolor\[rgb\]{[0-9.]+,[0-9.]+,[0-9.]+}"
@@ -196,6 +197,8 @@ def token(
         relative_start=relative_start,
         relative_end=relative_end,
         type_="atom",
+        mathml="<fake-mathml/>",
+        font_macros=[],
     )
 
 

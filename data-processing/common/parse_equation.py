@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import Callable, List, Optional, Union, cast
+from typing import Callable, Dict, List, Optional, Set, Tuple, Union, cast
 
 from bs4 import BeautifulSoup, NavigableString, Tag
 
@@ -93,7 +93,7 @@ def parse_equation(mathml: str) -> List[Node]:
     return all_symbols
 
 
-@dataclass(frozen=True)
+@dataclass
 class ParseResult:
 
     nodes: List[Node]
@@ -102,22 +102,18 @@ class ParseResult:
     "child symbols", if you are parsing the child tag of the parent.
     """
 
-    element: Optional[Tag]
-    """
-    A cleaned up BeautifulSoup element of the parsed entity (i.e. with S2 metadata tags removed
-    and with consecutive identifier characters merged.). Will be None if no element could be
-    parsed from the input element.
-    """
-
-    tokens: List[Token]
-    """
-    List of all tokens found in the subtree starting at the parsed element.
-    """
-
     @property
     def symbols(self) -> List[Node]:
         " Get a list of all top-level symbol nodes parsed from the MathML. "
         return [n for n in self.nodes if n.is_symbol]
+
+
+@dataclass
+class InternalParseResult(ParseResult):
+    token_ids: List[str]
+    """
+    List of IDs of all tokens found in the subtree starting at the parsed element.
+    """
 
 
 def walk_postorder(element: Tag, func: Callable[[Tag], None]) -> None:
@@ -205,6 +201,9 @@ def merge_row_elements(element: Tag) -> None:
         if start and end:
             merged[0].attrs["s2:start"] = start
             merged[0].attrs["s2:end"] = end
+        if "s2:style-start" in element.attrs and "s2:style-end" in element.attrs:
+            merged[0].attrs["s2:style-start"] = element.attrs["s2:style-start"]
+            merged[0].attrs["s2:style-end"] = element.attrs["s2:style-end"]
         element.replace_with(merged[0])
     else:
         for e in elements:
@@ -296,10 +295,12 @@ def merge_functions(element: Tag) -> None:
         element.replace_with(updated_children[0])
 
 
-def clean_equation_document(root: Tag) -> Tag:
+def clean_elements(root: Tag) -> Tag:
     """
-    This method does not destroy the tree passed in as an argument. Rather, it clones the tree,
-    cleans the cloned tree, and then returns it.
+    Clean the individual elements in a MathML tree. Involves pruning out empty elements, and
+    changing the tag type of some nodes (like making sure that math operators appear in an
+    'mo' node). This method does not modify the tree passed in as an argument. Rather,
+    it clones the tree, cleans the cloned tree, and then returns it.
     """
 
     root_clone = clone_element(root)
@@ -313,6 +314,59 @@ def clean_equation_document(root: Tag) -> Tag:
     walk_postorder(parent, remove_empty_strings)
     walk_postorder(parent, make_derivatives_into_operators)
     walk_postorder(parent, repair_operator_tags)
+
+    return list(parent.children)[0]
+
+
+def extract_tokens(root: Tag) -> Dict[str, Token]:
+    """
+    Extract tokens (i.e., single letters and affix marks like bars) from a MathML tree.
+    The tree is modified, where each element that contained tokens is annotated
+    with an ID of token data structures that were created when processing that element
+    in the 's2:token-ids' attribute. Also returns a dictionary mapping from token IDs to
+    token data.
+    """
+
+    # Dictionary mapping from a unique token ID to token data.
+    tokens: Dict[str, Token] = {}
+
+    def _visit(element: Tag) -> None:
+        """
+        Visit an element in the tree, extracting tokens from it, and setting an attribute in it
+        with the IDs of the tokens that were extracted from it.
+        """
+        element_tokens = _extract_tokens_from_element(element)
+
+        if element_tokens:
+            element_token_ids = []
+            for t in element_tokens:
+                # Save token to a shared dictionary keyed by unique token ID. Start and end
+                # character position of a token can be used as a unique key.
+                id_ = f"{t.start}-{t.end}"
+                element_token_ids.append(id_)
+                tokens[id_] = t
+
+            # Annotate the element with the IDs of the tokens it contains. This attribute will be
+            # read later when symbols are created from elements, to look up the data for the
+            # tokens that each symbol is composed of.
+            element.attrs["s2:token-ids"] = "&".join(element_token_ids)
+
+    walk_postorder(root, _visit)
+    return tokens
+
+
+def normalize_equation_structure(root: Tag) -> Tag:
+    """
+    Normalize the structure of a MathML equation, for instance, combining consecutive
+    digits into one number. This method returns a cleaned clone of the tree provided as input.
+    """
+
+    # See note in 'clean_elements' for why the cloned root is added to a synthesized
+    # root node.
+    root_clone = clone_element(root)
+    parent = BeautifulSoup("<div></div>", "lxml").div
+    parent.append(root_clone)
+
     walk_postorder(parent, merge_row_elements)
     walk_postorder(parent, merge_functions)
 
@@ -327,24 +381,26 @@ def parse_element(element: Tag) -> ParseResult:
     symbol found during the recursive parse.
     """
 
-    cleaned = clean_equation_document(element)
-    parse_result = _parse_element(cleaned)
+    cleaned = clean_elements(element)
+    tokens = extract_tokens(cleaned)
+    cleaned = normalize_equation_structure(cleaned)
+    parse_result = _parse_element(cleaned, tokens)
 
     # Remove custom S2 annotations that were used for parsing, but which do not belong
     # in a normalized representation of the element.
-    if parse_result.element:
-        walk_postorder(parse_result.element, _remove_s2_annotations)
+    cleaned_elements: Set[Tag] = set()
+    to_clean = {n.element for n in parse_result.nodes}
+    while to_clean:
+        element = to_clean.pop()
+        _sanitize_attributes(element)
+        for child in element.children:
+            if isinstance(child, Tag) and child not in cleaned_elements:
+                to_clean.add(child)
 
-    node_queue = list(parse_result.nodes)
-    while node_queue:
-        node = node_queue.pop()
-        _remove_s2_annotations(node.element)
-        node_queue.extend(node.children)
-
-    return parse_result
+    return ParseResult(parse_result.nodes)
 
 
-def _parse_element(element: Tag) -> ParseResult:
+def _parse_element(element: Tag, token_data: Dict[str, Token]) -> InternalParseResult:
     """
     Not meant to be called directly. Assumes a normalized form of the element and its children.
     Instead, called 'parse_element', which normalizes the element first.
@@ -352,20 +408,20 @@ def _parse_element(element: Tag) -> ParseResult:
 
     # Detect if this tag represents a KaTeX parse error. If so, return nothing.
     if _is_error_element(element):
-        return ParseResult([], None, [])
+        return InternalParseResult([], [])
 
     # Parse each child element. As of BeautifulSoup version 4.8.2, the 'element.children' property
     # ensures that children are visited in order.
     children: List[Node] = []
-    tokens: List[Token] = []
+    token_ids: List[str] = []
 
     for child in element.children:
         if isinstance(child, Tag):
 
             # Parse symbols from the child.
-            child_parse_result = _parse_element(child)
+            child_parse_result = _parse_element(child, token_data)
             children.extend(child_parse_result.nodes)
-            tokens.extend(child_parse_result.tokens)
+            token_ids.extend(child_parse_result.token_ids)
 
     # Determine whether any of the children in the sequence have been defined. This occurs
     # after the parsing above, because the parsing may regroup children in a way that makes it
@@ -377,28 +433,34 @@ def _parse_element(element: Tag) -> ParseResult:
             if previous_child.is_symbol and not _appears_in_operator_argument(element):
                 previous_child.defined = True
 
+    # Get a list of tokens represented by this element.
+    if "s2:token-ids" in element.attrs:
+        token_ids.extend(element.attrs["s2:token-ids"].split("&"))
+    unique_token_ids = set(token_ids)
+    tokens = [token_data[id_] for id_ in unique_token_ids if id_ in token_data]
+    tokens.sort(key=lambda t: t.start)
+
     # Attempt to parse nodes of specific types from the current element. Node type-specific
-    # parsers are responsible returning a parse resul. Type-specific parsers may take in:
+    # parsers are responsible returning a parse result. Type-specific parsers may take in:
     # * the element, if they need to extract tokens from the element;
     # * the list of all tokens parsed in the parses of child elements, because some tokens will have been found that
     #   don't have a corresponding node in 'children' (for instance, numbers, etc.).
     identifier = parse_identifier(element, children, tokens)
     if identifier is not None:
-        return identifier
+        return InternalParseResult([identifier], token_ids)
     function = parse_function(element, children, tokens)
     if function is not None:
-        return function
-    definition_operator = parse_definition_operator(element)
+        return InternalParseResult([function], token_ids)
+    definition_operator = parse_definition_operator(element, tokens)
     if definition_operator is not None:
-        return definition_operator
-    generic_operator = parse_operator(element)
+        return InternalParseResult([definition_operator], token_ids)
+    generic_operator = parse_operator(element, tokens)
     if generic_operator is not None:
-        return generic_operator
+        return InternalParseResult([generic_operator], token_ids)
 
     # If a specific type of node can't be parsed, then return a generic type of node,
     # comprising of all the children and tokens found in this element.
-    tokens.extend(_extract_tokens(element))
-    return ParseResult(children, element, tokens)
+    return InternalParseResult(children, token_ids)
 
 
 def _is_identifier(element: Tag) -> bool:
@@ -431,87 +493,90 @@ def _is_identifier(element: Tag) -> bool:
 
 def parse_identifier(
     element: Tag, children: List[Node], tokens: List[Token]
-) -> Optional[ParseResult]:
+) -> Optional[Node]:
     " Attempt to parse an element as an identifier. "
 
-    if _is_identifier(element) and _has_s2_offset_annotations(element):
-
-        tokens = list(tokens)
-        tokens.extend(_extract_tokens(element))
-
-        node = Node(
-            "identifier",
-            element,
-            children,
-            int(element.attrs["s2:start"]),
-            int(element.attrs["s2:end"]),
-            tokens,
-        )
-        return ParseResult([node], element, tokens)
+    if _is_identifier(element):
+        start, end = _extract_symbol_element_start_and_end(element)
+        if start is not None and end is not None:
+            node = Node("identifier", element, children, start, end, tokens,)
+            return node
 
     return None
 
 
 def parse_function(
     element: Tag, children: List[Node], tokens: List[Token]
-) -> Optional[ParseResult]:
+) -> Optional[Node]:
 
-    if (
-        not element.name == "mrow"
-        or not element.get("s2:is_function")
-        or not _has_s2_offset_annotations(element)
-    ):
+    if not element.name == "mrow" or not element.get("s2:is_function"):
         return None
 
-    node = Node(
-        "function",
-        element,
-        children,
-        int(element["s2:start"]),
-        int(element["s2:end"]),
-        tokens,
-    )
-    return ParseResult([node], element, tokens)
+    start, end = _extract_symbol_element_start_and_end(element)
+    if start is not None and end is not None:
+        return Node("function", element, children, start, end, tokens,)
+    return None
 
 
-def parse_definition_operator(element: Tag) -> Optional[ParseResult]:
+def parse_definition_operator(element: Tag, tokens: List[Token]) -> Optional[Node]:
     EQUATION_SIGNS = ["=", "≈", "≥", "≤", "<", ">", "∈", "∼", "≜"]
-    if (
-        element.name != "mo"
-        or element.text not in EQUATION_SIGNS
-        or not _has_s2_offset_annotations(element)
-    ):
+    if element.name != "mo" or element.text not in EQUATION_SIGNS:
         return None
 
-    tokens = _extract_tokens(element)
-    node = Node(
-        type_="definition-operator",
-        element=element,
-        children=[],
-        start=int(element.attrs["s2:start"]),
-        end=int(element.attrs["s2:end"]),
-        tokens=tokens,
-    )
-    return ParseResult([node], element, tokens)
+    start, end = _extract_symbol_element_start_and_end(element)
+    if start is not None and end is not None:
+        return Node(
+            type_="definition-operator",
+            element=element,
+            children=[],
+            start=start,
+            end=end,
+            tokens=tokens,
+        )
+    return None
 
 
-def parse_operator(element: Tag) -> Optional[ParseResult]:
-    if element.name != "mo" or not _has_s2_offset_annotations(element):
+def parse_operator(element: Tag, tokens: List[Token]) -> Optional[Node]:
+    if element.name != "mo":
         return None
 
-    tokens = _extract_tokens(element)
-    node = Node(
-        type_="operator",
-        element=element,
-        children=[],
-        start=int(element.attrs["s2:start"]),
-        end=int(element.attrs["s2:end"]),
-        tokens=tokens,
-    )
-    return ParseResult([node], element, tokens)
+    start, end = _extract_symbol_element_start_and_end(element)
+    if start is not None and end is not None:
+        return Node(
+            type_="operator",
+            element=element,
+            children=[],
+            start=start,
+            end=end,
+            tokens=tokens,
+        )
+
+    return None
 
 
-def _extract_tokens(element: Tag) -> List[Token]:
+def _extract_symbol_element_start_and_end(
+    element: Tag,
+) -> Tuple[Optional[int], Optional[int]]:
+    """
+    Get the start and end character offsets of a symbol. If the element was styled
+    in the TeX (e.g., with a macro like '\\mathbf'), then the character offsets will
+    include the characters of the macro.
+    """
+
+    start = None
+    end = None
+
+    if "s2:style-start" in element.attrs and "s2:style-end" in element.attrs:
+        start = int(element.attrs["s2:style-start"])
+        end = int(element.attrs["s2:style-end"])
+    elif "s2:start" in element.attrs and "s2:end" in element.attrs:
+        start = int(element.attrs["s2:start"])
+        end = int(element.attrs["s2:end"])
+
+    return start, end
+
+
+def _extract_tokens_from_element(element: Tag) -> List[Token]:
     """
     Get the tokens defined in this element. Tokens are characters or spans of text that
     make up symbols. There should be a token returned for each glyph in a symbol that needs
@@ -525,6 +590,8 @@ def _extract_tokens(element: Tag) -> List[Token]:
     tokens = []
 
     if _is_atomic_token(element):
+        cleaned_element = clone_element(element)
+        _sanitize_attributes(cleaned_element)
         tokens.append(
             Token(
                 # Convert text to a primitive type. 'element.string' is a NavigableString,
@@ -533,19 +600,37 @@ def _extract_tokens(element: Tag) -> List[Token]:
                 start=int(element["s2:start"]),
                 end=int(element["s2:end"]),
                 type_="atom",
+                mathml=str(cleaned_element),
+                font_macros=_extract_font_macros(element),
             )
         )
     elif _is_affix_token(element):
+        cleaned_element = clone_element(element)
+        _sanitize_attributes(cleaned_element)
         tokens.append(
             Token(
                 text=str(element.string),
                 start=int(element["s2:start"]),
                 end=int(element["s2:end"]),
                 type_="affix",
+                mathml=str(cleaned_element),
+                font_macros=_extract_font_macros(element),
             )
         )
 
     return tokens
+
+
+def _extract_font_macros(element: Tag) -> Tuple[str, ...]:
+    """
+    Get the list of TeX styling macros applied to a token represented by a MathML element. Relies
+    on the MathML having an "s2:font-macros" attribute on the elements for tokens, where
+    each font macro is separated by an '&' character.
+    """
+
+    font_macros_string = str(element.get("s2:font-macros", ""))
+    font_macros = tuple([m for m in font_macros_string.split("&") if m != ""])
+    return font_macros
 
 
 def _is_atomic_token(element: Tag) -> bool:
@@ -566,6 +651,24 @@ def _is_atomic_token(element: Tag) -> bool:
         return True
     # Parentheses, for functions.
     if element.name == "mo" and element.text in ["(", ")"]:
+        return True
+    # Common mathematical operators. See a list of all operators supported by KaTeX here:
+    # https://katex.org/docs/supported.html#binary-operators
+    OPERATORS = [
+        "+",
+        "-",
+        "/",
+        "*",
+        "∗",
+        "∙",
+        "⋅",
+        "⋅",
+        "⋅",
+        "÷",
+        "±",
+        "×",
+    ]
+    if element.name == "mo" and element.text in OPERATORS:
         return True
     # Text spans consisting of only a single word.
     if element.name == "mtext" and re.match(r"\w+", element.text):
@@ -622,11 +725,20 @@ def _is_error_element(element: Tag) -> bool:
     )
 
 
-def _remove_s2_annotations(element: Tag) -> None:
-    " Remove S2 metadata tags from a BeautifulSoup node. "
+def _sanitize_attributes(element: Tag) -> None:
+    """
+    Sanitize the attributes on a MathML element to remove attributes that would prevent
+    an equality comparison between two elements that are semantically the same. Includes
+    removing both S2 metadata tags (e.g., those that encode which font macros were used,
+    and start and end position of the element in the TeX), and presentation-related
+    attributes that do not affect the appearance, but only the layout, of the element.
+    (e.g., 'lspace', 'rspace').
+    """
     if hasattr(element, "attrs"):
         for key in list(element.attrs.keys()):
             if key.startswith("s2:"):
+                del element.attrs[key]
+            elif key in ["lspace", "rspace", "stretchy"]:
                 del element.attrs[key]
 
 
@@ -737,17 +849,22 @@ class MathMlElementMerger:
             return False
 
         # Here come the context-sensitive rules:
-        # 1. Script end all sequences of mergeable characters. This is because no identifier is
+        # 1. Scripts (e.g., elements with superscripts and subscripts) will end any
+        #    sequence of mergeable characters. This is because no identifier is
         #    expected to have a superscript or a subscript in the middle.
         if last_element.name in SCRIPT_TAGS:
             return False
-        # 2. Scripts (e.g., elements with superscripts and subscripts) can be merged into prior
-        #    elements, provided that the base (the element to which the script is applied) can be
-        #    merged according to the typical merging rules.
+        # 2. Scripts can be merged into prior elements, provided that the base
+        #    (the element to which the script is applied) can be merged according
+        #    to the typical merging rules.
         if element.name in SCRIPT_TAGS:
             first_child = next(element.children, None)
-            if first_child:
-                return self._is_mergeable_type(first_child)
+            if (
+                first_child
+                and self._is_mergeable_type(first_child)
+                and self._can_merge_with_prior_elements(first_child)
+            ):
+                return True
             return False
         # 3. Letters can be merged into any sequence of elements before them that starts with a
         #    a letter. This allows tokens to be merged into (target letter is shown in
@@ -789,6 +906,15 @@ class MathMlElementMerger:
                 self.merged.extend(self.to_merge)
         else:
             element = self._merge_simple_row(self.to_merge)
+
+        # The new element contains all tokens that were part of the merged elements.
+        token_ids = []
+        for e in self.to_merge:
+            for id_ in e.attrs.get("s2:token-ids", "").split("&"):
+                if id_:
+                    token_ids.append(id_)
+        if token_ids:
+            element.attrs["s2:token-ids"] = "&".join(token_ids)
 
         # Save the merged element.
         self.merged.append(element)

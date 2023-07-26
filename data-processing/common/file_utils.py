@@ -12,31 +12,17 @@ import os
 import re
 import shutil
 from collections import defaultdict
-from typing import Any, Dict, Iterator, List, Optional, Type, TypeVar
+from typing import Any, Dict, Iterator, List, Optional, Tuple, Type, TypeVar
 
 from common import directories
 from common.colorize_tex import EntityId
 from common.string import JournaledString
-from common.types import (
-    ArxivId,
-    BoundingBox,
-    CompilationResult,
-    EntityLocationInfo,
-    Equation,
-    EquationId,
-    FileContents,
-    HueLocationInfo,
-    Path,
-    SerializableChild,
-    SerializableSymbol,
-    SerializableSymbolToken,
-    SerializableToken,
-    Symbol,
-    SymbolId,
-    SymbolWithId,
-    Token,
-    TokenId,
-)
+from common.types import (ArxivId, BoundingBox, CompilationResult,
+                          EntityLocationInfo, Equation, EquationId,
+                          FileContents, HueLocationInfo, Path,
+                          SerializableChild, SerializableSymbol,
+                          SerializableSymbolToken, SerializableToken, Symbol,
+                          SymbolId, SymbolWithId, Token, TokenId)
 
 Contents = str
 Encoding = str
@@ -240,6 +226,8 @@ def load_from_csv(
                         data[field.name] = [
                             float(_) for _ in ast.literal_eval(row[field.name])
                         ]
+                    elif field.type == Tuple[str, ...]:
+                        data[field.name] = ast.literal_eval(row[field.name])
                     # 2. String literals. This check is based on the '__repr__' string representation of
                     # the literal, and checks that all options for the literal are strings. Based
                     # on the unit tests for the Literal type at:
@@ -393,7 +381,12 @@ def load_symbols(arxiv_id: ArxivId) -> Optional[List[SymbolWithId]]:
             t.tex_path, t.equation_index, t.relative_start, t.relative_end
         )
         tokens_by_id[token_id] = Token(
-            start=t.relative_start, end=t.relative_end, text=t.text, type_=t.type_
+            start=t.relative_start,
+            end=t.relative_end,
+            text=t.text,
+            type_=t.type_,
+            mathml=t.mathml,
+            font_macros=t.font_macros,
         )
 
     symbols_by_id: Dict[SymbolId, Symbol] = {}

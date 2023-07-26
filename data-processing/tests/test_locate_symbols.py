@@ -34,14 +34,19 @@ def test_get_none_if_no_matching_tokens():
 
 
 def test_get_token_bounding_box():
-    s = symbol(tokens=[Token("x", "atom", 0, 1)])
+    s = symbol(tokens=[Token("x", "atom", 0, 1, "<mi>x</mi>", [])])
     token_locations = {token_id(0, 1): [BoundingBox(0.01, 0.01, 0.01, 0.01, 0)]}
     box = get_symbol_bounding_box(s, symbol_id(), token_locations)
     assert box == BoundingBox(0.01, 0.01, 0.01, 0.01, 0)
 
 
 def test_merge_bounding_boxes():
-    s = symbol(tokens=[Token("x", "atom", 0, 1), Token("y", "atom", 2, 3)])
+    s = symbol(
+        tokens=[
+            Token("x", "atom", 0, 1, "<mi>x</mi>", []),
+            Token("y", "atom", 2, 3, "<mi>y</mi>", []),
+        ]
+    )
     token_locations = {
         token_id(0, 1): [
             BoundingBox(0.01, 0.01, 0.01, 0.01, 0),
