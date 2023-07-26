@@ -9,9 +9,10 @@ from typing import List, Optional
 
 import requests
 
-from common import directories
+from common import directories, file_utils
 from common.models import Metadata
 from common.types import ArxivId, Path
+from common.compile import get_output_files
 
 USER_AGENT = "Andrew Head, for academic research on dissemination of scientific insight <head.andrewm@gmail.com>"
 ARXIV_ASSET_URL_PREFIX = "https://export.arxiv.org/src/"
@@ -21,6 +22,9 @@ logger = logging.getLogger(__name__)
 
 
 class FetchFromArxivException(Exception):
+    pass
+
+class FetchFromArxivPDFException(Exception):
     pass
 
 
@@ -63,6 +67,33 @@ def fetch_from_arxiv(arxiv_id: ArxivId, dest: Optional[Path] = None) -> None:
             status_code = response.status_code
             msg = f"Failed to fetch assets for {arxiv_id} from ArXiv with code {status_code}"
             raise FetchFromArxivException(msg)
+
+
+def fetch_pdf_from_arxiv(arxiv_id: ArxivId, dest: Path) -> None:
+    logging.debug("Fetching PDF for arXiv paper %s from arXiv.", arxiv_id)
+    uri = "https://arxiv.org/pdf/%s.pdf" % (arxiv_id,)
+
+    try:
+        response = requests.get(uri, headers={"User-Agent": USER_AGENT})
+
+    except Exception:
+        msg  = f"Request to ArXiv for paper {arxiv_id} failed"
+        logger.exception(msg)
+        raise FetchFromArxivPDFException(msg)
+
+    else:
+        if response.ok:
+            if not os.path.exists(os.path.dirname(dest)):
+                os.makedirs(os.path.dirname(dest))
+            with open(dest, 'wb') as destfile:
+                destfile.write(response.content)
+
+        elif response.status_code == 404:
+            raise Exception(f"PDF doesn't exist in ArXiv for {arxiv_id}")
+        else:
+            status_code = response.status_code
+            msg = f"Failed to fetch PDF for {arxiv_id} from ArXiv with code {status_code}"
+            raise FetchFromArxivPDFException(msg)
 
 
 def fetch_from_s3(arxiv_id: ArxivId, bucket: str) -> None:
