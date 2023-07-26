@@ -1,3 +1,4 @@
+import { ServerInjectResponse } from "@hapi/hapi";
 import * as Knex from "knex";
 import ApiServer from "../server";
 import {
@@ -6,6 +7,7 @@ import {
   EntityCreatePayload,
   EntityGetResponse,
   EntityUpdatePayload,
+  LogEntryCreatePayload,
 } from "../types/api";
 import {
   createDefaultQueryBuilder,
@@ -52,6 +54,60 @@ describe("API", () => {
       url: "/api/health",
     });
     expect(response.statusCode).toEqual(200);
+  });
+
+  describe("POST /api/log", () => {
+    function getSessionIdCookie(response: ServerInjectResponse) {
+      const setCookie = response.headers["set-cookie"][0];
+      if (setCookie === undefined) {
+        return null;
+      }
+      const match = setCookie.match(/.*sessionId=(?<sid>.*?)=;.*/);
+      if (match === null || match.groups === undefined) {
+        return null;
+      }
+      return match.groups.sid;
+    }
+
+    test("sets session ID cookie", async () => {
+      const payload: LogEntryCreatePayload = {
+        data: {},
+        event_type: "first_event",
+        level: "debug",
+        username: null,
+      };
+      const response = await server.inject({
+        method: "post",
+        url: "/api/log",
+        payload,
+      });
+      expect(response.statusCode).toEqual(200);
+      expect(response.headers["set-cookie"]).toBeDefined();
+      expect(response.headers["set-cookie"][0]).toContain("sessionId=");
+    });
+
+    test("preserves the session ID cookie on subsequent calls", async () => {
+      const payload: LogEntryCreatePayload = {
+        data: {},
+        event_type: "first_event",
+        level: "debug",
+        username: null,
+      };
+      const response = await server.inject({
+        method: "post",
+        url: "/api/log",
+        headers: {
+          Cookie: "sessionId=mock_session_id",
+        },
+        payload,
+      });
+      expect(response.headers["set-cookie"]).toBeUndefined();
+      const logEntries: LogEntryRow[] = await knex("logentry").select();
+      expect(logEntries).toHaveLength(1);
+      expect(logEntries[0]).toMatchObject({
+        session_id: "mock_session_id",
+      } as LogEntryRow);
+    });
   });
 
   describe("GET /api/v0/papers/arxiv:{arxivId}/entities", () => {

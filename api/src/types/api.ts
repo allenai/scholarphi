@@ -90,17 +90,17 @@ export interface EntityGetResponse {
 }
 
 const entityTypes = [
-  'citation',
-  'definition',
-  'equation',
-  'sentence',
-  'symbol',
-  'term'
+  "citation",
+  "definition",
+  "equation",
+  "sentence",
+  "symbol",
+  "term",
 ] as const;
 export type EntityType = typeof entityTypes[number];
 export const isEntityType = (s: string): s is EntityType => {
   return (entityTypes as readonly string[]).indexOf(s) >= 0;
-}
+};
 
 /**
  * Use type guards (e.g., 'isSymbol') to distinguish between types of entities.
@@ -225,16 +225,16 @@ export const sharedSymbolFields = [
   "definitions",
   "snippets",
   "snippet_sentences",
-  "sources"
-]
+  "sources",
+];
 export interface SharedSymbolData {
-  defining_formula_equations: string[];  // entity id
-  defining_formulas: string[];  // tex-bearing formula text
+  defining_formula_equations: string[]; // entity id
+  defining_formulas: string[]; // tex-bearing formula text
   definition_sentences: string[];
   definition_texs: string[];
   definitions: string[];
-  snippets: string[];  // tex-bearing sentence text
-  snippet_sentences: string[];  // entity id
+  snippets: string[]; // tex-bearing sentence text
+  snippet_sentences: string[]; // entity id
   sources: string[];
 }
 
