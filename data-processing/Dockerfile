@@ -42,9 +42,14 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 RUN python get-pip.py --force-reinstall
 
-# Install Node.js
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash
-RUN apt-get install -y nodejs
+# Install Node.js. Official Node 24 binaries need glibc 2.28 but bionic ships 2.27,
+# so use the glibc-2.17 build from unofficial-builds.nodejs.org, checksum-pinned.
+ARG NODE_VERSION=24.22.1
+ARG NODE_SHA256=422ddeec2c08902a34ef80ae25de388c7b7e2920763030a5262d56b10675c570
+RUN curl -fsSLo node.tar.gz https://unofficial-builds.nodejs.org/download/release/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64-glibc-217.tar.gz \
+  && echo "${NODE_SHA256}  node.tar.gz" | sha256sum -c - \
+  && tar -xzf node.tar.gz -C /usr/local --strip-components=1 --no-same-owner \
+  && rm node.tar.gz
 
 # Let ImageMagick to read and write PDFs
 RUN apt-get install -y imagemagick imagemagick-6-common imagemagick-6.q16 \
