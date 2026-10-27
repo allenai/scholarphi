@@ -1,4 +1,4 @@
-FROM node:12.20.0 as build
+FROM node:24.22.1 as build
 WORKDIR /ui
 
 # Install dependencies
@@ -9,7 +9,8 @@ RUN npm install
 COPY . .
 ARG NODE_ENV
 ENV NODE_ENV ${NODE_ENV:-production}
-RUN npm run build
+# webpack 4 hashes with md4, which OpenSSL 3 (Node 17+) disables by default.
+RUN NODE_OPTIONS=--openssl-legacy-provider npm run build
 
 FROM nginx:1.17.0-alpine as runtime
 
